@@ -1,0 +1,24 @@
+{% extends "template.njk" %}
+
+{% block head %}
+<!--[if !IE 8]><!-->
+<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
+<!--<![endif]-->
+
+<!--[if lt IE 9]>
+<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+  <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
+<![endif]-->	
+
+{% endblock %}
+
+{% block header %}
+  {% include "./header.html" %}
+{% endblock %}
+
+{% block bodyEnd %}
+{# Run JavaScript at end of the
+<body>, to avoid blocking the initial render. #}
+<script src="/assets/all.js"></script>
+<script>window.GOVUKFrontend.initAll();</script>
+{% endblock %}

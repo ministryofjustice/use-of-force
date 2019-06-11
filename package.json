@@ -1,0 +1,81 @@
+{
+  "name": "form-app-starter",
+  "version": "0.0.1",
+  "description": "HMPPS Form Application Starter",
+  "repository": "git@github.com:ministryofjustice/form-app-starter.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
+    "build": "npm run css-build",
+    "css-build": "./bin/build-css",
+    "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
+    "lint": "eslint . --cache --max-warnings 0",
+    "test": "jest",
+    "migrate": "knex migrate:latest",
+    "record-build-info": "node ./bin/record-build-info"
+  },
+  "engines": {
+    "node": ">=10.15.3",
+    "npm": ">=6.4.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      ".circleci/*",
+      "migrations/*",
+      "node_modules/*",
+      "test/*"
+    ],
+    "delay": "2500"
+  },
+  "dependencies": {
+    "applicationinsights": "^1.4.0",
+    "axios": "^0.19.0",
+    "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "bunyan-format": "^0.2.1",
+    "bunyan-request-logger": "^2.0.1",
+    "compression": "^1.7.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.4",
+    "cookie-session": "^2.0.0-beta.3",
+    "csurf": "^1.10.0",
+    "debug": "^4.1.1",
+    "dotenv": "^6.2.0",
+    "express": "^4.17.0",
+    "express-request-id": "^1.4.1",
+    "govuk-elements-sass": "^3.1.3",
+    "govuk-frontend": "^2.9.0",
+    "helmet": "^3.18.0",
+    "http-errors": "~1.6.3",
+    "joi": "^14.3.1",
+    "joi-date-extensions": "^1.2.0",
+    "joi-postcode": "^3.0.0",
+    "jwt-decode": "^2.2.0",
+    "knex": "^0.16.3",
+    "moment": "^2.23.0",
+    "morgan": "^1.9.1",
+    "node-sass-middleware": "0.11.0",
+    "nunjucks": "^3.2.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.5.0",
+    "pg": "^7.11.0",
+    "querystring": "^0.2.0",
+    "ramda": "^0.25.0",
+    "sass-middleware": "^0.0.3",
+    "superagent": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "husky": "^2.4.0",
+    "jest": "^24.8.0",
+    "nock": "^10.0.6",
+    "prettier": "^1.18.2",
+    "supertest": "^3.4.2"
+  }
+}

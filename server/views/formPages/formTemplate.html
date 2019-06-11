@@ -1,0 +1,53 @@
+{% extends "../partials/layout.html" %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      {
+        text: "Home",
+        href: "/"
+      },
+      {
+        text: "Task list",
+        href: "/tasklist"
+      },
+      {
+        text: formName | capitalize
+      }
+    ]
+  }) }}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink or '/tasklist'
+  }) }}
+{% endblock %}
+
+
+{% block content %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+  {% block formItems %}
+
+  {% endblock %}
+
+  {{ govukButton({
+    text: "Save and continue"
+  }) }}
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "../formTemplate.html" %}
+
+{% from "select/macro.njk" import govukSelect %}
+
+{% block formItems %}
+
+
+{{ govukSelect({
+  id: "commuteVia",
+  name: "commuteVia",
+  label: {
+    text: "How do you commute to work?",
+    isPageHeading: true,
+    classes: "govuk-label--l"
+  },
+  items: [
+    {
+      value: "car",
+      text: "Car",
+      selected: data.commuteVia === 'car'
+    },
+    {
+      value: "train",
+      text: "Train",
+      selected: data.commuteVia === 'train'
+    },
+    {
+      value: "walk",
+      text: "Walk",
+      selected: data.commuteVia === 'walk'
+    },
+    {
+      value: "cycle",
+      text: "Cycle",
+      selected: data.commuteVia === 'cycle'
+    },
+    {
+      value: "helicopter",
+      text: "Personal helicopter",
+      selected: data.commuteVia === 'helicopter'
+    }
+  ]
+}) }}
+
+{% endblock %}

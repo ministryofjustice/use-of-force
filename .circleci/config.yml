@@ -1,0 +1,168 @@
+defaults: &defaults
+  working_directory: ~/mojdigitalstudio/form-app-starter
+  docker:
+    - image: circleci/node:10.15.3-browsers
+      environment:
+        GITHUB_TEAM_NAME_SLUG: digital-prison-services
+        APPLICATON_DEPLOY_NAME: node-form-builder
+        REPONAME: node-form-builder
+
+deploy_container_config: &deploy_container_config
+  docker:
+    - image: ${ECR_ENDPOINT}/cloud-platform/tools:circleci
+      environment:
+        GITHUB_TEAM_NAME_SLUG: digital-prison-services
+        APPLICATON_DEPLOY_NAME: node-form-builder
+        REPONAME: node-form-builder
+
+install_aws_cli: &install_aws_cli
+  run:
+    name: Set up aws
+    command: |
+      sudo apt-get update
+      sudo apt-get --assume-yes install python3-pip
+      sudo pip3 install awscli
+      $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Linter check
+          command: npm run lint
+      - run:
+          command: |
+            npm run build
+            DATE=$(date '+%Y-%m-%d')
+            export BUILD_NUMBER=${DATE}.${CIRCLE_BUILD_NUM}
+            export GIT_REF="$CIRCLE_SHA1"
+            npm run record-build-info
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
+            - build-info.json
+            - assets/stylesheets
+
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: unit tests
+          command: npm run test
+      - store_test_results:
+          path: ./reports
+
+  build_docker:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/mojdigitalstudio/form-app-starter
+      - setup_remote_docker:
+          exclusive: true
+      - run:
+          name: Build container and publish to docker hub (master only)
+          command: |
+            VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+            GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
+            BUILD_VERSION=${VERSION}
+
+            docker build --rm=false . \
+                --build-arg BUILD_NUMBER=$VERSION \
+                --build-arg GIT_REF=$GIT_REF \
+                --tag "mojdigitalstudio/${REPONAME}:$BUILD_VERSION" \
+                --label "maintainer=hmpps@digital.justice.gov.uk" \
+                --label "build.number=$CIRCLE_BUILD_NUM" \
+                --label "build.url=$CIRCLE_BUILD_URL" \
+                --label "build.gitref=$GIT_REF"
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag mojdigitalstudio/${REPONAME}:$BUILD_VERSION mojdigitalstudio/${REPONAME}:latest
+            docker push mojdigitalstudio/${REPONAME}:$BUILD_VERSION
+            docker push mojdigitalstudio/${REPONAME}:latest
+
+  copy_image_to_ecs:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/mojdigitalstudio/form-app-starter
+      - setup_remote_docker
+      - *install_aws_cli
+      - run:
+          name: publish image to ecs
+          command: |
+            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker pull mojdigitalstudio/${REPONAME}:$APP_VERSION
+
+            docker tag mojdigitalstudio/${REPONAME}:$APP_VERSION "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}"
+            docker tag "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}" "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
+            login="$(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)"
+            ${login}
+            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}"
+            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
+
+  deploy_dev:
+    <<: *deploy_container_config
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - attach_workspace:
+          at: ~/mojdigitalstudio/form-app-starter
+      - run:
+          name: Kubectl deployment dev setup
+          command: |
+            $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
+            setup-kube-auth
+            kubectl config use-context development
+      - deploy:
+          name: Deploy to Dev
+          command: |
+            APP_VERSION=$(egrep buildNumber ~/mojdigitalstudio/form-app-starter/build-info.json  | awk -F"\"" '{print $4}')
+            AWS_ACCESS_KEY_ID=${SM_AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${SM_AWS_SECRET_ACCESS_KEY} aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id sentence-planning-development | jq -r .SecretString | \
+            helm upgrade form-app-starter helm_deploy/form-app-starter/. \
+              --install --wait \
+              --tiller-namespace=${KUBE_ENV_DEVELOPMENT_NAMESPACE} \
+              --namespace=${KUBE_ENV_DEVELOPMENT_NAMESPACE} \
+              --values - \
+              --values ./helm_deploy/values-development.yaml \
+              --set image.repository="${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}" \
+              --set image.tag="${APP_VERSION}"
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - build_docker:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master

@@ -1,0 +1,36 @@
+{% extends "../formTemplate.html" %}
+
+{% from "radios/macro.njk" import govukRadios %}
+
+{% block formItems %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukRadios({
+      classes: "govuk-radios--inline",
+      name: "workedPreviously",
+      fieldset: {
+        legend: {
+          text: "Have you worked with agile methodologies before?",
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--l"
+        }
+      },
+        hint: {
+        text: "Select one option."
+      },
+      items: [
+        {
+          value: "Yes",
+          text: "Yes",
+          checked: data.workedPreviously === 'Yes'
+        },
+        {
+          value: "No",
+          checked: data.workedPreviously === 'No',
+          text: "No"
+        }
+      ]
+    }) }}
+  </div>
+</div>
+{% endblock %}

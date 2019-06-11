@@ -1,0 +1,26 @@
+{% extends "../formTemplate.html" %}
+
+{% from "textarea/macro.njk" import govukTextarea %}
+
+{% block formItems %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukTextarea({
+      name: "opinion",
+      id: "opinion",
+      rows: "8",
+      label: {
+        text: "Can you provide your opinions on agile working?",
+        isPageHeading: true,
+        classes: "govuk-label--l"
+      },
+      hint: {
+        text: "Any opinions are useful. Maybe compare the approach to previous ways of working that you have experienced"
+      }
+    }) }}
+
+  </div>
+</div>
+
+
+{% endblock %}
