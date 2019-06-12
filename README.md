@@ -1,4 +1,4 @@
-# Form app starter
+# Use of ForceForm
 A simple starter kit to start writing form based node app with the gov uk front end toolkit.
 
 
