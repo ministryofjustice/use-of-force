@@ -36,7 +36,7 @@ commands:
       - deploy:
           name: Deploy to << parameters.env >>
           command: |
-            APP_VERSION=$(cat ~/app/app_version.txt)
+            APP_VERSION=$(cat ~/app/build-info.json)
             aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
             helm upgrade use-of-force ~/git/helm_deploy/use-of-force/. \
               --install --wait --force --reset-values --timeout 360 \
@@ -116,14 +116,17 @@ jobs:
           name: Build container and publish to docker hub
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+            
             docker build --rm=false . \
-               --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
-               --label "maintainer=andrew.lee@digital.justice.gov.uk" \
-               --label "app.version=$APP_VERSION" \
-               --label "build.version=$APP_VERSION" \
-               --label "build.number=$CIRCLE_BUILD_NUM" \
-               --label "build.url=$CIRCLE_BUILD_URL" \
-               --label "build.gitref=$CIRCLE_SHA1"
+              --build-arg BUILD_NUMBER=$APP_VERSION \
+              --build-arg GIT_REF=$CIRCLE_SHA1 \       
+              --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
+              --label "maintainer=andrew.lee@digital.justice.gov.uk" \
+              --label "app.version=$APP_VERSION" \
+              --label "build.version=$APP_VERSION" \
+              --label "build.number=$CIRCLE_BUILD_NUM" \
+              --label "build.url=$CIRCLE_BUILD_URL" \
+              --label "build.gitref=$CIRCLE_SHA1"
 
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               # publish to docker hub as the tag
