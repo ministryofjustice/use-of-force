@@ -52,7 +52,7 @@ executors:
     working_directory: ~/app
   builder:  
     docker:
-      - image: circleci/openjdk:11-jdk-browsers
+      - image: circleci/node:10.15.3-browsers
     working_directory: ~/app
 
 orbs:
@@ -94,7 +94,7 @@ jobs:
           - build-info.json
           - assets/stylesheets
   test:
-    <<: *defaults
+    executor: builder
     steps:
     - checkout
     - restore_cache:
