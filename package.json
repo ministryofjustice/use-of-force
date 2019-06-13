@@ -11,7 +11,7 @@
     "css-build": "./bin/build-css",
     "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
-    "test": "jest",
+    "test": "JEST_HTML_REPORTER_OUTPUT_PATH=reports/test-reports.html jest --testResultsProcessor=jest-html-reporter",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info"
   },
@@ -74,6 +74,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^2.4.0",
     "jest": "^24.8.0",
+    "jest-html-reporter": "^2.5.0",
     "nock": "^10.0.6",
     "prettier": "^1.18.2",
     "supertest": "^3.4.2"
