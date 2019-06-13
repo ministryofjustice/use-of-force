@@ -36,7 +36,7 @@ commands:
       - deploy:
           name: Deploy to << parameters.env >>
           command: |
-            APP_VERSION=$(cat ~/app/app_version.txt)
+            APP_VERSION=$(cat ~/app/build-info.json)
             aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
             helm upgrade use-of-force ~/git/helm_deploy/use-of-force/. \
               --install --wait --force --reset-values --timeout 360 \

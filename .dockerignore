@@ -1,5 +1,6 @@
 kubectl_deploy*
 helm_deploy*
+Dockerfile
 README.md
 node_modules
 npm-debug.log
@@ -10,7 +11,9 @@ README.md
 .gitignore
 .git
 .circleci
-tests
+test*
 scss-report.txt
 eslint-report.html
 test-report.html
+docker-compose.yml
+
