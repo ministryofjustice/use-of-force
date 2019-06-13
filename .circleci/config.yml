@@ -115,7 +115,7 @@ jobs:
       - run:
           name: Build container and publish to docker hub
           command: |
-            APP_VERSION=$(cat ./app_version.txt)
+            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
             docker build --rm=false . \
                --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
                --label "maintainer=andrew.lee@digital.justice.gov.uk" \
