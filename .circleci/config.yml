@@ -52,7 +52,7 @@ executors:
     working_directory: ~/app
   builder:  
     docker:
-      - image: circleci/openjdk:11-jdk-browsers
+      - image: circleci/node:10.15.3-browsers
     working_directory: ~/app
 
 orbs:
@@ -65,40 +65,45 @@ jobs:
     executor: builder
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle" }}
-            - gradle-
-      - run: ./gradlew build
       - run:
-          name: Record the Application Version
-          command: |
-            jar xvf build/libs/use-of-force-*.jar BOOT-INF/classes/META-INF/build-info.properties
-            APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
-            rm BOOT-INF/classes/META-INF/build-info.properties
-
-            # make up a good version name
-            TAG=${APP_VERSION}.${CIRCLE_BRANCH}
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-              TAG=${APP_VERSION}
-            fi
-            echo $TAG > ./app_version.txt
-
+          name: Update npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install Dependencies
+          command: npm ci
       - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: build/test-results
-      - store_artifacts:
-          path: build/reports/tests
+          - node_modules
+      - run:
+          name: Linter check
+          command: npm run lint
+      - run:
+          command: |
+            npm run build
+            DATE=$(date '+%Y-%m-%d')
+            export BUILD_NUMBER=${DATE}.${CIRCLE_BUILD_NUM}
+            export GIT_REF="$CIRCLE_SHA1"
+            npm run record-build-info
       - persist_to_workspace:
           root: .
           paths:
-            - build/libs
-            - build.gradle
-            - app_version.txt
-
+          - node_modules
+          - build-info.json
+          - assets/stylesheets
+  test:
+    executor: builder
+    steps:
+    - checkout
+    - restore_cache:
+        key: dependency-cache-{{ checksum "package-lock.json" }}
+    - run:
+        name: unit tests
+        command: npm run test
+    - store_test_results:
+        path: ./reports
   build_docker:
     executor: deployer
     steps:
@@ -110,7 +115,7 @@ jobs:
       - run:
           name: Build container and publish to docker hub
           command: |
-            APP_VERSION=$(cat ./app_version.txt)
+            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
             docker build --rm=false . \
                --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
                --label "maintainer=andrew.lee@digital.justice.gov.uk" \
@@ -152,9 +157,12 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build_docker:
+      - test: 
           requires:
             - build
+      - build_docker:
+          requires:
+            - test
           filters:
             branches:
               only: master
