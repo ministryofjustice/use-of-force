@@ -1,168 +1,180 @@
-defaults: &defaults
-  working_directory: ~/mojdigitalstudio/form-app-starter
-  docker:
-    - image: circleci/node:10.15.3-browsers
-      environment:
-        GITHUB_TEAM_NAME_SLUG: digital-prison-services
-        APPLICATON_DEPLOY_NAME: node-form-builder
-        REPONAME: node-form-builder
+version: 2.1
+commands:
+  setup:
+    description: "Install tools and configure kubectl"
+    steps:
+      - aws-cli/install
+      - kubernetes/install
+      - helm/install-helm-client:
+          version: v2.13.1
+      - run:
+          name: Setup kubectl
+          command: |
+            echo -n "${KUBE_ENV_CACERT}" | base64 -d > /tmp/cluster_ca.crt
+            kubectl config set-cluster "${KUBE_ENV_NAME}" \
+              --certificate-authority="/tmp/cluster_ca.crt" \
+              --server="https://api.${KUBE_ENV_NAME}"
+            kubectl config set-credentials circleci \
+              --token="${KUBE_ENV_TOKEN}"
+            kubectl config set-context circleci \
+              --cluster="${KUBE_ENV_NAME}" \
+              --user="circleci" \
+              --namespace="${KUBE_ENV_NAMESPACE}"
+            # confirm setup is ok
+            kubectl config use-context circleci
+            kubectl -n "${KUBE_ENV_NAMESPACE}" get deployments
+  deploy_to_env:
+    parameters:
+      env:
+        type: string
+    steps:
+      - setup
+      - checkout:
+          path: ~/git
+      - attach_workspace:
+          at: ~/app
+      - deploy:
+          name: Deploy to << parameters.env >>
+          command: |
+            APP_VERSION=$(cat ~/app/app_version.txt)
+            aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
+            helm upgrade use-of-force ~/git/helm_deploy/use-of-force/. \
+              --install --wait --force --reset-values --timeout 360 \
+              --tiller-namespace=${KUBE_ENV_NAMESPACE} \
+              --namespace=${KUBE_ENV_NAMESPACE} \
+              --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
+              --values - \
+              --set image.tag="${APP_VERSION}"
+executors:
+  deployer:
+    docker:
+      - image: circleci/python:3
+    working_directory: ~/app
+  builder:  
+    docker:
+      - image: circleci/openjdk:11-jdk-browsers
+    working_directory: ~/app
 
-deploy_container_config: &deploy_container_config
-  docker:
-    - image: ${ECR_ENDPOINT}/cloud-platform/tools:circleci
-      environment:
-        GITHUB_TEAM_NAME_SLUG: digital-prison-services
-        APPLICATON_DEPLOY_NAME: node-form-builder
-        REPONAME: node-form-builder
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
+  kubernetes: circleci/kubernetes@0.3.0
+  helm: circleci/helm@0.1.2
 
-install_aws_cli: &install_aws_cli
-  run:
-    name: Set up aws
-    command: |
-      sudo apt-get update
-      sudo apt-get --assume-yes install python3-pip
-      sudo pip3 install awscli
-      $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
-
-version: 2
 jobs:
   build:
-    <<: *defaults
+    executor: builder
     steps:
       - checkout
-      - run:
-          name: Update npm
-          command: 'sudo npm install -g npm@latest'
       - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+            - gradle-
+      - run: ./gradlew build
       - run:
-          name: Install Dependencies
-          command: npm ci
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
-      - run:
-          name: Linter check
-          command: npm run lint
-      - run:
+          name: Record the Application Version
           command: |
-            npm run build
-            DATE=$(date '+%Y-%m-%d')
-            export BUILD_NUMBER=${DATE}.${CIRCLE_BUILD_NUM}
-            export GIT_REF="$CIRCLE_SHA1"
-            npm run record-build-info
+            jar xvf build/libs/use-of-force-*.jar BOOT-INF/classes/META-INF/build-info.properties
+            APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
+            rm BOOT-INF/classes/META-INF/build-info.properties
+
+            # make up a good version name
+            TAG=${APP_VERSION}.${CIRCLE_BRANCH}
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+              TAG=${APP_VERSION}
+            fi
+            echo $TAG > ./app_version.txt
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
       - persist_to_workspace:
           root: .
           paths:
-            - node_modules
-            - build-info.json
-            - assets/stylesheets
-
-  test:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: unit tests
-          command: npm run test
-      - store_test_results:
-          path: ./reports
+            - build/libs
+            - build.gradle
+            - app_version.txt
 
   build_docker:
-    <<: *defaults
+    executor: deployer
     steps:
       - checkout
       - attach_workspace:
-          at: ~/mojdigitalstudio/form-app-starter
-      - setup_remote_docker:
-          exclusive: true
-      - run:
-          name: Build container and publish to docker hub (master only)
-          command: |
-            VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
-            BUILD_VERSION=${VERSION}
-
-            docker build --rm=false . \
-                --build-arg BUILD_NUMBER=$VERSION \
-                --build-arg GIT_REF=$GIT_REF \
-                --tag "mojdigitalstudio/${REPONAME}:$BUILD_VERSION" \
-                --label "maintainer=hmpps@digital.justice.gov.uk" \
-                --label "build.number=$CIRCLE_BUILD_NUM" \
-                --label "build.url=$CIRCLE_BUILD_URL" \
-                --label "build.gitref=$GIT_REF"
-
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker tag mojdigitalstudio/${REPONAME}:$BUILD_VERSION mojdigitalstudio/${REPONAME}:latest
-            docker push mojdigitalstudio/${REPONAME}:$BUILD_VERSION
-            docker push mojdigitalstudio/${REPONAME}:latest
-
-  copy_image_to_ecs:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/mojdigitalstudio/form-app-starter
-      - setup_remote_docker
-      - *install_aws_cli
-      - run:
-          name: publish image to ecs
-          command: |
-            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker pull mojdigitalstudio/${REPONAME}:$APP_VERSION
-
-            docker tag mojdigitalstudio/${REPONAME}:$APP_VERSION "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}"
-            docker tag "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}" "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
-            login="$(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)"
-            ${login}
-            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${APP_VERSION}"
-            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
-
-  deploy_dev:
-    <<: *deploy_container_config
-    steps:
-      - checkout
+          at: ~/app
       - setup_remote_docker:
           docker_layer_caching: true
-      - attach_workspace:
-          at: ~/mojdigitalstudio/form-app-starter
       - run:
-          name: Kubectl deployment dev setup
+          name: Build container and publish to docker hub
           command: |
-            $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
-            setup-kube-auth
-            kubectl config use-context development
-      - deploy:
-          name: Deploy to Dev
-          command: |
-            APP_VERSION=$(egrep buildNumber ~/mojdigitalstudio/form-app-starter/build-info.json  | awk -F"\"" '{print $4}')
-            AWS_ACCESS_KEY_ID=${SM_AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${SM_AWS_SECRET_ACCESS_KEY} aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id sentence-planning-development | jq -r .SecretString | \
-            helm upgrade form-app-starter helm_deploy/form-app-starter/. \
-              --install --wait \
-              --tiller-namespace=${KUBE_ENV_DEVELOPMENT_NAMESPACE} \
-              --namespace=${KUBE_ENV_DEVELOPMENT_NAMESPACE} \
-              --values - \
-              --values ./helm_deploy/values-development.yaml \
-              --set image.repository="${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}" \
-              --set image.tag="${APP_VERSION}"
+            APP_VERSION=$(cat ./app_version.txt)
+            docker build --rm=false . \
+               --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
+               --label "maintainer=andrew.lee@digital.justice.gov.uk" \
+               --label "app.version=$APP_VERSION" \
+               --label "build.version=$APP_VERSION" \
+               --label "build.number=$CIRCLE_BUILD_NUM" \
+               --label "build.url=$CIRCLE_BUILD_URL" \
+               --label "build.gitref=$CIRCLE_SHA1"
+
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+              # publish to docker hub as the tag
+             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+             docker tag mojdigitalstudio/use-of-force:$APP_VERSION mojdigitalstudio/use-of-force:latest
+             docker push mojdigitalstudio/use-of-force:$APP_VERSION
+             docker push mojdigitalstudio/use-of-force:latest
+            fi
+
+  deploy_dev:
+    executor: deployer
+    steps:
+      - deploy_to_env:
+          env: "dev"
+  deploy_preprod:
+    executor: deployer
+    steps:
+      - deploy_to_env:
+          env: "preprod"
+  deploy_prod:
+    executor: deployer
+    steps:
+      - deploy_to_env:
+          env: "prod"
 
 workflows:
   version: 2
-  build_test_deploy:
+  build-test-and-deploy:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - build:
+          filters:
+            tags:
+              ignore: /.*/
       - build_docker:
           requires:
-            - test
+            - build
           filters:
             branches:
-              only:
-                - master
+              only: master
+      - deploy_dev:
+          requires:
+            - build_docker
+      - request-preprod-approval:
+          type: approval
+          requires:
+            - deploy_dev
+      - deploy_preprod:
+          context: use-of-force-preprod
+          requires:
+            - request-preprod-approval
+      - request-prod-approval:
+          type: approval
+          requires:
+            - deploy_preprod
+      - deploy_prod:
+          context: use-of-force-prod
+          requires:
+            - request-prod-approval
+

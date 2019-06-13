@@ -1,0 +1,24 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: docker.io/mojdigitalstudio/use-of-force 
+  tag: latest
+  pullPolicy: Always
+  port: 8080
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "217.33.148.210/32,81.134.202.29/32,35.177.252.195/32"
+  hosts:
+    - host: use-of-force.service.justice.gov.uk
+      cert_secret: use-of-force-cert
+  path: /
+
+env:
+  NOMIS_AUTH_URL: https://gateway.prod.nomis-api.service.hmpps.dsd.io/auth
+  NOMIS_OAUTH_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFwSkdtYWp6SW9POVdSY2owM2VTbQpFeWJTYnNJaEdkNkRWVDRxUWFSRTZwN3RIN1ppSklvRWtzczRkOFphMGhuYWJwa0JqWTYwS3NnMW5teXpoZVlSCithWXVtc0gxbm1JcmJ4ZCtqV043T3A2V1pteWRBU3JMek1XWVdBYlNHOHBXMXkxY1RwdkRaMTlBSGJTYTRRL2UKSnRlcDFscCsyMnVHMW5kTVRwclRkNjRLTkcyZnRwcmV3aFExeE5xdmtUWjZoQnVRRVJKMzFhUXBkRThNQTFxSwpDWnI3VDJxTk1BTWNkTlpia0FqRjVLOXE0alZ0QkY3WXFPeXJ0T1JmTldqYUJoWHA5TlN0YWJCTXBURTdQNm8vClhJaU9rcmltNjlzaG1OdDhVRlU3WUlJN0ZvejgzM29HZnk2dmtDRjRxcGpIZ0RNc21STjc1UXRrRmRtaU8xaDgKcHdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==
