@@ -17,22 +17,18 @@ RUN mkdir /home/appuser/.postgresql \
 # Create app directory
 RUN mkdir -p /app
 WORKDIR /app
-COPY . .
+COPY --chown=appuser:appgroup . .
 
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF ${GIT_REF:-dummy}
 
-RUN npm install && \
+RUN npm ci && \
     npm run build && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
 
-ENV PORT=3000
-
 EXPOSE 3000
-
-RUN chown -R appuser:appgroup /app
 
 USER 2000
 
