@@ -21,4 +21,5 @@ reports/
 
 */*.iml
 *secrets*.yaml
+!secrets.yaml
 !secrets-example.yaml
