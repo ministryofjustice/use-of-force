@@ -39,6 +39,6 @@ env:
   - name: NOMIS_OAUTH_PUBLIC_KEY
     value: {{ .Values.env.NOMIS_OAUTH_PUBLIC_KEY | quote }}
   - name: INGRESS_URL
-    value: 'https://{{ .Values.ingress.hosts.host }}'
+    value: 'https://{{ .Values.ingress.host }}'
 
 {{- end -}}
