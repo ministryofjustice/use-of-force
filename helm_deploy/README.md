@@ -14,6 +14,6 @@ helm init --tiller-namespace use-of-force-dev --service-account tiller --history
 
 ```
 kubectl -n use-of-force-dev apply -f certificate-dev.yaml
-kubectl -n use-of-force-dev apply -f certificate-preprod.yaml
-kubectl -n use-of-force-dev apply -f certificate-prod.yaml
+kubectl -n use-of-force-preprod apply -f certificate-preprod.yaml
+kubectl -n use-of-force-prod apply -f certificate-prod.yaml
 ```
