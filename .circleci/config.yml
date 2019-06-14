@@ -119,7 +119,7 @@ jobs:
             
             docker build --rm=false . \
               --build-arg BUILD_NUMBER=$APP_VERSION \
-              --build-arg GIT_REF=$CIRCLE_SHA1 \       
+              --build-arg GIT_REF=$CIRCLE_SHA1 \
               --tag "mojdigitalstudio/use-of-force:$APP_VERSION" \
               --label "maintainer=andrew.lee@digital.justice.gov.uk" \
               --label "app.version=$APP_VERSION" \
