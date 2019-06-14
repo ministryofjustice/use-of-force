@@ -1,8 +1,8 @@
 {
-  "name": "form-app-starter",
+  "name": "use-of-force",
   "version": "0.0.1",
-  "description": "HMPPS Form Application Starter",
-  "repository": "git@github.com:ministryofjustice/form-app-starter.git",
+  "description": "HMPPS Use of force",
+  "repository": "git@github.com:ministryofjustice/use-of-force.git",
   "license": "MIT",
   "scripts": {
     "start": "node server.js",
