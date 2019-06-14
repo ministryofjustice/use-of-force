@@ -28,6 +28,9 @@ env:
         name: dps-rds-instance-output
         key: database_name
 
+  - name: DB_SSL_ENABLED
+    value: "true"
+
   - name: API_CLIENT_ID
     valueFrom:
       secretKeyRef:
