@@ -35,9 +35,9 @@ env:
         name: {{ template "app.name" . }}
         key: API_CLIENT_SECRET
   - name: NOMIS_AUTH_URL
-    value: {{ .Values.deploy.NOMIS_AUTH_URL | quote }}
+    value: {{ .Values.env.NOMIS_AUTH_URL | quote }}
   - name: NOMIS_OAUTH_PUBLIC_KEY
-    value: {{ .Values.deploy.NOMIS_OAUTH_PUBLIC_KEY | quote }}
+    value: {{ .Values.env.NOMIS_OAUTH_PUBLIC_KEY | quote }}
   - name: INGRESS_URL
     value: 'https://{{ .Values.ingress.hosts.host }}'
 
