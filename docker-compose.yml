@@ -1,11 +1,11 @@
 version: '3.1'
 services:
-  form-builder:
+  use-of-force:
     build: .
     networks:
       - hmpps
     depends_on:
-      - form-builder-db
+      - use-of-force-db
       - nomis-oauth2-server
     ports:
       - "3000:3000"
@@ -13,26 +13,26 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
     environment:
     - PORT=3000
-    - DB_USER=form-builder
-    - DB_PASS=form-builder
-    - DB_SERVER=form-builder-db
-    - DB_NAME=form-builder
+    - DB_USER=use-of-force
+    - DB_PASS=use-of-force
+    - DB_SERVER=use-of-force-db
+    - DB_NAME=use-of-force
     - DB_SSL_ENABLED=no
     - NOMIS_AUTH_URL=http://nomis-oauth2-server:8080/auth
     - NOMIS_AUTH_EXTERNAL_URL=http://localhost:8080/auth
 
-  form-builder-db:
+  use-of-force-db:
     image: postgres
     networks:
     - hmpps
-    container_name: form-builder-db
+    container_name: use-of-force-db
     restart: always
     ports:
       - "5432:5432"
     environment:
-    - POSTGRES_PASSWORD=form-builder
-    - POSTGRES_USER=form-builder
-    - POSTGRES_DB=form-builder
+    - POSTGRES_PASSWORD=use-of-force
+    - POSTGRES_USER=use-of-force
+    - POSTGRES_DB=use-of-force
 
   nomis-oauth2-server:
     image: mojdigitalstudio/nomis-oauth2-server:latest
