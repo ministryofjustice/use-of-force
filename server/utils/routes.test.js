@@ -1,4 +1,4 @@
-const { getPathFor } = require('../../server/utils/routes')
+const { getPathFor } = require('./routes')
 
 describe('getPathFor', () => {
   describe('when the nextPath is a string', () => {

@@ -1,4 +1,3 @@
-const querystring = require('querystring')
 const config = require('../config')
 
 module.exports = {
@@ -10,7 +9,7 @@ function generateOauthClientToken() {
 }
 
 function generate(clientId, clientSecret) {
-  const token = Buffer.from(`${querystring.escape(clientId)}:${querystring.escape(clientSecret)}`).toString('base64')
+  const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
 
   return `Basic ${token}`
 }

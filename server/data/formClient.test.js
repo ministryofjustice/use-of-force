@@ -1,5 +1,5 @@
-const formClient = require('../../server/data/formClient')
-const db = require('../../server/data/dataAccess/db')
+const formClient = require('./formClient')
+const db = require('./dataAccess/db')
 
 jest.mock('../../server/data/dataAccess/db')
 

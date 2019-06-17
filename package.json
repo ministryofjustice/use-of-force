@@ -11,13 +11,41 @@
     "css-build": "./bin/build-css",
     "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
-    "test": "JEST_HTML_REPORTER_OUTPUT_PATH=reports/test-reports.html jest --testResultsProcessor=jest-html-reporter",
+    "test": "jest",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info"
   },
   "engines": {
     "node": ">=10.15.3",
     "npm": ">=6.4.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "server/**/*.{js,jsx,mjs}"
+    ],
+    "testMatch": [
+      "<rootDir>/(server)/**/?(*.)(spec|test).{js,jsx,mjs}"
+    ],
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "pageTitle": "Test Report",
+          "outputPath": "reports/test-reports.html"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node",
+      "mjs"
+    ]
   },
   "nodemonConfig": {
     "ignore": [

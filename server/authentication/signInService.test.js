@@ -1,4 +1,4 @@
-const signInService = require('../../server/authentication/signInService')
+const signInService = require('./signInService')
 
 describe('signInService', () => {
   let service
