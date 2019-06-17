@@ -9,14 +9,15 @@ RUN apt-get update && apt-get install -y make python && \
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000
 
-# Install AWS RDS Root cert
-RUN mkdir /home/appuser/.postgresql \
-  && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem \
-    > /home/appuser/.postgresql/root.crt
-
 # Create app directory
 RUN mkdir -p /app
 WORKDIR /app
+
+# Install AWS RDS Root cert
+RUN mkdir /home/appuser/.postgresql \
+  && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem \
+    > /app/root.crt
+
 COPY --chown=appuser:appgroup . .
 
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
