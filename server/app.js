@@ -178,9 +178,11 @@ module.exports = function createApp({ signInService, formService }) {
 
   app.get('/login', passport.authenticate('oauth2'))
 
-  app.get(
-    '/login/callback',
-    passport.authenticate('oauth2', { successReturnToOrRedirect: '/', failureRedirect: '/autherror' })
+  app.get('/login/callback', (req, res, next) =>
+    passport.authenticate('oauth2', {
+      successReturnToOrRedirect: req.session.returnTo || '/',
+      failureRedirect: '/autherror',
+    })(req, res, next)
   )
 
   app.use('/logout', (req, res) => {
