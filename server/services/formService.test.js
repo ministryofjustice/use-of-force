@@ -1,5 +1,5 @@
-const serviceCreator = require('../../server/services/formService')
-const personalDetailsConfig = require('../../server/config/personalDetails')
+const serviceCreator = require('./formService')
+const personalDetailsConfig = require('../config/personalDetails')
 
 const formClient = {
   getFormDataForUser: jest.fn(),

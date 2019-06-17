@@ -1,10 +1,10 @@
 const request = require('supertest')
-const appSetup = require('./utils/appSetup')
-const createRouter = require('../../server/routes/form')
-const { authenticationMiddleware } = require('./utils/mockAuthentication')
-const pdConfig = require('../../server/config/personalDetails')
-const tConfig = require('../../server/config/transport')
-const aConfig = require('../../server/config/agile')
+const appSetup = require('./testutils/appSetup')
+const createRouter = require('./form')
+const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const pdConfig = require('../config/personalDetails')
+const tConfig = require('../config/transport')
+const aConfig = require('../config/agile')
 
 const formConfig = {
   ...pdConfig,
