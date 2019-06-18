@@ -1,4 +1,4 @@
-const { equals } = require('../utils/functionalHelpers')
+const { equals } = require('../utils/utils')
 const { validate } = require('../utils/fieldValidation')
 
 module.exports = function createSomeService(formClient) {

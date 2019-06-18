@@ -1,7 +1,7 @@
 const passport = require('passport')
 const { Strategy } = require('passport-oauth2')
 const config = require('../config')
-const { generateOauthClientToken } = require('./oauth')
+const { generateOauthClientToken } = require('./clientCredentials')
 
 function authenticationMiddleware() {
   // eslint-disable-next-line
@@ -28,10 +28,10 @@ passport.deserializeUser((user, done) => {
 function init(signInService) {
   const strategy = new Strategy(
     {
-      authorizationURL: `${config.nomis.authExternalUrl}/oauth/authorize`,
-      tokenURL: `${config.nomis.authUrl}/oauth/token`,
-      clientID: config.nomis.apiClientId,
-      clientSecret: config.nomis.apiClientSecret,
+      authorizationURL: `${config.apis.oauth2.externalUrl}/oauth/authorize`,
+      tokenURL: `${config.apis.oauth2.url}/oauth/token`,
+      clientID: config.apis.oauth2.apiClientId,
+      clientSecret: config.apis.oauth2.apiClientSecret,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: { Authorization: generateOauthClientToken() },

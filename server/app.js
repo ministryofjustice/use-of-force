@@ -1,5 +1,6 @@
 const express = require('express')
-const log = require('bunyan-request-logger')()
+const loggingSerialiser = require('./loggingSerialiser') // eslint-disable-line
+const log = require('bunyan-request-logger')({ name: 'Use of force http', serializers: loggingSerialiser })
 const addRequestId = require('express-request-id')()
 const helmet = require('helmet')
 const csurf = require('csurf')
@@ -10,6 +11,7 @@ const passport = require('passport')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const sassMiddleware = require('node-sass-middleware')
+const { createNamespace } = require('cls-hooked')
 
 const healthcheck = require('./services/healthcheck')
 const createFormRouter = require('./routes/form')
@@ -24,7 +26,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService }) {
+module.exports = function createApp({ signInService, formService, nomisService }) {
   const app = express()
 
   auth.init(signInService)
@@ -47,7 +49,15 @@ module.exports = function createApp({ signInService, formService }) {
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
   app.use(helmet())
+  // Setup thread-locals for services under main routers (must occur before requestLogger)
+  const ns = createNamespace('request.scope')
 
+  app.use(async (req, res, next) => {
+    // const ns = getNamespace('request.scope')
+    ns.bindEmitter(req)
+    ns.bindEmitter(res)
+    return ns.run(() => next())
+  })
   app.use(addRequestId)
 
   app.use(
@@ -167,7 +177,7 @@ module.exports = function createApp({ signInService, formService }) {
     next()
   })
 
-  const authLogoutUrl = `${config.nomis.authExternalUrl}/logout?client_id=${config.nomis.apiClientId}&redirect_uri=${config.domain}`
+  const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
 
   app.get('/autherror', (req, res) => {
     res.status(401)
@@ -191,10 +201,17 @@ module.exports = function createApp({ signInService, formService }) {
     }
     res.redirect(authLogoutUrl)
   })
+  // Setup user thread-local
+  app.use(async (req, res, next) => {
+    if (req.user && req.user.username) {
+      ns.set('user', req.user.username)
+    }
+    return next()
+  })
 
   app.get('/', (req, res) => res.render('pages/index'))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
-  app.use('/form/', createFormRouter({ formService, authenticationMiddleware }))
+  app.use('/form/', createFormRouter({ formService, authenticationMiddleware, nomisService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

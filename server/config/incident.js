@@ -1,5 +1,5 @@
 module.exports = {
-  name: {
+  newIncident: {
     fields: [
       {
         fullName: {
@@ -10,7 +10,7 @@ module.exports = {
     ],
     validate: true,
     nextPath: {
-      path: '/form/personalDetails/dob/',
+      path: '/form/incident/dob/',
     },
   },
 
@@ -37,7 +37,7 @@ module.exports = {
     ],
     validate: true,
     nextPath: {
-      path: '/form/personalDetails/address/',
+      path: '/form/incident/address/',
     },
   },
 
@@ -76,7 +76,7 @@ module.exports = {
     ],
     validate: true,
     nextPath: {
-      path: '/tasklist',
+      path: '/tasklist/',
     },
   },
 }
