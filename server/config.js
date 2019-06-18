@@ -15,10 +15,10 @@ function get(name, fallback, options = {}) {
 module.exports = {
   sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', { requireInProduction: true }),
   db: {
-    username: get('DB_USER', 'form-builder'),
-    password: get('DB_PASS', 'form-builder'),
+    username: get('DB_USER', 'use-of-force'),
+    password: get('DB_PASS', 'use-of-force'),
     server: get('DB_SERVER', 'localhost'),
-    database: get('DB_NAME', 'form-builder'),
+    database: get('DB_NAME', 'use-of-force'),
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
   nomis: {
