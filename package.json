@@ -56,6 +56,24 @@
     ],
     "delay": "2500"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm test"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{js,json,css}": [
+        "prettier --write",
+        "eslint --fix",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "package.json",
+      "package-lock.json"
+    ]
+  },
   "dependencies": {
     "applicationinsights": "^1.4.0",
     "axios": "^0.19.0",
@@ -103,6 +121,7 @@
     "husky": "^2.4.0",
     "jest": "^24.8.0",
     "jest-html-reporter": "^2.5.0",
+    "lint-staged": "^7.3.0",
     "nock": "^10.0.6",
     "prettier": "^1.18.2",
     "supertest": "^3.4.2"
