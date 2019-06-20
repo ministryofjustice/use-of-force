@@ -29,7 +29,7 @@ module.exports = {
         response: 30000,
         deadline: 35000,
       },
-      apiClientId: get('API_CLIENT_ID', 'licences', true),
+      apiClientId: get('API_CLIENT_ID', 'use-of-force-client', true),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     },
     elite2: {
