@@ -1,7 +1,7 @@
 const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
 const postcodeExtend = require('joi-postcode')
-const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
+const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
 
 const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
 

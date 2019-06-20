@@ -2,12 +2,12 @@ const request = require('supertest')
 const appSetup = require('./testutils/appSetup')
 const createRouter = require('./form')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
-const pdConfig = require('../config/personalDetails')
+const incidentConfig = require('../config/incident')
 const tConfig = require('../config/transport')
 const aConfig = require('../config/agile')
 
 const formConfig = {
-  ...pdConfig,
+  ...incidentConfig,
   ...tConfig,
   ...aConfig,
 }
@@ -18,7 +18,11 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
 }
 
-const formRoute = createRouter({ formService, authenticationMiddleware })
+const offenderService = {
+  getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234' }),
+}
+
+const formRoute = createRouter({ formService, authenticationMiddleware, offenderService })
 
 let app
 
@@ -34,18 +38,17 @@ afterEach(() => {
 
 describe('GET /section/form', () => {
   test.each`
-    path                         | expectedContent
-    ${'personalDetails/name'}    | ${'Full name'}
-    ${'personalDetails/dob'}     | ${'What is your date of birth?'}
-    ${'personalDetails/address'} | ${'What is your address?'}
-    ${'transport/commute'}       | ${'How do you commute to work?'}
-    ${'transport/car'}           | ${'Do you own a car?'}
-    ${'agile/experience'}        | ${'Have you worked with agile methodologies before?'}
-    ${'agile/opinion'}           | ${'Can you provide your opinions on agile working?'}
+    path                      | expectedContent
+    ${'incident/newIncident'} | ${'Full name'}
+    ${'incident/dob'}         | ${'What is your date of birth?'}
+    ${'incident/address'}     | ${'What is your address?'}
+    ${'transport/commute'}    | ${'How do you commute to work?'}
+    ${'transport/car'}        | ${'Do you own a car?'}
+    ${'agile/experience'}     | ${'Have you worked with agile methodologies before?'}
+    ${'agile/opinion'}        | ${'Can you provide your opinions on agile working?'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
-      .get(`/${path}`)
-      .expect(200)
+      .get(`/${path}/1`)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
@@ -55,21 +58,21 @@ describe('GET /section/form', () => {
 
 describe('POST /section/form', () => {
   test.each`
-    sectionName          | formName        | userInput                        | nextPath
-    ${'personalDetails'} | ${'name'}       | ${{ fullName: 'Name' }}          | ${'/form/personalDetails/dob/'}
-    ${'personalDetails'} | ${'dob'}        | ${{ day: '12' }}                 | ${'/form/personalDetails/address/'}
-    ${'personalDetails'} | ${'address'}    | ${{ addressLine1: 'Something' }} | ${'/tasklist'}
-    ${'transport'}       | ${'commute'}    | ${{ commuteVia: 'a' }}           | ${'/form/transport/car/'}
-    ${'transport'}       | ${'car'}        | ${{ haveCar: 'no' }}             | ${'/tasklist'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'No' }}    | ${'/tasklist'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'Yes' }}   | ${'/form/agile/opinion'}
-    ${'agile'}           | ${'opinion'}    | ${{ response: 'Stuff' }}         | ${'/tasklist'}
+    sectionName    | formName         | userInput                        | nextPath
+    ${'incident'}  | ${'newIncident'} | ${{ fullName: 'Name' }}          | ${'/form/incident/dob/'}
+    ${'incident'}  | ${'dob'}         | ${{ day: '12' }}                 | ${'/form/incident/address/'}
+    ${'incident'}  | ${'address'}     | ${{ addressLine1: 'Something' }} | ${'/tasklist/'}
+    ${'transport'} | ${'commute'}     | ${{ commuteVia: 'a' }}           | ${'/form/transport/car/'}
+    ${'transport'} | ${'car'}         | ${{ haveCar: 'no' }}             | ${'/tasklist/'}
+    ${'agile'}     | ${'experience'}  | ${{ workedPreviously: 'No' }}    | ${'/tasklist/'}
+    ${'agile'}     | ${'experience'}  | ${{ workedPreviously: 'Yes' }}   | ${'/form/agile/opinion/'}
+    ${'agile'}     | ${'opinion'}     | ${{ response: 'Stuff' }}         | ${'/tasklist/'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
-      .post(`/${sectionName}/${formName}`)
+      .post(`/${sectionName}/${formName}/1`)
       .send(userInput)
       .expect(302)
-      .expect('Location', nextPath)
+      .expect('Location', `${nextPath}1`)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(formService.update).toBeCalledWith({
@@ -88,10 +91,10 @@ describe('POST /section/form', () => {
     formService.getValidationErrors.mockReturnValue({ some: 'thing' })
 
     return request(app)
-      .post(`/personalDetails/name`)
+      .post(`/incident/newIncident/1`)
       .send({ user: 'input' })
       .expect(302)
-      .expect('Location', '/form/personalDetails/name/')
+      .expect('Location', '/form/incident/newIncident/1')
       .expect(() => {
         expect(formService.update).toBeCalledTimes(0)
       })

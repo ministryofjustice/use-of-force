@@ -1,4 +1,4 @@
-const { generate } = require('./oauth')
+const { generate } = require('./clientCredentials')
 
 describe('generate', () => {
   it('Token can be generated', () => {

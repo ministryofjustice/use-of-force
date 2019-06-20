@@ -1,21 +1,33 @@
 const express = require('express')
 const flash = require('connect-flash')
-const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
+const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const getFormData = require('../middleware/getFormData')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-const personalDetailsConfig = require('../config/personalDetails')
+const incidentConfig = require('../config/incident')
 const transportConfig = require('../config/transport')
 const agile = require('../config/agile')
 
 const formConfig = {
-  ...personalDetailsConfig,
+  ...incidentConfig,
   ...transportConfig,
   ...agile,
 }
 
-module.exports = function Index({ formService, authenticationMiddleware }) {
+const renderForm = (req, res, section, form, data = {}) => {
+  const backLink = req.get('Referrer')
+  const pageData = firstItem(req.flash('userInput')) || getIn([section, form], res.locals.formObject)
+  const errors = req.flash('errors')
+  res.render(`formPages/${section}/${form}`, {
+    data: { ...pageData, ...data },
+    formName: form,
+    backLink,
+    errors,
+  })
+}
+
+module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -30,26 +42,28 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
   })
 
   router.get(
-    '/:section/:form',
+    '/incident/newIncident/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      const { displayName, offenderNo } = offenderDetail
+      const data = { displayName, offenderNo }
+      renderForm(req, res, 'incident', 'newIncident', data)
+    })
+  )
+
+  router.get(
+    '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form } = req.params
-      const backLink = req.get('Referrer')
-      const pageData = firstItem(req.flash('userInput')) || getIn([section, form], res.locals.formObject)
-      const errors = req.flash('errors')
-
-      res.render(`formPages/${section}/${form}`, {
-        data: pageData,
-        formName: form,
-        backLink,
-        errors,
-      })
+      renderForm(req, res, section, form)
     })
   )
 
   router.post(
-    '/:section/:form',
+    '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { section, form } = req.params
+      const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
       const expectedFields = formPageConfig.fields.map(getFieldName)
       const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
@@ -61,7 +75,7 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
         if (!isNilOrEmpty(errors)) {
           req.flash('errors', errors)
           req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/`)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
         }
       }
 
@@ -76,7 +90,7 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
       })
 
       const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
-      return res.redirect(`${nextPath}`)
+      return res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
