@@ -1,20 +1,20 @@
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
-const nomisClientBuilder = require('./data/nomisClientBuilder')
+const elite2ClientBuilder = require('./data/elite2ClientBuilder')
 
 const createFormService = require('./services/formService')
 const createSignInService = require('./authentication/signInService')
-const createNomisService = require('./services/nomisService')
+const createOffenderService = require('./services/offenderService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
-const nomisService = createNomisService(nomisClientBuilder)
+const offenderService = createOffenderService(elite2ClientBuilder)
 
 const app = createApp({
   formService,
   signInService: createSignInService(),
-  nomisService,
+  offenderService,
 })
 
 module.exports = app

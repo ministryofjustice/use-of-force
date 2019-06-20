@@ -15,7 +15,8 @@ for detailed instructions see `https://dsdmoj.atlassian.net/wiki/spaces/NFS/over
 You can log in with users stored in the seeded nomis oauth db e.g. `CA_USER, password123456`
 
 ### Dependencies
-The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres database.
+The app authenticates using `Nomis Oauth2 Server` and saves to a Postgres database.
+It retrieve offender info from the elite2api.
 
 ### Runing the app for development**
 

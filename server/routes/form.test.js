@@ -18,11 +18,11 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
 }
 
-const nomisService = {
+const offenderService = {
   getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234' }),
 }
 
-const formRoute = createRouter({ formService, authenticationMiddleware, nomisService })
+const formRoute = createRouter({ formService, authenticationMiddleware, offenderService })
 
 let app
 

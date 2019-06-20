@@ -1,28 +1,28 @@
-const serviceCreator = require('./nomisService')
+const serviceCreator = require('./offenderService')
 
 const token = 'token-1'
 
-const nomisClient = {
+const elite2Client = {
   getOffenderDetails: jest.fn(),
 }
 
-const nomisClientBuilder = jest.fn()
+const elite2ClientBuilder = jest.fn()
 
 let service
 
 beforeEach(() => {
-  nomisClientBuilder.mockReturnValue(nomisClient)
-  service = serviceCreator(nomisClientBuilder)
+  elite2ClientBuilder.mockReturnValue(elite2Client)
+  service = serviceCreator(elite2ClientBuilder)
 })
 
 afterEach(() => {
-  nomisClient.getOffenderDetails.mockReset()
+  elite2Client.getOffenderDetails.mockReset()
 })
 
 describe('getOffenderDetails', () => {
   it('should format display name', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH' }
-    nomisClient.getOffenderDetails.mockReturnValue(details)
+    elite2Client.getOffenderDetails.mockReturnValue(details)
 
     const result = await service.getOffenderDetails(token, -5)
 
@@ -31,10 +31,10 @@ describe('getOffenderDetails', () => {
 
   it('should use the user token', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH' }
-    nomisClient.getOffenderDetails.mockReturnValue(details)
+    elite2Client.getOffenderDetails.mockReturnValue(details)
 
     await service.getOffenderDetails(token, -5)
 
-    expect(nomisClientBuilder).toBeCalledWith(token)
+    expect(elite2ClientBuilder).toBeCalledWith(token)
   })
 })

@@ -8,17 +8,17 @@ const timeoutSpec = {
 }
 const apiUrl = config.apis.elite2.url
 module.exports = token => {
-  const nomisUserGet = nomisUserGetBuilder(token)
+  const userGet = userGetBuilder(token)
   return {
     async getOffenderDetails(bookingId) {
       const path = `${apiUrl}api/bookings/${bookingId}?basicInfo=false`
-      return nomisUserGet({ path })
+      return userGet({ path })
     },
   }
 }
-function nomisUserGetBuilder(token) {
+function userGetBuilder(token) {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    logger.info(`nomis Get using user credentials: calling elite2api: ${path} ${query}`)
+    logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent
         .get(path)
