@@ -1,4 +1,6 @@
 const superagent = require('superagent')
+const Agent = require('agentkeepalive')
+const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
 const config = require('../config')
 
@@ -7,6 +9,15 @@ const timeoutSpec = {
   deadline: config.apis.elite2.timeout.deadline,
 }
 const apiUrl = config.apis.elite2.url
+
+const agentOptions = {
+  maxSockets: config.apis.elite2.agent.maxSockets,
+  maxFreeSockets: config.apis.elite2.agent.maxFreeSockets,
+  freeSocketTimeout: config.apis.elite2.agent.freeSocketTimeout,
+}
+
+const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
+
 module.exports = token => {
   const userGet = userGetBuilder(token)
   return {
@@ -22,6 +33,7 @@ function userGetBuilder(token) {
     try {
       const result = await superagent
         .get(path)
+        .agent(keepaliveAgent)
         .query(query)
         .auth(token, { type: 'bearer' })
         .set(headers)

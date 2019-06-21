@@ -29,6 +29,11 @@ module.exports = {
         response: 30000,
         deadline: 35000,
       },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', true),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     },
@@ -37,6 +42,11 @@ module.exports = {
       timeout: {
         response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
         deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
       },
     },
   },
