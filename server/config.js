@@ -32,7 +32,7 @@ module.exports = {
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
+        freeSocketTimeout: 10000,
       },
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', true),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
@@ -46,7 +46,7 @@ module.exports = {
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
+        freeSocketTimeout: 10000,
       },
     },
   },
