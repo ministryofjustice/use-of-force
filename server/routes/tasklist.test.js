@@ -24,15 +24,11 @@ afterEach(() => {
 })
 
 describe('GET /tasklist', () => {
-  test.each`
-    path     | expectedContent
-    ${'-35'} | ${'Task list'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+  it('should render $expectedContent for $path', () =>
     request(app)
-      .get(`/${path}`)
+      .get('/-35')
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
-      })
-  )
+        expect(res.text).toContain('Task list')
+      }))
 })
