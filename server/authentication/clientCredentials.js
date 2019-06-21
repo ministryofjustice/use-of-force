@@ -41,7 +41,6 @@ async function getApiClientToken() {
   const clientToken = generateOauthClientToken()
   const handle = getNamespace('request.scope')
   const username = handle.get('user')
-  const correlationId = handle.get('correlationId')
   const oauthRequest = querystring.stringify({ grant_type: 'client_credentials', username })
 
   logger.info(
@@ -57,7 +56,6 @@ async function getApiClientToken() {
     })
     .auth(clientToken, { type: 'basic' })
     .set('content-type', 'application/x-www-form-urlencoded')
-    .set('correlationId', correlationId)
     .send(oauthRequest)
     .timeout(timeoutSpec)
 }
