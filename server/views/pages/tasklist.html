@@ -8,19 +8,19 @@
           <h2 class="app-task-list__section"><span class="app-task-list__section-number">1. </span> Personal details</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/name">Name</a>
+              <a href="/form/personalDetails/name/{{bookingId}}">Name</a>
               {% if data.personalDetails.name %}
               <strong class="govuk-tag app-task-list__task-completed" id="name-completed">Completed</strong>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/dob">Date of birth</a>
+              <a href="/form/personalDetails/dob/{{bookingId}}">Date of birth</a>
               {% if data.personalDetails.dob %}
               <strong class="govuk-tag app-task-list__task-completed" id="age-completed">Completed</strong>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/address">Address</a>
+              <a href="/form/personalDetails/address/{{bookingId}}">Address</a>
               {% if data.personalDetails.address %}
               <strong class="govuk-tag app-task-list__task-completed" id="address-completed">Completed</strong>
               {% endif %}
@@ -32,13 +32,13 @@
           <h2 class="app-task-list__section"><span class="app-task-list__section-number">2. </span> Transportation</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/transport/commute">Commute</a>
+              <a href="/form/transport/commute/{{bookingId}}">Commute</a>
               {% if data.transport.commute %}
               <strong class="govuk-tag app-task-list__task-completed" id="commute-completed">Completed</strong>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/transport/car">Car</a>
+              <a href="/form/transport/car/{{bookingId}}">Car</a>
               {% if data.transport.car %}
               <strong class="govuk-tag app-task-list__task-completed" id="car-completed">Completed</strong>
               {% endif %}
@@ -50,14 +50,14 @@
           <h2 class="app-task-list__section"><span class="app-task-list__section-number">3. </span> Agile experience</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/agile/experience">Previous experience</a>
+              <a href="/form/agile/experience/{{bookingId}}">Previous experience</a>
               {% if data.agile.experience %}
               <strong class="govuk-tag app-task-list__task-completed" id="agile-experience-completed">Completed</strong>
               {% endif %}
             </li>
             {% if data.agile.experience.workedPreviously !== 'No' %}
               <li class="app-task-list__item">
-                <a href="/form/agile/opinion">Opinion</a>
+                <a href="/form/agile/opinion/{{bookingId}}">Opinion</a>
                 {% if data.agile.opinion %}
                 <strong class="govuk-tag app-task-list__task-completed" id="opinions-completed">Completed</strong>
                 {% endif %}
