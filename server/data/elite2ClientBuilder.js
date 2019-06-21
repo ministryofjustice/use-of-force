@@ -23,7 +23,7 @@ function userGetBuilder(token) {
       const result = await superagent
         .get(path)
         .query(query)
-        .set('Authorization', `Bearer ${token}`)
+        .auth(token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)

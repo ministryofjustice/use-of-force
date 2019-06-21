@@ -41,7 +41,7 @@ async function getApiClientToken() {
 
   return superagent
     .post(oauthUrl)
-    .set('Authorization', clientToken)
+    .auth(clientToken, { type: 'basic' })
     .set('content-type', 'application/x-www-form-urlencoded')
     .set('correlationId', correlationId)
     .send(oauthRequest)
