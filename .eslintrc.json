@@ -6,6 +6,13 @@
   },
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
   "rules": {
+    "no-unused-vars": [
+      1,
+      {
+        "argsIgnorePattern": "res|next|^err|_",
+        "ignoreRestSiblings": true
+      }
+    ],
     "no-use-before-define": 0,
     "semi": 0,
     "comma-dangle": ["error", "always-multiline"]
