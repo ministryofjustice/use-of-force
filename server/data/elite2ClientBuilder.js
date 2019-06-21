@@ -34,6 +34,10 @@ function userGetBuilder(token) {
       const result = await superagent
         .get(path)
         .agent(keepaliveAgent)
+        .retry(2, (err, res) => {
+          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
+          return undefined // retry handler only for logging retries, not to influence retry logic
+        })
         .query(query)
         .auth(token, { type: 'bearer' })
         .set(headers)
