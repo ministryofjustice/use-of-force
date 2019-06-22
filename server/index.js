@@ -1,24 +1,20 @@
-// Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
-// In particular, applicationinsights automatically collects bunyan logs
-require('./utils/azure-appinsights')
-
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
-const elite2ClientBuilder = require('./data/elite2ClientBuilder')
+const nomisClientBuilder = require('./data/nomisClientBuilder')
 
 const createFormService = require('./services/formService')
 const createSignInService = require('./authentication/signInService')
-const createOffenderService = require('./services/offenderService')
+const createNomisService = require('./services/nomisService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
-const offenderService = createOffenderService(elite2ClientBuilder)
+const nomisService = createNomisService(nomisClientBuilder)
 
 const app = createApp({
   formService,
   signInService: createSignInService(),
-  offenderService,
+  nomisService,
 })
 
 module.exports = app

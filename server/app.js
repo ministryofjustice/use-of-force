@@ -26,7 +26,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService, offenderService }) {
+module.exports = function createApp({ signInService, formService, nomisService }) {
   const app = express()
 
   auth.init(signInService)
@@ -211,7 +211,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
 
   app.get('/', (req, res) => res.render('pages/index'))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
-  app.use('/form/', createFormRouter({ formService, authenticationMiddleware, offenderService }))
+  app.use('/form/', createFormRouter({ formService, authenticationMiddleware, nomisService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

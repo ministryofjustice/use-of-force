@@ -1,11 +1,11 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty, properCaseName } = require('../utils/utils')
 
-module.exports = function createOffendersService(elite2ClientBuilder) {
+module.exports = function createOffendersService(nomisClientBuilder) {
   async function getOffenderDetails(token, bookingId) {
     try {
-      const elite2Client = elite2ClientBuilder(token)
-      const result = await elite2Client.getOffenderDetails(bookingId)
+      const nomisClient = nomisClientBuilder(token)
+      const result = await nomisClient.getOffenderDetails(bookingId)
 
       if (isNilOrEmpty(result)) {
         logger.warn(`No details found for bookingId=${bookingId}`)

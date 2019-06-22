@@ -1,20 +1,20 @@
 const nock = require('nock')
 const { getNamespace } = require('cls-hooked')
-const config = require('../config')
-const elite2ClientBuilder = require('../../server/data/elite2ClientBuilder')
+const config = require('../../server/config')
+const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
 
 jest.mock('cls-hooked')
 
-describe('elite2Client', () => {
+describe('nomisClient', () => {
   let fakeElite2Api
-  let elite2Client
+  let nomisClient
 
   const offenderResponse = {}
   const token = 'token-1'
 
   beforeEach(() => {
     fakeElite2Api = nock(`${config.apis.elite2.url}`)
-    elite2Client = elite2ClientBuilder(token)
+    nomisClient = nomisClientBuilder(token)
     getNamespace.mockReturnValue({ get: () => 'myuser' })
   })
 
@@ -29,8 +29,9 @@ describe('elite2Client', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenderResponse)
 
-      const output = await elite2Client.getOffenderDetails('12345')
+      const output = await nomisClient.getOffenderDetails('12345')
       expect(output).toEqual(offenderResponse)
+      fakeElite2Api.done()
     })
   })
 })

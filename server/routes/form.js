@@ -27,7 +27,7 @@ const renderForm = (req, res, section, form, data = {}) => {
   })
 }
 
-module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ formService, authenticationMiddleware, nomisService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -45,7 +45,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
     '/incident/newIncident/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      const offenderDetail = await nomisService.getOffenderDetails(res.locals.user.token, bookingId)
       const { displayName, offenderNo } = offenderDetail
       const data = { displayName, offenderNo }
       renderForm(req, res, 'incident', 'newIncident', data)
