@@ -19,6 +19,9 @@ yarn-error.log
 .eslintcache
 reports/
 
+integration-tests/videos/
+integration-tests/screenshots/
+
 */*.iml
 *secrets*.yaml
 !secrets.yaml

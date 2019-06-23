@@ -9,8 +9,6 @@ The easiest way to get started is to use docker compose to download and run the 
 
 `docker-compose up`
 
-for detailed instructions see `https://dsdmoj.atlassian.net/wiki/spaces/NFS/overview`
-
 ### Users
 You can log in with users stored in the seeded nomis oauth db e.g. `CA_USER, password123456`
 
@@ -25,6 +23,13 @@ It retrieve offender info from the elite2api.
 
 Install dependencies using `npm install` ensure you are using >= `Node v10.15.3`
 
+To set up external services to allow local development:
+
+`docker-compose up use-of-force-db oauth-server elite2-api`
+
+And then start the app:
+`npm start`
+
 #### Env variables
 In config.js you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
 
@@ -37,3 +42,21 @@ In config.js you can see all the required variables. These are set with defaults
 ### Run tests
 
 `npm run test`
+
+### Running integration tests
+
+For local running, start a db and wiremock instance by:
+
+`docker-compose -f docker-compose.test.yml`
+
+Run the server in test mode by:
+
+`npm run start-feature`
+
+And then run tests in headless mode with:
+
+`npm run int-test`
+
+To run tests with the cypress UI:
+
+`npm run int-test-ui`

@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+
+  use-of-force-int-db:
+    image: postgres
+    networks:
+    - hmpps
+    container_name: use-of-force-int-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+    - POSTGRES_PASSWORD=use-of-force
+    - POSTGRES_USER=use-of-force
+    - POSTGRES_DB=use-of-force-int
+
+  wiremock:
+    image: rodolpheche/wiremock
+    networks:
+    - hmpps
+    container_name: use-of-force-wiremock
+    restart: always
+    ports:
+      - "9091:8080"
+
+
+networks:
+  hmpps:
