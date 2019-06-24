@@ -5,8 +5,6 @@ const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const formService = {
   getFormResponse: jest.fn(),
-  update: jest.fn(),
-  getValidationErrors: jest.fn().mockReturnValue([]),
 }
 
 const tasklistRoute = createRouter({ formService, authenticationMiddleware })
@@ -20,11 +18,10 @@ beforeEach(() => {
 
 afterEach(() => {
   formService.getFormResponse.mockReset()
-  formService.update.mockReset()
 })
 
 describe('GET /tasklist', () => {
-  it('should render $expectedContent for $path', () =>
+  it('should render page content', () =>
     request(app)
       .get('/-35')
       .expect('Content-Type', /html/)

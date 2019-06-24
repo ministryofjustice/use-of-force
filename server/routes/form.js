@@ -17,10 +17,11 @@ const formConfig = {
 
 const renderForm = (req, res, section, form, data = {}) => {
   const backLink = req.get('Referrer')
+  const { bookingId } = req.params
   const pageData = firstItem(req.flash('userInput')) || getIn([section, form], res.locals.formObject)
   const errors = req.flash('errors')
   res.render(`formPages/${section}/${form}`, {
-    data: { ...pageData, ...data },
+    data: { bookingId, ...pageData, ...data },
     formName: form,
     backLink,
     errors,

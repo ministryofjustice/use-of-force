@@ -13,7 +13,7 @@
       },
       {
         text: "Task list",
-        href: "/tasklist"
+        href: "/tasklist/" + data.bookingId
       },
       {
         text: formName | capitalize
@@ -23,7 +23,7 @@
 
   {{ govukBackLink({
     text: "Back",
-    href: backLink or '/tasklist'
+    href: backLink or '/tasklist/' + data.bookingId
   }) }}
 {% endblock %}
 

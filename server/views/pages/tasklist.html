@@ -5,22 +5,22 @@
       <h1 class="govuk-heading-xl">Task list</h1>
       <ol class="app-task-list">
         <li>
-          <h2 class="app-task-list__section"><span class="app-task-list__section-number">1. </span> Personal details</h2>
+          <h2 class="app-task-list__section"><span class="app-task-list__section-number">1. </span>Incident</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/name/{{bookingId}}">Name</a>
-              {% if data.personalDetails.name %}
+              <a href="/form/incident/newIncident/{{bookingId}}">New Incident</a>
+              {% if data.incident.newIncident %}
               <strong class="govuk-tag app-task-list__task-completed" id="name-completed">Completed</strong>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/dob/{{bookingId}}">Date of birth</a>
+              <a href="/form/incident/dob/{{bookingId}}">Date of birth</a>
               {% if data.personalDetails.dob %}
               <strong class="govuk-tag app-task-list__task-completed" id="age-completed">Completed</strong>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/address/{{bookingId}}">Address</a>
+              <a href="/form/incident/address/{{bookingId}}">Address</a>
               {% if data.personalDetails.address %}
               <strong class="govuk-tag app-task-list__task-completed" id="address-completed">Completed</strong>
               {% endif %}
