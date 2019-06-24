@@ -16,7 +16,7 @@ function dbCheck() {
 function authCheck() {
   return new Promise((resolve, reject) => {
     superagent
-      .get(`${config.apis.oauth2.externalUrl}/health`)
+      .get(`${config.apis.oauth2.url}/ping`)
       .timeout({
         response: 4000,
         deadline: 4500,
