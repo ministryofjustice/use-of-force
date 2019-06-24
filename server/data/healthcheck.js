@@ -16,7 +16,7 @@ function dbCheck() {
 function authCheck() {
   return new Promise((resolve, reject) => {
     superagent
-      .get(`${config.nomis.authUrl}/health`)
+      .get(`${config.apis.oauth2.externalUrl}/health`)
       .timeout({
         response: 4000,
         deadline: 4500,
