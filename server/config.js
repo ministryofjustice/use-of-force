@@ -26,13 +26,13 @@ module.exports = {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true),
       externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
       timeout: {
-        response: 30000,
-        deadline: 35000,
+        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000, true),
+        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000, true),
       },
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
-        freeSocketTimeout: 10000,
+        freeSocketTimeout: 30000,
       },
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', true),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
@@ -40,13 +40,13 @@ module.exports = {
     elite2: {
       url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080/', true),
       timeout: {
-        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
-        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
+        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000, true),
+        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000, true),
       },
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
-        freeSocketTimeout: 10000,
+        freeSocketTimeout: 30000,
       },
     },
   },
