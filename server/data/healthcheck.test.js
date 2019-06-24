@@ -6,7 +6,7 @@ describe('auth healthcheck', () => {
   let fakeAuthApi
 
   beforeEach(() => {
-    fakeAuthApi = nock(`${config.apis.oauth2.externalUrl}`)
+    fakeAuthApi = nock(`${config.apis.oauth2.url}`)
   })
 
   afterEach(() => {
@@ -15,7 +15,7 @@ describe('auth healthcheck', () => {
 
   describe('check healthy', () => {
     it('should return data from api', async () => {
-      fakeAuthApi.get('/health').reply(200, 'ping')
+      fakeAuthApi.get('/ping').reply(200, 'ping')
 
       const output = await healthcheck.authCheck()
       expect(output).toEqual('OK')
@@ -24,7 +24,7 @@ describe('auth healthcheck', () => {
 
   describe('check unhealthy', () => {
     it('should return data from api', async () => {
-      fakeAuthApi.get('/health').reply(404)
+      fakeAuthApi.get('/ping').reply(404)
 
       return expect(healthcheck.authCheck()).rejects.toContain('404')
     })
