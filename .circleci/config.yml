@@ -54,6 +54,15 @@ executors:
     docker:
       - image: circleci/node:10.15.3-browsers
     working_directory: ~/app
+  integration-tests:
+    docker:
+      - image: circleci/openjdk:11-jdk-node-browsers
+      - image: circleci/postgres:alpine-ram
+        environment:
+          POSTGRES_PASSWORD: use-of-force
+          POSTGRES_USER: use-of-force
+          POSTGRES_DB: use-of-force-int
+    working_directory: ~/app
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
@@ -69,14 +78,16 @@ jobs:
           name: Update npm
           command: 'sudo npm install -g npm@latest'
       - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-2-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
           command: npm ci
       - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-2-{{ checksum "package-lock.json" }}
           paths:
           - node_modules
+          - ~/.npm
+          - ~/.cache
       - run:
           name: Linter check
           command: npm run lint
@@ -93,17 +104,43 @@ jobs:
           - node_modules
           - build-info.json
           - assets/stylesheets
+          - .cache/Cypress
+
   test:
     executor: builder
     steps:
     - checkout
     - restore_cache:
-        key: dependency-cache-{{ checksum "package-lock.json" }}
+        key: dependency-cache-2-{{ checksum "package-lock.json" }}
     - run:
         name: unit tests
         command: npm run test
     - store_test_results:
         path: ./reports
+  integration_test:
+    executor: integration-tests
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/app
+      - run:
+          name: Run wiremock
+          command: java -jar .circleci/wiremock-standalone-2.23.2.jar --port 9091
+          background: true
+      - run:
+          name: Run the node app.
+          command: npm run start-feature
+          background: true
+      - run:
+          name: Wait for node app to start
+          command: sleep 5
+      - restore_cache:
+          key: dependency-cache-2-{{ checksum "package-lock.json" }}
+      - run:
+         name: integration tests
+         command: npm run int-test
+      - store_test_results:
+          path: ./integration-tests/videos/
   build_docker:
     executor: deployer
     steps:
@@ -135,7 +172,6 @@ jobs:
              docker push mojdigitalstudio/use-of-force:$APP_VERSION
              docker push mojdigitalstudio/use-of-force:latest
             fi
-
   deploy_dev:
     executor: deployer
     steps:
@@ -163,9 +199,12 @@ workflows:
       - test: 
           requires:
             - build
+      - integration_test:
+          requires: 
+            - test
       - build_docker:
           requires:
-            - test
+            - integration_test
           filters:
             branches:
               only: master
