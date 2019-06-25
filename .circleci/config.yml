@@ -1,7 +1,7 @@
 version: 2.1
 commands:
   setup:
-    description: "Install tools and configure kubectl"
+    description: 'Install tools and configure kubectl'
     steps:
       - aws-cli/install
       - kubernetes/install
@@ -50,7 +50,7 @@ executors:
     docker:
       - image: circleci/python:3
     working_directory: ~/app
-  builder:  
+  builder:
     docker:
       - image: circleci/node:10.15.3-browsers
     working_directory: ~/app
@@ -78,16 +78,15 @@ jobs:
           name: Update npm
           command: 'sudo npm install -g npm@latest'
       - restore_cache:
-          key: dependency-cache-2-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
           command: npm ci
       - save_cache:
-          key: dependency-cache-2-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
-          - node_modules
-          - ~/.npm
-          - ~/.cache
+            - node_modules
+            - ~/.cache
       - run:
           name: Linter check
           command: npm run lint
@@ -101,22 +100,25 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-          - node_modules
-          - build-info.json
-          - assets/stylesheets
-          - .cache/Cypress
+            - node_modules
+            - build-info.json
+            - assets/stylesheets
+            - .cache/Cypress
 
   test:
     executor: builder
     steps:
-    - checkout
-    - restore_cache:
-        key: dependency-cache-2-{{ checksum "package-lock.json" }}
-    - run:
-        name: unit tests
-        command: npm run test
-    - store_test_results:
-        path: ./reports
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: unit tests
+          command: npm run test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results/unit-test-reports.html
+
   integration_test:
     executor: integration-tests
     steps:
@@ -135,12 +137,17 @@ jobs:
           name: Wait for node app to start
           command: sleep 5
       - restore_cache:
-          key: dependency-cache-2-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
-         name: integration tests
-         command: npm run int-test
+          name: integration tests
+          command: npm run int-test
       - store_test_results:
-          path: ./integration-tests/videos/
+          path: test-results
+      - store_artifacts:
+          path: integration-tests/videos
+      - store_artifacts:
+          path: integration-tests/screenshots
+
   build_docker:
     executor: deployer
     steps:
@@ -153,7 +160,7 @@ jobs:
           name: Build container and publish to docker hub
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            
+
             docker build --rm=false . \
               --build-arg BUILD_NUMBER=$APP_VERSION \
               --build-arg GIT_REF=$CIRCLE_SHA1 \
@@ -176,17 +183,17 @@ jobs:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "dev"
+          env: 'dev'
   deploy_preprod:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "preprod"
+          env: 'preprod'
   deploy_prod:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "prod"
+          env: 'prod'
 
 workflows:
   version: 2
@@ -196,11 +203,11 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - test: 
+      - test:
           requires:
             - build
       - integration_test:
-          requires: 
+          requires:
             - test
       - build_docker:
           requires:
@@ -227,4 +234,3 @@ workflows:
           context: use-of-force-prod
           requires:
             - request-prod-approval
-

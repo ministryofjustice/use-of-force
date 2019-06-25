@@ -6,5 +6,9 @@
   "pluginsFile": "integration-tests/plugins/index.js",
   "screenshotsFolder": "integration-tests/screenshots",
   "supportFile": "integration-tests/support/index.js",
-  "videosFolder": "integration-tests/videos"
+  "videosFolder": "integration-tests/videos",
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "configFile": "reporter-config.json"
+  }
 }
