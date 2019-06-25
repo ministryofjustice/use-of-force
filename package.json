@@ -7,11 +7,14 @@
   "scripts": {
     "start": "node server.js",
     "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
+    "start-feature": "PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091/ DB_NAME=use-of-force-int node $NODE_DEBUG_OPTION server.js | bunyan -o short",
     "build": "npm run css-build",
     "css-build": "./bin/build-css",
     "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest",
+    "int-test": "DB_NAME=use-of-force-int cypress run",
+    "int-test-ui": "DB_NAME=use-of-force-int cypress open",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info"
   },
@@ -117,9 +120,11 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "cypress": "^3.3.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-cypress": "^2.2.1",
     "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^2.4.0",

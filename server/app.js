@@ -209,7 +209,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
     return next()
   })
 
-  app.get('/', (req, res) => res.render('pages/index'))
+  app.get('/:bookingId', (req, res) => res.render('pages/index', { bookingId: req.params.bookingId }))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware, offenderService }))
 
