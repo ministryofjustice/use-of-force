@@ -12,12 +12,12 @@ exports.up = knex =>
 
     table.string('user_id', 32).alter()
     table.string('status', 20)
-    table.unique(['booking_id', 'sequence_no'], 'booking_sequence_index')
+    table.unique(['user_id', 'booking_id', 'sequence_no'], 'user_booking_sequence_index')
   })
 
 exports.down = knex =>
   knex.schema.table('form', table => {
-    table.dropUnique(['booking_id', 'sequence_no'], 'booking_sequence_index')
+    table.dropUnique(['user_id', 'booking_id', 'sequence_no'], 'user_booking_sequence_index')
     table.dropColumn('sequence_no')
     table.dropColumn('booking_id')
     table.dropColumn('status')

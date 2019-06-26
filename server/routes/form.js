@@ -27,8 +27,8 @@ const renderForm = (req, res, section, form, data = {}) => {
 module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
 
+  const withFormData = getFormData(formService)
   router.use(authenticationMiddleware())
-  router.use(getFormData(formService))
   router.use(flash())
 
   router.use((req, res, next) => {
@@ -40,6 +40,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
   router.get(
     '/incident/newIncident/:bookingId',
+    withFormData,
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
@@ -51,6 +52,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
   router.get(
     '/:section/:form/:bookingId',
+    withFormData,
     asyncMiddleware(async (req, res) => {
       const { section, form } = req.params
       renderForm(req, res, section, form)
@@ -59,6 +61,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
   router.post(
     '/:section/:form/:bookingId',
+    withFormData,
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
@@ -77,6 +80,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       }
 
       await formService.update({
+        bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         formId: res.locals.formId,
         formObject: res.locals.formObject,

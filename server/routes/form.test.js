@@ -59,6 +59,7 @@ describe('POST /section/form', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(formService.update).toBeCalledWith({
+          bookingId: 1,
           userId: 'user1',
           formId: undefined,
           formObject: {},
