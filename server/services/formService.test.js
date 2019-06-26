@@ -1,5 +1,4 @@
 const serviceCreator = require('./formService')
-const incidentConfig = require('../config/incident')
 
 const formClient = {
   getFormDataForUser: jest.fn(),
@@ -251,22 +250,6 @@ describe('update', () => {
 })
 
 describe('getValidationErrors', () => {
-  const addressInputCorrect = {
-    addressLine1: 'a',
-    addressLine2: '',
-    addressTown: 'c',
-    addressCounty: 'd',
-    addressPostcode: 'LE17 4YR',
-  }
-
-  const addressInputIncorrect = {
-    addressLine1: '',
-    addressLine2: '',
-    addressTown: '',
-    addressCounty: '',
-    addressPostcode: 'L',
-  }
-
   const dependantConfig = {
     fields: [
       {
@@ -285,15 +268,9 @@ describe('getValidationErrors', () => {
   }
 
   test.each`
-    formBody                                    | formConfig                    | expectedOutput
-    ${{ fullName: '' }}                         | ${incidentConfig.newIncident} | ${[{ text: 'Please give a full name', href: '#fullName' }]}
-    ${{ fullName: 'MW' }}                       | ${incidentConfig.newIncident} | ${[]}
-    ${{ day: '12', month: '03', year: '1985' }} | ${incidentConfig.dob}         | ${[]}
-    ${{ day: '33', year: '33', month: '33' }}   | ${incidentConfig.dob}         | ${[{ href: '#day', text: 'Please give a valid day' }, { href: '#month', text: 'Please give a valid month' }, { href: '#year', text: 'Please give a valid year' }]}
-    ${addressInputCorrect}                      | ${incidentConfig.address}     | ${[]}
-    ${addressInputIncorrect}                    | ${incidentConfig.address}     | ${[{ href: '#addressLine1', text: 'Please give an address line 1' }, { href: '#addressTown', text: 'Please give a town or city' }, { href: '#addressCounty', text: 'Please give a county' }, { href: '#addressPostcode', text: 'Please give a postcode' }]}
-    ${{ q1: 'Yes' }}                            | ${dependantConfig}            | ${[{ href: '#q2', text: 'Error q2' }]}
-    ${{ q1: 'No' }}                             | ${dependantConfig}            | ${[]}
+    formBody         | formConfig         | expectedOutput
+    ${{ q1: 'Yes' }} | ${dependantConfig} | ${[{ href: '#q2', text: 'Error q2' }]}
+    ${{ q1: 'No' }}  | ${dependantConfig} | ${[]}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
     expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
   })

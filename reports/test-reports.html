@@ -1,0 +1,124 @@
+<html><head><meta charset="utf-8"/><title>Test Report</title><style type="text/css">html, body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1rem;
+	margin: 0;
+	padding: 0;
+	color: #333;
+}
+body {
+	padding: 1rem;
+	font-size: 0.85rem;
+}
+header {
+	display: flex;
+	align-items: center;
+}
+#title {
+	margin: 0;
+	flex-grow: 1;
+}
+#logo {
+	height: 4rem;
+}
+#timestamp {
+	font-weight: bold;
+	color: #666;
+	margin-bottom: 0.5rem;
+}
+#summary {
+	color: #999;
+	margin-bottom: 1rem;
+}
+.suite-info {
+	padding: 1rem;
+	background-color: #eee;
+	border-bottom: 2px solid #999;
+	color: #999;
+	display: flex;
+	align-items: center;
+}
+.suite-info .suite-path {
+	font-weight: bold;
+	word-break: break-all;
+	flex-grow: 1;
+}
+.suite-info .suite-time {
+	margin-left: 0.5rem;
+	padding: 0.2rem 0.3rem;
+	font-size: 0.75rem;
+}
+.suite-info .suite-time.warn {
+	background-color: #D8000C;
+	color: #fff;
+}
+.suite-table {
+	width: 100%;
+	font-size: 0.85rem;
+	margin-bottom: 1em;
+}
+.suite-table td {
+	padding: 0.5rem;
+}
+.suite-table tr.passed {
+	background-color: #DFF2BF;
+	color: #4F8A10;
+}
+.suite-table tr.pending {
+	background-color: #FEEFB3;
+	color: #9F6000;
+}
+.suite-table tr.failed {
+	background-color: #FFBABA;
+	color: #D8000C;
+}
+.suite-table td {
+	font-size: 0.85rem;
+	border-bottom: 1px solid #aaa;
+	vertical-align: top;
+}
+.suite-table td.suite {
+	font-weight: bold;
+	width: 20%;
+}
+.suite-table td.test {
+	font-style: italic;
+	width: 60%;
+}
+.suite-table td.test .failureMsg {
+	font-size: 1rem;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;
+}
+.suite-table td.result {
+	width: 20%;
+	text-align: right;
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background-color: #efefef;
+}
+.suite-consolelog-header {
+	font-weight: bold;
+}
+.suite-consolelog-item {
+	padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+	margin: 0;
+}
+.suite-consolelog-item-origin {
+	color: #777;
+	font-weight: bold;
+}
+.suite-consolelog-item-message {
+	color: #000;
+	font-size: 1rem;
+	padding: 0 0.5rem;
+}
+</style></head><body><div id="jesthtml-content"><header><h1 id="title">Test Report</h1></header><div id="metadata-container"><div id="timestamp">Start: 2019-06-26 13:59:09</div><div id="summary">37 tests -- 37 passed / 0 failed / 0 pending</div></div><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/utils/routes.test.js</div><div class="suite-time">0.922s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">getPathFor &gt; when the nextPath is a string</td><td class="test">returns the nextPath</td><td class="result">passed in 0.007s</td></tr><tr class="passed"><td class="suite">getPathFor &gt; when the next path is an object with multiple exit points</td><td class="test">returns the correct nextPath for Yes</td><td class="result">passed in 0s</td></tr><tr class="passed"><td class="suite">getPathFor &gt; when the next path is an object with multiple exit points</td><td class="test">returns the correct nextPath for No</td><td class="result">passed in 0s</td></tr><tr class="passed"><td class="suite">getPathFor &gt; when the next path is an array with multiple exit points</td><td class="test">returns the nextPath of when there is a match</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">getPathFor &gt; when the next path is an array with multiple exit points</td><td class="test">returns the default path when there is no match</td><td class="result">passed in 0.001s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/authentication/signInService.test.js</div><div class="suite-time">1.033s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">signInService &gt; getUser</td><td class="test">should return user object if all apis succeed</td><td class="result">passed in 0.014s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/data/formClient.test.js</div><div class="suite-time">1.14s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">getFormDataForUser</td><td class="test">it should call query on db</td><td class="result">passed in 0.005s</td></tr><tr class="passed"><td class="suite">getFormDataForUser</td><td class="test">it should pass om the correct sql</td><td class="result">passed in 0.002s</td></tr><tr class="passed"><td class="suite">update</td><td class="test">it should call query on db</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">update</td><td class="test">it should insert if no formId passed in</td><td class="result">passed in 0s</td></tr><tr class="passed"><td class="suite">update</td><td class="test">it should update if formId passed in</td><td class="result">passed in 0.001s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/authentication/clientCredentials.test.js</div><div class="suite-time">1.158s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">generate</td><td class="test">Token can be generated</td><td class="result">passed in 0.007s</td></tr><tr class="passed"><td class="suite">generate</td><td class="test">Token can be generated with special characters</td><td class="result">passed in 0.001s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/utils/utils.test.js</div><div class="suite-time">1.211s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">properCaseName</td><td class="test">null string</td><td class="result">passed in 0.005s</td></tr><tr class="passed"><td class="suite">properCaseName</td><td class="test">empty string</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">properCaseName</td><td class="test">Lower Case</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">properCaseName</td><td class="test">Mixed Case</td><td class="result">passed in 0s</td></tr><tr class="passed"><td class="suite">properCaseName</td><td class="test">Multiple words</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">properCaseName</td><td class="test">Hyphenated</td><td class="result">passed in 0s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/data/elite2ClientBuilder.test.js</div><div class="suite-time">1.256s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">elite2Client &gt; getOffenderDetails</td><td class="test">should return data from api</td><td class="result">passed in 0.023s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/data/healthcheck.test.js</div><div class="suite-time">1.308s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">auth healthcheck &gt; check healthy</td><td class="test">should return data from api</td><td class="result">passed in 0.016s</td></tr><tr class="passed"><td class="suite">auth healthcheck &gt; check unhealthy</td><td class="test">should return data from api</td><td class="result">passed in 0.008s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/services/offenderService.test.js</div><div class="suite-time">1.275s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">getOffenderDetails</td><td class="test">should format display name</td><td class="result">passed in 0.005s</td></tr><tr class="passed"><td class="suite">getOffenderDetails</td><td class="test">should use the user token</td><td class="result">passed in 0.001s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/services/formService.test.js</div><div class="suite-time">1.312s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">getFormResponse</td><td class="test">it should call query on db</td><td class="result">passed in 0.004s</td></tr><tr class="passed"><td class="suite">getFormResponse</td><td class="test">it should return the first row</td><td class="result">passed in 0.002s</td></tr><tr class="passed"><td class="suite">update &gt; When there are no dependant fields</td><td class="test">should store everything</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">update &gt; When there are no dependant fields</td><td class="test">should call updateLicence and pass in the licence</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">update &gt; When there are no dependant fields</td><td class="test">should not call update if there are no changes</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">update &gt; When there are no dependant fields</td><td class="test">should add new sections and forms to the licence if they dont exist</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">update &gt; When there are dependant fields</td><td class="test">should store dependents if predicate matches</td><td class="result">passed in 0s</td></tr><tr class="passed"><td class="suite">update &gt; When there are dependant fields</td><td class="test">should remove dependents if predicate does not match</td><td class="result">passed in 0.001s</td></tr><tr class="passed"><td class="suite">getValidationErrors</td><td class="test">should return errors $expectedContent for form return</td><td class="result">passed in 0.007s</td></tr><tr class="passed"><td class="suite">getValidationErrors</td><td class="test">should return errors $expectedContent for form return</td><td class="result">passed in 0.002s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/routes/checkAnswers.test.js</div><div class="suite-time">1.595s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">GET /check-answers</td><td class="test">should render page content</td><td class="result">passed in 0.067s</td></tr></table><div class="suite-info"><div class="suite-path">/Users/gurnankcheema/Documents/projects/use-of-force/server/routes/form.test.js</div><div class="suite-time">1.78s</div></div><table class="suite-table" cellspacing="0" cellpadding="0"><tr class="passed"><td class="suite">GET /section/form</td><td class="test">should render Prisoner involved for incident/newIncident</td><td class="result">passed in 0.06s</td></tr><tr class="passed"><td class="suite">POST /section/form</td><td class="test">should render $expectedContent for incident/newIncident</td><td class="result">passed in 0.014s</td></tr></table></div></body></html>

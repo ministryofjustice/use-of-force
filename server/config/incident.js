@@ -1,82 +1,33 @@
 module.exports = {
   newIncident: {
-    fields: [
-      {
-        fullName: {
-          responseType: 'requiredString',
-          validationMessage: 'Please give a full name',
-        },
-      },
-    ],
-    validate: true,
+    fields: [],
+    validate: false,
     nextPath: {
-      path: '/form/incident/dob/',
+      path: '/form/incident/details/',
     },
   },
 
-  dob: {
-    fields: [
-      {
-        day: {
-          responseType: 'requiredDay',
-          validationMessage: 'Please give a valid day',
-        },
-      },
-      {
-        month: {
-          responseType: 'requiredMonth',
-          validationMessage: 'Please give a valid month',
-        },
-      },
-      {
-        year: {
-          responseType: 'requiredYear',
-          validationMessage: 'Please give a valid year',
-        },
-      },
-    ],
-    validate: true,
+  details: {
+    fields: [],
+    validate: false,
     nextPath: {
-      path: '/form/incident/address/',
+      path: '/form/incident/relocationAndInjuries/',
     },
   },
 
-  address: {
-    fields: [
-      {
-        addressLine1: {
-          responseType: 'requiredString',
-          validationMessage: 'Please give an address line 1',
-        },
-      },
-      {
-        addressLine2: {
-          responseType: 'optionalString',
-          validationMessage: 'Please give an valid address line 1',
-        },
-      },
-      {
-        addressTown: {
-          responseType: 'requiredString',
-          validationMessage: 'Please give a town or city',
-        },
-      },
-      {
-        addressCounty: {
-          responseType: 'requiredString',
-          validationMessage: 'Please give a county',
-        },
-      },
-      {
-        addressPostcode: {
-          responseType: 'requiredPostcode',
-          validationMessage: 'Please give a postcode',
-        },
-      },
-    ],
-    validate: true,
+  relocationAndInjuries: {
+    fields: [],
+    validate: false,
     nextPath: {
-      path: '/tasklist/',
+      path: '/form/incident/evidence/',
+    },
+  },
+
+  evidence: {
+    fields: [],
+    validate: false,
+    nextPath: {
+      path: '/check-answers/',
     },
   },
 }
