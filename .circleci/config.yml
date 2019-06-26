@@ -1,7 +1,7 @@
 version: 2.1
 commands:
   setup:
-    description: "Install tools and configure kubectl"
+    description: 'Install tools and configure kubectl'
     steps:
       - aws-cli/install
       - kubernetes/install
@@ -50,9 +50,18 @@ executors:
     docker:
       - image: circleci/python:3
     working_directory: ~/app
-  builder:  
+  builder:
     docker:
       - image: circleci/node:10.15.3-browsers
+    working_directory: ~/app
+  integration-tests:
+    docker:
+      - image: circleci/openjdk:11-jdk-node-browsers
+      - image: circleci/postgres:alpine-ram
+        environment:
+          POSTGRES_PASSWORD: use-of-force
+          POSTGRES_USER: use-of-force
+          POSTGRES_DB: use-of-force-int
     working_directory: ~/app
 
 orbs:
@@ -76,7 +85,8 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
-          - node_modules
+            - node_modules
+            - ~/.cache
       - run:
           name: Linter check
           command: npm run lint
@@ -90,20 +100,54 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-          - node_modules
-          - build-info.json
-          - assets/stylesheets
+            - node_modules
+            - build-info.json
+            - assets/stylesheets
+            - .cache/Cypress
+
   test:
     executor: builder
     steps:
-    - checkout
-    - restore_cache:
-        key: dependency-cache-{{ checksum "package-lock.json" }}
-    - run:
-        name: unit tests
-        command: npm run test
-    - store_test_results:
-        path: ./reports
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: unit tests
+          command: npm run test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results/unit-test-reports.html
+
+  integration_test:
+    executor: integration-tests
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/app
+      - run:
+          name: Run wiremock
+          command: java -jar .circleci/wiremock-standalone-2.23.2.jar --port 9091
+          background: true
+      - run:
+          name: Run the node app.
+          command: npm run start-feature
+          background: true
+      - run:
+          name: Wait for node app to start
+          command: sleep 5
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: integration tests
+          command: npm run int-test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: integration-tests/videos
+      - store_artifacts:
+          path: integration-tests/screenshots
+
   build_docker:
     executor: deployer
     steps:
@@ -116,7 +160,7 @@ jobs:
           name: Build container and publish to docker hub
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            
+
             docker build --rm=false . \
               --build-arg BUILD_NUMBER=$APP_VERSION \
               --build-arg GIT_REF=$CIRCLE_SHA1 \
@@ -135,22 +179,21 @@ jobs:
              docker push mojdigitalstudio/use-of-force:$APP_VERSION
              docker push mojdigitalstudio/use-of-force:latest
             fi
-
   deploy_dev:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "dev"
+          env: 'dev'
   deploy_preprod:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "preprod"
+          env: 'preprod'
   deploy_prod:
     executor: deployer
     steps:
       - deploy_to_env:
-          env: "prod"
+          env: 'prod'
 
 workflows:
   version: 2
@@ -160,12 +203,15 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - test: 
+      - test:
           requires:
             - build
-      - build_docker:
+      - integration_test:
           requires:
             - test
+      - build_docker:
+          requires:
+            - integration_test
           filters:
             branches:
               only: master
@@ -188,4 +234,3 @@ workflows:
           context: use-of-force-prod
           requires:
             - request-prod-approval
-

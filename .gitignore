@@ -17,7 +17,7 @@ build-info.json
 .env
 yarn-error.log
 .eslintcache
-reports/
+test-results/
 
 integration-tests/videos/
 integration-tests/screenshots/
