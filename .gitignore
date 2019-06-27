@@ -9,6 +9,7 @@ govuk_modules
 node_modules/*
 .tmuxp.*
 .idea
+.vscode
 npm-debug.log
 build/*
 uploads/*

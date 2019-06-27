@@ -12,9 +12,11 @@ context('Logging in', () => {
     cy.login(bookingId)
 
     newIncidentPage.visit(bookingId)
-    newIncidentPage.header().contains('New use of force incident')
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     const detailsPage = newIncidentPage.next()
-    detailsPage.next()
+    const relocationPage = detailsPage.next()
+    const evidencePage = relocationPage.next()
+    const checkAnswersPage = evidencePage.next()
+    checkAnswersPage.submit()
   })
 })
