@@ -1,3 +1,3 @@
-export default () => {
-  cy.get('h1').contains('Report submitted')
-}
+const page = require('./page')
+
+export default () => page('Report submitted')

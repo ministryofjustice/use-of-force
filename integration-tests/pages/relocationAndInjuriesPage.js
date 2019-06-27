@@ -1,11 +1,10 @@
+const page = require('./page')
 const evidencePage = require('./evidencePage')
 
-export default () => {
-  cy.get('h1').contains('Relocation and injuries')
-  return {
+export default () =>
+  page('Relocation and injuries', {
     next: () => {
       cy.get('[data-next]').click()
       return evidencePage()
     },
-  }
-}
+  })
