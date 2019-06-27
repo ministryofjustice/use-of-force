@@ -5,9 +5,7 @@ const { clearDb } = require('../db/db')
 
 module.exports = on => {
   on('task', {
-    reset: () => {
-      return Promise.all([clearDb(), resetStubs()])
-    },
+    reset: () => Promise.all([clearDb(), resetStubs()]),
 
     getLoginUrl: auth.getLoginUrl,
 

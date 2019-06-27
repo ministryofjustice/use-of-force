@@ -1,0 +1,30 @@
+{% extends "../partials/layout.html" %} {% from "button/macro.njk" import govukButton %} {% from "back-link/macro.njk"
+import govukBackLink %} {% block beforeContent %}
+
+{{ govukBackLink({
+text: "Back",
+href: backLink or "/"
+}) }}
+{% endblock %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
+      <ul class="app-task-list__items">
+        <h2 class="app-task-list__section"><span class=""></span>New incident</h2>
+
+        <li class="app-task-list__item">
+          <a href="/form/incident/newIncident/{{ bookingId }}">New Incident</a>
+        </li>
+      </ul>
+      {{ govukButton({
+            text: "Submit",
+            href: "/submitted/" + bookingId,
+            classes: "govuk-button govuk-button--start",
+            attributes: {'data-submit': true}
+          }) }}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

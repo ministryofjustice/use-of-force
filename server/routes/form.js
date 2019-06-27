@@ -6,13 +6,9 @@ const getFormData = require('../middleware/getFormData')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
 const incidentConfig = require('../config/incident')
-const transportConfig = require('../config/transport')
-const agile = require('../config/agile')
 
 const formConfig = {
   ...incidentConfig,
-  ...transportConfig,
-  ...agile,
 }
 
 const renderForm = (req, res, section, form, data = {}) => {

@@ -1,32 +1,16 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% block formItems %}
-<div class="govuk-body-s">
+{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "select/macro.njk" import
+govukSelect %} {% block formItems %}
+<div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">New use of force incident</h1>
-  <div class="“govuk-grid-row" govuk-!-padding-left-3”>
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div class="govuk-grid-row">
-        <p class="govuk-!-margin-bottom-1">Prisoner involved</p>
+        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
       </div>
-
       <div class="govuk-grid-row">
-        <p class="govuk-!-font-weight-bold govuk-!-margin-top-1" data-offender-name>{{ data.displayName}} ({{data.offenderNo}})</p>
+        <p class=" govuk-!-margin-bottom-5 govuk-label--s" data-offender-name >{{ data.displayName }} ({{ data.offenderNo }})</p>
       </div>
     </div>
   </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {{ govukInput({
-        label: {
-          text: "Full name",
-          isPageHeading: true,
-          classes: "govuk-label--l"
-        },
-        id: "fullName",
-        name: "fullName",
-        value: data.fullName,
-        errorMessage: errors | findError('fullName')
-      }) }}
-    </div>
-  </div>
+  {% endblock %}
 </div>
-{% endblock %}

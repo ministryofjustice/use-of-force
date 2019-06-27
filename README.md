@@ -47,7 +47,7 @@ In config.js you can see all the required variables. These are set with defaults
 
 For local running, start a db and wiremock instance by:
 
-`docker-compose -f docker-compose.test.yml`
+`docker-compose -f docker-compose.test.yml up`
 
 Run the server in test mode by:
 

@@ -11,7 +11,7 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
-      res.render('pages/tasklist', { data: res.locals.formObject, bookingId: req.params.bookingId })
+      res.render('pages/check-answers', { data: res.locals.formObject, bookingId: req.params.bookingId })
     })
   )
 

@@ -15,7 +15,8 @@ const { createNamespace } = require('cls-hooked')
 
 const healthcheck = require('./services/healthcheck')
 const createFormRouter = require('./routes/form')
-const createTasklistRouter = require('./routes/tasklist')
+const createCheckAnswersRouter = require('./routes/checkAnswers')
+const createSubmittedRouter = require('./routes/submitted')
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
@@ -210,7 +211,8 @@ module.exports = function createApp({ signInService, formService, offenderServic
   })
 
   app.get('/:bookingId', (req, res) => res.render('pages/index', { bookingId: req.params.bookingId }))
-  app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
+  app.use('/check-answers/', createCheckAnswersRouter({ formService, authenticationMiddleware }))
+  app.use('/submitted/', createSubmittedRouter({ formService, authenticationMiddleware }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware, offenderService }))
 
   app.use((req, res, next) => {
