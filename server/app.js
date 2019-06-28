@@ -20,6 +20,8 @@ const createSubmittedRouter = require('./routes/submitted')
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
+const populateCurrentUser = require('./middleware/populateCurrentUser')
+
 const config = require('../server/config')
 
 const { authenticationMiddleware } = auth
@@ -27,7 +29,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService, offenderService }) {
+module.exports = function createApp({ signInService, formService, offenderService, userService }) {
   const app = express()
 
   auth.init(signInService)
@@ -209,6 +211,9 @@ module.exports = function createApp({ signInService, formService, offenderServic
     }
     return next()
   })
+
+  const currentUserInContext = populateCurrentUser(userService)
+  app.use(currentUserInContext)
 
   app.get('/:bookingId', (req, res) => res.render('pages/index', { bookingId: req.params.bookingId }))
   app.use('/check-answers/', createCheckAnswersRouter({ formService, authenticationMiddleware }))

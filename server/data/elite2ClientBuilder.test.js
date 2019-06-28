@@ -9,7 +9,6 @@ describe('elite2Client', () => {
   let fakeElite2Api
   let elite2Client
 
-  const offenderResponse = {}
   const token = 'token-1'
 
   beforeEach(() => {
@@ -24,6 +23,7 @@ describe('elite2Client', () => {
 
   describe('getOffenderDetails', () => {
     it('should return data from api', async () => {
+      const offenderResponse = {}
       fakeElite2Api
         .get(`/api/bookings/12345?basicInfo=false`)
         .matchHeader('authorization', `Bearer ${token}`)
@@ -31,6 +31,32 @@ describe('elite2Client', () => {
 
       const output = await elite2Client.getOffenderDetails('12345')
       expect(output).toEqual(offenderResponse)
+    })
+  })
+
+  describe('getUser', () => {
+    const userResponse = {}
+    it('should return data from api', async () => {
+      fakeElite2Api
+        .get('/api/users/me')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
+
+      const output = await elite2Client.getUser()
+      expect(output).toEqual(userResponse)
+    })
+  })
+
+  describe('getUserCaseLoads', () => {
+    const caseloads = []
+    it('should return data from api', async () => {
+      fakeElite2Api
+        .get('/api/users/me/caseLoads')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, caseloads)
+
+      const output = await elite2Client.getUserCaseLoads()
+      expect(output).toEqual(caseloads)
     })
   })
 })
