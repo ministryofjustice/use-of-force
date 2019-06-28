@@ -1,6 +1,357 @@
 {% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "radios/macro.njk" import
-govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItems %}
+govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItems %} {% from "checkboxes/macro.njk" import govukCheckboxes %}
+
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">Use of force details</h1>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <!-- Q1  -->
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'positive-communication',
+          name: 'positive-communication',
+          fieldset: {
+            legend: {
+              text: 'Was Positive Communication used to de-escalate the situation?',
+              isPageHeading: false,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+            {
+              value: 'yes',
+              text: 'Yes'
+            },
+            {
+              value: 'no',
+              text: 'No'
+            }
+          ]
+        })
+      }}
+
+      <!-- Q2 -->
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'personal-protection-techniques',
+          name: 'personal-protection-techniques',
+          fieldset: {
+            legend: {
+              text: 'Were any Personal Protection techniques used?',
+              isPageHeading: false,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+            {
+              value: 'yes',
+              text: 'Yes'
+            },
+            {
+              value: 'no',
+              text: 'No'
+            }
+          ]
+        })
+      }}
+
+      <!-- Q3 -->
+
+      {% set batonDrawnHtml %}
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline',
+          idPrefix: 'batton-drawn',
+          name: 'batton-drawn',
+          fieldset: {
+            legend: {
+              text: 'Was it used?',
+              isPageHeading: false
+            }
+          },
+          items: [
+            {
+              value: 'yes',
+              text: 'Yes'
+            },
+            {
+              value: 'no',
+              text: 'No'
+            }
+          ]
+        })
+      }}
+      {% endset -%} 
+
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'baton-drawn-conditional',
+          name: 'baton-drawn-conditional',
+        
+          fieldset: {
+            legend: {
+              text: 'Was a baton drawn?',
+              isPageHeading: true,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+          {
+            value: 'yes',
+            text: 'Yes',
+            conditional: {
+              html: batonDrawnHtml
+            }
+          },
+          {
+            value: 'no',
+            text: 'No'
+          }
+        ]
+        })
+      }}
+
+      <!-- Q4 -->
+
+      {% set pavaDrawnHtml %}
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline',
+          idPrefix: 'pava-drawn',
+          name: 'pava-drawn',
+          fieldset: {
+            legend: {
+              text: 'Was it used?',
+              isPageHeading: false
+            }
+          },
+          items: [
+            {
+              value: 'yes',
+              text: 'Yes'
+            },
+            {
+              value: 'no',
+              text: 'No'
+            }
+          ]
+        })
+      }}
+      {% endset -%} 
+
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'baton-drawn-conditional',
+          name: 'pava-drawn-conditional',
+        
+          fieldset: {
+            legend: {
+              text: 'Was a pava drawn?',
+              isPageHeading: true,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+          {
+            value: 'yes',
+            text: 'Yes',
+            conditional: {
+              html: pavaDrawnHtml
+            }
+          },
+          {
+            value: 'no',
+            text: 'No'
+          }
+        ]
+        })
+      }}
+
+      <!-- Q5 -->
+
+      {% set guidingHoldHtml %}
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline',
+          idPrefix: 'guiding-hold',
+          name: 'guiding-hold',
+          fieldset: {
+            legend: {
+              text: 'How many officers were involved?',
+              isPageHeading: false
+            }
+          },
+          items: [
+            {
+              value: 1,
+              text: 'One'
+            },
+            {
+              value: 2,
+              text: 'Two'
+            }
+          ]
+        })
+      }}
+      {% endset -%} 
+
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'guiding-hold-conditional',
+          name: 'guiding-hold-conditional',
+        
+          fieldset: {
+            legend: {
+              text: 'Was a guiding hold used?',
+              isPageHeading: false,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+          {
+            value: 'yes',
+            text: 'Yes',
+            conditional: {
+              html: guidingHoldHtml
+            }
+          },
+          {
+            value: 'no',
+            text: 'No'
+          }
+        ]
+        })
+      }}
+
+
+      <!-- Q6 -->
+
+      {% set restraintHtml %}
+        {{ govukCheckboxes({
+          idPrefix: "restraint",
+          name: "restraint",
+          fieldset: {
+            legend: {
+              text: "What positions were used?",
+              isPageHeading: false,
+              classes: "govuk-body"
+            }
+          },
+          items: [
+            {
+              value: "standing",
+              text: "Standing"
+            },
+            {
+              value: "supine",
+              text: "On back (supine)"
+            },
+            {
+              value: "prone",
+              text: "Face down (prone)"
+            },
+            {
+              value: "kneeling",
+              text: "Kneeling"
+            }
+          ]
+        }) 
+      }}
+      {% endset -%} 
+
+      {{
+        govukRadios({
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          idPrefix: 'restraint-conditional',
+          name: 'restraint-conditional',
+        
+          fieldset: {
+            legend: {
+              text: 'Was control and restraint used?',
+              isPageHeading: false,
+              classes: 'govuk-body'
+            }
+          },
+          items: [
+          {
+            value: 'yes',
+            text: 'Yes',
+            conditional: {
+              html: restraintHtml
+            }
+          },
+          {
+            value: 'no',
+            text: 'No'
+          }
+        ]
+        })
+      }}
+    </div>
+  </div>
 </div>
+
+   <!-- Q6 -->
+
+   {% set handcuffsHtml %}
+   {{
+     govukRadios({
+       classes: 'govuk-radios--inline',
+       idPrefix: 'handcuffs',
+       name: 'handcuffs',
+       fieldset: {
+         legend: {
+           text: 'Select which type of handcuffs were used',
+           isPageHeading: false
+         }
+       },
+       items: [
+         {
+           value: 'ratchet',
+           text: 'ratchet'
+         },
+         {
+           value: 'fixedBar',
+           text: 'fixed bar'
+         }
+       ]
+     })
+   }}
+   {% endset -%} 
+
+   {{
+     govukRadios({
+       classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+       idPrefix: 'handcuffs-conditional',
+       name: 'handcuffs-conditional',
+     
+       fieldset: {
+         legend: {
+           text: 'Were handcuffs applied?',
+           isPageHeading: false,
+           classes: 'govuk-body'
+         }
+       },
+       items: [
+       {
+         value: 'yes',
+         text: 'Yes',
+         conditional: {
+           html: handcuffsHtml
+         }
+       },
+       {
+         value: 'no',
+         text: 'No'
+       }
+     ]
+     })
+   }}
+
 {% endblock %}

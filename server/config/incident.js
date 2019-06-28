@@ -8,7 +8,38 @@ module.exports = {
   },
 
   details: {
-    fields: [],
+    fields: [
+      {
+        'positive-communication': {
+          responseType: 'requiredString',
+          validationMessage: 'Was Positive Communication used?',
+        },
+      },
+      {
+        'personal-protection-techniques': {
+          responseType: 'requiredString',
+          validationMessage: 'Were Personal Protection techniques used?',
+        },
+      },
+      {
+        'baton-drawn-conditional': {
+          responseType: 'requiredString',
+          validationMessage: 'Was a baton drawn?',
+        },
+      },
+      {
+        'pava-drawn-conditional': {
+          responseType: 'requiredString',
+          validationMessage: 'Was a pava drawn?',
+        },
+      },
+      {
+        'guiding-hold-conditional': {
+          responseType: 'requiredString',
+          validationMessage: 'Was a guiding hold used?',
+        },
+      },
+    ],
     validate: false,
     nextPath: {
       path: '/form/incident/relocationAndInjuries/',
