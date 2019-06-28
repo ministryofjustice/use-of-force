@@ -3,6 +3,7 @@ const serviceCreator = require('./formService')
 const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
+  create: jest.fn(),
 }
 let service
 
@@ -14,6 +15,7 @@ beforeEach(() => {
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
+  formClient.create.mockReset()
 })
 
 describe('getFormResponse', () => {
@@ -62,6 +64,7 @@ describe('update', () => {
       }
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
@@ -84,7 +87,7 @@ describe('update', () => {
       })
     })
 
-    test('should call updateLicence and pass in the licence', async () => {
+    test('should call update and pass in the form', async () => {
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -92,6 +95,7 @@ describe('update', () => {
       }
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
@@ -102,7 +106,28 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 'user1')
+      expect(formClient.update).toBeCalledWith('form1', output)
+    })
+
+    test('should call create when form id not present', async () => {
+      const userInput = {
+        decision: 'Yes',
+        followUp1: 'County',
+        followUp2: 'Town',
+      }
+
+      await service.update({
+        bookingId: 1,
+        userId: 'user1',
+        formObject: baseForm,
+        config: { fields: fieldMap },
+        userInput,
+        formSection: 'section4',
+        formName: 'form3',
+      })
+
+      expect(formClient.create).toBeCalledTimes(1)
+      expect(formClient.create).toBeCalledWith('user1', 1)
     })
 
     test('should not call update if there are no changes', async () => {
@@ -110,6 +135,7 @@ describe('update', () => {
       const userInput = { answer: 'answer' }
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
@@ -131,6 +157,7 @@ describe('update', () => {
       }
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
@@ -194,6 +221,7 @@ describe('update', () => {
       const formName = 'form3'
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
@@ -227,6 +255,7 @@ describe('update', () => {
       const formName = 'form3'
 
       const output = await service.update({
+        bookingId: 1,
         userId: 'user1',
         formId: 'form1',
         formObject: baseForm,
