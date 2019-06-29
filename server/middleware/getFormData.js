@@ -1,9 +1,10 @@
 module.exports = formService => async (req, res, next) => {
   try {
-    const formData = await formService.getFormResponse(req.user.username)
+    const { bookingId } = req.params
+    const { form_response: response = {}, id } = await formService.getFormResponse(req.user.username, bookingId)
 
-    res.locals.formObject = formData.form_response || {}
-    res.locals.formId = formData.id
+    res.locals.formObject = response
+    res.locals.formId = id
 
     next()
   } catch (error) {

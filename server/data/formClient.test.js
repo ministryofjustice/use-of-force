@@ -14,36 +14,36 @@ describe('getFormDataForUser', () => {
   })
 
   test('it should pass om the correct sql', () => {
-    formClient.getFormDataForUser('user1')
+    formClient.getFormDataForUser('user1', -1)
 
     expect(db.query).toBeCalledWith({
-      text: 'select id, form_response from form where user_id = $1',
-      values: ['user1'],
+      text: `select id, form_response from form f
+            where user_id = $1
+            and booking_id = $2
+            and status = 'IN_PROGRESS'
+            and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and user_id = f.user_id)`,
+      values: ['user1', -1],
     })
   })
 })
 
-describe('update', () => {
-  test('it should call query on db', () => {
-    formClient.update('formId', {}, 'userId')
-    expect(db.query).toBeCalledTimes(1)
-  })
-
-  test('it should insert if no formId passed in', () => {
-    formClient.update(undefined, {}, 'user1')
+describe('insert or update', () => {
+  test('create', () => {
+    formClient.create('user1', 'booking-1')
 
     expect(db.query).toBeCalledWith({
-      text: 'insert into form (form_response, user_id) values ($1, $2)',
-      values: [{}, 'user1'],
+      text: `insert into form (form_response, user_id, booking_id, status, sequence_no, start_date)
+            values ($1, CAST($2 AS VARCHAR), $3, $4, (select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $3 and user_id = $2), CURRENT_TIMESTAMP)`,
+      values: [{}, 'user1', 'booking-1', 'IN_PROGRESS'],
     })
   })
 
-  test('it should update if formId passed in', () => {
-    formClient.update('formId', {}, 'user1')
+  test('update', () => {
+    formClient.update('formId', {})
 
     expect(db.query).toBeCalledWith({
-      text: 'update form set form_response = $1 where user_id=$2',
-      values: [{}, 'user1'],
+      text: 'update form f set form_response = $1 where f.id = $2',
+      values: [{}, 'formId'],
     })
   })
 })

@@ -2,13 +2,12 @@ const { equals } = require('../utils/utils')
 const { validate } = require('../utils/fieldValidation')
 
 module.exports = function createSomeService(formClient) {
-  async function getFormResponse(userId) {
-    const data = await formClient.getFormDataForUser(userId)
-
+  async function getFormResponse(userId, bookingId) {
+    const data = await formClient.getFormDataForUser(userId, bookingId)
     return data.rows[0] || {}
   }
 
-  async function update({ userId, formId, formObject, config, userInput, formSection, formName }) {
+  async function update({ userId, formId, bookingId, formObject, config, userInput, formSection, formName }) {
     const updatedFormObject = getUpdatedFormObject({
       formObject,
       fieldMap: config.fields,
@@ -21,7 +20,11 @@ module.exports = function createSomeService(formClient) {
       return formObject
     }
 
-    await formClient.update(formId, updatedFormObject, userId)
+    if (formId) {
+      await formClient.update(formId, updatedFormObject)
+    } else {
+      await formClient.create(userId, bookingId)
+    }
     return updatedFormObject
   }
 
