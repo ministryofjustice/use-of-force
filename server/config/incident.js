@@ -39,6 +39,18 @@ module.exports = {
           validationMessage: 'Was a guiding hold used?',
         },
       },
+      {
+        'restraint-conditional': {
+          responseType: 'requiredString',
+          validationMessage: 'Was control and restraint used?',
+        },
+      },
+      {
+        'handcuffs-conditional': {
+          responseType: 'requiredString',
+          validationMessage: 'Were handcuffs applied?',
+        },
+      },
     ],
     validate: false,
     nextPath: {
