@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %} 
 {% from "input/macro.njk" import govukInput %} 
 {% from "select/macro.njk" import govukSelect %} 
-{% block content %}
+{% block formItems %}
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">New use of force incident</h1>
   <div class="govuk-grid-row">
@@ -10,7 +10,7 @@
         <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
       </div>
       <div class="govuk-grid-row">
-        <p class=" govuk-!-margin-bottom-5 govuk-label--s" data-offender-name>
+        <p class="govuk-!-margin-bottom-5 govuk-label--s" data-offender-name>
           {{ data.displayName }} ({{ data.offenderNo }})
         </p>
       </div>
