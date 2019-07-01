@@ -5,9 +5,22 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
+const { createNamespace } = require('cls-hooked')
+const db = require('../../../server/data/dataAccess/db')
 
 module.exports = route => {
   const app = express()
+
+  const ns = createNamespace('request.scope')
+  const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
+
+  app.use(async (req, res, next) => {
+    ns.bindEmitter(req)
+    ns.bindEmitter(res)
+    return ns.run(() => next())
+  })
 
   app.set('view engine', 'html')
 
@@ -41,7 +54,7 @@ module.exports = route => {
       token: 'token',
       username: 'user1',
     }
-    res.locals = {} 
+    res.locals = {}
     res.locals.user = req.user
     next()
   })

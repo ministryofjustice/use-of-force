@@ -4,7 +4,10 @@ exports.up = knex =>
       .integer('sequence_no')
       .notNullable()
       .defaultTo(1)
-    table.bigInteger('booking_id').notNullable()
+    table
+      .bigInteger('booking_id')
+      .notNullable()
+      .defaultTo(-1)
     table
       .timestamp('start_date')
       .notNullable()

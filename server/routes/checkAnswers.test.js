@@ -3,21 +3,12 @@ const appSetup = require('./testutils/appSetup')
 const createRouter = require('./checkAnswers')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const formService = {
-  getFormResponse: jest.fn(),
-}
-
-const checkAnswersRoute = createRouter({ formService, authenticationMiddleware })
+const checkAnswersRoute = createRouter({ authenticationMiddleware })
 
 let app
 
 beforeEach(() => {
   app = appSetup(checkAnswersRoute)
-  formService.getFormResponse.mockResolvedValue({})
-})
-
-afterEach(() => {
-  formService.getFormResponse.mockReset()
 })
 
 describe('GET /check-answers', () => {
