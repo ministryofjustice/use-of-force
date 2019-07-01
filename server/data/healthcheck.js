@@ -10,7 +10,7 @@ module.exports = {
 }
 
 function dbCheck() {
-  return db.query('SELECT 1 AS ok')
+  return db.queryWithoutTransaction('SELECT 1 AS ok')
 }
 
 function authCheck() {
