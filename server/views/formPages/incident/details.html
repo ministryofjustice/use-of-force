@@ -11,7 +11,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
           idPrefix: 'positive-communication',
-          name: 'positive-communication',
+          name: 'positiveCommunication',
           fieldset: {
             legend: {
               text: 'Was Positive Communication used to de-escalate the situation?',
@@ -37,7 +37,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
           idPrefix: 'personal-protection-techniques',
-          name: 'personal-protection-techniques',
+          name: 'personalProtectionTechniques',
           fieldset: {
             legend: {
               text: 'Were any Personal Protection techniques used?',
@@ -60,12 +60,12 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
 
       <!-- Q3 -->
 
-      {% set batonDrawnHtml %}
+      {% set batonUsedHtml %}
       {{
         govukRadios({
           classes: 'govuk-radios--inline',
-          idPrefix: 'baton-drawn',
-          name: 'baton-drawn',
+          idPrefix: 'baton-used',
+          name: 'batonUsed',
           fieldset: {
             legend: {
               text: 'Was it used?',
@@ -89,8 +89,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'baton-drawn-conditional',
-          name: 'baton-drawn-conditional',
+          idPrefix: 'baton-drawn',
+          name: 'batonDrawn',
         
           fieldset: {
             legend: {
@@ -103,8 +103,9 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
           {
             value: 'yes',
             text: 'Yes',
+
             conditional: {
-              html: batonDrawnHtml
+              html: batonUsedHtml
             }
           },
           {
@@ -117,12 +118,12 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
 
       <!-- Q4 -->
 
-      {% set pavaDrawnHtml %}
+      {% set pavaUsedHtml %}
       {{
         govukRadios({
           classes: 'govuk-radios--inline',
-          idPrefix: 'pava-drawn',
-          name: 'pava-drawn',
+          idPrefix: 'pava-used',
+          name: 'pavaUsed',
           fieldset: {
             legend: {
               text: 'Was it used?',
@@ -146,8 +147,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'baton-drawn-conditional',
-          name: 'pava-drawn-conditional',
+          idPrefix: 'baton-drawn',
+          name: 'pavaDrawn',
         
           fieldset: {
             legend: {
@@ -161,7 +162,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
             value: 'yes',
             text: 'Yes',
             conditional: {
-              html: pavaDrawnHtml
+              html: pavaUsedHtml
             }
           },
           {
@@ -178,8 +179,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{
         govukRadios({
           classes: 'govuk-radios--inline',
-          idPrefix: 'guiding-hold',
-          name: 'guiding-hold',
+          idPrefix: 'guiding-hold-officers-involved',
+          name: 'guidingHoldOfficersInvolved',
           fieldset: {
             legend: {
               text: 'How many officers were involved?',
@@ -203,8 +204,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'guiding-hold-conditional',
-          name: 'guiding-hold-conditional',
+          idPrefix: 'guiding-hold',
+          name: 'guidingHold',
         
           fieldset: {
             legend: {
@@ -232,10 +233,10 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
 
       <!-- Q6 -->
 
-      {% set restraintHtml %}
+      {% set restraintPositionsHtml %}
         {{ govukCheckboxes({
-          idPrefix: "restraint",
-          name: "restraint",
+          idPrefix: "restraint-positions",
+          name: "restraintPositions",
           fieldset: {
             legend: {
               text: "What positions were used?",
@@ -268,8 +269,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{
         govukRadios({
           classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'restraint-conditional',
-          name: 'restraint-conditional',
+          idPrefix: 'restraint',
+          name: 'restraint',
         
           fieldset: {
             legend: {
@@ -283,7 +284,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
             value: 'yes',
             text: 'Yes',
             conditional: {
-              html: restraintHtml
+              html: restraintPositionsHtml
             }
           },
           {
@@ -303,8 +304,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
    {{
      govukRadios({
        classes: 'govuk-radios--inline',
-       idPrefix: 'handcuffs',
-       name: 'handcuffs',
+       idPrefix: 'handcuffs-type',
+       name: 'handcuffsType',
        fieldset: {
          legend: {
            text: 'Select which type of handcuffs were used',
@@ -328,8 +329,8 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
    {{
      govukRadios({
        classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-       idPrefix: 'handcuffs-conditional',
-       name: 'handcuffs-conditional',
+       idPrefix: 'handcuffs-applied',
+       name: 'handcuffsApplied',
      
        fieldset: {
          legend: {
