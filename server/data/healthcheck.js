@@ -1,22 +1,16 @@
 /* eslint-disable prefer-promise-reject-errors */
 const superagent = require('superagent')
-const config = require('../config.js')
 const db = require('./dataAccess/db')
 const logger = require('../../log.js')
-
-module.exports = {
-  dbCheck,
-  authCheck,
-}
 
 function dbCheck() {
   return db.queryWithoutTransaction('SELECT 1 AS ok')
 }
 
-function authCheck() {
+function serviceCheck(name, url) {
   return new Promise((resolve, reject) => {
     superagent
-      .get(`${config.apis.oauth2.url}/ping`)
+      .get(url)
       .timeout({
         response: 4000,
         deadline: 4500,
@@ -24,7 +18,7 @@ function authCheck() {
       .end((error, result) => {
         try {
           if (error) {
-            logger.error(error.stack, 'Error calling Auth service')
+            logger.error(error.stack, `Error calling ${name}`)
             return reject(`${error.status} | ${error.code} | ${error.errno}`)
           }
 
@@ -34,9 +28,14 @@ function authCheck() {
 
           return reject(result.status)
         } catch (apiError) {
-          logger.error(apiError.stack, 'Exception calling Auth service')
+          logger.error(apiError.stack, `Exception calling ${name} service`)
           return reject(apiError)
         }
       })
   })
+}
+
+module.exports = {
+  dbCheck,
+  serviceCheck,
 }

@@ -1,12 +1,11 @@
 const nock = require('nock')
-const config = require('../config')
 const healthcheck = require('./healthcheck')
 
-describe('auth healthcheck', () => {
-  let fakeAuthApi
+describe('service healthcheck', () => {
+  let fakeServiceApi
 
   beforeEach(() => {
-    fakeAuthApi = nock(`${config.apis.oauth2.url}`)
+    fakeServiceApi = nock('http://test-service.com')
   })
 
   afterEach(() => {
@@ -15,18 +14,20 @@ describe('auth healthcheck', () => {
 
   describe('check healthy', () => {
     it('should return data from api', async () => {
-      fakeAuthApi.get('/ping').reply(200, 'ping')
+      fakeServiceApi.get('/ping').reply(200, 'ping')
 
-      const output = await healthcheck.authCheck()
+      const output = await healthcheck.serviceCheck('externalService', 'http://test-service.com/ping')
       expect(output).toEqual('OK')
     })
   })
 
   describe('check unhealthy', () => {
-    it('should return data from api', async () => {
-      fakeAuthApi.get('/ping').reply(404)
+    it('should throw error from api', async () => {
+      fakeServiceApi.get('/ping').reply(404)
 
-      return expect(healthcheck.authCheck()).rejects.toContain('404')
+      return expect(healthcheck.serviceCheck('externalService', 'http://test-service.com/ping')).rejects.toContain(
+        '404'
+      )
     })
   })
 })

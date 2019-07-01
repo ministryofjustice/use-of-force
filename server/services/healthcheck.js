@@ -1,4 +1,5 @@
-const { dbCheck, authCheck } = require('../data/healthcheck')
+const { dbCheck, serviceCheck } = require('../data/healthcheck')
+const config = require('../config')
 
 function db() {
   return dbCheck()
@@ -6,14 +7,19 @@ function db() {
     .catch(err => ({ name: 'db', status: 'ERROR', message: err.message }))
 }
 
-function auth() {
-  return authCheck()
-    .then(result => ({ name: 'auth', status: 'ok', message: result }))
-    .catch(err => ({ name: 'auth', status: 'ERROR', message: err }))
+function service(name, url) {
+  return () =>
+    serviceCheck(name, url)
+      .then(result => ({ name, status: 'ok', message: result }))
+      .catch(err => ({ name, status: 'ERROR', message: err }))
 }
 
 module.exports = function healthcheck(callback) {
-  const checks = [db, auth]
+  const checks = [
+    db,
+    service('auth', `${config.apis.oauth2.url}ping`),
+    service('elite2', `${config.apis.elite2.url}ping`),
+  ]
 
   return Promise.all(checks.map(fn => fn())).then(checkResults => {
     const allOk = checkResults.every(item => item.status === 'ok')
