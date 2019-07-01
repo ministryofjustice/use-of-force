@@ -4,6 +4,50 @@
 #global-header #logo .logo-img
   margin-right: 10px
 
+// Header
+
+div.govuk-width-container
+  max-width: 1150px
+
+div.govuk-header__container
+  border-bottom: 0
+  padding-top: 0
+
+div.govuk-header__logo
+  padding-top: 10px
+  padding-bottom: 10px
+
+header.govuk-header
+  padding-top: 0
+  box-sizing: border-box
+    
+.title
+  text-align: left
+  font-size: 26px
+  flex-grow: 1
+  text-decoration: none
+  padding-left: 0px
+
+.logo-text
+  padding: 3px 15px 0 10px
+  border-right: solid white 1px
+  margin-right: 15px
+
+.user-block
+  color: white
+  float: right
+  font-size: 19px
+  background-color: govuk-colour("blue")
+  ul
+    padding: 0
+    li
+      padding: 0 30px
+      display: inline
+      &:not(:last-child)
+        border-right: solid white 1px
+  a
+    color: white
+
 // Task list pattern
 
 .app-task-list

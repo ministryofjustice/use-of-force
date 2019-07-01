@@ -10,15 +10,18 @@ const elite2ClientBuilder = require('./data/elite2ClientBuilder')
 const createFormService = require('./services/formService')
 const createSignInService = require('./authentication/signInService')
 const createOffenderService = require('./services/offenderService')
+const createUserService = require('./services/userService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
 const offenderService = createOffenderService(elite2ClientBuilder)
+const userService = createUserService(elite2ClientBuilder)
 
 const app = createApp({
   formService,
   signInService: createSignInService(),
   offenderService,
+  userService,
 })
 
 module.exports = app
