@@ -62,7 +62,8 @@
       "node_modules/*",
       "test/*"
     ],
-    "delay": "2500"
+    "delay": "2500",
+    "ext": "js,json,html"
   },
   "husky": {
     "hooks": {
