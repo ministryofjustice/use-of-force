@@ -38,7 +38,7 @@ module.exports = {
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     },
     elite2: {
-      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080/', true),
+      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', true),
       timeout: {
         response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000, true),
         deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000, true),

@@ -17,8 +17,8 @@ function service(name, url) {
 module.exports = function healthcheck(callback) {
   const checks = [
     db,
-    service('auth', `${config.apis.oauth2.url}ping`),
-    service('elite2', `${config.apis.elite2.url}ping`),
+    service('auth', `${config.apis.oauth2.url}/ping`),
+    service('elite2', `${config.apis.elite2.url}/ping`),
   ]
 
   return Promise.all(checks.map(fn => fn())).then(checkResults => {
