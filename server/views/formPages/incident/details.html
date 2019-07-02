@@ -69,7 +69,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       {{ incMcr.inlineConditionalRadiosWithNestedRadios('Was a guiding hold used?', 'guidingHold', 'yes', 'no', 'How many officers were involved?', 'guidingHoldOfficersInvolved', 'one', 'two') }}
       
       <!-- Q6 -->
-      {{ incMcr.inlineConditionalRadiosWithNestedCheckboxes('Was control and restraint used?', 'restraint', 'yes', 'no', 'What positions were used?', 'restraintPositions', 'standing', 'On back (supine)', 'face down (prone)', 'kneeling') }}
+      {{ incMcr.inlineConditionalRadiosWithNestedCheckboxes('Was control and restraint used?', 'restraint', 'yes', 'no', 'What positions were used?', 'restraintPositions', 'standing', 'on back (supine)', 'face down (prone)', 'kneeling') }}
 
       <!-- Q7 -->
       {{ incMcr.inlineConditionalRadiosWithNestedRadios('Were handcuffs applied?', 'handcuffsApplied', 'yes', 'no', 'Select which type of handcuffs were used', 'handcuffsType', 'ratchet', "fixed bar") }}
