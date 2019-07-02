@@ -62,6 +62,7 @@ executors:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
           POSTGRES_DB: use-of-force-int
+          PGPORT: 5433
     working_directory: ~/app
 
 orbs:

@@ -19,6 +19,7 @@ module.exports = {
     password: get('DB_PASS', 'use-of-force'),
     server: get('DB_SERVER', 'localhost'),
     database: get('DB_NAME', 'use-of-force'),
+    port: get('DB_PORT', 5432),
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
   apis: {
