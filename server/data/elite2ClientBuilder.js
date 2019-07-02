@@ -22,15 +22,15 @@ module.exports = token => {
   const userGet = userGetBuilder(token)
   return {
     async getOffenderDetails(bookingId) {
-      const path = `${apiUrl}api/bookings/${bookingId}?basicInfo=false`
+      const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
       return userGet({ path })
     },
     async getUser() {
-      const path = `${apiUrl}api/users/me`
+      const path = `${apiUrl}/api/users/me`
       return userGet({ path })
     },
     getUserCaseLoads() {
-      const path = `${apiUrl}api/users/me/caseLoads`
+      const path = `${apiUrl}/api/users/me/caseLoads`
       return userGet({ path })
     },
   }
