@@ -10,45 +10,75 @@ module.exports = {
   details: {
     fields: [
       {
-        'positive-communication': {
+        positiveCommunication: {
           responseType: 'requiredString',
           validationMessage: 'Was Positive Communication used?',
         },
       },
       {
-        'personal-protection-techniques': {
+        personalProtectionTechniques: {
           responseType: 'requiredString',
           validationMessage: 'Were Personal Protection techniques used?',
         },
       },
       {
-        'baton-drawn-conditional': {
+        batonDrawn: {
           responseType: 'requiredString',
           validationMessage: 'Was a baton drawn?',
         },
       },
       {
-        'pava-drawn-conditional': {
+        batonUsed: {
+          responseType: 'requiredString',
+          validationMessage: 'Was a baton used?',
+        },
+      },
+      {
+        pavaUsed: {
+          responseType: 'requiredString',
+          validationMessage: 'Was a pava used?',
+        },
+      },
+      {
+        pavaDrawn: {
           responseType: 'requiredString',
           validationMessage: 'Was a pava drawn?',
         },
       },
       {
-        'guiding-hold-conditional': {
+        guidingHold: {
           responseType: 'requiredString',
           validationMessage: 'Was a guiding hold used?',
         },
       },
       {
-        'restraint-conditional': {
+        guidingHoldOfficersInvolved: {
+          responseType: 'requiredString',
+          validationMessage: 'How many officers were involved?',
+        },
+      },
+      {
+        restraint: {
           responseType: 'requiredString',
           validationMessage: 'Was control and restraint used?',
         },
       },
       {
-        'handcuffs-conditional': {
+        restraintPositions: {
+          responseType: 'requiredString',
+          validationMessage: 'What positions were used?',
+        },
+      },
+      {
+        handcuffsApplied: {
           responseType: 'requiredString',
           validationMessage: 'Were handcuffs applied?',
+        },
+      },
+      {
+        handcuffsType: {
+          responseType: 'requiredString',
+          validationMessage: 'What type of handcuffs were used?',
         },
       },
     ],
