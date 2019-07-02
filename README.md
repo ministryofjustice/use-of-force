@@ -1,6 +1,5 @@
 # Use of ForceForm
-A simple starter kit to start writing form based node app with the gov uk front end toolkit.
-
+A service to allow recording of Use of Force incidents.
 
 ## Getting started
 The easiest way to get started is to use docker compose to download and run the three required containers.
@@ -17,6 +16,11 @@ The app authenticates using `Nomis Oauth2 Server` and saves to a Postgres databa
 It retrieve offender info from the elite2api.
 
 ### Runing the app for development**
+
+#### Start required downstream services: 
+
+To start all services excluding the use of force app: 
+`docker-compose up --scale=use-of-force=0`
 
 #### Build assets
 `npm run build`
