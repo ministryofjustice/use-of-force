@@ -4,11 +4,11 @@ services:
   use-of-force-int-db:
     image: postgres
     networks:
-    - hmpps
+    - hmpps_int
     container_name: use-of-force-int-db
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
     - POSTGRES_PASSWORD=use-of-force
     - POSTGRES_USER=use-of-force
@@ -17,7 +17,7 @@ services:
   wiremock:
     image: rodolpheche/wiremock
     networks:
-    - hmpps
+    - hmpps_int
     container_name: use-of-force-wiremock
     restart: always
     ports:
@@ -25,4 +25,4 @@ services:
 
 
 networks:
-  hmpps:
+  hmpps_int:
