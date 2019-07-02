@@ -1,0 +1,123 @@
+{% macro inlineConditionalRadiosWithNestedRadios(primaryQuestion, primaryName, primaryOpt1, primaryOpt2, secondaryQuestion, secondaryName, secondaryOpt1, secondaryOpt2) %}
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+        <h1 class="govuk-fieldset__heading">
+          {{primaryQuestion}}
+        </h1>
+      </legend>
+      <div class="govuk-!-margin-bottom-6" style='display:block'>
+        <div class="govuk-radios--inline" data-module="radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input  govuk-!-margin-bottom-6" id="id-{{primaryName}}-1" name="{{primaryName}}" type="radio" value="{{primaryOpt1}}" data-aria-controls="conditional-{{primaryName}}">
+            <label class="govuk-label govuk-radios__label" for='id-{{primaryName}}-1'>
+              {{primaryOpt1 | capitalize }}
+            </label>
+          </div>
+
+          <div class="govuk-radios__item  govuk-!-margin-bottom-6">
+            <input class="govuk-radios__input  govuk-!-margin-bottom-6" id="id-{{primaryName}}-2" name="{{primaryName}}" type="radio" value="{{primaryOpt2}}">
+            <label class="govuk-label govuk-radios__label" for="id-{{primaryName}}-2">
+              {{primaryOpt2 | capitalize }}
+            </label>
+          </div>
+
+          <div style="clear: both" class="govuk-radios__conditional govuk-radios--inline govuk-radios__conditional--hidden" id="conditional-{{primaryName}}">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                <h1 class="govuk-fieldset__heading">
+                  {{secondaryQuestion}}
+                </h1>
+              </legend>
+
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="id-{{secondaryName}}-1" name="{{secondaryName}}" type="radio" value="{{secondaryOpt1}}">
+                <label class="govuk-label govuk-radios__label" for="id-{{secondaryName}}-1">
+                  {{secondaryOpt1 | capitalize }}
+                </label>
+              </div>
+
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="id-{{secondaryName}}-2" name="{{secondaryName}}" type="radio" value="{{secondaryOpt2}}">
+                <label class="govuk-label govuk-radios__label" for="id-{{secondaryName}}-2">
+                  {{secondaryOpt2 | capitalize }}
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+{% endmacro %}
+
+{% macro inlineConditionalRadiosWithNestedCheckboxes(primaryQuestion, primaryName, primaryOpt1, primaryOpt2, secondaryQuestion, secondaryName, secondaryOpt1, secondaryOpt2, secondaryOpt3, secondaryOpt4) %}
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+        <h1 class="govuk-fieldset__heading">
+          {{primaryQuestion}}
+        </h1>
+      </legend>
+      <div class="govuk-!-margin-bottom-6" style='display:block'>
+        <div class="govuk-radios--inline" data-module="radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input  govuk-!-margin-bottom-6" id="id-{{primaryName}}-1" name="{{primaryName}}" type="radio" value="{{primaryOpt1}}" data-aria-controls="conditional-{{primaryName}}">
+            <label class="govuk-label govuk-radios__label" for='id-{{primaryName}}-1'>
+              {{primaryOpt1 | capitalize }}
+            </label>
+          </div>
+
+          <div class="govuk-radios__item  govuk-!-margin-bottom-6">
+            <input class="govuk-radios__input  govuk-!-margin-bottom-6" id="id-{{primaryName}}-2" name="{{primaryName}}" type="radio" value="{{primaryOpt2}}">
+            <label class="govuk-label govuk-radios__label" for="id-{{primaryName}}-2">
+              {{primaryOpt2 | capitalize }}
+            </label>
+          </div>
+
+          <div style="clear: both" class="govuk-checkboxes__conditional govuk-radios__conditional--hidden" id="conditional-{{primaryName}}">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                <h1 class="govuk-fieldset__heading">
+                  {{secondaryQuestion}}
+                </h1>
+              </legend>
+
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="id-{{secondaryName}}-1" name="{{secondaryName}}" type="checkbox" value="{{secondaryOpt1}}">
+                <label class="govuk-label govuk-checkboxes__label" for="id-{{secondaryName}}-1">
+                  {{secondaryOpt1 | capitalize }}
+                </label>
+              </div>
+
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="id-{{secondaryName}}-2" name="{{secondaryName}}" type="checkbox" value="{{secondaryOpt2}}">
+                <label class="govuk-label govuk-checkboxes__label" for="id-{{secondaryName}}-2">
+                  {{secondaryOpt2 | capitalize }}
+                </label>
+              </div>
+
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="id-{{secondaryName}}-3" name="{{secondaryName}}" type="checkbox" value="{{secondaryOpt3}}">
+                <label class="govuk-label govuk-checkboxes__label" for="id-{{secondaryName}}-3">
+                  {{secondaryOpt3 | capitalize }}
+                </label>
+              </div>
+
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="id-{{secondaryName}}-4" name="{{secondaryName}}" type="checkbox" value="{{secondaryOpt4}}">
+                <label class="govuk-label govuk-checkboxes__label" for="id-{{secondaryName}}-4">
+                  {{secondaryOpt4 | capitalize }}
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+{% endmacro %}

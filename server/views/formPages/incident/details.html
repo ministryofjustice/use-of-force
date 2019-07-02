@@ -1,5 +1,6 @@
 {% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "radios/macro.njk" import
 govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItems %} {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% import "../incidentMacros.njk" as incMcr %}
 
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">Use of force details</h1>
@@ -9,7 +10,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       <!-- Q1  -->
       {{
         govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-6',
           idPrefix: 'positive-communication',
           name: 'positiveCommunication',
           fieldset: {
@@ -35,7 +36,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       <!-- Q2 -->
       {{
         govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
+          classes: 'govuk-radios--inline govuk-!-margin-bottom-6',
           idPrefix: 'personal-protection-techniques',
           name: 'personalProtectionTechniques',
           fieldset: {
@@ -59,300 +60,35 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% block formItem
       }}
 
       <!-- Q3 -->
-
-      {% set batonUsedHtml %}
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline',
-          idPrefix: 'baton-used',
-          name: 'batonUsed',
-          fieldset: {
-            legend: {
-              text: 'Was it used?',
-              isPageHeading: false
-            }
-          },
-          items: [
-            {
-              value: 'yes',
-              text: 'Yes'
-            },
-            {
-              value: 'no',
-              text: 'No'
-            }
-          ]
-        })
-      }}
-      {% endset -%} 
-
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'baton-drawn',
-          name: 'batonDrawn',
-        
-          fieldset: {
-            legend: {
-              text: 'Was a baton drawn?',
-              isPageHeading: true,
-              classes: 'govuk-body'
-            }
-          },
-          items: [
-          {
-            value: 'yes',
-            text: 'Yes',
-
-            conditional: {
-              html: batonUsedHtml
-            }
-          },
-          {
-            value: 'no',
-            text: 'No'
-          }
-        ]
-        })
-      }}
+      {{ incMcr.inlineConditionalRadiosWithNestedRadios('Was a baton drawn?', 'batonDrawn', 'yes', 'no', 'Was it used?', 'batonUsed', 'yes', 'no') }}
 
       <!-- Q4 -->
-
-      {% set pavaUsedHtml %}
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline',
-          idPrefix: 'pava-used',
-          name: 'pavaUsed',
-          fieldset: {
-            legend: {
-              text: 'Was it used?',
-              isPageHeading: false
-            }
-          },
-          items: [
-            {
-              value: 'yes',
-              text: 'Yes'
-            },
-            {
-              value: 'no',
-              text: 'No'
-            }
-          ]
-        })
-      }}
-      {% endset -%} 
-
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'baton-drawn',
-          name: 'pavaDrawn',
-        
-          fieldset: {
-            legend: {
-              text: 'Was a pava drawn?',
-              isPageHeading: true,
-              classes: 'govuk-body'
-            }
-          },
-          items: [
-          {
-            value: 'yes',
-            text: 'Yes',
-            conditional: {
-              html: pavaUsedHtml
-            }
-          },
-          {
-            value: 'no',
-            text: 'No'
-          }
-        ]
-        })
-      }}
+      {{ incMcr.inlineConditionalRadiosWithNestedRadios('Was pava drawn?', 'pavaDrawn', 'yes', 'no', 'Was it used?', 'pavaUsed', 'yes', 'no') }}
 
       <!-- Q5 -->
-
-      {% set guidingHoldHtml %}
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline',
-          idPrefix: 'guiding-hold-officers-involved',
-          name: 'guidingHoldOfficersInvolved',
-          fieldset: {
-            legend: {
-              text: 'How many officers were involved?',
-              isPageHeading: false
-            }
-          },
-          items: [
-            {
-              value: 1,
-              text: 'One'
-            },
-            {
-              value: 2,
-              text: 'Two'
-            }
-          ]
-        })
-      }}
-      {% endset -%} 
-
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'guiding-hold',
-          name: 'guidingHold',
-        
-          fieldset: {
-            legend: {
-              text: 'Was a guiding hold used?',
-              isPageHeading: false,
-              classes: 'govuk-body'
-            }
-          },
-          items: [
-          {
-            value: 'yes',
-            text: 'Yes',
-            conditional: {
-              html: guidingHoldHtml
-            }
-          },
-          {
-            value: 'no',
-            text: 'No'
-          }
-        ]
-        })
-      }}
-
-
+      {{ incMcr.inlineConditionalRadiosWithNestedRadios('Was a guiding hold used?', 'guidingHold', 'yes', 'no', 'How many officers were involved?', 'guidingHoldOfficersInvolved', 'one', 'two') }}
+      
       <!-- Q6 -->
+      {{ incMcr.inlineConditionalRadiosWithNestedCheckboxes('Was control and restraint used?', 'restraint', 'yes', 'no', 'What positions were used?', 'restraintPositions', 'standing', 'On back (supine)', 'face down (prone)', 'kneeling') }}
 
-      {% set restraintPositionsHtml %}
-        {{ govukCheckboxes({
-          idPrefix: "restraint-positions",
-          name: "restraintPositions",
-          fieldset: {
-            legend: {
-              text: "What positions were used?",
-              isPageHeading: false,
-              classes: "govuk-body"
-            }
-          },
-          items: [
-            {
-              value: "standing",
-              text: "Standing"
-            },
-            {
-              value: "supine",
-              text: "On back (supine)"
-            },
-            {
-              value: "prone",
-              text: "Face down (prone)"
-            },
-            {
-              value: "kneeling",
-              text: "Kneeling"
-            }
-          ]
-        }) 
-      }}
-      {% endset -%} 
-
-      {{
-        govukRadios({
-          classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-          idPrefix: 'restraint',
-          name: 'restraint',
-        
-          fieldset: {
-            legend: {
-              text: 'Was control and restraint used?',
-              isPageHeading: false,
-              classes: 'govuk-body'
-            }
-          },
-          items: [
-          {
-            value: 'yes',
-            text: 'Yes',
-            conditional: {
-              html: restraintPositionsHtml
-            }
-          },
-          {
-            value: 'no',
-            text: 'No'
-          }
-        ]
-        })
-      }}
-    </div>
+      <!-- Q7 -->
+      {{ incMcr.inlineConditionalRadiosWithNestedRadios('Were handcuffs applied?', 'handcuffsApplied', 'yes', 'no', 'Select which type of handcuffs were used', 'handcuffsType', 'ratchet', "fixed bar") }}
+    
+      <hr class = "govuk-!-margin-bottom-9" />
   </div>
-</div>
-
-   <!-- Q6 -->
-
-   {% set handcuffsHtml %}
-   {{
-     govukRadios({
-       classes: 'govuk-radios--inline',
-       idPrefix: 'handcuffs-type',
-       name: 'handcuffsType',
-       fieldset: {
-         legend: {
-           text: 'Select which type of handcuffs were used',
-           isPageHeading: false
-         }
-       },
-       items: [
-         {
-           value: 'ratchet',
-           text: 'ratchet'
-         },
-         {
-           value: 'fixedBar',
-           text: 'fixed bar'
-         }
-       ]
-     })
-   }}
-   {% endset -%} 
-
-   {{
-     govukRadios({
-       classes: 'govuk-radios--inline govuk-!-margin-bottom-9',
-       idPrefix: 'handcuffs-applied',
-       name: 'handcuffsApplied',
-     
-       fieldset: {
-         legend: {
-           text: 'Were handcuffs applied?',
-           isPageHeading: false,
-           classes: 'govuk-body'
-         }
-       },
-       items: [
-       {
-         value: 'yes',
-         text: 'Yes',
-         conditional: {
-           html: handcuffsHtml
-         }
-       },
-       {
-         value: 'no',
-         text: 'No'
-       }
-     ]
-     })
-   }}
 
 {% endblock %}
+
+
+  <!-- params for macro
+   mcr.inlineConditionalRadiosWithNestedRadios(primary-question, primary-name, primary-opt-1, primary-opt-2, secondary-question, secondary-name, secondary-opt-1, secondary-opt-2)
+    primary-question,   = the main question
+    primary-name,       = name to be given to main input element
+    primary-opt-1,      = eg yes
+    primary-opt-2,      = eg no
+    secondary-question, = the question presented by inner set for radios/checkboxes. Secondary will only display if 'Yes' is selected in main input
+    secondary-name,     = name to be given to the second input element
+    secondary-opt-1,    = the labels given to radios/checkboxes in the nested set. These will also be used as the vale stored in the db
+    secondary-opt-2,
+    ...more opts
+   -->
