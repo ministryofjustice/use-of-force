@@ -5,7 +5,7 @@
   "repository": "git@github.com:ministryofjustice/use-of-force.git",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
     "start-feature": "PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5433 node $NODE_DEBUG_OPTION server.js | bunyan -o short",
     "build": "npm run css-build",

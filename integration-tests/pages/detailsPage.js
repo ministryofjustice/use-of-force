@@ -3,7 +3,7 @@ const relocationAndInjuries = require('./relocationAndInjuriesPage')
 
 export default () =>
   page('Use of force details', {
-    allRadiosYes: () => {
+    fillForm: () => {
       cy.get('[name="positiveCommunication"]').check('yes')
       cy.get('[name="personalProtectionTechniques"]').check('yes')
       cy.get('[name="batonDrawn"]').check('yes')

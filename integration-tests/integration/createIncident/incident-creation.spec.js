@@ -16,7 +16,7 @@ context('Logging in', () => {
     const newIncidentPage = taskListPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     const detailsPage = newIncidentPage.next()
-    detailsPage.allRadiosYes()
+    detailsPage.fillForm()
     const relocationPage = detailsPage.next()
     const evidencePage = relocationPage.next()
     const checkAnswersPage = evidencePage.next()
