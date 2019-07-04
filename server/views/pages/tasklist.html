@@ -1,4 +1,14 @@
 {% extends "../partials/layout.html" %}
+
+{% macro section(name, label, url, value) %}
+<li class="app-task-list__item">
+  <a href="{{url}}" data-qa-{{name}}-link>{{label}}</a>
+  {% if value %}
+  <strong class="govuk-tag app-task-list__task-completed" data-qa-{{name}}-completed>Completed</strong>
+  {% endif %}
+</li>
+{% endmacro %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -6,33 +16,29 @@
       <ol class="app-task-list">
         <li>
           <ul class="app-task-list__items">
-            <li class="app-task-list__item">
-              <a href="/form/incident/newIncident/{{bookingId}}" data-qa-new-incidient-link>New Incident</a>
-              {% if form.incident.newIncident %}
-              <strong class="govuk-tag app-task-list__task-completed" data-qa-new-incidient-completed>Completed</strong>
-              {% endif %}
-            </li>
-            <li class="app-task-list__item">
-              <a href="/form/incident/details/{{bookingId}}" data-qa-details-link>Details</a>
-              {% if form.incident.details %}
-              <strong class="govuk-tag app-task-list__task-completed" data-qa-details-completed>Completed</strong>
-              {% endif %}
-            </li>
-            <li class="app-task-list__item">
-              <a href="/form/incident/relocationAndInjuries/{{bookingId}}" data-qa-relocation-and-injuries-link>Relocation and Injuries</a>
-              {% if form.incident.relocationAndInjuries %}
-              <strong class="govuk-tag app-task-list__task-completed" data-qa-relocation-and-injuries-completed>Completed</strong>
-              {% endif %}
-            </li>
-            <li class="app-task-list__item">
-                <a href="/form/incident/evidence/{{bookingId}}" data-qa-evidence-link>Evidence</a>
-                {% if form.incident.evidence %}
-                <strong class="govuk-tag app-task-list__task-completed" data-qa-evidence-completed>Completed</strong>
-                {% endif %}
-              </li>
-              <li class="app-task-list__item" data-qa-check-answers-link>
-                <a href="/check-answers/{{bookingId}}">Check your answers</a>
-              </li>
+              {{  section(name = "new-incident", 
+                  label = "New Incident",  
+                  url = "/form/incident/newIncident/" + bookingId, 
+                  value = form.incident.newIncident) }}
+              
+              {{  section(name = "details", 
+                  label = "Details",  
+                  url = "/form/incident/details/" + bookingId, 
+                  value = form.incident.details) }}
+              
+              {{  section(name = "relocation-and-injuries", 
+                  label = "Relocation and Injuries",  
+                  url = "/form/incident/relocationAndInjuries/" + bookingId, 
+                  value = form.incident.relocationAndInjuries) }}
+              
+              {{  section(name = "evidence", 
+                  label = "Evidence",  
+                  url = "/form/incident/evidence/" + bookingId, 
+                  value = form.incident.evidence) }}
+                  
+              {{  section(name = "check-answers", 
+                  label = "Check your answers",  
+                  url = "/check-answers/" + bookingId) }}
           </ul>
         </li>
         </li>
