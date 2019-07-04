@@ -18,32 +18,43 @@ describe('getFormDataForUser', () => {
 
     expect(db.query).toBeCalledWith({
       text: `select id, form_response from form f
-            where user_id = $1
-            and booking_id = $2
-            and status = 'IN_PROGRESS'
-            and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and user_id = f.user_id)`,
+          where user_id = $1
+          and booking_id = $2
+          and status = 'IN_PROGRESS'
+          and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and user_id = f.user_id)`,
       values: ['user1', -1],
     })
   })
 })
 
-describe('insert or update', () => {
-  test('create', () => {
-    formClient.create('user1', 'booking-1', { someData: true })
+test('create', () => {
+  formClient.create('user1', 'booking-1', { someData: true })
 
-    expect(db.query).toBeCalledWith({
-      text: `insert into form (form_response, user_id, booking_id, status, sequence_no, start_date)
+  expect(db.query).toBeCalledWith({
+    text: `insert into form (form_response, user_id, booking_id, status, sequence_no, start_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, (select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $3 and user_id = $2), CURRENT_TIMESTAMP)`,
-      values: [{ someData: true }, 'user1', 'booking-1', 'IN_PROGRESS'],
-    })
+    values: [{ someData: true }, 'user1', 'booking-1', 'IN_PROGRESS'],
   })
+})
 
-  test('update', () => {
-    formClient.update('formId', {})
+test('update', () => {
+  formClient.update('formId', {})
 
-    expect(db.query).toBeCalledWith({
-      text: 'update form f set form_response = $1 where f.id = $2',
-      values: [{}, 'formId'],
-    })
+  expect(db.query).toBeCalledWith({
+    text: 'update form f set form_response = $1 where f.id = $2',
+    values: [{}, 'formId'],
+  })
+})
+
+test('submit', () => {
+  formClient.submit('user1', 'booking1')
+
+  expect(db.query).toBeCalledWith({
+    text: `update form f set status = $1, submitted_date = CURRENT_TIMESTAMP 
+    where user_id = $2
+    and booking_id = $3
+    and status = 'IN_PROGRESS'
+    and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and user_id = f.user_id)`,
+    values: ['SUBMITTED', 'user1', 'booking1'],
   })
 })

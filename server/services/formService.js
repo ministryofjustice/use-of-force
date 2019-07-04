@@ -1,3 +1,4 @@
+const logger = require('../../log.js')
 const { equals } = require('../utils/utils')
 const { validate } = require('../utils/fieldValidation')
 
@@ -5,6 +6,11 @@ module.exports = function createSomeService(formClient) {
   async function getFormResponse(userId, bookingId) {
     const data = await formClient.getFormDataForUser(userId, bookingId)
     return data.rows[0] || {}
+  }
+
+  async function submitForm(userId, bookingId) {
+    const result = await formClient.submit(userId, bookingId)
+    logger.info(`Rows altered: ${result.rows}`)
   }
 
   async function update({ userId, formId, bookingId, formObject, config, userInput, formSection, formName }) {
@@ -69,6 +75,7 @@ module.exports = function createSomeService(formClient) {
   return {
     getFormResponse,
     update,
+    submitForm,
     getValidationErrors: validate,
   }
 }

@@ -3,7 +3,7 @@ const relocationAndInjuries = require('./relocationAndInjuriesPage')
 
 export default () =>
   page('Use of force details', {
-    next: () => {
+    save: () => {
       cy.get('[data-next]').click()
       return relocationAndInjuries()
     },

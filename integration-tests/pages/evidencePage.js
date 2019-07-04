@@ -3,7 +3,7 @@ const checkAnswersPage = require('./checkAnswersPage')
 
 export default () =>
   page('Evidence', {
-    next: () => {
+    save: () => {
       cy.get('[data-next]').click()
       return checkAnswersPage()
     },

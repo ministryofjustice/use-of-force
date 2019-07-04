@@ -1,4 +1,5 @@
 export default (name, pageObject = {}) => {
-  cy.get('h1').contains(name)
-  return pageObject
+  const checkOnPage = () => cy.get('h1').contains(name)
+  checkOnPage()
+  return { ...pageObject, checkStillOnPage: checkOnPage }
 }
