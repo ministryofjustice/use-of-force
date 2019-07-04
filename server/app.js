@@ -13,7 +13,7 @@ const cookieSession = require('cookie-session')
 const sassMiddleware = require('node-sass-middleware')
 const { createNamespace } = require('cls-hooked')
 
-const healthcheck = require('./services/healthcheck')
+const healthcheckFactory = require('./services/healthcheck')
 const createFormRouter = require('./routes/form')
 const createCheckAnswersRouter = require('./routes/checkAnswers')
 const createSubmittedRouter = require('./routes/submitted')
@@ -128,6 +128,8 @@ module.exports = function createApp({ signInService, formService, offenderServic
   ;['../node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
     app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
   })
+
+  const healthcheck = healthcheckFactory(config.apis.oauth2.url, config.apis.elite2.url)
 
   // Express Routing Configuration
   app.get('/health', (req, res, next) => {

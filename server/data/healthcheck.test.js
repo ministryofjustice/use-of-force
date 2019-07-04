@@ -1,7 +1,8 @@
 const nock = require('nock')
-const healthcheck = require('./healthcheck')
+const { serviceCheckFactory } = require('./healthcheck')
 
 describe('service healthcheck', () => {
+  const healthcheck = serviceCheckFactory('externalService', 'http://test-service.com/ping')
   let fakeServiceApi
 
   beforeEach(() => {
@@ -14,20 +15,66 @@ describe('service healthcheck', () => {
 
   describe('check healthy', () => {
     it('should return data from api', async () => {
-      fakeServiceApi.get('/ping').reply(200, 'ping')
+      fakeServiceApi.get('/ping').reply(200, 'pong')
 
-      const output = await healthcheck.serviceCheck('externalService', 'http://test-service.com/ping')
+      const output = await healthcheck()
       expect(output).toEqual('OK')
     })
   })
 
   describe('check unhealthy', () => {
     it('should throw error from api', async () => {
-      fakeServiceApi.get('/ping').reply(404)
+      fakeServiceApi
+        .get('/ping')
+        .thrice()
+        .reply(500)
 
-      return expect(healthcheck.serviceCheck('externalService', 'http://test-service.com/ping')).rejects.toContain(
-        '404'
-      )
+      await expect(healthcheck()).rejects.toThrow('Internal Server Error')
+    })
+  })
+
+  describe('check healthy retry test', () => {
+    it('Should retry twice if request fails', async () => {
+      fakeServiceApi
+        .get('/ping')
+        .reply(500, { failure: 'one' })
+        .get('/ping')
+        .reply(500, { failure: 'two' })
+        .get('/ping')
+        .reply(200, 'pong')
+
+      const response = await healthcheck()
+      expect(response).toEqual('OK')
+    })
+
+    it('Should retry twice if request times out', async () => {
+      fakeServiceApi
+        .get('/ping')
+        .delay(10000) // delay set to 10s, timeout to 900/3=300ms
+        .reply(200, { failure: 'one' })
+        .get('/ping')
+        .delay(10000)
+        .reply(200, { failure: 'two' })
+        .get('/ping')
+        .reply(200, 'pong')
+
+      const response = await healthcheck()
+      expect(response).toEqual('OK')
+    })
+
+    it('Should fail if request times out three times', async () => {
+      fakeServiceApi
+        .get('/ping')
+        .delay(10000) // delay set to 10s, timeout to 900/3=300ms
+        .reply(200, { failure: 'one' })
+        .get('/ping')
+        .delay(10000)
+        .reply(200, { failure: 'two' })
+        .get('/ping')
+        .delay(10000)
+        .reply(200, { failure: 'three' })
+
+      await expect(healthcheck()).rejects.toThrow('Response timeout of 1000ms exceeded')
     })
   })
 })
