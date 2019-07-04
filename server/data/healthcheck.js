@@ -18,7 +18,6 @@ const agentOptions = {
 
 function serviceCheckFactory(name, url) {
   const keepaliveAgent = url.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
-  logger.warn(`We have constructed a new service check here for ${url}`)
 
   return () =>
     new Promise((resolve, reject) => {
@@ -34,18 +33,13 @@ function serviceCheckFactory(name, url) {
           deadline: 1500,
         })
         .end((error, result) => {
-          try {
-            if (error) {
-              logger.error(error.stack, `Error calling ${name}`)
-              reject(error)
-            } else if (result.status === 200) {
-              resolve('OK')
-            } else {
-              reject(result.status)
-            }
-          } catch (apiError) {
-            logger.error(apiError.stack, `Exception calling ${name} service`)
-            reject(apiError)
+          if (error) {
+            logger.error(error.stack, `Error calling ${name}`)
+            reject(error)
+          } else if (result.status === 200) {
+            resolve('OK')
+          } else {
+            reject(result.status)
           }
         })
     })
