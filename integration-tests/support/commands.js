@@ -25,7 +25,6 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('login', bookingId => {
-  cy.visit(`/${bookingId}`)
-  cy.get('.govuk-button').click()
+  cy.request(`/${bookingId}`)
   cy.task('getLoginUrl').then(cy.visit)
 })
