@@ -1,4 +1,4 @@
-const NewIncidentPage = require('../../pages/newIncidentPage')
+const TasklistPage = require('../../pages/tasklistPage')
 
 context('Logging in', () => {
   const bookingId = 1001
@@ -11,12 +11,17 @@ context('Logging in', () => {
   it('Can login and create a new incident', () => {
     cy.login(bookingId)
 
-    const newIncidentPage = NewIncidentPage.visit(bookingId)
+    const taskListPage = TasklistPage.visit(bookingId)
+    taskListPage.checkNoPartsComplete()
+    const newIncidentPage = taskListPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     const detailsPage = newIncidentPage.next()
     const relocationPage = detailsPage.next()
     const evidencePage = relocationPage.next()
     const checkAnswersPage = evidencePage.next()
     checkAnswersPage.submit()
+
+    const taskListPageForSubmittedForm = TasklistPage.visit(bookingId)
+    taskListPageForSubmittedForm.checkAllPartsComplete()
   })
 })

@@ -119,7 +119,7 @@ describe('update', () => {
       await service.update({
         bookingId: 1,
         userId: 'user1',
-        formObject: baseForm,
+        formObject: {},
         config: { fields: fieldMap },
         userInput,
         formSection: 'section4',
@@ -127,7 +127,11 @@ describe('update', () => {
       })
 
       expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith('user1', 1)
+      expect(formClient.create).toBeCalledWith('user1', 1, {
+        section4: {
+          form3: userInput,
+        },
+      })
     })
 
     test('should not call update if there are no changes', async () => {

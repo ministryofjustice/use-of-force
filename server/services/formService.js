@@ -23,7 +23,7 @@ module.exports = function createSomeService(formClient) {
     if (formId) {
       await formClient.update(formId, updatedFormObject)
     } else {
-      await formClient.create(userId, bookingId)
+      await formClient.create(userId, bookingId, updatedFormObject)
     }
     return updatedFormObject
   }
