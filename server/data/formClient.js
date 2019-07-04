@@ -8,13 +8,13 @@ const update = (formId, formResponse) => {
   return db.query(query)
 }
 
-const create = (userId, bookingId) => {
+const create = (userId, bookingId, formResponse) => {
   const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $3 and user_id = $2)`
 
   const query = {
     text: `insert into form (form_response, user_id, booking_id, status, sequence_no, start_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, ${nextSequence}, CURRENT_TIMESTAMP)`,
-    values: [{}, userId, bookingId, 'IN_PROGRESS'],
+    values: [formResponse, userId, bookingId, 'IN_PROGRESS'],
   }
   return db.query(query)
 }

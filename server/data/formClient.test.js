@@ -29,12 +29,12 @@ describe('getFormDataForUser', () => {
 
 describe('insert or update', () => {
   test('create', () => {
-    formClient.create('user1', 'booking-1')
+    formClient.create('user1', 'booking-1', { someData: true })
 
     expect(db.query).toBeCalledWith({
       text: `insert into form (form_response, user_id, booking_id, status, sequence_no, start_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, (select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $3 and user_id = $2), CURRENT_TIMESTAMP)`,
-      values: [{}, 'user1', 'booking-1', 'IN_PROGRESS'],
+      values: [{ someData: true }, 'user1', 'booking-1', 'IN_PROGRESS'],
     })
   })
 

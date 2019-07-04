@@ -1,0 +1,48 @@
+{% extends "../partials/layout.html" %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Report use of force</h1>
+      <ol class="app-task-list">
+        <li>
+          <ul class="app-task-list__items">
+            <li class="app-task-list__item">
+              <a href="/form/incident/newIncident/{{bookingId}}" data-qa-new-incidient-link>New Incident</a>
+              {% if form.incident.newIncident %}
+              <strong class="govuk-tag app-task-list__task-completed" data-qa-new-incidient-completed>Completed</strong>
+              {% endif %}
+            </li>
+            <li class="app-task-list__item">
+              <a href="/form/incident/details/{{bookingId}}" data-qa-details-link>Details</a>
+              {% if form.incident.details %}
+              <strong class="govuk-tag app-task-list__task-completed" data-qa-details-completed>Completed</strong>
+              {% endif %}
+            </li>
+            <li class="app-task-list__item">
+              <a href="/form/incident/relocationAndInjuries/{{bookingId}}" data-qa-relocation-and-injuries-link>Relocation and Injuries</a>
+              {% if form.incident.relocationAndInjuries %}
+              <strong class="govuk-tag app-task-list__task-completed" data-qa-relocation-and-injuries-completed>Completed</strong>
+              {% endif %}
+            </li>
+            <li class="app-task-list__item">
+                <a href="/form/incident/evidence/{{bookingId}}" data-qa-evidence-link>Evidence</a>
+                {% if form.incident.evidence %}
+                <strong class="govuk-tag app-task-list__task-completed" data-qa-evidence-completed>Completed</strong>
+                {% endif %}
+              </li>
+              <li class="app-task-list__item" data-qa-check-answers-link>
+                <a href="/check-answers/{{bookingId}}">Check your answers</a>
+              </li>
+          </ul>
+        </li>
+        </li>
+      </ol>
+    </div>
+
+  </div>
+
+  </ol>
+
+
+
+{% endblock %}
