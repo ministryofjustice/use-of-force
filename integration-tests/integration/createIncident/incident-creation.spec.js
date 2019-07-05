@@ -11,18 +11,39 @@ context('Logging in', () => {
   it('Can login and create a new incident', () => {
     cy.login(bookingId)
 
-    const taskListPage = TasklistPage.visit(bookingId)
-    taskListPage.checkNoPartsComplete()
-    const newIncidentPage = taskListPage.startNewForm()
+    const tasklistPage = TasklistPage.visit(bookingId)
+
+    const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
-    const detailsPage = newIncidentPage.next()
+    const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
-    const relocationPage = detailsPage.next()
-    const evidencePage = relocationPage.next()
-    const checkAnswersPage = evidencePage.next()
+    const relocationPage = detailsPage.save()
+    const evidencePage = relocationPage.save()
+    const checkAnswersPage = evidencePage.save()
+    checkAnswersPage.confirm()
+    checkAnswersPage.submit()
+  })
+
+  it('Form parts are saved as the user goes through the form and a new form is presented after submission', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    tasklistPage.checkNoPartsComplete()
+
+    const newIncidentPage = tasklistPage.startNewForm()
+    const detailsPage = newIncidentPage.save()
+    const relocationPage = detailsPage.save()
+    const evidencePage = relocationPage.save()
+    evidencePage.save()
+
+    const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
+    tasklistPageAfterAllPartsComplete.checkAllPartsComplete()
+
+    const checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
+    checkAnswersPage.confirm()
     checkAnswersPage.submit()
 
-    const taskListPageForSubmittedForm = TasklistPage.visit(bookingId)
-    taskListPageForSubmittedForm.checkAllPartsComplete()
+    const tasklistPageForSubmittedForm = TasklistPage.visit(bookingId)
+    tasklistPageForSubmittedForm.checkNoPartsComplete()
   })
 })

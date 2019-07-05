@@ -3,6 +3,7 @@ const relocationAndInjuries = require('./relocationAndInjuriesPage')
 
 export default () =>
   page('Use of force details', {
+
     fillForm: () => {
       cy.get('[name="positiveCommunication"]').check('yes')
       cy.get('[name="personalProtectionTechniques"]').check('yes')
@@ -17,7 +18,9 @@ export default () =>
       cy.get('[name="handcuffsApplied"]').check('yes')
       cy.get('[name="handcuffsType"]').check('ratchet')
     },
-    next: () => {
+
+    save: () => {
+
       cy.get('[data-next]').click()
       return relocationAndInjuries()
     },

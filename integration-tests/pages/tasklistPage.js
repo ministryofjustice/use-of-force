@@ -1,4 +1,5 @@
 const newIncidentPage = require('./newIncidentPage')
+const checkAnswersPage = require('./checkAnswersPage')
 const page = require('./page')
 
 export default {
@@ -8,6 +9,10 @@ export default {
       startNewForm: () => {
         cy.get('[data-qa-new-incident-link]').click()
         return newIncidentPage()
+      },
+      goToAnswerPage: () => {
+        cy.get('[data-qa-check-answers-link]').click()
+        return checkAnswersPage()
       },
       checkNoPartsComplete: () => {
         cy.get('[data-qa-new-incident-completed]').should('not.exist')
