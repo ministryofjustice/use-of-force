@@ -13,7 +13,7 @@ export default () =>
       cy.get('[name="guidingHold"]').check('yes')
       cy.get('[name="guidingHoldOfficersInvolved"]').check('two')
       cy.get('[name="restraint"]').check('yes')
-      cy.get('[name="restraintPositions"]').check(['standing', 'face down (prone)', 'on back (supine)', 'kneeling'])
+      cy.get('[name="restraintPositions"]').check(['standing', 'prone', 'supine', 'kneeling'])
       cy.get('[name="handcuffsApplied"]').check('yes')
       cy.get('[name="handcuffsType"]').check('ratchet')
     },
