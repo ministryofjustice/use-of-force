@@ -1,136 +1,205 @@
 {% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "radios/macro.njk" import
 govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkboxes/macro.njk" import govukCheckboxes %}
-{% import "../incidentMacros.njk" as incMcr %}
+{% import "../incidentMacros.njk" as incidentMacro %}
 
-{% set questions = {
-    baton : {
-      'primaryQuestion':'Was a baton drawn?',
-      'primaryName': 'batonDrawn', 
-      'primaryOpt1':'yes', 
-      'primaryOpt2': 'no', 
-      'secondaryQuestion': 'Was it used?', 
-      'secondaryName': 'batonUsed', 
-      'secondaryOpt1': 'yes', 
-      'secondaryOpt2': 'no'
-    },
-    pava: {
-      'primaryQuestion':'Was pava drawn?',
-      'primaryName': 'pavaDrawn', 
-      'primaryOpt1':'yes', 
-      'primaryOpt2': 'no', 
-      'secondaryQuestion': 'Was it used?', 
-      'secondaryName': 'pavaUsed', 
-      'secondaryOpt1': 'yes', 
-      'secondaryOpt2': 'no'
-    },
-    guidingHold: {
-      'primaryQuestion':'Was a guiding hold used?',
-      'primaryName': 'guidingHold', 
-      'primaryOpt1':'yes', 
-      'primaryOpt2': 'no', 
-      'secondaryQuestion': 'How many officers were involved?', 
-      'secondaryName': 'guidingHoldOfficersInvolved', 
-      'secondaryOpt1': 'one', 
-      'secondaryOpt2': 'two'
-    },
-    restraint: {
-      'primaryQuestion':'Was control and restraint used?',
-      'primaryName': 'restraint', 
-      'primaryOpt1':'yes', 
-      'primaryOpt2': 'no', 
-      'secondaryQuestion': 'What positions were used?', 
-      'secondaryName': 'restraintPositions', 
-      'secondaryOpt1': 'standing', 
-      'secondaryOpt2': 'on back (supine)', 
-      'secondaryOpt3': 'face down (prone)', 
-      'secondaryOpt4': 'kneeling'
-    },
-    handcuffs: {
-      'primaryQuestion':'Were handcuffs applied?',
-      'primaryName': 'handcuffsApplied', 
-      'primaryOpt1':'yes', 
-      'primaryOpt2': 'no', 
-      'secondaryQuestion': 'Select which type of handcuffs were used', 
-      'secondaryName': 'handcuffsType', 
-      'secondaryOpt1': 'ratchet', 
-      'secondaryOpt2': 'fixed bar'
-    }
-  }
-%}
+{% block formItems %}
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl mainHeading">Use of force details</h1>
 
-{% block formItems %} 
+    <!-- Q1 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+          {
+            "primaryQuestion": {
+              "text": "Was Positive Communication used to de-escalate the situation?",
+              "name": "positiveCommunication",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, {
+                "value": "no",
+                "label": "No"
+              }]
+            }
+          }
+          )
+         }}
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-xl mainHeading">Use of force details</h1>
-        <!-- Q1  -->
-        {{
-          govukRadios({
-            classes: 'govuk-radios--inline govuk-!-margin-bottom-6',
-            idPrefix: 'positive-communication',
-            name: 'positiveCommunication',
-            fieldset: {
-              legend: {
-                text: 'Was Positive Communication used to de-escalate the situation?',
-                isPageHeading: false,
-                classes: 'govuk-body'
+    <!-- Q2 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+          {
+            "primaryQuestion": {
+              "text": "Were any Personal Protection techniques used?",
+              "name": "personalProtectionTechniques",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, {
+                "value": "no",
+                "label": "No"
+              }]
+            }
+          }
+          )
+         }}
+
+    <!-- Q3 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+          {
+            "primaryQuestion": {
+              "text": "Was a baton drawn?",
+              "name": "batonDrawn",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, 
+              {
+                "value": "no",
+                "label": "No"
               }
+              ]
             },
-            items: [
+            "followUpQuestion": {
+              "text": "Was it used?",
+              "name": "batonUsed",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, 
               {
-                value: 'yes',
-                text: 'Yes'
-              },
-              {
-                value: 'no',
-                text: 'No'
+                "value": "no",
+                "label": "No"
               }
-            ]
-          })
+              ]
+            }
+          }
+          )
+         }}
+
+    <!-- Q4 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+          {
+            "primaryQuestion": {
+              "text": "Was pava drawn?",
+              "name": "pavaDrawn",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, {
+                "value": "no",
+                "label": "No"
+              }]
+            },
+            "followUpQuestion": {
+              "text": "Was it used?",
+              "name": "pavaUsed",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, {
+                "value": "no",
+                "label": "No"
+              }]
+            }
+          }
+          )
         }}
 
-        <!-- Q2 -->
-        {{
-          govukRadios({
-            classes: 'govuk-radios--inline govuk-!-margin-bottom-6',
-            idPrefix: 'personal-protection-techniques',
-            name: 'personalProtectionTechniques',
-            fieldset: {
-              legend: {
-                text: 'Were any Personal Protection techniques used?',
-                isPageHeading: false,
-                classes: 'govuk-body'
+    <!-- Q5 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+          {
+            "primaryQuestion": {
+              "text": "Was a guiding hold used?",
+              "name": "guidingHold",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, 
+              {
+                "value": "no",
+                "label": "No"
               }
+           ]
             },
-            items: [
+            "followUpQuestion": {
+              "text": "How many officers were involved?",
+              "name": "guidingHoldOfficersInvolved",
+              "options": [{
+                "value": 1,
+                "label": "One"
+              }, 
               {
-                value: 'yes',
-                text: 'Yes'
-              },
-              {
-                value: 'no',
-                text: 'No'
-              }
-            ]
-          })
+                "value": 2,
+                "label": "Two"
+              }]
+            }
+          }
+          )
         }}
-        <!-- Q3 -->
-        {{ incMcr.inlineConditionalRadiosWithNestedRadios(questions.baton) }}
 
-        <!-- Q4 -->
-        {{ incMcr.inlineConditionalRadiosWithNestedRadios(questions.pava) }}
+    <!-- Q6 -->
+    {{ incidentMacro.radiosWithNestedCheckboxes({
+          "primaryQuestion": {
+            "text": "Was control and restraint used?",
+            "name": "restraint",
+            "options": [{
+              "value": "yes",
+              "label": "Yes"
+            }, {
+              "value": "no",
+              "label": "No"
+            }]
+          },
+          "followUpQuestion": {
+            "text": "What positions were used?",
+            "name": "restraintPositions",
+            "options": [{
+              "value": "standing",
+              "label": "standing"
+            }, {
+              "value": "supine",
+              "label": "On back (supine)"
+            }, {
+              "value": "prone",
+              "label": "Face down (prone)"
+            }, {
+              "value": "kneeling",
+              "label": "Kneeling"
+            }]
+          }
+        }) 
+      }}
 
-        <!-- Q5 -->
-        {{ incMcr.inlineConditionalRadiosWithNestedRadios(questions.guidingHold) }}
-        
-        <!-- Q6 -->
-        {{ incMcr.inlineConditionalRadiosWithNestedCheckboxes(questions.restraint) }}
-
-        <!-- Q7 -->
-        {{ incMcr.inlineConditionalRadiosWithNestedRadios(questions.handcuffs) }}
-
-      </div>
-    </div>
+    <!-- Q7 -->
+    {{ incidentMacro.radiosWithNestedRadios( 
+        {
+          "primaryQuestion": {
+            "text": "Were handcuffs applied?",
+            "name": "handcuffsApplied",
+            "options": [{
+              "value": "yes",
+              "label": "Yes"
+            }, {
+              "value": "no",
+              "label": "No"
+            }]
+          },
+          "followUpQuestion": {
+            "text": "Select which type of handcuffs were used",
+            "name": "handcuffsType",
+            "options": [{
+              "value": "ratchet",
+              "label": "Ratchet"
+            }, {
+              "value": "fixedBar",
+              "label": "fixed bar"
+            }]
+          }
+        }
+        )
+        }}
+  </div>
+</div>
 
 {% endblock %}

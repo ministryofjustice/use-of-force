@@ -1,51 +1,49 @@
-{% macro inlineConditionalRadiosWithNestedRadios(question) %}
+{% macro radiosWithNestedRadios(question) %}
 
   <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
+      {# primary #}
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
         <h1 class="govuk-fieldset__heading">
-          {{question.primaryQuestion}}
+          {{question.primaryQuestion.text}}
         </h1>
       </legend>
-      <div class="govuk-!-margin-bottom-6" >
-        <div class="govuk-radios--inline" data-module="radios">
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="id-{{question.primaryName}}-1" name="{{question.primaryName}}" type="radio" value="{{question.primaryOpt1}}" data-aria-controls="conditional-{{question.primaryName}}">
-            <label class="govuk-label govuk-radios__label" for='id-{{question.primaryName}}-1'>
-              {{question.primaryOpt1 | capitalize }}
-            </label>
-          </div>
+      <div class="govuk-!-margin-bottom-6">
+        <div class="{% if question.primaryQuestion.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="radios">
+          {% set name1 = question.primaryQuestion.name %}
+          {% for option in question.primaryQuestion.options %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="id-{{name1}}-{{loop.index}}" name="{{name1}}" type="radio" value="{{option.value}}" {% if option.value === 'yes' %} data-aria-controls="conditional-{{name1}}" {% endif %}>
+              <label class="govuk-label govuk-radios__label" for='id-{{name1}}-{{loop.index}}'>
+                {{option.label}}
+              </label>
+            </div>
+          {% endfor %}
 
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="id-{{question.primaryName}}-2" name="{{question.primaryName}}" type="radio" value="{{question.primaryOpt2}}">
-            <label class="govuk-label govuk-radios__label" for="id-{{question.primaryName}}-2">
-              {{question.primaryOpt2 | capitalize }}
-            </label>
-          </div>
-
-          <div class="govuk-radios__conditional govuk-radios--inline govuk-radios__conditional--hidden clear-both" id="conditional-{{question.primaryName}}">
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                <h1 class="govuk-fieldset__heading govuk-!-font-weight-bold">
-                  {{question.secondaryQuestion}}
-                </h1>
-              </legend>
-
-              <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="id-{{question.secondaryName}}-1" name="{{question.secondaryName}}" type="radio" value="{{question.secondaryOpt1}}">
-                <label class="govuk-label govuk-radios__label" for="id-{{question.secondaryName}}-1">
-                  {{question.secondaryOpt1 | capitalize }}
-                </label>
-              </div>
-
-              <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="id-{{question.secondaryName}}-2" name="{{question.secondaryName}}" type="radio" value="{{question.secondaryOpt2}}">
-                <label class="govuk-label govuk-radios__label" for="id-{{question.secondaryName}}-2">
-                  {{question.secondaryOpt2 | capitalize }}
-                </label>
-              </div>
-            </fieldset>
-          </div>
+          {# followup #}
+          {% if question.followUpQuestion %}
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{name1}}">
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                  <h1 class="govuk-fieldset__heading govuk-!-font-weight-bold">
+                    {{question.followUpQuestion.text}}
+                  </h1>
+                </legend>
+                {% set name2 = question.followUpQuestion.name %}
+                <div class="{% if question.followUpQuestion.options | length < 3 %} govuk-radios--inline {% endif %}">
+                  {% for option in question.followUpQuestion.options %}
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input" id="id-{{name2}}-{{loop.index}}" name="{{name2}}" type="radio" value="{{option.value}}">
+                      <label class="govuk-label govuk-radios__label" for="id-{{name2}}-{{loop.index}}">
+                        {{option.label}}
+                      </label>
+                    </div>
+                  {% endfor %}
+                </div>
+              </fieldset>
+            </div>
+          {% endif %}
+          {# end of followup #}
         </div>
       </div>
     </fieldset>
@@ -53,67 +51,47 @@
 
 {% endmacro %}
 
-
-{% macro inlineConditionalRadiosWithNestedCheckboxes(question) %}
+{% macro radiosWithNestedCheckboxes(question) %}
 
   <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
+      {# primary #}
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
         <h1 class="govuk-fieldset__heading">
-          {{question.primaryQuestion}}
+          {{question.primaryQuestion.text}}
         </h1>
       </legend>
       <div class="govuk-!-margin-bottom-6">
         <div class="govuk-radios--inline" data-module="radios">
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="id-{{question.primaryName}}-1" name="{{question.primaryName}}" type="radio" value="{{question.primaryOpt1}}" data-aria-controls="conditional-{{question.primaryName}}">
-            <label class="govuk-label govuk-radios__label" for='id-{{primaryName}}-1'>
-              {{question.primaryOpt1 | capitalize }}
-            </label>
-          </div>
+          {% set name = question.primaryQuestion.name %}
+          {% for option in question.primaryQuestion.options %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}>
+              <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
+                {{option.label}}
+              </label>
+            </div>
+          {% endfor %}
 
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="id-{{question.primaryName}}-2" name="{{question.primaryName}}" type="radio" value="{{question.primaryOpt2}}">
-            <label class="govuk-label govuk-radios__label" for="id-{{question.primaryName}}-2">
-              {{question.primaryOpt2 | capitalize }}
-            </label>
-          </div>
-
-          <div class="govuk-checkboxes__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{question.primaryName}}">
+          {# followup #}
+          <div class="govuk-checkboxes__conditional clear-both" id="conditional-{{name}}">
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend">
                 <h1 class="govuk-fieldset__heading govuk-!-font-weight-bold">
-                  {{question.secondaryQuestion}}
+                  {{question.followUpQuestion.text}}
                 </h1>
               </legend>
 
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="id-{{question.secondaryName}}-1" name="{{question.secondaryName}}" type="checkbox" value="{{question.secondaryOpt1}}">
-                <label class="govuk-label govuk-checkboxes__label" for="id-{{question.secondaryName}}-1">
-                  {{question.secondaryOpt1 | capitalize }}
-                </label>
-              </div>
+              {% set name = question.followUpQuestion.name %}
+              {% for option in question.followUpQuestion.options %}
 
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="id-{{question.secondaryName}}-2" name="{{question.secondaryName}}" type="checkbox" value="{{question.secondaryOpt2}}">
-                <label class="govuk-label govuk-checkboxes__label" for="id-{{question.secondaryName}}-2">
-                  {{question.secondaryOpt2 | capitalize }}
-                </label>
-              </div>
-
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="id-{{question.secondaryName}}-3" name="{{question.secondaryName}}" type="checkbox" value="{{question.secondaryOpt3}}">
-                <label class="govuk-label govuk-checkboxes__label" for="id-{{question.secondaryName}}-3">
-                  {{question.secondaryOpt3 | capitalize }}
-                </label>
-              </div>
-
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="id-{{question.secondaryName}}-4" name="{{question.secondaryName}}" type="checkbox" value="{{question.secondaryOpt4}}">
-                <label class="govuk-label govuk-checkboxes__label" for="id-{{question.secondaryName}}-4">
-                  {{question.secondaryOpt4 | capitalize }}
-                </label>
-              </div>
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="checkbox" value="{{option.value}}">
+                  <label class="govuk-label govuk-checkboxes__label" for="id-{{name}}-{{loop.index}}">
+                    {{option.label}}
+                  </label>
+                </div>
+              {% endfor %}
             </fieldset>
           </div>
         </div>
