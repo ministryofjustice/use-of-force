@@ -97,3 +97,62 @@
   </div>
 
 {% endmacro %}
+
+{% macro radiosWithNestedTextboxes(question) %}
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      {# primary #}
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+        <h1 class="govuk-fieldset__heading">
+          {{question.primaryQuestion.text}}
+        </h1>
+      </legend>
+      <div class="govuk-!-margin-bottom-6">
+        <div class="govuk-radios--inline" data-module="radios">
+          {% set name = question.primaryQuestion.name %}
+          {% for option in question.primaryQuestion.options %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}>
+              <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
+                {{option.label}}
+              </label>
+            </div>
+          {% endfor %}
+
+          {# followup #}
+          <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{name}}">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden" {% endif %}>
+                <h2 class="govuk-fieldset__heading govuk-heading-l">
+                  {{question.followUpQuestion.legend}}
+                </h2>
+              </legend>
+
+              {% set name = question.followUpQuestion.name %}
+
+              {% for option in question.followUpQuestion.options %}
+                <div class="govuk-textboxes__item">
+                  <label class="govuk-label" for="id-{{name}}-{{loop.index}}">
+                    {{option.label}}
+                  </label>
+                  <input class="govuk-input govuk-!-width-one-third" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="text" value="">
+                </div>
+                {% if  question.followUpQuestion.alertMsg %}
+                <div class="govuk-warning-text">
+                  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                  <p class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">Warning</span>
+                     {{question.followUpQuestion.alertMsg}}
+                  </p>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+{% endmacro %}
