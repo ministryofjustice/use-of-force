@@ -1,5 +1,165 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% block formItems %}
-<div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
+{% extends "../formTemplate.html" %}
+{% from "input/macro.njk" import govukInput %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% import "../incidentMacros.njk" as incidentMacro %}
+
+{% block formItems %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
+
+
+    <!-- Q1 -->
+
+    {{ govukSelect({
+        id: "prisoner-relocation",
+        name: "prisonerRelocation",
+        label: {
+          text: "Where was the prisoner relocated to?"
+        },
+        attributes: {style:'min-width:33%'},
+        items: [
+          {
+            value: "select",
+            text: "Select",
+            selected: true
+          },
+          {
+            value: "ownCell",
+            text: "Own cell"   
+          },
+          {
+            value: "segregationUnit",
+            text: "Segregation unit"
+          },
+          {
+            value: "specialAccommodation",
+            text: "Special accommodation"
+          },
+          {
+            value: "cellularVehicle",
+            text: "Cellular vehicle"
+          }
+        ]
+      }) }}
+
+    <!-- Q2 -->
+
+    {{ govukSelect({
+      id: "relocation-compliancy",
+      name: "prisonerCompliancy",
+      label: {
+        text: "Where was the prisoner relocated to?"
+      },
+      attributes: {style:'min-width:33%'},
+      items: [
+        {
+          value: "select",
+          text: "Select",
+          selected: true
+        },
+        {
+          value: "compliant",
+          text: "compliant"
+        },
+        {
+          value: "nonCompliant",
+          text: "Non-compliant"
+        }
+      ]
+    }) }}
+
+    <hr />
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+
+    <!-- Q3 -->
+
+    <h2 class="govuk-heading-l ">Injuries sustained and healthcare involvement</h2>
+
+    {{ incidentMacro.radiosWithNestedTextboxes({
+        "primaryQuestion": {
+          "text": "Was a member of Healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+          "name": "healthcareInvolved",
+          "options": [{
+            "value": "yes",
+            "label": "Yes"
+          }, 
+          {
+            "value": "no",
+            "label": "No"
+          }]
+        },
+        "followUpQuestion": {
+          "legend": "blank",
+          "name": "healthcarePractionerName",
+          "alertMsg":"",
+          "options": [{
+            "label": "Name"
+          }]
+        }
+      }) 
+    }}
+
+        <!-- Q4 -->
+
+
+        {{ incidentMacro.radiosWithNestedTextboxes({
+            "primaryQuestion": {
+              "text": "Did the prisoner sustain any injuries at the time?",
+              "name": "prisonerInjuries",
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, 
+              {
+                "value": "no",
+                "label": "No"
+              }]
+            },
+            "followUpQuestion": {
+              "legend": "Who completed the F213 form?",
+              "name": "f213CompletedBy",
+              "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
+              "options": [{
+                "label": "Name"
+              }]
+            }
+          }) 
+        }}
+    
+
+
+    <!-- Q5 -->
+
+    {{ govukRadios({
+        classes: "govuk-radios--inline",
+        idPrefix: "prisoner-hospitalisation",
+        name: "prisonerHospitalisation",
+        fieldset: {
+          legend: {
+            text: "Did the prisoner require outside hospitalisation at the time?",
+            isPageHeading: false,
+            classes: "govuk-fieldset"
+          }
+        },
+        items: [
+          {
+            value: "yes",
+            text: "Yes"
+          },
+          {
+            value: "no",
+            text: "No"
+          }
+        ]
+      }) 
+      }}
+
+  </div>
 </div>
+
 {% endblock %}
