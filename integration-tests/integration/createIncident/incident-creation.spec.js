@@ -15,8 +15,8 @@ context('Logging in', () => {
 
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
-
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationPage = detailsPage.save()
     const evidencePage = relocationPage.save()
     const checkAnswersPage = evidencePage.save()
@@ -29,9 +29,9 @@ context('Logging in', () => {
 
     const tasklistPage = TasklistPage.visit(bookingId)
     tasklistPage.checkNoPartsComplete()
-
     const newIncidentPage = tasklistPage.startNewForm()
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationPage = detailsPage.save()
     const evidencePage = relocationPage.save()
     evidencePage.save()
