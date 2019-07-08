@@ -68,8 +68,7 @@ block formItems %}
     <div class="govuk-grid-column-full">
       <h3>Staff involved in use of force</h3>
       <div class="add-another-staff-member">
-        {% for staffMember in data.involved %} 
-        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {% for staffMember in data.involved %} {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{
           govukInput({
             label: {
@@ -88,9 +87,7 @@ block formItems %}
         <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
           Remove
         </button>
-        {% endcall %} 
-        {% else %} 
-        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {% endcall %} {% else %} {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{
           govukInput({
             label: {
@@ -111,7 +108,7 @@ block formItems %}
             govukButton({
               text: 'Add another member of staff',
               classes: 'govuk-button--secondary  add-another__add-button  govuk-!-margin-bottom-4',
-              attributes: {'data-qa-add-another-staff': true}
+              attributes: { 'data-qa-add-another-staff': true }
             })
           }}
         </div>
@@ -123,8 +120,7 @@ block formItems %}
     <div class="govuk-grid-column-full">
       <h3>Other witnesses to the incident</h3>
       <div class="add-another-witness">
-        {% for staffMember in data.witnesses %} 
-        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {% for staffMember in data.witnesses %} {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{
           govukInput({
             label: {
@@ -164,7 +160,7 @@ block formItems %}
             govukButton({
               text: 'Add another witness',
               classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
-              attributes: {'data-qa-add-another-witness': true}
+              attributes: { 'data-qa-add-another-witness': true }
             })
           }}
         </div>
@@ -173,11 +169,7 @@ block formItems %}
   </div>
 </div>
 
-<script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"
-></script>
+<script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
   new AddAnother($('.add-another-staff-member'))
