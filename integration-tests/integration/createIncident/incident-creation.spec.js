@@ -17,9 +17,15 @@ context('Logging in', () => {
     const newIncidentPage = tasklistPage.startNewForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
-    const relocationPage = detailsPage.save()
-    const evidencePage = relocationPage.save()
-    const checkAnswersPage = evidencePage.save()
+    const relocationAndInjuriesPage = detailsPage.save()
+    relocationAndInjuriesPage.fillForm()
+    const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.save()
+
+    const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
+    tasklistPageAfterAllPartsComplete.checkAllPartsComplete()
+
+    const checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
     checkAnswersPage.confirm()
     checkAnswersPage.submit()
 

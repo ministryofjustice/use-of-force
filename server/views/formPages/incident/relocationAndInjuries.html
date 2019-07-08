@@ -51,8 +51,9 @@
     {{ govukSelect({
       id: "relocation-compliancy",
       name: "prisonerCompliancy",
+      classes:" govuk-!-margin-bottom-6",
       label: {
-        text: "Where was the prisoner relocated to?"
+        text: "What type of relocation was it?"
       },
       attributes: {style:'min-width:33%'},
       items: [
@@ -78,7 +79,7 @@
 
     <!-- Q3 -->
 
-    <h2 class="govuk-heading-l ">Injuries sustained and healthcare involvement</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
 
     {{ incidentMacro.radiosWithNestedTextboxes({
         "primaryQuestion": {
@@ -161,5 +162,7 @@
 
   </div>
 </div>
+
+<!-- Q6 -->
 
 {% endblock %}

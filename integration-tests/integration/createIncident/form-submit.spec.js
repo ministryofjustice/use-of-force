@@ -17,8 +17,8 @@ context('Submit the incident report', () => {
 
     const newIncidentPage = tasklistPage.startNewForm()
     const detailsPage = newIncidentPage.save()
-    const relocationPage = detailsPage.save()
-    const evidencePage = relocationPage.save()
+    const relocationAndInjuriesPage = detailsPage.save()
+    const evidencePage = relocationAndInjuriesPage.save()
     const checkAnswersPage = evidencePage.save()
 
     checkAnswersPage.clickSubmit()
