@@ -59,4 +59,17 @@ describe('elite2Client', () => {
       expect(output).toEqual(caseloads)
     })
   })
+
+  describe('getLocations', () => {
+    const locations = []
+    it('should return data from api', async () => {
+      fakeElite2Api
+        .get('/api/agencies/123/locations')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, locations)
+
+      const output = await elite2Client.getLocations(123)
+      expect(output).toEqual(locations)
+    })
+  })
 })

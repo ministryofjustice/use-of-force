@@ -1,20 +1,184 @@
-{% extends "../formTemplate.html" %} 
-{% from "input/macro.njk" import govukInput %} 
-{% from "select/macro.njk" import govukSelect %} 
-{% block formItems %}
+{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "select/macro.njk" import
+govukSelect %} {% from "fieldset/macro.njk" import govukFieldset %} {% from "button/macro.njk" import govukButton %} {%
+block formItems %}
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">New use of force incident</h1>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <div class="govuk-grid-row">
-        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+      <p class="govuk-!-margin-bottom-5 govuk-label--s" data-offender-name>
+        {{ data.displayName }} ({{ data.offenderNo }})
+      </p>
+    </div>
+  </div>
+  <hr />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{
+        govukSelect({
+          id: 'locationId',
+          name: 'locationId',
+          classes: 'govuk-!-width-one-third',
+          label: {
+            text: 'Location of incident:',
+            isPageHeading: false,
+            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+          },
+          items: data.locations
+        })
+      }}
+    </div>
+  </div>
+  <hr />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{
+        govukSelect({
+          id: 'forceType',
+          name: 'forceType',
+          classes: 'govuk-!-width-one-third',
+          label: {
+            text: 'The use of force was:',
+            isPageHeading: false,
+            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+          },
+          items: [
+            {
+              value: '',
+              text: '-- Select --',
+              selected: data.forceType === ''
+            },
+            {
+              value: 'planned',
+              text: 'Planned',
+              selected: data.forceType === 'planned'
+            },
+            {
+              value: 'spontaneous',
+              text: 'Spontaneous',
+              selected: data.forceType === 'spontaneous'
+            }
+          ]
+        })
+      }}
+    </div>
+  </div>
+  <hr />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h3>Staff involved in use of force</h3>
+      <div class="add-another-staff-member">
+        {% for staffMember in data.involved %} 
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {{
+          govukInput({
+            label: {
+              html: 'Name'
+            },
+            classes: 'govuk-!-width-one-third',
+            id: 'involved[' + loop.index0 + '][name]',
+            name: 'involved[' + loop.index0 + '][name]',
+            value: staffMember.name,
+            attributes: {
+              'data-name': 'involved[%index%][name]',
+              'data-id': 'involved[%index%][name]'
+            }
+          })
+        }}
+        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+          Remove
+        </button>
+        {% endcall %} 
+        {% else %} 
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {{
+          govukInput({
+            label: {
+              html: 'Name'
+            },
+            classes: 'govuk-!-width-one-third',
+            id: 'involved[0][name]',
+            name: 'involved[0][name]',
+            attributes: {
+              'data-name': 'involved[%index%][name]',
+              'data-id': 'involved[%index%][namee]'
+            }
+          })
+        }}
+        {% endcall %} {% endfor %}
+        <div class="button-action">
+          {{
+            govukButton({
+              text: 'Add another member of staff',
+              classes: 'govuk-button--secondary  add-another__add-button  govuk-!-margin-bottom-4'
+            })
+          }}
+        </div>
       </div>
-      <div class="govuk-grid-row">
-        <p class="govuk-!-margin-bottom-5 govuk-label--s" data-offender-name>
-          {{ data.displayName }} ({{ data.offenderNo }})
-        </p>
+    </div>
+  </div>
+  <hr />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h3>Other witnesses to the incident</h3>
+      <div class="add-another-witness">
+        {% for staffMember in data.witnesses %} 
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {{
+          govukInput({
+            label: {
+              html: 'Name'
+            },
+            classes: 'govuk-!-width-one-third',
+            id: 'witnesses[' + loop.index0 + '][name]',
+            name: 'witnesses[' + loop.index0 + '][name]',
+            value: staffMember.name,
+            attributes: {
+              'data-name': 'witnesses[%index%][name]',
+              'data-id': 'witnesses[%index%][name]'
+            }
+          })
+        }}
+        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+          Remove
+        </button>
+        {% endcall %} {% else %} {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {{
+          govukInput({
+            label: {
+              html: 'Name'
+            },
+            classes: 'govuk-!-width-one-third',
+            id: 'witnesses[0][name]',
+            name: 'witnesses[0][name]',
+            attributes: {
+              'data-name': 'witnesses[%index%][name]',
+              'data-id': 'witnesses[%index%][namee]'
+            }
+          })
+        }}
+        {% endcall %} {% endfor %}
+        <div class="button-action">
+          {{
+            govukButton({
+              text: 'Add another witness',
+              classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4'
+            })
+          }}
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"
+></script>
+<script src="/assets/add-another.js"></script>
+<script>
+  new AddAnother($('.add-another-staff-member'))
+  new AddAnother($('.add-another-witness'))
+</script>
 {% endblock %}

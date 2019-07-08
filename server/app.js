@@ -120,6 +120,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
   ;[
     '../assets',
     '../assets/stylesheets',
+    '../assets/js',
     '../node_modules/govuk-frontend/assets',
     '../node_modules/govuk-frontend',
   ].forEach(dir => {

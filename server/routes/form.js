@@ -50,10 +50,33 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { displayName, offenderNo } = offenderDetail
-      const data = { displayName, offenderNo }
+      const { displayName, offenderNo, locations } = offenderDetail
+
+      const section = 'incident'
+      const form = 'newIncident'
+
       const { formObject } = await loadForm(req, res)
-      renderForm({ req, res, formObject, section: 'incident', form: 'newIncident', data })
+      const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject) || {}
+
+      const data = {
+        displayName,
+        offenderNo,
+        locations: [
+          {
+            value: '',
+            text: '-- Select --',
+            selected: pageData.location === '',
+          },
+        ].concat(
+          locations.map(location => ({
+            value: location.locationId,
+            text: location.userDescription,
+            selected: pageData.locationId === location.locationId.toString(),
+          }))
+        ),
+      }
+
+      renderForm({ req, res, formObject, data, section, form })
     })
   )
 
