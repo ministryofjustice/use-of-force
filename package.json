@@ -109,6 +109,7 @@
     "joi": "^14.3.1",
     "joi-date-extensions": "^1.2.0",
     "joi-postcode": "^3.0.0",
+    "jquery": "^3.4.1",
     "jwt-decode": "^2.2.0",
     "knex": "^0.16.5",
     "moment": "^2.24.0",

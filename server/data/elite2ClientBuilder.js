@@ -33,6 +33,10 @@ module.exports = token => {
       const path = `${apiUrl}/api/users/me/caseLoads`
       return userGet({ path })
     },
+    getLocations(agencyId) {
+      const path = `${apiUrl}/api/agencies/${agencyId}/locations`
+      return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
+    },
   }
 }
 function userGetBuilder(token) {

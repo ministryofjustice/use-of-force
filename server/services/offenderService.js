@@ -12,11 +12,18 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
         return []
       }
 
+      const locations = await elite2Client.getLocations(result.agencyId)
+
       const displayName = {
         displayName: `${properCaseName(result.firstName)} ${properCaseName(result.lastName)}`,
       }
 
+      const filteredLocations = locations.filter(
+        agy => agy.userDescription && !['CELL', 'BOX'].includes(agy.locationType)
+      )
+
       return {
+        locations: filteredLocations,
         ...result,
         ...displayName,
       }

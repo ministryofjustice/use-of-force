@@ -1,11 +1,12 @@
 const TasklistPage = require('../../pages/tasklistPage')
 
-context('Logging in', () => {
+context('Submit the incident report', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
+    cy.task('stubLocations', 'MDI')
   })
 
   it('A form cannot be submitted until confirmed', () => {

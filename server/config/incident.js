@@ -1,6 +1,25 @@
 module.exports = {
   newIncident: {
-    fields: [],
+    fields: [
+      {
+        locationId: {
+          responseType: 'requiredNumber',
+          validationMessage: 'Where did the incident occur?',
+        },
+      },
+      {
+        forceType: {
+          responseType: 'requiredString',
+          validationMessage: 'Was the use of force planned?',
+        },
+      },
+      {
+        involved: {},
+      },
+      {
+        witnesses: {},
+      },
+    ],
     validate: false,
     nextPath: {
       path: '/form/incident/details/',

@@ -120,6 +120,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
   ;[
     '../assets',
     '../assets/stylesheets',
+    '../assets/js',
     '../node_modules/govuk-frontend/assets',
     '../node_modules/govuk-frontend',
   ].forEach(dir => {
@@ -127,6 +128,9 @@ module.exports = function createApp({ signInService, formService, offenderServic
   })
   ;['../node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
     app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
+  })
+  ;['../node_modules/jquery/dist/jquery.min.js'].forEach(dir => {
+    app.use('/assets/js/jquery.min.js', express.static(path.join(__dirname, dir), cacheControl))
   })
 
   const healthcheck = healthcheckFactory(config.apis.oauth2.url, config.apis.elite2.url)
