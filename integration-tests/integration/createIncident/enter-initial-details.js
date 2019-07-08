@@ -26,11 +26,13 @@ context('Submitting details page form', () => {
     newIncidentPage.witnesses(0).type('1111')
     newIncidentPage.addAnotherWitness().click()
     newIncidentPage.witnesses(1).type('2222')
+    newIncidentPage.addAnotherWitness().click()
+    newIncidentPage.addAnotherWitness().click()
     newIncidentPage.save()
 
     cy.task('getFormData', { bookingId, formName: 'newIncident' }).then(data =>
       expect(data).to.deep.equal({
-        locationId: '357591',
+        locationId: 357591,
         involved: [{ name: 'AAAA' }, { name: 'BBBB' }],
         forceType: 'spontaneous',
         witnesses: [{ name: '1111' }, { name: '2222' }],

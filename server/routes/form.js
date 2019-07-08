@@ -71,7 +71,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
           locations.map(location => ({
             value: location.locationId,
             text: location.userDescription,
-            selected: pageData.locationId === location.locationId.toString(),
+            selected: pageData.locationId === location.locationId,
           }))
         ),
       }
