@@ -10,7 +10,7 @@ module.exports = {
       {
         forceType: {
           responseType: 'requiredString',
-          validationMessage: 'Where did the incident occur?',
+          validationMessage: 'Was the use of force planned?',
         },
       },
       {
