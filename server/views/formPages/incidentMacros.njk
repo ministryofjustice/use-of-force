@@ -4,9 +4,7 @@
     <fieldset class="govuk-fieldset">
       {# primary #}
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-        <h1 class="govuk-fieldset__heading">
           {{question.primaryQuestion.text}}
-        </h1>
       </legend>
       <div class="govuk-!-margin-bottom-6">
         <div class="{% if question.primaryQuestion.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="radios">
@@ -24,10 +22,8 @@
           {% if question.followUpQuestion %}
             <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{name1}}">
               <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                  <h1 class="govuk-fieldset__heading govuk-!-font-weight-bold">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend govuk-!-font-weight-bold">
                     {{question.followUpQuestion.text}}
-                  </h1>
                 </legend>
                 {% set name2 = question.followUpQuestion.name %}
                 <div class="{% if question.followUpQuestion.options | length < 3 %} govuk-radios--inline {% endif %}">
@@ -57,9 +53,7 @@
     <fieldset class="govuk-fieldset">
       {# primary #}
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-        <h1 class="govuk-fieldset__heading">
           {{question.primaryQuestion.text}}
-        </h1>
       </legend>
       <div class="govuk-!-margin-bottom-6">
         <div class="govuk-radios--inline" data-module="radios">
@@ -76,10 +70,8 @@
           {# followup #}
           <div class="govuk-checkboxes__conditional clear-both" id="conditional-{{name}}">
             <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                <h1 class="govuk-fieldset__heading govuk-!-font-weight-bold">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend govuk-!-font-weight-bold">
                   {{question.followUpQuestion.text}}
-                </h1>
               </legend>
 
               {% set name = question.followUpQuestion.name %}
