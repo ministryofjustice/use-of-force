@@ -16,7 +16,7 @@ block formItems %}
     <div class="govuk-grid-column-full">
       {{
         govukSelect({
-          id: 'locationId',
+          id: 'location',
           name: 'locationId',
           classes: 'govuk-!-width-one-third',
           label: {
@@ -101,7 +101,7 @@ block formItems %}
             name: 'involved[0][name]',
             attributes: {
               'data-name': 'involved[%index%][name]',
-              'data-id': 'involved[%index%][namee]'
+              'data-id': 'involved[%index%][name]'
             }
           })
         }}
@@ -110,7 +110,8 @@ block formItems %}
           {{
             govukButton({
               text: 'Add another member of staff',
-              classes: 'govuk-button--secondary  add-another__add-button  govuk-!-margin-bottom-4'
+              classes: 'govuk-button--secondary  add-another__add-button  govuk-!-margin-bottom-4',
+              attributes: {'data-qa-add-another-staff': true}
             })
           }}
         </div>
@@ -153,7 +154,7 @@ block formItems %}
             name: 'witnesses[0][name]',
             attributes: {
               'data-name': 'witnesses[%index%][name]',
-              'data-id': 'witnesses[%index%][namee]'
+              'data-id': 'witnesses[%index%][name]'
             }
           })
         }}
@@ -162,7 +163,8 @@ block formItems %}
           {{
             govukButton({
               text: 'Add another witness',
-              classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4'
+              classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+              attributes: {'data-qa-add-another-witness': true}
             })
           }}
         </div>

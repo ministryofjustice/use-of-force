@@ -30,8 +30,8 @@ const submit = (userId, bookingId) => {
   })
 }
 
-const getFormDataForUser = (userId, bookingId) => {
-  return db.query({
+const getFormDataForUser = (userId, bookingId, query = db.query) => {
+  return query({
     text: `select id, form_response from form f
           where user_id = $1
           and booking_id = $2

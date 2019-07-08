@@ -6,6 +6,7 @@ context('Logging in', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
+    cy.task('stubLocations', 'MDI')
   })
 
   it('Can login and create a new incident', () => {
@@ -14,7 +15,6 @@ context('Logging in', () => {
     const tasklistPage = TasklistPage.visit(bookingId)
 
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationPage = detailsPage.save()

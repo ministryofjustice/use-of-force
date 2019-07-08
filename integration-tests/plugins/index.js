@@ -1,7 +1,7 @@
 const auth = require('../mockApis/auth')
 const { resetStubs } = require('../mockApis/wiremock')
 const elite2api = require('../mockApis/elite2api')
-const { clearDb } = require('../db/db')
+const { clearDb, getFormData } = require('../db/db')
 
 module.exports = on => {
   on('task', {
@@ -11,6 +11,10 @@ module.exports = on => {
 
     stubLogin: auth.stubLogin,
 
-    stubOffenderDetails: id => elite2api.stubOffenderDetails(id),
+    stubOffenderDetails: elite2api.stubOffenderDetails,
+
+    stubLocations: elite2api.stubLocations,
+
+    getFormData: (userId, bookingId, formName) => getFormData(userId, bookingId, formName),
   })
 }
