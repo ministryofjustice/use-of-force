@@ -1,5 +1,5 @@
 const page = require('./page')
-const relocationAndInjuries = require('./relocationAndInjuriesPage')
+const relocationAndInjuriesPage = require('./relocationAndInjuriesPage')
 
 export default () =>
   page('Use of force details', {
@@ -20,6 +20,6 @@ export default () =>
 
     save: () => {
       cy.get('[data-next]').click()
-      return relocationAndInjuries()
+      return relocationAndInjuriesPage()
     },
   })

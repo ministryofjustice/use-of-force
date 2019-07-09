@@ -17,7 +17,7 @@ context('Submitting details page form', () => {
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     newIncidentPage.location().select('Asso A Wing')
-    newIncidentPage.forceType().select('Spontaneous')
+    newIncidentPage.forceType().check('spontaneous')
 
     newIncidentPage.staffInvolved(0).type('AAAA')
     newIncidentPage.addAnotherStaff().click()
