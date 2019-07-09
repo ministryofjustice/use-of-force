@@ -104,9 +104,7 @@
     <fieldset class="govuk-fieldset">
       {# primary #}
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-        <h1 class="govuk-fieldset__heading">
           {{question.primaryQuestion.text}}
-        </h1>
       </legend>
       <div class="govuk-!-margin-bottom-6">
         <div class="govuk-radios--inline" data-module="radios">
@@ -123,10 +121,10 @@
           {# followup #}
           <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{name}}">
             <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden" {% endif %}>
-                <h2 class="govuk-fieldset__heading govuk-heading-l">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden {% endif %}" >
+                <p class="govuk-fieldset__heading govuk-heading-l">
                   {{question.followUpQuestion.legend}}
-                </h2>
+                </p>
               </legend>
 
               {% set name = question.followUpQuestion.name %}
