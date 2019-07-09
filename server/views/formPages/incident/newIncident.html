@@ -1,6 +1,10 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "select/macro.njk" import
-govukSelect %} {% from "fieldset/macro.njk" import govukFieldset %} {% from "button/macro.njk" import govukButton %} {%
-block formItems %}
+{% extends "../formTemplate.html" %} 
+{% from "input/macro.njk" import govukInput %} 
+{% from "select/macro.njk" import govukSelect %} 
+{% from "fieldset/macro.njk" import govukFieldset %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "button/macro.njk" import govukButton %} 
+{% block formItems %}
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">New use of force incident</h1>
   <div class="govuk-grid-row">
@@ -32,35 +36,30 @@ block formItems %}
   <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{
-        govukSelect({
-          id: 'forceType',
-          name: 'forceType',
-          classes: 'govuk-!-width-one-third',
-          label: {
-            text: 'The use of force was:',
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        idPrefix: "forceType",
+        name: "forceType",
+        fieldset: {
+          legend: {
+            text: "Was the use of force plannned?",
             isPageHeading: false,
-            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+            classes: "govuk-label govuk-label--xs"
+          }
+        },
+        items: [
+          {
+            value: "planned",
+            text: "Yes",
+            checked: data.forceType === 'planned'
           },
-          items: [
-            {
-              value: '',
-              text: '-- Select --',
-              selected: data.forceType === ''
-            },
-            {
-              value: 'planned',
-              text: 'Planned',
-              selected: data.forceType === 'planned'
-            },
-            {
-              value: 'spontaneous',
-              text: 'Spontaneous',
-              selected: data.forceType === 'spontaneous'
-            }
-          ]
-        })
-      }}
+          {
+            value: "spontaneous",
+            text: "No",
+            checked: data.forceType === 'spontaneous'
+          }
+        ]
+      }) }}
     </div>
   </div>
   <hr />

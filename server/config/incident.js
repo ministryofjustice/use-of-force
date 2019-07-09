@@ -16,12 +16,12 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: vals => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
         },
       },
       {
         witnesses: {
-          sanitiser: vals => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
         },
       },
     ],
