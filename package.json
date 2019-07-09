@@ -63,7 +63,7 @@
       "test/*"
     ],
     "delay": "2500",
-    "ext": "js,json,html"
+    "ext": "js,json,html,njk"
   },
   "husky": {
     "hooks": {

@@ -145,7 +145,6 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           }
           )
         }}
-
     <!-- Q6 -->
     {{ incidentMacro.radiosWithNestedCheckboxes({
           "primaryQuestion": {
@@ -163,7 +162,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           "followUpQuestion": {
             "text": "What positions were used?",
             "name": "restraintPositions",
-            "value": data.restraintPositions,
+            "value": data.restraintPositions or [],
             "options": [{
               "value": "standing",
               "label": "standing"
