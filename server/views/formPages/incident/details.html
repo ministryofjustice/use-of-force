@@ -14,6 +14,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "primaryQuestion": {
               "text": "Was Positive Communication used to de-escalate the situation?",
               "name": "positiveCommunication",
+              "value": data.positiveCommunication,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -32,6 +33,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "primaryQuestion": {
               "text": "Were any Personal Protection techniques used?",
               "name": "personalProtectionTechniques",
+              "value": data.personalProtectionTechniques,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -50,6 +52,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "primaryQuestion": {
               "text": "Was a baton drawn?",
               "name": "batonDrawn",
+              "value": data.batonDrawn,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -62,6 +65,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             },
             "followUpQuestion": {
               "text": "Was it used?",
+              "value": data.batonUsed,
               "name": "batonUsed",
               "options": [{
                 "value": "yes",
@@ -83,6 +87,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "primaryQuestion": {
               "text": "Was pava drawn?",
               "name": "pavaDrawn",
+              "value": data.pavaDrawn,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -94,6 +99,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "followUpQuestion": {
               "text": "Was it used?",
               "name": "pavaUsed",
+              "value": data.pavaUsed,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -112,6 +118,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "primaryQuestion": {
               "text": "Was a guiding hold used?",
               "name": "guidingHold",
+              "value": data.guidingHold,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -125,6 +132,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
             "followUpQuestion": {
               "text": "How many officers were involved?",
               "name": "guidingHoldOfficersInvolved",
+              "value": data.guidingHoldOfficersInvolved,
               "options": [{
                 "value": 'one',
                 "label": "One"
@@ -137,12 +145,12 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           }
           )
         }}
-
     <!-- Q6 -->
     {{ incidentMacro.radiosWithNestedCheckboxes({
           "primaryQuestion": {
             "text": "Was control and restraint used?",
             "name": "restraint",
+            "value": data.restraint,
             "options": [{
               "value": "yes",
               "label": "Yes"
@@ -154,6 +162,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           "followUpQuestion": {
             "text": "What positions were used?",
             "name": "restraintPositions",
+            "value": data.restraintPositions or [],
             "options": [{
               "value": "standing",
               "label": "standing"
@@ -177,6 +186,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           "primaryQuestion": {
             "text": "Were handcuffs applied?",
             "name": "handcuffsApplied",
+            "value": data.handcuffsApplied,
             "options": [{
               "value": "yes",
               "label": "Yes"
@@ -188,6 +198,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
           "followUpQuestion": {
             "text": "Select which type of handcuffs were used",
             "name": "handcuffsType",
+            "value": data.handcuffsType,
             "options": [{
               "value": "ratchet",
               "label": "Ratchet"
