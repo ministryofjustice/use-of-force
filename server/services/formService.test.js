@@ -307,4 +307,36 @@ describe('getValidationErrors', () => {
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
     expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
   })
+
+  test('sanitisation', async () => {
+    const config = {
+      fields: [
+        {
+          q1: {
+            responseType: 'requiredString',
+            validationMessage: 'Please give a full name',
+            sanitiser: val => val.toUpperCase(),
+          },
+        },
+      ],
+    }
+    const output = await service.update({
+      bookingId: 1,
+      userId: 'user1',
+      formId: 'form1',
+      formObject: {},
+      config,
+      userInput: { q1: 'aaaAAAaa' },
+      formSection: 'section4',
+      formName: 'form1',
+    })
+
+    expect(output).toEqual({
+      section4: {
+        form1: {
+          q1: 'AAAAAAAA',
+        },
+      },
+    })
+  })
 })

@@ -48,13 +48,13 @@ module.exports = function createSomeService(formClient) {
 
   function answersFromMapReducer(userInput) {
     return (answersAccumulator, field) => {
-      const { fieldName, answerIsRequired } = getFieldInfo(field, userInput)
+      const { fieldName, answerIsRequired, sanitiser } = getFieldInfo(field, userInput)
 
       if (!answerIsRequired) {
         return answersAccumulator
       }
 
-      return { ...answersAccumulator, [fieldName]: userInput[fieldName] }
+      return { ...answersAccumulator, [fieldName]: sanitiser(userInput[fieldName]) }
     }
   }
 
@@ -63,11 +63,12 @@ module.exports = function createSomeService(formClient) {
     const fieldConfig = field[fieldName]
 
     const fieldDependentOn = userInput[fieldConfig.dependentOn]
-    const predicateResponse = fieldConfig.predicate
+    const { sanitiser = value => value, predicate: predicateResponse } = fieldConfig
     const dependentMatchesPredicate = fieldConfig.dependentOn && fieldDependentOn === predicateResponse
 
     return {
       fieldName,
+      sanitiser,
       answerIsRequired: !fieldDependentOn || dependentMatchesPredicate,
     }
   }

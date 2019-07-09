@@ -5,6 +5,7 @@ module.exports = {
         locationId: {
           responseType: 'requiredNumber',
           validationMessage: 'Where did the incident occur?',
+          sanitiser: val => parseInt(val, 10),
         },
       },
       {
@@ -14,10 +15,14 @@ module.exports = {
         },
       },
       {
-        involved: {},
+        involved: {
+          sanitiser: vals => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+        },
       },
       {
-        witnesses: {},
+        witnesses: {
+          sanitiser: vals => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+        },
       },
     ],
     validate: false,
