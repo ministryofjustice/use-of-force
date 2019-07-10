@@ -165,13 +165,13 @@ module.exports = {
       {
         staffMedicalAttentionName: {
           responseType: 'requiredString',
-          validationMessage: 'Did a member of staff need medical attention at the time?',
+          validationMessage: 'What is the name of the staff who needed medical attention?',
         },
       },
       {
         staffMedicalAttentionHospital: {
           responseType: 'requiredString',
-          validationMessage: 'Did a member of staff need to go to hospital',
+          validationMessage: 'Did a member of staff need to go to hospital?',
         },
       },
     ],

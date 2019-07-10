@@ -180,8 +180,9 @@
         }) 
         }}
       </div>
-
-      {{data | dump}}
+{% for x in data.staffMedicalAttentionName %}
+   {{x | dump}}
+{% endfor %}}
 
 <!-- Q6 -->
 
@@ -220,6 +221,7 @@
           
             <div class="add-another-witness">
               {% for staffMember in data.staffMedicalAttentionName %} 
+
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                    {{
                     govukInput({
@@ -227,18 +229,43 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'witnesses[' + loop.index0 + '][name]',
-                      name: 'witnesses[' + loop.index0 + '][name]',
+                      id: 'staffMedicalAttentionName[' + loop.index0 + '][name]',
+                      name: 'staffMedicalAttentionName[' + loop.index0 + '][name]',
                       value: staffMember.name,
                       attributes: {
-                        'data-name': 'witnesses[%index%][name]',
-                        'data-id': 'witnesses[%index%][name]'
+                        'data-name': 'staffMedicalAttentionName[%index%][name]',
+                        'data-id': 'staffMedicalAttentionName[%index%][name]'
                       }
                     })
                   }} 
+
+                  {{ govukRadios({
+                    classes: "govuk-radios--inline",
+                    idPrefix: 'staff-medical-attention-hospital[' + loop.index0 + '][name]',
+                    name: 'staffMedicalAttentionHospital[' + loop.index0 + '][name]',
+                    fieldset: {
+                      legend: {
+                        text: "Did they go to hospital?"
+                      }
+                    },
+    
+                    items: [
+                      {
+                        value: "yes",
+                        text: "Yes"
+                      },
+                      {
+                        value: "no",
+                        text: "No"
+                      }
+                    ]
+                  }) }}
+
+
                 <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
                   Remove
                 </button>
+                
                 {% endcall %} 
                 {% else %} 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
@@ -249,19 +276,19 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'witnesses[0][name]',
-                      name: 'witnesses[0][name]',
+                      id: 'staffMedicalAttentionName[0][name]',
+                      name: 'staffMedicalAttentionName[0][name]',
                       attributes: {
-                        'data-name': 'witnesses[%index%][name]',
-                        'data-id': 'witnesses[%index%][name]'
+                        'data-name': 'staffMedicalAttentionName[%index%][name]',
+                        'data-id': 'staffMedicalAttentionName[%index%][name]'
                       }
                     })
                   }}
 
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: "staff-medical-attention-hospital",
-                    name: "staffMedicalAttentionHospital",
+                    idPrefix: 'staff-medical-attention-hospital[0][name]',
+                    name: 'staffMedicalAttentionHospital[0][name]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
