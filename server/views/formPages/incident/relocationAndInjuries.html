@@ -4,6 +4,8 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
+{% from "fieldset/macro.njk" import govukFieldset %} 
+{% from "button/macro.njk" import govukButton %} 
 
 {% block formItems %}
 
@@ -75,6 +77,7 @@
 
     <hr />
   </div>
+
   <div class="govuk-grid-column-two-thirds">
 
     <!-- Q3 -->
@@ -135,33 +138,152 @@
 
 
     <!-- Q5 -->
-
-    {{ govukRadios({
-        classes: "govuk-radios--inline",
-        idPrefix: "prisoner-hospitalisation",
-        name: "prisonerHospitalisation",
-        fieldset: {
-          legend: {
-            text: "Did the prisoner require outside hospitalisation at the time?",
-            isPageHeading: false,
-            classes: "govuk-fieldset"
-          }
-        },
-        items: [
-          {
-            value: "yes",
-            text: "Yes"
+    <div class="govuk-!-margin-bottom-9">
+      {{ govukRadios({
+          classes: "govuk-radios--inline",
+          idPrefix: "prisoner-hospitalisation",
+          name: "prisonerHospitalisation",
+          fieldset: {
+            legend: {
+              text: "Did the prisoner require outside hospitalisation at the time?",
+              isPageHeading: false,
+              classes: "govuk-fieldset"
+            }
           },
-          {
-            value: "no",
-            text: "No"
-          }
-        ]
-      }) 
-      }}
+          items: [
+            {
+              value: "yes",
+              text: "Yes"
+            },
+            {
+              value: "no",
+              text: "No"
+            }
+          ]
+        }) 
+        }}
+      </div>
 
 <!-- Q6 -->
 
-</div>
-</div>
+<div class="govuk-!-margin-bottom-6">
+      <div class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend ">
+          Did a member of staff need medical attention at the time?
+        </legend>
+
+        <div class="govuk-radios" data-module="radios">
+          <div class=" govuk-radios--inline">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="how-contacted-conditional-1" name="how-contacted" type="radio"
+                value="yes" data-aria-controls="conditional-how-contacted-conditional-1">
+              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-1">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="how-contacted-conditional-1" name="how-contacted" type="radio"
+                value="no">
+              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-1">
+                No
+              </label>
+            </div>
+          </div>
+
+          <!-- hidden panel start -->
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-how-contacted-conditional-1">
+
+            <!-- add another starts here   -->
+          
+            <div class="add-another-witness">
+              {% for staffMember in data.witnesses %} 
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  {{
+                    govukInput({
+                      label: {
+                        html: 'Name'
+                      },
+                      classes: 'govuk-!-width-one-third',
+                      id: 'witnesses[' + loop.index0 + '][name]',
+                      name: 'witnesses[' + loop.index0 + '][name]',
+                      value: staffMember.name,
+                      attributes: {
+                        'data-name': 'witnesses[%index%][name]',
+                        'data-id': 'witnesses[%index%][name]'
+                      }
+                    })
+                  }}
+                <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                  Remove
+                </button>
+                {% endcall %} 
+                {% else %} 
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  
+                  {{
+                    govukInput({
+                      label: {
+                        html: 'Name of who needed medical attention'
+                      },
+                      classes: 'govuk-!-width-one-third',
+                      id: 'witnesses[0][name]',
+                      name: 'witnesses[0][name]',
+                      attributes: {
+                        'data-name': 'witnesses[%index%][name]',
+                        'data-id': 'witnesses[%index%][name]'
+                      }
+                    })
+                  }}
+
+                  {{ govukRadios({
+                    classes: "govuk-radios--inline",
+                    idPrefix: "changed-name",
+                    name: "changed-name",
+                    fieldset: {
+                      legend: {
+                        text: "Did they go to hospital?"
+                      }
+                    },
+    
+                    items: [
+                      {
+                        value: "yes",
+                        text: "Yes"
+                      },
+                      {
+                        value: "no",
+                        text: "No"
+                      }
+                    ]
+                  }) }}
+
+                {% endcall %} 
+              {% endfor %}
+              <div class="button-action">
+                {{
+                  govukButton({
+                    text: 'Add another witness',
+                    classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                    attributes: { 'data-qa-add-another-witness': true }
+                  })
+                }}
+              </div> 
+            </div>  <!-- add another ends here -->
+          </div>  <!-- hidden panel end -->
+        </fieldset>     
+      </div> <!-- end of this component  -->
+
+
+  </div> <!-- end of column two thirds -->
+</div>   <!-- end of grid row-->
+
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/add-another.js"></script>
+<script>
+new AddAnother($('.add-another-staff-member'))
+new AddAnother($('.add-another-witness'))
+</script>
+
+
 {% endblock %}
