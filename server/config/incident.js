@@ -171,7 +171,7 @@ module.exports = {
       {
         staffMedicalAttentionHospital: {
           responseType: 'requiredString',
-          validationMessage: 'Did a member of staff need medical attention at the time?',
+          validationMessage: 'Did a member of staff need to go to hospital',
         },
       },
     ],

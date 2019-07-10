@@ -83,13 +83,16 @@
     }) }}
 
     <hr />
+
+  <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
+
   </div>
 
+
   <div class="govuk-grid-column-two-thirds">
+   
 
     <!-- Q3 -->
-
-    <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
 
     {{ incidentMacro.radiosWithNestedTextboxes({
         "primaryQuestion": {
@@ -192,7 +195,7 @@
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="staff-medical-attention" name="staffMedicalAttention" type="radio"
-                value="yes" data-aria-controls="conditional-how-contacted-conditional-1"
+                value="yes" data-aria-controls="staff-medical-attention--conditional"
                 {% if data.staffMedicalAttention === 'yes' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="staff-medical-attention-1">
@@ -211,19 +214,19 @@
           </div>
 
           <!-- hidden panel start -->
-          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-how-contacted-conditional-1">
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="staff-medical-attention--conditional">
 
             <!-- add another starts here   -->
           
             <div class="add-another-witness">
-              {% for staffMember in data.witnesses %} 
+              {% for staffMember in data.staffMedicalAttentionName %} 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
-                  {{
+                   {{
                     govukInput({
                       label: {
-                        html: 'Name'
+                        html: 'Name of who needed medical attention'
                       },
-                      classes: 'govuk-!-width-one-third',
+                      classes: 'govuk-!-width-two-thirds',
                       id: 'witnesses[' + loop.index0 + '][name]',
                       name: 'witnesses[' + loop.index0 + '][name]',
                       value: staffMember.name,
@@ -232,7 +235,7 @@
                         'data-id': 'witnesses[%index%][name]'
                       }
                     })
-                  }}
+                  }} 
                 <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
                   Remove
                 </button>
@@ -245,7 +248,7 @@
                       label: {
                         html: 'Name of who needed medical attention'
                       },
-                      classes: 'govuk-!-width-one-third',
+                      classes: 'govuk-!-width-two-thirds',
                       id: 'witnesses[0][name]',
                       name: 'witnesses[0][name]',
                       attributes: {
@@ -257,8 +260,8 @@
 
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: "changed-name",
-                    name: "changed-name",
+                    idPrefix: "staff-medical-attention-hospital",
+                    name: "staffMedicalAttentionHospital",
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -301,7 +304,6 @@
 <script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
-new AddAnother($('.add-another-staff-member'))
 new AddAnother($('.add-another-witness'))
 </script>
 
