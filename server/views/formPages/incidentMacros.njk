@@ -111,7 +111,10 @@
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}>
+              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio"  value="{{option.value}}" 
+                {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
+                {% if option.value === question.primaryQuestion.value %} checked="checked"  {% endif %}
+              >
               <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
                 {{option.label}}
               </label>
@@ -134,7 +137,7 @@
                   <label class="govuk-label" for="id-{{name}}-{{loop.index}}">
                     {{option.label}}
                   </label>
-                  <input class="govuk-input govuk-!-width-one-third" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="text" value="">
+                  <input class="govuk-input govuk-!-width-one-third" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="text" value={{question.followUpQuestion.value}} >
                 </div>
                 {% if  question.followUpQuestion.alertMsg %}
                 <div class="govuk-warning-text">
@@ -154,3 +157,5 @@
   </div>
 
 {% endmacro %}
+
+

@@ -121,7 +121,7 @@ module.exports = {
         },
       },
       {
-        relocationType: {
+        relocationCompliancy: {
           responseType: 'requiredString',
           validationMessage: 'What type of relocation was it?',
         },
@@ -153,7 +153,25 @@ module.exports = {
       {
         prisonerHospitalisation: {
           responseType: 'requiredString',
-          validationMessage: 'Did the prsoner require outside hospitalisation?',
+          validationMessage: 'Did the prisoner require outside hospitalisation?',
+        },
+      },
+      {
+        staffMedicalAttention: {
+          responseType: 'requiredString',
+          validationMessage: 'Did a member of staff need medical attention at the time?',
+        },
+      },
+      {
+        staffMedicalAttentionName: {
+          responseType: 'requiredString',
+          validationMessage: 'Did a member of staff need medical attention at the time?',
+        },
+      },
+      {
+        staffMedicalAttentionHospital: {
+          responseType: 'requiredString',
+          validationMessage: 'Did a member of staff need medical attention at the time?',
         },
       },
     ],

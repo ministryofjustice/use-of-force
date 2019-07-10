@@ -7,6 +7,7 @@
 {% from "fieldset/macro.njk" import govukFieldset %} 
 {% from "button/macro.njk" import govukButton %} 
 
+
 {% block formItems %}
 
 <div class="govuk-grid-row">
@@ -27,23 +28,27 @@
           {
             value: "select",
             text: "Select",
-            selected: true
+            selected: data.prisonerRelocation === 'select'
           },
           {
             value: "ownCell",
-            text: "Own cell"   
+            text: "Own cell",
+            selected: data.prisonerRelocation === 'ownCell'
           },
           {
             value: "segregationUnit",
-            text: "Segregation unit"
+            text: "Segregation unit",
+            selected: data.prisonerRelocation === 'segregationUnit'
           },
           {
             value: "specialAccommodation",
-            text: "Special accommodation"
+            text: "Special accommodation",
+            selected: data.prisonerRelocation === 'specialAccommodation'
           },
           {
             value: "cellularVehicle",
-            text: "Cellular vehicle"
+            text: "Cellular vehicle",
+            selected: data.prisonerRelocation === 'cellularVehicle'
           }
         ]
       }) }}
@@ -52,7 +57,7 @@
 
     {{ govukSelect({
       id: "relocation-compliancy",
-      name: "prisonerCompliancy",
+      name: "relocationCompliancy",
       classes:" govuk-!-margin-bottom-6",
       label: {
         text: "What type of relocation was it?"
@@ -62,15 +67,17 @@
         {
           value: "select",
           text: "Select",
-          selected: true
+          selected: data.relocationCompliancy === 'select'
         },
         {
           value: "compliant",
-          text: "compliant"
+          text: "compliant",
+          selected: data.relocationCompliancy === 'compliant'
         },
         {
           value: "nonCompliant",
-          text: "Non-compliant"
+          text: "Non-compliant",
+          selected: data.relocationCompliancy === 'nonCompliant'
         }
       ]
     }) }}
@@ -88,6 +95,7 @@
         "primaryQuestion": {
           "text": "Was a member of Healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
           "name": "healthcareInvolved",
+          "value":data.healthcareInvolved,
           "options": [{
             "value": "yes",
             "label": "Yes"
@@ -100,6 +108,7 @@
         "followUpQuestion": {
           "legend": "blank",
           "name": "healthcarePractionerName",
+          "value":data.healthcarePractionerName,
           "alertMsg":"",
           "options": [{
             "label": "Name"
@@ -107,14 +116,15 @@
         }
       }) 
     }}
-
-        <!-- Q4 -->
+    
+    <!-- Q4 -->
 
 
         {{ incidentMacro.radiosWithNestedTextboxes({
             "primaryQuestion": {
               "text": "Did the prisoner sustain any injuries at the time?",
               "name": "prisonerInjuries",
+              "value":data.prisonerInjuries,
               "options": [{
                 "value": "yes",
                 "label": "Yes"
@@ -127,6 +137,7 @@
             "followUpQuestion": {
               "legend": "Who completed the F213 form?",
               "name": "f213CompletedBy",
+              "value":data.f213CompletedBy,
               "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
               "options": [{
                 "label": "Name"
@@ -143,6 +154,7 @@
           classes: "govuk-radios--inline",
           idPrefix: "prisoner-hospitalisation",
           name: "prisonerHospitalisation",
+          "value":data.prisonerHospitalisation,
           fieldset: {
             legend: {
               text: "Did the prisoner require outside hospitalisation at the time?",
@@ -153,16 +165,20 @@
           items: [
             {
               value: "yes",
-              text: "Yes"
+              text: "Yes",
+              checked: data.prisonerHospitalisation === 'yes'
             },
             {
               value: "no",
-              text: "No"
+              text: "No",
+              checked: data.prisonerHospitalisation === 'no'
             }
           ]
         }) 
         }}
       </div>
+
+      {{data | dump}}
 
 <!-- Q6 -->
 
@@ -175,16 +191,20 @@
         <div class="govuk-radios" data-module="radios">
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="how-contacted-conditional-1" name="how-contacted" type="radio"
-                value="yes" data-aria-controls="conditional-how-contacted-conditional-1">
-              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-1">
+              <input class="govuk-radios__input" id="staff-medical-attention" name="staffMedicalAttention" type="radio"
+                value="yes" data-aria-controls="conditional-how-contacted-conditional-1"
+                {% if data.staffMedicalAttention === 'yes' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="staff-medical-attention-1">
                 Yes
               </label>
             </div>
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="how-contacted-conditional-1" name="how-contacted" type="radio"
-                value="no">
-              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-1">
+              <input class="govuk-radios__input" id="how-contacted-conditional-2" name="staffMedicalAttention" type="radio"
+                value="no" 
+                 {% if data.staffMedicalAttention === 'no' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-2">
                 No
               </label>
             </div>
@@ -262,7 +282,7 @@
               <div class="button-action">
                 {{
                   govukButton({
-                    text: 'Add another witness',
+                    text: 'Add another',
                     classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
                     attributes: { 'data-qa-add-another-witness': true }
                   })
