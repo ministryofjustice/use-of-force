@@ -7,13 +7,18 @@ const formService = {
   getFormResponse: jest.fn(),
 }
 
-const tasklistRoute = createRouter({ formService, authenticationMiddleware })
+const offenderService = {
+  getOffenderDetails: jest.fn(),
+}
+
+const tasklistRoute = createRouter({ authenticationMiddleware, formService, offenderService })
 
 let app
 
 beforeEach(() => {
   app = appSetup(tasklistRoute)
   formService.getFormResponse.mockResolvedValue({})
+  offenderService.getOffenderDetails.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -26,6 +31,6 @@ describe('GET /task-list', () => {
       .get('/-35')
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Report use of force')
+        expect(res.text).toContain('Use of force task list')
       }))
 })

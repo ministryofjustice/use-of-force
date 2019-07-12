@@ -1,54 +1,71 @@
-{% extends "../partials/layout.html" %}
+{% extends "../partials/layout.html" %} 
 
 {% macro section(name, label, url, value) %}
 <li class="app-task-list__item">
-  <a href="{{url}}" data-qa-{{name}}-link>{{label}}</a>
+  <a href="{{ url }}" data-qa-{{name}}-link>{{ label }}</a>
   {% if value %}
   <strong class="govuk-tag app-task-list__task-completed" data-qa-{{name}}-completed>Completed</strong>
   {% endif %}
 </li>
-{% endmacro %}
+{% endmacro %} 
+
+{% macro field(name, label, value) %}
+<div class="govuk-grid-column-one-quarter">
+  <p class="govuk-!-margin-bottom-1 govuk-label--xs">{{ label }}</p>
+  <p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="{{ name }}">
+    {{ value }}
+  </p>
+</div>
+{% endmacro %} 
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">Report use of force</h1>
-      <ol class="app-task-list">
-        <li>
-          <ul class="app-task-list__items">
-              {{  section(name = "new-incident", 
+<h1 class="govuk-heading-xl mainHeading">Use of force task list</h1>
+<div class="govuk-grid-row govuk-body">
+  <hr />
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-one-quarter">
+      <img
+        src="api/offender/{{ bookingId }}/image"
+        height="150"
+        width="120"
+        alt="Headshot of {{ displayName }}"
+        data-qa="offender-image"
+      />
+    </div>
+    {{ field(name='offender-name', label='Name', value=data.displayName) }}
+    {{ field(name='nomis-id', label='NOMIS ID', value=data.offenderNo) }}
+    {{ field(name='dob', label='Date of Birth', value=data.dateOfBirth) }}
+  </div>
+</div>
+<div class="govuk-grid-row govuk-body">
+  <ol class="app-task-list">
+    <li>
+      <ul class="app-task-list__items">
+        {{  section(name = "new-incident", 
                   label = "New Incident",  
                   url = "/form/incident/newIncident/" + bookingId, 
                   value = form.incident.newIncident) }}
-              
-              {{  section(name = "details", 
+
+        {{  section(name = "details", 
                   label = "Details",  
                   url = "/form/incident/details/" + bookingId, 
                   value = form.incident.details) }}
-              
-              {{  section(name = "relocation-and-injuries", 
+
+        {{  section(name = "relocation-and-injuries", 
                   label = "Relocation and Injuries",  
                   url = "/form/incident/relocationAndInjuries/" + bookingId, 
                   value = form.incident.relocationAndInjuries) }}
-              
-              {{  section(name = "evidence", 
+
+        {{  section(name = "evidence", 
                   label = "Evidence",  
                   url = "/form/incident/evidence/" + bookingId, 
                   value = form.incident.evidence) }}
-                  
-              {{  section(name = "check-answers", 
+
+        {{  section(name = "check-answers", 
                   label = "Check your answers",  
                   url = "/check-answers/" + bookingId) }}
-          </ul>
-        </li>
-        </li>
-      </ol>
-    </div>
-
-  </div>
-
+      </ul>
+    </li>
   </ol>
-
-
-
+</div>
 {% endblock %}

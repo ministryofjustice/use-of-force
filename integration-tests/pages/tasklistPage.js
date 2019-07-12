@@ -5,7 +5,7 @@ const page = require('./page')
 export default {
   visit: bookingId => {
     cy.visit(`/${bookingId}`)
-    return page('Report use of force', {
+    return page('Use of force task list', {
       startNewForm: () => {
         cy.get('[data-qa-new-incident-link]').click()
         return newIncidentPage()
@@ -14,6 +14,10 @@ export default {
         cy.get('[data-qa-check-answers-link]').click()
         return checkAnswersPage()
       },
+      offenderName: () => cy.get('[data-qa="offender-name"]'),
+      nomisId: () => cy.get('[data-qa="nomis-id"]'),
+      dob: () => cy.get('[data-qa="dob"]'),
+      offenderImage: () => cy.get('[data-qa="offender-image"]'),
       checkNoPartsComplete: () => {
         cy.get('[data-qa-new-incident-completed]').should('not.exist')
         cy.get('[data-qa-details-completed]').should('not.exist')

@@ -5,6 +5,7 @@ const token = 'token-1'
 const elite2Client = {
   getOffenderDetails: jest.fn(),
   getLocations: jest.fn(),
+  getOffenderImage: jest.fn(),
 }
 
 const elite2ClientBuilder = jest.fn()
@@ -18,11 +19,12 @@ beforeEach(() => {
 
 afterEach(() => {
   elite2Client.getOffenderDetails.mockReset()
+  elite2Client.getOffenderImage.mockReset()
 })
 
 describe('getOffenderDetails', () => {
   it('should format display name', async () => {
-    const details = { firstName: 'SAM', lastName: 'SMITH' }
+    const details = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: '1980-12-31' }
     elite2Client.getOffenderDetails.mockReturnValue(details)
     elite2Client.getLocations.mockReturnValue([
       { locationType: 'BOX', userDescription: 'Box 1' },
@@ -35,6 +37,7 @@ describe('getOffenderDetails', () => {
 
     expect(result).toEqual({
       ...details,
+      dateOfBirth: '31/12/1980',
       displayName: 'Sam Smith',
       locations: [{ locationType: 'WING', userDescription: 'Wing A' }],
     })
@@ -47,5 +50,16 @@ describe('getOffenderDetails', () => {
     await service.getOffenderDetails(token, -5)
 
     expect(elite2ClientBuilder).toBeCalledWith(token)
+  })
+})
+
+describe('getOffenderImage', () => {
+  it('Can retrieve image', () => {
+    const image = 'a stream'
+    elite2Client.getOffenderImage.mockReturnValue(image)
+    service.getOffenderImage(token, -5)
+
+    expect(elite2ClientBuilder).toBeCalledWith(token)
+    expect(elite2Client.getOffenderImage).toBeCalledWith(-5)
   })
 })

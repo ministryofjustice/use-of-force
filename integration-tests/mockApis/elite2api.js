@@ -17,6 +17,7 @@ module.exports = {
           firstName: 'NORMAN',
           lastName: 'SMITH',
           agencyId: 'MDI',
+          dateOfBirth: '2000-12-26',
         },
       },
     })

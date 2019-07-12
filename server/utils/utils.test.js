@@ -1,4 +1,4 @@
-const { properCaseName } = require('./utils')
+const { properCaseName, formatDate } = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -18,5 +18,14 @@ describe('properCaseName', () => {
   })
   it('Hyphenated', () => {
     expect(properCaseName('MONTGOMERY-FOSTER-SMYTH-WALLACE-BOB')).toEqual('Montgomery-Foster-Smyth-Wallace-Bob')
+  })
+})
+
+describe('formatDate', () => {
+  it('null string', () => {
+    expect(formatDate(null)).toEqual('')
+  })
+  it('correct date', () => {
+    expect(formatDate('2010-12-30')).toEqual('30/12/2010')
   })
 })

@@ -1,4 +1,5 @@
 const R = require('ramda')
+const moment = require('moment')
 
 const isNilOrEmpty = item => {
   return R.isEmpty(item) || R.isNil(item)
@@ -38,7 +39,10 @@ const properCaseName = name =>
         .map(properCase)
         .join('-')
 
+const formatDate = val => (isBlank(val) ? '' : moment(val, 'DDYYYY-MM-DDMMMYY').format('DD/MM/YYYY'))
+
 module.exports = {
+  formatDate,
   isNilOrEmpty,
   getFieldDetail,
   getFieldName,

@@ -18,6 +18,7 @@ const createFormRouter = require('./routes/form')
 const createCheckAnswersRouter = require('./routes/checkAnswers')
 const createSubmittedRouter = require('./routes/submitted')
 const createTasklistRouter = require('./routes/tasklist')
+const createApiRouter = require('./routes/api')
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
@@ -221,10 +222,11 @@ module.exports = function createApp({ signInService, formService, offenderServic
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/check-answers/', createCheckAnswersRouter({ formService, authenticationMiddleware }))
+  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, formService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
-  app.use('/form/', createFormRouter({ formService, authenticationMiddleware, offenderService }))
-  app.use('/', createTasklistRouter({ formService, authenticationMiddleware }))
+  app.use('/form/', createFormRouter({ authenticationMiddleware, formService, offenderService }))
+  app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
+  app.use('/', createTasklistRouter({ authenticationMiddleware, formService, offenderService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))
