@@ -53,7 +53,7 @@ AddAnother.prototype.updateAttributes = function(index, item) {
     el.id = $(el)
       .attr('data-id')
       .replace(/%index%/, index)
-    ;($(el).prev('label')[0] || $(el).parents('label')[0]).htmlFor = el.id
+    ;($(el).prev('label')[0] || $(el).parents('label')[0] || $(el).next('label')[0]).htmlFor = el.id
   })
 }
 
