@@ -288,24 +288,32 @@
                   }}
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: 'staff-member-went-to-hospital[0][name]',
                     name: 'staffMemberWentToHospital[0][name]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
                       }
                     },
-    
                     items: [
                       {
                         value: "yes",
                         text: "Yes",
-                        checked: data.staffMemberWentToHospital[0].name === 'yes'
+                        id: 'staff-member-went-to-hospital[0]-yes',
+                        checked: data.staffMemberWentToHospital[0].name === 'yes',
+                        attributes: {
+                          'data-name': 'staffMemberWentToHospital[%index%][name]',
+                          'data-id': 'staff-member-went-to-hospital[%index%]-yes'
+                        }
                       },
                       {
                         value: "no",
                         text: "No",
-                        checked: data.staffMemberWentToHospital[0].name === 'no'
+                        id: 'staff-member-went-to-hospital[0]-no',
+                        checked: data.staffMemberWentToHospital[0].name === 'no',
+                        attributes: {
+                          'data-name': 'staffMemberWentToHospital[%index%][name]',
+                          'data-id': 'staff-member-went-to-hospital[%index%]-no'
+                        }
                       }
                     ]
                   }) }}
