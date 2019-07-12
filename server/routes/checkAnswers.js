@@ -34,7 +34,7 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
         req.flash('errors', [
           {
             text: 'Check that you agree before submitting',
-            href: `#confirmed`,
+            href: '#confirm',
           },
         ])
         return res.redirect(`/check-answers/${bookingId}`)

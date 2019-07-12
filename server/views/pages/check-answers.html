@@ -14,7 +14,8 @@ href: backLink or "/"
       {{
         govukErrorSummary({
           titleText: 'There is a problem',
-          errorList: errors
+          errorList: errors,
+          attributes: { 'data-qa-errors': true }
         })
       }}
       {% endif %}

@@ -25,7 +25,8 @@ context('Submit the incident report', () => {
 
     checkAnswersPage.checkStillOnPage()
     checkAnswersPage.errorSummary().contains('There is a problem')
-    checkAnswersPage.confirm()
+    checkAnswersPage.errorLink('Check that you agree before submitting').click()
+    cy.focused().check()
     checkAnswersPage.submit()
   })
 })
