@@ -1,6 +1,7 @@
 const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
+const { Readable } = require('stream')
 const logger = require('../../log')
 const config = require('../config')
 
@@ -18,8 +19,11 @@ const agentOptions = {
 
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
+const defaultErrorLogger = error => logger.warn(error, 'Error calling elite2api')
+
 module.exports = token => {
   const userGet = userGetBuilder(token)
+  const userStream = userStreamBuilder(token)
   return {
     async getOffenderDetails(bookingId) {
       const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
@@ -36,6 +40,16 @@ module.exports = token => {
     getLocations(agencyId) {
       const path = `${apiUrl}/api/agencies/${agencyId}/locations`
       return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
+    },
+    getOffenderImage(bookingId) {
+      const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
+      return userStream({
+        path,
+        logger: error =>
+          error.status === 404
+            ? logger.info(`No offender image available for: ${bookingId}`)
+            : defaultErrorLogger(error),
+      })
     },
   }
 }
@@ -61,5 +75,36 @@ function userGetBuilder(token) {
       logger.warn(error, 'Error calling elite2api')
       throw error
     }
+  }
+}
+
+function userStreamBuilder(token) {
+  return ({ path, headers = {}, errorLogger = defaultErrorLogger }) => {
+    logger.info(`Get using user credentials: calling elite2api: ${path}`)
+    return new Promise((resolve, reject) => {
+      superagent
+        .get(path)
+        .agent(keepaliveAgent)
+        .auth(token, { type: 'bearer' })
+        .retry(2, (err, res) => {
+          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
+          return undefined // retry handler only for logging retries, not to influence retry logic
+        })
+        .timeout(timeoutSpec)
+        .set(headers)
+        .end((error, response) => {
+          if (error) {
+            errorLogger(error, response)
+            reject(error)
+          } else if (response) {
+            const s = new Readable()
+            // eslint-disable-next-line no-underscore-dangle
+            s._read = () => {}
+            s.push(response.body)
+            s.push(null)
+            resolve(s)
+          }
+        })
+    })
   }
 }

@@ -1,7 +1,7 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ formService, authenticationMiddleware }) {
+module.exports = function Index({ formService, offenderService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -10,8 +10,16 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
+      const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
+        res.locals.user.token,
+        bookingId
+      )
       const { form_response: form = {} } = await formService.getFormResponse(req.user.username, bookingId)
-      res.render('pages/tasklist', { data: res.locals.formObject, bookingId: req.params.bookingId, form })
+      res.render('pages/tasklist', {
+        data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },
+        bookingId: req.params.bookingId,
+        form,
+      })
     })
   )
 

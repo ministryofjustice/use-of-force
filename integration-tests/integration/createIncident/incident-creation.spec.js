@@ -9,22 +9,7 @@ context('Logging in', () => {
     cy.task('stubLocations', 'MDI')
   })
 
-  it('Can login and create a new incident', () => {
-    cy.login(bookingId)
-
-    const tasklistPage = TasklistPage.visit(bookingId)
-
-    const newIncidentPage = tasklistPage.startNewForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationPage = detailsPage.save()
-    const evidencePage = relocationPage.save()
-    const checkAnswersPage = evidencePage.save()
-    checkAnswersPage.confirm()
-    checkAnswersPage.submit()
-  })
-
-  it('Form parts are saved as the user goes through the form and a new form is presented after submission', () => {
+  it('After submitting a report, A user has the ability to start a new report', () => {
     cy.login(bookingId)
 
     const tasklistPage = TasklistPage.visit(bookingId)
@@ -34,12 +19,7 @@ context('Logging in', () => {
     detailsPage.fillForm()
     const relocationPage = detailsPage.save()
     const evidencePage = relocationPage.save()
-    evidencePage.save()
-
-    const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
-    tasklistPageAfterAllPartsComplete.checkAllPartsComplete()
-
-    const checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
+    const checkAnswersPage = evidencePage.save()
     checkAnswersPage.confirm()
     checkAnswersPage.submit()
 
