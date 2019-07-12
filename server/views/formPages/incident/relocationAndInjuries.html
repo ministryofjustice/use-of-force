@@ -180,11 +180,8 @@
         }) 
         }}
       </div>
-{% for x in data.staffMedicalAttentionName %}
-   {{x | dump}}
-{% endfor %}}
 
-<!-- Q6 -->
+      <!-- Q6 -->          
 
 <div class="govuk-!-margin-bottom-6">
       <div class="govuk-fieldset">
@@ -214,13 +211,13 @@
             </div>
           </div>
 
-          <!-- hidden panel start -->
+          <!-- hidden panel starts here -->
           <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="staff-medical-attention--conditional">
 
             <!-- add another starts here   -->
-          
+
             <div class="add-another-witness">
-              {% for staffMember in data.staffMedicalAttentionName %} 
+              {%  for staffMember in  data.staffMemberNeedingMedicalAttention %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                    {{
@@ -229,20 +226,24 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staffMedicalAttentionName[' + loop.index0 + '][name]',
-                      name: 'staffMedicalAttentionName[' + loop.index0 + '][name]',
+                      id: 'staff-member-needing-medical-attention[' + loop.index0 + '][name]',
+                      name: 'staffMemberNeedingMedicalAttention[' + loop.index0 + '][name]',
                       value: staffMember.name,
                       attributes: {
-                        'data-name': 'staffMedicalAttentionName[%index%][name]',
-                        'data-id': 'staffMedicalAttentionName[%index%][name]'
+                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
                       }
                     })
                   }} 
 
+                   {% set index = loop.index0 %}
+                   {# this assignment is required because can't access both staffMemberNeedingMedicalAttention and staffMemberWentToHospital in same loop.
+                   The value for index will change on each iteration so will keep both data keys in sync #}
+                            
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: 'staff-medical-attention-hospital[' + loop.index0 + '][name]',
-                    name: 'staffMedicalAttentionHospital[' + loop.index0 + '][name]',
+                    idPrefix: 'staff-member-went-to-hospital[' + loop.index0 + '][name]',
+                    name: 'staffMemberWentToHospital[' + loop.index0 + '][name]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -252,15 +253,16 @@
                     items: [
                       {
                         value: "yes",
-                        text: "Yes"
+                        text: "Yes",
+                        checked: data.staffMemberWentToHospital[index].name === 'yes'
                       },
                       {
                         value: "no",
-                        text: "No"
+                        text: "No",
+                        checked: data.staffMemberWentToHospital[index].name === 'no'
                       }
                     ]
                   }) }}
-
 
                 <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
                   Remove
@@ -276,19 +278,18 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staffMedicalAttentionName[0][name]',
-                      name: 'staffMedicalAttentionName[0][name]',
+                      id: 'staff-member-needing-medical-attention[0][name]',
+                      name: 'staffMemberNeedingMedicalAttention[0][name]',
                       attributes: {
-                        'data-name': 'staffMedicalAttentionName[%index%][name]',
-                        'data-id': 'staffMedicalAttentionName[%index%][name]'
+                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
                       }
                     })
                   }}
-
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: 'staff-medical-attention-hospital[0][name]',
-                    name: 'staffMedicalAttentionHospital[0][name]',
+                    idPrefix: 'staff-member-went-to-hospital[0][name]',
+                    name: 'staffMemberWentToHospital[0][name]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -298,11 +299,13 @@
                     items: [
                       {
                         value: "yes",
-                        text: "Yes"
+                        text: "Yes",
+                        checked: data.staffMemberWentToHospital[0].name === 'yes'
                       },
                       {
                         value: "no",
-                        text: "No"
+                        text: "No",
+                        checked: data.staffMemberWentToHospital[0].name === 'no'
                       }
                     ]
                   }) }}
@@ -322,8 +325,6 @@
           </div>  <!-- hidden panel end -->
         </fieldset>     
       </div> <!-- end of this component  -->
-
-
   </div> <!-- end of column two thirds -->
 </div>   <!-- end of grid row-->
 
