@@ -113,7 +113,68 @@ module.exports = {
   },
 
   relocationAndInjuries: {
-    fields: [],
+    fields: [
+      {
+        prisonerRelocation: {
+          responseType: 'requiredString',
+          validationMessage: 'Where was the prisoner relocated to?',
+        },
+      },
+      {
+        relocationCompliancy: {
+          responseType: 'requiredString',
+          validationMessage: 'What type of relocation was it?',
+        },
+      },
+      {
+        healthcareInvolved: {
+          responseType: 'requiredString',
+          validationMessage: 'Was a a healthcare practioner involved?',
+        },
+      },
+      {
+        healthcarePractionerName: {
+          responseType: 'requiredString',
+          validationMessage: 'Name of healthcare practioner',
+        },
+      },
+      {
+        prisonerInjuries: {
+          responseType: 'requiredString',
+          validationMessage: 'Did the prisoner sustain any injuries?',
+        },
+      },
+      {
+        f213CompletedBy: {
+          responseType: 'requiredString',
+          validationMessage: 'Who completed the f213 form?',
+        },
+      },
+      {
+        prisonerHospitalisation: {
+          responseType: 'requiredString',
+          validationMessage: 'Did the prisoner require outside hospitalisation?',
+        },
+      },
+      {
+        staffMedicalAttention: {
+          responseType: 'requiredString',
+          validationMessage: 'Did a member of staff need medical attention at the time?',
+        },
+      },
+      {
+        staffMemberNeedingMedicalAttention: {
+          responseType: 'requiredString',
+          validationMessage: 'What is the name of the staff who needed medical attention?',
+        },
+      },
+      {
+        staffMemberWentToHospital: {
+          responseType: 'requiredString',
+          validationMessage: 'Did a member of staff need to go to hospital?',
+        },
+      },
+    ],
     validate: false,
     nextPath: {
       path: '/form/incident/evidence/',

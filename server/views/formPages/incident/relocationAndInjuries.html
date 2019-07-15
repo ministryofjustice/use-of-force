@@ -1,5 +1,347 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% block formItems %}
-<div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
-</div>
+{% extends "../formTemplate.html" %}
+{% from "input/macro.njk" import govukInput %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% import "../incidentMacros.njk" as incidentMacro %}
+{% from "fieldset/macro.njk" import govukFieldset %} 
+{% from "button/macro.njk" import govukButton %} 
+
+
+{% block formItems %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
+
+
+    <!-- Q1 -->
+
+    {{ govukSelect({
+        id: "prisoner-relocation",
+        name: "prisonerRelocation",
+        label: {
+          text: "Where was the prisoner relocated to?"
+        },
+        attributes: {style:'min-width:33%'},
+        items: [
+          {
+            value: "select",
+            text: "Select",
+            selected: data.prisonerRelocation === 'select'
+          },
+          {
+            value: "ownCell",
+            text: "Own cell",
+            selected: data.prisonerRelocation === 'ownCell'
+          },
+          {
+            value: "segregationUnit",
+            text: "Segregation unit",
+            selected: data.prisonerRelocation === 'segregationUnit'
+          },
+          {
+            value: "specialAccommodation",
+            text: "Special accommodation",
+            selected: data.prisonerRelocation === 'specialAccommodation'
+          },
+          {
+            value: "cellularVehicle",
+            text: "Cellular vehicle",
+            selected: data.prisonerRelocation === 'cellularVehicle'
+          }
+        ]
+      }) }}
+
+    <!-- Q2 -->
+
+    {{ govukSelect({
+      id: "relocation-compliancy",
+      name: "relocationCompliancy",
+      classes:" govuk-!-margin-bottom-6",
+      label: {
+        text: "What type of relocation was it?"
+      },
+      attributes: {style:'min-width:33%'},
+      items: [
+        {
+          value: "select",
+          text: "Select",
+          selected: data.relocationCompliancy === 'select'
+        },
+        {
+          value: "compliant",
+          text: "compliant",
+          selected: data.relocationCompliancy === 'compliant'
+        },
+        {
+          value: "nonCompliant",
+          text: "Non-compliant",
+          selected: data.relocationCompliancy === 'nonCompliant'
+        }
+      ]
+    }) }}
+
+    <hr />
+
+  <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
+
+  </div>
+
+
+  <div class="govuk-grid-column-two-thirds">
+   
+
+    <!-- Q3 -->
+
+    {{ incidentMacro.radiosWithNestedTextboxes({
+        "primaryQuestion": {
+          "text": "Was a member of Healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+          "name": "healthcareInvolved",
+          "value":data.healthcareInvolved,
+          "options": [{
+            "value": "yes",
+            "label": "Yes"
+          }, 
+          {
+            "value": "no",
+            "label": "No"
+          }]
+        },
+        "followUpQuestion": {
+          "legend": "blank",
+          "name": "healthcarePractionerName",
+          "value":data.healthcarePractionerName,
+          "alertMsg":"",
+          "options": [{
+            "label": "Name"
+          }]
+        }
+      }) 
+    }}
+    
+    <!-- Q4 -->
+
+
+        {{ incidentMacro.radiosWithNestedTextboxes({
+            "primaryQuestion": {
+              "text": "Did the prisoner sustain any injuries at the time?",
+              "name": "prisonerInjuries",
+              "value":data.prisonerInjuries,
+              "options": [{
+                "value": "yes",
+                "label": "Yes"
+              }, 
+              {
+                "value": "no",
+                "label": "No"
+              }]
+            },
+            "followUpQuestion": {
+              "legend": "Who completed the F213 form?",
+              "name": "f213CompletedBy",
+              "value":data.f213CompletedBy,
+              "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
+              "options": [{
+                "label": "Name"
+              }]
+            }
+          }) 
+        }}
+    
+
+
+    <!-- Q5 -->
+    <div class="govuk-!-margin-bottom-9">
+      {{ govukRadios({
+          classes: "govuk-radios--inline",
+          idPrefix: "prisoner-hospitalisation",
+          name: "prisonerHospitalisation",
+          "value":data.prisonerHospitalisation,
+          fieldset: {
+            legend: {
+              text: "Did the prisoner require outside hospitalisation at the time?",
+              isPageHeading: false,
+              classes: "govuk-fieldset"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: data.prisonerHospitalisation === 'yes'
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: data.prisonerHospitalisation === 'no'
+            }
+          ]
+        }) 
+        }}
+      </div>
+
+      <!-- Q6 -->          
+
+<div class="govuk-!-margin-bottom-6">
+      <div class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend ">
+          Did a member of staff need medical attention at the time?
+        </legend>
+
+        <div class="govuk-radios" data-module="radios">
+          <div class=" govuk-radios--inline">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="staff-medical-attention" name="staffMedicalAttention" type="radio"
+                value="yes" data-aria-controls="staff-medical-attention--conditional"
+                {% if data.staffMedicalAttention === 'yes' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="staff-medical-attention-1">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="how-contacted-conditional-2" name="staffMedicalAttention" type="radio"
+                value="no" 
+                 {% if data.staffMedicalAttention === 'no' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-2">
+                No
+              </label>
+            </div>
+          </div>
+
+          <!-- hidden panel starts here -->
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="staff-medical-attention--conditional">
+
+            <!-- add another starts here   -->
+
+            <div class="add-another-witness">
+              {%  for staffMember in  data.staffMemberNeedingMedicalAttention %} 
+
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                   {{
+                    govukInput({
+                      label: {
+                        html: 'Name of who needed medical attention'
+                      },
+                      classes: 'govuk-!-width-two-thirds',
+                      id: 'staff-member-needing-medical-attention[' + loop.index0 + '][name]',
+                      name: 'staffMemberNeedingMedicalAttention[' + loop.index0 + '][name]',
+                      value: staffMember.name,
+                      attributes: {
+                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                      }
+                    })
+                  }} 
+
+                   {% set index = loop.index0 %}
+                   {# this assignment is required because can't access both staffMemberNeedingMedicalAttention and staffMemberWentToHospital in same loop.
+                   The value for index will change on each iteration so will keep both data keys in sync #}
+                            
+                  {{ govukRadios({
+                    classes: "govuk-radios--inline",
+                    idPrefix: 'staff-member-went-to-hospital[' + loop.index0 + '][name]',
+                    name: 'staffMemberWentToHospital[' + loop.index0 + '][name]',
+                    fieldset: {
+                      legend: {
+                        text: "Did they go to hospital?"
+                      }
+                    },
+    
+                    items: [
+                      {
+                        value: "yes",
+                        text: "Yes",
+                        checked: data.staffMemberWentToHospital[index].name === 'yes'
+                      },
+                      {
+                        value: "no",
+                        text: "No",
+                        checked: data.staffMemberWentToHospital[index].name === 'no'
+                      }
+                    ]
+                  }) }}
+
+                <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                  Remove
+                </button>
+                
+                {% endcall %} 
+                {% else %} 
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  
+                  {{
+                    govukInput({
+                      label: {
+                        html: 'Name of who needed medical attention'
+                      },
+                      classes: 'govuk-!-width-two-thirds',
+                      id: 'staff-member-needing-medical-attention[0][name]',
+                      name: 'staffMemberNeedingMedicalAttention[0][name]',
+                      attributes: {
+                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                      }
+                    })
+                  }}
+                  {{ govukRadios({
+                    classes: "govuk-radios--inline",
+                    name: 'staffMemberWentToHospital[0][name]',
+                    fieldset: {
+                      legend: {
+                        text: "Did they go to hospital?"
+                      }
+                    },
+                    items: [
+                      {
+                        value: "yes",
+                        text: "Yes",
+                        id: 'staff-member-went-to-hospital[0]-yes',
+                        checked: data.staffMemberWentToHospital[0].name === 'yes',
+                        attributes: {
+                          'data-name': 'staffMemberWentToHospital[%index%][name]',
+                          'data-id': 'staff-member-went-to-hospital[%index%]-yes'
+                        }
+                      },
+                      {
+                        value: "no",
+                        text: "No",
+                        id: 'staff-member-went-to-hospital[0]-no',
+                        checked: data.staffMemberWentToHospital[0].name === 'no',
+                        attributes: {
+                          'data-name': 'staffMemberWentToHospital[%index%][name]',
+                          'data-id': 'staff-member-went-to-hospital[%index%]-no'
+                        }
+                      }
+                    ]
+                  }) }}
+
+                {% endcall %} 
+              {% endfor %}
+              <div class="button-action">
+                {{
+                  govukButton({
+                    text: 'Add another',
+                    classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                    attributes: { 'data-qa-add-another-witness': true }
+                  })
+                }}
+              </div> 
+            </div>  <!-- add another ends here -->
+          </div>  <!-- hidden panel end -->
+        </fieldset>     
+      </div> <!-- end of this component  -->
+  </div> <!-- end of column two thirds -->
+</div>   <!-- end of grid row-->
+
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/add-another.js"></script>
+<script>
+new AddAnother($('.add-another-witness'))
+</script>
+
+
 {% endblock %}
