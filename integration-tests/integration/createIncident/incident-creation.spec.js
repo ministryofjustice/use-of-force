@@ -20,6 +20,7 @@ context('Logging in', () => {
     const relocationAndInjuriesPage = detailsPage.save()
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.fillForm()
     evidencePage.save()
 
     const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)

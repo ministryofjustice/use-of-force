@@ -164,14 +164,13 @@ module.exports = {
       },
       {
         staffMemberNeedingMedicalAttention: {
-          responseType: 'requiredString',
-          validationMessage: 'What is the name of the staff who needed medical attention?',
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
         },
       },
       {
         staffMemberWentToHospital: {
           responseType: 'requiredString',
-          validationMessage: 'Did a member of staff need to go to hospital?',
+          validationMessage: 'Did they go to hospital?',
         },
       },
     ],
@@ -182,7 +181,47 @@ module.exports = {
   },
 
   evidence: {
-    fields: [],
+    fields: [
+      {
+        baggedEvidence: {
+          responseType: 'requiredString',
+          validationMessage: 'Any evidence bagged and tagged?',
+        },
+      },
+      {
+        tagNumbers: {
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+        },
+      },
+      {
+        evidenceDescriptions: {
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+        },
+      },
+      {
+        photographsTaken: {
+          responseType: 'requiredString',
+          validationMessage: 'Were any photographs taken?',
+        },
+      },
+      {
+        cctvRecording: {
+          responseType: 'requiredString',
+          validationMessage: 'Was any part of the incident captured on CCTV?',
+        },
+      },
+      {
+        bodyWornCamera: {
+          responseType: 'requiredString',
+          validationMessage: 'Was any part of the incident captured on a body worn camera?',
+        },
+      },
+      {
+        bodyWornCameraNumbers: {
+          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+        },
+      },
+    ],
     validate: false,
     nextPath: {
       path: '/check-answers/',
