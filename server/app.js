@@ -238,7 +238,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
   app.use(currentUserInContext)
 
   app.use('/', createIncidentsRouter({ authenticationMiddleware, formService, offenderService }))
-  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, formService }))
+  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, formService, offenderService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use('/form/', createFormRouter({ authenticationMiddleware, formService, offenderService }))
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
