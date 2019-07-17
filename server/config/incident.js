@@ -17,6 +17,12 @@ module.exports = {
         },
       },
       {
+        location: {
+          responseType: 'location',
+          validationMessage: 'Where did the incident occur?',
+        },
+      },
+      {
         forceType: {
           responseType: 'requiredString',
           validationMessage: 'Was the use of force planned?',

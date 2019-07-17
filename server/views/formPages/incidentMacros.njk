@@ -13,7 +13,7 @@
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="id-{{name1}}-{{loop.index}}" name="{{name1}}" type="radio" value="{{option.value}}" 
               {% if option.value === question.primaryQuestion.value %} checked {% endif %}
-              {% if option.value === 'yes' %} data-aria-controls="conditional-{{name1}}" {% endif %}>
+              {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name1}}" {% endif %}>
               <label class="govuk-label govuk-radios__label" for='id-{{name1}}-{{loop.index}}'>
                 {{option.label}}
               </label>
@@ -63,7 +63,7 @@
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
+              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
               {% if option.value === question.primaryQuestion.value %} checked  {% endif %}>
               <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
                 {{option.label}}
@@ -98,7 +98,7 @@
 
 {% endmacro %}
 
-{% macro radiosWithNestedTextboxes(question) %}
+{% macro radiosWithNestedTextbox(question) %}
 
   <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
@@ -112,7 +112,7 @@
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio"  value="{{option.value}}" 
-                {% if option.value === 'yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
+                {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
                 {% if option.value === question.primaryQuestion.value %} checked="checked"  {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
@@ -130,25 +130,22 @@
                 </p>
               </legend>
 
-              {% set name = question.followUpQuestion.name %}
-
-              {% for option in question.followUpQuestion.options %}
+              {% set followUpQuestion = question.followUpQuestion %}
                 <div class="govuk-textboxes__item">
-                  <label class="govuk-label" for="id-{{name}}-{{loop.index}}">
-                    {{option.label}}
+                  <label class="govuk-label" for="id-{{followUpQuestion.name}}">
+                    {{followUpQuestion.label}}
                   </label>
-                  <input class="govuk-input govuk-!-width-one-third" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="text" value={{question.followUpQuestion.value}} >
+                  <input class="govuk-input govuk-!-width-one-third" id="id-{{followUpQuestion.name}}" name="{{followUpQuestion.name}}" type="text" value="{{followUpQuestion.value}}" >
                 </div>
-                {% if  question.followUpQuestion.alertMsg %}
+                {% if followUpQuestion.alertMsg %}
                 <div class="govuk-warning-text">
                   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                   <p class="govuk-warning-text__text">
                     <span class="govuk-warning-text__assistive">Warning</span>
-                     {{question.followUpQuestion.alertMsg}}
+                     {{followUpQuestion.alertMsg}}
                   </p>
                 </div>
                 {% endif %}
-              {% endfor %}
             </fieldset>
           </div>
         </div>
