@@ -16,12 +16,12 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
       {
         witnesses: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
     ],
@@ -164,7 +164,7 @@ module.exports = {
       },
       {
         staffMemberNeedingMedicalAttention: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
       {
@@ -190,12 +190,12 @@ module.exports = {
       },
       {
         tagNumbers: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
       {
         evidenceDescriptions: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
       {
@@ -218,7 +218,7 @@ module.exports = {
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: (vals = []) => vals.reduce((res, val) => (val.name && val.name.trim() ? [...res, val] : res), []),
+          sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
     ],
@@ -227,4 +227,14 @@ module.exports = {
       path: '/check-answers/',
     },
   },
+}
+
+function inputsExcludingEmptyStrings(inputs) {
+  const sanitisedArray = []
+  inputs.forEach(input => {
+    if (input.name !== null && input.name !== '' && input.name.trim() !== '') {
+      sanitisedArray.push(input)
+    }
+  })
+  return sanitisedArray
 }
