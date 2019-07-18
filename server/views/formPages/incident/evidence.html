@@ -1,5 +1,337 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% block formItems %}
-<div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
-</div>
+{% extends "../formTemplate.html" %}
+{% from "input/macro.njk" import govukInput %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% import "../incidentMacros.njk" as incidentMacro %}
+{% from "fieldset/macro.njk" import govukFieldset %} 
+{% from "button/macro.njk" import govukButton %} 
+{% from "textarea/macro.njk" import govukTextarea %}
+
+
+
+{% block formItems %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
+   
+    <!-- Q1 -->
+        
+    <div class="govuk-!-margin-bottom-9">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend ">
+          Was any evidence bagged and tagged?
+        </legend>
+
+        <div class="govuk-radios" data-module="radios">
+          <div class=" govuk-radios--inline">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="bagged-evidence-yes" name="baggedEvidence" type="radio"
+                value="yes" data-aria-controls="bagged-evidence-conditional"
+                {% if data.baggedEvidence === 'yes' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="bagged-evidence-yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="bagged-evidence-no" name="baggedEvidence" type="radio"
+                value="no" 
+                {% if data.baggedEvidence === 'no' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="bagged-evidence-no">
+                No
+              </label>
+            </div>
+          </div>
+
+          <!-- hidden panel starts here -->
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="bagged-evidence-conditional">
+
+            <!-- add another starts here   -->
+
+            <div class="add-another-tag">
+              {%  for tagNumber in  data.tagNumbers %} 
+
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  {{
+                    govukInput({
+                      label: {
+                        html: 'Tag number'
+                      },
+                      classes: 'govuk-!-width-one-third',
+                      id: 'tag-numbers[' + loop.index0 + '][name]',
+                      name: 'tagNumbers[' + loop.index0 + '][name]',
+                      value: tagNumber.name,
+                      attributes: {
+                        'data-name': 'tagNumbers[%index%][name]',
+                        'data-id': 'tagNumbers[%index%][name]'
+                      }
+                    })
+                  }} 
+
+                  {% set index = loop.index0 %}
+
+                  <!--this assignment is required because can't access both tagNumber and evidenceDescriptions in same loop.
+                  The value for index will change on each iteration so will keep both data keys in sync -->
+                            
+                  {{ govukTextarea({
+                    name: 'evidenceDescriptions[' + loop.index0 + '][name]',
+                    idPrefix: 'evidence-descriptions[' + loop.index0 + '][name]',
+                    classes: 'govuk-!-width-two-thirds',
+                    value: data.evidenceDescriptions[index].name,
+                    label: {
+                      text: "Description of evidence"
+                    },
+                    attributes:{
+                      'data-id': 'evidence-descriptions[%index%][name]',
+                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'rows':10,
+                      'columns': 50
+                    }
+                  }) }}
+
+                  {% if loop.length != 1 %}
+                    <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                      Remove
+                    </button>
+                  {% endif  %}
+                
+                {% endcall %} 
+                {% else %} 
+                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  
+                  {{
+                    govukInput({
+                      label: {
+                        html: 'Tag number'
+                      },
+                      classes: 'govuk-!-width-one-third',
+                      id: 'tag-numbers[0][name]',
+                      name: 'tagNumbers[0][name]',
+                      attributes: {
+                        'data-name': 'tagNumbers[%index%][name]',
+                        'data-id': 'tagNumbers[%index%][name]'
+                      }
+                    })
+                  }}
+                  {{ govukInput({
+                    idPrefix: 'evidence-descriptions[0][name]',
+                    name: 'evidenceDescriptions[0][name]',
+                    classes: "govuk-!-width-two-thirds",
+                    value: data.evidenceDescriptions[0].name,
+                    label: {
+                      text: "Description of evidence"
+                    },
+                    attributes: {
+                      'data-id': 'evidence-descriptions[%index%][name]',
+                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'rows':10,
+                      'columns': 50
+                    }
+                  }) }}
+
+                {% endcall %} 
+              {% endfor %}
+              <div class="button-action">
+                {{
+                  govukButton({
+                    text: 'Add another',
+                    classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                    attributes: { 'data-qa-add-another-tag': true }
+                  })
+                }}
+              </div> 
+            </div>  <!-- add another ends here -->
+          </div>  <!-- hidden panel end -->
+      </fieldset>     
+    </div> <!-- end of this component  -->
+
+    <!-- Q2 -->
+    <div class="govuk-!-margin-bottom-9">
+      {{ govukRadios({
+          classes: "govuk-radios--inline",
+          idPrefix: "photographs-taken",
+          name: "photographsTaken",
+          "value":data.photographsTaken,
+          fieldset: {
+            legend: {
+              text: "Were any photographs taken?",
+              isPageHeading: false,
+              classes: "govuk-fieldset"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: data.photographsTaken === 'yes'
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: data.photographsTaken === 'no'
+            }
+          ]
+        }) 
+        }}
+    </div>
+
+    <!-- Q3 -->
+      
+    <div class="govuk-!-margin-bottom-9">
+        {{ govukRadios({
+            classes: "govuk-radios",
+            idPrefix: "cctv-recording",
+            name: "cctvRecording",
+            "value":data.cctvRecording,
+            fieldset: {
+              legend: {
+                text: "Was any part of the incident captured on CCTV?",
+                isPageHeading: false,
+                classes: "govuk-fieldset"
+              }
+            },
+            items: [
+              {
+                value: "yes",
+                text: "Yes",
+                checked: data.cctvRecording === 'yes'
+              },
+              {
+                value: "no",
+                text: "No",
+                checked: data.cctvRecording === 'no'
+              },
+              {
+                value: "notKnown",
+                text: "Not known",
+                checked: data.cctvRecording === 'notKnown'
+              }
+            ]
+          }) 
+          }}
+     </div>
+    
+    <!-- Q4 -->
+    
+    <div class="govuk-!-margin-bottom-9">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend ">
+            Was any part of the incident captured on a body-worn camera?
+          </legend>
+
+          <div class="govuk-radios" data-module="radios">
+            <div class=" govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="body-worn-camera-yes" name="bodyWornCamera" type="radio"
+                  value="yes" data-aria-controls="body-worn-camera-conditional"
+                  {% if data.bodyWornCamera === 'yes' %} checked {% endif %}
+                >
+                <label class="govuk-label govuk-radios__label" for="body-worn-camera-yes">
+                  Yes
+                </label>
+              </div>
+              <!-- hidden panel starts here -->
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="body-worn-camera-conditional">
+
+              <!-- add another starts here   -->
+    
+              <div class="add-another-camera">
+                {%  for camera in  data.bodyWornCameraNumbers %} 
+    
+                  {% call govukFieldset({ classes: 'add-another__item' }) %}
+                    {{
+                      govukInput({
+                        label: {
+                          html: 'Camera number'
+                        },
+                        classes: 'govuk-!-width-one-third',
+                        id: 'body-worn-camera-numbers[' + loop.index0 + '][name]',
+                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][name]',
+                        value: camera.name,
+                        attributes: {
+                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                        }
+                      })
+                    }} 
+    
+                  {% if loop.length != 1 %}
+                  <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                    Remove
+                  </button>
+                  {% endif  %}
+                  
+                  {% endcall %} 
+                  {% else %} 
+                  {% call govukFieldset({ classes: 'add-another__item' }) %}
+                    
+                    {{
+                      govukInput({
+                        label: {
+                          html: 'Camera number'
+                        },
+                        classes: 'govuk-!-width-one-third',
+                        id: 'body-worn-camera-numbers[0][name]',
+                        name: 'bodyWornCameraNumbers[0][name]',
+                        attributes: {
+                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                        }
+                      })
+                    }}
+    
+                  {% endcall %} 
+                {% endfor %}
+                <div class="button-action">
+                  {{
+                    govukButton({
+                      text: 'Add another',
+                      classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                      attributes: { 'data-qa-add-another-camera': true }
+                    })
+                  }}
+                </div> 
+              </div>  <!-- add another ends here -->
+            </div>  <!-- hidden panel end -->
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio"
+                value="no" 
+                {% if data.bodyWornCamera === 'no' %} checked {% endif %}
+              >
+              <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
+                No
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio"
+                  value="notKnown" 
+                  {% if data.bodyWornCamera === 'no' %} checked {% endif %}
+                >
+                <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
+                  Not known
+                </label>
+              </div>
+          </div>
+        </fieldset>     
+      </div> <!-- end of this Q4 component  -->
+
+   </div>   <!-- end of govuk-grid-column-full-->
+</div>    <!-- end of govuk-grid-row-->
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/add-another.js"></script>
+<script>
+new AddAnother($('.add-another-tag'))
+new AddAnother($('.add-another-camera'))
+
+</script>
+
+
+   
+
+
 {% endblock %}

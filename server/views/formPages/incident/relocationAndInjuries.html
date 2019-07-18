@@ -36,6 +36,11 @@
             selected: data.prisonerRelocation === 'ownCell'
           },
           {
+            value: "gatedCell",
+            text: "Gated cell",
+            selected: data.prisonerRelocation === 'gatedCell'
+          },
+          {
             value: "segregationUnit",
             text: "Segregation unit",
             selected: data.prisonerRelocation === 'segregationUnit'
@@ -216,7 +221,7 @@
 
             <!-- add another starts here   -->
 
-            <div class="add-another-witness">
+            <div class="add-another-staff-needing-medical-attention">
               {%  for staffMember in  data.staffMemberNeedingMedicalAttention %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
@@ -264,9 +269,11 @@
                     ]
                   }) }}
 
-                <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-                  Remove
-                </button>
+                {% if loop.length != 1 %}
+                  <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                    Remove
+                  </button>
+                {% endif  %}
                 
                 {% endcall %} 
                 {% else %} 
@@ -325,7 +332,7 @@
                   govukButton({
                     text: 'Add another',
                     classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
-                    attributes: { 'data-qa-add-another-witness': true }
+                    attributes: { 'data-qa-add-another-staff-needing-medical-attention': true }
                   })
                 }}
               </div> 
@@ -340,7 +347,7 @@
 <script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
-new AddAnother($('.add-another-witness'))
+new AddAnother($('.add-another-staff-needing-medical-attention'))
 </script>
 
 
