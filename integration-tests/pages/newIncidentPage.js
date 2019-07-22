@@ -3,14 +3,6 @@ const detailsPage = require('./detailsPage')
 
 export default () =>
   page('New use of force incident', {
-    offenderName: () => cy.get('[data-offender-name]'),
-    location: () => cy.get('#location'),
-
-    forceType: {
-      check: value => cy.get('[name="forceType"]').check(value),
-      planned: () => cy.get("[name='forceType'][value='planned']"),
-      spontaneous: () => cy.get("[name='forceType'][value='spontaneous']"),
-    },
     fillForm: () => {
       cy.get('[data-offender-name]')
       cy.get('#location').select('Asso A Wing')
