@@ -33,7 +33,7 @@ export default () =>
     addAnotherWitness: () => cy.get('[data-qa-add-another-witness]'),
 
     save: () => {
-      cy.get('[data-next]').click()
+      cy.get('[data-qa="save-and-continue"]').click()
       return detailsPage()
     },
   })

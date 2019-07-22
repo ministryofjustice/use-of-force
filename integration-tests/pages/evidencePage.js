@@ -27,7 +27,7 @@ export default () =>
     },
 
     save: () => {
-      cy.get('[data-next]').click()
+      cy.get('[data-qa="save-and-continue"]').click()
       return checkAnswersPage()
     },
   })
