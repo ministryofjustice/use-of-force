@@ -1,0 +1,23 @@
+{% extends "../../partials/layout.html" %} 
+{% from "button/macro.njk" import govukButton %} 
+{% from "panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+{{
+    govukPanel({
+        classes: "govuk-!-width-one-half",
+        titleText: "Statement submitted"
+    }) 
+}}  
+
+  {{ 
+    govukButton({
+      text: "Finish",
+      name: "submit",
+      href: '/incidents',
+      classes: "govuk-button govuk-button--secondary",
+      attributes: {'data-qa': 'return-to-tasklist'}
+    })
+  }}
+{% endblock %} 
