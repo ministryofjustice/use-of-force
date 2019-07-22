@@ -85,6 +85,23 @@ module.exports = {
       },
     })
   },
+  stubLocation: locationId => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/api/locations/${locationId}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: {
+          description: 'ASSO A Wing',
+        },
+      },
+    })
+  },
   stubLocations: agencyId => {
     return stubFor({
       request: {

@@ -18,5 +18,7 @@ module.exports = on => {
     stubLocations: elite2api.stubLocations,
 
     getFormData: (userId, bookingId, formName) => getFormData(userId, bookingId, formName),
+
+    stubLocation: elite2api.stubLocation,
   })
 }

@@ -1,4 +1,4 @@
-{% extends "../formTemplate.html" %}
+git {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
@@ -52,7 +52,7 @@
             <!-- add another starts here   -->
 
             <div class="add-another-tag">
-              {%  for tagNumber in  data.tagNumbers %} 
+              {%  for evidenceTagAndDescription in  data.evidenceTagAndDescription %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                   {{
@@ -61,34 +61,29 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'tag-numbers[' + loop.index0 + '][name]',
-                      name: 'tagNumbers[' + loop.index0 + '][name]',
-                      value: tagNumber.name,
+                      id: 'evidence-tag-and-description[' + loop.index0 + '][name]',
+                      name: 'evidenceTagAndDescription[' + loop.index0 + '][name]',
+                      value: evidenceTagAndDescription.name,
                       attributes: {
-                        'data-name': 'tagNumbers[%index%][name]',
-                        'data-id': 'tagNumbers[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][name]',
+                        'data-id': 'evidence-tag-and-description[%index%][name]'
                       }
                     })
                   }} 
-
-                  {% set index = loop.index0 %}
-
-                  <!--this assignment is required because can't access both tagNumber and evidenceDescriptions in same loop.
-                  The value for index will change on each iteration so will keep both data keys in sync -->
                             
                   {{ govukTextarea({
-                    name: 'evidenceDescriptions[' + loop.index0 + '][name]',
-                    idPrefix: 'evidence-descriptions[' + loop.index0 + '][name]',
+                    name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
+                    idPrefix: 'evidence-tag-and-description[' + loop.index0 + '][description]',
                     classes: 'govuk-!-width-two-thirds',
-                    value: data.evidenceDescriptions[index].name,
+                    value: evidenceTagAndDescription.description,
                     label: {
                       text: "Description of evidence"
                     },
                     attributes:{
-                      'data-id': 'evidence-descriptions[%index%][name]',
-                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-name': 'evidenceTagAndDescription[%index%][description]',
                       'rows':10,
-                      'columns': 50
+                      'columns': 40
                     }
                   }) }}
 
@@ -108,27 +103,27 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'tag-numbers[0][name]',
-                      name: 'tagNumbers[0][name]',
+                      id: 'evidence-tag-and-description[0][name]',
+                      name: 'evidenceTagAndDescription[0][name]',
                       attributes: {
-                        'data-name': 'tagNumbers[%index%][name]',
-                        'data-id': 'tagNumbers[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][name]',
+                        'data-id': 'evidence-tag-and-description[%index%][name]'
                       }
                     })
                   }}
                   {{ govukInput({
-                    idPrefix: 'evidence-descriptions[0][name]',
-                    name: 'evidenceDescriptions[0][name]',
+                    idPrefix: 'evidence-tag-and-description[0][description]',
+                    name: 'evidenceTagAndDescription[0][description]',
                     classes: "govuk-!-width-two-thirds",
-                    value: data.evidenceDescriptions[0].name,
+                    value: data.evidenceTagAndDescription[0].description,
                     label: {
                       text: "Description of evidence"
                     },
                     attributes: {
-                      'data-id': 'evidence-descriptions[%index%][name]',
-                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-name': 'evidenceTagAndDescription[%index%][description]',
                       'rows':10,
-                      'columns': 50
+                      'columns': 40
                     }
                   }) }}
 

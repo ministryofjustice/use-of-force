@@ -5,14 +5,18 @@ export default () =>
   page('Evidence', {
     fillForm: () => {
       cy.get('[name="baggedEvidence"]').check('Yes')
-      cy.get('[name="tagNumbers[0][name]"]').type('Bagged evidence 1')
-      cy.get('[name="evidenceDescriptions[0][name]"]').type('This evidence was collected from the prsioners cell')
+      cy.get('[name="evidenceTagAndDescription[0][name]"]').type('Bagged evidence 1')
+      cy.get('[name="evidenceTagAndDescription[0][description]"]').type(
+        'This evidence was collected from the prisoners cell'
+      )
       cy.get('[data-qa-add-another-tag = true]').click()
-      cy.get('[name="tagNumbers[1][name]"]').type('Bagged evidence 2')
-      cy.get('[name="evidenceDescriptions[1][name]"]').type('This was found outside the canteen')
+      cy.get('[name="evidenceTagAndDescription[1][name]"]').type('Bagged evidence 2')
+      cy.get('[name="evidenceTagAndDescription[1][description]"]').type(
+        'This evidence was collected from the prisoners cell'
+      )
       cy.get('[data-qa-add-another-tag = true]').click()
-      cy.get('[name="tagNumbers[2][name]"]').type('Bagged evidence 3')
-      cy.get('[name="evidenceDescriptions[2][name]"]').type('Clothes samples')
+      cy.get('[name="evidenceTagAndDescription[2][name]"]').type('Bagged evidence 3')
+      cy.get('[name="evidenceTagAndDescription[2][description]"]').type('Clothes samples')
       cy.get('[name="photographsTaken"]').check('Yes')
       cy.get('[name="cctvRecording"]').check('Not Known')
       cy.get('[name="bodyWornCamera"]').check('Yes')

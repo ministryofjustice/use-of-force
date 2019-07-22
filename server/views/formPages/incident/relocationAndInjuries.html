@@ -217,7 +217,7 @@
             <!-- add another starts here   -->
 
             <div class="add-another-staff-needing-medical-attention">
-              {%  for staffMember in  data.staffMemberNeedingMedicalAttention %} 
+              {%  for staffMember in  data.staffNeedingMedicalAttention %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                    {{
@@ -226,24 +226,19 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staff-member-needing-medical-attention[' + loop.index0 + '][name]',
-                      name: 'staffMemberNeedingMedicalAttention[' + loop.index0 + '][name]',
+                      id: 'staff-needing-medical-attention[' + loop.index0 + '][name]',
+                      name: 'staffNeedingMedicalAttention[' + loop.index0 + '][name]',
                       value: staffMember.name,
                       attributes: {
-                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staff-needing-medical-attention[%index%][name]'
                       }
                     })
                   }} 
 
-                   {% set index = loop.index0 %}
-                   {# this assignment is required because can't access both staffMemberNeedingMedicalAttention and staffMemberWentToHospital in same loop.
-                   The value for index will change on each iteration so will keep both data keys in sync #}
-                            
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: 'staff-member-went-to-hospital[' + loop.index0 + '][name]',
-                    name: 'staffMemberWentToHospital[' + loop.index0 + '][name]',
+                    name: 'staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -254,12 +249,22 @@
                       {
                         value: "Yes",
                         text: "Yes",
-                        checked: data.staffMemberWentToHospital[index].name === 'Yes'
+                        checked: staffMember.hospitalisation === 'Yes',
+                        id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-yes',
+                        attributes: {
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-yes'
+                        }
                       },
                       {
                         value: "No",
                         text: "No",
-                        checked: data.staffMemberWentToHospital[index].name === 'No'
+                        checked: staffMember.hospitalisation === 'No',
+                        id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-no',
+                        attributes: {
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-no'
+                        }
                       }
                     ]
                   }) }}
@@ -280,17 +285,17 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staff-member-needing-medical-attention[0][name]',
-                      name: 'staffMemberNeedingMedicalAttention[0][name]',
+                      id: 'staff-needing-medical-attention[0][name]',
+                      name: 'staffNeedingMedicalAttention[0][name]',
                       attributes: {
-                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staff-needing-medical-attention[%index%][name]'
                       }
                     })
                   }}
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    name: 'staffMemberWentToHospital[0][name]',
+                    name: 'staffNeedingMedicalAttention[0][hospitalisation]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -300,21 +305,19 @@
                       {
                         value: "Yes",
                         text: "Yes",
-                        id: 'staff-member-went-to-hospital[0]-yes',
-                        checked: data.staffMemberWentToHospital[0].name === 'Yes',
+                        id: 'staff-needing-medical-attention[0][hospitalisation]-yes',
                         attributes: {
-                          'data-name': 'staffMemberWentToHospital[%index%][name]',
-                          'data-id': 'staff-member-went-to-hospital[%index%]-yes'
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-yes'
                         }
                       },
                       {
                         value: "No",
                         text: "No",
-                        id: 'staff-member-went-to-hospital[0]-no',
-                        checked: data.staffMemberWentToHospital[0].name === 'No',
+                        id: 'staff-needing-medical-attention[0][hospitalisation]-no',
                         attributes: {
-                          'data-name': 'staffMemberWentToHospital[%index%][name]',
-                          'data-id': 'staff-member-went-to-hospital[%index%]-no'
+                          'data-name': 'staffNeedingMedicalAttention[%index%][[hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-no'
                         }
                       }
                     ]

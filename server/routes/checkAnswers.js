@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const offenderService = require('../services/offenderService')
 
 // eslint-disable-next-line
 module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
@@ -41,13 +40,18 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
       // parent obj to send to view
       const viewObject = formObject.incident || {}
+      viewObject.newIncident = viewObject.newIncident || {}
+
+      const offenderLocation = await offenderService.getLocation(
+        res.locals.user.token,
+        viewObject.newIncident.locationId
+      )
 
       // new incident object
-      viewObject.newIncident = viewObject.newIncident || {}
       const newIncident = {
         'Offender name': offenderDetail.displayName,
         'Offender number': offenderDetail.offenderNo,
-        Location: viewObject.newIncident.location,
+        Location: offenderLocation.description,
         'Use of force planned': viewObject.newIncident.forceType,
         'Staff involved': toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.involved)),
         Witnesses: toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.witnesses)),
@@ -96,24 +100,20 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
           viewObject.relocationAndInjuries.staffMedicalAttention +
           (viewObject.relocationAndInjuries.staffMedicalAttention === 'Yes'
             ? ` - ${toTitleCase(
-                convertArrayOfObjectsToString(viewObject.relocationAndInjuries.staffMemberNeedingMedicalAttention)
+                convertArrayOfObjectsToString(viewObject.relocationAndInjuries.staffNeedingMedicalAttention)
               )}`
             : ''),
-        'Staff taken to hospital': staffTakenToHospital(
-          viewObject.relocationAndInjuries.staffMemberNeedingMedicalAttention,
-          viewObject.relocationAndInjuries.staffMemberWentToHospital
-        ),
+        'Staff taken to hospital': staffTakenToHospital(viewObject.relocationAndInjuries.staffNeedingMedicalAttention),
       }
       viewObject.relocationAndInjuries = relocationAndInjuries
 
       // evidence object
       viewObject.evidence = viewObject.evidence || {}
       const evidence = {
-        'Evidence bagged and tagged':
-          viewObject.evidence.baggedEvidence +
-          (viewObject.evidence.baggedEvidence === 'Yes'
-            ? `${baggedAndTagged(viewObject.evidence.tagNumbers, viewObject.evidence.evidenceDescriptions)}`
-            : ''),
+        'Evidence bagged and tagged': baggedAndTaggedEvidence(
+          viewObject.evidence.evidenceTagAndDescription,
+          viewObject.evidence.baggedEvidence
+        ),
         'Photgraphs taken': viewObject.evidence.photographsTaken,
         'CCTV images': viewObject.evidence.cctvRecording,
         'Body worn cameras':
@@ -182,29 +182,24 @@ const toTitleCase = (str = '') => {
 }
 
 // staff taken to hospital
-const staffTakenToHospital = (membersOfStaff = [], takenHospital = []) => {
-  let staffNames = ''
-  let hospitalFlag = 0
-
-  membersOfStaff.forEach((staff, index) => {
-    if (takenHospital[index].name === 'Yes') {
-      staffNames += `${staff.name}, `
-      hospitalFlag = 1
-    }
-  })
-  if (hospitalFlag === 0 && takenHospital.length > 0) {
-    return 'None'
+const staffTakenToHospital = (staffMembers = []) => {
+  const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === 'Yes').map(staff => staff.name)
+  if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
+    return 'none'
   }
-  return toTitleCase(staffNames.slice(0, -2))
+  return toTitleCase(hospitalisedStaff.join(', '))
 }
 
 // evidence bagged
-const baggedAndTagged = (tags, description) => {
-  let finalString = ''
-  tags.forEach((tag, index) => {
-    finalString += `<br/>${tag.name}: ${description[index].name} `
-  })
-  return finalString
+const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
+  if (evidenceYesNo === 'No') {
+    return 'none'
+  }
+  return tagsAndEvidence
+    .map(item => {
+      return `${item.name} ${item.description}`
+    })
+    .join(`<br/>`)
 }
 
 // how many officers involved
