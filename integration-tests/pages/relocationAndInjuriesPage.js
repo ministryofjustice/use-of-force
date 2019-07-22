@@ -23,7 +23,7 @@ export default () =>
       cy.get(':nth-child(1) > .govuk-button').click()
     },
     save: () => {
-      cy.get('[data-next]').click()
+      cy.get('[data-qa="save-and-continue"]').click()
       return evidencePage()
     },
   })

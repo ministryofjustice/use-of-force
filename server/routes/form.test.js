@@ -46,16 +46,42 @@ describe('GET /section/form', () => {
   )
 })
 
-describe('POST /section/form', () => {
+describe('POST save and continue /section/form', () => {
   test.each`
-    sectionName   | formName         | userInput | nextPath
-    ${'incident'} | ${'newIncident'} | ${{}}     | ${'/form/incident/details/'}
+    sectionName   | formName         | userInput                          | nextPath
+    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-continue' }} | ${'/form/incident/details/1'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
       .post(`/${sectionName}/${formName}/1`)
       .send(userInput)
       .expect(302)
-      .expect('Location', `${nextPath}1`)
+      .expect('Location', nextPath)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        expect(formService.update).toBeCalledWith({
+          bookingId: 1,
+          userId: 'user1',
+          formId: undefined,
+          formObject: {},
+          config: formConfig[formName],
+          userInput,
+          formSection: sectionName,
+          formName,
+        })
+      })
+  )
+})
+
+describe('POST save and return to tasklist', () => {
+  test.each`
+    sectionName   | formName         | userInput                        | nextPath
+    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-return' }} | ${'/1'}
+  `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
+    request(app)
+      .post(`/${sectionName}/${formName}/1`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', nextPath)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(formService.update).toBeCalledWith({
