@@ -29,4 +29,21 @@ context('Submit the incident report', () => {
     cy.focused().check()
     checkAnswersPage.submit()
   })
+
+  it('Can defer submitting form', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    tasklistPage.checkNoPartsComplete()
+
+    const newIncidentPage = tasklistPage.startNewForm()
+    const detailsPage = newIncidentPage.save()
+    const relocationAndInjuriesPage = detailsPage.save()
+    const evidencePage = relocationAndInjuriesPage.save()
+    const checkAnswersPage = evidencePage.save()
+
+    checkAnswersPage.backToTasklist().click()
+
+    TasklistPage.verifyOnPage()
+  })
 })
