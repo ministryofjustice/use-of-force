@@ -8,6 +8,7 @@ context('Logging in', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubLocation', '357591')
   })
 
   it('After submitting a report, A user has the ability to start a new report', () => {
@@ -16,13 +17,15 @@ context('Logging in', () => {
     const tasklistPage = TasklistPage.visit(bookingId)
     tasklistPage.checkNoPartsComplete()
     const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
-    evidencePage.save()
+    const checkInputs = evidencePage.save()
+    checkInputs.verifyInputs()
 
     const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
     tasklistPageAfterAllPartsComplete.checkAllPartsComplete()

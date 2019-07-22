@@ -177,14 +177,8 @@ module.exports = {
         },
       },
       {
-        staffMemberNeedingMedicalAttention: {
+        staffNeedingMedicalAttention: {
           sanitiser: vals => inputsExcludingEmptyStrings(vals),
-        },
-      },
-      {
-        staffMemberWentToHospital: {
-          responseType: 'requiredString',
-          validationMessage: 'Did they go to hospital?',
         },
       },
     ],
@@ -203,12 +197,7 @@ module.exports = {
         },
       },
       {
-        tagNumbers: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
-        },
-      },
-      {
-        evidenceDescriptions: {
+        evidenceTagAndDescription: {
           sanitiser: vals => inputsExcludingEmptyStrings(vals),
         },
       },
@@ -243,7 +232,7 @@ module.exports = {
   },
 }
 
-function inputsExcludingEmptyStrings(inputs) {
+function inputsExcludingEmptyStrings(inputs = []) {
   const sanitisedArray = []
   inputs.forEach(input => {
     if (input.name !== null && input.name !== '' && input.name.trim() !== '') {

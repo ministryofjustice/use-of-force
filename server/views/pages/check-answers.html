@@ -41,32 +41,6 @@ href: backLink or "/"
     <p class="govuk-body">
       By submitting the report I confirm that the information I provided is correct to the best of my knowledge.
     </p>
-
-    <form method="post">
-      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-      {{
-        govukCheckboxes({
-          idPrefix: 'confirm',
-          name: 'confirmed',
-          classes: 'govuk-checkboxes--small',
-          errorMessage: errors[0],
-          items: [
-            {
-              id: 'confirm',
-              value: 'true',
-              text: 'I agree'
-            }
-          ]
-        })
-      }}
-      {% endif %}
-
-      <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
-
-      <h2 class="govuk-heading-m">Now submit the report</h2>
-      <p class="govuk-body">
-        By submitting the report I confirm that the information I provided is correct to the best of my knowledge.
-      </p>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
         {{
