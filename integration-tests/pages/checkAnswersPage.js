@@ -13,4 +13,5 @@ export default () =>
     confirm: () => cy.get('#confirm').click(),
     errorSummary: () => cy.get('#error-summary-title'),
     errorLink: error => cy.get('[data-qa-errors]').contains(error),
+    backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),
   })
