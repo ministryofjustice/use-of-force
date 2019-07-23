@@ -1,4 +1,5 @@
 const TasklistPage = require('../../pages/tasklistPage')
+const SubmittedPage = require('../../pages/submittedPage')
 
 context('Logging in', () => {
   const bookingId = 1001
@@ -28,7 +29,8 @@ context('Logging in', () => {
 
     const checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
     checkAnswersPage.confirm()
-    checkAnswersPage.submit()
+    checkAnswersPage.clickSubmit()
+    SubmittedPage.verifyOnPage()
 
     const tasklistPageForSubmittedForm = TasklistPage.visit(bookingId)
     tasklistPageForSubmittedForm.checkNoPartsComplete()

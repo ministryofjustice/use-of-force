@@ -9,8 +9,13 @@ module.exports = function createSomeService(formClient) {
   }
 
   async function submitForm(userId, bookingId) {
-    const result = await formClient.submit(userId, bookingId)
-    logger.info(`Rows altered: ${result.rows}`)
+    const form = await getFormResponse(userId, bookingId)
+    if (form.id) {
+      logger.info(`Submitting form for user: ${userId} and booking: ${bookingId}`)
+      await formClient.submit(userId, bookingId)
+      return form.id
+    }
+    return false
   }
 
   async function update({ userId, formId, bookingId, formObject, config, userInput, formSection, formName }) {
