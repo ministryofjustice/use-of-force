@@ -224,7 +224,7 @@ module.exports = function createApp({ signInService, formService, offenderServic
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/', createIncidentsRouter({ authenticationMiddleware }))
+  app.use('/', createIncidentsRouter({ authenticationMiddleware, formService }))
   app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, formService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use('/form/', createFormRouter({ authenticationMiddleware, formService, offenderService }))

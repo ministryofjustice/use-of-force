@@ -73,10 +73,16 @@ module.exports = function createSomeService(formClient) {
     }
   }
 
+  const getIncidentsForUser = async (userId, status) => {
+    const data = await formClient.getIncidentsForUser(userId, status)
+    return data.rows
+  }
+
   return {
     getFormResponse,
     update,
     submitForm,
     getValidationErrors: validate,
+    getIncidentsForUser,
   }
 }
