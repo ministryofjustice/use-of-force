@@ -1,12 +1,12 @@
 /* eslint-disable */
 
-const nunjucks = require('nunjucks')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
 const { createNamespace } = require('cls-hooked')
 const db = require('../../../server/data/dataAccess/db')
+const nunjucksSetup = require('../../utils/nunjucksSetup')
 
 module.exports = route => {
   const app = express()
@@ -24,27 +24,7 @@ module.exports = route => {
 
   app.set('view engine', 'html')
 
-  const njkEnv = nunjucks.configure(
-    [
-      path.join(__dirname, '../../../server/views'),
-      'node_modules/govuk-frontend/',
-      'node_modules/govuk-frontend/components/',
-    ],
-    {
-      autoescape: true,
-      express: app,
-    }
-  )
-
-  njkEnv.addFilter('findError', (array, formFieldId) => {
-    const item = array.find(error => error.href === `#${formFieldId}`)
-    if (item) {
-      return {
-        text: item.text,
-      }
-    }
-    return null
-  })
+  nunjucksSetup(app, path)
 
   app.use((req, res, next) => {
     req.user = {
