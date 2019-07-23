@@ -1,0 +1,28 @@
+{% extends "../../partials/layout.html" %} 
+{% from "button/macro.njk" import govukButton %} 
+
+{% block content %}
+  <h1 class="govuk-heading-xl mainHeading">Use of force statement</h1>
+
+  <form method="POST">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+  {{ 
+    govukButton({
+      text: "Submit",
+      name: "submit",
+      classes: "govuk-button",
+      attributes: {'data-qa': 'submit'}
+    })
+  }}
+  {{ 
+    govukButton({
+      text: "Cancel",
+      name: "submit",
+      href: '/',
+      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {'data-qa': 'return-to-tasklist'}
+    })
+  }}
+  </form>
+
+{% endblock %} 

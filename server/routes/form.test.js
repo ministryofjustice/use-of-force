@@ -75,7 +75,7 @@ describe('POST save and continue /section/form', () => {
 describe('POST save and return to tasklist', () => {
   test.each`
     sectionName   | formName         | userInput                        | nextPath
-    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-return' }} | ${'/1'}
+    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-return' }} | ${'/tasklist/1'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
       .post(`/${sectionName}/${formName}/1`)
