@@ -1,6 +1,14 @@
+const moment = require('moment')
+
 module.exports = {
   newIncident: {
     fields: [
+      {
+        incidentDate: {
+          responseType: 'requiredString',
+          sanitiser: val => moment(val, 'DD/MM/YYYY-HH:mm').toDate(),
+        },
+      },
       {
         locationId: {
           responseType: 'requiredNumber',
