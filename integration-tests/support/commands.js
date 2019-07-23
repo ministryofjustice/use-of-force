@@ -25,6 +25,6 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('login', bookingId => {
-  cy.request(`/${bookingId}`)
+  cy.request(`/tasklist/${bookingId}`)
   cy.task('getLoginUrl').then(cy.visit)
 })

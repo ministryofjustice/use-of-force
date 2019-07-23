@@ -9,7 +9,7 @@ module.exports = on => {
 
     getLoginUrl: auth.getLoginUrl,
 
-    stubLogin: auth.stubLogin,
+    stubLogin: () => Promise.all([auth.stubLogin(), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
 
     stubOffenderDetails: elite2api.stubOffenderDetails,
 
