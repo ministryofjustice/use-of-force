@@ -1,51 +1,45 @@
-{% extends "../partials/layout.html" %} {% from "button/macro.njk" import govukButton %} {% from "table/macro.njk"
-import govukTable %} {% block content %}
+{% extends "../partials/layout.html" %} 
+{% from "button/macro.njk" import govukButton %} 
+{% from "table/macro.njk" import govukTable %} 
+
+{% block content %}
 <h1 class="govuk-heading-xl mainHeading">Use of force incidents</h1>
 
-{{
-  govukTable({
-    caption: 'Not completed',
-    head: [
-      {
-        text: 'Date',
-        classes: 'govuk-!-width-one-quarter'
-      },
-      {
-        text: 'Prisoner',
-        classes: 'govuk-!-width-one-quarter'
-      },
-      {
-        text: 'Use of force reporter',
-        classes: 'govuk-!-width-one-quarter'
-      },
-      {
-        text: '',
-        classes: 'govuk-!-width-one-quarter'
-      }
-    ],
-    rows: [
-      [
-        {
-          text: '12/01/2018 - 13:20'
-        },
-        {
-          text: 'Mark Andrews'
-        },
-        {
-          text: 'Jane Smith'
-        }, 
-        {
-          html: govukButton({
-            text: 'Start now',
-            name: 'submit',
-            href: '/incidents/-1/statement',
-            classes: 'govuk-button',
-            attributes: { 'data-qa': 'return-to-tasklist' }
-          })
-        }
-      ]
-    ]
-  })
-}}
+<table class="govuk-table">
+  <caption class="govuk-table__caption">
+    Not completed
+  </caption>
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Date</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Use of force reporter</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+      {% for incident in incidentsToDo %}
+      <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{incident.date}}</td>
+          <td class="govuk-table__cell">{{incident.offenderName}}</td>
+          <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
+          <td class="govuk-table__cell">
+            <a
+              href="/incidents/{{ incident.id }}/statement"
+              role="button"
+              draggable="false"
+              class="govuk-button govuk-button"
+              data-qa="return-to-tasklist"
+            >
+              Start now
+            </a>
+          </td>
+      </tr>  
+      {% endfor %}
+
+  </tbody>
+</table>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware }) {
+module.exports = function Index({ authenticationMiddleware, formService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -20,8 +20,17 @@ module.exports = function Index({ authenticationMiddleware }) {
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
+      // TODO: retrieve correct values here
+      const incidents = await formService.getIncidentsForUser(req.user.username, 'SUBMITTED')
+      const incidentsToDo = incidents.map(incident => ({
+        id: incident.id,
+        date: incident.start_date,
+        staffMemberName: incident.user_id,
+        offenderName: incident.booking_id,
+      }))
+
       res.render('pages/incidents', {
-        data: {},
+        incidentsToDo,
       })
     })
   )

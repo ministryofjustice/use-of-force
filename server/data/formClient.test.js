@@ -58,3 +58,15 @@ test('submit', () => {
     values: ['SUBMITTED', 'user1', 'booking1'],
   })
 })
+
+test('getIncidentsForUser', () => {
+  formClient.getIncidentsForUser('user1', 'STATUS_1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select id, booking_id, start_date, user_id
+          from form
+          where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
+          and status = $3`,
+    values: ['user1', '[{"name":"user1"}]', 'STATUS_1'],
+  })
+})

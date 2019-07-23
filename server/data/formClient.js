@@ -41,9 +41,20 @@ const getFormDataForUser = (userId, bookingId, query = db.query) => {
   })
 }
 
+const getIncidentsForUser = (userId, status, query = db.query) => {
+  return query({
+    text: `select id, booking_id, start_date, user_id
+          from form
+          where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
+          and status = $3`,
+    values: [userId, JSON.stringify([{ name: userId }]), status],
+  })
+}
+
 module.exports = {
   create,
   update,
   submit,
   getFormDataForUser,
+  getIncidentsForUser,
 }

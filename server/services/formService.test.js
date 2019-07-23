@@ -2,6 +2,7 @@ const serviceCreator = require('./formService')
 
 const formClient = {
   getFormDataForUser: jest.fn(),
+  getIncidentsForUser: jest.fn(),
   update: jest.fn(),
   create: jest.fn(),
 }
@@ -10,12 +11,14 @@ let service
 beforeEach(() => {
   service = serviceCreator(formClient)
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
+  formClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 })
 
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
   formClient.create.mockReset()
+  formClient.getIncidentsForUser.mockReset()
 })
 
 describe('getFormResponse', () => {
@@ -338,5 +341,14 @@ describe('getValidationErrors', () => {
         },
       },
     })
+  })
+
+  test('getIncidentsForUser', async () => {
+    const output = await service.getIncidentsForUser('user1', 'STATUS-1')
+
+    expect(output).toEqual([{ id: 1 }, { id: 2 }])
+
+    expect(formClient.getIncidentsForUser).toBeCalledTimes(1)
+    expect(formClient.getIncidentsForUser).toBeCalledWith('user1', 'STATUS-1')
   })
 })
