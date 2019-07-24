@@ -2,7 +2,7 @@ const logger = require('../../log.js')
 const { equals } = require('../utils/utils')
 const { validate } = require('../utils/fieldValidation')
 
-module.exports = function createSomeService(formClient) {
+module.exports = function createIncidentService({ formClient, elite2ClientBuilder }) {
   async function getFormResponse(userId, bookingId) {
     const data = await formClient.getFormDataForUser(userId, bookingId)
     return data.rows[0] || {}
@@ -18,7 +18,18 @@ module.exports = function createSomeService(formClient) {
     return false
   }
 
-  async function update({ userId, formId, bookingId, formObject, config, userInput, formSection, formName }) {
+  async function update({
+    token,
+    userId,
+    reporterName,
+    formId,
+    bookingId,
+    formObject,
+    config,
+    userInput,
+    formSection,
+    formName,
+  }) {
     const updatedFormObject = getUpdatedFormObject({
       formObject,
       fieldMap: config.fields,
@@ -34,7 +45,15 @@ module.exports = function createSomeService(formClient) {
     if (formId) {
       await formClient.update(formId, updatedFormObject)
     } else {
-      await formClient.create(userId, bookingId, updatedFormObject)
+      const elite2Client = elite2ClientBuilder(token)
+      const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
+      await formClient.create({
+        userId,
+        bookingId,
+        reporterName,
+        offenderNo,
+        formResponse: updatedFormObject,
+      })
     }
     return updatedFormObject
   }

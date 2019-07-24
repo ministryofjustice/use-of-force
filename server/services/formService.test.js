@@ -6,12 +6,21 @@ const formClient = {
   update: jest.fn(),
   create: jest.fn(),
 }
+
+const elite2Client = {
+  getOffenderDetails: jest.fn(),
+}
+
 let service
 
 beforeEach(() => {
-  service = serviceCreator(formClient)
+  const elite2ClientBuilder = jest.fn()
+  elite2ClientBuilder.mockReturnValue(elite2Client)
+
+  service = serviceCreator({ formClient, elite2ClientBuilder })
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
   formClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+  elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
 afterEach(() => {
@@ -19,6 +28,7 @@ afterEach(() => {
   formClient.update.mockReset()
   formClient.create.mockReset()
   formClient.getIncidentsForUser.mockReset()
+  elite2Client.getOffenderDetails.mockReset()
 })
 
 describe('getFormResponse', () => {
@@ -122,6 +132,7 @@ describe('update', () => {
       await service.update({
         bookingId: 1,
         userId: 'user1',
+        reporterName: 'Bob Smith',
         formObject: {},
         config: { fields: fieldMap },
         userInput,
@@ -130,9 +141,15 @@ describe('update', () => {
       })
 
       expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith('user1', 1, {
-        section4: {
-          form3: userInput,
+      expect(formClient.create).toBeCalledWith({
+        userId: 'user1',
+        bookingId: 1,
+        offenderNo: 'AA123ABC',
+        reporterName: 'Bob Smith',
+        formResponse: {
+          section4: {
+            form3: userInput,
+          },
         },
       })
     })

@@ -13,7 +13,7 @@ const createOffenderService = require('./services/offenderService')
 const createUserService = require('./services/userService')
 
 // pass in dependencies of service
-const formService = createFormService(formClient)
+const formService = createFormService({ elite2ClientBuilder, formClient })
 const offenderService = createOffenderService(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder)
 

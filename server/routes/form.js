@@ -108,10 +108,12 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const { formId, formObject } = await loadForm(req, res)
 
       await formService.update({
+        token: res.locals.user.token,
         formId,
         formObject,
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
+        reporterName: res.locals.user.displayName,
         config: formPageConfig,
         userInput: req.body,
         formSection: section,
