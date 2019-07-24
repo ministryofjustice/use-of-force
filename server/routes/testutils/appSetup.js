@@ -33,6 +33,7 @@ module.exports = route => {
       userId: 'id',
       token: 'token',
       username: 'user1',
+      displayName: 'First Last',
     }
     res.locals = {}
     res.locals.user = req.user
