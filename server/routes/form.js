@@ -70,19 +70,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
         displayName,
         offenderNo,
         dateAndTime,
-        locations: [
-          {
-            value: '',
-            text: '-- Select --',
-            selected: pageData.location === '',
-          },
-        ].concat(
-          locations.map(location => ({
-            value: location.locationId,
-            text: location.userDescription,
-            selected: pageData.locationId === location.locationId,
-          }))
-        ),
+        locations,
       }
 
       renderForm({ req, res, formObject, data, section, form })

@@ -37,7 +37,7 @@
             isPageHeading: false,
             classes: 'govuk-label--xs govuk-!-margin-bottom-2'
           },
-          items: data.locations
+          items: data.locations | toSelect('locationId', 'userDescription', data.locationId )
         })
       }}
     </div>
