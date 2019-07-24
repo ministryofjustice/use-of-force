@@ -39,8 +39,9 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
         ])
         return res.redirect(`/check-answers/${bookingId}`)
       }
-      formService.submitForm(req.user.username, bookingId)
-      return res.redirect(`/submitted/${bookingId}`)
+      const incidentId = await formService.submitForm(req.user.username, bookingId)
+      const location = incidentId ? `/submitted/${incidentId}` : `/incidents`
+      return res.redirect(location)
     })
   )
 

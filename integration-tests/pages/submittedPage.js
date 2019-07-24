@@ -1,3 +1,7 @@
 const page = require('./page')
 
-export default () => page('Report submitted')
+const submittedPage = () => page('Report submitted')
+
+export default {
+  verifyOnPage: submittedPage,
+}

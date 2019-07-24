@@ -1,4 +1,6 @@
 const TasklistPage = require('../../pages/tasklistPage')
+const IncidentsPage = require('../../pages/incidentsPage')
+const SubmittedPage = require('../../pages/submittedPage')
 
 context('Submit the incident report', () => {
   const bookingId = 1001
@@ -27,7 +29,9 @@ context('Submit the incident report', () => {
     checkAnswersPage.errorSummary().contains('There is a problem')
     checkAnswersPage.errorLink('Check that you agree before submitting').click()
     cy.focused().check()
-    checkAnswersPage.submit()
+    checkAnswersPage.clickSubmit()
+
+    SubmittedPage.verifyOnPage()
   })
 
   it('Can defer submitting form', () => {
@@ -45,5 +49,29 @@ context('Submit the incident report', () => {
     checkAnswersPage.backToTasklist().click()
 
     TasklistPage.verifyOnPage()
+  })
+
+  it('After submitting, can not resubmit, go on to view all incidents', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    tasklistPage.checkNoPartsComplete()
+
+    const newIncidentPage = tasklistPage.startNewForm()
+    const detailsPage = newIncidentPage.save()
+    const relocationAndInjuriesPage = detailsPage.save()
+    const evidencePage = relocationAndInjuriesPage.save()
+    const checkAnswersPage = evidencePage.save()
+
+    checkAnswersPage.confirm()
+    checkAnswersPage.clickSubmit()
+
+    SubmittedPage.verifyOnPage()
+
+    cy.go('back')
+
+    checkAnswersPage.clickSubmit()
+
+    IncidentsPage.verifyOnPage()
   })
 })

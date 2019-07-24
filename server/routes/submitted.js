@@ -7,9 +7,9 @@ module.exports = function Index({ authenticationMiddleware }) {
   router.use(authenticationMiddleware())
 
   router.get(
-    '/:bookingId',
+    '/:incidentId',
     asyncMiddleware(async (req, res) => {
-      res.render('pages/submitted', { data: res.locals.formObject, bookingId: req.params.bookingId })
+      res.render('pages/submitted', { data: res.locals.formObject, incidentId: req.params.incidentId })
     })
   )
 
