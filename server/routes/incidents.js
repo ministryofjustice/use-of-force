@@ -1,4 +1,5 @@
 const express = require('express')
+const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
 module.exports = function Index({ authenticationMiddleware, formService }) {
@@ -24,7 +25,7 @@ module.exports = function Index({ authenticationMiddleware, formService }) {
       const incidents = await formService.getIncidentsForUser(req.user.username, 'SUBMITTED')
       const incidentsToDo = incidents.map(incident => ({
         id: incident.id,
-        date: incident.start_date,
+        date: moment(incident.incident_date).format('DD/MM/YYYY - HH:mm'),
         staffMemberName: incident.user_id,
         offenderName: incident.booking_id,
       }))
