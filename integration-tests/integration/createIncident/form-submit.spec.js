@@ -9,6 +9,7 @@ context('Submit the incident report', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubOffenders')
   })
 
   it('A form cannot be submitted until confirmed', () => {
@@ -72,6 +73,10 @@ context('Submit the incident report', () => {
 
     checkAnswersPage.clickSubmit()
 
-    IncidentsPage.verifyOnPage()
+    const incidentPage = IncidentsPage.verifyOnPage()
+    const [date, prisoner, reporter] = incidentPage.getTodoRow(0)
+    prisoner().should('contain', 'Norman Smith')
+    reporter().should('contain', 'James Stuart')
+    date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
   })
 })

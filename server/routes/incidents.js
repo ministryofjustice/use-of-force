@@ -1,7 +1,6 @@
 const express = require('express')
 const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const { properCaseName } = require('../utils/utils')
 
 module.exports = function Index({ authenticationMiddleware, formService, offenderService }) {
   const router = express.Router()
