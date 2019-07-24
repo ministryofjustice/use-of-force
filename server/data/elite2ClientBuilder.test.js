@@ -72,4 +72,19 @@ describe('elite2Client', () => {
       expect(output).toEqual(locations)
     })
   })
+
+  describe('getOffenders', () => {
+    const offenderNos = ['aaa', 'bbb']
+    const offenders = []
+
+    it('should return data from api', async () => {
+      fakeElite2Api
+        .post('/api/bookings/offenders', offenderNos)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, offenders)
+
+      const output = await elite2Client.getOffenders(offenderNos)
+      expect(output).toEqual(offenders)
+    })
+  })
 })

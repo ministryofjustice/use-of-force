@@ -43,7 +43,7 @@ const getFormDataForUser = (userId, bookingId, query = db.query) => {
 
 const getIncidentsForUser = (userId, status, query = db.query) => {
   return query({
-    text: `select id, booking_id, user_id, form_response -> 'incident' -> 'newIncident' -> 'incidentDate' incident_date
+    text: `select id, booking_id, reporter_name, offender_no, form_response -> 'incident' -> 'newIncident' -> 'incidentDate' incident_date
           from form
           where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
           and status = $3`,
