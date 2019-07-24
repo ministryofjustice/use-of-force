@@ -1,4 +1,5 @@
 const express = require('express')
+const moment = require('moment')
 const flash = require('connect-flash')
 const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
@@ -58,9 +59,17 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const { formObject } = await loadForm(req, res)
       const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject) || {}
 
+      const incidentDate = pageData.incidentDate ? moment(pageData.incidentDate) : moment()
+
+      const dateAndTime = {
+        date: incidentDate.format('DD/MM/YYYY'),
+        time: incidentDate.format('HH:mm'),
+      }
+
       const data = {
         displayName,
         offenderNo,
+        dateAndTime,
         locations: [
           {
             value: '',

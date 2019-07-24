@@ -1,3 +1,4 @@
+const moment = require('moment')
 const TasklistPage = require('../../pages/tasklistPage')
 const newIncidentPageFactory = require('../../pages/newIncidentPage')
 
@@ -43,14 +44,22 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getFormData', { bookingId, formName: 'newIncident' }).then(data =>
-      expect(data).to.deep.equal({
+    cy.task('getFormData', { bookingId, formName: 'newIncident' }).then(data => {
+      const { incidentDate, ...payload } = data
+
+      const incidentDateInMillis = moment(incidentDate).valueOf()
+      const nowInMillis = moment().valueOf()
+
+      const millisBetweenSavedDateAndNow = nowInMillis - incidentDateInMillis
+      expect(millisBetweenSavedDateAndNow).to.be.above(0)
+
+      expect(payload).to.deep.equal({
         locationId: 357591,
         involved: [{ name: 'AAAA' }, { name: 'BBBB' }],
         forceType: 'spontaneous',
         witnesses: [{ name: '1111' }],
       })
-    )
+    })
   })
 
   it('Can revisit saved data', () => {
