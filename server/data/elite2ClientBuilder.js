@@ -24,10 +24,15 @@ const defaultErrorLogger = error => logger.warn(error, 'Error calling elite2api'
 module.exports = token => {
   const userGet = userGetBuilder(token)
   const userStream = userStreamBuilder(token)
+  const userPost = userPostBuilder(token)
   return {
     async getOffenderDetails(bookingId) {
       const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
       return userGet({ path })
+    },
+    async getOffenders(offenderNos) {
+      const path = `${apiUrl}/api/bookings/offenders`
+      return userPost({ path, data: offenderNos })
     },
     async getUser() {
       const path = `${apiUrl}/api/users/me`
@@ -65,6 +70,31 @@ function userGetBuilder(token) {
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
         .query(query)
+        .auth(token, { type: 'bearer' })
+        .set(headers)
+        .responseType(responseType)
+        .timeout(timeoutSpec)
+
+      return raw ? result : result.body
+    } catch (error) {
+      logger.warn(error, 'Error calling elite2api')
+      throw error
+    }
+  }
+}
+
+function userPostBuilder(token) {
+  return async ({ path, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
+    logger.info(`Get using user credentials: calling elite2api: ${path}`)
+    try {
+      const result = await superagent
+        .post(path)
+        .send(data)
+        .agent(keepaliveAgent)
+        .retry(2, (err, res) => {
+          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
+          return undefined // retry handler only for logging retries, not to influence retry logic
+        })
         .auth(token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)

@@ -6,6 +6,7 @@ const elite2Client = {
   getOffenderDetails: jest.fn(),
   getLocations: jest.fn(),
   getOffenderImage: jest.fn(),
+  getOffenders: jest.fn(),
 }
 
 const elite2ClientBuilder = jest.fn()
@@ -61,5 +62,22 @@ describe('getOffenderImage', () => {
 
     expect(elite2ClientBuilder).toBeCalledWith(token)
     expect(elite2Client.getOffenderImage).toBeCalledWith(-5)
+  })
+})
+
+describe('getOffenders', () => {
+  it('Can retrieve offenders', async () => {
+    const offenders = [
+      { offenderNo: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
+      { offenderNo: 'BBB', firstName: 'BEN', lastName: 'SMITH' },
+    ]
+    elite2Client.getOffenders.mockReturnValue(offenders)
+
+    const offenderNos = ['AAA', 'BBB', 'AAA']
+    const names = await service.getOffenderNames(token, offenderNos)
+
+    expect(names).toEqual({ AAA: 'Sam Smith', BBB: 'Ben Smith' })
+    expect(elite2ClientBuilder).toBeCalledWith(token)
+    expect(elite2Client.getOffenders).toBeCalledWith(['AAA', 'BBB'])
   })
 })

@@ -69,7 +69,7 @@ test('getIncidentsForUser', () => {
   formClient.getIncidentsForUser('user1', 'STATUS_1')
 
   expect(db.query).toBeCalledWith({
-    text: `select id, booking_id, start_date, user_id
+    text: `select id, booking_id, reporter_name, offender_no, form_response -> 'incident' -> 'newIncident' -> 'incidentDate' incident_date
           from form
           where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
           and status = $3`,

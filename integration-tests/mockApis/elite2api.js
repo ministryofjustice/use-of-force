@@ -61,6 +61,30 @@ module.exports = {
       },
     })
   },
+  stubOffenders: () => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `/api/bookings/offenders`,
+        bodyPatterns: [{ equalToJson: ['A1234AC'] }],
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: [
+          {
+            offenderNo: 'A1234AC',
+            firstName: 'NORMAN',
+            lastName: 'SMITH',
+            agencyId: 'MDI',
+            dateOfBirth: '2000-12-26',
+          },
+        ],
+      },
+    })
+  },
   stubLocations: agencyId => {
     return stubFor({
       request: {

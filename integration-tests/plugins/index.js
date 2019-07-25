@@ -13,6 +13,8 @@ module.exports = on => {
 
     stubOffenderDetails: elite2api.stubOffenderDetails,
 
+    stubOffenders: elite2api.stubOffenders,
+
     stubLocations: elite2api.stubLocations,
 
     getFormData: (userId, bookingId, formName) => getFormData(userId, bookingId, formName),

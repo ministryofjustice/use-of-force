@@ -1,7 +1,8 @@
 const express = require('express')
+const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware, formService }) {
+module.exports = function Index({ authenticationMiddleware, formService, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -17,16 +18,21 @@ module.exports = function Index({ authenticationMiddleware, formService }) {
     res.redirect('/incidents')
   })
 
+  const getOffenderNames = (token, incidents) => {
+    const offenderNos = incidents.map(incident => incident.offender_no)
+    return offenderService.getOffenderNames(token, offenderNos)
+  }
+
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      // TODO: retrieve correct values here
       const incidents = await formService.getIncidentsForUser(req.user.username, 'SUBMITTED')
+      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, incidents)
       const incidentsToDo = incidents.map(incident => ({
         id: incident.id,
-        date: incident.start_date,
-        staffMemberName: incident.user_id,
-        offenderName: incident.booking_id,
+        date: moment(incident.incident_date).format('DD/MM/YYYY - HH:mm'),
+        staffMemberName: incident.reporter_name,
+        offenderName: namesByOffenderNumber[incident.offender_no],
       }))
 
       res.render('pages/incidents', {
