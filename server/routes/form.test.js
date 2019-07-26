@@ -2,16 +2,12 @@ const request = require('supertest')
 const appSetup = require('./testutils/appSetup')
 const createRouter = require('./form')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
-const incidentConfig = require('../config/incident')
-
-const formConfig = {
-  ...incidentConfig,
-}
 
 const formService = {
   getFormResponse: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
+  getUpdatedFormObject: jest.fn(),
 }
 
 const offenderService = {
@@ -25,10 +21,12 @@ let app
 beforeEach(() => {
   app = appSetup(formRoute)
   formService.getFormResponse.mockResolvedValue({})
+  formService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
   formService.getFormResponse.mockReset()
+  formService.getUpdatedFormObject.mockReset({})
   formService.update.mockReset()
 })
 
@@ -62,13 +60,9 @@ describe('POST save and continue /section/form', () => {
           bookingId: 1,
           userId: 'user1',
           formId: undefined,
-          formObject: {},
+          updatedFormObject: {},
           token: 'token',
           reporterName: 'First Last',
-          config: formConfig[formName],
-          userInput,
-          formSection: sectionName,
-          formName,
         })
       })
   )
@@ -92,11 +86,7 @@ describe('POST save and return to tasklist', () => {
           formId: undefined,
           token: 'token',
           reporterName: 'First Last',
-          formObject: {},
-          config: formConfig[formName],
-          userInput,
-          formSection: sectionName,
-          formName,
+          updatedFormObject: {},
         })
       })
   )

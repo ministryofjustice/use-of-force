@@ -18,30 +18,7 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
     return false
   }
 
-  async function update({
-    token,
-    userId,
-    reporterName,
-    formId,
-    bookingId,
-    formObject,
-    config,
-    userInput,
-    formSection,
-    formName,
-  }) {
-    const updatedFormObject = getUpdatedFormObject({
-      formObject,
-      fieldMap: config.fields,
-      userInput,
-      formSection,
-      formName,
-    })
-
-    if (equals(formObject, updatedFormObject)) {
-      return formObject
-    }
-
+  async function update({ token, userId, reporterName, formId, bookingId, updatedFormObject }) {
     if (formId) {
       await formClient.update(formId, updatedFormObject)
     } else {
@@ -61,13 +38,14 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
   function getUpdatedFormObject({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap.reduce(answersFromMapReducer(userInput), {})
 
-    return {
+    const updatedFormObject = {
       ...formObject,
       [formSection]: {
         ...formObject[formSection],
         [formName]: answers,
       },
     }
+    return !equals(formObject, updatedFormObject) && updatedFormObject
   }
 
   function answersFromMapReducer(userInput) {
@@ -108,5 +86,6 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
     submitForm,
     getValidationErrors: validate,
     getIncidentsForUser,
+    getUpdatedFormObject,
   }
 }

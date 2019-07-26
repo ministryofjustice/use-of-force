@@ -69,19 +69,16 @@ describe('update', () => {
       },
     }
 
-    test('should store everything', async () => {
+    test('should build updated object correctly', async () => {
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
         followUp2: 'Town',
       }
 
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
+      const output = await service.getUpdatedFormObject({
         formObject: baseForm,
-        config: { fields: fieldMap },
+        fieldMap,
         userInput,
         formSection: 'section4',
         formName: 'form3',
@@ -100,98 +97,47 @@ describe('update', () => {
       })
     })
 
-    test('should call update and pass in the form', async () => {
-      const userInput = {
-        decision: 'Yes',
-        followUp1: 'County',
-        followUp2: 'Town',
-      }
-
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
-        config: { fields: fieldMap },
-        userInput,
-        formSection: 'section4',
-        formName: 'form3',
-      })
-
-      expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output)
-    })
-
-    test('should call create when form id not present', async () => {
-      const userInput = {
-        decision: 'Yes',
-        followUp1: 'County',
-        followUp2: 'Town',
-      }
-
-      await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        reporterName: 'Bob Smith',
-        formObject: {},
-        config: { fields: fieldMap },
-        userInput,
-        formSection: 'section4',
-        formName: 'form3',
-      })
-
-      expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith({
-        userId: 'user1',
-        bookingId: 1,
-        offenderNo: 'AA123ABC',
-        reporterName: 'Bob Smith',
-        formResponse: {
-          section4: {
-            form3: userInput,
-          },
-        },
-      })
-    })
-
-    test('should not call update if there are no changes', async () => {
+    test('should not return updated form object when there has been no change', async () => {
       const fieldMapSimple = [{ answer: {} }]
       const userInput = { answer: 'answer' }
 
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
-        config: { fields: fieldMapSimple },
+      const existingForm = {
+        section1: '',
+        section2: '',
+        section3: {},
+        section4: {
+          form1: {},
+          form2: { answer: 'answer' },
+        },
+      }
+
+      const output = await service.getUpdatedFormObject({
+        formObject: existingForm,
+        fieldMap: fieldMapSimple,
         userInput,
         formSection: 'section4',
         formName: 'form2',
       })
 
-      expect(formClient.update).toBeCalledTimes(0)
-      expect(output).toEqual(baseForm)
+      expect(output).toEqual(false)
     })
 
-    it('should add new sections and forms to the licence if they dont exist', async () => {
+    it('should add new sections and forms to the form if they dont exist', async () => {
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
         followUp2: 'Town',
       }
 
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
+      const output = await service.getUpdatedFormObject({
         formObject: baseForm,
-        config: { fields: fieldMap },
+        fieldMap,
         userInput,
         formSection: 'section5',
         formName: 'form1',
       })
 
-      const expectedLicence = {
+      const expectedForm = {
         ...baseForm,
         section5: {
           form1: {
@@ -201,7 +147,41 @@ describe('update', () => {
           },
         },
       }
-      expect(output).toEqual(expectedLicence)
+      expect(output).toEqual(expectedForm)
+    })
+  })
+
+  test('should call update and pass in the form when form id is present', async () => {
+    const updatedFormObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
+
+    await service.update({
+      bookingId: 1,
+      userId: 'user1',
+      formId: 'form1',
+      updatedFormObject,
+    })
+
+    expect(formClient.update).toBeCalledTimes(1)
+    expect(formClient.update).toBeCalledWith('form1', updatedFormObject)
+  })
+
+  test('should call create when form id not present', async () => {
+    const updatedFormObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
+
+    await service.update({
+      bookingId: 1,
+      userId: 'user1',
+      reporterName: 'Bob Smith',
+      updatedFormObject,
+    })
+
+    expect(formClient.create).toBeCalledTimes(1)
+    expect(formClient.create).toBeCalledWith({
+      userId: 'user1',
+      bookingId: 1,
+      offenderNo: 'AA123ABC',
+      reporterName: 'Bob Smith',
+      formResponse: updatedFormObject,
     })
   })
 
@@ -244,12 +224,9 @@ describe('update', () => {
       const formSection = 'section4'
       const formName = 'form3'
 
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
+      const output = await service.getUpdatedFormObject({
         formObject: baseForm,
-        config: { fields: fieldMap },
+        fieldMap,
         userInput,
         formSection,
         formName,
@@ -278,12 +255,9 @@ describe('update', () => {
       const formSection = 'section4'
       const formName = 'form3'
 
-      const output = await service.update({
-        bookingId: 1,
-        userId: 'user1',
-        formId: 'form1',
+      const output = await service.getUpdatedFormObject({
         formObject: baseForm,
-        config: { fields: fieldMap },
+        fieldMap,
         userInput,
         formSection,
         formName,
@@ -329,23 +303,19 @@ describe('getValidationErrors', () => {
   })
 
   test('sanitisation', async () => {
-    const config = {
-      fields: [
-        {
-          q1: {
-            responseType: 'requiredString',
-            validationMessage: 'Please give a full name',
-            sanitiser: val => val.toUpperCase(),
-          },
+    const config = [
+      {
+        q1: {
+          responseType: 'requiredString',
+          validationMessage: 'Please give a full name',
+          sanitiser: val => val.toUpperCase(),
         },
-      ],
-    }
-    const output = await service.update({
-      bookingId: 1,
-      userId: 'user1',
-      formId: 'form1',
+      },
+    ]
+
+    const output = await service.getUpdatedFormObject({
       formObject: {},
-      config,
+      fieldMap: config,
       userInput: { q1: 'aaaAAAaa' },
       formSection: 'section4',
       formName: 'form1',

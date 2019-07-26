@@ -56,7 +56,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const section = 'incident'
       const form = 'newIncident'
 
-      const { formObject } = await loadForm(req, res)
+      const { formObject } = await loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject) || {}
 
       const incidentDate = pageData.incidentDate ? moment(pageData.incidentDate) : moment()
@@ -81,7 +81,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form } = req.params
-      const { formObject } = await loadForm(req, res)
+      const { formObject } = await loadForm(req)
       renderForm({ req, res, formObject, section, form })
     })
   )
@@ -105,20 +105,26 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
         }
       }
 
-      const { formId, formObject } = await loadForm(req, res)
+      const { formId, formObject } = await loadForm(req)
 
-      await formService.update({
-        token: res.locals.user.token,
-        formId,
+      const updatedFormObject = await formService.getUpdatedFormObject({
         formObject,
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        reporterName: res.locals.user.displayName,
-        config: formPageConfig,
+        fieldMap: formPageConfig.fields,
         userInput: req.body,
         formSection: section,
         formName: form,
       })
+
+      if (updatedFormObject) {
+        await formService.update({
+          token: res.locals.user.token,
+          formId,
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          reporterName: res.locals.user.displayName,
+          updatedFormObject,
+        })
+      }
 
       const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
       const location = req.body.submit === 'save-and-continue' ? `${nextPath}${bookingId}` : `/tasklist/${bookingId}`
