@@ -164,14 +164,12 @@ const convertArrayOfObjectsToString = (dataArray = []) => {
   return finalString.slice(0, -2)
 }
 
-// titlecase all person names
 const toTitleCase = (str = '') => {
   return str.replace(/\w\S*/g, txt => {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
   })
 }
 
-// staff taken to hospital
 const staffTakenToHospital = (staffMembers = []) => {
   const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === 'Yes').map(staff => staff.name)
   if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
@@ -180,7 +178,6 @@ const staffTakenToHospital = (staffMembers = []) => {
   return toTitleCase(hospitalisedStaff.join(', '))
 }
 
-// evidence bagged
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
   if (evidenceYesNo === 'No') {
     return 'none'
@@ -192,12 +189,10 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
     .join(`<br/>`)
 }
 
-// how many officers involved
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
   return guidingHoldOfficersInvolved === 'one' ? ' - one officer involved' : ' - two officers involved'
 }
 
-// handcuffs used
 const typeOfHandcuffsUsed = handcuffsType => {
   return handcuffsType === 'ratchet' ? ' - ratchet' : ' - fixed bar'
 }
