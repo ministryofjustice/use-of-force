@@ -24,13 +24,13 @@ context('Logging in', () => {
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
-    const checkInputs = evidencePage.save()
-    checkInputs.verifyInputs()
+    let checkAnswersPage = evidencePage.save()
+    checkAnswersPage.verifyInputs()
 
     const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
     tasklistPageAfterAllPartsComplete.checkAllPartsComplete()
 
-    const checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
+    checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
     checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
     SubmittedPage.verifyOnPage()
