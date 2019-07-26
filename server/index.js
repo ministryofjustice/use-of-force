@@ -7,18 +7,18 @@ const createApp = require('./app')
 const formClient = require('./data/formClient')
 const elite2ClientBuilder = require('./data/elite2ClientBuilder')
 
-const createFormService = require('./services/formService')
+const createIncidentService = require('./services/incidentService')
 const createSignInService = require('./authentication/signInService')
 const createOffenderService = require('./services/offenderService')
 const createUserService = require('./services/userService')
 
 // pass in dependencies of service
-const formService = createFormService({ elite2ClientBuilder, formClient })
+const incidentService = createIncidentService({ elite2ClientBuilder, formClient })
 const offenderService = createOffenderService(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder)
 
 const app = createApp({
-  formService,
+  incidentService,
   signInService: createSignInService(),
   offenderService,
   userService,

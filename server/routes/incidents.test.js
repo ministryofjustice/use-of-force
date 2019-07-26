@@ -3,14 +3,14 @@ const appSetup = require('./testutils/appSetup')
 const createRouter = require('./incidents')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const formService = {
+const incidentService = {
   getIncidentsForUser: () => [{ id: 1, booking_id: 2, start_date: '12/12/2018', user_id: 'ITAG_USER' }],
 }
 
 const offenderService = {
   getOffenderNames: () => [],
 }
-const route = createRouter({ authenticationMiddleware, formService, offenderService })
+const route = createRouter({ authenticationMiddleware, incidentService, offenderService })
 
 let app
 

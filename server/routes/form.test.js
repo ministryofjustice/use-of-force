@@ -3,7 +3,7 @@ const appSetup = require('./testutils/appSetup')
 const createRouter = require('./form')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const formService = {
+const incidentService = {
   getFormResponse: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
@@ -14,20 +14,20 @@ const offenderService = {
   getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
 }
 
-const formRoute = createRouter({ formService, authenticationMiddleware, offenderService })
+const formRoute = createRouter({ incidentService, authenticationMiddleware, offenderService })
 
 let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  formService.getFormResponse.mockResolvedValue({})
-  formService.getUpdatedFormObject.mockResolvedValue({})
+  incidentService.getFormResponse.mockResolvedValue({})
+  incidentService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
-  formService.getFormResponse.mockReset()
-  formService.getUpdatedFormObject.mockReset({})
-  formService.update.mockReset()
+  incidentService.getFormResponse.mockReset()
+  incidentService.getUpdatedFormObject.mockReset({})
+  incidentService.update.mockReset()
 })
 
 describe('GET /section/form', () => {
@@ -55,8 +55,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.update).toBeCalledWith({
+        expect(incidentService.update).toBeCalledTimes(1)
+        expect(incidentService.update).toBeCalledWith({
           bookingId: 1,
           userId: 'user1',
           formId: undefined,
@@ -79,8 +79,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.update).toBeCalledWith({
+        expect(incidentService.update).toBeCalledTimes(1)
+        expect(incidentService.update).toBeCalledWith({
           bookingId: 1,
           userId: 'user1',
           formId: undefined,

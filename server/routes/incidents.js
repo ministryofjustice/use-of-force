@@ -2,7 +2,7 @@ const express = require('express')
 const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware, formService, offenderService }) {
+module.exports = function Index({ authenticationMiddleware, incidentService, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -26,7 +26,7 @@ module.exports = function Index({ authenticationMiddleware, formService, offende
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      const incidents = await formService.getIncidentsForUser(req.user.username, 'SUBMITTED')
+      const incidents = await incidentService.getIncidentsForUser(req.user.username, 'SUBMITTED')
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, incidents)
       const incidentsToDo = incidents.map(incident => ({
         id: incident.id,

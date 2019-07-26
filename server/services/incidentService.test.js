@@ -1,4 +1,4 @@
-const serviceCreator = require('./formService')
+const serviceCreator = require('./incidentService')
 
 const formClient = {
   getFormDataForUser: jest.fn(),

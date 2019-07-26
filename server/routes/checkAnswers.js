@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -23,7 +23,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { form_response: formObject = {} } = await formService.getFormResponse(req.user.username, bookingId)
+      const { form_response: formObject = {} } = await incidentService.getFormResponse(req.user.username, bookingId)
       const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
@@ -57,7 +57,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
         ])
         return res.redirect(`/check-answers/${bookingId}`)
       }
-      const incidentId = await formService.submitForm(req.user.username, bookingId)
+      const incidentId = await incidentService.submitForm(req.user.username, bookingId)
       const location = incidentId ? `/submitted/${incidentId}` : `/incidents`
       return res.redirect(location)
     })

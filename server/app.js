@@ -33,7 +33,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService, offenderService, userService }) {
+module.exports = function createApp({ signInService, incidentService, offenderService, userService }) {
   const app = express()
 
   auth.init(signInService)
@@ -224,12 +224,12 @@ module.exports = function createApp({ signInService, formService, offenderServic
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/', createIncidentsRouter({ authenticationMiddleware, formService, offenderService }))
-  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, formService, offenderService }))
+  app.use('/', createIncidentsRouter({ authenticationMiddleware, incidentService, offenderService }))
+  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, incidentService, offenderService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
-  app.use('/form/', createFormRouter({ authenticationMiddleware, formService, offenderService }))
+  app.use('/form/', createFormRouter({ authenticationMiddleware, incidentService, offenderService }))
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
-  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, formService, offenderService }))
+  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, incidentService, offenderService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

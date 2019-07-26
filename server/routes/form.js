@@ -24,10 +24,10 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
   })
 }
 
-module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
-    const { form_response: formObject = {}, id: formId } = await formService.getFormResponse(
+    const { form_response: formObject = {}, id: formId } = await incidentService.getFormResponse(
       req.user.username,
       bookingId
     )
@@ -96,7 +96,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
       if (formPageConfig.validate) {
         const formResponse = inputForExpectedFields
-        const errors = formService.getValidationErrors(formResponse, formPageConfig)
+        const errors = incidentService.getValidationErrors(formResponse, formPageConfig)
 
         if (!isNilOrEmpty(errors)) {
           req.flash('errors', errors)
@@ -107,7 +107,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
       const { formId, formObject } = await loadForm(req)
 
-      const updatedFormObject = await formService.getUpdatedFormObject({
+      const updatedFormObject = await incidentService.getUpdatedFormObject({
         formObject,
         fieldMap: formPageConfig.fields,
         userInput: req.body,
@@ -116,7 +116,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       })
 
       if (updatedFormObject) {
-        await formService.update({
+        await incidentService.update({
           token: res.locals.user.token,
           formId,
           bookingId: parseInt(bookingId, 10),
