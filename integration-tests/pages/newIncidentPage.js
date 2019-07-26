@@ -11,6 +11,7 @@ export default () =>
       planned: () => cy.get("[name='forceType'][value='planned']"),
       spontaneous: () => cy.get("[name='forceType'][value='spontaneous']"),
     },
+
     fillForm: () => {
       cy.get('[data-offender-name]')
       cy.get('#location').select('Asso A Wing')
@@ -28,6 +29,7 @@ export default () =>
       cy.get('.add-another-staff-member > :nth-child(1) > .govuk-button').click()
       cy.get('.add-another-witness > :nth-child(2) > .govuk-button').click()
     },
+
     staffInvolved: index => ({
       name: () => cy.get(`#involved\\[${index}\\]\\[name\\]`),
       remove: () =>
@@ -47,6 +49,7 @@ export default () =>
           .find('button.add-another__remove-button'),
     }),
     addAnotherWitness: () => cy.get('[data-qa-add-another-witness]'),
+
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
       return detailsPage()

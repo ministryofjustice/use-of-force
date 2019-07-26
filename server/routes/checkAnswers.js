@@ -42,7 +42,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const viewObject = formObject.incident || {}
       viewObject.newIncident = viewObject.newIncident || {}
 
-      const offenderLocation = await offenderService.getLocation(
+      const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
         viewObject.newIncident.locationId
       )
@@ -51,7 +51,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const newIncident = {
         'Offender name': offenderDetail.displayName,
         'Offender number': offenderDetail.offenderNo,
-        Location: offenderLocation.description,
+        Location: description,
         'Use of force planned': viewObject.newIncident.forceType,
         'Staff involved': toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.involved)),
         Witnesses: toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.witnesses)),

@@ -50,6 +50,9 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
   }
 
   const getLocation = (token, locationId) => {
+    if (!locationId) {
+      return {}
+    }
     const elite2Client = elite2ClientBuilder(token)
     return elite2Client.getLocation(locationId)
   }
