@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-// eslint-disable-next-line
 module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
 
