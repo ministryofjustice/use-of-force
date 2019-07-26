@@ -66,7 +66,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
         'Restraint used':
           viewObject.details.restraint +
           (viewObject.details.restraint === 'Yes'
-            ? ` - ${convertNestedArraysToString(viewObject.details.restraintPositions)}`
+            ? ` - ${getRestraintPositions(viewObject.details.restraintPositions)}`
             : ''),
         'Handcuffs used':
           viewObject.details.handcuffsApplied +
@@ -141,27 +141,15 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
   return router
 }
 
-// utility function - convert to string where input MAY be an array
-
-const convertNestedArraysToString = allElements => {
-  if (Array.isArray(allElements)) {
-    let finalString = ''
-    allElements.forEach(element => {
-      finalString += `${element}, `
-    })
-    finalString = finalString.slice(0, -2)
-    return finalString
+const getRestraintPositions = positions => {
+  if (Array.isArray(positions)) {
+    return positions.join(', ')
   }
-  return allElements
+  return ''
 }
 
-// utility function - convert to string when input WILL be nested objects
 const convertArrayOfObjectsToString = (dataArray = []) => {
-  let finalString = ''
-  dataArray.forEach(element => {
-    finalString += `${element.name}, `
-  })
-  return finalString.slice(0, -2)
+  return dataArray.map(element => element.name).join(', ')
 }
 
 const toTitleCase = (str = '') => {
