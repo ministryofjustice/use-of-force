@@ -26,16 +26,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       // offender details
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
 
-      // retrieve form inputs
-      // eslint-disable-next-line
-      const loadForm = async req => {
-        const { form_response: formObject = {}, id: formId } = await formService.getFormResponse(
-          req.user.username,
-          bookingId
-        )
-        return { formId, formObject }
-      }
-      const { formObject } = await loadForm(req, res)
+      const { form_response: formObject = {} } = await formService.getFormResponse(req.user.username, bookingId)
 
       // parent obj to send to view
       const viewObject = formObject.incident || {}
