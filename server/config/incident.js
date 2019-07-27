@@ -30,12 +30,12 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
         },
       },
       {
         witnesses: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
         },
       },
     ],
@@ -178,7 +178,7 @@ module.exports = {
       },
       {
         staffNeedingMedicalAttention: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
         },
       },
     ],
@@ -198,7 +198,7 @@ module.exports = {
       },
       {
         evidenceTagAndDescription: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => inputsExcludingEmptyStrings('description', vals),
         },
       },
       {
@@ -221,7 +221,7 @@ module.exports = {
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => inputsExcludingEmptyStrings('cameraNum', vals),
         },
       },
     ],
@@ -232,10 +232,10 @@ module.exports = {
   },
 }
 
-function inputsExcludingEmptyStrings(inputs = []) {
+function inputsExcludingEmptyStrings(attr = 'name', inputs = []) {
   const sanitisedArray = []
   inputs.forEach(input => {
-    if (input.name !== null && input.name !== '' && input.name.trim() !== '') {
+    if (input[attr] !== null && input[attr] !== '' && input[attr].trim() !== '') {
       sanitisedArray.push(input)
     }
   })

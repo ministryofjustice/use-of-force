@@ -34,9 +34,13 @@ export default () =>
         'Eddie Thomas, Jayne Eyre'
       )
       cy.get('.govuk-grid-column-full > :nth-child(5) > :nth-child(2) > :nth-child(2)')
-        .contains('Bagged evidence 1 This evidence was collected from the prisoners cell')
-        .contains('Bagged evidence 2 This evidence was collected from the prisoners cell')
-        .contains('Bagged evidence 3 Clothes samples')
+        .contains('Bagged evidence 1')
+        .contains('This evidence was collected from the prisoner 1')
+
+        .contains('Bagged evidence 2')
+        .contains('This evidence was collected from the prisoner 2')
+        .contains('Bagged evidence 3')
+        .contains('Clothes samples')
 
       cy.get('.govuk-grid-column-full > :nth-child(5) > :nth-child(3) > :nth-child(2)').contains('Yes')
       cy.get('.govuk-grid-column-full > :nth-child(5) > :nth-child(4) > :nth-child(2)').contains('Not Known')

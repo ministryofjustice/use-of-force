@@ -80,8 +80,8 @@ const getRestraintPositions = positions => {
   return ''
 }
 
-const convertArrayOfObjectsToString = (dataArray = []) => {
-  return dataArray.map(element => element.name).join(', ')
+const convertArrayOfObjectsToStringUsingSpecifiedKey = (attr, dataArray = []) => {
+  return dataArray.map(element => element[attr]).join(', ')
 }
 
 const toTitleCase = (str = '') => {
@@ -104,9 +104,9 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
   }
   return tagsAndEvidence
     .map(item => {
-      return `${item.name} ${item.description}`
+      return `${item.evidenceTagReference}<br/>${item.description}`
     })
-    .join(`<br/>`)
+    .join(`<br/></br>`)
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
@@ -123,8 +123,10 @@ const createNewIncidentObj = (offenderDetail, description, formData) => {
     'Offender number': offenderDetail.offenderNo,
     Location: description,
     'Use of force planned': formData.newIncident.forceType,
-    'Staff involved': toTitleCase(convertArrayOfObjectsToString(formData.newIncident.involved)),
-    Witnesses: toTitleCase(convertArrayOfObjectsToString(formData.newIncident.witnesses)),
+    'Staff involved': toTitleCase(
+      convertArrayOfObjectsToStringUsingSpecifiedKey('name', formData.newIncident.involved)
+    ),
+    Witnesses: toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', formData.newIncident.witnesses)),
   }
 }
 
@@ -159,7 +161,9 @@ const createRelocationObj = relocationAndInjuries => {
     'Staff needed medical attention':
       relocationAndInjuries.staffMedicalAttention +
       (relocationAndInjuries.staffMedicalAttention === 'Yes'
-        ? ` - ${toTitleCase(convertArrayOfObjectsToString(relocationAndInjuries.staffNeedingMedicalAttention))}`
+        ? ` - ${toTitleCase(
+            convertArrayOfObjectsToStringUsingSpecifiedKey('name', relocationAndInjuries.staffNeedingMedicalAttention)
+          )}`
         : ''),
     'Staff taken to hospital': staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
   }
@@ -172,6 +176,8 @@ const createEvidenceObj = evidence => {
     'CCTV images': evidence.cctvRecording,
     'Body worn cameras':
       evidence.bodyWornCamera +
-      (evidence.bodyWornCamera === 'Yes' ? ` - ${convertArrayOfObjectsToString(evidence.bodyWornCameraNumbers)}` : ''),
+      (evidence.bodyWornCamera === 'Yes'
+        ? ` - ${convertArrayOfObjectsToStringUsingSpecifiedKey('cameraNum', evidence.bodyWornCameraNumbers)}`
+        : ''),
   }
 }

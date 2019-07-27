@@ -61,12 +61,12 @@ git {% extends "../formTemplate.html" %}
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'evidence-tag-and-description[' + loop.index0 + '][name]',
-                      name: 'evidenceTagAndDescription[' + loop.index0 + '][name]',
-                      value: evidenceTagAndDescription.name,
+                      id: 'evidence-tag-and-description[' + loop.index0 + '][evidenceTagReference]',
+                      name: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
+                      value: evidenceTagAndDescription.evidenceTagReference,
                       attributes: {
-                        'data-name': 'evidenceTagAndDescription[%index%][name]',
-                        'data-id': 'evidence-tag-and-description[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
+                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
                       }
                     })
                   }} 
@@ -103,11 +103,11 @@ git {% extends "../formTemplate.html" %}
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'evidence-tag-and-description[0][name]',
-                      name: 'evidenceTagAndDescription[0][name]',
+                      id: 'evidence-tag-and-description[0][evidenceTagReference]',
+                      name: 'evidenceTagAndDescription[0][evidenceTagReference]',
                       attributes: {
-                        'data-name': 'evidenceTagAndDescription[%index%][name]',
-                        'data-id': 'evidence-tag-and-description[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
+                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
                       }
                     })
                   }}
@@ -243,12 +243,12 @@ git {% extends "../formTemplate.html" %}
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[' + loop.index0 + '][name]',
-                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][name]',
-                        value: camera.name,
+                        id: 'body-worn-camera-numbers[' + loop.index0 + '][cameraNum]',
+                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
+                        value: camera.cameraNum,
                         attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
                     }} 
@@ -269,11 +269,11 @@ git {% extends "../formTemplate.html" %}
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[0][name]',
-                        name: 'bodyWornCameraNumbers[0][name]',
+                        id: 'body-worn-camera-numbers[0][cameraNum]',
+                        name: 'bodyWornCameraNumbers[0][cameraNum]',
                         attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
                     }}
