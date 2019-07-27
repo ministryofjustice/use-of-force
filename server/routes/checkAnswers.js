@@ -22,99 +22,31 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
     asyncMiddleware(async (req, res) => {
       const errors = req.flash('errors')
       const { bookingId } = req.params
-
-      // offender details
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-
       const { form_response: formObject = {} } = await formService.getFormResponse(req.user.username, bookingId)
+      const formData = {}
 
-      // parent obj to send to view
-      const viewObject = formObject.incident || {}
-      viewObject.newIncident = viewObject.newIncident || {}
+      Object.assign(formData, formObject.incident)
+
+      formData.newIncident = formData.newIncident || {}
+      formData.details = formData.details || {}
+      formData.relocationAndInjuries = formData.relocationAndInjuries || {}
+      formData.evidence = formData.evidence || {}
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
-        viewObject.newIncident.locationId
+        formData.newIncident.locationId
       )
 
-      // new incident object
-      const newIncident = {
-        'Offender name': offenderDetail.displayName,
-        'Offender number': offenderDetail.offenderNo,
-        Location: description,
-        'Use of force planned': viewObject.newIncident.forceType,
-        'Staff involved': toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.involved)),
-        Witnesses: toTitleCase(convertArrayOfObjectsToString(viewObject.newIncident.witnesses)),
+      const data = {
+        newIncident: createNewIncidentObj(offenderDetail, description, formData),
+        offenderDetail,
+        details: createDetailsObj(formData.details),
+        relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
+        evidence: createEvidenceObj(formData.evidence),
       }
-      viewObject.newIncident = newIncident
-      viewObject.offenderDetail = offenderDetail
 
-      // details object. Initilise to previous values or empty object to prevent 'undefined' errors
-      viewObject.details = viewObject.details || {}
-      const details = {
-        'Positive communication used': viewObject.details.positiveCommunication,
-        'Personal Protection Techniques': viewObject.details.personalProtectionTechniques,
-        'Baton Drawn':
-          viewObject.details.batonDrawn + (viewObject.details.batonUsed === 'Yes' ? ' - and used' : ' - but not used'),
-        'Pava drawn':
-          viewObject.details.pavaDrawn + (viewObject.details.pavaUsed === 'Yes' ? ' - and used' : ' - but not used'),
-        'Guiding hold used':
-          viewObject.details.guidingHold +
-          (viewObject.details.guidingHold === 'Yes'
-            ? howManyOfficersInvolved(viewObject.details.guidingHoldOfficersInvolved)
-            : ''),
-        'Restraint used':
-          viewObject.details.restraint +
-          (viewObject.details.restraint === 'Yes'
-            ? ` - ${getRestraintPositions(viewObject.details.restraintPositions)}`
-            : ''),
-        'Handcuffs used':
-          viewObject.details.handcuffsApplied +
-          (viewObject.details.handcuffsApplied === 'Yes' ? typeOfHandcuffsUsed(viewObject.details.handcuffsType) : ''),
-      }
-      viewObject.details = details
-
-      // relocation object
-      viewObject.relocationAndInjuries = viewObject.relocationAndInjuries || {}
-      const relocationAndInjuries = {
-        'Prisoner relocated to': viewObject.relocationAndInjuries.prisonerRelocation,
-        'Relocation compliancy': viewObject.relocationAndInjuries.relocationCompliancy,
-        'Healthcare staff present':
-          viewObject.relocationAndInjuries.healthcareInvolved +
-          (viewObject.relocationAndInjuries.healthcareInvolved === 'Yes'
-            ? ` - ${toTitleCase(viewObject.relocationAndInjuries.healthcarePractionerName)}`
-            : ''),
-        'F213 completed by': toTitleCase(viewObject.relocationAndInjuries.f213CompletedBy),
-        'Prisoner required hospitalisation': viewObject.relocationAndInjuries.prisonerHospitalisation,
-        'Staff needed medical attention':
-          viewObject.relocationAndInjuries.staffMedicalAttention +
-          (viewObject.relocationAndInjuries.staffMedicalAttention === 'Yes'
-            ? ` - ${toTitleCase(
-                convertArrayOfObjectsToString(viewObject.relocationAndInjuries.staffNeedingMedicalAttention)
-              )}`
-            : ''),
-        'Staff taken to hospital': staffTakenToHospital(viewObject.relocationAndInjuries.staffNeedingMedicalAttention),
-      }
-      viewObject.relocationAndInjuries = relocationAndInjuries
-
-      // evidence object
-      viewObject.evidence = viewObject.evidence || {}
-      const evidence = {
-        'Evidence bagged and tagged': baggedAndTaggedEvidence(
-          viewObject.evidence.evidenceTagAndDescription,
-          viewObject.evidence.baggedEvidence
-        ),
-        'Photgraphs taken': viewObject.evidence.photographsTaken,
-        'CCTV images': viewObject.evidence.cctvRecording,
-        'Body worn cameras':
-          viewObject.evidence.bodyWornCamera +
-          (viewObject.evidence.bodyWornCamera === 'Yes'
-            ? ` - ${convertArrayOfObjectsToString(viewObject.evidence.bodyWornCameraNumbers)}`
-            : ''),
-      }
-      viewObject.evidence = evidence
-
-      res.render('pages/check-answers', { data: viewObject, bookingId, errors })
+      res.render('pages/check-answers', { data, bookingId, errors })
     })
   )
 
@@ -183,4 +115,63 @@ const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
 
 const typeOfHandcuffsUsed = handcuffsType => {
   return handcuffsType === 'ratchet' ? ' - ratchet' : ' - fixed bar'
+}
+
+const createNewIncidentObj = (offenderDetail, description, formData) => {
+  return {
+    'Offender name': offenderDetail.displayName,
+    'Offender number': offenderDetail.offenderNo,
+    Location: description,
+    'Use of force planned': formData.newIncident.forceType,
+    'Staff involved': toTitleCase(convertArrayOfObjectsToString(formData.newIncident.involved)),
+    Witnesses: toTitleCase(convertArrayOfObjectsToString(formData.newIncident.witnesses)),
+  }
+}
+
+const createDetailsObj = details => {
+  return {
+    'Positive communication used': details.positiveCommunication,
+    'Personal Protection Techniques': details.personalProtectionTechniques,
+    'Baton Drawn': details.batonDrawn + (details.batonUsed === 'Yes' ? ' - and used' : ' - but not used'),
+    'Pava drawn': details.pavaDrawn + (details.pavaUsed === 'Yes' ? ' - and used' : ' - but not used'),
+    'Guiding hold used':
+      details.guidingHold +
+      (details.guidingHold === 'Yes' ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : ''),
+    'Restraint used':
+      details.restraint +
+      (details.restraint === 'Yes' ? ` - ${getRestraintPositions(details.restraintPositions)}` : ''),
+    'Handcuffs used':
+      details.handcuffsApplied + (details.handcuffsApplied === 'Yes' ? typeOfHandcuffsUsed(details.handcuffsType) : ''),
+  }
+}
+
+const createRelocationObj = relocationAndInjuries => {
+  return {
+    'Prisoner relocated to': relocationAndInjuries.prisonerRelocation,
+    'Relocation compliancy': relocationAndInjuries.relocationCompliancy,
+    'Healthcare staff present':
+      relocationAndInjuries.healthcareInvolved +
+      (relocationAndInjuries.healthcareInvolved === 'Yes'
+        ? ` - ${toTitleCase(relocationAndInjuries.healthcarePractionerName)}`
+        : ''),
+    'F213 completed by': toTitleCase(relocationAndInjuries.f213CompletedBy),
+    'Prisoner required hospitalisation': relocationAndInjuries.prisonerHospitalisation,
+    'Staff needed medical attention':
+      relocationAndInjuries.staffMedicalAttention +
+      (relocationAndInjuries.staffMedicalAttention === 'Yes'
+        ? ` - ${toTitleCase(convertArrayOfObjectsToString(relocationAndInjuries.staffNeedingMedicalAttention))}`
+        : ''),
+    'Staff taken to hospital': staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
+  }
+}
+
+const createEvidenceObj = evidence => {
+  return {
+    'Evidence bagged and tagged': baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
+    'Photgraphs taken': evidence.photographsTaken,
+    'CCTV images': evidence.cctvRecording,
+    'Body worn cameras':
+      evidence.bodyWornCamera +
+      (evidence.bodyWornCamera === 'Yes' ? ` - ${convertArrayOfObjectsToString(evidence.bodyWornCameraNumbers)}` : ''),
+  }
 }
