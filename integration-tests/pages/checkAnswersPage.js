@@ -36,7 +36,6 @@ export default () =>
       cy.get('.govuk-grid-column-full > :nth-child(5) > :nth-child(2) > :nth-child(2)')
         .contains('Bagged evidence 1')
         .contains('This evidence was collected from the prisoner 1')
-
         .contains('Bagged evidence 2')
         .contains('This evidence was collected from the prisoner 2')
         .contains('Bagged evidence 3')
