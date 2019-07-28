@@ -1,25 +1,33 @@
 const { equals } = require('../utils/utils')
+const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 
-const getFieldInfo = (field, userInput) => {
+const requiresAnotherFieldToBeADifferentValue = ({ dependentOn, predicate: requiredValue }, userInput) => {
+  if (!dependentOn) {
+    return false
+  }
+  const dependentFieldValue = userInput[dependentOn]
+  const matchesRequiredValue = dependentFieldValue && dependentFieldValue === requiredValue
+  return !matchesRequiredValue
+}
+
+const getFieldInfo = ({ field, userInput, requiredFieldType }) => {
   const fieldName = Object.keys(field)[0]
   const fieldConfig = field[fieldName]
 
-  const fieldDependentOn = userInput[fieldConfig.dependentOn]
-  const { sanitiser = value => value, predicate: predicateResponse } = fieldConfig
-  const dependentMatchesPredicate = fieldConfig.dependentOn && fieldDependentOn === predicateResponse
+  const { sanitiser = value => value, fieldType = PAYLOAD } = fieldConfig
 
   return {
     fieldName,
     sanitiser,
-    answerIsRequired: !fieldDependentOn || dependentMatchesPredicate,
+    exclude: fieldType !== requiredFieldType || requiresAnotherFieldToBeADifferentValue(fieldConfig, userInput),
   }
 }
 
-const answersFromMapReducer = userInput => {
+const extractFields = ({ userInput, requiredFieldType }) => {
   return (answersAccumulator, field) => {
-    const { fieldName, answerIsRequired, sanitiser } = getFieldInfo(field, userInput)
+    const { fieldName, exclude, sanitiser } = getFieldInfo({ field, userInput, requiredFieldType })
 
-    if (!answerIsRequired) {
+    if (exclude) {
       return answersAccumulator
     }
 
@@ -27,8 +35,12 @@ const answersFromMapReducer = userInput => {
   }
 }
 
+const extractAnswers = userInput => extractFields({ userInput, requiredFieldType: PAYLOAD })
+const extractOtherFields = userInput => extractFields({ userInput, requiredFieldType: EXTRACTED })
+
 const buildUpdate = ({ formObject, fieldMap, userInput, formSection, formName }) => {
-  const answers = fieldMap.reduce(answersFromMapReducer(userInput), {})
+  const answers = fieldMap.reduce(extractAnswers(userInput), {})
+  const extractedFields = fieldMap.reduce(extractOtherFields(userInput), {})
 
   const updatedFormObject = {
     ...formObject,
@@ -37,7 +49,12 @@ const buildUpdate = ({ formObject, fieldMap, userInput, formSection, formName })
       [formName]: answers,
     },
   }
-  return !equals(formObject, updatedFormObject) && updatedFormObject
+
+  const payloadChanged = !equals(formObject, updatedFormObject)
+  return {
+    ...(payloadChanged && { payload: updatedFormObject }),
+    ...(extractedFields && extractedFields),
+  }
 }
 
 module.exports = buildUpdate

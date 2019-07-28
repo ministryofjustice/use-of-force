@@ -1,5 +1,7 @@
 const logger = require('../../log.js')
 const { validate } = require('../utils/fieldValidation')
+const { isNilOrEmpty } = require('../utils/utils')
+
 const getUpdatedFormObject = require('./updateBuilder')
 
 module.exports = function createIncidentService({ formClient, elite2ClientBuilder }) {
@@ -20,19 +22,22 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
 
   async function update({ token, userId, reporterName, formId, bookingId, updatedFormObject }) {
     if (formId) {
-      await formClient.update(formId, updatedFormObject)
+      if (!isNilOrEmpty(updatedFormObject.payload)) {
+        await formClient.update(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
+      }
     } else {
       const elite2Client = elite2ClientBuilder(token)
       const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
-      await formClient.create({
+      const id = await formClient.create({
         userId,
         bookingId,
         reporterName,
         offenderNo,
-        formResponse: updatedFormObject,
+        incidentDate: updatedFormObject.incidentDate,
+        formResponse: updatedFormObject.payload,
       })
+      logger.info('Newly created id:', id)
     }
-    return updatedFormObject
   }
 
   const getIncidentsForUser = async (userId, status) => {

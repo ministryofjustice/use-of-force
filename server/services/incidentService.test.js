@@ -55,7 +55,10 @@ describe('getIncidentsForUser', () => {
 })
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
-    const updatedFormObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
+    const updatedFormObject = {
+      incidentDate: '21/12/2010',
+      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
+    }
 
     await service.update({
       bookingId: 1,
@@ -65,11 +68,11 @@ describe('update', () => {
     })
 
     expect(formClient.update).toBeCalledTimes(1)
-    expect(formClient.update).toBeCalledWith('form1', updatedFormObject)
+    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
   })
 
   test('should call create when form id not present', async () => {
-    const updatedFormObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
+    const updatedFormObject = { payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' } }
 
     await service.update({
       bookingId: 1,
@@ -84,7 +87,7 @@ describe('update', () => {
       bookingId: 1,
       offenderNo: 'AA123ABC',
       reporterName: 'Bob Smith',
-      formResponse: updatedFormObject,
+      formResponse: updatedFormObject.payload,
     })
   })
 })
