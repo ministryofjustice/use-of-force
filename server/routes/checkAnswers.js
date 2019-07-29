@@ -24,22 +24,15 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
       const { form_response: formObject = {} } = await formService.getFormResponse(req.user.username, bookingId)
-      const formData = {}
-
-      Object.assign(formData, formObject.incident)
-
-      formData.newIncident = formData.newIncident || {}
-      formData.details = formData.details || {}
-      formData.relocationAndInjuries = formData.relocationAndInjuries || {}
-      formData.evidence = formData.evidence || {}
+      const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
-        formData.newIncident.locationId
+        formData.newIncident && formData.newIncident.locationId
       )
 
       const data = {
-        newIncident: createNewIncidentObj(offenderDetail, description, formData),
+        newIncident: createNewIncidentObj(offenderDetail, description, formData.newIncident),
         offenderDetail,
         details: createDetailsObj(formData.details),
         relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
@@ -117,20 +110,18 @@ const typeOfHandcuffsUsed = handcuffsType => {
   return handcuffsType === 'ratchet' ? ' - ratchet' : ' - fixed bar'
 }
 
-const createNewIncidentObj = (offenderDetail, description, formData) => {
+const createNewIncidentObj = (offenderDetail, description, newIncident = {}) => {
   return {
     'Offender name': offenderDetail.displayName,
     'Offender number': offenderDetail.offenderNo,
     Location: description,
-    'Use of force planned': formData.newIncident.forceType,
-    'Staff involved': toTitleCase(
-      convertArrayOfObjectsToStringUsingSpecifiedKey('name', formData.newIncident.involved)
-    ),
-    Witnesses: toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', formData.newIncident.witnesses)),
+    'Use of force planned': newIncident.forceType,
+    'Staff involved': toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.involved)),
+    Witnesses: toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses)),
   }
 }
 
-const createDetailsObj = details => {
+const createDetailsObj = (details = {}) => {
   return {
     'Positive communication used': details.positiveCommunication,
     'Personal Protection Techniques': details.personalProtectionTechniques,
@@ -147,7 +138,7 @@ const createDetailsObj = details => {
   }
 }
 
-const createRelocationObj = relocationAndInjuries => {
+const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
     'Prisoner relocated to': relocationAndInjuries.prisonerRelocation,
     'Relocation compliancy': relocationAndInjuries.relocationCompliancy,
@@ -169,7 +160,7 @@ const createRelocationObj = relocationAndInjuries => {
   }
 }
 
-const createEvidenceObj = evidence => {
+const createEvidenceObj = (evidence = {}) => {
   return {
     'Evidence bagged and tagged': baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
     'Photgraphs taken': evidence.photographsTaken,
