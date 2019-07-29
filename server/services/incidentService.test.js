@@ -3,6 +3,8 @@ const serviceCreator = require('./incidentService')
 const formClient = {
   getFormDataForUser: jest.fn(),
   getIncidentsForUser: jest.fn(),
+  deleteInvolvedStaff: jest.fn(),
+  insertInvolvedStaff: jest.fn(),
   update: jest.fn(),
   create: jest.fn(),
 }
@@ -28,6 +30,8 @@ afterEach(() => {
   formClient.update.mockReset()
   formClient.create.mockReset()
   formClient.getIncidentsForUser.mockReset()
+  formClient.insertInvolvedStaff.mockReset()
+  formClient.deleteInvolvedStaff.mockReset()
   elite2Client.getOffenderDetails.mockReset()
 })
 
@@ -58,6 +62,7 @@ describe('update', () => {
     const updatedFormObject = {
       incidentDate: '21/12/2010',
       payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
+      involved: [{ name: 'Bob' }],
     }
 
     await service.update({
@@ -69,6 +74,50 @@ describe('update', () => {
 
     expect(formClient.update).toBeCalledTimes(1)
     expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(formClient.deleteInvolvedStaff).toBeCalledTimes(1)
+    expect(formClient.deleteInvolvedStaff).toBeCalledWith('form1')
+    expect(formClient.insertInvolvedStaff).toBeCalledTimes(1)
+    expect(formClient.insertInvolvedStaff).toBeCalledWith('form1', [{ name: 'Bob' }])
+  })
+
+  test('updates if no-one is present', async () => {
+    const updatedFormObject = {
+      incidentDate: '21/12/2010',
+      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
+      involved: [],
+    }
+
+    await service.update({
+      bookingId: 1,
+      userId: 'user1',
+      formId: 'form1',
+      updatedFormObject,
+    })
+
+    expect(formClient.update).toBeCalledTimes(1)
+    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(formClient.deleteInvolvedStaff).toBeCalledTimes(1)
+    expect(formClient.deleteInvolvedStaff).toBeCalledWith('form1')
+    expect(formClient.insertInvolvedStaff).not.toBeCalled()
+  })
+
+  test('doesnt update involved staff if non-present', async () => {
+    const updatedFormObject = {
+      incidentDate: '21/12/2010',
+      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
+    }
+
+    await service.update({
+      bookingId: 1,
+      userId: 'user1',
+      formId: 'form1',
+      updatedFormObject,
+    })
+
+    expect(formClient.update).toBeCalledTimes(1)
+    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(formClient.deleteInvolvedStaff).not.toBeCalled()
+    expect(formClient.insertInvolvedStaff).not.toBeCalled()
   })
 
   test('should call create when form id not present', async () => {

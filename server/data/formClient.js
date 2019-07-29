@@ -1,3 +1,4 @@
+const format = require('pg-format')
 const db = require('./dataAccess/db')
 
 const create = ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
@@ -53,10 +54,27 @@ const getIncidentsForUser = (userId, status, query = db.query) => {
   })
 }
 
+const deleteInvolvedStaff = incidentId => {
+  return db.query({
+    text: `delete from involved_staff where incident_id = $1`,
+    values: [incidentId],
+  })
+}
+
+const insertInvolvedStaff = (incidentId, staff) => {
+  const rows = staff.map(s => [incidentId, s.name, 'PENDING'])
+  const results = db.query({
+    text: format('insert into involved_staff (incident_id, user_id, statement_status) VALUES %L returning id', rows),
+  })
+  return results.rows.map(row => row.id)
+}
+
 module.exports = {
   create,
   update,
   submit,
   getFormDataForUser,
   getIncidentsForUser,
+  deleteInvolvedStaff,
+  insertInvolvedStaff,
 }

@@ -17,6 +17,7 @@ exports.up = knex =>
         .onDelete('cascade')
       table.string('user_id').nullable()
       table.string('name').nullable()
+      table.string('email').nullable()
       table.timestamp('submitted_date')
       table.string('statement_status').notNullable()
     }),

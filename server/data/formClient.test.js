@@ -81,3 +81,23 @@ test('getIncidentsForUser', () => {
     values: ['user1', '[{"name":"user1"}]', 'STATUS_1'],
   })
 })
+
+test('deleteInvolvedStaff', () => {
+  formClient.deleteInvolvedStaff('incident-1')
+
+  expect(db.query).toBeCalledWith({
+    text: `delete from involved_staff where incident_id = $1`,
+    values: ['incident-1'],
+  })
+})
+
+test('inserInvolvedStaff', () => {
+  db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+
+  const ids = formClient.insertInvolvedStaff('incident-1', [{ name: 'aaaa' }, { name: 'bbbb' }])
+
+  expect(ids).toEqual([1, 2])
+  expect(db.query).toBeCalledWith({
+    text: `insert into involved_staff (incident_id, user_id, statement_status) VALUES ('incident-1', 'aaaa', 'PENDING'), ('incident-1', 'bbbb', 'PENDING') returning id`,
+  })
+})
