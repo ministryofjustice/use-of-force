@@ -3,7 +3,7 @@ const appSetup = require('./testutils/appSetup')
 const createRouter = require('./checkAnswers')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const formService = {
+const incidentService = {
   getFormResponse: jest.fn(),
 }
 
@@ -12,13 +12,13 @@ const offenderService = {
   getLocation: jest.fn(),
 }
 
-const checkAnswersRoute = createRouter({ authenticationMiddleware, formService, offenderService })
+const checkAnswersRoute = createRouter({ authenticationMiddleware, incidentService, offenderService })
 
 let app
 
 beforeEach(() => {
   app = appSetup(checkAnswersRoute)
-  formService.getFormResponse.mockResolvedValue({})
+  incidentService.getFormResponse.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
   offenderService.getLocation.mockResolvedValue({})
 })
