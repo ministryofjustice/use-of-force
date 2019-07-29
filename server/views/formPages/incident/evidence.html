@@ -8,8 +8,6 @@
 {% from "button/macro.njk" import govukButton %} 
 {% from "textarea/macro.njk" import govukTextarea %}
 
-
-
 {% block formItems %}
 
 <div class="govuk-grid-row">
@@ -17,7 +15,6 @@
     <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
    
     <!-- Q1 -->
-        
     <div class="govuk-!-margin-bottom-9">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend ">
@@ -28,8 +25,8 @@
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="bagged-evidence-yes" name="baggedEvidence" type="radio"
-                value="yes" data-aria-controls="bagged-evidence-conditional"
-                {% if data.baggedEvidence === 'yes' %} checked {% endif %}
+                value="Yes" data-aria-controls="bagged-evidence-conditional"
+                {% if data.baggedEvidence === 'Yes' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="bagged-evidence-yes">
                 Yes
@@ -37,8 +34,8 @@
             </div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="bagged-evidence-no" name="baggedEvidence" type="radio"
-                value="no" 
-                {% if data.baggedEvidence === 'no' %} checked {% endif %}
+                value="No" 
+                {% if data.baggedEvidence === 'No' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="bagged-evidence-no">
                 No
@@ -52,7 +49,7 @@
             <!-- add another starts here   -->
 
             <div class="add-another-tag">
-              {%  for tagNumber in  data.tagNumbers %} 
+              {%  for evidenceTagAndDescription in  data.evidenceTagAndDescription %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                   {{
@@ -61,34 +58,29 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'tag-numbers[' + loop.index0 + '][name]',
-                      name: 'tagNumbers[' + loop.index0 + '][name]',
-                      value: tagNumber.name,
+                      id: 'evidence-tag-and-description[' + loop.index0 + '][evidenceTagReference]',
+                      name: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
+                      value: evidenceTagAndDescription.evidenceTagReference,
                       attributes: {
-                        'data-name': 'tagNumbers[%index%][name]',
-                        'data-id': 'tagNumbers[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
+                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
                       }
                     })
                   }} 
-
-                  {% set index = loop.index0 %}
-
-                  <!--this assignment is required because can't access both tagNumber and evidenceDescriptions in same loop.
-                  The value for index will change on each iteration so will keep both data keys in sync -->
                             
                   {{ govukTextarea({
-                    name: 'evidenceDescriptions[' + loop.index0 + '][name]',
-                    idPrefix: 'evidence-descriptions[' + loop.index0 + '][name]',
+                    name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
+                    idPrefix: 'evidence-tag-and-description[' + loop.index0 + '][description]',
                     classes: 'govuk-!-width-two-thirds',
-                    value: data.evidenceDescriptions[index].name,
+                    value: evidenceTagAndDescription.description,
                     label: {
                       text: "Description of evidence"
                     },
                     attributes:{
-                      'data-id': 'evidence-descriptions[%index%][name]',
-                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-name': 'evidenceTagAndDescription[%index%][description]',
                       'rows':10,
-                      'columns': 50
+                      'columns': 40
                     }
                   }) }}
 
@@ -108,27 +100,27 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'tag-numbers[0][name]',
-                      name: 'tagNumbers[0][name]',
+                      id: 'evidence-tag-and-description[0][evidenceTagReference]',
+                      name: 'evidenceTagAndDescription[0][evidenceTagReference]',
                       attributes: {
-                        'data-name': 'tagNumbers[%index%][name]',
-                        'data-id': 'tagNumbers[%index%][name]'
+                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
+                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
                       }
                     })
                   }}
                   {{ govukInput({
-                    idPrefix: 'evidence-descriptions[0][name]',
-                    name: 'evidenceDescriptions[0][name]',
+                    idPrefix: 'evidence-tag-and-description[0][description]',
+                    name: 'evidenceTagAndDescription[0][description]',
                     classes: "govuk-!-width-two-thirds",
-                    value: data.evidenceDescriptions[0].name,
+                    value: data.evidenceTagAndDescription[0].description,
                     label: {
                       text: "Description of evidence"
                     },
                     attributes: {
-                      'data-id': 'evidence-descriptions[%index%][name]',
-                      'data-name': 'evidenceDescriptions[%index%][name]',
+                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-name': 'evidenceTagAndDescription[%index%][description]',
                       'rows':10,
-                      'columns': 50
+                      'columns': 40
                     }
                   }) }}
 
@@ -164,14 +156,14 @@
           },
           items: [
             {
-              value: "yes",
+              value: "Yes",
               text: "Yes",
-              checked: data.photographsTaken === 'yes'
+              checked: data.photographsTaken === 'Yes'
             },
             {
-              value: "no",
+              value: "No",
               text: "No",
-              checked: data.photographsTaken === 'no'
+              checked: data.photographsTaken === 'No'
             }
           ]
         }) 
@@ -195,19 +187,19 @@
             },
             items: [
               {
-                value: "yes",
+                value: "Yes",
                 text: "Yes",
-                checked: data.cctvRecording === 'yes'
+                checked: data.cctvRecording === 'Yes'
               },
               {
-                value: "no",
+                value: "No",
                 text: "No",
-                checked: data.cctvRecording === 'no'
+                checked: data.cctvRecording === 'No'
               },
               {
-                value: "notKnown",
+                value: "Not Known",
                 text: "Not known",
-                checked: data.cctvRecording === 'notKnown'
+                checked: data.cctvRecording === 'Not Known'
               }
             ]
           }) 
@@ -226,8 +218,8 @@
             <div class=" govuk-radios">
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="body-worn-camera-yes" name="bodyWornCamera" type="radio"
-                  value="yes" data-aria-controls="body-worn-camera-conditional"
-                  {% if data.bodyWornCamera === 'yes' %} checked {% endif %}
+                  value="Yes" data-aria-controls="body-worn-camera-conditional"
+                  {% if data.bodyWornCamera === 'Yes' %} checked {% endif %}
                 >
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-yes">
                   Yes
@@ -248,12 +240,12 @@
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[' + loop.index0 + '][name]',
-                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][name]',
-                        value: camera.name,
+                        id: 'body-worn-camera-numbers[' + loop.index0 + '][cameraNum]',
+                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
+                        value: camera.cameraNum,
                         attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
                     }} 
@@ -274,11 +266,11 @@
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[0][name]',
-                        name: 'bodyWornCameraNumbers[0][name]',
+                        id: 'body-worn-camera-numbers[0][cameraNum]',
+                        name: 'bodyWornCameraNumbers[0][cameraNum]',
                         attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][name]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][name]'
+                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
                     }}
@@ -299,8 +291,8 @@
 
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio"
-                value="no" 
-                {% if data.bodyWornCamera === 'no' %} checked {% endif %}
+                value="No" 
+                {% if data.bodyWornCamera === 'No' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
                 No
@@ -308,8 +300,8 @@
             </div>
             <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio"
-                  value="notKnown" 
-                  {% if data.bodyWornCamera === 'no' %} checked {% endif %}
+                  value="Not known" 
+                  {% if data.bodyWornCamera === 'Not known' %} checked {% endif %}
                 >
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
                   Not known
@@ -329,9 +321,5 @@ new AddAnother($('.add-another-tag'))
 new AddAnother($('.add-another-camera'))
 
 </script>
-
-
-   
-
 
 {% endblock %}

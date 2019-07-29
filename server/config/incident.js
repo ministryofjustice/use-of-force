@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { isBlank } = require('../utils/utils')
 
 module.exports = {
   newIncident: {
@@ -17,6 +18,12 @@ module.exports = {
         },
       },
       {
+        location: {
+          responseType: 'location',
+          validationMessage: 'Where did the incident occur?',
+        },
+      },
+      {
         forceType: {
           responseType: 'requiredString',
           validationMessage: 'Was the use of force planned?',
@@ -24,12 +31,12 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
       {
         witnesses: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
     ],
@@ -171,14 +178,8 @@ module.exports = {
         },
       },
       {
-        staffMemberNeedingMedicalAttention: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
-        },
-      },
-      {
-        staffMemberWentToHospital: {
-          responseType: 'requiredString',
-          validationMessage: 'Did they go to hospital?',
+        staffNeedingMedicalAttention: {
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
     ],
@@ -197,13 +198,8 @@ module.exports = {
         },
       },
       {
-        tagNumbers: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
-        },
-      },
-      {
-        evidenceDescriptions: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+        evidenceTagAndDescription: {
+          sanitiser: vals => removeEmptyValues('description', vals),
         },
       },
       {
@@ -226,7 +222,7 @@ module.exports = {
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: vals => inputsExcludingEmptyStrings(vals),
+          sanitiser: vals => removeEmptyValues('cameraNum', vals),
         },
       },
     ],
@@ -237,12 +233,4 @@ module.exports = {
   },
 }
 
-function inputsExcludingEmptyStrings(inputs) {
-  const sanitisedArray = []
-  inputs.forEach(input => {
-    if (input.name !== null && input.name !== '' && input.name.trim() !== '') {
-      sanitisedArray.push(input)
-    }
-  })
-  return sanitisedArray
-}
+const removeEmptyValues = (attr, inputs = []) => inputs.filter(input => !isBlank(input[attr]))

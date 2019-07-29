@@ -10,6 +10,7 @@ context('Submit the incident report', () => {
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
+    cy.task('stubLocation', '357591')
   })
 
   it('A form cannot be submitted until confirmed', () => {

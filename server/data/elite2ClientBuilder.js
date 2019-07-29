@@ -46,6 +46,10 @@ module.exports = token => {
       const path = `${apiUrl}/api/agencies/${agencyId}/locations`
       return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
     },
+    getLocation(locationId) {
+      const path = `${apiUrl}/api/locations/${locationId}`
+      return userGet({ path })
+    },
     getOffenderImage(bookingId) {
       const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
       return userStream({

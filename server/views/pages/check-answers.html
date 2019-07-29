@@ -1,31 +1,46 @@
-{% extends "../partials/layout.html" %} {% from "button/macro.njk" import govukButton %} {% from "checkboxes/macro.njk"
-import govukCheckboxes %} {% from "back-link/macro.njk" import govukBackLink %} {% from "error-summary/macro.njk" import
-govukErrorSummary %}{% block beforeContent %}
+{% extends "../partials/layout.html" %} 
+{% from "button/macro.njk" import govukButton %} 
+{% from "checkboxes/macro.njk"import govukCheckboxes %} 
+{% from "back-link/macro.njk" import govukBackLink %} 
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+
+{% block beforeContent %}
 
 {{ govukBackLink({
 text: "Back",
 href: backLink or "/"
 }) }}
-{% endblock %} {% block content %}
+
+{% endblock %} 
+
+{% block content %}
 <div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      })
+    }}
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
+    {% include "./check-answers-sections/new-incident.html" %}
+    {% include "./check-answers-sections/details.html" %}
+    {% include "./check-answers-sections/relocation-and-injuries.html" %}
+    {% include "./check-answers-sections/evidence.html" %}
+
+  </div>
   <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-column-full">
-      {% if errors.length > 0 %}
-      {{
-        govukErrorSummary({
-          titleText: 'There is a problem',
-          errorList: errors,
-          attributes: { 'data-qa-errors': true }
-        })
-      }}
-      {% endif %}
 
-      <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
-
-      <h2 class="govuk-heading-m">Now submit the report</h2>
-      <p class="govuk-body">
-        By submitting the report I confirm that the information I provided is correct to the best of my knowledge.
-      </p>
+    <h2 class="govuk-heading-m">Now submit the report</h2>
+    <p class="govuk-body">
+      By submitting the report I confirm that the information I provided is correct to the best of my knowledge.
+    </p>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
         {{

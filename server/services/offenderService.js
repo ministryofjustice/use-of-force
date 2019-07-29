@@ -49,9 +49,18 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: fullName(offender) }), {})
   }
 
+  const getLocation = (token, locationId) => {
+    if (!locationId) {
+      return {}
+    }
+    const elite2Client = elite2ClientBuilder(token)
+    return elite2Client.getLocation(locationId)
+  }
+
   return {
     getOffenderDetails,
     getOffenderImage,
     getOffenderNames,
+    getLocation,
   }
 }

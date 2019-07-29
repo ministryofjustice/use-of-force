@@ -52,4 +52,5 @@ module.exports = {
   firstItem: R.head,
   mergeWithRight: R.mergeDeepRight,
   pickBy: R.pickBy,
+  isBlank,
 }

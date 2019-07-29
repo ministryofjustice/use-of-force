@@ -14,7 +14,6 @@
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
 
-
     <!-- Q1 -->
 
     {{ govukSelect({
@@ -31,29 +30,29 @@
             selected: data.prisonerRelocation === 'select'
           },
           {
-            value: "ownCell",
+            value: "own cell",
             text: "Own cell",
-            selected: data.prisonerRelocation === 'ownCell'
+            selected: data.prisonerRelocation === 'own cell'
           },
           {
-            value: "gatedCell",
+            value: "gated cell",
             text: "Gated cell",
-            selected: data.prisonerRelocation === 'gatedCell'
+            selected: data.prisonerRelocation === 'gated cell'
           },
           {
-            value: "segregationUnit",
+            value: "segregation unit",
             text: "Segregation unit",
-            selected: data.prisonerRelocation === 'segregationUnit'
+            selected: data.prisonerRelocation === 'segregation unit'
           },
           {
-            value: "specialAccommodation",
+            value: "special accommodation",
             text: "Special accommodation",
-            selected: data.prisonerRelocation === 'specialAccommodation'
+            selected: data.prisonerRelocation === 'special accommodation'
           },
           {
-            value: "cellularVehicle",
+            value: "Cellular vehicle",
             text: "Cellular vehicle",
-            selected: data.prisonerRelocation === 'cellularVehicle'
+            selected: data.prisonerRelocation === 'cellular vehicle'
           }
         ]
       }) }}
@@ -76,13 +75,13 @@
         },
         {
           value: "compliant",
-          text: "compliant",
+          text: "Compliant",
           selected: data.relocationCompliancy === 'compliant'
         },
         {
-          value: "nonCompliant",
+          value: "non-compliant",
           text: "Non-compliant",
-          selected: data.relocationCompliancy === 'nonCompliant'
+          selected: data.relocationCompliancy === 'non-compliant'
         }
       ]
     }) }}
@@ -99,17 +98,17 @@
 
     <!-- Q3 -->
 
-    {{ incidentMacro.radiosWithNestedTextboxes({
+    {{ incidentMacro.radiosWithNestedTextbox({
         "primaryQuestion": {
           "text": "Was a member of Healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
           "name": "healthcareInvolved",
           "value":data.healthcareInvolved,
           "options": [{
-            "value": "yes",
+            "value": "Yes",
             "label": "Yes"
           }, 
           {
-            "value": "no",
+            "value": "No",
             "label": "No"
           }]
         },
@@ -118,9 +117,7 @@
           "name": "healthcarePractionerName",
           "value":data.healthcarePractionerName,
           "alertMsg":"",
-          "options": [{
-            "label": "Name"
-          }]
+          "label": "Name"
         }
       }) 
     }}
@@ -128,65 +125,63 @@
     <!-- Q4 -->
 
 
-        {{ incidentMacro.radiosWithNestedTextboxes({
-            "primaryQuestion": {
-              "text": "Did the prisoner sustain any injuries at the time?",
-              "name": "prisonerInjuries",
-              "value":data.prisonerInjuries,
-              "options": [{
-                "value": "yes",
-                "label": "Yes"
-              }, 
-              {
-                "value": "no",
-                "label": "No"
-              }]
-            },
-            "followUpQuestion": {
-              "legend": "Who completed the F213 form?",
-              "name": "f213CompletedBy",
-              "value":data.f213CompletedBy,
-              "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
-              "options": [{
-                "label": "Name"
-              }]
-            }
-          }) 
-        }}
+    {{ incidentMacro.radiosWithNestedTextbox({
+        "primaryQuestion": {
+          "text": "Did the prisoner sustain any injuries at the time?",
+          "name": "prisonerInjuries",
+          "value":data.prisonerInjuries,
+          "options": [{
+            "value": "Yes",
+            "label": "Yes"
+          }, 
+          {
+            "value": "No",
+            "label": "No"
+          }]
+        },
+        "followUpQuestion": {
+          "legend": "Who completed the F213 form?",
+          "name": "f213CompletedBy",
+          "value":data.f213CompletedBy,
+          "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
+          "label": "Name"
+        }
+      }) 
+    }}
     
 
 
-    <!-- Q5 -->
-    <div class="govuk-!-margin-bottom-9">
-      {{ govukRadios({
-          classes: "govuk-radios--inline",
-          idPrefix: "prisoner-hospitalisation",
-          name: "prisonerHospitalisation",
-          "value":data.prisonerHospitalisation,
-          fieldset: {
-            legend: {
-              text: "Did the prisoner require outside hospitalisation at the time?",
-              isPageHeading: false,
-              classes: "govuk-fieldset"
-            }
+  <!-- Q5 -->
+  <div class="govuk-!-margin-bottom-9">
+    {{ govukRadios({
+        classes: "govuk-radios--inline",
+        idPrefix: "prisoner-hospitalisation",
+        name: "prisonerHospitalisation",
+        "value":data.prisonerHospitalisation,
+        fieldset: {
+          legend: {
+            text: "Did the prisoner require outside hospitalisation at the time?",
+            isPageHeading: false,
+            classes: "govuk-fieldset"
+          }
+        },
+        items: [
+          {
+            value: "Yes",
+            text: "Yes",
+            checked: data.prisonerHospitalisation === 'Yes'
           },
-          items: [
-            {
-              value: "yes",
-              text: "Yes",
-              checked: data.prisonerHospitalisation === 'yes'
-            },
-            {
-              value: "no",
-              text: "No",
-              checked: data.prisonerHospitalisation === 'no'
-            }
-          ]
-        }) 
-        }}
-      </div>
+          {
+            value: "No",
+            text: "No",
+            checked: data.prisonerHospitalisation === 'No'
+          }
+        ]
+      }) 
+      }}
+    </div>
 
-      <!-- Q6 -->          
+    <!-- Q6 -->          
 
 <div class="govuk-!-margin-bottom-6">
       <div class="govuk-fieldset">
@@ -198,8 +193,8 @@
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="staff-medical-attention" name="staffMedicalAttention" type="radio"
-                value="yes" data-aria-controls="staff-medical-attention--conditional"
-                {% if data.staffMedicalAttention === 'yes' %} checked {% endif %}
+                value="Yes" data-aria-controls="staff-medical-attention--conditional"
+                {% if data.staffMedicalAttention === 'Yes' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="staff-medical-attention-1">
                 Yes
@@ -207,8 +202,8 @@
             </div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="how-contacted-conditional-2" name="staffMedicalAttention" type="radio"
-                value="no" 
-                 {% if data.staffMedicalAttention === 'no' %} checked {% endif %}
+                value="No" 
+                 {% if data.staffMedicalAttention === 'No' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-2">
                 No
@@ -222,7 +217,7 @@
             <!-- add another starts here   -->
 
             <div class="add-another-staff-needing-medical-attention">
-              {%  for staffMember in  data.staffMemberNeedingMedicalAttention %} 
+              {%  for staffMember in  data.staffNeedingMedicalAttention %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
                    {{
@@ -231,24 +226,19 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staff-member-needing-medical-attention[' + loop.index0 + '][name]',
-                      name: 'staffMemberNeedingMedicalAttention[' + loop.index0 + '][name]',
+                      id: 'staff-needing-medical-attention[' + loop.index0 + '][name]',
+                      name: 'staffNeedingMedicalAttention[' + loop.index0 + '][name]',
                       value: staffMember.name,
                       attributes: {
-                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staff-needing-medical-attention[%index%][name]'
                       }
                     })
                   }} 
 
-                   {% set index = loop.index0 %}
-                   {# this assignment is required because can't access both staffMemberNeedingMedicalAttention and staffMemberWentToHospital in same loop.
-                   The value for index will change on each iteration so will keep both data keys in sync #}
-                            
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    idPrefix: 'staff-member-went-to-hospital[' + loop.index0 + '][name]',
-                    name: 'staffMemberWentToHospital[' + loop.index0 + '][name]',
+                    name: 'staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -257,14 +247,24 @@
     
                     items: [
                       {
-                        value: "yes",
+                        value: "Yes",
                         text: "Yes",
-                        checked: data.staffMemberWentToHospital[index].name === 'yes'
+                        checked: staffMember.hospitalisation === 'Yes',
+                        id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-yes',
+                        attributes: {
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-yes'
+                        }
                       },
                       {
-                        value: "no",
+                        value: "No",
                         text: "No",
-                        checked: data.staffMemberWentToHospital[index].name === 'no'
+                        checked: staffMember.hospitalisation === 'No',
+                        id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-no',
+                        attributes: {
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-no'
+                        }
                       }
                     ]
                   }) }}
@@ -285,17 +285,17 @@
                         html: 'Name of who needed medical attention'
                       },
                       classes: 'govuk-!-width-two-thirds',
-                      id: 'staff-member-needing-medical-attention[0][name]',
-                      name: 'staffMemberNeedingMedicalAttention[0][name]',
+                      id: 'staff-needing-medical-attention[0][name]',
+                      name: 'staffNeedingMedicalAttention[0][name]',
                       attributes: {
-                        'data-name': 'staffMemberNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffMemberNeedingMedicalAttention[%index%][name]'
+                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                        'data-id': 'staff-needing-medical-attention[%index%][name]'
                       }
                     })
                   }}
                   {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    name: 'staffMemberWentToHospital[0][name]',
+                    name: 'staffNeedingMedicalAttention[0][hospitalisation]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
@@ -303,23 +303,21 @@
                     },
                     items: [
                       {
-                        value: "yes",
+                        value: "Yes",
                         text: "Yes",
-                        id: 'staff-member-went-to-hospital[0]-yes',
-                        checked: data.staffMemberWentToHospital[0].name === 'yes',
+                        id: 'staff-needing-medical-attention[0][hospitalisation]-yes',
                         attributes: {
-                          'data-name': 'staffMemberWentToHospital[%index%][name]',
-                          'data-id': 'staff-member-went-to-hospital[%index%]-yes'
+                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-yes'
                         }
                       },
                       {
-                        value: "no",
+                        value: "No",
                         text: "No",
-                        id: 'staff-member-went-to-hospital[0]-no',
-                        checked: data.staffMemberWentToHospital[0].name === 'no',
+                        id: 'staff-needing-medical-attention[0][hospitalisation]-no',
                         attributes: {
-                          'data-name': 'staffMemberWentToHospital[%index%][name]',
-                          'data-id': 'staff-member-went-to-hospital[%index%]-no'
+                          'data-name': 'staffNeedingMedicalAttention[%index%][[hospitalisation]',
+                          'data-id': 'staff-needing-medical-attention[%index%][hospitalisation]-no'
                         }
                       }
                     ]
