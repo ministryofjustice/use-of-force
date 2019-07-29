@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { isBlank } = require('../utils/utils')
 
 module.exports = {
   newIncident: {
@@ -30,12 +31,12 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
       {
         witnesses: {
-          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
     ],
@@ -178,7 +179,7 @@ module.exports = {
       },
       {
         staffNeedingMedicalAttention: {
-          sanitiser: vals => inputsExcludingEmptyStrings('name', vals),
+          sanitiser: vals => removeEmptyValues('name', vals),
         },
       },
     ],
@@ -198,7 +199,7 @@ module.exports = {
       },
       {
         evidenceTagAndDescription: {
-          sanitiser: vals => inputsExcludingEmptyStrings('description', vals),
+          sanitiser: vals => removeEmptyValues('description', vals),
         },
       },
       {
@@ -221,7 +222,7 @@ module.exports = {
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: vals => inputsExcludingEmptyStrings('cameraNum', vals),
+          sanitiser: vals => removeEmptyValues('cameraNum', vals),
         },
       },
     ],
@@ -232,12 +233,4 @@ module.exports = {
   },
 }
 
-function inputsExcludingEmptyStrings(attr = 'name', inputs = []) {
-  const sanitisedArray = []
-  inputs.forEach(input => {
-    if (input[attr] !== null && input[attr] !== '' && input[attr].trim() !== '') {
-      sanitisedArray.push(input)
-    }
-  })
-  return sanitisedArray
-}
+const removeEmptyValues = (attr, inputs = []) => inputs.filter(input => !isBlank(input[attr]))

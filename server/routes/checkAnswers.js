@@ -163,7 +163,7 @@ const createRelocationObj = (relocationAndInjuries = {}) => {
 const createEvidenceObj = (evidence = {}) => {
   return {
     'Evidence bagged and tagged': baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
-    'Photgraphs taken': evidence.photographsTaken,
+    'Photographs taken': evidence.photographsTaken,
     'CCTV images': evidence.cctvRecording,
     'Body worn cameras':
       evidence.bodyWornCamera +
