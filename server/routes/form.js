@@ -24,10 +24,10 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
   })
 }
 
-module.exports = function Index({ formService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
-    const { form_response: formObject = {}, id: formId } = await formService.getFormResponse(
+    const { form_response: formObject = {}, id: formId } = await incidentService.getFormResponse(
       req.user.username,
       bookingId
     )
@@ -56,7 +56,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
       const section = 'incident'
       const form = 'newIncident'
 
-      const { formObject } = await loadForm(req, res)
+      const { formObject } = await loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject) || {}
 
       const incidentDate = pageData.incidentDate ? moment(pageData.incidentDate) : moment()
@@ -81,7 +81,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form } = req.params
-      const { formObject } = await loadForm(req, res)
+      const { formObject } = await loadForm(req)
       renderForm({ req, res, formObject, section, form })
     })
   )
@@ -96,7 +96,7 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
 
       if (formPageConfig.validate) {
         const formResponse = inputForExpectedFields
-        const errors = formService.getValidationErrors(formResponse, formPageConfig)
+        const errors = incidentService.getValidationErrors(formResponse, formPageConfig)
 
         if (!isNilOrEmpty(errors)) {
           req.flash('errors', errors)
@@ -105,20 +105,26 @@ module.exports = function Index({ formService, authenticationMiddleware, offende
         }
       }
 
-      const { formId, formObject } = await loadForm(req, res)
+      const { formId, formObject } = await loadForm(req)
 
-      await formService.update({
-        token: res.locals.user.token,
-        formId,
+      const updatedFormObject = await incidentService.getUpdatedFormObject({
         formObject,
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        reporterName: res.locals.user.displayName,
-        config: formPageConfig,
+        fieldMap: formPageConfig.fields,
         userInput: req.body,
         formSection: section,
         formName: form,
       })
+
+      if (updatedFormObject) {
+        await incidentService.update({
+          token: res.locals.user.token,
+          formId,
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          reporterName: res.locals.user.displayName,
+          updatedFormObject,
+        })
+      }
 
       const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
       const location = req.body.submit === 'save-and-continue' ? `${nextPath}${bookingId}` : `/tasklist/${bookingId}`

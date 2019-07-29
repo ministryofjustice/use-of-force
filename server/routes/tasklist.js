@@ -1,7 +1,7 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ formService, offenderService, authenticationMiddleware }) {
+module.exports = function Index({ incidentService, offenderService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -14,7 +14,7 @@ module.exports = function Index({ formService, offenderService, authenticationMi
         res.locals.user.token,
         bookingId
       )
-      const { form_response: form = {} } = await formService.getFormResponse(req.user.username, bookingId)
+      const { form_response: form = {} } = await incidentService.getFormResponse(req.user.username, bookingId)
       res.render('pages/tasklist', {
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },
         bookingId: req.params.bookingId,

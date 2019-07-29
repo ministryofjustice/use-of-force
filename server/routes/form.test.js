@@ -2,34 +2,32 @@ const request = require('supertest')
 const appSetup = require('./testutils/appSetup')
 const createRouter = require('./form')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
-const incidentConfig = require('../config/incident')
 
-const formConfig = {
-  ...incidentConfig,
-}
-
-const formService = {
+const incidentService = {
   getFormResponse: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
+  getUpdatedFormObject: jest.fn(),
 }
 
 const offenderService = {
   getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
 }
 
-const formRoute = createRouter({ formService, authenticationMiddleware, offenderService })
+const formRoute = createRouter({ incidentService, authenticationMiddleware, offenderService })
 
 let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  formService.getFormResponse.mockResolvedValue({})
+  incidentService.getFormResponse.mockResolvedValue({})
+  incidentService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
-  formService.getFormResponse.mockReset()
-  formService.update.mockReset()
+  incidentService.getFormResponse.mockReset()
+  incidentService.getUpdatedFormObject.mockReset({})
+  incidentService.update.mockReset()
 })
 
 describe('GET /section/form', () => {
@@ -57,18 +55,14 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.update).toBeCalledWith({
+        expect(incidentService.update).toBeCalledTimes(1)
+        expect(incidentService.update).toBeCalledWith({
           bookingId: 1,
           userId: 'user1',
           formId: undefined,
-          formObject: {},
+          updatedFormObject: {},
           token: 'token',
           reporterName: 'First Last',
-          config: formConfig[formName],
-          userInput,
-          formSection: sectionName,
-          formName,
         })
       })
   )
@@ -85,18 +79,14 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.update).toBeCalledWith({
+        expect(incidentService.update).toBeCalledTimes(1)
+        expect(incidentService.update).toBeCalledWith({
           bookingId: 1,
           userId: 'user1',
           formId: undefined,
           token: 'token',
           reporterName: 'First Last',
-          formObject: {},
-          config: formConfig[formName],
-          userInput,
-          formSection: sectionName,
-          formName,
+          updatedFormObject: {},
         })
       })
   )
