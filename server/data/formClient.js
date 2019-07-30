@@ -33,8 +33,8 @@ const submit = (userId, bookingId) => {
   })
 }
 
-const getFormDataForUser = (userId, bookingId, query = db.query) => {
-  return query({
+const getCurrentDraftIncident = async (userId, bookingId, query = db.query) => {
+  const results = await query({
     text: `select id, incident_date, form_response from incidents i
           where user_id = $1
           and booking_id = $2
@@ -42,6 +42,7 @@ const getFormDataForUser = (userId, bookingId, query = db.query) => {
           and i.sequence_no = ${maxSequenceForBooking}`,
     values: [userId, bookingId],
   })
+  return results.rows[0] || {}
 }
 
 const getIncidentsForUser = (userId, status, query = db.query) => {
@@ -86,7 +87,7 @@ module.exports = {
   create,
   update,
   submit,
-  getFormDataForUser,
+  getCurrentDraftIncident,
   getIncidentsForUser,
   getInvolvedStaff,
   deleteInvolvedStaff,

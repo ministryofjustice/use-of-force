@@ -2,8 +2,8 @@ const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
 const formClient = require('../../server/data/formClient')
 
-const getFormDataForUser = bookingId =>
-  formClient.getFormDataForUser('Test User', bookingId, db.queryWithoutTransaction)
+const getCurrentDraftIncident = bookingId =>
+  formClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
 
 module.exports = {
   clearDb() {
@@ -15,11 +15,11 @@ module.exports = {
     return Promise.all(drops)
   },
 
-  getFormData({ bookingId, formName }) {
-    return getFormDataForUser(bookingId)
+  getCurrentDraftIncident({ bookingId, formName }) {
+    return getCurrentDraftIncident(bookingId)
       .then(form => ({
-        id: form.rows[0].id,
-        data: { incidentDate: form.rows[0].incident_date, ...form.rows[0].form_response.incident[formName] },
+        id: form.id,
+        data: { incidentDate: form.incident_date, ...form.form_response.incident[formName] },
       }))
       .then(({ id, data }) =>
         formClient

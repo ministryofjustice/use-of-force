@@ -5,13 +5,12 @@ const { isNilOrEmpty } = require('../utils/utils')
 const getUpdatedFormObject = require('./updateBuilder')
 
 module.exports = function createIncidentService({ formClient, elite2ClientBuilder }) {
-  async function getFormResponse(userId, bookingId) {
-    const data = await formClient.getFormDataForUser(userId, bookingId)
-    return data.rows[0] || {}
+  function getCurrentDraftIncident(userId, bookingId) {
+    return formClient.getCurrentDraftIncident(userId, bookingId)
   }
 
   async function submitForm(userId, bookingId) {
-    const form = await getFormResponse(userId, bookingId)
+    const form = await getCurrentDraftIncident(userId, bookingId)
     if (form.id) {
       logger.info(`Submitting form for user: ${userId} and booking: ${bookingId}`)
       await formClient.submit(userId, bookingId)
@@ -72,7 +71,7 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
   }
 
   return {
-    getFormResponse,
+    getCurrentDraftIncident,
     update,
     submitForm,
     getValidationErrors: validate,
