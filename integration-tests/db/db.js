@@ -1,9 +1,9 @@
 const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
-const formClient = require('../../server/data/formClient')
+const incidentClient = require('../../server/data/incidentClient')
 
 const getCurrentDraftIncident = bookingId =>
-  formClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
+  incidentClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
 
 module.exports = {
   clearDb() {
@@ -22,7 +22,7 @@ module.exports = {
         data: { incidentDate: form.incident_date, ...form.form_response.incident[formName] },
       }))
       .then(({ id, data }) =>
-        formClient
+        incidentClient
           .getInvolvedStaff(id, db.queryWithoutTransaction)
           .then(staff => staff.map(s => ({ userId: s.user_id, name: s.name })))
           .then(staff => ({ data, staff }))
