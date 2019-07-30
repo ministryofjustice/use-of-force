@@ -30,5 +30,6 @@ exports.down = knex =>
       table.dropColumn('incident_date')
       table.renameColumn('created_date', 'start_date')
     }),
-    knex.schema.dropTable('form'),
+
+    knex.schema.dropTable('involved_staff'),
   ])

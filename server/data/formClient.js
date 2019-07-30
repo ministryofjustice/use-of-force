@@ -1,9 +1,9 @@
 const format = require('pg-format')
 const db = require('./dataAccess/db')
 
-const create = ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
+const create = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
   const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from incidents where booking_id = $5 and user_id = $2)`
-  const result = db.query({
+  const result = await db.query({
     text: `insert into incidents (form_response, user_id, reporter_name, offender_no, booking_id, status, incident_date, sequence_no, created_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, ${nextSequence}, CURRENT_TIMESTAMP)
             returning id`,
@@ -46,12 +46,22 @@ const getFormDataForUser = (userId, bookingId, query = db.query) => {
 
 const getIncidentsForUser = (userId, status, query = db.query) => {
   return query({
-    text: `select id, booking_id, reporter_name, offender_no, incident_date
-          from incidents
-          where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
-          and status = $3`,
-    values: [userId, JSON.stringify([{ name: userId }]), status],
+    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv.id, inv."name"
+            from involved_staff inv 
+            inner join incidents i on inv.incident_id = i.id   
+          where i.status = $1 
+          and inv.user_id = $2 
+          and inv.statement_status = $3`,
+    values: ['SUBMITTED', userId, 'PENDING'],
   })
+}
+
+const getInvolvedStaff = async (incidentId, query = db.query) => {
+  const results = await query({
+    text: 'select id, user_id, name, email from involved_staff where incident_id = $1',
+    values: [incidentId],
+  })
+  return results.rows
 }
 
 const deleteInvolvedStaff = incidentId => {
@@ -61,10 +71,13 @@ const deleteInvolvedStaff = incidentId => {
   })
 }
 
-const insertInvolvedStaff = (incidentId, staff) => {
-  const rows = staff.map(s => [incidentId, s.name, 'PENDING'])
-  const results = db.query({
-    text: format('insert into involved_staff (incident_id, user_id, statement_status) VALUES %L returning id', rows),
+const insertInvolvedStaff = async (incidentId, staff) => {
+  const rows = staff.map(s => [incidentId, s.userId, s.name, 'PENDING'])
+  const results = await db.query({
+    text: format(
+      'insert into involved_staff (incident_id, user_id, name, statement_status) VALUES %L returning id',
+      rows
+    ),
   })
   return results.rows.map(row => row.id)
 }
@@ -75,6 +88,7 @@ module.exports = {
   submit,
   getFormDataForUser,
   getIncidentsForUser,
+  getInvolvedStaff,
   deleteInvolvedStaff,
   insertInvolvedStaff,
 }

@@ -74,11 +74,26 @@ test('getIncidentsForUser', () => {
   formClient.getIncidentsForUser('user1', 'STATUS_1')
 
   expect(db.query).toBeCalledWith({
-    text: `select id, booking_id, reporter_name, offender_no, incident_date
-          from incidents
-          where (user_id = $1 or form_response -> 'incident' -> 'newIncident' -> 'involved'  @> $2)
-          and status = $3`,
-    values: ['user1', '[{"name":"user1"}]', 'STATUS_1'],
+    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv.id, inv."name"
+            from involved_staff inv 
+            inner join incidents i on inv.incident_id = i.id   
+          where i.status = $1 
+          and inv.user_id = $2 
+          and inv.statement_status = $3`,
+    values: ['SUBMITTED', 'user1', 'PENDING'],
+  })
+})
+
+test('getInvolvedStaff', async () => {
+  const expected = [{ id: 1 }, { id: 2 }]
+  db.query.mockReturnValue({ rows: expected })
+
+  const result = await formClient.getInvolvedStaff('incident-1')
+
+  expect(result).toEqual(expected)
+  expect(db.query).toBeCalledWith({
+    text: `select id, user_id, name, email from involved_staff where incident_id = $1`,
+    values: ['incident-1'],
   })
 })
 
@@ -91,13 +106,16 @@ test('deleteInvolvedStaff', () => {
   })
 })
 
-test('inserInvolvedStaff', () => {
+test('insertInvolvedStaff', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 
-  const ids = formClient.insertInvolvedStaff('incident-1', [{ name: 'aaaa' }, { name: 'bbbb' }])
+  const ids = await formClient.insertInvolvedStaff('incident-1', [
+    { userId: 1, name: 'aaaa' },
+    { userId: 2, name: 'bbbb' },
+  ])
 
   expect(ids).toEqual([1, 2])
   expect(db.query).toBeCalledWith({
-    text: `insert into involved_staff (incident_id, user_id, statement_status) VALUES ('incident-1', 'aaaa', 'PENDING'), ('incident-1', 'bbbb', 'PENDING') returning id`,
+    text: `insert into involved_staff (incident_id, user_id, name, statement_status) VALUES ('incident-1', '1', 'aaaa', 'PENDING'), ('incident-1', '2', 'bbbb', 'PENDING') returning id`,
   })
 })

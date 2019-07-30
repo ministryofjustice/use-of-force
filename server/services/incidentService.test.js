@@ -3,6 +3,7 @@ const serviceCreator = require('./incidentService')
 const formClient = {
   getFormDataForUser: jest.fn(),
   getIncidentsForUser: jest.fn(),
+  getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
   update: jest.fn(),
@@ -47,6 +48,13 @@ describe('getFormResponse', () => {
   })
 })
 
+describe('getInvolvedStaff', () => {
+  test('it should call query on db', async () => {
+    await service.getInvolvedStaff('incident-1')
+    expect(formClient.getInvolvedStaff).toBeCalledTimes(1)
+  })
+})
+
 describe('getIncidentsForUser', () => {
   test('retrieve  details', async () => {
     const output = await service.getIncidentsForUser('user1', 'STATUS-1')
@@ -77,7 +85,7 @@ describe('update', () => {
     expect(formClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(formClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(formClient.insertInvolvedStaff).toBeCalledTimes(1)
-    expect(formClient.insertInvolvedStaff).toBeCalledWith('form1', [{ name: 'Bob' }])
+    expect(formClient.insertInvolvedStaff).toBeCalledWith('form1', [{ userId: 'Bob', name: 'Bob' }])
   })
 
   test('updates if no-one is present', async () => {

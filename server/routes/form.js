@@ -57,7 +57,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const section = 'incident'
       const form = 'newIncident'
 
-      const { formObject, incidentDate } = await loadForm(req)
+      const { formId, formObject, incidentDate } = await loadForm(req)
       const date = incidentDate ? moment(incidentDate) : moment()
 
       const dateAndTime = {
@@ -65,11 +65,14 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         time: date.format('HH:mm'),
       }
 
+      const involved = formId ? await incidentService.getInvolvedStaff(formId) : []
+
       const data = {
         displayName,
         offenderNo,
         dateAndTime,
         locations,
+        involved,
       }
 
       renderForm({ req, res, formObject, data, section, form })

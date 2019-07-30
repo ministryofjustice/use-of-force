@@ -60,6 +60,11 @@ context('Submit the incident report', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage
+      .staffInvolved(0)
+      .name()
+      .type('Test User')
+
     const detailsPage = newIncidentPage.save()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()

@@ -1,6 +1,6 @@
 const logger = require('../../log.js')
 const { validate } = require('../utils/fieldValidation')
-const { isNilOrEmpty, equals } = require('../utils/utils')
+const { isNilOrEmpty } = require('../utils/utils')
 
 const getUpdatedFormObject = require('./updateBuilder')
 
@@ -23,7 +23,7 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
   async function update({ token, userId, reporterName, formId, bookingId, updatedFormObject }) {
     const incidentId = await updateIncident({ token, userId, reporterName, formId, bookingId, updatedFormObject })
     if (updatedFormObject.involved) {
-      await updateInvolvedStaff(incidentId, updatedFormObject.involved)
+      await updateInvolvedStaff({ incidentId, userId, reporterName, involvedStaff: updatedFormObject.involved })
     }
   }
 
@@ -49,16 +49,26 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
     return id
   }
 
-  async function updateInvolvedStaff(incidentId, involvedStaff) {
+  async function updateInvolvedStaff({ incidentId, involvedStaff }) {
     await formClient.deleteInvolvedStaff(incidentId)
     if (involvedStaff.length) {
-      await formClient.insertInvolvedStaff(incidentId, involvedStaff)
+      // TODO The reporting staff may need to be added to the list
+      // TODO: Currently have no way of retrieving user_id from a name - so currently coding both to same value
+      const staff = involvedStaff.map(user => ({
+        userId: user.name,
+        ...user,
+      }))
+      await formClient.insertInvolvedStaff(incidentId, staff)
     }
   }
 
   const getIncidentsForUser = async (userId, status) => {
     const data = await formClient.getIncidentsForUser(userId, status)
     return data.rows
+  }
+
+  const getInvolvedStaff = incidentId => {
+    return formClient.getInvolvedStaff(incidentId)
   }
 
   return {
@@ -68,5 +78,6 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
     getValidationErrors: validate,
     getIncidentsForUser,
     getUpdatedFormObject,
+    getInvolvedStaff,
   }
 }
