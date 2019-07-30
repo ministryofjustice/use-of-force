@@ -100,11 +100,9 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
   if (evidenceYesNo === 'No') {
     return 'none'
   }
-  return tagsAndEvidence
-    .map(item => {
-      return `${item.evidenceTagReference}<br/>${item.description}`
-    })
-    .join(`<br/></br>`)
+  return tagsAndEvidence.map(item => {
+    return { tag: item.evidenceTagReference, description: item.description }
+  })
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
