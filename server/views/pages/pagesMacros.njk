@@ -1,0 +1,34 @@
+
+{% macro getUserInputs(data, title, url) %}
+{# regex to prevent display of 'undefined' which may occur if value depends on answer to a preceding question. Will also prevent 'select' displaying #}
+{% set regExp = r/^(?:undefined.*|select.*)/i %}  
+
+  <h2 class="govuk-heading-l govuk-!-margin-bottom-1 govuk-!-margin-top-9">
+    {{title}}
+  <span class="govuk-body govuk-!-margin-top-1 float-right">
+    <a class="govuk-link" href= {{url}} >
+      Change<span class="govuk-visually-hidden"> {{title}} </span>
+    </a>
+  </span>
+  </h2>
+  <dl class="govuk-summary-list">
+    {% for key, value in data %}
+      <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"> {{key}} </dt>
+            <dd class="govuk-summary-list__value"> 
+              {% if not value or regExp.test(value) %} 
+                &ndash;  
+              {% elif key === "Evidence bagged and tagged" %} 
+              {% for item in value %}
+                {{item.tag }}<br>{{item.description}}<br/><br/>
+              {% endfor %}
+              {% else %} 
+                {{value}} 
+              {% endif %} 
+            </dd>
+            <dd class="govuk-summary-list__actions"></dd>
+      </div>
+    {% endfor %}
+  </dl>
+
+{% endmacro %}

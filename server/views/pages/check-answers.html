@@ -4,7 +4,7 @@
 {% from "back-link/macro.njk" import govukBackLink %} 
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
-
+{% import "./pagesMacros.njk" as pagesMacros %}
 
 {% block beforeContent %}
 
@@ -29,10 +29,30 @@ href: backLink or "/"
     {% endif %}
 
     <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
-    {% include "./check-answers-sections/new-incident.html" %}
-    {% include "./check-answers-sections/details.html" %}
-    {% include "./check-answers-sections/relocation-and-injuries.html" %}
-    {% include "./check-answers-sections/evidence.html" %}
+
+           {{  pagesMacros.getUserInputs(
+                  data = data.newIncident,
+                  title = "New incident", 
+                  url = "/form/incident/newIncident/" + bookingId
+          )}}
+
+          {{  pagesMacros.getUserInputs(
+                  data = data.details,
+                  title = "Details", 
+                  url = "/form/incident/details/" + bookingId
+          )}}
+
+          {{  pagesMacros.getUserInputs(
+                  data = data.relocationAndInjuries,
+                  title = "Relocation and injuries", 
+                  url = "/form/incident/relocationAndInjuries/" + bookingId
+          )}}
+
+          {{  pagesMacros.getUserInputs(
+                  data = data.evidence,
+                  title = "Evidence", 
+                  url = "/form/incident/evidence/" + bookingId
+          )}}
 
   </div>
   <div class="govuk-grid-column-two-thirds">
@@ -76,7 +96,6 @@ href: backLink or "/"
           })
         }}
       </form>
-    </div>
   </div>
 </div>
 
