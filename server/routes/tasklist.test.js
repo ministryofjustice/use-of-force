@@ -4,7 +4,7 @@ const createRouter = require('./tasklist')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const incidentService = {
-  getFormResponse: jest.fn(),
+  getCurrentDraftIncident: jest.fn(),
 }
 
 const offenderService = {
@@ -17,12 +17,12 @@ let app
 
 beforeEach(() => {
   app = appSetup(tasklistRoute)
-  incidentService.getFormResponse.mockResolvedValue({})
+  incidentService.getCurrentDraftIncident.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
 })
 
 afterEach(() => {
-  incidentService.getFormResponse.mockReset()
+  incidentService.getCurrentDraftIncident.mockReset()
 })
 
 describe('GET /task-list', () => {

@@ -23,7 +23,10 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { id, form_response: formObject = {} } = await incidentService.getFormResponse(req.user.username, bookingId)
+      const { id, form_response: formObject = {} } = await incidentService.getCurrentDraftIncident(
+        req.user.username,
+        bookingId
+      )
       const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(

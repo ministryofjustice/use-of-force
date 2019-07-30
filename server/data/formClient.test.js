@@ -7,14 +7,14 @@ afterEach(() => {
   db.query.mockReset()
 })
 
-describe('getFormDataForUser', () => {
+describe('getCurrentDraftIncident', () => {
   test('it should call query on db', () => {
-    formClient.getFormDataForUser('user1')
+    formClient.getCurrentDraftIncident('user1')
     expect(db.query).toBeCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
-    formClient.getFormDataForUser('user1', -1)
+    formClient.getCurrentDraftIncident('user1', -1)
 
     expect(db.query).toBeCalledWith({
       text: `select id, incident_date, form_response from incidents i

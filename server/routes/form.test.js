@@ -4,7 +4,7 @@ const createRouter = require('./form')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const incidentService = {
-  getFormResponse: jest.fn(),
+  getCurrentDraftIncident: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   getUpdatedFormObject: jest.fn(),
@@ -20,12 +20,12 @@ let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  incidentService.getFormResponse.mockResolvedValue({})
+  incidentService.getCurrentDraftIncident.mockResolvedValue({})
   incidentService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
-  incidentService.getFormResponse.mockReset()
+  incidentService.getCurrentDraftIncident.mockReset()
   incidentService.getUpdatedFormObject.mockReset({})
   incidentService.update.mockReset()
 })

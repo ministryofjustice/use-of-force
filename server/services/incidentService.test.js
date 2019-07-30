@@ -1,7 +1,7 @@
 const serviceCreator = require('./incidentService')
 
 const formClient = {
-  getFormDataForUser: jest.fn(),
+  getCurrentDraftIncident: jest.fn(),
   getIncidentsForUser: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
@@ -21,13 +21,13 @@ beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
   service = serviceCreator({ formClient, elite2ClientBuilder })
-  formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
+  formClient.getCurrentDraftIncident.mockReturnValue({ a: 'b' })
   formClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
 afterEach(() => {
-  formClient.getFormDataForUser.mockReset()
+  formClient.getCurrentDraftIncident.mockReset()
   formClient.update.mockReset()
   formClient.create.mockReset()
   formClient.getIncidentsForUser.mockReset()
@@ -36,14 +36,14 @@ afterEach(() => {
   elite2Client.getOffenderDetails.mockReset()
 })
 
-describe('getFormResponse', () => {
+describe('getCurrentDraftIncident', () => {
   test('it should call query on db', async () => {
-    await service.getFormResponse('user1')
-    expect(formClient.getFormDataForUser).toBeCalledTimes(1)
+    await service.getCurrentDraftIncident('user1')
+    expect(formClient.getCurrentDraftIncident).toBeCalledTimes(1)
   })
 
   test('it should return the first row', async () => {
-    const output = await service.getFormResponse('user1')
+    const output = await service.getCurrentDraftIncident('user1')
     expect(output).toEqual({ a: 'b' })
   })
 })

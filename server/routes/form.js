@@ -31,7 +31,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       id: formId,
       incident_date: incidentDate,
       form_response: formObject = {},
-    } = await incidentService.getFormResponse(req.user.username, bookingId)
+    } = await incidentService.getCurrentDraftIncident(req.user.username, bookingId)
     return { formId, incidentDate, formObject }
   }
 
