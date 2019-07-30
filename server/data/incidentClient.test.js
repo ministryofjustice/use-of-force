@@ -27,10 +27,10 @@ describe('getCurrentDraftIncident', () => {
   })
 })
 
-test('create', () => {
+test('createDraftIncident', () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }] })
 
-  const id = incidentClient.create({
+  const id = incidentClient.createDraftIncident({
     userId: 'user1',
     bookingId: 'booking-1',
     reporterName: 'Bob Smith',

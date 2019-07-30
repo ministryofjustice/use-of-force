@@ -36,7 +36,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     }
     const elite2Client = elite2ClientBuilder(token)
     const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
-    const id = await incidentClient.create({
+    const id = await incidentClient.createDraftIncident({
       userId,
       bookingId,
       reporterName,

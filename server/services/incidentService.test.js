@@ -7,7 +7,7 @@ const incidentClient = {
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
   update: jest.fn(),
-  create: jest.fn(),
+  createDraftIncident: jest.fn(),
 }
 
 const elite2Client = {
@@ -29,7 +29,7 @@ beforeEach(() => {
 afterEach(() => {
   incidentClient.getCurrentDraftIncident.mockReset()
   incidentClient.update.mockReset()
-  incidentClient.create.mockReset()
+  incidentClient.createDraftIncident.mockReset()
   incidentClient.getIncidentsForUser.mockReset()
   incidentClient.insertInvolvedStaff.mockReset()
   incidentClient.deleteInvolvedStaff.mockReset()
@@ -128,7 +128,7 @@ describe('update', () => {
     expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })
 
-  test('should call create when form id not present', async () => {
+  test('should call createDraftIncident when form id not present', async () => {
     const updatedFormObject = { payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' } }
 
     await service.update({
@@ -138,8 +138,8 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(incidentClient.create).toBeCalledTimes(1)
-    expect(incidentClient.create).toBeCalledWith({
+    expect(incidentClient.createDraftIncident).toBeCalledTimes(1)
+    expect(incidentClient.createDraftIncident).toBeCalledWith({
       userId: 'user1',
       bookingId: 1,
       offenderNo: 'AA123ABC',
