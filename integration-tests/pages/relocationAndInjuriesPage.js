@@ -20,7 +20,7 @@ export default () =>
       cy.get('[data-qa-add-another-staff-needing-medical-attention = true]').click()
       cy.get('[name="staffNeedingMedicalAttention[2][name]"]').type('Jayne Eyre')
       cy.get('[name="staffNeedingMedicalAttention[2][hospitalisation]"]').check('Yes')
-      cy.get(':nth-child(1) > .govuk-button').click()
+      cy.get('.add-another-staff-needing-medical-attention > :nth-child(1) > .govuk-button').click()
     },
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()

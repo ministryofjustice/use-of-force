@@ -184,7 +184,7 @@
     <!-- Q6 -->          
 
 <div class="govuk-!-margin-bottom-6">
-      <div class="govuk-fieldset">
+      <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend ">
           Did a member of staff need medical attention at the time?
         </legend>
@@ -192,7 +192,7 @@
         <div class="govuk-radios" data-module="radios">
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="staff-medical-attention" name="staffMedicalAttention" type="radio"
+              <input class="govuk-radios__input" id="staff-medical-attention-1" name="staffMedicalAttention" type="radio"
                 value="Yes" data-aria-controls="staff-medical-attention--conditional"
                 {% if data.staffMedicalAttention === 'Yes' %} checked {% endif %}
               >
@@ -336,8 +336,9 @@
               </div> 
             </div>  <!-- add another ends here -->
           </div>  <!-- hidden panel end -->
-        </fieldset>     
-      </div> <!-- end of this component  -->
+        </div> <!--end of radios -->
+      </fieldset>     
+    </div> <!-- end of this component  -->
   </div> <!-- end of column two thirds -->
 </div>   <!-- end of grid row-->
 
