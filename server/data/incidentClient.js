@@ -1,7 +1,7 @@
 const format = require('pg-format')
 const db = require('./dataAccess/db')
 
-const create = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
+const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
   const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from incidents where booking_id = $5 and user_id = $2)`
   const result = await db.query({
     text: `insert into incidents (form_response, user_id, reporter_name, offender_no, booking_id, status, incident_date, sequence_no, created_date)
@@ -12,7 +12,7 @@ const create = async ({ userId, bookingId, reporterName, offenderNo, incidentDat
   return result.rows[0].id
 }
 
-const update = (incidentId, incidentDate, formResponse) => {
+const updateDraftIncident = (incidentId, incidentDate, formResponse) => {
   return db.query({
     text: `update incidents i set form_response = $1, incident_date = COALESCE($2, i.incident_date) where i.id = $3`,
     values: [formResponse, incidentDate, incidentId],
@@ -84,8 +84,8 @@ const insertInvolvedStaff = async (incidentId, staff) => {
 }
 
 module.exports = {
-  create,
-  update,
+  createDraftIncident,
+  updateDraftIncident,
   submit,
   getCurrentDraftIncident,
   getIncidentsForUser,

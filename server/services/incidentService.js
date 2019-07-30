@@ -4,16 +4,16 @@ const { isNilOrEmpty } = require('../utils/utils')
 
 const getUpdatedFormObject = require('./updateBuilder')
 
-module.exports = function createIncidentService({ formClient, elite2ClientBuilder }) {
+module.exports = function createIncidentService({ incidentClient, elite2ClientBuilder }) {
   function getCurrentDraftIncident(userId, bookingId) {
-    return formClient.getCurrentDraftIncident(userId, bookingId)
+    return incidentClient.getCurrentDraftIncident(userId, bookingId)
   }
 
   async function submitForm(userId, bookingId) {
     const form = await getCurrentDraftIncident(userId, bookingId)
     if (form.id) {
       logger.info(`Submitting form for user: ${userId} and booking: ${bookingId}`)
-      await formClient.submit(userId, bookingId)
+      await incidentClient.submit(userId, bookingId)
       return form.id
     }
     return false
@@ -30,13 +30,13 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
     if (formId) {
       if (!isNilOrEmpty(updatedFormObject.payload)) {
         logger.info(`Updated incident with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-        await formClient.update(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
+        await incidentClient.updateDraftIncident(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
       }
       return formId
     }
     const elite2Client = elite2ClientBuilder(token)
     const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
-    const id = await formClient.create({
+    const id = await incidentClient.createDraftIncident({
       userId,
       bookingId,
       reporterName,
@@ -49,7 +49,7 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
   }
 
   async function updateInvolvedStaff({ incidentId, involvedStaff }) {
-    await formClient.deleteInvolvedStaff(incidentId)
+    await incidentClient.deleteInvolvedStaff(incidentId)
     if (involvedStaff.length) {
       // TODO The reporting staff may need to be added to the list
       // TODO: Currently have no way of retrieving user_id from a name - so currently coding both to same value
@@ -57,17 +57,17 @@ module.exports = function createIncidentService({ formClient, elite2ClientBuilde
         userId: user.name,
         ...user,
       }))
-      await formClient.insertInvolvedStaff(incidentId, staff)
+      await incidentClient.insertInvolvedStaff(incidentId, staff)
     }
   }
 
   const getIncidentsForUser = async (userId, status) => {
-    const data = await formClient.getIncidentsForUser(userId, status)
+    const data = await incidentClient.getIncidentsForUser(userId, status)
     return data.rows
   }
 
   const getInvolvedStaff = incidentId => {
-    return formClient.getInvolvedStaff(incidentId)
+    return incidentClient.getInvolvedStaff(incidentId)
   }
 
   return {
