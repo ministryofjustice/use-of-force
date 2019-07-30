@@ -27,11 +27,12 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
 module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
-    const { form_response: formObject = {}, id: formId } = await incidentService.getFormResponse(
-      req.user.username,
-      bookingId
-    )
-    return { formId, formObject }
+    const {
+      id: formId,
+      incident_date: incidentDate,
+      form_response: formObject = {},
+    } = await incidentService.getFormResponse(req.user.username, bookingId)
+    return { formId, incidentDate, formObject }
   }
 
   const router = express.Router()
@@ -56,21 +57,22 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const section = 'incident'
       const form = 'newIncident'
 
-      const { formObject } = await loadForm(req)
-      const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject) || {}
-
-      const incidentDate = pageData.incidentDate ? moment(pageData.incidentDate) : moment()
+      const { formId, formObject, incidentDate } = await loadForm(req)
+      const date = incidentDate ? moment(incidentDate) : moment()
 
       const dateAndTime = {
-        date: incidentDate.format('DD/MM/YYYY'),
-        time: incidentDate.format('HH:mm'),
+        date: date.format('DD/MM/YYYY'),
+        time: date.format('HH:mm'),
       }
+
+      const involved = formId ? await incidentService.getInvolvedStaff(formId) : []
 
       const data = {
         displayName,
         offenderNo,
         dateAndTime,
         locations,
+        involved,
       }
 
       renderForm({ req, res, formObject, data, section, form })

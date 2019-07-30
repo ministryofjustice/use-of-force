@@ -44,7 +44,7 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getFormData', { bookingId, formName: 'newIncident' }).then(data => {
+    cy.task('getFormData', { bookingId, formName: 'newIncident' }).then(({ data, staff }) => {
       const { incidentDate, ...payload } = data
 
       const incidentDateInMillis = moment(incidentDate).valueOf()
@@ -55,10 +55,10 @@ context('Submitting details page form', () => {
 
       expect(payload).to.deep.equal({
         locationId: 357591,
-        involved: [{ name: 'AAAA' }, { name: 'BBBB' }],
         forceType: 'spontaneous',
         witnesses: [{ name: '1111' }],
       })
+      expect(staff).to.deep.equal([{ userId: 'AAAA', name: 'AAAA' }, { userId: 'BBBB', name: 'BBBB' }])
     })
   })
 

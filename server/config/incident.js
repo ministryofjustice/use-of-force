@@ -1,5 +1,6 @@
 const moment = require('moment')
 const { isBlank } = require('../utils/utils')
+const { EXTRACTED } = require('./fieldType')
 
 module.exports = {
   newIncident: {
@@ -8,6 +9,7 @@ module.exports = {
         incidentDate: {
           responseType: 'requiredString',
           sanitiser: val => moment(val, 'DD/MM/YYYY-HH:mm').toDate(),
+          fieldType: EXTRACTED,
         },
       },
       {
@@ -32,6 +34,7 @@ module.exports = {
       {
         involved: {
           sanitiser: vals => removeEmptyValues('name', vals),
+          fieldType: EXTRACTED,
         },
       },
       {

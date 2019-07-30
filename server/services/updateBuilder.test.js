@@ -1,4 +1,5 @@
 const getUpdatedFormObject = require('./updateBuilder')
+const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 
 describe('getUpdatedFormObject', () => {
   const baseForm = {
@@ -42,13 +43,15 @@ describe('getUpdatedFormObject', () => {
       })
 
       expect(output).toEqual({
-        ...form,
-        section4: {
-          ...form.section4,
-          form3: {
-            decision: 'Yes',
-            followUp1: 'County',
-            followUp2: 'Town',
+        payload: {
+          ...form,
+          section4: {
+            ...form.section4,
+            form3: {
+              decision: 'Yes',
+              followUp1: 'County',
+              followUp2: 'Town',
+            },
           },
         },
       })
@@ -76,7 +79,7 @@ describe('getUpdatedFormObject', () => {
         formName: 'form2',
       })
 
-      expect(output).toEqual(false)
+      expect(output).toEqual({})
     })
 
     it('should add new sections and forms to the form if they dont exist', async () => {
@@ -95,12 +98,14 @@ describe('getUpdatedFormObject', () => {
       })
 
       const expectedForm = {
-        ...baseForm,
-        section5: {
-          form1: {
-            decision: 'Yes',
-            followUp1: 'County',
-            followUp2: 'Town',
+        payload: {
+          ...baseForm,
+          section5: {
+            form1: {
+              decision: 'Yes',
+              followUp1: 'County',
+              followUp2: 'Town',
+            },
           },
         },
       }
@@ -156,13 +161,15 @@ describe('getUpdatedFormObject', () => {
       })
 
       expect(output).toEqual({
-        ...form,
-        section4: {
-          ...form.section4,
-          form3: {
-            decision: 'Yes',
-            followUp1: 'County',
-            followUp2: 'Town',
+        payload: {
+          ...form,
+          section4: {
+            ...form.section4,
+            form3: {
+              decision: 'Yes',
+              followUp1: 'County',
+              followUp2: 'Town',
+            },
           },
         },
       })
@@ -187,15 +194,47 @@ describe('getUpdatedFormObject', () => {
       })
 
       expect(output).toEqual({
-        ...form,
-        section4: {
-          ...form.section4,
-          form3: {
-            decision: 'No',
+        payload: {
+          ...form,
+          section4: {
+            ...form.section4,
+            form3: {
+              decision: 'No',
+            },
           },
         },
       })
     })
+  })
+})
+
+test('check extracted fields are present outside of the payload', async () => {
+  const config = [
+    { q1: {} },
+    { q2: { fieldType: EXTRACTED } },
+    { q3: { fieldType: PAYLOAD } },
+    { q4: { fieldType: EXTRACTED } },
+  ]
+
+  const output = getUpdatedFormObject({
+    formObject: {},
+    fieldMap: config,
+    userInput: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
+    formSection: 'section4',
+    formName: 'form1',
+  })
+
+  expect(output).toEqual({
+    payload: {
+      section4: {
+        form1: {
+          q1: 'aaa',
+          q3: 'ccc',
+        },
+      },
+    },
+    q2: 'bbb',
+    q4: 'ddd',
   })
 })
 
@@ -219,9 +258,11 @@ test('sanitisation', async () => {
   })
 
   expect(output).toEqual({
-    section4: {
-      form1: {
-        q1: 'AAAAAAAA',
+    payload: {
+      section4: {
+        form1: {
+          q1: 'AAAAAAAA',
+        },
       },
     },
   })

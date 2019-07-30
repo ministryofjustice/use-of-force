@@ -23,7 +23,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { form_response: formObject = {} } = await incidentService.getFormResponse(req.user.username, bookingId)
+      const { id, form_response: formObject = {} } = await incidentService.getFormResponse(req.user.username, bookingId)
       const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
@@ -31,8 +31,10 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         formData.newIncident && formData.newIncident.locationId
       )
 
+      const involvedStaff = id ? await incidentService.getInvolvedStaff(id) : []
+
       const data = {
-        newIncident: createNewIncidentObj(offenderDetail, description, formData.newIncident),
+        newIncident: createNewIncidentObj(offenderDetail, description, formData.newIncident, involvedStaff),
         offenderDetail,
         details: createDetailsObj(formData.details),
         relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
@@ -110,13 +112,13 @@ const typeOfHandcuffsUsed = handcuffsType => {
   return handcuffsType === 'ratchet' ? ' - ratchet' : ' - fixed bar'
 }
 
-const createNewIncidentObj = (offenderDetail, description, newIncident = {}) => {
+const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff) => {
   return {
     'Offender name': offenderDetail.displayName,
     'Offender number': offenderDetail.offenderNo,
     Location: description,
     'Use of force planned': newIncident.forceType,
-    'Staff involved': toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.involved)),
+    'Staff involved': toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', involvedStaff)),
     Witnesses: toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses)),
   }
 }

@@ -121,6 +121,7 @@
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.5.0",
     "pg": "^7.11.0",
+    "pg-format": "^1.0.4",
     "querystring": "^0.2.0",
     "ramda": "^0.25.0",
     "sass-middleware": "^0.0.3",
