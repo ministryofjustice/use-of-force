@@ -1,6 +1,6 @@
 const serviceCreator = require('./incidentService')
 
-const formClient = {
+const incidentClient = {
   getCurrentDraftIncident: jest.fn(),
   getIncidentsForUser: jest.fn(),
   getInvolvedStaff: jest.fn(),
@@ -20,26 +20,26 @@ beforeEach(() => {
   const elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
-  service = serviceCreator({ formClient, elite2ClientBuilder })
-  formClient.getCurrentDraftIncident.mockReturnValue({ a: 'b' })
-  formClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+  service = serviceCreator({ incidentClient, elite2ClientBuilder })
+  incidentClient.getCurrentDraftIncident.mockReturnValue({ a: 'b' })
+  incidentClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
 afterEach(() => {
-  formClient.getCurrentDraftIncident.mockReset()
-  formClient.update.mockReset()
-  formClient.create.mockReset()
-  formClient.getIncidentsForUser.mockReset()
-  formClient.insertInvolvedStaff.mockReset()
-  formClient.deleteInvolvedStaff.mockReset()
+  incidentClient.getCurrentDraftIncident.mockReset()
+  incidentClient.update.mockReset()
+  incidentClient.create.mockReset()
+  incidentClient.getIncidentsForUser.mockReset()
+  incidentClient.insertInvolvedStaff.mockReset()
+  incidentClient.deleteInvolvedStaff.mockReset()
   elite2Client.getOffenderDetails.mockReset()
 })
 
 describe('getCurrentDraftIncident', () => {
   test('it should call query on db', async () => {
     await service.getCurrentDraftIncident('user1')
-    expect(formClient.getCurrentDraftIncident).toBeCalledTimes(1)
+    expect(incidentClient.getCurrentDraftIncident).toBeCalledTimes(1)
   })
 
   test('it should return the first row', async () => {
@@ -51,7 +51,7 @@ describe('getCurrentDraftIncident', () => {
 describe('getInvolvedStaff', () => {
   test('it should call query on db', async () => {
     await service.getInvolvedStaff('incident-1')
-    expect(formClient.getInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
   })
 })
 
@@ -61,8 +61,8 @@ describe('getIncidentsForUser', () => {
 
     expect(output).toEqual([{ id: 1 }, { id: 2 }])
 
-    expect(formClient.getIncidentsForUser).toBeCalledTimes(1)
-    expect(formClient.getIncidentsForUser).toBeCalledWith('user1', 'STATUS-1')
+    expect(incidentClient.getIncidentsForUser).toBeCalledTimes(1)
+    expect(incidentClient.getIncidentsForUser).toBeCalledWith('user1', 'STATUS-1')
   })
 })
 describe('update', () => {
@@ -80,12 +80,12 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(formClient.update).toBeCalledTimes(1)
-    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
-    expect(formClient.deleteInvolvedStaff).toBeCalledTimes(1)
-    expect(formClient.deleteInvolvedStaff).toBeCalledWith('form1')
-    expect(formClient.insertInvolvedStaff).toBeCalledTimes(1)
-    expect(formClient.insertInvolvedStaff).toBeCalledWith('form1', [{ userId: 'Bob', name: 'Bob' }])
+    expect(incidentClient.update).toBeCalledTimes(1)
+    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
+    expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [{ userId: 'Bob', name: 'Bob' }])
   })
 
   test('updates if no-one is present', async () => {
@@ -102,11 +102,11 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(formClient.update).toBeCalledTimes(1)
-    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
-    expect(formClient.deleteInvolvedStaff).toBeCalledTimes(1)
-    expect(formClient.deleteInvolvedStaff).toBeCalledWith('form1')
-    expect(formClient.insertInvolvedStaff).not.toBeCalled()
+    expect(incidentClient.update).toBeCalledTimes(1)
+    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
+    expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })
 
   test('doesnt update involved staff if non-present', async () => {
@@ -122,10 +122,10 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(formClient.update).toBeCalledTimes(1)
-    expect(formClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
-    expect(formClient.deleteInvolvedStaff).not.toBeCalled()
-    expect(formClient.insertInvolvedStaff).not.toBeCalled()
+    expect(incidentClient.update).toBeCalledTimes(1)
+    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.deleteInvolvedStaff).not.toBeCalled()
+    expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })
 
   test('should call create when form id not present', async () => {
@@ -138,8 +138,8 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(formClient.create).toBeCalledTimes(1)
-    expect(formClient.create).toBeCalledWith({
+    expect(incidentClient.create).toBeCalledTimes(1)
+    expect(incidentClient.create).toBeCalledWith({
       userId: 'user1',
       bookingId: 1,
       offenderNo: 'AA123ABC',

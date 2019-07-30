@@ -1,4 +1,4 @@
-const formClient = require('./formClient')
+const incidentClient = require('./incidentClient')
 const db = require('./dataAccess/db')
 
 jest.mock('../../server/data/dataAccess/db')
@@ -9,12 +9,12 @@ afterEach(() => {
 
 describe('getCurrentDraftIncident', () => {
   test('it should call query on db', () => {
-    formClient.getCurrentDraftIncident('user1')
+    incidentClient.getCurrentDraftIncident('user1')
     expect(db.query).toBeCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
-    formClient.getCurrentDraftIncident('user1', -1)
+    incidentClient.getCurrentDraftIncident('user1', -1)
 
     expect(db.query).toBeCalledWith({
       text: `select id, incident_date, form_response from incidents i
@@ -30,7 +30,7 @@ describe('getCurrentDraftIncident', () => {
 test('create', () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }] })
 
-  const id = formClient.create({
+  const id = incidentClient.create({
     userId: 'user1',
     bookingId: 'booking-1',
     reporterName: 'Bob Smith',
@@ -49,7 +49,7 @@ test('create', () => {
 })
 
 test('update', () => {
-  formClient.update('formId', 'date-1', {})
+  incidentClient.update('formId', 'date-1', {})
 
   expect(db.query).toBeCalledWith({
     text: 'update incidents i set form_response = $1, incident_date = COALESCE($2, i.incident_date) where i.id = $3',
@@ -58,7 +58,7 @@ test('update', () => {
 })
 
 test('submit', () => {
-  formClient.submit('user1', 'booking1')
+  incidentClient.submit('user1', 'booking1')
 
   expect(db.query).toBeCalledWith({
     text: `update incidents i set status = $1, submitted_date = CURRENT_TIMESTAMP 
@@ -71,7 +71,7 @@ test('submit', () => {
 })
 
 test('getIncidentsForUser', () => {
-  formClient.getIncidentsForUser('user1', 'STATUS_1')
+  incidentClient.getIncidentsForUser('user1', 'STATUS_1')
 
   expect(db.query).toBeCalledWith({
     text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv.id, inv."name"
@@ -88,7 +88,7 @@ test('getInvolvedStaff', async () => {
   const expected = [{ id: 1 }, { id: 2 }]
   db.query.mockReturnValue({ rows: expected })
 
-  const result = await formClient.getInvolvedStaff('incident-1')
+  const result = await incidentClient.getInvolvedStaff('incident-1')
 
   expect(result).toEqual(expected)
   expect(db.query).toBeCalledWith({
@@ -98,7 +98,7 @@ test('getInvolvedStaff', async () => {
 })
 
 test('deleteInvolvedStaff', () => {
-  formClient.deleteInvolvedStaff('incident-1')
+  incidentClient.deleteInvolvedStaff('incident-1')
 
   expect(db.query).toBeCalledWith({
     text: `delete from involved_staff where incident_id = $1`,
@@ -109,7 +109,7 @@ test('deleteInvolvedStaff', () => {
 test('insertInvolvedStaff', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 
-  const ids = await formClient.insertInvolvedStaff('incident-1', [
+  const ids = await incidentClient.insertInvolvedStaff('incident-1', [
     { userId: 1, name: 'aaaa' },
     { userId: 2, name: 'bbbb' },
   ])
