@@ -6,7 +6,7 @@ const incidentClient = {
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
-  update: jest.fn(),
+  updateDraftIncident: jest.fn(),
   createDraftIncident: jest.fn(),
 }
 
@@ -28,7 +28,7 @@ beforeEach(() => {
 
 afterEach(() => {
   incidentClient.getCurrentDraftIncident.mockReset()
-  incidentClient.update.mockReset()
+  incidentClient.updateDraftIncident.mockReset()
   incidentClient.createDraftIncident.mockReset()
   incidentClient.getIncidentsForUser.mockReset()
   incidentClient.insertInvolvedStaff.mockReset()
@@ -80,8 +80,12 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(incidentClient.update).toBeCalledTimes(1)
-    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
+    expect(incidentClient.updateDraftIncident).toBeCalledWith(
+      'form1',
+      updatedFormObject.incidentDate,
+      updatedFormObject.payload
+    )
     expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
@@ -102,8 +106,12 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(incidentClient.update).toBeCalledTimes(1)
-    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
+    expect(incidentClient.updateDraftIncident).toBeCalledWith(
+      'form1',
+      updatedFormObject.incidentDate,
+      updatedFormObject.payload
+    )
     expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
@@ -122,8 +130,12 @@ describe('update', () => {
       updatedFormObject,
     })
 
-    expect(incidentClient.update).toBeCalledTimes(1)
-    expect(incidentClient.update).toBeCalledWith('form1', updatedFormObject.incidentDate, updatedFormObject.payload)
+    expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
+    expect(incidentClient.updateDraftIncident).toBeCalledWith(
+      'form1',
+      updatedFormObject.incidentDate,
+      updatedFormObject.payload
+    )
     expect(incidentClient.deleteInvolvedStaff).not.toBeCalled()
     expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })

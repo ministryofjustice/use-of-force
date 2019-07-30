@@ -48,8 +48,8 @@ test('createDraftIncident', () => {
   })
 })
 
-test('update', () => {
-  incidentClient.update('formId', 'date-1', {})
+test('updateDraftIncident', () => {
+  incidentClient.updateDraftIncident('formId', 'date-1', {})
 
   expect(db.query).toBeCalledWith({
     text: 'update incidents i set form_response = $1, incident_date = COALESCE($2, i.incident_date) where i.id = $3',

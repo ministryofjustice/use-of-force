@@ -12,7 +12,7 @@ const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo
   return result.rows[0].id
 }
 
-const update = (incidentId, incidentDate, formResponse) => {
+const updateDraftIncident = (incidentId, incidentDate, formResponse) => {
   return db.query({
     text: `update incidents i set form_response = $1, incident_date = COALESCE($2, i.incident_date) where i.id = $3`,
     values: [formResponse, incidentDate, incidentId],
@@ -85,7 +85,7 @@ const insertInvolvedStaff = async (incidentId, staff) => {
 
 module.exports = {
   createDraftIncident,
-  update,
+  updateDraftIncident,
   submit,
   getCurrentDraftIncident,
   getIncidentsForUser,

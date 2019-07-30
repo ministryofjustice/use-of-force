@@ -30,7 +30,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     if (formId) {
       if (!isNilOrEmpty(updatedFormObject.payload)) {
         logger.info(`Updated incident with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-        await incidentClient.update(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
+        await incidentClient.updateDraftIncident(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
       }
       return formId
     }
