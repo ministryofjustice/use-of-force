@@ -23,20 +23,29 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     return offenderService.getOffenderNames(token, offenderNos)
   }
 
+  const toStatement = namesByOffenderNumber => incident => ({
+    id: incident.id,
+    date: moment(incident.incident_date).format('DD/MM/YYYY - HH:mm'),
+    staffMemberName: incident.reporter_name,
+    offenderName: namesByOffenderNumber[incident.offender_no],
+  })
+
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      const incidents = await incidentService.getIncidentsForUser(req.user.username, 'SUBMITTED')
-      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, incidents)
-      const incidentsToDo = incidents.map(incident => ({
-        id: incident.id,
-        date: moment(incident.incident_date).format('DD/MM/YYYY - HH:mm'),
-        staffMemberName: incident.reporter_name,
-        offenderName: namesByOffenderNumber[incident.offender_no],
-      }))
+      const awaitingIncidents = await incidentService.getIncidentsForUser(req.user.username, 'PENDING')
+      const completedIncidents = await incidentService.getIncidentsForUser(req.user.username, 'SUBMITTED')
+
+      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [
+        ...awaitingIncidents,
+        ...completedIncidents,
+      ])
+      const awaitingStatements = awaitingIncidents.map(toStatement(namesByOffenderNumber))
+      const completedStatements = completedIncidents.map(toStatement(namesByOffenderNumber))
 
       res.render('pages/incidents', {
-        incidentsToDo,
+        awaitingStatements,
+        completedStatements,
       })
     })
   )
@@ -55,6 +64,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     '/incidents/:incidentId/statement',
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
+      await incidentService.submitStatement(req.user.username, incidentId)
       res.redirect(`/incidents/${incidentId}/statement/submitted`)
     })
   )
