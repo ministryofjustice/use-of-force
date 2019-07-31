@@ -38,22 +38,34 @@ const getCurrentDraftIncident = async (userId, bookingId, query = db.query) => {
     text: `select id, incident_date, form_response from incidents i
           where user_id = $1
           and booking_id = $2
-          and status = 'IN_PROGRESS'
+          and status = $3
           and i.sequence_no = ${maxSequenceForBooking}`,
-    values: [userId, bookingId],
+    values: [userId, bookingId, 'IN_PROGRESS'],
   })
   return results.rows[0] || {}
 }
 
 const getIncidentsForUser = (userId, status, query = db.query) => {
   return query({
-    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv.id, inv."name"
+    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv."name"
             from involved_staff inv 
             inner join incidents i on inv.incident_id = i.id   
           where i.status = $1 
           and inv.user_id = $2 
           and inv.statement_status = $3`,
-    values: ['SUBMITTED', userId, 'PENDING'],
+    values: ['SUBMITTED', userId, status],
+  })
+}
+
+const submitStatement = (userId, incidentId, query = db.query) => {
+  return query({
+    text: `update involved_staff 
+    set submitted_date = CURRENT_TIMESTAMP
+    ,   statement_status = $1
+    where user_id = $2
+    and incident_id = $3
+    and statement_status = $4`,
+    values: ['SUBMITTED', userId, incidentId, 'PENDING'],
   })
 }
 
@@ -92,4 +104,5 @@ module.exports = {
   getInvolvedStaff,
   deleteInvolvedStaff,
   insertInvolvedStaff,
+  submitStatement,
 }

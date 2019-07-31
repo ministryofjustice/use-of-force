@@ -20,9 +20,9 @@ describe('getCurrentDraftIncident', () => {
       text: `select id, incident_date, form_response from incidents i
           where user_id = $1
           and booking_id = $2
-          and status = 'IN_PROGRESS'
+          and status = $3
           and i.sequence_no = (select max(i2.sequence_no) from incidents i2 where i2.booking_id = i.booking_id and user_id = i.user_id)`,
-      values: ['user1', -1],
+      values: ['user1', -1, 'IN_PROGRESS'],
     })
   })
 })
@@ -74,13 +74,13 @@ test('getIncidentsForUser', () => {
   incidentClient.getIncidentsForUser('user1', 'STATUS_1')
 
   expect(db.query).toBeCalledWith({
-    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv.id, inv."name"
+    text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv."name"
             from involved_staff inv 
             inner join incidents i on inv.incident_id = i.id   
           where i.status = $1 
           and inv.user_id = $2 
           and inv.statement_status = $3`,
-    values: ['SUBMITTED', 'user1', 'PENDING'],
+    values: ['SUBMITTED', 'user1', 'STATUS_1'],
   })
 })
 
@@ -117,5 +117,19 @@ test('insertInvolvedStaff', async () => {
   expect(ids).toEqual([1, 2])
   expect(db.query).toBeCalledWith({
     text: `insert into involved_staff (incident_id, user_id, name, statement_status) VALUES ('incident-1', '1', 'aaaa', 'PENDING'), ('incident-1', '2', 'bbbb', 'PENDING') returning id`,
+  })
+})
+
+test('submitStatement', () => {
+  incidentClient.submitStatement('user1', 'incident1')
+
+  expect(db.query).toBeCalledWith({
+    text: `update involved_staff 
+    set submitted_date = CURRENT_TIMESTAMP
+    ,   statement_status = $1
+    where user_id = $2
+    and incident_id = $3
+    and statement_status = $4`,
+    values: ['SUBMITTED', 'user1', 'incident1', 'PENDING'],
   })
 })

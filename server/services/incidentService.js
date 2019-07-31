@@ -70,6 +70,11 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return incidentClient.getInvolvedStaff(incidentId)
   }
 
+  const submitStatement = (userId, incidentId) => {
+    logger.info(`Submitting statement for user: ${userId} and incident: ${incidentId}`)
+    incidentClient.submitStatement(userId, incidentId)
+  }
+
   return {
     getCurrentDraftIncident,
     update,
@@ -78,5 +83,6 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     getIncidentsForUser,
     getUpdatedFormObject,
     getInvolvedStaff,
+    submitStatement,
   }
 }

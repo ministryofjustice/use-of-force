@@ -12,7 +12,8 @@ href: backLink or "/check-answers/" + bookingId
     {{ govukButton({
             text: "Continue to statement",
             href: "/incidents/" + incidentId + "/statement",
-            classes: "govuk-button tableButton "
+            classes: "govuk-button tableButton ",
+            attributes: {'data-qa': 'continue-to-statement'}
           }) }}
   </div>
 </div>
