@@ -5,11 +5,13 @@ const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const incidentService = {
   getIncidentsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
+  getIncident: () => ({ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }),
   submitStatement: jest.fn(),
 }
 
 const offenderService = {
   getOffenderNames: () => [],
+  getOffenderDetails: () => ({}),
 }
 const route = createRouter({ authenticationMiddleware, incidentService, offenderService })
 

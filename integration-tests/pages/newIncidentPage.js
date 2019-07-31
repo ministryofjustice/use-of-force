@@ -3,7 +3,7 @@ const detailsPage = require('./detailsPage')
 
 export default () =>
   page('New use of force incident', {
-    offenderName: () => cy.get('[data-offender-name]'),
+    offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#location'),
 
     forceType: {
@@ -13,7 +13,7 @@ export default () =>
     },
 
     fillForm: () => {
-      cy.get('[data-offender-name]')
+      cy.get('[data-qa=offender-name]')
       cy.get('#location').select('Asso A Wing')
       cy.get('[name="forceType"]').check('planned')
       cy.get('[name="involved[0][name]"]').type('Dr Smith')

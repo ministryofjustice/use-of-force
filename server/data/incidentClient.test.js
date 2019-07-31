@@ -84,6 +84,15 @@ test('getIncidentsForUser', () => {
   })
 })
 
+test('getIncident', () => {
+  incidentClient.getIncident('incident-1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select id, booking_id, incident_date, form_response from incidents i where id = $1`,
+    values: ['incident-1'],
+  })
+})
+
 test('getInvolvedStaff', async () => {
   const expected = [{ id: 1 }, { id: 2 }]
   db.query.mockReturnValue({ rows: expected })
