@@ -1,5 +1,11 @@
 {% extends "../../partials/layout.html" %} 
 {% from "button/macro.njk" import govukButton %} 
+{% from "textarea/macro.njk" import govukTextarea %} 
+{% from "input/macro.njk" import govukInput %} 
+{% from "select/macro.njk" import govukSelect %}
+{% from "fieldset/macro.njk" import govukFieldset %} 
+{% from "checkboxes/macro.njk"import govukCheckboxes %} 
+
 {% block content %}
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">Use of force statement</h1>
@@ -24,6 +30,179 @@
       </div>
     </div>
     <hr />
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half govuk-!-margin-top-5">
+        {% call govukFieldset({ legend: { text: "When did you last attend control and restraint basic refresher
+        training?", classes: "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            {{
+              govukSelect({
+                id: 'month',
+                name: 'month',
+                label: {
+                  text: 'Month'
+                },
+                items: [
+                  {
+                    value: '',
+                    text: 'Select'
+                  },
+                  {
+                    value: '1',
+                    text: 'January'
+                  },
+                  {
+                    value: '2',
+                    text: 'February'
+                  },
+                  {
+                    value: '3',
+                    text: 'March'
+                  },
+                  {
+                    value: '4',
+                    text: 'April'
+                  },
+                  {
+                    value: '5',
+                    text: 'May'
+                  },
+                  {
+                    value: '6',
+                    text: 'June'
+                  },
+                  {
+                    value: '7',
+                    text: 'July'
+                  },
+                  {
+                    value: '8',
+                    text: 'August'
+                  },
+                  {
+                    value: '9',
+                    text: 'September'
+                  },
+                  {
+                    value: '10',
+                    text: 'October'
+                  },
+                  {
+                    value: '11',
+                    text: 'November'
+                  },
+                  {
+                    value: '12',
+                    text: 'December'
+                  }
+                ]
+              })
+            }}
+          </div>
+          <div class="govuk-grid-column-one-half"></div>
+          {{
+            govukInput({
+              label: {
+                text: 'Year'
+              },
+              classes: 'govuk-!-width-one-quarter',
+              id: 'year',
+              name: 'year'
+            })
+          }}
+        </div>
+      </div>
+      {% endcall %}
+      <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
+        {% call govukFieldset({ legend: { text: "What year did you join the prison service?", classes:
+        "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
+
+        {{
+          govukInput({
+            label: {
+              text: 'Year'
+            },
+            classes: 'govuk-!-width-one-quarter',
+            id: 'join-year',
+            name: 'joinYear'
+          })
+        }}
+        {% endcall %}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        {{
+          govukTextarea({
+            name: 'statement',
+            value: statement,
+            rows: 25,
+            cols: 440,
+            label: {
+              text: 'Your statement',
+              classes: 'govuk-label--s govuk-!-margin-top-4'
+            }
+          })
+        }}
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <h3 class="govuk-label--s">What to include in your statement</h3>
+        <p>
+          You should include:
+        </p>
+        <ul>
+          <li>time and date of the incident</li>
+          <li>when you became aware of the incident</li>
+          <li>your initial understanding of what was happening</li>
+          <li>details given at initial briefing (if planned)</li>
+          <li>what you knew about the prisoner</li>
+          <li>what you saw</li>
+          <li>who was there (staff and prisoners)</li>
+          <li>how the prisoner was behaving, including any unusual behaviour</li>
+          <li>what the prisoner was saying and doing</li>
+          <li>how you were feeling at the time (shocked/upset/fearful)</li>
+          <li>your role in the team and incident</li>
+          <li>any non control and restraint techniques used</li>
+          <li>attempts to de-esculate and how successful they were</li>
+          <li>a detailed account of how you applied force</li>
+          <li>details of communication between staff and prisoner</li>
+          <li>use of handcuffs - when they were placed on and removed</li>
+          <li>how and where the prisoner was relocated</li>
+          <li>any injuries to staff and prisoner</li>
+        </ul>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you confirm that:</p>
+        <ul class="govuk-!-margin-top-1">
+          <li>the information you've given is correct to the best of your knowledge</li>
+          <li>you wrote the statement independently of other staff involved in the incident</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        {{
+          govukCheckboxes({
+            idPrefix: 'confirm',
+            name: 'confirmed',
+            classes: 'govuk-checkboxes--small',
+            errorMessage: errors[0],
+            items: [
+              {
+                id: 'confirm',
+                value: 'true',
+                text: 'I agree'
+              }
+            ]
+          })
+        }}
+      </div>
+    </div>
+
     {{
       govukButton({
         text: 'Submit',
