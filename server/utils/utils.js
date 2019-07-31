@@ -39,10 +39,12 @@ const properCaseName = name =>
         .map(properCase)
         .join('-')
 
-const formatDate = val => (isBlank(val) ? '' : moment(val, 'DDYYYY-MM-DDMMMYY').format('DD/MM/YYYY'))
+const formatDate = val => (isBlank(val) ? '' : moment(val, 'YYYY-MM-DD').format('DD/MM/YYYY'))
+const formatTimestampToDateTime = val => moment(val).format('DD/MM/YYYY - HH:mm')
 
 module.exports = {
   formatDate,
+  formatTimestampToDateTime,
   isNilOrEmpty,
   getFieldDetail,
   getFieldName,

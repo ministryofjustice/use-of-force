@@ -57,6 +57,14 @@ const getIncidentsForUser = (userId, status, query = db.query) => {
   })
 }
 
+const getIncident = async (incidentId, query = db.query) => {
+  const results = await query({
+    text: `select id, booking_id, incident_date, form_response from incidents i where id = $1`,
+    values: [incidentId],
+  })
+  return results.rows[0] || {}
+}
+
 const submitStatement = (userId, incidentId, query = db.query) => {
   return query({
     text: `update involved_staff 
@@ -101,6 +109,7 @@ module.exports = {
   submit,
   getCurrentDraftIncident,
   getIncidentsForUser,
+  getIncident,
   getInvolvedStaff,
   deleteInvolvedStaff,
   insertInvolvedStaff,

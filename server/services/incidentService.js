@@ -66,6 +66,20 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return data.rows
   }
 
+  const canAccessIncident = async (userId, incidentId) => {
+    const involvedStaff = await incidentClient.getInvolvedStaff(incidentId)
+    const involvedStaffUserIds = involvedStaff.map(staff => staff.user_id)
+    return involvedStaffUserIds.includes(userId)
+  }
+
+  const getIncident = async (userId, incidentId) => {
+    const incident = await incidentClient.getIncident(incidentId)
+    if (!incident || !(await canAccessIncident(userId, incidentId))) {
+      throw new Error(`Incident: '${incidentId}' does not exist`)
+    }
+    return incident
+  }
+
   const getInvolvedStaff = incidentId => {
     return incidentClient.getInvolvedStaff(incidentId)
   }
@@ -80,6 +94,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     update,
     submitForm,
     getValidationErrors: validate,
+    getIncident,
     getIncidentsForUser,
     getUpdatedFormObject,
     getInvolvedStaff,

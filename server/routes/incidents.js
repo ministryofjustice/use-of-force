@@ -1,5 +1,7 @@
 const express = require('express')
 const moment = require('moment')
+const { formatTimestampToDateTime } = require('../utils/utils')
+
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
 module.exports = function Index({ authenticationMiddleware, incidentService, offenderService }) {
@@ -54,8 +56,16 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     '/incidents/:incidentId/statement',
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
+
+      const { booking_id: bookingId, incident_date: incidentDate } = await incidentService.getIncident(
+        req.user.username,
+        incidentId
+      )
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      const { displayName, offenderNo } = offenderDetail
+
       res.render('pages/statement/provide', {
-        data: { incidentId },
+        data: { incidentId, displayName, offenderNo, incidentDate: formatTimestampToDateTime(incidentDate) },
       })
     })
   )

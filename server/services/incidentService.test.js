@@ -3,6 +3,7 @@ const serviceCreator = require('./incidentService')
 const incidentClient = {
   getCurrentDraftIncident: jest.fn(),
   getIncidentsForUser: jest.fn(),
+  getIncident: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
@@ -27,13 +28,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  incidentClient.getCurrentDraftIncident.mockReset()
-  incidentClient.updateDraftIncident.mockReset()
-  incidentClient.createDraftIncident.mockReset()
-  incidentClient.getIncidentsForUser.mockReset()
-  incidentClient.insertInvolvedStaff.mockReset()
-  incidentClient.deleteInvolvedStaff.mockReset()
-  elite2Client.getOffenderDetails.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('getCurrentDraftIncident', () => {
@@ -65,6 +60,44 @@ describe('getIncidentsForUser', () => {
     expect(incidentClient.getIncidentsForUser).toBeCalledWith('user1', 'STATUS-1')
   })
 })
+
+describe('getIncidents', () => {
+  test('retrieve details when user is involved', async () => {
+    const incident = { id: 1, user_id: 'BOB' }
+
+    incidentClient.getIncident.mockReturnValue(incident)
+    incidentClient.getInvolvedStaff.mockReturnValue([{ user_id: 'BOB' }])
+
+    const output = await service.getIncident('BOB', 1)
+
+    expect(output).toEqual(incident)
+
+    expect(incidentClient.getIncident).toBeCalledWith(1)
+    expect(incidentClient.getInvolvedStaff).toBeCalledWith(1)
+  })
+
+  test('retrieve details when user is not involved', async () => {
+    const incident = { id: 1, user_id: 'BOB' }
+
+    incidentClient.getIncident.mockReturnValue(incident)
+    incidentClient.getInvolvedStaff.mockReturnValue([{ user_id: 'JEN' }])
+
+    await expect(service.getIncident('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
+
+    expect(incidentClient.getIncident).toBeCalledWith(1)
+    expect(incidentClient.getInvolvedStaff).toBeCalledWith(1)
+  })
+
+  test('retrieve details when incident is not present', async () => {
+    incidentClient.getIncident.mockReturnValue(undefined)
+
+    await expect(service.getIncident('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
+
+    expect(incidentClient.getIncident).toBeCalledWith(1)
+    expect(incidentClient.getInvolvedStaff).not.toBeCalledWith(1)
+  })
+})
+
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const updatedFormObject = {

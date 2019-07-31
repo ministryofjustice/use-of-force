@@ -45,6 +45,7 @@ context('Submit the incident report', () => {
     }
 
     const submitStatementPage = SubmitStatementPage.verifyOnPage()
+    submitStatementPage.offenderName().contains('Norman Smith (A1234AC)')
     const statementSubmittedPage = submitStatementPage.submit()
 
     {
