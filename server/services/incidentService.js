@@ -2,7 +2,7 @@ const logger = require('../../log.js')
 const { validate } = require('../utils/fieldValidation')
 const { isNilOrEmpty } = require('../utils/utils')
 
-const getUpdatedFormObject = require('./updateBuilder')
+const updateBuilder = require('./updateBuilder')
 
 module.exports = function createIncidentService({ incidentClient, elite2ClientBuilder }) {
   function getCurrentDraftIncident(userId, bookingId) {
@@ -66,27 +66,21 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return data.rows
   }
 
-  const canAccessIncident = async (userId, incidentId) => {
-    const involvedStaff = await incidentClient.getInvolvedStaff(incidentId)
-    const involvedStaffUserIds = involvedStaff.map(staff => staff.user_id)
-    return involvedStaffUserIds.includes(userId)
-  }
-
-  const getIncident = async (userId, incidentId) => {
-    const incident = await incidentClient.getIncident(incidentId)
-    if (!incident || !(await canAccessIncident(userId, incidentId))) {
+  const getStatement = async (userId, incidentId) => {
+    const statement = await incidentClient.getStatement(userId, incidentId)
+    if (!statement) {
       throw new Error(`Incident: '${incidentId}' does not exist`)
     }
-    return incident
+    return statement
   }
 
   const getInvolvedStaff = incidentId => {
     return incidentClient.getInvolvedStaff(incidentId)
   }
 
-  const submitStatement = (userId, incidentId) => {
+  const submitStatement = (userId, incidentId, statement) => {
     logger.info(`Submitting statement for user: ${userId} and incident: ${incidentId}`)
-    incidentClient.submitStatement(userId, incidentId)
+    incidentClient.submitStatement(userId, incidentId, statement)
   }
 
   return {
@@ -94,10 +88,10 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     update,
     submitForm,
     getValidationErrors: validate,
-    getIncident,
+    getStatement,
     getIncidentsForUser,
-    getUpdatedFormObject,
     getInvolvedStaff,
     submitStatement,
+    ...updateBuilder,
   }
 }

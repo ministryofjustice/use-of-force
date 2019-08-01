@@ -1,7 +1,7 @@
 const express = require('express')
 const moment = require('moment')
 const flash = require('connect-flash')
-const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/utils')
+const { getIn, isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
@@ -93,16 +93,13 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
-      const expectedFields = formPageConfig.fields.map(getFieldName)
-      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
 
       if (formPageConfig.validate) {
-        const formResponse = inputForExpectedFields
-        const errors = incidentService.getValidationErrors(formResponse, formPageConfig)
+        const { errors, formResponse } = incidentService.getValidationErrors(req.body, formPageConfig.fields)
 
         if (!isNilOrEmpty(errors)) {
           req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
+          req.flash('userInput', formResponse)
           return res.redirect(`/form/${section}/${form}/${bookingId}`)
         }
       }

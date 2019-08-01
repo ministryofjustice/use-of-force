@@ -1,13 +1,19 @@
 const express = require('express')
 const moment = require('moment')
-const { formatTimestampToDateTime } = require('../utils/utils')
-
+const flash = require('connect-flash')
+const { formatTimestampToDateTime, isNilOrEmpty } = require('../utils/utils')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const statementConfig = require('../config/statement')
+
+const formConfig = {
+  ...statementConfig,
+}
 
 module.exports = function Index({ authenticationMiddleware, incidentService, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
+  router.use(flash())
 
   router.use((req, res, next) => {
     if (typeof req.csrfToken === 'function') {
@@ -57,11 +63,8 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
-      const { booking_id: bookingId, incident_date: incidentDate } = await incidentService.getIncident(
-        req.user.username,
-        incidentId
-      )
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      const statement = await incidentService.getStatement(req.user.username, incidentId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       res.render('pages/statement/provide', {
@@ -69,7 +72,8 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
           incidentId,
           displayName,
           offenderNo,
-          incidentDate: formatTimestampToDateTime(incidentDate),
+          ...statement,
+          incidentDate: formatTimestampToDateTime(statement.incidentDate),
           months: moment.months().map((month, i) => ({ value: i, label: month })),
         },
       })
@@ -80,8 +84,26 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     '/incidents/:incidentId/statement',
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
-      await incidentService.submitStatement(req.user.username, incidentId)
-      res.redirect(`/incidents/${incidentId}/statement/submitted`)
+
+      const formPageConfig = formConfig
+
+      if (formPageConfig.validate) {
+        const { errors, formResponse } = incidentService.getValidationErrors(req.body, formPageConfig.fields)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          req.flash('userInput', formResponse)
+          return res.redirect(`/incidents/${incidentId}/statement`)
+        }
+      }
+
+      const { extractedFields: statement } = await incidentService.processUserInput({
+        fieldMap: formPageConfig.fields,
+        userInput: req.body,
+      })
+
+      await incidentService.submitStatement(req.user.username, incidentId, statement)
+      return res.redirect(`/incidents/${incidentId}/statement/submitted`)
     })
   )
 

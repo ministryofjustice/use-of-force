@@ -1,4 +1,4 @@
-const getUpdatedFormObject = require('./updateBuilder')
+const { getUpdatedFormObject } = require('./updateBuilder')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 
 describe('getUpdatedFormObject', () => {

@@ -25,7 +25,6 @@
         <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
           {{ data.incidentDate }}
-          <input type="hidden" name="incidentDate" value="{{ data.dateAndTime.date + '-' + data.dateAndTime.time }}" />
         </p>
       </div>
     </div>
@@ -39,40 +38,45 @@
             {{
               govukSelect({
                 id: 'month',
-                name: 'month',
+                name: 'lastTrainingMonth',
                 label: {
                   text: 'Month'
                 },
-                items: data.months | toSelect('value', 'label', month)
+                items: data.months | toSelect('value', 'label', data.lastTrainingMonth)
               })
             }}
           </div>
           <div class="govuk-grid-column-one-half"></div>
           {{
             govukInput({
+              id: 'year',
+              name: 'lastTrainingYear',
+              value: data.lastTrainingYear,
+              classes: 'govuk-!-width-one-quarter',
               label: {
                 text: 'Year'
-              },
-              classes: 'govuk-!-width-one-quarter',
-              id: 'year',
-              name: 'year'
+              }
             })
           }}
         </div>
       </div>
       {% endcall %}
       <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
-        {% call govukFieldset({ legend: { text: "What year did you join the prison service?", classes:
-        "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
-
+        {% call govukFieldset({ 
+          legend: { 
+            text: "What year did you join the prison service?", 
+            classes: "govuk-fieldset__legend--s govuk-!-width-two-thirds"} 
+          }) 
+        %}
         {{
           govukInput({
+            id: 'job-start-year',
+            name: 'jobStartYear',
+            value: data.jobStartYear,
+            classes: 'govuk-!-width-one-quarter',
             label: {
               text: 'Year'
-            },
-            classes: 'govuk-!-width-one-quarter',
-            id: 'join-year',
-            name: 'joinYear'
+            }
           })
         }}
         {% endcall %}
@@ -82,8 +86,9 @@
       <div class="govuk-grid-column-one-half">
         {{
           govukTextarea({
+            id: 'statement',
             name: 'statement',
-            value: statement,
+            value: data.statement,
             rows: 25,
             cols: 440,
             label: {
@@ -135,7 +140,8 @@
         {{
           govukCheckboxes({
             idPrefix: 'confirm',
-            name: 'confirmed',
+            name: 'confirm',
+            value: data.confirm,
             classes: 'govuk-checkboxes--small',
             errorMessage: errors[0],
             items: [
