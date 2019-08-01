@@ -125,9 +125,7 @@
           <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{name}}">
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden {% endif %}" >
-                <p class="govuk-fieldset__heading govuk-heading-l">
                   {{question.followUpQuestion.legend}}
-                </p>
               </legend>
 
               {% set followUpQuestion = question.followUpQuestion %}

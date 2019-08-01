@@ -1,7 +1,5 @@
 
 {% macro getUserInputs(data, title, url) %}
-{# regex to prevent display of 'undefined' which may occur if value depends on answer to a preceding question. Will also prevent 'select' displaying #}
-{% set regExp = r/^(?:undefined.*|select.*)/i %}  
 
   <h2 class="govuk-heading-l govuk-!-margin-bottom-1 govuk-!-margin-top-9">
     {{title}}
@@ -16,9 +14,9 @@
       <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key"> {{key}} </dt>
             <dd class="govuk-summary-list__value"> 
-              {% if not value or regExp.test(value) %} 
+              {% if not value or value.length  == 0 %} 
                 &ndash;  
-              {% elif key === "Evidence bagged and tagged" %} 
+              {% elif key === "Evidence bagged and tagged" and value !== "No" %}
               {% for item in value %}
                 {{item.tag }}<br>{{item.description}}<br/><br/>
               {% endfor %}

@@ -70,7 +70,7 @@
                             
                   {{ govukTextarea({
                     name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
-                    idPrefix: 'evidence-tag-and-description[' + loop.index0 + '][description]',
+                    id: 'evidence-tag-and-description[' + loop.index0 + '][description]',
                     classes: 'govuk-!-width-two-thirds',
                     value: evidenceTagAndDescription.description,
                     label: {
@@ -78,9 +78,7 @@
                     },
                     attributes:{
                       'data-id': 'evidence-tag-and-description[%index%][description]',
-                      'data-name': 'evidenceTagAndDescription[%index%][description]',
-                      'rows':10,
-                      'columns': 40
+                      'data-name': 'evidenceTagAndDescription[%index%][description]'
                     }
                   }) }}
 
@@ -108,8 +106,8 @@
                       }
                     })
                   }}
-                  {{ govukInput({
-                    idPrefix: 'evidence-tag-and-description[0][description]',
+                  {{ govukTextarea({
+                    id: 'evidence-tag-and-description[0][description]',
                     name: 'evidenceTagAndDescription[0][description]',
                     classes: "govuk-!-width-two-thirds",
                     value: data.evidenceTagAndDescription[0].description,
@@ -118,9 +116,7 @@
                     },
                     attributes: {
                       'data-id': 'evidence-tag-and-description[%index%][description]',
-                      'data-name': 'evidenceTagAndDescription[%index%][description]',
-                      'rows':10,
-                      'columns': 40
+                      'data-name': 'evidenceTagAndDescription[%index%][description]'
                     }
                   }) }}
 
@@ -137,6 +133,7 @@
               </div> 
             </div>  <!-- add another ends here -->
           </div>  <!-- hidden panel end -->
+        </div> <!-- end of radios -->
       </fieldset>     
     </div> <!-- end of this component  -->
 
@@ -306,8 +303,9 @@
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
                   Not known
                 </label>
-              </div>
-          </div>
+            </div>
+            </div> 
+          </div> <!-- end of radios -->
         </fieldset>     
       </div> <!-- end of this Q4 component  -->
 

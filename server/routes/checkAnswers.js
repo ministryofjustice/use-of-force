@@ -75,6 +75,9 @@ const getRestraintPositions = positions => {
   if (Array.isArray(positions)) {
     return positions.join(', ')
   }
+  if (positions) {
+    return positions
+  }
   return ''
 }
 
@@ -91,14 +94,14 @@ const toTitleCase = (str = '') => {
 const staffTakenToHospital = (staffMembers = []) => {
   const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === 'Yes').map(staff => staff.name)
   if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
-    return 'none'
+    return ''
   }
   return toTitleCase(hospitalisedStaff.join(', '))
 }
 
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
   if (evidenceYesNo === 'No') {
-    return 'none'
+    return 'No'
   }
   return tagsAndEvidence.map(item => {
     return { tag: item.evidenceTagReference, description: item.description }
@@ -106,11 +109,11 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
-  return guidingHoldOfficersInvolved === 'one' ? ' - one officer involved' : ' - two officers involved'
+  return guidingHoldOfficersInvolved === 'one' ? '- one officer involved' : '- two officers involved'
 }
 
 const typeOfHandcuffsUsed = handcuffsType => {
-  return handcuffsType === 'ratchet' ? ' - ratchet' : ' - fixed bar'
+  return handcuffsType === 'ratchet' ? 'ratchet' : 'fixed bar'
 }
 
 const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff) => {
@@ -128,16 +131,19 @@ const createDetailsObj = (details = {}) => {
   return {
     'Positive communication used': details.positiveCommunication,
     'Personal Protection Techniques': details.personalProtectionTechniques,
-    'Baton Drawn': details.batonDrawn + (details.batonUsed === 'Yes' ? ' - and used' : ' - but not used'),
-    'Pava drawn': details.pavaDrawn + (details.pavaUsed === 'Yes' ? ' - and used' : ' - but not used'),
-    'Guiding hold used':
-      details.guidingHold +
-      (details.guidingHold === 'Yes' ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : ''),
-    'Restraint used':
-      details.restraint +
-      (details.restraint === 'Yes' ? ` - ${getRestraintPositions(details.restraintPositions)}` : ''),
-    'Handcuffs used':
-      details.handcuffsApplied + (details.handcuffsApplied === 'Yes' ? typeOfHandcuffsUsed(details.handcuffsType) : ''),
+    'Baton drawn': whenPresent(details.batonDrawn, value =>
+      value === 'Yes' ? wasWeaponUsed(details.batonUsed) : 'No'
+    ),
+    'PAVA drawn': whenPresent(details.pavaDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.pavaUsed) : 'No')),
+    'Guiding hold used': whenPresent(details.guidingHold, value =>
+      value === 'Yes' ? `Yes ${howManyOfficersInvolved(details.guidingHoldOfficersInvolved)}` : 'No'
+    ),
+    'Control and restraint used': whenPresent(details.restraint, value =>
+      value === 'Yes' ? `Yes - ${getRestraintPositions(details.restraintPositions)}` : 'No'
+    ),
+    'Handcuffs used': whenPresent(details.handcuffsApplied, value =>
+      value === 'Yes' ? typeOfHandcuffsUsed(details.handcuffsType) : 'No'
+    ),
   }
 }
 
@@ -145,20 +151,18 @@ const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
     'Prisoner relocated to': relocationAndInjuries.prisonerRelocation,
     'Relocation compliancy': relocationAndInjuries.relocationCompliancy,
-    'Healthcare staff present':
-      relocationAndInjuries.healthcareInvolved +
-      (relocationAndInjuries.healthcareInvolved === 'Yes'
-        ? ` - ${toTitleCase(relocationAndInjuries.healthcarePractionerName)}`
-        : ''),
+    'HealthCare staff present': whenPresent(relocationAndInjuries.healthcareInvolved, value =>
+      value === 'Yes' ? `${toTitleCase(relocationAndInjuries.healthcarePractionerName)}` : 'No'
+    ),
     'F213 completed by': toTitleCase(relocationAndInjuries.f213CompletedBy),
     'Prisoner required hospitalisation': relocationAndInjuries.prisonerHospitalisation,
-    'Staff needed medical attention':
-      relocationAndInjuries.staffMedicalAttention +
-      (relocationAndInjuries.staffMedicalAttention === 'Yes'
-        ? ` - ${toTitleCase(
+    'Staff needed medical attention': whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
+      value === 'Yes'
+        ? `${toTitleCase(
             convertArrayOfObjectsToStringUsingSpecifiedKey('name', relocationAndInjuries.staffNeedingMedicalAttention)
           )}`
-        : ''),
+        : 'No'
+    ),
     'Staff taken to hospital': staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
   }
 }
@@ -168,10 +172,23 @@ const createEvidenceObj = (evidence = {}) => {
     'Evidence bagged and tagged': baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
     'Photographs taken': evidence.photographsTaken,
     'CCTV images': evidence.cctvRecording,
-    'Body worn cameras':
-      evidence.bodyWornCamera +
-      (evidence.bodyWornCamera === 'Yes'
-        ? ` - ${convertArrayOfObjectsToStringUsingSpecifiedKey('cameraNum', evidence.bodyWornCameraNumbers)}`
-        : ''),
+    'Body worn cameras': whenPresent(evidence.bodyWornCamera, value =>
+      value === 'Yes'
+        ? `${convertArrayOfObjectsToStringUsingSpecifiedKey('cameraNum', evidence.bodyWornCameraNumbers)}`
+        : value
+    ),
+  }
+}
+
+const whenPresent = (value, present) => (!value ? undefined : present(value))
+
+const wasWeaponUsed = WeaponUsed => {
+  switch (WeaponUsed) {
+    case undefined:
+      return undefined
+    case 'Yes':
+      return 'Yes - and used'
+    default:
+      return 'Yes - and not used'
   }
 }
