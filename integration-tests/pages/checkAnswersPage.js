@@ -19,13 +19,13 @@ export default () =>
       cy.get('.govuk-grid-column-full > :nth-child(5) > :nth-child(6) > :nth-child(2)').contains(
         'Yes - standing, supine, prone, kneeling'
       )
-      cy.get(':nth-child(5) > :nth-child(7) > .govuk-summary-list__value').contains('Yes - ratchet')
+      cy.get(':nth-child(5) > :nth-child(7) > .govuk-summary-list__value').contains('ratchet')
       cy.get(':nth-child(7) > :nth-child(1) > .govuk-summary-list__value').contains('segregation unit')
       cy.get(':nth-child(7) > :nth-child(2) > .govuk-summary-list__value').contains('compliant')
-      cy.get(':nth-child(7) > :nth-child(3) > .govuk-summary-list__value').contains('Yes - Dr Smith')
+      cy.get(':nth-child(7) > :nth-child(3) > .govuk-summary-list__value').contains('Dr Smith')
       cy.get(':nth-child(7) > :nth-child(4) > .govuk-summary-list__value').contains('Dr Taylor')
       cy.get(':nth-child(7) > :nth-child(5) > .govuk-summary-list__value').contains('Yes')
-      cy.get(':nth-child(7) > :nth-child(6) > .govuk-summary-list__value').contains('Yes - Eddie Thomas, Jayne Eyre')
+      cy.get(':nth-child(7) > :nth-child(6) > .govuk-summary-list__value').contains('Eddie Thomas, Jayne Eyre')
       cy.get(':nth-child(7) > :nth-child(6) > .govuk-summary-list__value').contains('Eddie Thomas, Jayne Eyre')
       cy.get(':nth-child(9) > :nth-child(1) > .govuk-summary-list__value')
         .contains('Bagged evidence 1')
@@ -37,7 +37,7 @@ export default () =>
 
       cy.get(':nth-child(9) > :nth-child(2) > .govuk-summary-list__value').contains('Yes')
       cy.get(':nth-child(9) > :nth-child(3) > .govuk-summary-list__value').contains('Not Known')
-      cy.get(':nth-child(9) > :nth-child(4) > .govuk-summary-list__value').contains('Yes - 123, 789, 456')
+      cy.get(':nth-child(9) > :nth-child(4) > .govuk-summary-list__value').contains('123, 789, 456')
     },
     clickSubmit,
     confirm: () => cy.get('#confirm').click(),
