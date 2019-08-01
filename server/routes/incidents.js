@@ -65,7 +65,13 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const { displayName, offenderNo } = offenderDetail
 
       res.render('pages/statement/provide', {
-        data: { incidentId, displayName, offenderNo, incidentDate: formatTimestampToDateTime(incidentDate) },
+        data: {
+          incidentId,
+          displayName,
+          offenderNo,
+          incidentDate: formatTimestampToDateTime(incidentDate),
+          months: moment.months().map((month, i) => ({ value: i, label: month })),
+        },
       })
     })
   )
