@@ -26,7 +26,7 @@ module.exports = (app, path) => {
   njkEnv.addFilter('toSelect', (array, valueKey, textKey, value) => {
     const emptyOption = {
       value: '',
-      text: '-- Select --',
+      text: 'Select',
       selected: value === '',
     }
     const items = array.map(item => ({
