@@ -5,6 +5,8 @@ const incidentClient = require('../../server/data/incidentClient')
 const getCurrentDraftIncident = bookingId =>
   incidentClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
 
+const getStatement = incidentId => incidentClient.getStatement('Test User', incidentId, db.queryWithoutTransaction)
+
 module.exports = {
   clearDb() {
     const drops = ['incidents', 'involved_staff'].map(table =>
@@ -28,4 +30,6 @@ module.exports = {
           .then(staff => ({ data, staff }))
       )
   },
+
+  getStatement,
 }

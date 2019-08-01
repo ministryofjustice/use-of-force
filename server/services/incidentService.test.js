@@ -3,7 +3,7 @@ const serviceCreator = require('./incidentService')
 const incidentClient = {
   getCurrentDraftIncident: jest.fn(),
   getIncidentsForUser: jest.fn(),
-  getIncident: jest.fn(),
+  getStatement: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
@@ -61,40 +61,25 @@ describe('getIncidentsForUser', () => {
   })
 })
 
-describe('getIncidents', () => {
+describe('getIncidentWithStatement', () => {
   test('retrieve details when user is involved', async () => {
     const incident = { id: 1, user_id: 'BOB' }
 
-    incidentClient.getIncident.mockReturnValue(incident)
-    incidentClient.getInvolvedStaff.mockReturnValue([{ user_id: 'BOB' }])
+    incidentClient.getStatement.mockReturnValue(incident)
 
-    const output = await service.getIncident('BOB', 1)
+    const output = await service.getStatement('BOB', 1)
 
     expect(output).toEqual(incident)
 
-    expect(incidentClient.getIncident).toBeCalledWith(1)
-    expect(incidentClient.getInvolvedStaff).toBeCalledWith(1)
-  })
-
-  test('retrieve details when user is not involved', async () => {
-    const incident = { id: 1, user_id: 'BOB' }
-
-    incidentClient.getIncident.mockReturnValue(incident)
-    incidentClient.getInvolvedStaff.mockReturnValue([{ user_id: 'JEN' }])
-
-    await expect(service.getIncident('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
-
-    expect(incidentClient.getIncident).toBeCalledWith(1)
-    expect(incidentClient.getInvolvedStaff).toBeCalledWith(1)
+    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1)
   })
 
   test('retrieve details when incident is not present', async () => {
-    incidentClient.getIncident.mockReturnValue(undefined)
+    incidentClient.getStatement.mockReturnValue(undefined)
 
-    await expect(service.getIncident('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
+    await expect(service.getStatement('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
 
-    expect(incidentClient.getIncident).toBeCalledWith(1)
-    expect(incidentClient.getInvolvedStaff).not.toBeCalledWith(1)
+    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1)
   })
 })
 
@@ -213,10 +198,10 @@ describe('getValidationErrors', () => {
   }
 
   test.each`
-    formBody         | formConfig         | expectedOutput
-    ${{ q1: 'Yes' }} | ${dependantConfig} | ${[{ href: '#q2', text: 'Error q2' }]}
-    ${{ q1: 'No' }}  | ${dependantConfig} | ${[]}
+    formBody                    | formConfig         | expectedOutput
+    ${{ q1: 'Yes', q3: 'Yes' }} | ${dependantConfig} | ${{ errors: [{ href: '#q2', text: 'Error q2' }], formResponse: { q1: 'Yes' } }}
+    ${{ q1: 'No', q3: 'Yes' }}  | ${dependantConfig} | ${{ errors: [], formResponse: { q1: 'No' } }}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
-    expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
+    expect(service.getValidationErrors(formBody, formConfig.fields)).toEqual(expectedOutput)
   })
 })

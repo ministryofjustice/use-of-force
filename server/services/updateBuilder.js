@@ -38,15 +38,24 @@ const extractFields = ({ userInput, requiredFieldType }) => {
 const extractAnswers = userInput => extractFields({ userInput, requiredFieldType: PAYLOAD })
 const extractOtherFields = userInput => extractFields({ userInput, requiredFieldType: EXTRACTED })
 
-const buildUpdate = ({ formObject, fieldMap, userInput, formSection, formName }) => {
-  const answers = fieldMap.reduce(extractAnswers(userInput), {})
+const processUserInput = ({ fieldMap, userInput }) => {
+  const formSpecificPayload = fieldMap.reduce(extractAnswers(userInput), {})
   const extractedFields = fieldMap.reduce(extractOtherFields(userInput), {})
+
+  return {
+    formSpecificPayload,
+    extractedFields,
+  }
+}
+
+const getUpdatedFormObject = ({ formObject, fieldMap, userInput, formSection, formName }) => {
+  const { formSpecificPayload, extractedFields } = processUserInput({ fieldMap, userInput })
 
   const updatedFormObject = {
     ...formObject,
     [formSection]: {
       ...formObject[formSection],
-      [formName]: answers,
+      [formName]: formSpecificPayload,
     },
   }
 
@@ -57,4 +66,7 @@ const buildUpdate = ({ formObject, fieldMap, userInput, formSection, formName })
   }
 }
 
-module.exports = buildUpdate
+module.exports = {
+  getUpdatedFormObject,
+  processUserInput,
+}
