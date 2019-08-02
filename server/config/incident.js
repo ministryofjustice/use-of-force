@@ -171,7 +171,7 @@ module.exports = {
       {
         prisonerHospitalisation: {
           responseType: 'requiredString',
-          validationMessage: 'Did the prisoner require outside hospitalisation?',
+          validationMessage: 'Did the prisoner need outside hospitalisation?',
         },
       },
       {

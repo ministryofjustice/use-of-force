@@ -6,12 +6,13 @@
 {% import "../incidentMacros.njk" as incidentMacro %}
 {% from "fieldset/macro.njk" import govukFieldset %} 
 {% from "button/macro.njk" import govukButton %} 
+{% from "warning-text/macro.njk" import govukWarningText %}
 
 
 {% block formItems %}
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
     <h1 class="govuk-heading-xl mainHeading">Relocation and injuries</h1>
 
     <!-- Q1 -->
@@ -58,40 +59,35 @@
       }) }}
 
     <!-- Q2 -->
-
-    {{ govukSelect({
-      id: "relocation-compliancy",
+    {{ govukRadios({
+      classes: "govuk-radios--inline",
+      idPrefix: "relocationCompliancy",
       name: "relocationCompliancy",
-      classes:" govuk-!-margin-bottom-6",
-      label: {
-        text: "What type of relocation was it?"
+      fieldset: {
+        legend: {
+          text: "Was the prisoner compliant?",
+          isPageHeading: false,
+          classes: "govuk-label govuk-label--xs"
+        }
       },
-      attributes: {style:'min-width:33%'},
       items: [
         {
-          value: "",
-          text: "Select",
-          selected: data.relocationCompliancy === ''
-        },
-        {
           value: "compliant",
-          text: "Compliant",
-          selected: data.relocationCompliancy === 'compliant'
+          text: "Yes",
+          checked: data.relocationCompliancy === 'compliant'
         },
         {
           value: "non-compliant",
-          text: "Non-compliant",
-          selected: data.relocationCompliancy === 'non-compliant'
+          text: "No",
+          checked: data.relocationCompliancy === 'non-compliant'
         }
       ]
     }) }}
 
     <hr />
-
-  <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
-
   </div>
-
+  
+  <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
 
   <div class="govuk-grid-column-two-thirds">
    
@@ -100,7 +96,7 @@
 
     {{ incidentMacro.radiosWithNestedTextbox({
         "primaryQuestion": {
-          "text": "Was a member of Healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+          "text": "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
           "name": "healthcareInvolved",
           "value":data.healthcareInvolved,
           "options": [{
@@ -124,35 +120,45 @@
     
     <!-- Q4 -->
 
-
-    {{ incidentMacro.radiosWithNestedTextbox({
-        "primaryQuestion": {
-          "text": "Did the prisoner sustain any injuries at the time?",
-          "name": "prisonerInjuries",
-          "value":data.prisonerInjuries,
-          "options": [{
-            "value": "Yes",
-            "label": "Yes"
-          }, 
-          {
-            "value": "No",
-            "label": "No"
-          }]
-        },
-        "followUpQuestion": {
-          "legend": "Who completed the F213 form?",
-          "name": "f213CompletedBy",
-          "value":data.f213CompletedBy,
-          "alertMsg": "An F213 must be completed on all prisoners, even if they appear not to have sustained any injuries",
-          "label": "Name"
+    {{ govukInput({
+      label: {
+        text: "Who completed the F213 form?",
+        classes: "govuk-!-margin-top-1"
+      },
+      id: "event-name",
+      classes: "govuk-!-width-one-half govuk-!-margin-bottom-2",
+      value: data.f213CompletedBy,
+      "name": "f213CompletedBy"
+    }) }}
+    
+    {{ govukRadios({
+      classes: "govuk-radios--inline",
+      idPrefix: "prisonerInjuries",
+      name: "prisonerInjuries",
+      fieldset: {
+        legend: {
+          text: "Did the prisoner sustain any injuries at the time?",
+          isPageHeading: false,
+          classes: "govuk-label govuk-label--xs"
         }
-      }) 
-    }}
+      },
+      items: [
+        {
+          value: "Yes",
+          text: "Yes",
+          checked: data.prisonerInjuries === 'Yes'
+        },
+        {
+          value: "No",
+          text: "No",
+          checked: data.prisonerInjuries === 'No'
+        }
+      ]
+    }) }}
     
 
-
   <!-- Q5 -->
-  <div class="govuk-!-margin-bottom-9">
+  <div>
     {{ govukRadios({
         classes: "govuk-radios--inline",
         idPrefix: "prisoner-hospitalisation",
@@ -160,7 +166,7 @@
         "value":data.prisonerHospitalisation,
         fieldset: {
           legend: {
-            text: "Did the prisoner require outside hospitalisation at the time?",
+            text: "Did the prisoner need outside hospitalisation at the time?",
             isPageHeading: false,
             classes: "govuk-fieldset"
           }
@@ -190,7 +196,7 @@
         </legend>
 
         <div class="govuk-radios" data-module="radios">
-          <div class=" govuk-radios--inline">
+          <div class=" govuk-radios--inline govuk-!-margin-bottom-2">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="staff-medical-attention-1" name="staffMedicalAttention" type="radio"
                 value="Yes" data-aria-controls="staff-medical-attention--conditional"

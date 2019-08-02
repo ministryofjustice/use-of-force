@@ -28,7 +28,7 @@ href: backLink or "/"
     }}
     {% endif %}
 
-    <h1 class="govuk-heading-xl">Check your answers before submitting the report</h1>
+    <h1 class="govuk-heading-xl">Check your answers before sending the report</h1>
 
            {{  pagesMacros.getUserInputs(
                   data = data.newIncident,
@@ -57,9 +57,9 @@ href: backLink or "/"
   </div>
   <div class="govuk-grid-column-two-thirds">
 
-    <h2 class="govuk-heading-m">Now submit the report</h2>
+    <h2 class="govuk-heading-m">Now send the report</h2>
     <p class="govuk-body">
-      By submitting the report I confirm that the information I provided is correct to the best of my knowledge.
+      By sending the report I confirm that the information I provided is correct to the best of my knowledge.
     </p>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
@@ -80,7 +80,7 @@ href: backLink or "/"
         }}
         {{
           govukButton({
-            text: 'Submit',
+            text: 'Send',
             classes: 'govuk-button',
             attributes: { 'data-submit': true }
           })

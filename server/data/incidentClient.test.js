@@ -110,7 +110,7 @@ test('getInvolvedStaff', async () => {
 
   expect(result).toEqual(expected)
   expect(db.query).toBeCalledWith({
-    text: `select id, user_id, name, email from involved_staff where incident_id = $1`,
+    text: `select id, user_id, name, email from involved_staff where incident_id = $1 order by id`,
     values: ['incident-1'],
   })
 })
