@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const flash = require('connect-flash')
+const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
 module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
@@ -23,10 +24,11 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { id, form_response: formObject = {} } = await incidentService.getCurrentDraftIncident(
-        req.user.username,
-        bookingId
-      )
+      const {
+        id,
+        form_response: formObject = {},
+        incident_date: incidentDate,
+      } = await incidentService.getCurrentDraftIncident(req.user.username, bookingId)
       const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
@@ -37,7 +39,13 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const involvedStaff = id ? await incidentService.getInvolvedStaff(id) : []
 
       const data = {
-        newIncident: createNewIncidentObj(offenderDetail, description, formData.newIncident, involvedStaff),
+        newIncident: createNewIncidentObj(
+          offenderDetail,
+          description,
+          formData.newIncident,
+          involvedStaff,
+          incidentDate
+        ),
         offenderDetail,
         details: createDetailsObj(formData.details),
         relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
@@ -110,7 +118,7 @@ const typeOfHandcuffsUsed = handcuffsType => {
   return handcuffsType === 'ratchet' ? 'ratchet' : 'fixed bar'
 }
 
-const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff) => {
+const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff, incidentDate) => {
   return {
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
@@ -118,6 +126,8 @@ const createNewIncidentObj = (offenderDetail, description, newIncident = {}, inv
     forceType: newIncident.forceType,
     staffInvolved: convertArrayOfObjectsToStringUsingSpecifiedKey('name', involvedStaff),
     witnesses: convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses),
+    incidentDate: moment(incidentDate).format('DD/MM/YYYY'),
+    incidentTime: moment(incidentDate).format('HH:mm'),
   }
 }
 
