@@ -143,7 +143,7 @@ const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: relocationAndInjuries.prisonerRelocation,
     prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
-    halthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
+    healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value === 'Yes' ? `${relocationAndInjuries.healthcarePractionerName}` : 'No'
     ),
     f213CompletedBy: relocationAndInjuries.f213CompletedBy,
