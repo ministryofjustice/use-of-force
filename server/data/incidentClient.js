@@ -97,7 +97,7 @@ const submitStatement = (
 
 const getInvolvedStaff = async (incidentId, query = db.query) => {
   const results = await query({
-    text: 'select id, user_id, name, email from involved_staff where incident_id = $1',
+    text: 'select id, user_id, name, email from involved_staff where incident_id = $1 order by id',
     values: [incidentId],
   })
   return results.rows

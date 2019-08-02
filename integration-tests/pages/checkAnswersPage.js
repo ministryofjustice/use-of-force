@@ -3,7 +3,7 @@ const page = require('./page')
 const clickSubmit = () => cy.get('[data-submit]').click()
 
 export default () =>
-  page('Check your answers before submitting the report', {
+  page('Check your answers before sending the report', {
     verifyInputs: () => {
       cy.get(':nth-child(3) > :nth-child(1) > .govuk-summary-list__value').contains('Norman Smith')
       cy.get(':nth-child(3) > :nth-child(2) > .govuk-summary-list__value').contains('A1234AC')

@@ -5,7 +5,7 @@ export default () =>
   page('Relocation and injuries', {
     fillForm: () => {
       cy.get('[name="prisonerRelocation"]').select('Segregation unit')
-      cy.get('[name="relocationCompliancy"]').select('compliant')
+      cy.get('[name="relocationCompliancy"]').check('compliant')
       cy.get('[name="healthcareInvolved"]').check('Yes')
       cy.get('[name="healthcarePractionerName"]').type('Dr Smith')
       cy.get('[name="prisonerInjuries"]').check('Yes')

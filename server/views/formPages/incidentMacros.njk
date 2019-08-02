@@ -106,7 +106,6 @@
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
           {{question.primaryQuestion.text}}
       </legend>
-      <div class="govuk-!-margin-bottom-6">
         <div class="govuk-radios--inline" data-module="radios">
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
@@ -140,13 +139,12 @@
                   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                   <p class="govuk-warning-text__text">
                     <span class="govuk-warning-text__assistive">Warning</span>
-                     {{followUpQuestion.alertMsg}}
+                      {{followUpQuestion.alertMsg}}
                   </p>
                 </div>
                 {% endif %}
             </fieldset>
           </div>
-        </div>
       </div>
     </fieldset>
   </div>

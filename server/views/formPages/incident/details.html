@@ -12,7 +12,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
     {{ incidentMacro.radiosWithNestedRadios( 
           {
             "primaryQuestion": {
-              "text": "Was Positive Communication used to de-escalate the situation?",
+              "text": "Was positive communication used to de-escalate the situation?",
               "name": "positiveCommunication",
               "value": data.positiveCommunication,
               "options": [{
@@ -31,7 +31,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
     {{ incidentMacro.radiosWithNestedRadios( 
           {
             "primaryQuestion": {
-              "text": "Were any Personal Protection techniques used?",
+              "text": "Were any personal protection techniques used?",
               "name": "personalProtectionTechniques",
               "value": data.personalProtectionTechniques,
               "options": [{
@@ -85,7 +85,7 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
     {{ incidentMacro.radiosWithNestedRadios( 
           {
             "primaryQuestion": {
-              "text": "Was pava drawn?",
+              "text": "Was PAVA drawn?",
               "name": "pavaDrawn",
               "value": data.pavaDrawn,
               "options": [{
@@ -135,11 +135,11 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
               "value": data.guidingHoldOfficersInvolved,
               "options": [{
                 "value": 'one',
-                "label": "One"
+                "label": "1"
               }, 
               {
                 "value": 'two',
-                "label": "Two"
+                "label": "2"
               }]
             }
           }
@@ -168,10 +168,10 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
               "label": "standing"
             }, {
               "value": "supine",
-              "label": "On back (supine)"
+              "label": "On back"
             }, {
               "value": "prone",
-              "label": "Face down (prone)"
+              "label": "Face down"
             }, {
               "value": "kneeling",
               "label": "Kneeling"
