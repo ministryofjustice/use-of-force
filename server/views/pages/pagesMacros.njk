@@ -1,32 +1,31 @@
 
-{% macro getUserInputs(data, title, url) %}
-
+ {% macro getUserInputs(obj) %}
+  
   <h2 class="govuk-heading-l govuk-!-margin-bottom-1 govuk-!-margin-top-9">
-    {{title}}
+    {{obj.title}}
   <span class="govuk-body govuk-!-margin-top-1 float-right">
-    <a class="govuk-link" href= {{url}} >
-      Change<span class="govuk-visually-hidden"> {{title}} </span>
+    <a class="govuk-link" href= '{{obj.url}}' >
+      Change<span class="govuk-visually-hidden"> {{obj.title}} </span>
     </a>
   </span>
   </h2>
-  <dl class="govuk-summary-list">
-    {% for key, value in data %}
-      <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key"> {{key}} </dt>
-            <dd class="govuk-summary-list__value"> 
-              {% if not value or value.length  == 0 %} 
-                &ndash;  
-              {% elif key === "Evidence bagged and tagged" and value !== "No" %}
-              {% for item in value %}
-                {{item.tag }}<br>{{item.description}}<br/><br/>
-              {% endfor %}
-              {% else %} 
-                {{value}} 
-              {% endif %} 
+{% endmacro %}
+{% macro tableRow(dataItem) %}
+ <dl class="govuk-summary-list govuk-!-margin-0">  
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key"> {{dataItem.label}} </dt>
+            <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+              {% if dataItem.dataValue.length === 0 %}
+                &ndash;
+              {% elif dataItem.type === 'bagAndTag' %}
+                {%for item in dataItem.dataValue %}
+                {{item.tag}}<br/>{{item.description | dump}} <br/><br/>
+                {% endfor %}
+              {% else %}
+              {{dataItem.dataValue}}
+              {% endif %}
             </dd>
             <dd class="govuk-summary-list__actions"></dd>
       </div>
-    {% endfor %}
-  </dl>
-
+  </dl> 
 {% endmacro %}

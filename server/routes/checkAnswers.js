@@ -73,10 +73,10 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
 
 const getRestraintPositions = positions => {
   if (Array.isArray(positions)) {
-    return positions.join(', ')
+    return `Yes - ${positions.join(', ')}`
   }
   if (positions) {
-    return positions
+    return `Yes - ${positions}`
   }
   return ''
 }
@@ -85,18 +85,12 @@ const convertArrayOfObjectsToStringUsingSpecifiedKey = (attr, dataArray = []) =>
   return dataArray.map(element => element[attr]).join(', ')
 }
 
-const toTitleCase = (str = '') => {
-  return str.replace(/\w\S*/g, txt => {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  })
-}
-
 const staffTakenToHospital = (staffMembers = []) => {
   const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === 'Yes').map(staff => staff.name)
   if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
     return ''
   }
-  return toTitleCase(hospitalisedStaff.join(', '))
+  return hospitalisedStaff.join(', ')
 }
 
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
@@ -118,30 +112,28 @@ const typeOfHandcuffsUsed = handcuffsType => {
 
 const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff) => {
   return {
-    'Offender name': offenderDetail.displayName,
-    'Offender number': offenderDetail.offenderNo,
-    Location: description,
-    'Use of force planned': newIncident.forceType,
-    'Staff involved': toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', involvedStaff)),
-    Witnesses: toTitleCase(convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses)),
+    offenderName: offenderDetail.displayName,
+    offenderNumber: offenderDetail.offenderNo,
+    location: description,
+    forceType: newIncident.forceType,
+    staffInvolved: convertArrayOfObjectsToStringUsingSpecifiedKey('name', involvedStaff),
+    witnesses: convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses),
   }
 }
 
 const createDetailsObj = (details = {}) => {
   return {
-    'Positive communication used': details.positiveCommunication,
-    'Personal Protection Techniques': details.personalProtectionTechniques,
-    'Baton drawn': whenPresent(details.batonDrawn, value =>
-      value === 'Yes' ? wasWeaponUsed(details.batonUsed) : 'No'
-    ),
-    'PAVA drawn': whenPresent(details.pavaDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.pavaUsed) : 'No')),
-    'Guiding hold used': whenPresent(details.guidingHold, value =>
+    positiveCommunicationUsed: details.positiveCommunication,
+    personalProtectionTechniques: details.personalProtectionTechniques,
+    batonDrawn: whenPresent(details.batonDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.batonUsed) : 'No')),
+    pavaDrawn: whenPresent(details.pavaDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.pavaUsed) : 'No')),
+    guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value === 'Yes' ? `Yes ${howManyOfficersInvolved(details.guidingHoldOfficersInvolved)}` : 'No'
     ),
-    'Control and restraint used': whenPresent(details.restraint, value =>
-      value === 'Yes' ? `Yes - ${getRestraintPositions(details.restraintPositions)}` : 'No'
+    controlAndRestraintUsed: whenPresent(details.restraint, value =>
+      details.restraintPositions && value === 'Yes' ? getRestraintPositions(details.restraintPositions) : undefined
     ),
-    'Handcuffs used': whenPresent(details.handcuffsApplied, value =>
+    handcuffsUsed: whenPresent(details.handcuffsApplied, value =>
       value === 'Yes' ? typeOfHandcuffsUsed(details.handcuffsType) : 'No'
     ),
   }
@@ -149,30 +141,31 @@ const createDetailsObj = (details = {}) => {
 
 const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
-    'Prisoner relocated to': relocationAndInjuries.prisonerRelocation,
-    'Relocation compliancy': relocationAndInjuries.relocationCompliancy,
-    'HealthCare staff present': whenPresent(relocationAndInjuries.healthcareInvolved, value =>
-      value === 'Yes' ? `${toTitleCase(relocationAndInjuries.healthcarePractionerName)}` : 'No'
+    prisonerRelocation: relocationAndInjuries.prisonerRelocation,
+    prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
+    halthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
+      value === 'Yes' ? `${relocationAndInjuries.healthcarePractionerName}` : 'No'
     ),
-    'F213 completed by': toTitleCase(relocationAndInjuries.f213CompletedBy),
-    'Prisoner required hospitalisation': relocationAndInjuries.prisonerHospitalisation,
-    'Staff needed medical attention': whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
+    f213CompletedBy: relocationAndInjuries.f213CompletedBy,
+    prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
+    staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
       value === 'Yes'
-        ? `${toTitleCase(
-            convertArrayOfObjectsToStringUsingSpecifiedKey('name', relocationAndInjuries.staffNeedingMedicalAttention)
+        ? `${convertArrayOfObjectsToStringUsingSpecifiedKey(
+            'name',
+            relocationAndInjuries.staffNeedingMedicalAttention
           )}`
         : 'No'
     ),
-    'Staff taken to hospital': staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
+    staffHospitalisation: staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
   }
 }
 
 const createEvidenceObj = (evidence = {}) => {
   return {
-    'Evidence bagged and tagged': baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
-    'Photographs taken': evidence.photographsTaken,
-    'CCTV images': evidence.cctvRecording,
-    'Body worn cameras': whenPresent(evidence.bodyWornCamera, value =>
+    evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
+    photographs: evidence.photographsTaken,
+    cctv: evidence.cctvRecording,
+    bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
       value === 'Yes'
         ? `${convertArrayOfObjectsToStringUsingSpecifiedKey('cameraNum', evidence.bodyWornCameraNumbers)}`
         : value

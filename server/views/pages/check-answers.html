@@ -1,58 +1,87 @@
-{% extends "../partials/layout.html" %} 
-{% from "button/macro.njk" import govukButton %} 
-{% from "checkboxes/macro.njk"import govukCheckboxes %} 
-{% from "back-link/macro.njk" import govukBackLink %} 
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "back-link/macro.njk" import govukBackLink %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% import "./pagesMacros.njk" as pagesMacros %}
 
 {% block beforeContent %}
 
-{{ govukBackLink({
+  {{ govukBackLink({
 text: "Back",
 href: backLink or "/"
 }) }}
 
-{% endblock %} 
+{% endblock %}
 
 {% block content %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    {% if errors.length > 0 %}
-    {{
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
+      {% if errors.length > 0 %}
+        {{
       govukErrorSummary({
         titleText: 'There is a problem',
         errorList: errors,
         attributes: { 'data-qa-errors': true }
       })
     }}
-    {% endif %}
+      {% endif %}
 
     <h1 class="govuk-heading-xl">Check your answers before sending the report</h1>
 
-           {{  pagesMacros.getUserInputs(
-                  data = data.newIncident,
-                  title = "New incident", 
-                  url = "/form/incident/newIncident/" + bookingId
-          )}}
+      {{ pagesMacros.getUserInputs({ 
+              data : data.newIncident, 
+              title : "New incident",  
+              url : "/form/incident/newIncident/" + bookingId
+              })
+          }}
+      {{pagesMacros.tableRow({label: 'Offender name',   'data-qa': 'offenderName',      dataValue: data.newIncident.offenderName | title })}}
+      {{pagesMacros.tableRow({label: 'Offender number', 'data-qa': 'offenderNumber',    dataValue: data.newIncident.offenderNumber})}}
+      {{pagesMacros.tableRow({label: 'Location',        'data-qa': 'location',          dataValue: data.newIncident.location | title })}}
+      {{pagesMacros.tableRow({label: 'Incident type',   'data-qa': 'incidentType',      dataValue: data.newIncident.forceType | title })}}
+      {{pagesMacros.tableRow({label: 'Staff involved',  'data-qa': 'staffInvolved',     dataValue: data.newIncident.staffInvolved | title })}}
+      {{pagesMacros.tableRow({label: 'Witnesses',       'data-qa': 'witnesses',         dataValue: data.newIncident.witnesses | title})}}
 
-          {{  pagesMacros.getUserInputs(
-                  data = data.details,
-                  title = "Details", 
-                  url = "/form/incident/details/" + bookingId
-          )}}
+      {{  pagesMacros.getUserInputs({
+                data: data.details,
+                title: "Details", 
+                url: "/form/incident/details/" + bookingId
+            })
+          }}
+      {{pagesMacros.tableRow({label: 'Positive communication used',     'data-qa': 'positiveCommunication',     dataValue: data.details.positiveCommunicationUsed | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Personal protection techniques',  'data-qa': 'personalProtection',        dataValue: data.details.personalProtectionTechniques | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Baton drawn',                     'data-qa': 'batonDrawn',                dataValue: data.details.batonDrawn | capitalize })}}
+      {{pagesMacros.tableRow({label: 'PAVA drawn',                      'data-qa': 'pavaDrawn',                 dataValue: data.details.pavaDrawn | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Guiding hold used',               'data-qa': 'guidingHold',               dataValue: data.details.guidingHoldUsed | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Control and restraint used',      'data-qa': 'restraintUsed',             dataValue: data.details.controlAndRestraintUsed | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Handcuffs used',                  'data-qa': 'handcuffsUsed',             dataValue: data.details.handcuffsUsed | capitalize })}}
 
-          {{  pagesMacros.getUserInputs(
-                  data = data.relocationAndInjuries,
-                  title = "Relocation and injuries", 
-                  url = "/form/incident/relocationAndInjuries/" + bookingId
-          )}}
+      {{  pagesMacros.getUserInputs({
+                data: data.relocationAndInjuries,
+                title: "Relocation and injuries", 
+                url: "/form/incident/relocationAndInjuries/" + bookingId
+            })
+          }}
+      {{pagesMacros.tableRow({label: 'Prisoner relocated to',             'data-qa': 'prisonerRelocation',      dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Relocation compliancy',             'data-qa': 'compliancy',              dataValue: data.relocationAndInjuries.prisonerCompliancy | capitalize })}}
+      {{pagesMacros.tableRow({label: 'HealthCare staff present',          'data-qa': 'healthcareStaffPresent',  dataValue: data.relocationAndInjuries.halthcareStaffPresent | title })}}
+      {{pagesMacros.tableRow({label: 'F213 completed by',                 'data-qa': 'f213',                    dataValue: data.relocationAndInjuries.f213CompletedBy | title })}}
+      {{pagesMacros.tableRow({label: 'Prisoner required hospitalisation', 'data-qa': 'prisonerHospitalisation', dataValue: data.relocationAndInjuries.prisonerHospitalisation | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Staff needed medical attention',    'data-qa': 'staffMedicalAttention',   dataValue: data.relocationAndInjuries.staffMedicalAttention |title })}}
+      {{pagesMacros.tableRow({label: 'Staff taken to hospital',           'data-qa': 'staffHospitalisation',    dataValue: data.relocationAndInjuries.staffHospitalisation | title })}}
 
-          {{  pagesMacros.getUserInputs(
-                  data = data.evidence,
-                  title = "Evidence", 
-                  url = "/form/incident/evidence/" + bookingId
-          )}}
+      {{  pagesMacros.getUserInputs({
+                data: data.evidence,
+                title: "Evidence", 
+                url: "/form/incident/evidence/" + bookingId
+            })
+          }}
+      {{pagesMacros.tableRow({label: 'Evidence bagged and tagged',    'data-qa': 'evidenceBaggedTagged',      dataValue: data.evidence.evidenceBaggedTagged, type: 'bagAndTag' })}}
+      {{pagesMacros.tableRow({label: 'Photographs taken',             'data-qa': 'photographs',               dataValue: data.evidence.photographs | capitalize })}}
+      {{pagesMacros.tableRow({label: 'CCTV images',                   'data-qa': 'cctv',                      dataValue: data.evidence.cctv | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Body worn cameras',             'data-qa': 'bodyCameras',               dataValue: data.evidence.bodyCameras | capitalize })}}
+    </div>
 
   </div>
   <div class="govuk-grid-column-two-thirds">
@@ -62,7 +91,7 @@ href: backLink or "/"
       By sending the report I confirm that the information I provided is correct to the best of my knowledge.
     </p>
       <form method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
         {{
           govukCheckboxes({
             idPrefix: 'confirm',
@@ -96,7 +125,7 @@ href: backLink or "/"
           })
         }}
       </form>
+    </div>
   </div>
-</div>
 
 {% endblock %}
