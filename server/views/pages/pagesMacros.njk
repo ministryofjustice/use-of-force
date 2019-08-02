@@ -17,9 +17,9 @@
             <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
               {% if dataItem.dataValue.length === 0 %}
                 &ndash;
-              {% elif dataItem.type === 'bagAndTag' %}
+              {% elif dataItem.type === 'itemPerLine' %}
                 {%for item in dataItem.dataValue %}
-                {{item.tag}}<br/>{{item.description | dump}} <br/><br/>
+                {{item.tag}}<br/>{{item.description}} <br/><br/>
                 {% endfor %}
               {% else %}
               {{dataItem.dataValue}}

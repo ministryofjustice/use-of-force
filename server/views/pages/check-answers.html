@@ -77,13 +77,12 @@ href: backLink or "/"
                 url: "/form/incident/evidence/" + bookingId
             })
           }}
-      {{pagesMacros.tableRow({label: 'Evidence bagged and tagged',    'data-qa': 'evidenceBaggedTagged',      dataValue: data.evidence.evidenceBaggedTagged, type: 'bagAndTag' })}}
+      {{pagesMacros.tableRow({label: 'Evidence bagged and tagged',    'data-qa': 'evidenceBaggedTagged',      dataValue: data.evidence.evidenceBaggedTagged, type: 'itemPerLine' })}}
       {{pagesMacros.tableRow({label: 'Photographs taken',             'data-qa': 'photographs',               dataValue: data.evidence.photographs | capitalize })}}
       {{pagesMacros.tableRow({label: 'CCTV images',                   'data-qa': 'cctv',                      dataValue: data.evidence.cctv | capitalize })}}
       {{pagesMacros.tableRow({label: 'Body worn cameras',             'data-qa': 'bodyCameras',               dataValue: data.evidence.bodyCameras | capitalize })}}
     </div>
 
-  </div>
   <div class="govuk-grid-column-two-thirds">
 
     <h2 class="govuk-heading-m">Now send the report</h2>
