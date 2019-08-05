@@ -1,8 +1,6 @@
 const page = require('./page')
 
 const clickSubmit = () => cy.get('[data-submit]').click()
-const incidentDateFormat = new RegExp(Cypress.moment().format('DD/MM/YYYY'))
-const incidentTimeFormat = new RegExp(Cypress.moment().format('HH:mm'))
 
 export default () =>
   page('Check your answers before sending the report', {
@@ -11,10 +9,12 @@ export default () =>
       cy.get('[data-qa="offenderNumber"]').contains('A1234AC')
       cy.get('[data-qa="incidentDate"]')
         .invoke('text')
-        .should('match', incidentDateFormat)
+        .invoke('trim')
+        .should('match', /^([0-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/(2019|20[2-9][0-9])$/)
       cy.get('[data-qa="incidentTime"]')
         .invoke('text')
-        .should('match', incidentTimeFormat)
+        .invoke('trim')
+        .should('match', /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
       cy.get('[data-qa="location"]').contains('Asso A Wing')
       cy.get('[data-qa="incidentType"]').contains('Planned')
       cy.get('[data-qa="staffInvolved"]').contains('Mr Zagato, Mrs Jones')
