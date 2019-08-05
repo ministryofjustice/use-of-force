@@ -4,6 +4,7 @@ const flash = require('connect-flash')
 const { getIn, isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const types = require('../config/types')
 
 const incidentConfig = require('../config/incident')
 
@@ -17,7 +18,7 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
   const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject)
   const errors = req.flash('errors')
   res.render(`formPages/${section}/${form}`, {
-    data: { bookingId, ...pageData, ...data },
+    data: { bookingId, ...pageData, ...data, types },
     formName: form,
     backLink,
     errors,

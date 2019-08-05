@@ -36,4 +36,22 @@ module.exports = (app, path) => {
     }))
     return [emptyOption, ...items]
   })
+
+  njkEnv.addFilter('extractAttr', (array, key) => {
+    return array.map(item => item[key])
+  })
+
+  njkEnv.addFilter('toOptions', (array, valueKey, textKey) => {
+    return array.map(item => ({
+      value: item[valueKey],
+      label: item[textKey],
+    }))
+  })
+
+  njkEnv.addFilter('toYesNo', value => {
+    if (value == null) {
+      return '\u2013'
+    }
+    return value ? 'Yes' : 'No'
+  })
 }

@@ -47,8 +47,8 @@
     <div class="govuk-grid-column-full">
       {{ govukRadios({
         classes: "govuk-radios--inline",
-        idPrefix: "forceType",
-        name: "forceType",
+        idPrefix: "plannedUseOfForce",
+        name: "plannedUseOfForce",
         fieldset: {
           legend: {
             text: "Was the use of force planned?",
@@ -58,14 +58,14 @@
         },
         items: [
           {
-            value: "planned",
+            value: true,
             text: "Yes",
-            checked: data.forceType === 'planned'
+            checked: data.plannedUseOfForce === true
           },
           {
-            value: "spontaneous",
+            value: false,
             text: "No",
-            checked: data.forceType === 'spontaneous'
+            checked: data.plannedUseOfForce === false
           }
         ]
       }) }}

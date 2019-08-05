@@ -1,3 +1,29 @@
+{% macro radio(question) %}
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      {# primary #}
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+          {{question.text}}
+      </legend>
+      <div class="govuk-!-margin-bottom-6">
+        <div class="{% if question.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="radios">
+          {% set name1 = question.name %}
+          {% for option in question.options %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="id-{{name1}}-{{loop.index}}" name="{{name1}}" type="radio" value="{{option.value}}" 
+              {% if option.value === question.value %} checked {% endif %}>
+              <label class="govuk-label govuk-radios__label" for='id-{{name1}}-{{loop.index}}'>
+                {{option.label}}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </fieldset>
+  </div>
+{% endmacro %}
+
 {% macro radiosWithNestedRadios(question) %}
 
   <div class="govuk-form-group">
@@ -13,7 +39,7 @@
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="id-{{name1}}-{{loop.index}}" name="{{name1}}" type="radio" value="{{option.value}}" 
               {% if option.value === question.primaryQuestion.value %} checked {% endif %}
-              {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name1}}" {% endif %}>
+              {% if option.value === true %} data-aria-controls="conditional-{{name1}}" {% endif %}>
               <label class="govuk-label govuk-radios__label" for='id-{{name1}}-{{loop.index}}'>
                 {{option.label}}
               </label>
@@ -63,7 +89,8 @@
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
+              <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio" value="{{option.value}}" 
+              {% if option.value === true %} data-aria-controls="conditional-{{name}}" {% endif %}
               {% if option.value === question.primaryQuestion.value %} checked  {% endif %}>
               <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
                 {{option.label}}
@@ -111,7 +138,7 @@
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio"  value="{{option.value}}" 
-                {% if option.value === 'Yes' %} data-aria-controls="conditional-{{name}}" {% endif %}
+                {% if option.value === true %} data-aria-controls="conditional-{{name}}" {% endif %}
                 {% if option.value === question.primaryQuestion.value %} checked="checked"  {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>

@@ -36,14 +36,14 @@ href: backLink or "/"
               url : "/form/incident/newIncident/" + bookingId
               })
           }}
-      {{pagesMacros.tableRow({label: 'Offender name',     'data-qa': 'offenderName',      dataValue: data.newIncident.offenderName | title })}}
-      {{pagesMacros.tableRow({label: 'Offender number',   'data-qa': 'offenderNumber',    dataValue: data.newIncident.offenderNumber})}}
+      {{pagesMacros.tableRow({label: 'Offender name',   'data-qa': 'offenderName',      dataValue: data.newIncident.offenderName | title })}}
+      {{pagesMacros.tableRow({label: 'Offender number', 'data-qa': 'offenderNumber',    dataValue: data.newIncident.offenderNumber})}}
       {{pagesMacros.tableRow({label: 'Date of incident',  'data-qa': 'incidentDate',      dataValue: data.newIncident.incidentDate })}}
       {{pagesMacros.tableRow({label: 'Time of incident',  'data-qa': 'incidentTime',      dataValue: data.newIncident.incidentTime })}}
-      {{pagesMacros.tableRow({label: 'Location',          'data-qa': 'location',          dataValue: data.newIncident.location | title })}}
-      {{pagesMacros.tableRow({label: 'Incident type',     'data-qa': 'incidentType',      dataValue: data.newIncident.forceType | title })}}
-      {{pagesMacros.tableRow({label: 'Staff involved',    'data-qa': 'staffInvolved',     dataValue: data.newIncident.staffInvolved | title })}}
-      {{pagesMacros.tableRow({label: 'Witnesses',         'data-qa': 'witnesses',         dataValue: data.newIncident.witnesses | title})}}
+      {{pagesMacros.tableRow({label: 'Location',        'data-qa': 'location',          dataValue: data.newIncident.location  })}}
+      {{pagesMacros.tableRow({label: 'Incident type',   'data-qa': 'incidentType',      dataValue: data.newIncident.plannedUseOfForce  })}}
+      {{pagesMacros.tableRow({label: 'Staff involved',  'data-qa': 'staffInvolved',     dataValue: data.newIncident.staffInvolved | title })}}
+      {{pagesMacros.tableRow({label: 'Witnesses',       'data-qa': 'witnesses',         dataValue: data.newIncident.witnesses | title})}}
 
       {{  pagesMacros.getUserInputs({
                 data: data.details,
@@ -51,10 +51,10 @@ href: backLink or "/"
                 url: "/form/incident/details/" + bookingId
             })
           }}
-      {{pagesMacros.tableRow({label: 'Positive communication used',     'data-qa': 'positiveCommunication',     dataValue: data.details.positiveCommunicationUsed | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Personal protection techniques',  'data-qa': 'personalProtection',        dataValue: data.details.personalProtectionTechniques | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Baton drawn',                     'data-qa': 'batonDrawn',                dataValue: data.details.batonDrawn | capitalize })}}
-      {{pagesMacros.tableRow({label: 'PAVA drawn',                      'data-qa': 'pavaDrawn',                 dataValue: data.details.pavaDrawn | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Positive communication used',     'data-qa': 'positiveCommunication',     dataValue: data.details.positiveCommunicationUsed | toYesNo })}}
+      {{pagesMacros.tableRow({label: 'Personal protection techniques',  'data-qa': 'personalProtection',        dataValue: data.details.personalProtectionTechniques | toYesNo })}}
+      {{pagesMacros.tableRow({label: 'Baton drawn',                     'data-qa': 'batonDrawn',                dataValue: data.details.batonDrawn })}}
+      {{pagesMacros.tableRow({label: 'PAVA drawn',                      'data-qa': 'pavaDrawn',                 dataValue: data.details.pavaDrawn })}}
       {{pagesMacros.tableRow({label: 'Guiding hold used',               'data-qa': 'guidingHold',               dataValue: data.details.guidingHoldUsed | capitalize })}}
       {{pagesMacros.tableRow({label: 'Control and restraint used',      'data-qa': 'restraintUsed',             dataValue: data.details.controlAndRestraintUsed | capitalize })}}
       {{pagesMacros.tableRow({label: 'Handcuffs used',                  'data-qa': 'handcuffsUsed',             dataValue: data.details.handcuffsUsed | capitalize })}}
@@ -66,10 +66,10 @@ href: backLink or "/"
             })
           }}
       {{pagesMacros.tableRow({label: 'Prisoner relocated to',             'data-qa': 'prisonerRelocation',      dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Relocation compliancy',             'data-qa': 'compliancy',              dataValue: data.relocationAndInjuries.prisonerCompliancy | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Relocation compliancy',             'data-qa': 'compliancy',              dataValue: data.relocationAndInjuries.prisonerCompliancy })}}
       {{pagesMacros.tableRow({label: 'Healthcare staff present',          'data-qa': 'healthcareStaffPresent',  dataValue: data.relocationAndInjuries.healthcareStaffPresent | title })}}
       {{pagesMacros.tableRow({label: 'F213 completed by',                 'data-qa': 'f213',                    dataValue: data.relocationAndInjuries.f213CompletedBy | title })}}
-      {{pagesMacros.tableRow({label: 'Prisoner required hospitalisation', 'data-qa': 'prisonerHospitalisation', dataValue: data.relocationAndInjuries.prisonerHospitalisation | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Prisoner required hospitalisation', 'data-qa': 'prisonerHospitalisation', dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo })}}
       {{pagesMacros.tableRow({label: 'Staff needed medical attention',    'data-qa': 'staffMedicalAttention',   dataValue: data.relocationAndInjuries.staffMedicalAttention |title })}}
       {{pagesMacros.tableRow({label: 'Staff taken to hospital',           'data-qa': 'staffHospitalisation',    dataValue: data.relocationAndInjuries.staffHospitalisation | title })}}
 
@@ -80,7 +80,7 @@ href: backLink or "/"
             })
           }}
       {{pagesMacros.tableRow({label: 'Evidence bagged and tagged',    'data-qa': 'evidenceBaggedTagged',      dataValue: data.evidence.evidenceBaggedTagged, type: 'itemPerLine' })}}
-      {{pagesMacros.tableRow({label: 'Photographs taken',             'data-qa': 'photographs',               dataValue: data.evidence.photographs | capitalize })}}
+      {{pagesMacros.tableRow({label: 'Photographs taken',             'data-qa': 'photographs',               dataValue: data.evidence.photographs | toYesNo })}}
       {{pagesMacros.tableRow({label: 'CCTV images',                   'data-qa': 'cctv',                      dataValue: data.evidence.cctv | capitalize })}}
       {{pagesMacros.tableRow({label: 'Body worn cameras',             'data-qa': 'bodyCameras',               dataValue: data.evidence.bodyCameras | capitalize })}}
     </div>

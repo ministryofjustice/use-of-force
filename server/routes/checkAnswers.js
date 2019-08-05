@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, toLabel } = require('../config/types')
 
 module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
@@ -79,24 +80,85 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
   return router
 }
 
-const getRestraintPositions = positions => {
-  if (Array.isArray(positions)) {
-    return `Yes - ${positions.join(', ')}`
+const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff, incidentDate) => {
+  return {
+    offenderName: offenderDetail.displayName,
+    offenderNumber: offenderDetail.offenderNo,
+    location: description,
+    plannedUseOfForce: whenPresent(newIncident.plannedUseOfForce, value => (value ? 'Planned' : 'Spontaneous')),
+    staffInvolved: extractCommaSeparatedList('name', involvedStaff),
+    witnesses: extractCommaSeparatedList('name', newIncident.witnesses),
+    incidentDate: moment(incidentDate).format('DD/MM/YYYY'),
+    incidentTime: moment(incidentDate).format('HH:mm'),
   }
-  if (positions) {
-    return `Yes - ${positions}`
-  }
-  return ''
 }
 
-const convertArrayOfObjectsToStringUsingSpecifiedKey = (attr, dataArray = []) => {
-  return dataArray.map(element => element[attr]).join(', ')
+const createDetailsObj = (details = {}) => {
+  return {
+    positiveCommunicationUsed: details.positiveCommunication,
+    personalProtectionTechniques: details.personalProtectionTechniques,
+    batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : 'No')),
+    pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : 'No')),
+    guidingHoldUsed: whenPresent(details.guidingHold, value =>
+      value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : 'No'
+    ),
+    controlAndRestraintUsed: whenPresent(details.restraint, value =>
+      value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
+    ),
+    handcuffsUsed: whenPresent(details.handcuffsApplied, value =>
+      value ? typeOfHandcuffsUsed(details.handcuffsType) : 'No'
+    ),
+  }
+}
+
+const createRelocationObj = (relocationAndInjuries = {}) => {
+  return {
+    prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
+    prisonerCompliancy: whenPresent(relocationAndInjuries.relocationCompliancy, value =>
+      value ? 'Compliant' : 'Non-compliant'
+    ),
+    healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
+      value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
+    ),
+    f213CompletedBy: relocationAndInjuries.f213CompletedBy,
+    prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
+    staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
+      value ? `${extractCommaSeparatedList('name', relocationAndInjuries.staffNeedingMedicalAttention)}` : 'No'
+    ),
+    staffHospitalisation: staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
+  }
+}
+
+const createEvidenceObj = (evidence = {}) => {
+  return {
+    evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
+    photographs: evidence.photographsTaken,
+    cctv: toLabel(Cctv, evidence.cctvRecording),
+    bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
+      value === Cctv.YES.value
+        ? extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers) || 'Yes'
+        : toLabel(BodyWornCameras, value)
+    ),
+  }
+}
+
+const whenPresent = (value, present) => (value == null ? undefined : present(value))
+
+const wasWeaponUsed = weaponUsed => {
+  if (weaponUsed == null) {
+    return undefined
+  }
+  return weaponUsed ? 'Yes - and used' : 'Yes - and not used'
+}
+
+const getRestraintPositions = positions => {
+  return positions == null ? '' : `Yes - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
-  const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === 'Yes').map(staff => staff.name)
+  const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === true).map(staff => staff.name)
   if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
-    return ''
+    return 'No'
   }
   return hospitalisedStaff.join(', ')
 }
@@ -111,87 +173,13 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
-  return guidingHoldOfficersInvolved === 'one' ? '- one officer involved' : '- two officers involved'
+  return guidingHoldOfficersInvolved === 1 ? 'Yes - one officer involved' : 'Yes - two officers involved'
 }
 
 const typeOfHandcuffsUsed = handcuffsType => {
-  return handcuffsType === 'ratchet' ? 'ratchet' : 'fixed bar'
+  return handcuffsType === 'RATCHET' ? 'ratchet' : 'fixed bar'
 }
 
-const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff, incidentDate) => {
-  return {
-    offenderName: offenderDetail.displayName,
-    offenderNumber: offenderDetail.offenderNo,
-    location: description,
-    forceType: newIncident.forceType,
-    staffInvolved: convertArrayOfObjectsToStringUsingSpecifiedKey('name', involvedStaff),
-    witnesses: convertArrayOfObjectsToStringUsingSpecifiedKey('name', newIncident.witnesses),
-    incidentDate: moment(incidentDate).format('DD/MM/YYYY'),
-    incidentTime: moment(incidentDate).format('HH:mm'),
-  }
-}
-
-const createDetailsObj = (details = {}) => {
-  return {
-    positiveCommunicationUsed: details.positiveCommunication,
-    personalProtectionTechniques: details.personalProtectionTechniques,
-    batonDrawn: whenPresent(details.batonDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.batonUsed) : 'No')),
-    pavaDrawn: whenPresent(details.pavaDrawn, value => (value === 'Yes' ? wasWeaponUsed(details.pavaUsed) : 'No')),
-    guidingHoldUsed: whenPresent(details.guidingHold, value =>
-      value === 'Yes' ? `Yes ${howManyOfficersInvolved(details.guidingHoldOfficersInvolved)}` : 'No'
-    ),
-    controlAndRestraintUsed: whenPresent(details.restraint, value =>
-      details.restraintPositions && value === 'Yes' ? getRestraintPositions(details.restraintPositions) : undefined
-    ),
-    handcuffsUsed: whenPresent(details.handcuffsApplied, value =>
-      value === 'Yes' ? typeOfHandcuffsUsed(details.handcuffsType) : 'No'
-    ),
-  }
-}
-
-const createRelocationObj = (relocationAndInjuries = {}) => {
-  return {
-    prisonerRelocation: relocationAndInjuries.prisonerRelocation,
-    prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
-    healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
-      value === 'Yes' ? `${relocationAndInjuries.healthcarePractionerName}` : 'No'
-    ),
-    f213CompletedBy: relocationAndInjuries.f213CompletedBy,
-    prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
-    staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-      value === 'Yes'
-        ? `${convertArrayOfObjectsToStringUsingSpecifiedKey(
-            'name',
-            relocationAndInjuries.staffNeedingMedicalAttention
-          )}`
-        : 'No'
-    ),
-    staffHospitalisation: staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
-  }
-}
-
-const createEvidenceObj = (evidence = {}) => {
-  return {
-    evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
-    photographs: evidence.photographsTaken,
-    cctv: evidence.cctvRecording,
-    bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
-      value === 'Yes'
-        ? `${convertArrayOfObjectsToStringUsingSpecifiedKey('cameraNum', evidence.bodyWornCameraNumbers)}`
-        : value
-    ),
-  }
-}
-
-const whenPresent = (value, present) => (!value ? undefined : present(value))
-
-const wasWeaponUsed = WeaponUsed => {
-  switch (WeaponUsed) {
-    case undefined:
-      return undefined
-    case 'Yes':
-      return 'Yes - and used'
-    default:
-      return 'Yes - and not used'
-  }
+const extractCommaSeparatedList = (attr, dataArray = []) => {
+  return dataArray.map(element => element[attr]).join(', ')
 }
