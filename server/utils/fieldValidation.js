@@ -7,6 +7,7 @@ const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
 
 const fieldOptions = {
   requiredString: joi.string().required(),
+  requiredBoolean: joi.boolean().required(),
   optionalString: joi
     .string()
     .allow('')

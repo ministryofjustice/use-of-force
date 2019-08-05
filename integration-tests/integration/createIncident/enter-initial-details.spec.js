@@ -16,7 +16,7 @@ context('Submitting details page form', () => {
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     newIncidentPage.location().select('Asso A Wing')
-    newIncidentPage.forceType.check('spontaneous')
+    newIncidentPage.forceType.check('true')
 
     newIncidentPage
       .staffInvolved(0)
@@ -55,7 +55,7 @@ context('Submitting details page form', () => {
 
       expect(payload).to.deep.equal({
         locationId: 357591,
-        forceType: 'spontaneous',
+        plannedUseOfForce: true,
         witnesses: [{ name: '1111' }],
       })
       expect(staff).to.deep.equal([{ userId: 'AAAA', name: 'AAAA' }, { userId: 'BBBB', name: 'BBBB' }])
@@ -71,7 +71,7 @@ context('Submitting details page form', () => {
     const updatedIncidentPage = newIncidentPageFactory()
     updatedIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
     updatedIncidentPage.location().contains('Asso A Wing')
-    updatedIncidentPage.forceType.spontaneous().should('be.checked')
+    updatedIncidentPage.forceType.planned().should('be.checked')
 
     updatedIncidentPage
       .staffInvolved(0)

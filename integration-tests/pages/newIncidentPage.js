@@ -7,15 +7,15 @@ export default () =>
     location: () => cy.get('#location'),
 
     forceType: {
-      check: value => cy.get('[name="forceType"]').check(value),
-      planned: () => cy.get("[name='forceType'][value='planned']"),
-      spontaneous: () => cy.get("[name='forceType'][value='spontaneous']"),
+      check: value => cy.get('[name="plannedUseOfForce"]').check(value),
+      planned: () => cy.get("[name='plannedUseOfForce'][value='true']"),
+      spontaneous: () => cy.get("[name='plannedUseOfForce'][value='false']"),
     },
 
     fillForm: () => {
       cy.get('[data-qa=offender-name]')
       cy.get('#location').select('Asso A Wing')
-      cy.get('[name="forceType"]').check('planned')
+      cy.get('[name="plannedUseOfForce"]').check('true')
       cy.get('[name="involved[0][name]"]').type('Dr Smith')
       cy.get('.add-another-staff-member > .button-action > .govuk-button').click()
       cy.get('[name="involved[1][name]"]').type('Mr Zagato')

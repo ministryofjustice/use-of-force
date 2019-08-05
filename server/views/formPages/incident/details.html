@@ -1,5 +1,8 @@
-{% extends "../formTemplate.html" %} {% from "input/macro.njk" import govukInput %} {% from "radios/macro.njk" import
-govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% extends "../formTemplate.html" %} 
+{% from "input/macro.njk" import govukInput %} 
+{% from "radios/macro.njk" import govukRadios %} 
+{% from "select/macro.njk" import govukSelect %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
 
 {% block formItems %}
@@ -8,208 +11,125 @@ govukRadios %} {% from "select/macro.njk" import govukSelect %}{% from "checkbox
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl mainHeading">Use of force details</h1>
 
+    {% set yesNoOptions = [{
+        value: true,
+        label: "Yes"
+      }, {
+        value: false,
+        label: "No"
+      }] 
+    %}
+
     <!-- Q1 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-          {
-            "primaryQuestion": {
-              "text": "Was positive communication used to de-escalate the situation?",
-              "name": "positiveCommunication",
-              "value": data.positiveCommunication,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, {
-                "value": "No",
-                "label": "No"
-              }]
-            }
-          }
-          )
-         }}
+    {{ incidentMacro.radio( {
+      text: "Was positive communication used to de-escalate the situation?",
+      name: "positiveCommunication",
+      value: data.positiveCommunication,
+      options: yesNoOptions
+    })}}
 
     <!-- Q2 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-          {
-            "primaryQuestion": {
-              "text": "Were any personal protection techniques used?",
-              "name": "personalProtectionTechniques",
-              "value": data.personalProtectionTechniques,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, {
-                "value": "No",
-                "label": "No"
-              }]
-            }
-          }
-          )
-         }}
+    {{ incidentMacro.radio( {
+      text: "Were any personal protection techniques used?",
+      name: "personalProtectionTechniques",
+      value: data.personalProtectionTechniques,
+      options: yesNoOptions
+    })}}
 
     <!-- Q3 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-          {
-            "primaryQuestion": {
-              "text": "Was a baton drawn?",
-              "name": "batonDrawn",
-              "value": data.batonDrawn,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, 
-              {
-                "value": "No",
-                "label": "No"
-              }
-              ]
-            },
-            "followUpQuestion": {
-              "text": "Was it used?",
-              "value": data.batonUsed,
-              "name": "batonUsed",
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, 
-              {
-                "value": "No",
-                "label": "No"
-              }
-              ]
-            }
-          }
-          )
-         }}
+    {{ incidentMacro.radiosWithNestedRadios({
+      primaryQuestion: {
+        text: "Was a baton drawn?",
+        name: "batonDrawn",
+        value: data.batonDrawn,
+        options: yesNoOptions
+      },
+      followUpQuestion: {
+        text: "Was it used?",
+        value: data.batonUsed,
+        name: "batonUsed",
+        options: yesNoOptions
+      }
+    })}}
 
     <!-- Q4 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-          {
-            "primaryQuestion": {
-              "text": "Was PAVA drawn?",
-              "name": "pavaDrawn",
-              "value": data.pavaDrawn,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, {
-                "value": "no",
-                "label": "No"
-              }]
-            },
-            "followUpQuestion": {
-              "text": "Was it used?",
-              "name": "pavaUsed",
-              "value": data.pavaUsed,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, {
-                "value": "no",
-                "label": "No"
-              }]
-            }
-          }
-          )
-        }}
+    {{ incidentMacro.radiosWithNestedRadios({
+      primaryQuestion: {
+        text: "Was PAVA drawn?",
+        name: "pavaDrawn",
+        value: data.pavaDrawn,
+        options: yesNoOptions
+      },
+      followUpQuestion: {
+        text: "Was it used?",
+        name: "pavaUsed",
+        value: data.pavaUsed,
+        options: yesNoOptions
+      }
+    }
+    )}}
 
     <!-- Q5 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-          {
-            "primaryQuestion": {
-              "text": "Was a guiding hold used?",
-              "name": "guidingHold",
-              "value": data.guidingHold,
-              "options": [{
-                "value": "Yes",
-                "label": "Yes"
-              }, 
-              {
-                "value": "No",
-                "label": "No"
-              }
-           ]
-            },
-            "followUpQuestion": {
-              "text": "How many officers were involved?",
-              "name": "guidingHoldOfficersInvolved",
-              "value": data.guidingHoldOfficersInvolved,
-              "options": [{
-                "value": 'one',
-                "label": "1"
-              }, 
-              {
-                "value": 'two',
-                "label": "2"
-              }]
-            }
-          }
-          )
-        }}
+    {{ incidentMacro.radiosWithNestedRadios({
+      primaryQuestion: {
+        text: "Was a guiding hold used?",
+        name: "guidingHold",
+        value: data.guidingHold,
+        options: yesNoOptions
+      },
+      followUpQuestion: {
+        text: "How many officers were involved?",
+        name: "guidingHoldOfficersInvolved",
+        value: data.guidingHoldOfficersInvolved,
+        options: [{
+          value: 1,
+          label: "1"
+        }, 
+        {
+          value: 2,
+          label: "2"
+        }]
+      }
+    })}}
+
     <!-- Q6 -->
     {{ incidentMacro.radiosWithNestedCheckboxes({
-          "primaryQuestion": {
-            "text": "Was control and restraint used?",
-            "name": "restraint",
-            "value": data.restraint,
-            "options": [{
-              "value": "Yes",
-              "label": "Yes"
-            }, {
-              "value": "No",
-              "label": "No"
-            }]
+          primaryQuestion: {
+            text: "Was control and restraint used?",
+            name: "restraint",
+            value: data.restraint,
+            options: yesNoOptions
           },
-          "followUpQuestion": {
-            "text": "What positions were used?",
-            "name": "restraintPositions",
-            "value": data.restraintPositions or [],
-            "options": [{
-              "value": "standing",
-              "label": "standing"
-            }, {
-              "value": "supine",
-              "label": "On back"
-            }, {
-              "value": "prone",
-              "label": "Face down"
-            }, {
-              "value": "kneeling",
-              "label": "Kneeling"
-            }]
+          followUpQuestion: {
+            text: "What positions were used?",
+            name: "restraintPositions",
+            value: data.restraintPositions or [],
+            options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label')
           }
         }) 
       }}
 
     <!-- Q7 -->
-    {{ incidentMacro.radiosWithNestedRadios( 
-        {
-          "primaryQuestion": {
-            "text": "Were handcuffs applied?",
-            "name": "handcuffsApplied",
-            "value": data.handcuffsApplied,
-            "options": [{
-              "value": "Yes",
-              "label": "Yes"
-            }, {
-              "value": "No",
-              "label": "No"
-            }]
-          },
-          "followUpQuestion": {
-            "text": "Select which type of handcuffs were used",
-            "name": "handcuffsType",
-            "value": data.handcuffsType,
-            "options": [{
-              "value": "ratchet",
-              "label": "Ratchet"
-            }, {
-              "value": "fixed bar",
-              "label": "Fixed bar"
-            }]
-          }
-        }
-        )
-        }}
+    {{ incidentMacro.radiosWithNestedRadios({
+      primaryQuestion: {
+        text: "Were handcuffs applied?",
+        name: "handcuffsApplied",
+        value: data.handcuffsApplied,
+        options: yesNoOptions
+      },
+      followUpQuestion: {
+        text: "Select which type of handcuffs were used",
+        name: "handcuffsType",
+        value: data.handcuffsType,
+        options: [{
+          value: "RATCHET",
+          label: "Ratchet"
+        }, {
+          value: "FIXED_BAR",
+          label: "Fixed bar"
+        }]
+      }
+      })}}
   </div>
 </div>
 

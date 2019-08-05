@@ -2,6 +2,12 @@ const moment = require('moment')
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 
+const removeEmptyValues = attr => (inputs = []) => inputs.filter(input => !isBlank(input[attr]))
+
+const toBoolean = val => (val == null ? null : val === 'true')
+
+const toInteger = val => parseInt(val, 10)
+
 module.exports = {
   newIncident: {
     fields: [
@@ -16,30 +22,25 @@ module.exports = {
         locationId: {
           responseType: 'requiredNumber',
           validationMessage: 'Where did the incident occur?',
-          sanitiser: val => parseInt(val, 10),
+          sanitiser: toInteger,
         },
       },
       {
-        location: {
-          responseType: 'location',
-          validationMessage: 'Where did the incident occur?',
-        },
-      },
-      {
-        forceType: {
-          responseType: 'requiredString',
+        plannedUseOfForce: {
+          responseType: 'requiredBoolean',
           validationMessage: 'Was the use of force planned?',
+          sanitiser: toBoolean,
         },
       },
       {
         involved: {
-          sanitiser: vals => removeEmptyValues('name', vals),
+          sanitiser: removeEmptyValues('name'),
           fieldType: EXTRACTED,
         },
       },
       {
         witnesses: {
-          sanitiser: vals => removeEmptyValues('name', vals),
+          sanitiser: removeEmptyValues('name'),
         },
       },
     ],
@@ -53,74 +54,94 @@ module.exports = {
     fields: [
       {
         positiveCommunication: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was Positive Communication used?',
+          sanitiser: toBoolean,
         },
       },
       {
         personalProtectionTechniques: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Were Personal Protection techniques used?',
+          sanitiser: toBoolean,
         },
       },
       {
         batonDrawn: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was a baton drawn?',
+          sanitiser: toBoolean,
         },
       },
       {
         batonUsed: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was a baton used?',
-        },
-      },
-      {
-        pavaUsed: {
-          responseType: 'requiredString',
-          validationMessage: 'Was a pava used?',
+          sanitiser: toBoolean,
+          dependentOn: 'batonDrawn',
+          predicate: 'true',
         },
       },
       {
         pavaDrawn: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was a pava drawn?',
+          sanitiser: toBoolean,
+        },
+      },
+      {
+        pavaUsed: {
+          responseType: 'requiredBoolean',
+          validationMessage: 'Was a pava used?',
+          sanitiser: toBoolean,
+          dependentOn: 'pavaDrawn',
+          predicate: 'true',
         },
       },
       {
         guidingHold: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was a guiding hold used?',
+          sanitiser: toBoolean,
         },
       },
       {
         guidingHoldOfficersInvolved: {
-          responseType: 'requiredString',
+          responseType: 'requiredNumber',
           validationMessage: 'How many officers were involved?',
+          sanitiser: toInteger,
+          dependentOn: 'guidingHold',
+          predicate: 'true',
         },
       },
       {
         restraint: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was control and restraint used?',
+          sanitiser: toBoolean,
         },
       },
       {
         restraintPositions: {
           responseType: 'requiredString',
           validationMessage: 'What positions were used?',
+          dependentOn: 'restraint',
+          predicate: 'true',
         },
       },
       {
         handcuffsApplied: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Were handcuffs applied?',
+          sanitiser: toBoolean,
         },
       },
       {
         handcuffsType: {
           responseType: 'requiredString',
           validationMessage: 'What type of handcuffs were used?',
+          dependentOn: 'handcuffsApplied',
+          predicate: 'true',
         },
       },
     ],
@@ -140,26 +161,31 @@ module.exports = {
       },
       {
         relocationCompliancy: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'What type of relocation was it?',
+          sanitiser: toBoolean,
         },
       },
       {
         healthcareInvolved: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Was a a healthcare practioner involved?',
+          sanitiser: toBoolean,
         },
       },
       {
         healthcarePractionerName: {
           responseType: 'requiredString',
           validationMessage: 'Name of healthcare practioner',
+          dependentOn: 'healthcareInvolved',
+          predicate: 'true',
         },
       },
       {
         prisonerInjuries: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Did the prisoner sustain any injuries?',
+          sanitiser: toBoolean,
         },
       },
       {
@@ -170,19 +196,26 @@ module.exports = {
       },
       {
         prisonerHospitalisation: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Did the prisoner need outside hospitalisation?',
+          sanitiser: toBoolean,
         },
       },
       {
         staffMedicalAttention: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Did a member of staff need medical attention at the time?',
+          sanitiser: toBoolean,
         },
       },
       {
         staffNeedingMedicalAttention: {
-          sanitiser: vals => removeEmptyValues('name', vals),
+          sanitiser: values => {
+            return removeEmptyValues('name')(values).map(({ name, hospitalisation }) => ({
+              name,
+              hospitalisation: toBoolean(hospitalisation),
+            }))
+          },
         },
       },
     ],
@@ -196,19 +229,21 @@ module.exports = {
     fields: [
       {
         baggedEvidence: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Any evidence bagged and tagged?',
+          sanitiser: toBoolean,
         },
       },
       {
         evidenceTagAndDescription: {
-          sanitiser: vals => removeEmptyValues('description', vals),
+          sanitiser: removeEmptyValues('description'),
         },
       },
       {
         photographsTaken: {
-          responseType: 'requiredString',
+          responseType: 'requiredBoolean',
           validationMessage: 'Were any photographs taken?',
+          sanitiser: toBoolean,
         },
       },
       {
@@ -225,7 +260,9 @@ module.exports = {
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: vals => removeEmptyValues('cameraNum', vals),
+          sanitiser: removeEmptyValues('cameraNum'),
+          dependentOn: 'bodyWornCamera',
+          predicate: 'YES',
         },
       },
     ],
@@ -235,5 +272,3 @@ module.exports = {
     },
   },
 }
-
-const removeEmptyValues = (attr, inputs = []) => inputs.filter(input => !isBlank(input[attr]))

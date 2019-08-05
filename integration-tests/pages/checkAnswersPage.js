@@ -15,7 +15,7 @@ export default () =>
         .invoke('text')
         .invoke('trim')
         .should('match', /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
-      cy.get('[data-qa="location"]').contains('Asso A Wing')
+      cy.get('[data-qa="location"]').contains('ASSO A Wing')
       cy.get('[data-qa="incidentType"]').contains('Planned')
       cy.get('[data-qa="staffInvolved"]').contains('Mr Zagato, Mrs Jones')
       cy.get('[data-qa="witnesses"]').contains('Witness 1, Tom Jones')
@@ -25,7 +25,7 @@ export default () =>
       cy.get('[data-qa="batonDrawn"]').contains('Yes - and used')
       cy.get('[data-qa="pavaDrawn"]').contains('Yes - and used')
       cy.get('[data-qa="guidingHold"]').contains('Yes - two officers involved')
-      cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, supine, prone, kneeling')
+      cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back, face down, kneeling')
       cy.get('[data-qa="handcuffsUsed"]').contains('Ratchet')
 
       cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')

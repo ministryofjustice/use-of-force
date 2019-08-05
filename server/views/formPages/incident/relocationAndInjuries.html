@@ -24,65 +24,23 @@
           text: "Where was the prisoner relocated to?"
         },
         attributes: {style:'min-width:33%'},
-        items: [
-          {
-            value: "",
-            text: "Select",
-            selected: data.prisonerRelocation === ''
-          },
-          {
-            value: "own cell",
-            text: "Own cell",
-            selected: data.prisonerRelocation === 'own cell'
-          },
-          {
-            value: "gated cell",
-            text: "Gated cell",
-            selected: data.prisonerRelocation === 'gated cell'
-          },
-          {
-            value: "segregation unit",
-            text: "Segregation unit",
-            selected: data.prisonerRelocation === 'segregation unit'
-          },
-          {
-            value: "special accommodation",
-            text: "Special accommodation",
-            selected: data.prisonerRelocation === 'special accommodation'
-          },
-          {
-            value: "Cellular vehicle",
-            text: "Cellular vehicle",
-            selected: data.prisonerRelocation === 'cellular vehicle'
-          }
-        ]
+        items: data.types.RelocationLocation | list | extractAttr('value') | toSelect('value', 'label', data.prisonerRelocation) 
       }) }}
 
     <!-- Q2 -->
-    {{ govukRadios({
-      classes: "govuk-radios--inline",
-      idPrefix: "relocationCompliancy",
+    
+    {{ incidentMacro.radio( {
+      text: "Was the prisoner compliant?",
       name: "relocationCompliancy",
-      fieldset: {
-        legend: {
-          text: "Was the prisoner compliant?",
-          isPageHeading: false,
-          classes: "govuk-label govuk-label--xs"
-        }
-      },
-      items: [
-        {
-          value: "compliant",
-          text: "Yes",
-          checked: data.relocationCompliancy === 'compliant'
-        },
-        {
-          value: "non-compliant",
-          text: "No",
-          checked: data.relocationCompliancy === 'non-compliant'
-        }
-      ]
-    }) }}
+      value: data.relocationCompliancy,
+      options: [{
+        value: true,
+        label: "Yes"
+      }, {
+        value: false,
+        label: "No"
+      }]
+    })}}
 
     <hr />
   </div>
@@ -90,30 +48,29 @@
   <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
 
   <div class="govuk-grid-column-two-thirds">
-   
 
     <!-- Q3 -->
 
     {{ incidentMacro.radiosWithNestedTextbox({
-        "primaryQuestion": {
-          "text": "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
-          "name": "healthcareInvolved",
-          "value":data.healthcareInvolved,
-          "options": [{
-            "value": "Yes",
-            "label": "Yes"
+        primaryQuestion: {
+          text: "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+          name: "healthcareInvolved",
+          value: data.healthcareInvolved,
+          options: [{
+            value: true,
+            label: "Yes"
           }, 
           {
-            "value": "No",
-            "label": "No"
+            value: false,
+            label: "No"
           }]
         },
-        "followUpQuestion": {
-          "legend": "blank",
-          "name": "healthcarePractionerName",
-          "value":data.healthcarePractionerName,
-          "alertMsg":"",
-          "label": "Name"
+        followUpQuestion: {
+          legend: "blank",
+          name: "healthcarePractionerName",
+          value: data.healthcarePractionerName,
+          alertMsg: "",
+          label: "Name"
         }
       }) 
     }}
@@ -131,60 +88,33 @@
       "name": "f213CompletedBy"
     }) }}
     
-    {{ govukRadios({
-      classes: "govuk-radios--inline",
-      idPrefix: "prisonerInjuries",
+    {{ incidentMacro.radio( {
+      text: "Did the prisoner sustain any injuries at the time?",
       name: "prisonerInjuries",
-      fieldset: {
-        legend: {
-          text: "Did the prisoner sustain any injuries at the time?",
-          isPageHeading: false,
-          classes: "govuk-label govuk-label--xs"
-        }
-      },
-      items: [
-        {
-          value: "Yes",
-          text: "Yes",
-          checked: data.prisonerInjuries === 'Yes'
-        },
-        {
-          value: "No",
-          text: "No",
-          checked: data.prisonerInjuries === 'No'
-        }
-      ]
-    }) }}
-    
+      value: data.prisonerInjuries,
+      options: [{
+        value: true,
+        label: "Yes"
+      }, {
+        value: false,
+        label: "No"
+      }]
+    })}}
 
   <!-- Q5 -->
   <div>
-    {{ govukRadios({
-        classes: "govuk-radios--inline",
-        idPrefix: "prisoner-hospitalisation",
+      {{ incidentMacro.radio( {
+        text: "Did the prisoner need outside hospitalisation at the time?",
         name: "prisonerHospitalisation",
-        "value":data.prisonerHospitalisation,
-        fieldset: {
-          legend: {
-            text: "Did the prisoner need outside hospitalisation at the time?",
-            isPageHeading: false,
-            classes: "govuk-fieldset"
-          }
-        },
-        items: [
-          {
-            value: "Yes",
-            text: "Yes",
-            checked: data.prisonerHospitalisation === 'Yes'
-          },
-          {
-            value: "No",
-            text: "No",
-            checked: data.prisonerHospitalisation === 'No'
-          }
-        ]
-      }) 
-      }}
+        value: data.prisonerHospitalisation,
+        options: [{
+          value: true,
+          label: "Yes"
+        }, {
+          value: false,
+          label: "No"
+        }]
+      })}}
     </div>
 
     <!-- Q6 -->          
@@ -199,8 +129,8 @@
           <div class=" govuk-radios--inline govuk-!-margin-bottom-2">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="staff-medical-attention-1" name="staffMedicalAttention" type="radio"
-                value="Yes" data-aria-controls="staff-medical-attention--conditional"
-                {% if data.staffMedicalAttention === 'Yes' %} checked {% endif %}
+                value="true" data-aria-controls="staff-medical-attention--conditional"
+                {% if data.staffMedicalAttention === true %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="staff-medical-attention-1">
                 Yes
@@ -208,8 +138,8 @@
             </div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="how-contacted-conditional-2" name="staffMedicalAttention" type="radio"
-                value="No" 
-                 {% if data.staffMedicalAttention === 'No' %} checked {% endif %}
+                value="false" 
+                  {% if data.staffMedicalAttention === false %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="how-contacted-conditional-2">
                 No
@@ -226,7 +156,7 @@
               {%  for staffMember in  data.staffNeedingMedicalAttention %} 
 
                 {% call govukFieldset({ classes: 'add-another__item' }) %}
-                   {{
+                    {{
                     govukInput({
                       label: {
                         html: 'Name of who needed medical attention'
@@ -253,9 +183,9 @@
     
                     items: [
                       {
-                        value: "Yes",
+                        value: true,
                         text: "Yes",
-                        checked: staffMember.hospitalisation === 'Yes',
+                        checked: staffMember.hospitalisation === true,
                         id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-yes',
                         attributes: {
                           'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
@@ -263,9 +193,9 @@
                         }
                       },
                       {
-                        value: "No",
+                        value: false,
                         text: "No",
-                        checked: staffMember.hospitalisation === 'No',
+                        checked: staffMember.hospitalisation === false,
                         id: 'staff-needing-medical-attention[' + loop.index0 + '][hospitalisation]-no',
                         attributes: {
                           'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
@@ -309,7 +239,7 @@
                     },
                     items: [
                       {
-                        value: "Yes",
+                        value: true,
                         text: "Yes",
                         id: 'staff-needing-medical-attention[0][hospitalisation]-yes',
                         attributes: {
@@ -318,7 +248,7 @@
                         }
                       },
                       {
-                        value: "No",
+                        value: false,
                         text: "No",
                         id: 'staff-needing-medical-attention[0][hospitalisation]-no',
                         attributes: {

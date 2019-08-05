@@ -25,8 +25,8 @@
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="bagged-evidence-yes" name="baggedEvidence" type="radio"
-                value="Yes" data-aria-controls="bagged-evidence-conditional"
-                {% if data.baggedEvidence === 'Yes' %} checked {% endif %}
+                value="true" data-aria-controls="bagged-evidence-conditional"
+                {% if data.baggedEvidence === true %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="bagged-evidence-yes">
                 Yes
@@ -34,8 +34,8 @@
             </div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="bagged-evidence-no" name="baggedEvidence" type="radio"
-                value="No" 
-                {% if data.baggedEvidence === 'No' %} checked {% endif %}
+                value="false" 
+                {% if data.baggedEvidence === false %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="bagged-evidence-no">
                 No
@@ -153,14 +153,14 @@
           },
           items: [
             {
-              value: "Yes",
+              value: true,
               text: "Yes",
-              checked: data.photographsTaken === 'Yes'
+              checked: data.photographsTaken === true
             },
             {
-              value: "No",
+              value: false,
               text: "No",
-              checked: data.photographsTaken === 'No'
+              checked: data.photographsTaken === false
             }
           ]
         }) 
@@ -184,19 +184,19 @@
             },
             items: [
               {
-                value: "Yes",
+                value: "YES",
                 text: "Yes",
-                checked: data.cctvRecording === 'Yes'
+                checked: data.cctvRecording === 'YES'
               },
               {
-                value: "No",
+                value: "NO",
                 text: "No",
-                checked: data.cctvRecording === 'No'
+                checked: data.cctvRecording === 'NO'
               },
               {
-                value: "Not known",
+                value: "NOT_KNOWN",
                 text: "Not known",
-                checked: data.cctvRecording === 'Not known'
+                checked: data.cctvRecording === 'NOT_KNOWN'
               }
             ]
           }) 
@@ -215,8 +215,8 @@
             <div class=" govuk-radios">
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="body-worn-camera-yes" name="bodyWornCamera" type="radio"
-                  value="Yes" data-aria-controls="body-worn-camera-conditional"
-                  {% if data.bodyWornCamera === 'Yes' %} checked {% endif %}
+                  value="YES" data-aria-controls="body-worn-camera-conditional"
+                  {% if data.bodyWornCamera === 'YES' %} checked {% endif %}
                 >
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-yes">
                   Yes
@@ -288,8 +288,8 @@
 
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio"
-                value="No" 
-                {% if data.bodyWornCamera === 'No' %} checked {% endif %}
+                value="NO" 
+                {% if data.bodyWornCamera === 'NO' %} checked {% endif %}
               >
               <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
                 No
@@ -297,8 +297,8 @@
             </div>
             <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio"
-                  value="Not known" 
-                  {% if data.bodyWornCamera === 'Not known' %} checked {% endif %}
+                  value="NOT_KNOWN" 
+                  {% if data.bodyWornCamera === 'NOT_KNOWN' %} checked {% endif %}
                 >
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
                   Not known

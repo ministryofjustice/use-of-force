@@ -4,18 +4,18 @@ const relocationAndInjuriesPage = require('./relocationAndInjuriesPage')
 export default () =>
   page('Use of force details', {
     fillForm: () => {
-      cy.get('[name="positiveCommunication"]').check('Yes')
-      cy.get('[name="personalProtectionTechniques"]').check('Yes')
-      cy.get('[name="batonDrawn"]').check('Yes')
-      cy.get('[name="batonUsed"]').check('Yes')
-      cy.get('[name="pavaDrawn"]').check('Yes')
-      cy.get('[name="pavaUsed"]').check('Yes')
-      cy.get('[name="guidingHold"]').check('Yes')
-      cy.get('[name="guidingHoldOfficersInvolved"]').check('two')
-      cy.get('[name="restraint"]').check('Yes')
-      cy.get('[name="restraintPositions"]').check(['standing', 'prone', 'supine', 'kneeling'])
-      cy.get('[name="handcuffsApplied"]').check('Yes')
-      cy.get('[name="handcuffsType"]').check('ratchet')
+      cy.get('[name="positiveCommunication"]').check('true')
+      cy.get('[name="personalProtectionTechniques"]').check('true')
+      cy.get('[name="batonDrawn"]').check('true')
+      cy.get('[name="batonUsed"]').check('true')
+      cy.get('[name="pavaDrawn"]').check('true')
+      cy.get('[name="pavaUsed"]').check('true')
+      cy.get('[name="guidingHold"]').check('true')
+      cy.get('[name="guidingHoldOfficersInvolved"]').check('2')
+      cy.get('[name="restraint"]').check('true')
+      cy.get('[name="restraintPositions"]').check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
+      cy.get('[name="handcuffsApplied"]').check('true')
+      cy.get('[name="handcuffsType"]').check('RATCHET')
     },
 
     save: () => {
