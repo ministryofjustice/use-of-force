@@ -1,4 +1,4 @@
-{% extends "template.njk" %}
+{% extends "govuk/template.njk" %}
 
 {% block head %}
 <!--[if !IE 8]><!-->
@@ -19,6 +19,6 @@
 {% block bodyEnd %}
 {# Run JavaScript at end of the
 <body>, to avoid blocking the initial render. #}
-<script src="/assets/all.js"></script>
+<script src="/assets/govuk/all.js"></script>
 <script>window.GOVUKFrontend.initAll();</script>
 {% endblock %}

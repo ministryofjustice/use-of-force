@@ -1,12 +1,12 @@
 {% extends "../formTemplate.html" %}
-{% from "input/macro.njk" import govukInput %}
-{% from "radios/macro.njk" import govukRadios %}
-{% from "select/macro.njk" import govukSelect %}
-{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
-{% from "fieldset/macro.njk" import govukFieldset %} 
-{% from "button/macro.njk" import govukButton %} 
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
 {% block formItems %}
 
@@ -21,7 +21,7 @@
           Was any evidence bagged and tagged?
         </legend>
 
-        <div class="govuk-radios" data-module="radios">
+        <div class="govuk-radios" data-module="govuk-radios">
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="bagged-evidence-yes" name="baggedEvidence" type="radio"
@@ -211,7 +211,7 @@
             Was any part of the incident captured on a body-worn camera?
           </legend>
 
-          <div class="govuk-radios" data-module="radios">
+          <div class="govuk-radios" data-module="govuk-radios">
             <div class=" govuk-radios">
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="body-worn-camera-yes" name="bodyWornCamera" type="radio"

@@ -1,12 +1,12 @@
 {% extends "../formTemplate.html" %}
-{% from "input/macro.njk" import govukInput %}
-{% from "radios/macro.njk" import govukRadios %}
-{% from "select/macro.njk" import govukSelect %}
-{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
-{% from "fieldset/macro.njk" import govukFieldset %} 
-{% from "button/macro.njk" import govukButton %} 
-{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 
 {% block formItems %}
@@ -125,7 +125,7 @@
           Did a member of staff need medical attention at the time?
         </legend>
 
-        <div class="govuk-radios" data-module="radios">
+        <div class="govuk-radios" data-module="govuk-radios">
           <div class=" govuk-radios--inline govuk-!-margin-bottom-2">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="staff-medical-attention-1" name="staffMedicalAttention" type="radio"
