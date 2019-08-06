@@ -7,7 +7,7 @@
           {{question.text}}
       </legend>
       <div class="govuk-!-margin-bottom-6">
-        <div class="{% if question.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="radios">
+        <div class="{% if question.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="govuk-radios">
           {% set name1 = question.name %}
           {% for option in question.options %}
             <div class="govuk-radios__item">
@@ -33,7 +33,7 @@
           {{question.primaryQuestion.text}}
       </legend>
       <div class="govuk-!-margin-bottom-6">
-        <div class="{% if question.primaryQuestion.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="radios">
+        <div class="{% if question.primaryQuestion.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="govuk-radios">
           {% set name1 = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
@@ -85,7 +85,7 @@
           {{question.primaryQuestion.text}}
       </legend>
       <div class="govuk-!-margin-bottom-6">
-        <div class="govuk-radios--inline" data-module="radios">
+        <div class="govuk-radios--inline" data-module="govuk-radios">
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
@@ -99,7 +99,7 @@
           {% endfor %}
 
           {# followup #}
-          <div class="govuk-checkboxes__conditional clear-both" id="conditional-{{name}}">
+          <div class="govuk-radios__conditional clear-both" data-module="govuk-checkboxes" id="conditional-{{name}}">
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend govuk-!-font-weight-bold">
                   {{question.followUpQuestion.text}}
@@ -109,7 +109,7 @@
               {% for option in question.followUpQuestion.options %}
 
                 <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="checkbox"  value="{{option.value}}"
+                  <input class="govuk-checkboxes__input "  id="id-{{name}}-{{loop.index}}" name="{{name}}" type="checkbox"  value="{{option.value}}"
                   {% if option.value in question.followUpQuestion.value %} checked  {% endif %}>
                   <label class="govuk-label govuk-checkboxes__label" for="id-{{name}}-{{loop.index}}">
                     {{option.label}}
@@ -133,7 +133,7 @@
       <legend class="govuk-fieldset__legend govuk-fieldset__legend">
           {{question.primaryQuestion.text}}
       </legend>
-        <div class="govuk-radios--inline" data-module="radios">
+        <div class="govuk-radios--inline" data-module="govuk-radios">
           {% set name = question.primaryQuestion.name %}
           {% for option in question.primaryQuestion.options %}
             <div class="govuk-radios__item">
