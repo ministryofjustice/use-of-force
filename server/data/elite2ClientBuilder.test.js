@@ -12,7 +12,7 @@ describe('elite2Client', () => {
   const token = 'token-1'
 
   beforeEach(() => {
-    fakeElite2Api = nock(`${config.apis.elite2.url}`)
+    fakeElite2Api = nock(config.apis.elite2.url)
     elite2Client = elite2ClientBuilder(token)
     getNamespace.mockReturnValue({ get: () => 'myuser' })
   })

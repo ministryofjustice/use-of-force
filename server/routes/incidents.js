@@ -63,6 +63,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
+      // TODO retrieve statement/errors from flash to re-render on validation error
       const statement = await incidentService.getStatement(req.user.username, incidentId)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
