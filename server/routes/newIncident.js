@@ -126,8 +126,8 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         })
       }
 
-      const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
-      const location = req.body.submit === 'save-and-continue' ? `${nextPath}${bookingId}` : `/tasklist/${bookingId}`
+      const nextPath = getPathFor({ data: req.body, config: formConfig[form] })(bookingId)
+      const location = req.body.submit === 'save-and-continue' ? nextPath : `/tasklist/${bookingId}`
       return res.redirect(location)
     })
   )

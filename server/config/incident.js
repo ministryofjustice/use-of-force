@@ -46,7 +46,7 @@ module.exports = {
     ],
     validate: false,
     nextPath: {
-      path: '/form/incident/details/',
+      path: bookingId => `/form/incident/details/${bookingId}`,
     },
   },
 
@@ -147,7 +147,7 @@ module.exports = {
     ],
     validate: false,
     nextPath: {
-      path: '/form/incident/relocationAndInjuries/',
+      path: bookingId => `/form/incident/relocationAndInjuries/${bookingId}`,
     },
   },
 
@@ -221,7 +221,7 @@ module.exports = {
     ],
     validate: false,
     nextPath: {
-      path: '/form/incident/evidence/',
+      path: bookingId => `/form/incident/evidence/${bookingId}`,
     },
   },
 
@@ -268,7 +268,7 @@ module.exports = {
     ],
     validate: false,
     nextPath: {
-      path: '/check-answers/',
+      path: bookingId => `/check-answers/${bookingId}`,
     },
   },
 }
