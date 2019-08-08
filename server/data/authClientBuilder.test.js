@@ -1,0 +1,58 @@
+const nock = require('nock')
+const { getNamespace } = require('cls-hooked')
+const config = require('../config')
+const oauthClientBuilder = require('./authClientBuilder')
+
+jest.mock('cls-hooked')
+
+describe('authClient', () => {
+  let fakeApi
+  let client
+
+  const token = 'token-1'
+
+  beforeEach(() => {
+    fakeApi = nock(config.apis.oauth2.url)
+    client = oauthClientBuilder(token)
+    getNamespace.mockReturnValue({ get: () => 'myuser' })
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
+  describe('getEmail', () => {
+    const userName = 'Bob'
+    const userResponse = { username: 'Bob', email: 'an@email.com' }
+
+    it('email exists', async () => {
+      fakeApi
+        .get(`/api/user/${userName}/email`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
+
+      const output = await client.getEmail(userName)
+      expect(output).toEqual({ username: 'Bob', email: 'an@email.com', exists: true, verified: true })
+    })
+
+    it('no verified email exists', async () => {
+      fakeApi
+        .get(`/api/user/${userName}/email`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(204)
+
+      const output = await client.getEmail(userName)
+      expect(output).toEqual({ username: 'Bob', exists: true, verified: false })
+    })
+
+    it('user doesnt exist', async () => {
+      fakeApi
+        .get(`/api/user/${userName}/email`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(404)
+
+      const output = await client.getEmail(userName)
+      expect(output).toEqual({ username: 'Bob', exists: false, verified: false })
+    })
+  })
+})
