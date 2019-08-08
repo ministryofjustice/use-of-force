@@ -13,8 +13,8 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
-   
-    <!-- Q1 -->
+    
+      <!-- Q1 -->
     <div class="govuk-!-margin-bottom-9">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend ">
@@ -24,11 +24,11 @@
         <div class="govuk-radios" data-module="govuk-radios">
           <div class=" govuk-radios--inline">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="bagged-evidence-yes" name="baggedEvidence" type="radio"
+              <input class="govuk-radios__input" id="baggedEvidence" name="baggedEvidence" type="radio"
                 value="true" data-aria-controls="bagged-evidence-conditional"
                 {% if data.baggedEvidence === true %} checked {% endif %}
               >
-              <label class="govuk-label govuk-radios__label" for="bagged-evidence-yes">
+              <label class="govuk-label govuk-radios__label" for="baggedEvidence">
                 Yes
               </label>
             </div>
@@ -141,7 +141,7 @@
     <div class="govuk-!-margin-bottom-9">
       {{ govukRadios({
           classes: "govuk-radios--inline",
-          idPrefix: "photographs-taken",
+          idPrefix: "photographsTaken",
           name: "photographsTaken",
           "value":data.photographsTaken,
           fieldset: {
@@ -172,7 +172,7 @@
     <div class="govuk-!-margin-bottom-9">
         {{ govukRadios({
             classes: "govuk-radios",
-            idPrefix: "cctv-recording",
+            idPrefix: "cctvRecording",
             name: "cctvRecording",
             "value":data.cctvRecording,
             fieldset: {
@@ -201,7 +201,7 @@
             ]
           }) 
           }}
-     </div>
+    </div>
     
     <!-- Q4 -->
     
@@ -214,11 +214,11 @@
           <div class="govuk-radios" data-module="govuk-radios">
             <div class=" govuk-radios">
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="body-worn-camera-yes" name="bodyWornCamera" type="radio"
+                <input class="govuk-radios__input" id="bodyWornCamera" name="bodyWornCamera" type="radio"
                   value="YES" data-aria-controls="body-worn-camera-conditional"
                   {% if data.bodyWornCamera === 'YES' %} checked {% endif %}
                 >
-                <label class="govuk-label govuk-radios__label" for="body-worn-camera-yes">
+                <label class="govuk-label govuk-radios__label" for="bodyWornCamera">
                   Yes
                 </label>
               </div>
@@ -227,7 +227,7 @@
 
               <!-- add another starts here   -->
     
-              <div class="add-another-camera">
+              <div class="add-another-camera" id ="bodyWornCameraNumbers">
                 {%  for camera in  data.bodyWornCameraNumbers %} 
     
                   {% call govukFieldset({ classes: 'add-another__item' }) %}

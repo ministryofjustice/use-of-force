@@ -2,7 +2,9 @@ const moment = require('moment')
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 
-const removeEmptyValues = attr => (inputs = []) => inputs.filter(input => !isBlank(input[attr]))
+const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs))
+
+const hasAtLeastOneOf = attrs => input => attrs.find(attr => !isBlank(input[attr]))
 
 const toBoolean = val => (val == null ? null : val === 'true')
 
@@ -34,13 +36,13 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: removeEmptyValues('name'),
+          sanitiser: removeEmptyValues(['name']),
           fieldType: EXTRACTED,
         },
       },
       {
         witnesses: {
-          sanitiser: removeEmptyValues('name'),
+          sanitiser: removeEmptyValues(['name']),
         },
       },
     ],
@@ -211,7 +213,7 @@ module.exports = {
       {
         staffNeedingMedicalAttention: {
           sanitiser: values => {
-            return removeEmptyValues('name')(values).map(({ name, hospitalisation }) => ({
+            return removeEmptyValues(['name', 'hospitalisation'])(values).map(({ name, hospitalisation }) => ({
               name,
               hospitalisation: toBoolean(hospitalisation),
             }))
@@ -230,43 +232,49 @@ module.exports = {
       {
         baggedEvidence: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Any evidence bagged and tagged?',
+          validationMessage: 'Select yes if any evidence was bagged and tagged',
           sanitiser: toBoolean,
         },
       },
       {
         evidenceTagAndDescription: {
-          sanitiser: removeEmptyValues('description'),
+          responseType: 'requiredTagAndDescription',
+          sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
+          validationMessage: 'Please input both the evidence tag number and the description',
+          dependentOn: 'baggedEvidence',
+          predicate: 'true',
         },
       },
       {
         photographsTaken: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Were any photographs taken?',
+          validationMessage: 'Select yes if any photographs were taken',
           sanitiser: toBoolean,
         },
       },
       {
         cctvRecording: {
           responseType: 'requiredString',
-          validationMessage: 'Was any part of the incident captured on CCTV?',
+          validationMessage: 'Select yes if any part of the incident captured on CCTV',
         },
       },
       {
         bodyWornCamera: {
           responseType: 'requiredString',
-          validationMessage: 'Was any part of the incident captured on a body worn camera?',
+          validationMessage: 'Select yes if any part of the incident was captured on a body-worn camera',
         },
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: removeEmptyValues('cameraNum'),
+          responseType: 'requiredCameraNumber',
+          sanitiser: removeEmptyValues(['cameraNum']),
           dependentOn: 'bodyWornCamera',
           predicate: 'YES',
+          validationMessage: 'Please input the camera number',
         },
       },
     ],
-    validate: false,
+    validate: true,
     nextPath: {
       path: bookingId => `/check-answers/${bookingId}`,
     },

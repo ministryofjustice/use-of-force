@@ -23,6 +23,7 @@ context('Submit the incident report', () => {
     const detailsPage = newIncidentPage.save()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.fillForm()
     const checkAnswersPage = evidencePage.save()
 
     checkAnswersPage.clickSubmit()
@@ -46,6 +47,7 @@ context('Submit the incident report', () => {
     const detailsPage = newIncidentPage.save()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.fillForm()
     const checkAnswersPage = evidencePage.save()
 
     checkAnswersPage.backToTasklist().click()
@@ -68,8 +70,9 @@ context('Submit the incident report', () => {
     const detailsPage = newIncidentPage.save()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
-    const checkAnswersPage = evidencePage.save()
+    evidencePage.fillForm()
 
+    const checkAnswersPage = evidencePage.save()
     checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
 

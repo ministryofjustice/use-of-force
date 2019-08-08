@@ -164,7 +164,7 @@ const staffTakenToHospital = (staffMembers = []) => {
 }
 
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
-  if (evidenceYesNo === 'No') {
+  if (evidenceYesNo === false) {
     return 'No'
   }
   return tagsAndEvidence.map(item => {
