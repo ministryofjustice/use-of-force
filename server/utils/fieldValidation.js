@@ -77,6 +77,20 @@ const fieldOptions = {
     }),
 }
 
+const getHref = (fieldConfig, error) => {
+  const [head, ...sections] = error.path
+  const { firstFieldName } = fieldConfig[head]
+
+  if (sections.length === 0 && firstFieldName) {
+    /* If this field represents an array and the error is related to its structure 
+        we want to focus on the first field within the array item 
+    */
+    return firstFieldName
+  }
+
+  return sections.reduce((path, section) => `${path}[${section}]`, head)
+}
+
 module.exports = {
   validate(response, fields) {
     const { formSpecificPayload: formResponse } = processUserInput({ fieldMap: fields, userInput: response })
@@ -95,7 +109,7 @@ module.exports = {
 
       return {
         text: errorMessage,
-        href: `#${getFieldName(fieldConfig)}`,
+        href: `#${getHref(fieldConfig, error)}`,
       }
     })
 

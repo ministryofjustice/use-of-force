@@ -242,6 +242,7 @@ module.exports = {
           sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
           validationMessage: 'Please input both the evidence tag number and the description',
           dependentOn: 'baggedEvidence',
+          firstFieldName: 'evidenceTagAndDescription[0][evidenceTagReference]',
           predicate: 'true',
         },
       },
