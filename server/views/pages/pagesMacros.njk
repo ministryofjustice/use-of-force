@@ -17,7 +17,7 @@
     <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
         &ndash;
-      {% elif dataItem.type === 'itemPerLine' %}
+      {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}
         {%for item in dataItem.dataValue %}
         {{item.tag}}<br/>{{item.description}} <br/><br/>
         {% endfor %}

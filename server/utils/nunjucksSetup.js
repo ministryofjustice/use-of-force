@@ -34,6 +34,10 @@ module.exports = (app, path) => {
     return array.map(item => item[key])
   })
 
+  njkEnv.addFilter('isArray', value => {
+    return Array.isArray(value)
+  })
+
   njkEnv.addFilter('toOptions', (array, valueKey, textKey) => {
     return array.map(item => ({
       value: item[valueKey],

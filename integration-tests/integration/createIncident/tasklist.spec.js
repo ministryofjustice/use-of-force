@@ -30,6 +30,7 @@ context('Submit the incident report', () => {
     detailsPage.fillForm()
     const relocationPage = detailsPage.save()
     const evidencePage = relocationPage.save()
+    evidencePage.fillForm()
     evidencePage.save()
 
     const tasklistPageAfterAllPartsComplete = TasklistPage.visit(bookingId)
