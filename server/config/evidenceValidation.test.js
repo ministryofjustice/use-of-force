@@ -3,7 +3,7 @@ const validator = require('../utils/fieldValidation')
 
 const validatorChecker = ({ fields }) => input => validator.validate(input, fields)
 const check = validatorChecker(config.evidence)
-
+ 
 const validInput = {
   baggedEvidence: 'true',
   evidenceTagAndDescription: [
