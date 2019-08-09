@@ -208,7 +208,7 @@ describe('Body Worn Cameras', () => {
 
     expect(errors).toEqual([
       {
-        href: '#bodyWornCameraNumbers',
+        href: '#bodyWornCameraNumbers[0][cameraNum]',
         text: 'Please input the camera number',
       },
     ])

@@ -272,6 +272,7 @@ module.exports = {
           dependentOn: 'bodyWornCamera',
           predicate: 'YES',
           validationMessage: 'Please input the camera number',
+          firstFieldName: 'bodyWornCameraNumbers[0][cameraNum]',
         },
       },
     ],
