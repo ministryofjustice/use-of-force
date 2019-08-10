@@ -85,25 +85,19 @@ describe('getIncidentWithStatement', () => {
 
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
-    const updatedFormObject = {
-      incidentDate: '21/12/2010',
-      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
-      involved: [{ name: 'Bob' }],
-    }
+    const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
     await service.update({
       bookingId: 1,
       userId: 'user1',
       formId: 'form1',
-      updatedFormObject,
+      formObject,
+      incidentDate: '21/12/2010',
+      involved: [{ name: 'Bob' }],
     })
 
     expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftIncident).toBeCalledWith(
-      'form1',
-      updatedFormObject.incidentDate,
-      updatedFormObject.payload
-    )
+    expect(incidentClient.updateDraftIncident).toBeCalledWith('form1', '21/12/2010', formObject)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
@@ -111,61 +105,57 @@ describe('update', () => {
   })
 
   test('updates if no-one is present', async () => {
-    const updatedFormObject = {
-      incidentDate: '21/12/2010',
-      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
-      involved: [],
+    const formObject = {
+      decision: 'Yes',
+      followUp1: 'County',
+      followUp2: 'Town',
     }
 
     await service.update({
       bookingId: 1,
       userId: 'user1',
       formId: 'form1',
-      updatedFormObject,
+      formObject,
+      involved: [],
+      incidentDate: '21/12/2010',
     })
 
     expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftIncident).toBeCalledWith(
-      'form1',
-      updatedFormObject.incidentDate,
-      updatedFormObject.payload
-    )
+    expect(incidentClient.updateDraftIncident).toBeCalledWith('form1', '21/12/2010', formObject)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })
 
   test('doesnt update involved staff if non-present', async () => {
-    const updatedFormObject = {
-      incidentDate: '21/12/2010',
-      payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' },
+    const formObject = {
+      decision: 'Yes',
+      followUp1: 'County',
+      followUp2: 'Town',
     }
 
     await service.update({
       bookingId: 1,
       userId: 'user1',
       formId: 'form1',
-      updatedFormObject,
+      formObject,
+      incidentDate: '21/12/2010',
     })
 
     expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftIncident).toBeCalledWith(
-      'form1',
-      updatedFormObject.incidentDate,
-      updatedFormObject.payload
-    )
+    expect(incidentClient.updateDraftIncident).toBeCalledWith('form1', '21/12/2010', formObject)
     expect(incidentClient.deleteInvolvedStaff).not.toBeCalled()
     expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
   })
 
   test('should call createDraftIncident when form id not present', async () => {
-    const updatedFormObject = { payload: { decision: 'Yes', followUp1: 'County', followUp2: 'Town' } }
+    const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
     await service.update({
       bookingId: 1,
       userId: 'user1',
       reporterName: 'Bob Smith',
-      updatedFormObject,
+      formObject,
     })
 
     expect(incidentClient.createDraftIncident).toBeCalledTimes(1)
@@ -174,34 +164,7 @@ describe('update', () => {
       bookingId: 1,
       offenderNo: 'AA123ABC',
       reporterName: 'Bob Smith',
-      formResponse: updatedFormObject.payload,
+      formResponse: formObject,
     })
-  })
-})
-
-describe('getValidationErrors', () => {
-  const dependantConfig = {
-    fields: [
-      {
-        q1: {
-          responseType: 'requiredString',
-          validationMessage: 'Please give a full name',
-        },
-      },
-      {
-        q2: {
-          responseType: 'requiredYesNoIf_q1_Yes',
-          validationMessage: 'Error q2',
-        },
-      },
-    ],
-  }
-
-  test.each`
-    formBody                    | formConfig         | expectedOutput
-    ${{ q1: 'Yes', q3: 'Yes' }} | ${dependantConfig} | ${{ errors: [{ href: '#q2', text: 'Error q2' }], formResponse: { q1: 'Yes' } }}
-    ${{ q1: 'No', q3: 'Yes' }}  | ${dependantConfig} | ${{ errors: [], formResponse: { q1: 'No' } }}
-  `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
-    expect(service.getValidationErrors(formBody, formConfig.fields)).toEqual(expectedOutput)
   })
 })

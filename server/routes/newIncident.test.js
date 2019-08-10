@@ -60,7 +60,7 @@ describe('POST save and continue /section/form', () => {
           bookingId: 1,
           userId: 'user1',
           formId: undefined,
-          updatedFormObject: {},
+          formObject: { incident: { newIncident: {} } },
           token: 'token',
           reporterName: 'First Last',
         })
@@ -86,7 +86,7 @@ describe('POST save and return to tasklist', () => {
           formId: undefined,
           token: 'token',
           reporterName: 'First Last',
-          updatedFormObject: {},
+          formObject: { incident: { newIncident: {} } },
         })
       })
   )

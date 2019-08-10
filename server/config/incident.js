@@ -8,7 +8,12 @@ const hasAtLeastOneOf = attrs => input => attrs.find(attr => !isBlank(input[attr
 
 const toBoolean = val => (val == null ? null : val === 'true')
 
-const toInteger = val => parseInt(val, 10)
+const toInteger = val => (val == null ? null : parseInt(val, 10))
+
+const toDate = val => {
+  const date = moment(val, 'DD/MM/YYYY-HH:mm')
+  return date.isValid() ? date.toDate() : null
+}
 
 module.exports = {
   newIncident: {
@@ -16,7 +21,7 @@ module.exports = {
       {
         incidentDate: {
           responseType: 'requiredString',
-          sanitiser: val => moment(val, 'DD/MM/YYYY-HH:mm').toDate(),
+          sanitiser: toDate,
           fieldType: EXTRACTED,
         },
       },
