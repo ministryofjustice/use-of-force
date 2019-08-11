@@ -16,22 +16,21 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return false
   }
 
-  async function update({ token, userId, reporterName, formId, bookingId, formObject, incidentDate, involved }) {
+  async function update({ currentUser, formId, bookingId, formObject, incidentDate, involved }) {
     const incidentId = await updateIncident({
-      token,
-      userId,
-      reporterName,
+      currentUser,
       formId,
       bookingId,
       formObject,
       incidentDate,
     })
     if (involved) {
-      await updateInvolvedStaff({ incidentId, userId, reporterName, involvedStaff: involved })
+      await updateInvolvedStaff({ incidentId, involvedStaff: involved })
     }
   }
 
-  async function updateIncident({ token, userId, reporterName, formId, bookingId, formObject, incidentDate }) {
+  async function updateIncident({ currentUser, formId, bookingId, formObject, incidentDate }) {
+    const { username: userId, token, displayName: reporterName } = currentUser
     if (formId) {
       if (!isNilOrEmpty(formObject)) {
         logger.info(`Updated incident with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
@@ -43,8 +42,8 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftIncident({
       userId,
-      bookingId,
       reporterName,
+      bookingId,
       offenderNo,
       incidentDate,
       formResponse: formObject,

@@ -7,7 +7,7 @@ const validatorChecker = formConfig => input => {
 }
 
 const check = validatorChecker(config.evidence)
- 
+
 const validInput = {
   baggedEvidence: 'true',
   evidenceTagAndDescription: [

@@ -15,6 +15,8 @@ const elite2Client = {
   getOffenderDetails: jest.fn(),
 }
 
+const currentUser = { username: 'user1', displayName: 'Bob Smith' }
+
 let service
 
 beforeEach(() => {
@@ -88,8 +90,8 @@ describe('update', () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
     await service.update({
+      currentUser,
       bookingId: 1,
-      userId: 'user1',
       formId: 'form1',
       formObject,
       incidentDate: '21/12/2010',
@@ -112,8 +114,8 @@ describe('update', () => {
     }
 
     await service.update({
+      currentUser,
       bookingId: 1,
-      userId: 'user1',
       formId: 'form1',
       formObject,
       involved: [],
@@ -135,8 +137,8 @@ describe('update', () => {
     }
 
     await service.update({
+      currentUser,
       bookingId: 1,
-      userId: 'user1',
       formId: 'form1',
       formObject,
       incidentDate: '21/12/2010',
@@ -152,9 +154,8 @@ describe('update', () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
     await service.update({
+      currentUser,
       bookingId: 1,
-      userId: 'user1',
-      reporterName: 'Bob Smith',
       formObject,
     })
 

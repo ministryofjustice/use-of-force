@@ -114,11 +114,9 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
 
       if (updatedPayload || !isNilOrEmpty(extractedFields)) {
         await incidentService.update({
-          token: res.locals.user.token,
+          currentUser: res.locals.user,
           formId,
           bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          reporterName: res.locals.user.displayName,
           formObject: updatedPayload,
           ...extractedFields,
         })
