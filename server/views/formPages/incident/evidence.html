@@ -58,26 +58,26 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'evidence-tag-and-description[' + loop.index0 + '][evidenceTagReference]',
+                      id: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
                       name: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
                       value: evidenceTagAndDescription.evidenceTagReference,
                       attributes: {
                         'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
-                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
+                        'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
                       }
                     })
                   }} 
                             
                   {{ govukTextarea({
                     name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
-                    id: 'evidence-tag-and-description[' + loop.index0 + '][description]',
+                    id: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
                     classes: 'govuk-!-width-two-thirds',
                     value: evidenceTagAndDescription.description,
                     label: {
                       text: "Description of evidence"
                     },
                     attributes:{
-                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-id': 'evidenceTagAndDescription[%index%][description]',
                       'data-name': 'evidenceTagAndDescription[%index%][description]'
                     }
                   }) }}
@@ -98,16 +98,16 @@
                         html: 'Tag number'
                       },
                       classes: 'govuk-!-width-one-third',
-                      id: 'evidence-tag-and-description[0][evidenceTagReference]',
+                      id: 'evidenceTagAndDescription[0][evidenceTagReference]',
                       name: 'evidenceTagAndDescription[0][evidenceTagReference]',
                       attributes: {
                         'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
-                        'data-id': 'evidence-tag-and-description[%index%][evidenceTagReference]'
+                        'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
                       }
                     })
                   }}
                   {{ govukTextarea({
-                    id: 'evidence-tag-and-description[0][description]',
+                    id: 'evidenceTagAndDescription[0][description]',
                     name: 'evidenceTagAndDescription[0][description]',
                     classes: "govuk-!-width-two-thirds",
                     value: data.evidenceTagAndDescription[0].description,
@@ -115,7 +115,7 @@
                       text: "Description of evidence"
                     },
                     attributes: {
-                      'data-id': 'evidence-tag-and-description[%index%][description]',
+                      'data-id': 'evidenceTagAndDescription[%index%][description]',
                       'data-name': 'evidenceTagAndDescription[%index%][description]'
                     }
                   }) }}
@@ -237,7 +237,7 @@
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[' + loop.index0 + '][cameraNum]',
+                        id: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
                         name: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
                         value: camera.cameraNum,
                         attributes: {
@@ -263,7 +263,7 @@
                           html: 'Camera number'
                         },
                         classes: 'govuk-!-width-one-third',
-                        id: 'body-worn-camera-numbers[0][cameraNum]',
+                        id: 'bodyWornCameraNumbers[0][cameraNum]',
                         name: 'bodyWornCameraNumbers[0][cameraNum]',
                         attributes: {
                           'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
