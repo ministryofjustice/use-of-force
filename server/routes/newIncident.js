@@ -5,6 +5,7 @@ const { getIn, isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const types = require('../config/types')
+const formProcessing = require('../services/formProcessing')
 
 const incidentConfig = require('../config/incident')
 
@@ -93,40 +94,35 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
-      const formPageConfig = formConfig[form]
 
-      if (formPageConfig.validate) {
-        const { errors, formResponse } = incidentService.getValidationErrors(req.body, formPageConfig.fields)
+      const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
 
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', formResponse)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!isNilOrEmpty(errors)) {
+        req.flash('errors', errors)
+        req.flash('userInput', { ...payloadFields, ...extractedFields })
+        return res.redirect(`/form/${section}/${form}/${bookingId}`)
       }
 
       const { formId, formObject } = await loadForm(req)
 
-      const updatedFormObject = await incidentService.getUpdatedFormObject({
+      const updatedPayload = await formProcessing.mergeIntoPayload({
         formObject,
-        fieldMap: formPageConfig.fields,
-        userInput: req.body,
+        formPayload: payloadFields,
         formSection: section,
         formName: form,
       })
 
-      if (updatedFormObject) {
+      if (updatedPayload || !isNilOrEmpty(extractedFields)) {
         await incidentService.update({
-          token: res.locals.user.token,
+          currentUser: res.locals.user,
           formId,
           bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          reporterName: res.locals.user.displayName,
-          updatedFormObject,
+          formObject: updatedPayload,
+          ...extractedFields,
         })
       }
 
-      const nextPath = getPathFor({ data: req.body, config: formConfig[form] })(bookingId)
+      const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
       const location = req.body.submit === 'save-and-continue' ? nextPath : `/tasklist/${bookingId}`
       return res.redirect(location)
     })

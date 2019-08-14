@@ -1,5 +1,5 @@
 const request = require('supertest')
-const appSetup = require('./testutils/appSetup')
+const { appSetup } = require('./testutils/appSetup')
 const createRouter = require('./incidents')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 

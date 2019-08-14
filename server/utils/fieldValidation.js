@@ -4,7 +4,6 @@ const postcodeExtend = require('joi-postcode')
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
 
 const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
-const { processUserInput } = require('../services/updateBuilder')
 
 const fieldOptions = {
   requiredString: joi.string().required(),
@@ -92,15 +91,13 @@ const getHref = (fieldConfig, error) => {
 }
 
 module.exports = {
-  validate(response, fields) {
-    const { formSpecificPayload: formResponse } = processUserInput({ fieldMap: fields, userInput: response })
-
+  validate(fields, formResponse) {
     const formSchema = createSchemaFromConfig(fields)
     const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = fields
 
     if (isNilOrEmpty(joiErrors.error)) {
-      return { errors: [], formResponse }
+      return []
     }
 
     const errors = joiErrors.error.details.map(error => {
@@ -113,7 +110,7 @@ module.exports = {
       }
     })
 
-    return { errors, formResponse }
+    return errors
   },
 }
 

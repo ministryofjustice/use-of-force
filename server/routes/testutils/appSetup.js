@@ -8,7 +8,16 @@ const { createNamespace } = require('cls-hooked')
 const db = require('../../../server/data/dataAccess/db')
 const nunjucksSetup = require('../../utils/nunjucksSetup')
 
-module.exports = route => {
+const user = {
+  firstName: 'first',
+  lastName: 'last',
+  userId: 'id',
+  token: 'token',
+  username: 'user1',
+  displayName: 'First Last',
+}
+
+const appSetup = route => {
   const app = express()
 
   const ns = createNamespace('request.scope')
@@ -27,14 +36,7 @@ module.exports = route => {
   nunjucksSetup(app, path)
 
   app.use((req, res, next) => {
-    req.user = {
-      firstName: 'first',
-      lastName: 'last',
-      userId: 'id',
-      token: 'token',
-      username: 'user1',
-      displayName: 'First Last',
-    }
+    req.user = user
     res.locals = {}
     res.locals.user = req.user
     next()
@@ -48,3 +50,5 @@ module.exports = route => {
   })
   return app
 }
+
+module.exports = { appSetup, user }

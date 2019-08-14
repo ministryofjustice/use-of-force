@@ -1,8 +1,5 @@
 const logger = require('../../log.js')
-const { validate } = require('../utils/fieldValidation')
 const { isNilOrEmpty } = require('../utils/utils')
-
-const updateBuilder = require('./updateBuilder')
 
 module.exports = function createIncidentService({ incidentClient, elite2ClientBuilder }) {
   function getCurrentDraftIncident(userId, bookingId) {
@@ -19,18 +16,25 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return false
   }
 
-  async function update({ token, userId, reporterName, formId, bookingId, updatedFormObject }) {
-    const incidentId = await updateIncident({ token, userId, reporterName, formId, bookingId, updatedFormObject })
-    if (updatedFormObject.involved) {
-      await updateInvolvedStaff({ incidentId, userId, reporterName, involvedStaff: updatedFormObject.involved })
+  async function update({ currentUser, formId, bookingId, formObject, incidentDate, involved }) {
+    const incidentId = await updateIncident({
+      currentUser,
+      formId,
+      bookingId,
+      formObject,
+      incidentDate,
+    })
+    if (involved) {
+      await updateInvolvedStaff({ incidentId, involvedStaff: involved })
     }
   }
 
-  async function updateIncident({ token, userId, reporterName, formId, bookingId, updatedFormObject }) {
+  async function updateIncident({ currentUser, formId, bookingId, formObject, incidentDate }) {
+    const { username: userId, token, displayName: reporterName } = currentUser
     if (formId) {
-      if (!isNilOrEmpty(updatedFormObject.payload)) {
+      if (!isNilOrEmpty(formObject)) {
         logger.info(`Updated incident with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-        await incidentClient.updateDraftIncident(formId, updatedFormObject.incidentDate, updatedFormObject.payload)
+        await incidentClient.updateDraftIncident(formId, incidentDate, formObject)
       }
       return formId
     }
@@ -38,17 +42,17 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftIncident({
       userId,
-      bookingId,
       reporterName,
+      bookingId,
       offenderNo,
-      incidentDate: updatedFormObject.incidentDate,
-      formResponse: updatedFormObject.payload,
+      incidentDate,
+      formResponse: formObject,
     })
     logger.info(`Created new incident with id: ${id} for user: ${userId} on booking: ${bookingId}`)
     return id
   }
 
-  async function updateInvolvedStaff({ incidentId, involvedStaff }) {
+  async function updateInvolvedStaff({ incidentId, involvedStaff = [] }) {
     await incidentClient.deleteInvolvedStaff(incidentId)
     if (involvedStaff.length) {
       // TODO The reporting staff may need to be added to the list
@@ -87,11 +91,9 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     getCurrentDraftIncident,
     update,
     submitForm,
-    getValidationErrors: validate,
     getStatement,
     getIncidentsForUser,
     getInvolvedStaff,
     submitStatement,
-    ...updateBuilder,
   }
 }

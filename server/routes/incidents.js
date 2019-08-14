@@ -4,6 +4,7 @@ const flash = require('connect-flash')
 const { formatTimestampToDateTime, isNilOrEmpty } = require('../utils/utils')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const statementConfig = require('../config/statement')
+const formProcessing = require('../services/formProcessing')
 
 const formConfig = {
   ...statementConfig,
@@ -88,20 +89,13 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
 
       const formPageConfig = formConfig
 
-      if (formPageConfig.validate) {
-        const { errors, formResponse } = incidentService.getValidationErrors(req.body, formPageConfig.fields)
+      const { extractedFields: statement, errors } = formProcessing.processInput(formPageConfig, req.body)
 
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', formResponse)
-          return res.redirect(`/incidents/${incidentId}/statement`)
-        }
+      if (!isNilOrEmpty(errors)) {
+        req.flash('errors', errors)
+        req.flash('userInput', statement)
+        return res.redirect(`/incidents/${incidentId}/statement`)
       }
-
-      const { extractedFields: statement } = await incidentService.processUserInput({
-        fieldMap: formPageConfig.fields,
-        userInput: req.body,
-      })
 
       await incidentService.submitStatement(req.user.username, incidentId, statement)
       return res.redirect(`/incidents/${incidentId}/statement/submitted`)

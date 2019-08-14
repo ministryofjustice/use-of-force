@@ -1,5 +1,5 @@
 const request = require('supertest')
-const appSetup = require('./testutils/appSetup')
+const { appSetup, user } = require('./testutils/appSetup')
 const createRouter = require('./newIncident')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
@@ -57,12 +57,10 @@ describe('POST save and continue /section/form', () => {
       .expect(() => {
         expect(incidentService.update).toBeCalledTimes(1)
         expect(incidentService.update).toBeCalledWith({
+          currentUser: user,
           bookingId: 1,
-          userId: 'user1',
           formId: undefined,
-          updatedFormObject: {},
-          token: 'token',
-          reporterName: 'First Last',
+          formObject: { incident: { newIncident: {} } },
         })
       })
   )
@@ -81,12 +79,10 @@ describe('POST save and return to tasklist', () => {
       .expect(() => {
         expect(incidentService.update).toBeCalledTimes(1)
         expect(incidentService.update).toBeCalledWith({
+          currentUser: user,
           bookingId: 1,
-          userId: 'user1',
           formId: undefined,
-          token: 'token',
-          reporterName: 'First Last',
-          updatedFormObject: {},
+          formObject: { incident: { newIncident: {} } },
         })
       })
   )

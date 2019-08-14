@@ -1,7 +1,11 @@
 const config = require('./incident.js')
-const validator = require('../utils/fieldValidation')
+const formProcessing = require('../services/formProcessing')
 
-const validatorChecker = ({ fields }) => input => validator.validate(input, fields)
+const validatorChecker = formConfig => input => {
+  const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+  return { formResponse, errors }
+}
+
 const check = validatorChecker(config.evidence)
 
 const validInput = {
@@ -62,12 +66,7 @@ describe('check evidence validation', () => {
       },
     ])
 
-    expect(formResponse).toEqual({
-      baggedEvidence: null,
-      bodyWornCamera: undefined,
-      cctvRecording: undefined,
-      photographsTaken: null,
-    })
+    expect(formResponse).toEqual({})
   })
 })
 
@@ -88,7 +87,6 @@ describe('Evidence', () => {
     ])
 
     expect(formResponse).toEqual({
-      baggedEvidence: null,
       bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
       cctvRecording: 'YES',
@@ -155,7 +153,6 @@ describe('Evidence', () => {
       bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
       cctvRecording: 'YES',
-      evidenceTagAndDescription: [],
       photographsTaken: true,
     })
   })
@@ -195,7 +192,6 @@ describe('Body Worn Cameras', () => {
 
     expect(formResponse).toEqual({
       baggedEvidence: true,
-      bodyWornCamera: undefined,
       cctvRecording: 'YES',
       evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
       photographsTaken: true,
@@ -216,7 +212,6 @@ describe('Body Worn Cameras', () => {
     expect(formResponse).toEqual({
       baggedEvidence: true,
       bodyWornCamera: 'YES',
-      bodyWornCameraNumbers: [],
       cctvRecording: 'YES',
       evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
       photographsTaken: true,
