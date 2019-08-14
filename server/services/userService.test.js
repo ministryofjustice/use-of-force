@@ -9,6 +9,7 @@ const elite2Client = {
 
 const authClient = {
   getEmail: jest.fn(),
+  getUser: jest.fn(),
 }
 
 const elite2ClientBuilder = jest.fn()
@@ -49,27 +50,32 @@ describe('getUser', () => {
   })
 })
 
-describe('getEmails', () => {
+describe('getUsers', () => {
   it('All successfull', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
     const user2 = { username: 'June', email: 'an@email.com', exists: true, verified: true }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' }).mockResolvedValueOnce({ name: 'June Jones' })
 
-    const result = await service.getEmails(token, ['Bob', 'June'])
+    const result = await service.getUsers(token, ['Bob', 'June'])
 
     expect(result).toEqual({
       exist: [
         {
+          i: 0,
           email: 'an@email.com',
           exists: true,
+          name: 'Bob Smith',
           username: 'Bob',
           verified: true,
         },
         {
+          i: 1,
           email: 'an@email.com',
           exists: true,
           username: 'June',
+          name: 'June Jones',
           verified: true,
         },
       ],
@@ -84,19 +90,22 @@ describe('getEmails', () => {
     const user2 = { username: 'June', exists: false, verified: true }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
 
-    const result = await service.getEmails(token, ['Bob', 'June'])
+    const result = await service.getUsers(token, ['Bob', 'June'])
 
     expect(result).toEqual({
       exist: [
         {
+          i: 0,
           email: 'an@email.com',
           exists: true,
+          name: 'Bob Smith',
           username: 'Bob',
           verified: true,
         },
       ],
-      missing: [{ exists: false, username: 'June', verified: true }],
+      missing: [{ i: 1, exists: false, username: 'June', verified: true }],
       notVerified: [],
       success: false,
     })
@@ -107,29 +116,34 @@ describe('getEmails', () => {
     const user2 = { username: 'June', exists: true, verified: false }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
 
-    const result = await service.getEmails(token, ['Bob', 'June'])
+    const result = await service.getUsers(token, ['Bob', 'June'])
 
     expect(result).toEqual({
       exist: [
         {
+          i: 0,
           email: 'an@email.com',
           exists: true,
+          name: 'Bob Smith',
           username: 'Bob',
           verified: true,
         },
       ],
       missing: [],
-      notVerified: [{ exists: true, username: 'June', verified: false }],
+      notVerified: [{ i: 1, exists: true, username: 'June', verified: false }],
       success: false,
     })
   })
 
   it('should use the user token', async () => {
-    const user1 = { username: 'Bob', email: 'an@email.com' }
-    authClient.getEmail.mockReturnValue(user1)
+    const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
 
-    await service.getEmails(token, ['Bob'])
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
+
+    await service.getUsers(token, ['Bob'])
 
     expect(authClientBuilder).toBeCalledWith(token)
   })

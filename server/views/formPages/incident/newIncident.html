@@ -80,15 +80,16 @@
         {{
           govukInput({
             label: {
-              html: 'Name'
+              html: 'Username'
             },
             classes: 'govuk-!-width-one-third',
-            id: 'involved[' + loop.index0 + '][name]',
-            name: 'involved[' + loop.index0 + '][name]',
-            value: staffMember.name,
+            id: 'involved[' + loop.index0 + '][username]',
+            name: 'involved[' + loop.index0 + '][username]',
+            value: staffMember.username,
+            errorMessage: errors | findError('involved[' + loop.index0 + '][username]'),
             attributes: {
-              'data-name': 'involved[%index%][name]',
-              'data-id': 'involved[%index%][name]'
+              'data-name': 'involved[%index%][username]',
+              'data-id': 'involved[%index%][username]'
             }
           })
         }}
@@ -101,14 +102,15 @@
         {{
           govukInput({
             label: {
-              html: 'Name'
+              html: 'Username'
             },
             classes: 'govuk-!-width-one-third',
-            id: 'involved[0][name]',
-            name: 'involved[0][name]',
+            id: 'involved[0][username]',
+            name: 'involved[0][username]',
+            errorMessage: errors | findError('involved[0][username]'),
             attributes: {
-              'data-name': 'involved[%index%][name]',
-              'data-id': 'involved[%index%][name]'
+              'data-name': 'involved[%index%][username]',
+              'data-id': 'involved[%index%][username]'
             }
           })
         }}

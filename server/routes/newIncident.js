@@ -26,7 +26,7 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
   })
 }
 
-module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ incidentService, authenticationMiddleware, offenderService, involvedStaffService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
     const {
@@ -67,7 +67,9 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         time: date.format('HH:mm'),
       }
 
-      const involved = formId ? await incidentService.getInvolvedStaff(formId) : []
+      const input = firstItem(req.flash('userInput'))
+
+      const involved = (input && input.involved) || (formId && (await incidentService.getInvolvedStaff(formId))) || []
 
       const data = {
         displayName,
@@ -90,6 +92,17 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
     })
   )
 
+  const getAdditonalData = async (res, form, extractedFields) => {
+    if (form === 'newIncident' && extractedFields.involved) {
+      const result = await involvedStaffService.getInvolvedStaff(
+        res.locals.user.token,
+        extractedFields.involved.map(u => u.username)
+      )
+      return result
+    }
+    return { additionalFields: [], additionalErrors: [] }
+  }
+
   router.post(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
@@ -97,8 +110,13 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
 
-      if (!isNilOrEmpty(errors)) {
-        req.flash('errors', errors)
+      const { additionalFields, additionalErrors } = await getAdditonalData(res, form, extractedFields)
+
+      const allErrors = [...errors, ...additionalErrors]
+      const allAdditionalFields = { ...extractedFields, ...additionalFields }
+
+      if (!isNilOrEmpty(allErrors)) {
+        req.flash('errors', allErrors)
         req.flash('userInput', { ...payloadFields, ...extractedFields })
         return res.redirect(`/form/${section}/${form}/${bookingId}`)
       }
@@ -118,7 +136,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
           formId,
           bookingId: parseInt(bookingId, 10),
           formObject: updatedPayload,
-          ...extractedFields,
+          ...allAdditionalFields,
         })
       }
 

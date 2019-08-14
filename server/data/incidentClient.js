@@ -97,7 +97,7 @@ const submitStatement = (
 
 const getInvolvedStaff = async (incidentId, query = db.query) => {
   const results = await query({
-    text: 'select id, user_id, name, email from involved_staff where incident_id = $1 order by id',
+    text: 'select id, user_id username, name, email from involved_staff where incident_id = $1 order by id',
     values: [incidentId],
   })
   return results.rows
@@ -111,10 +111,10 @@ const deleteInvolvedStaff = incidentId => {
 }
 
 const insertInvolvedStaff = async (incidentId, staff) => {
-  const rows = staff.map(s => [incidentId, s.userId, s.name, 'PENDING'])
+  const rows = staff.map(s => [incidentId, s.userId, s.name, s.email, 'PENDING'])
   const results = await db.query({
     text: format(
-      'insert into involved_staff (incident_id, user_id, name, statement_status) VALUES %L returning id',
+      'insert into involved_staff (incident_id, user_id, name, email, statement_status) VALUES %L returning id',
       rows
     ),
   })

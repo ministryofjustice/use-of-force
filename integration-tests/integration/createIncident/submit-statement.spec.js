@@ -12,6 +12,7 @@ context('Submit the incident report', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
+    cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
   it('A user can submit their statement from incidents page', () => {

@@ -33,7 +33,13 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, incidentService, offenderService, userService }) {
+module.exports = function createApp({
+  signInService,
+  incidentService,
+  offenderService,
+  userService,
+  involvedStaffService,
+}) {
   const app = express()
 
   auth.init(signInService)
@@ -240,7 +246,16 @@ module.exports = function createApp({ signInService, incidentService, offenderSe
   app.use('/', createIncidentsRouter({ authenticationMiddleware, incidentService, offenderService }))
   app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, incidentService, offenderService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
-  app.use('/form/', createNewIncidentRouter({ authenticationMiddleware, incidentService, offenderService }))
+  app.use(
+    '/form/',
+    createNewIncidentRouter({
+      authenticationMiddleware,
+      incidentService,
+      offenderService,
+      userService,
+      involvedStaffService,
+    })
+  )
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
   app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, incidentService, offenderService }))
 
