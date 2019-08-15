@@ -14,3 +14,4 @@ spec:
             args:
             - node
             - job/send-reminders
+          restartPolicy: Never
