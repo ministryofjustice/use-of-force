@@ -4,54 +4,55 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
-{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
 {% block formItems %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl mainHeading">Evidence</h1>
-    
       <!-- Q1 -->
-    <div class="govuk-!-margin-bottom-9">
-      <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend ">
-          Was any evidence bagged and tagged?
-        </legend>
+      <div class="govuk-!-margin-bottom-9 govuk-form-group
+        {% if errors | findError('baggedEvidence') %}
+          govuk-form-group--error
+          {% set bagTagErrMsg =  errors | findError('baggedEvidence') %}
+        {% endif %}">
 
-        <div class="govuk-radios" data-module="govuk-radios">
-          <div class=" govuk-radios--inline">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="baggedEvidence" name="baggedEvidence" type="radio"
-                value="true" data-aria-controls="bagged-evidence-conditional"
-                {% if data.baggedEvidence === true %} checked {% endif %}
-              >
-              <label class="govuk-label govuk-radios__label" for="baggedEvidence">
-                Yes
-              </label>
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend ">
+            Was any evidence bagged and tagged?
+          </legend>
+          <span id="bagTagErrMsg" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ bagTagErrMsg.text}}
+          </span>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class=" govuk-radios--inline">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="baggedEvidence" name="baggedEvidence" type="radio" value="true" data-aria-controls="bagged-evidence-conditional" {% if data.baggedEvidence === true %} checked="checked" {% endif %}>
+                <label class="govuk-label govuk-radios__label" for="baggedEvidence">
+                  Yes
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="bagged-evidence-no" name="baggedEvidence" type="radio" value="false" {% if data.baggedEvidence === false %} checked="checked" {% endif %}>
+                <label class="govuk-label govuk-radios__label" for="bagged-evidence-no">
+                  No
+                </label>
+              </div>
             </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="bagged-evidence-no" name="baggedEvidence" type="radio"
-                value="false" 
-                {% if data.baggedEvidence === false %} checked {% endif %}
-              >
-              <label class="govuk-label govuk-radios__label" for="bagged-evidence-no">
-                No
-              </label>
-            </div>
-          </div>
 
-          <!-- hidden panel starts here -->
-          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="bagged-evidence-conditional">
+            <!-- hidden panel starts here -->
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="bagged-evidence-conditional">
 
-            <!-- add another starts here   -->
+              <!-- add another starts here -->
 
-            <div class="add-another-tag">
-              {%  for evidenceTagAndDescription in  data.evidenceTagAndDescription %} 
+              <div class="add-another-tag">
+                {% for evidenceTagAndDescription in data.evidenceTagAndDescription %}
 
-                {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  {% call govukFieldset({ classes: 'add-another__item' }) %}
                   {{
                     govukInput({
                       label: {
@@ -61,18 +62,21 @@
                       id: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
                       name: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
                       value: evidenceTagAndDescription.evidenceTagReference,
+                      errorMessage: errors | findError('evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]'),
                       attributes: {
                         'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
                         'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
                       }
                     })
-                  }} 
-                            
+                  }}
+
                   {{ govukTextarea({
                     name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
                     id: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
                     classes: 'govuk-!-width-two-thirds',
                     value: evidenceTagAndDescription.description,
+                    errorMessage: errors | findError('evidenceTagAndDescription[' + loop.index0 + '][description]'),
+
                     label: {
                       text: "Description of evidence"
                     },
@@ -86,12 +90,12 @@
                     <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
                       Remove
                     </button>
-                  {% endif  %}
-                
-                {% endcall %} 
-                {% else %} 
-                {% call govukFieldset({ classes: 'add-another__item' }) %}
-                  
+                  {% endif %}
+
+                  {% endcall %}
+                {% else %}
+                  {% call govukFieldset({ classes: 'add-another__item' }) %}
+
                   {{
                     govukInput({
                       label: {
@@ -100,6 +104,7 @@
                       classes: 'govuk-!-width-one-third',
                       id: 'evidenceTagAndDescription[0][evidenceTagReference]',
                       name: 'evidenceTagAndDescription[0][evidenceTagReference]',
+                      errorMessage: errors | findError('evidenceTagAndDescription[0][evidenceTagReference]'),
                       attributes: {
                         'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
                         'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
@@ -111,6 +116,8 @@
                     name: 'evidenceTagAndDescription[0][description]',
                     classes: "govuk-!-width-two-thirds",
                     value: data.evidenceTagAndDescription[0].description,
+                    errorMessage: errors | findError('evidenceTagAndDescription[0][description]'),
+
                     label: {
                       text: "Description of evidence"
                     },
@@ -120,30 +127,35 @@
                     }
                   }) }}
 
-                {% endcall %} 
-              {% endfor %}
-              <div class="button-action">
-                {{
+                  {% endcall %}
+                {% endfor %}
+                <div class="button-action">
+                  {{
                   govukButton({
                     text: 'Add another',
                     classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
                     attributes: { 'data-qa-add-another-tag': true }
                   })
                 }}
-              </div> 
-            </div>  <!-- add another ends here -->
-          </div>  <!-- hidden panel end -->
-        </div> <!-- end of radios -->
-      </fieldset>     
-    </div> <!-- end of this component  -->
+                </div>
+              </div>
+              <!-- add another ends here -->
+            </div>
+            <!-- hidden panel end -->
+          </div>
+          <!-- end of radios -->
+        </fieldset>
+      </div>
+      <!-- end of this component -->
 
-    <!-- Q2 -->
-    <div class="govuk-!-margin-bottom-9">
-      {{ govukRadios({
+      <!-- Q2 -->
+      <div class="govuk-!-margin-bottom-9">
+        {{ govukRadios({
           classes: "govuk-radios--inline",
           idPrefix: "photographsTaken",
           name: "photographsTaken",
           "value":data.photographsTaken,
+          errorMessage: errors | findError('photographsTaken'),
           fieldset: {
             legend: {
               text: "Were any photographs taken?",
@@ -165,16 +177,17 @@
           ]
         }) 
         }}
-    </div>
+      </div>
 
-    <!-- Q3 -->
-      
-    <div class="govuk-!-margin-bottom-9">
+      <!-- Q3 -->
+
+      <div class="govuk-!-margin-bottom-9">
         {{ govukRadios({
             classes: "govuk-radios",
             idPrefix: "cctvRecording",
             name: "cctvRecording",
             "value":data.cctvRecording,
+            errorMessage: errors | findError('cctvRecording'),
             fieldset: {
               legend: {
                 text: "Was any part of the incident captured on CCTV?",
@@ -201,36 +214,41 @@
             ]
           }) 
           }}
-    </div>
-    
-    <!-- Q4 -->
-    
-    <div class="govuk-!-margin-bottom-9">
+      </div>
+
+      <!-- Q4 -->
+
+      <div class="govuk-!-margin-bottom-9
+        {% if errors | findError('bodyWornCamera') %}
+          govuk-form-group--error
+          {% set cameraErrMsg =  errors | findError('bodyWornCamera') %}
+        {% endif %}">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend ">
             Was any part of the incident captured on a body-worn camera?
           </legend>
+          <span id="cameraErrMsg" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ cameraErrMsg.text}}
+          </span>
 
           <div class="govuk-radios" data-module="govuk-radios">
             <div class=" govuk-radios">
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="bodyWornCamera" name="bodyWornCamera" type="radio"
-                  value="YES" data-aria-controls="body-worn-camera-conditional"
-                  {% if data.bodyWornCamera === 'YES' %} checked {% endif %}
-                >
+                <input class="govuk-radios__input" id="bodyWornCamera" name="bodyWornCamera" type="radio" value="YES" data-aria-controls="body-worn-camera-conditional" {% if data.bodyWornCamera === 'YES' %} checked="checked" {% endif %}>
                 <label class="govuk-label govuk-radios__label" for="bodyWornCamera">
                   Yes
                 </label>
               </div>
               <!-- hidden panel starts here -->
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="body-worn-camera-conditional">
+              <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="body-worn-camera-conditional">
 
-              <!-- add another starts here   -->
-    
-              <div class="add-another-camera" id ="bodyWornCameraNumbers">
-                {%  for camera in  data.bodyWornCameraNumbers %} 
-    
-                  {% call govukFieldset({ classes: 'add-another__item' }) %}
+                <!-- add another starts here -->
+
+                <div class="add-another-camera" id="bodyWornCameraNumbers">
+                  {% for camera in data.bodyWornCameraNumbers %}
+
+                    {% call govukFieldset({ classes: 'add-another__item' }) %}
                     {{
                       govukInput({
                         label: {
@@ -240,23 +258,24 @@
                         id: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
                         name: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
                         value: camera.cameraNum,
+                        errorMessage: errors | findError('bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]'),
                         attributes: {
                           'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
                           'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
-                    }} 
-    
-                  {% if loop.length != 1 %}
-                  <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-                    Remove
-                  </button>
-                  {% endif  %}
-                  
-                  {% endcall %} 
-                  {% else %} 
-                  {% call govukFieldset({ classes: 'add-another__item' }) %}
-                    
+                    }}
+
+                    {% if loop.length != 1 %}
+                      <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                        Remove
+                      </button>
+                    {% endif %}
+
+                    {% endcall %}
+                  {% else %}
+                    {% call govukFieldset({ classes: 'add-another__item' }) %}
+
                     {{
                       govukInput({
                         label: {
@@ -265,59 +284,58 @@
                         classes: 'govuk-!-width-one-third',
                         id: 'bodyWornCameraNumbers[0][cameraNum]',
                         name: 'bodyWornCameraNumbers[0][cameraNum]',
+                        errorMessage:errors | findError('bodyWornCameraNumbers[0][cameraNum]'),
                         attributes: {
                           'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
                           'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
                         }
                       })
                     }}
-    
-                  {% endcall %} 
-                {% endfor %}
-                <div class="button-action">
-                  {{
+
+                    {% endcall %}
+                  {% endfor %}
+                  <div class="button-action">
+                    {{
                     govukButton({
                       text: 'Add another',
                       classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
                       attributes: { 'data-qa-add-another-camera': true }
                     })
                   }}
-                </div> 
-              </div>  <!-- add another ends here -->
-            </div>  <!-- hidden panel end -->
+                  </div>
+                </div>
+                <!-- add another ends here -->
+              </div>
+              <!-- hidden panel end -->
 
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio"
-                value="NO" 
-                {% if data.bodyWornCamera === 'NO' %} checked {% endif %}
-              >
-              <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
-                No
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio"
-                  value="NOT_KNOWN" 
-                  {% if data.bodyWornCamera === 'NOT_KNOWN' %} checked {% endif %}
-                >
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio" value="NO" {% if data.bodyWornCamera === 'NO' %} checked="checked" {% endif %}>
+                <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
+                  No
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio" value="NOT_KNOWN" {% if data.bodyWornCamera === 'NOT_KNOWN' %} checked="checked" {% endif %}>
                 <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
                   Not known
                 </label>
+              </div>
             </div>
-            </div> 
-          </div> <!-- end of radios -->
-        </fieldset>     
-      </div> <!-- end of this Q4 component  -->
+          </div>
+          <!-- end of radios -->
+        </fieldset>
+      </div>
+      <!-- end of this Q4 component -->
 
-   </div>   <!-- end of govuk-grid-column-full-->
-</div>    <!-- end of govuk-grid-row-->
+    </div>
+    <!-- end of govuk-grid-column-full-->
+  </div>
+  <!-- end of govuk-grid-row-->
 
-<script src="/assets/js/jquery.min.js"></script>
-<script src="/assets/add-another.js"></script>
-<script>
-new AddAnother($('.add-another-tag'))
-new AddAnother($('.add-another-camera'))
-
-</script>
-
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/add-another.js"></script>
+  <script>
+    new AddAnother($('.add-another-tag'))
+    new AddAnother($('.add-another-camera'))
+  </script>
 {% endblock %}

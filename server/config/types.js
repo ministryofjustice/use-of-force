@@ -26,7 +26,7 @@ const RelocationLocation = {
   OWN_CELL: { value: 'OWN_CELL', label: 'Own cell' },
   GATED_CELL: { value: 'GATED_CELL', label: 'Gated cell' },
   SEGREGATION_UNIT: { value: 'SEGREGATION_UNIT', label: 'Segregation unit' },
-  SPECIAL_ACCOMODATION: { value: 'SPECIAL_ACCOMODATION', label: 'Special Accomodation' },
+  SPECIAL_ACCOMODATION: { value: 'SPECIAL_ACCOMODATION', label: 'Special accomodation' },
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
 }
 

@@ -143,7 +143,7 @@ describe('Evidence', () => {
 
     expect(errors).toEqual([
       {
-        href: '#evidenceTagAndDescription[0][evidenceTagReference]',
+        href: '#baggedEvidence',
         text: 'Please input both the evidence tag number and the description',
       },
     ])
