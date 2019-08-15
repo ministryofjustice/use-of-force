@@ -13,6 +13,4 @@ spec:
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
             args:
             - node
-            - run
-            - send-reminders
-          restartPolicy: OnFailure
+            - job/send-reminders
