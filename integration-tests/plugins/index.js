@@ -22,5 +22,7 @@ module.exports = on => {
     stubLocation: elite2api.stubLocation,
 
     getStatement,
+
+    stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
   })
 }

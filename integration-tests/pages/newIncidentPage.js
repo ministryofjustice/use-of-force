@@ -16,11 +16,11 @@ export default () =>
       cy.get('[data-qa=offender-name]')
       cy.get('#location').select('Asso A Wing')
       cy.get('[name="plannedUseOfForce"]').check('true')
-      cy.get('[name="involved[0][name]"]').type('Dr Smith')
+      cy.get('[name="involved[0][username]"]').type('Dr Smith')
       cy.get('.add-another-staff-member > .button-action > .govuk-button').click()
-      cy.get('[name="involved[1][name]"]').type('Mr Zagato')
+      cy.get('[name="involved[1][username]"]').type('Mr Zagato')
       cy.get('.add-another-staff-member > .button-action > .govuk-button').click()
-      cy.get('[name="involved[2][name]"]').type('Mrs Jones')
+      cy.get('[name="involved[2][username]"]').type('Mrs Jones')
       cy.get('[name="witnesses[0][name]').type('Witness 1')
       cy.get('.add-another-witness > .button-action > .govuk-button').click()
       cy.get('[name="witnesses[1][name]').type('Witness two')
@@ -31,10 +31,10 @@ export default () =>
     },
 
     staffInvolved: index => ({
-      name: () => cy.get(`#involved\\[${index}\\]\\[name\\]`),
+      name: () => cy.get(`#involved\\[${index}\\]\\[username\\]`),
       remove: () =>
         cy
-          .get(`#involved\\[${index}\\]\\[name\\]`)
+          .get(`#involved\\[${index}\\]\\[username\\]`)
           .parents('.add-another__item')
           .find('button.add-another__remove-button'),
     }),

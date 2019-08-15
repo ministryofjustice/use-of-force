@@ -41,7 +41,7 @@ module.exports = {
       },
       {
         involved: {
-          sanitiser: removeEmptyValues(['name']),
+          sanitiser: removeEmptyValues(['username']),
           fieldType: EXTRACTED,
         },
       },

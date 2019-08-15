@@ -110,7 +110,7 @@ test('getInvolvedStaff', async () => {
 
   expect(result).toEqual(expected)
   expect(db.query).toBeCalledWith({
-    text: `select id, user_id, name, email from involved_staff where incident_id = $1 order by id`,
+    text: `select id, user_id username, name, email from involved_staff where incident_id = $1 order by id`,
     values: ['incident-1'],
   })
 })
@@ -128,13 +128,13 @@ test('insertInvolvedStaff', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 
   const ids = await incidentClient.insertInvolvedStaff('incident-1', [
-    { userId: 1, name: 'aaaa' },
-    { userId: 2, name: 'bbbb' },
+    { userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
+    { userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
   ])
 
   expect(ids).toEqual([1, 2])
   expect(db.query).toBeCalledWith({
-    text: `insert into involved_staff (incident_id, user_id, name, statement_status) VALUES ('incident-1', '1', 'aaaa', 'PENDING'), ('incident-1', '2', 'bbbb', 'PENDING') returning id`,
+    text: `insert into involved_staff (incident_id, user_id, name, email, statement_status) VALUES ('incident-1', '1', 'aaaa', 'aaaa@gov.uk', 'PENDING'), ('incident-1', '2', 'bbbb', 'bbbb@gov.uk', 'PENDING') returning id`,
   })
 })
 

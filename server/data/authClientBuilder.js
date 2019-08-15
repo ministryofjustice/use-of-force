@@ -27,6 +27,11 @@ module.exports = token => {
       const { status, body } = await userGet({ path, raw: true })
       return { ...body, username, exists: status !== 404, verified: status === 200 }
     },
+    async getUser(username) {
+      const path = `${apiUrl}/api/user/${username}`
+      const body = await userGet({ path })
+      return body
+    },
   }
 }
 function userGetBuilder(token) {
