@@ -17,7 +17,8 @@
     "int-test": "DB_NAME=use-of-force-int DB_PORT=5433 cypress run",
     "int-test-ui": "DB_NAME=use-of-force-int DB_PORT=5433 cypress open",
     "migrate": "knex migrate:latest",
-    "record-build-info": "node ./bin/record-build-info"
+    "record-build-info": "node ./bin/record-build-info",
+    "send-reminders": "node job/sendReminders"
   },
   "engines": {
     "node": ">=10.15.3",
