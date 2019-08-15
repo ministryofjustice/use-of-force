@@ -21,15 +21,19 @@ module.exports = function createUserService(elite2ClientBuilder, authClientBuild
     }
   }
 
-  async function getEmails(token, usernames) {
+  async function getUsers(token, usernames) {
     try {
       const client = authClientBuilder(token)
-      const requests = usernames.map(username => client.getEmail(username))
+      const requests = usernames.map((username, i) => client.getEmail(username).then(email => ({ ...email, i })))
       const responses = await Promise.all(requests)
 
       const missing = responses.filter(email => !email.exists)
-      const notVerified = responses.filter(email => !email.verified)
-      const exist = responses.filter(email => email.email)
+      const notVerified = responses.filter(email => email.exists && !email.verified)
+      const usernamesForExisting = responses
+        .filter(email => email.email)
+        .map(email => client.getUser(email.username).then(user => ({ ...user, ...email })))
+
+      const exist = await Promise.all(usernamesForExisting)
 
       return {
         exist,
@@ -43,5 +47,5 @@ module.exports = function createUserService(elite2ClientBuilder, authClientBuild
     }
   }
 
-  return { getUser, getEmails }
+  return { getUser, getUsers }
 }

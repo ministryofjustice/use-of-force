@@ -16,7 +16,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return false
   }
 
-  async function update({ currentUser, formId, bookingId, formObject, incidentDate, involved }) {
+  async function update({ currentUser, formId, bookingId, formObject, incidentDate, involvedStaff }) {
     const incidentId = await updateIncident({
       currentUser,
       formId,
@@ -24,8 +24,8 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
       formObject,
       incidentDate,
     })
-    if (involved) {
-      await updateInvolvedStaff({ incidentId, involvedStaff: involved })
+    if (involvedStaff) {
+      await updateInvolvedStaff({ incidentId, involvedStaff })
     }
   }
 
@@ -56,10 +56,10 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     await incidentClient.deleteInvolvedStaff(incidentId)
     if (involvedStaff.length) {
       // TODO The reporting staff may need to be added to the list
-      // TODO: Currently have no way of retrieving user_id from a name - so currently coding both to same value
       const staff = involvedStaff.map(user => ({
-        userId: user.name,
-        ...user,
+        userId: user.username,
+        name: user.name,
+        email: user.email,
       }))
       await incidentClient.insertInvolvedStaff(incidentId, staff)
     }

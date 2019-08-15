@@ -95,7 +95,7 @@ describe('update', () => {
       formId: 'form1',
       formObject,
       incidentDate: '21/12/2010',
-      involved: [{ name: 'Bob' }],
+      involvedStaff: [{ name: 'Bob', username: 'BOB', email: 'bob@gov.uk' }],
     })
 
     expect(incidentClient.updateDraftIncident).toBeCalledTimes(1)
@@ -103,7 +103,9 @@ describe('update', () => {
     expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
     expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
     expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
-    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [{ userId: 'Bob', name: 'Bob' }])
+    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [
+      { userId: 'BOB', name: 'Bob', email: 'bob@gov.uk' },
+    ])
   })
 
   test('updates if no-one is present', async () => {
@@ -118,7 +120,7 @@ describe('update', () => {
       bookingId: 1,
       formId: 'form1',
       formObject,
-      involved: [],
+      involvedStaff: [],
       incidentDate: '21/12/2010',
     })
 

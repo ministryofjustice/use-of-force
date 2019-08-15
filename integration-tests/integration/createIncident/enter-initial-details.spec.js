@@ -9,6 +9,8 @@ context('Submitting details page form', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubUserDetailsRetrieval', 'AAAA')
+    cy.task('stubUserDetailsRetrieval', 'BBBB')
   })
 
   const fillFormAndSave = () => {
@@ -58,7 +60,10 @@ context('Submitting details page form', () => {
         plannedUseOfForce: true,
         witnesses: [{ name: '1111' }],
       })
-      expect(staff).to.deep.equal([{ userId: 'AAAA', name: 'AAAA' }, { userId: 'BBBB', name: 'BBBB' }])
+      expect(staff).to.deep.equal([
+        { userId: 'AAAA', name: 'AAAA name', email: 'AAAA@gov.uk' },
+        { userId: 'BBBB', name: 'BBBB name', email: 'BBBB@gov.uk' },
+      ])
     })
   })
 

@@ -17,7 +17,7 @@ export default () =>
         .should('match', /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)
       cy.get('[data-qa="location"]').contains('ASSO A Wing')
       cy.get('[data-qa="incidentType"]').contains('Planned')
-      cy.get('[data-qa="staffInvolved"]').contains('Mr Zagato, Mrs Jones')
+      cy.get('[data-qa="staffInvolved"]').contains('Mr Zagato Name, Mrs Jones Name')
       cy.get('[data-qa="witnesses"]').contains('Witness 1, Tom Jones')
 
       cy.get('[data-qa="positiveCommunication"]').contains('Yes')

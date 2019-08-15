@@ -74,7 +74,49 @@ const token = () =>
     },
   })
 
+const stubUser = username =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/auth/api/user/${encodeURI(username)}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        user_name: username,
+        staffId: 231232,
+        username,
+        active: true,
+        name: `${username} name`,
+        authSource: 'nomis',
+        activeCaseLoadId: 'MDI',
+      },
+    },
+  })
+
+const stubEmail = username =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/auth/api/user/${encodeURI(username)}/email`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        username,
+        email: `${username}@gov.uk`,
+      },
+    },
+  })
+
 module.exports = {
   getLoginUrl,
   stubLogin: () => Promise.all([favicon(), redirect(), logout(), token()]),
+  stubUserDetailsRetrieval: username => Promise.all([stubUser(username), stubEmail(username)]),
 }

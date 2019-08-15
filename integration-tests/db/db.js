@@ -26,7 +26,7 @@ module.exports = {
       .then(({ id, data }) =>
         incidentClient
           .getInvolvedStaff(id, db.queryWithoutTransaction)
-          .then(staff => staff.map(s => ({ userId: s.user_id, name: s.name })))
+          .then(staff => staff.map(s => ({ userId: s.username, name: s.name, email: s.email })))
           .then(staff => ({ data, staff }))
       )
   },
