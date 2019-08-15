@@ -117,6 +117,7 @@
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "node-sass-middleware": "0.11.0",
+    "notifications-node-client": "^4.6.0",
     "nunjucks": "^3.2.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
