@@ -157,6 +157,32 @@ describe('Evidence', () => {
     })
   })
 
+  it('Doesnt allow whitespace only', () => {
+    const input = {
+      ...validInput,
+      baggedEvidence: 'true',
+      evidenceTagAndDescription: [{ description: '    ', evidenceTagReference: 'ref-1' }],
+    }
+
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#evidenceTagAndDescription[0][description]',
+        text: 'Please input a description of the evidence',
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
+      cctvRecording: 'YES',
+      photographsTaken: true,
+      evidenceTagAndDescription: [{ description: '    ', evidenceTagReference: 'ref-1' }],
+    })
+  })
+
   it('Conditional field selected: No, evidence are not required', () => {
     const input = {
       ...validInput,
@@ -193,6 +219,26 @@ describe('Body Worn Cameras', () => {
     expect(formResponse).toEqual({
       baggedEvidence: true,
       cctvRecording: 'YES',
+      evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+      photographsTaken: true,
+    })
+  })
+
+  it('Conditional field must be one of allowed values', () => {
+    const input = { ...validInput, bodyWornCamera: 'BOB', bodyWornCameraNumbers: [{ cameraNum: 'AAA123' }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#bodyWornCamera',
+        text: 'Select yes if any part of the incident was captured on a body-worn camera',
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      cctvRecording: 'YES',
+      bodyWornCamera: 'BOB',
       evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
       photographsTaken: true,
     })
