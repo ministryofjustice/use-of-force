@@ -13,5 +13,5 @@ spec:
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
             args:
             - node
-            - job/send-reminders
+            - job/sendReminders
           restartPolicy: Never
