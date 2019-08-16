@@ -38,6 +38,7 @@ const fieldOptions = {
       then: joi.valid(['Yes', 'No']).required(),
       otherwise: joi.any().optional(),
     }),
+  requiredYesNoNotKnown: joi.valid(['YES', 'NO', 'NOT_KNOWN']).required(),
   requiredCameraNumber: () =>
     joi.when('bodyWornCamera', {
       is: 'YES',
@@ -64,10 +65,12 @@ const fieldOptions = {
           joi.object().keys({
             evidenceTagReference: joi
               .string()
+              .trim()
               .required()
               .error(() => 'Please input the tag name for the evidence'),
             description: joi
               .string()
+              .trim()
               .required()
               .error(() => 'Please input a description of the evidence'),
           })

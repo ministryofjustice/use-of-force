@@ -260,13 +260,13 @@ module.exports = {
       },
       {
         cctvRecording: {
-          responseType: 'requiredString',
+          responseType: 'requiredYesNoNotKnown',
           validationMessage: 'Select yes if any part of the incident captured on CCTV',
         },
       },
       {
         bodyWornCamera: {
-          responseType: 'requiredString',
+          responseType: 'requiredYesNoNotKnown',
           validationMessage: 'Select yes if any part of the incident was captured on a body-worn camera',
         },
       },
