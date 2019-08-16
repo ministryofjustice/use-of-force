@@ -27,7 +27,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
     <div class="govuk-grid-column-full">
       <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
       <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-        {{ data.incidentDate }}
+        {{ data.incidentDate  | formatDate('DD/MM/YYYY - HH:mm')  }}
       </p>
     </div>
   </div>
@@ -53,9 +53,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-full ">
       <p class="govuk-!-margin-bottom-1 govuk-label--s">Your statement</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs statement"  data-qa="statement">
-        {{ data.statement }}
-      </p>
+      <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
     </div>
   </div>
   <hr />
@@ -63,7 +61,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
     <div class="govuk-grid-column-full">
       <p class="govuk-!-margin-bottom-1 govuk-label--s">First submitted</p>
       <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="date-and-time">
-        {{ data.submittedDate }}
+        {{ data.submittedDate | formatDate('DD/MM/YYYY - HH:mm') }}
       </p>
     </div>
   </div>

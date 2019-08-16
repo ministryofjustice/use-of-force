@@ -1,7 +1,7 @@
 const express = require('express')
 const moment = require('moment')
 const flash = require('connect-flash')
-const { formatTimestampToDateTime, isNilOrEmpty } = require('../utils/utils')
+const { isNilOrEmpty } = require('../utils/utils')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const statementConfig = require('../config/statement')
 const formProcessing = require('../services/formProcessing')
@@ -75,7 +75,6 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
           displayName,
           offenderNo,
           ...statement,
-          incidentDate: formatTimestampToDateTime(statement.incidentDate),
           months: moment.months().map((month, i) => ({ value: i, label: month })),
         },
       })
@@ -99,7 +98,6 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
           offenderNo,
           ...statement,
           lastTrainingMonth: moment.months(statement.lastTrainingMonth),
-          incidentDate: formatTimestampToDateTime(statement.incidentDate),
         },
       })
     })
@@ -120,7 +118,6 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
           offenderNo,
           ...statement,
           lastTrainingMonth: moment.months(statement.lastTrainingMonth),
-          incidentDate: formatTimestampToDateTime(statement.incidentDate),
         },
       })
     })
