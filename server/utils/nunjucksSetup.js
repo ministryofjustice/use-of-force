@@ -1,4 +1,5 @@
 const nunjucks = require('nunjucks')
+const moment = require('moment')
 
 module.exports = (app, path) => {
   const njkEnv = nunjucks.configure([path.join(__dirname, '../../server/views'), 'node_modules/govuk-frontend/'], {
@@ -14,6 +15,10 @@ module.exports = (app, path) => {
       }
     }
     return null
+  })
+
+  njkEnv.addFilter('formatDate', (value, format) => {
+    return value ? moment(value).format(format) : null
   })
 
   njkEnv.addFilter('toSelect', (array, valueKey, textKey, value) => {

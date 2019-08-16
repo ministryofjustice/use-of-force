@@ -31,7 +31,7 @@ govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} 
       <div class="govuk-grid-column-full">
         <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-          {{ data.incidentDate }}
+          {{ data.incidentDate | formatDate('DD/MM/YYYY - HH:mm')  }}
         </p>
       </div>
     </div>
