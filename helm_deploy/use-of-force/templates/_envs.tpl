@@ -49,6 +49,12 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
+  - name: NOTIFY_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: NOTIFY_API_KEY
+
   - name: NOMIS_AUTH_URL
     value: {{ .Values.env.NOMIS_AUTH_URL | quote }}
 
