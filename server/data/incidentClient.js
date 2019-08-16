@@ -66,6 +66,7 @@ const getStatement = async (userId, incidentId, query = db.query) => {
     ,      inv.last_training_year   "lastTrainingYear"
     ,      inv.job_start_year       "jobStartYear"
     ,      inv.statement
+    ,      inv.submitted_date       "submittedDate"
     from incidents i 
     left join involved_staff inv on i.id = inv.incident_id
     where i.id = $1 and i.user_id = $2`,
@@ -74,7 +75,7 @@ const getStatement = async (userId, incidentId, query = db.query) => {
   return results.rows[0] || {}
 }
 
-const submitStatement = (
+const saveStatement = (
   userId,
   incidentId,
   { lastTrainingMonth, lastTrainingYear, jobStartYear, statement },
@@ -82,16 +83,26 @@ const submitStatement = (
 ) => {
   return query({
     text: `update involved_staff 
+    set last_training_month = $1
+    ,   last_training_year = $2
+    ,   job_start_year = $3
+    ,   statement = $4
+    where user_id = $5
+    and incident_id = $6
+    and statement_status = $7`,
+    values: [lastTrainingMonth, lastTrainingYear, jobStartYear, statement, userId, incidentId, 'PENDING'],
+  })
+}
+
+const submitStatement = (userId, incidentId, query = db.query) => {
+  return query({
+    text: `update involved_staff 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
-    ,   last_training_month = $2
-    ,   last_training_year = $3
-    ,   job_start_year = $4
-    ,   statement = $5
-    where user_id = $6
-    and incident_id = $7
-    and statement_status = $8`,
-    values: ['SUBMITTED', lastTrainingMonth, lastTrainingYear, jobStartYear, statement, userId, incidentId, 'PENDING'],
+    where user_id = $2
+    and incident_id = $3
+    and statement_status = $4`,
+    values: ['SUBMITTED', userId, incidentId, 'PENDING'],
   })
 }
 
@@ -131,5 +142,6 @@ module.exports = {
   getInvolvedStaff,
   deleteInvolvedStaff,
   insertInvolvedStaff,
+  saveStatement,
   submitStatement,
 }

@@ -1,5 +1,5 @@
 const page = require('./page')
-const StatementSubmittedPage = require('./statementSubmittedPage')
+const ConfirmStatementPage = require('./confirmStatementPage')
 
 const submitStatementPage = () =>
   page('Use of force statement', {
@@ -8,11 +8,10 @@ const submitStatementPage = () =>
     lastTrainingYear: () => cy.get('[name=lastTrainingYear]'),
     jobStartYear: () => cy.get('[name=jobStartYear]'),
     statement: () => cy.get('[name=statement]'),
-    confirm: () => cy.get('confirm'),
 
     submit: () => {
       cy.get('[data-qa=submit]').click()
-      return StatementSubmittedPage.verifyOnPage()
+      return ConfirmStatementPage.verifyOnPage()
     },
   })
 

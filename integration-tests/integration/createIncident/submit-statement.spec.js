@@ -53,7 +53,10 @@ context('Submit the incident report', () => {
     submitStatementPage.jobStartYear().type('1999')
     submitStatementPage.statement().type('This is my statement')
 
-    const statementSubmittedPage = submitStatementPage.submit()
+    const confirmStatementPage = submitStatementPage.submit()
+    confirmStatementPage.confirm().click()
+
+    const statementSubmittedPage = confirmStatementPage.submit()
 
     {
       const incidentsPage = statementSubmittedPage.finish()
@@ -93,7 +96,11 @@ context('Submit the incident report', () => {
     submitStatementPage.jobStartYear().type('1999')
     submitStatementPage.statement().type('This is my statement')
 
-    const statementSubmittedPage = submitStatementPage.submit()
+    const confirmStatementPage = submitStatementPage.submit()
+    confirmStatementPage.confirm().click()
+
+    const statementSubmittedPage = confirmStatementPage.submit()
+
     const incidentsPage = statementSubmittedPage.finish()
 
     const { date, prisoner, reporter, incidentId } = incidentsPage.getCompleteRow(0)
@@ -103,7 +110,7 @@ context('Submit the incident report', () => {
 
     incidentId().then(id =>
       cy.task('getStatement', id).then(statement => {
-        const { id: _, incidentDate, ...vals } = statement
+        const { id: _, incidentDate, submittedDate, ...vals } = statement
 
         expect(vals).to.deep.equal({
           bookingId: '1001',

@@ -7,6 +7,7 @@ const incidentService = {
   getIncidentsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
   getStatement: () => ({ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }),
   submitStatement: jest.fn(),
+  saveStatement: jest.fn(),
   processUserInput: () => ({}),
 }
 
@@ -53,9 +54,32 @@ describe('GET /incidents/:incidentId/statement', () => {
 })
 
 describe('POST /incidents/:incidentId/statement', () => {
-  it('should render page', () =>
+  it('save and return should redirect to incidents page', () =>
     request(app)
       .post('/incidents/-1/statement')
+      .send('submit=save-and-return')
+      .expect(302)
+      .expect('Location', '/incidents/'))
+
+  it('save and continue should forward to confirm page', () =>
+    request(app)
+      .post('/incidents/-1/statement')
+      .send('submit=save-and-continue')
+      .expect(302)
+      .expect('Location', '/incidents/-1/statement/confirm'))
+})
+
+describe('POST /incidents/:incidentId/statement/confirm', () => {
+  it('unconfirmed submit redirects due to validation', () =>
+    request(app)
+      .post('/incidents/-1/statement/confirm')
+      .expect(302)
+      .expect('Location', '/incidents/-1/statement/confirm'))
+
+  it('confirmed submit redirects to submitted', () =>
+    request(app)
+      .post('/incidents/-1/statement/confirm')
+      .send('confirmed=confirmed')
       .expect(302)
       .expect('Location', '/incidents/-1/statement/submitted'))
 })
