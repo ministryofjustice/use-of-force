@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: send-reminders
 spec:
-  schedule: "*/1 * * * *"
+  schedule: "*/5 * * * *"
   jobTemplate:
     spec:
       template:
@@ -14,4 +14,9 @@ spec:
             args:
             - node
             - job/sendReminders
+{{ include "deployment.envs" . | nindent 12 }}
           restartPolicy: Never
+          successfulJobsHistoryLimit: 5
+          failedJobsHistoryLimit: 3
+          concurrencyPolicy: Forbid
+        
