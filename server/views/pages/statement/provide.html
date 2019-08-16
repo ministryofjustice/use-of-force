@@ -46,7 +46,7 @@
               })
             }}
           </div>
-          <div class="govuk-grid-column-one-half"></div>
+          <div class="govuk-grid-column-one-half">
           {{
             govukInput({
               id: 'year',
@@ -61,6 +61,7 @@
         </div>
       </div>
       {% endcall %}
+      </div>
       <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
         {% call govukFieldset({ 
           legend: { 
@@ -125,50 +126,21 @@
         </ul>
       </div>
     </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half">
-        <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you confirm that:</p>
-        <ul class="govuk-!-margin-top-1">
-          <li>the information you've given is correct to the best of your knowledge</li>
-          <li>you wrote the statement independently of other staff involved in the incident</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half">
-        {{
-          govukCheckboxes({
-            idPrefix: 'confirm',
-            name: 'confirm',
-            value: data.confirm,
-            classes: 'govuk-checkboxes--small',
-            errorMessage: errors[0],
-            items: [
-              {
-                id: 'confirm',
-                value: 'true',
-                text: 'I agree'
-              }
-            ]
-          })
-        }}
-      </div>
-    </div>
-
+   
     {{
       govukButton({
-        text: 'Submit',
+        text: 'Save and continue',
         name: 'submit',
+        value: 'save-and-continue',
         classes: 'govuk-button',
         attributes: { 'data-qa': 'submit' }
       })
     }}
     {{
       govukButton({
-        text: 'Cancel',
+        text: 'Save and return',
         name: 'submit',
-        href: '/',
+        value: 'save-and-return',
         classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3',
         attributes: { 'data-qa': 'return-to-tasklist' }
       })

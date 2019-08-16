@@ -82,9 +82,14 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return incidentClient.getInvolvedStaff(incidentId)
   }
 
-  const submitStatement = (userId, incidentId, statement) => {
+  const saveStatement = (userId, incidentId, statement) => {
+    logger.info(`Saving statement for user: ${userId} and incident: ${incidentId}`)
+    return incidentClient.saveStatement(userId, incidentId, statement)
+  }
+
+  const submitStatement = (userId, incidentId) => {
     logger.info(`Submitting statement for user: ${userId} and incident: ${incidentId}`)
-    incidentClient.submitStatement(userId, incidentId, statement)
+    return incidentClient.submitStatement(userId, incidentId)
   }
 
   return {
@@ -94,6 +99,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     getStatement,
     getIncidentsForUser,
     getInvolvedStaff,
+    saveStatement,
     submitStatement,
   }
 }

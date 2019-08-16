@@ -95,6 +95,7 @@ test('getStatement', () => {
     ,      inv.last_training_year   "lastTrainingYear"
     ,      inv.job_start_year       "jobStartYear"
     ,      inv.statement
+    ,      inv.submitted_date       "submittedDate"
     from incidents i 
     left join involved_staff inv on i.id = inv.incident_id
     where i.id = $1 and i.user_id = $2`,
@@ -138,8 +139,8 @@ test('insertInvolvedStaff', async () => {
   })
 })
 
-test('submitStatement', () => {
-  incidentClient.submitStatement('user1', 'incident1', {
+test('saveStatement', () => {
+  incidentClient.saveStatement('user1', 'incident1', {
     lastTrainingMonth: 1,
     lastTrainingYear: 2,
     jobStartYear: 3,
@@ -148,15 +149,27 @@ test('submitStatement', () => {
 
   expect(db.query).toBeCalledWith({
     text: `update involved_staff 
+    set last_training_month = $1
+    ,   last_training_year = $2
+    ,   job_start_year = $3
+    ,   statement = $4
+    where user_id = $5
+    and incident_id = $6
+    and statement_status = $7`,
+    values: [1, 2, 3, 'A long time ago...', 'user1', 'incident1', 'PENDING'],
+  })
+})
+
+test('submitStatement', () => {
+  incidentClient.submitStatement('user1', 'incident1')
+
+  expect(db.query).toBeCalledWith({
+    text: `update involved_staff 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
-    ,   last_training_month = $2
-    ,   last_training_year = $3
-    ,   job_start_year = $4
-    ,   statement = $5
-    where user_id = $6
-    and incident_id = $7
-    and statement_status = $8`,
-    values: ['SUBMITTED', 1, 2, 3, 'A long time ago...', 'user1', 'incident1', 'PENDING'],
+    where user_id = $2
+    and incident_id = $3
+    and statement_status = $4`,
+    values: ['SUBMITTED', 'user1', 'incident1', 'PENDING'],
   })
 })

@@ -4,6 +4,8 @@ const incidentClient = {
   getCurrentDraftIncident: jest.fn(),
   getIncidentsForUser: jest.fn(),
   getStatement: jest.fn(),
+  saveStatement: jest.fn(),
+  submitStatement: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   insertInvolvedStaff: jest.fn(),
@@ -169,5 +171,21 @@ describe('update', () => {
       reporterName: 'Bob Smith',
       formResponse: formObject,
     })
+  })
+
+  test('should call saveStatement', async () => {
+    const statement = {}
+
+    await service.saveStatement('user1', 'incident-1', statement)
+
+    expect(incidentClient.saveStatement).toBeCalledTimes(1)
+    expect(incidentClient.saveStatement).toBeCalledWith('user1', 'incident-1', statement)
+  })
+
+  test('should call submitStatement', async () => {
+    await service.submitStatement('user1', 'incident-1')
+
+    expect(incidentClient.submitStatement).toBeCalledTimes(1)
+    expect(incidentClient.submitStatement).toBeCalledWith('user1', 'incident-1')
   })
 })

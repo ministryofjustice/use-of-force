@@ -82,6 +82,72 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     })
   )
 
+  router.get(
+    '/incidents/:incidentId/statement/confirm',
+    asyncMiddleware(async (req, res) => {
+      const { incidentId } = req.params
+
+      const statement = await incidentService.getStatement(req.user.username, incidentId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+      const errors = req.flash('errors')
+      res.render('pages/statement/confirm', {
+        errors,
+        data: {
+          incidentId,
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+          incidentDate: formatTimestampToDateTime(statement.incidentDate),
+        },
+      })
+    })
+  )
+
+  router.get(
+    '/incidents/:incidentId/statement/review',
+    asyncMiddleware(async (req, res) => {
+      const { incidentId } = req.params
+
+      const statement = await incidentService.getStatement(req.user.username, incidentId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+      res.render('pages/statement/review', {
+        data: {
+          incidentId,
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+          incidentDate: formatTimestampToDateTime(statement.incidentDate),
+        },
+      })
+    })
+  )
+
+  router.post(
+    '/incidents/:incidentId/statement/confirm',
+    asyncMiddleware(async (req, res) => {
+      const { incidentId } = req.params
+      const { confirmed } = req.body
+      if (!confirmed) {
+        req.flash('errors', [
+          {
+            text: 'Check that you agree before sending',
+            href: '#confirm',
+          },
+        ])
+        return res.redirect(`/incidents/${incidentId}/statement/confirm`)
+      }
+      await incidentService.submitStatement(req.user.username, incidentId)
+
+      const location = `/incidents/${incidentId}/statement/submitted`
+
+      return res.redirect(location)
+    })
+  )
+
   router.post(
     '/incidents/:incidentId/statement',
     asyncMiddleware(async (req, res) => {
@@ -97,8 +163,12 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
         return res.redirect(`/incidents/${incidentId}/statement`)
       }
 
-      await incidentService.submitStatement(req.user.username, incidentId, statement)
-      return res.redirect(`/incidents/${incidentId}/statement/submitted`)
+      await incidentService.saveStatement(req.user.username, incidentId, statement)
+
+      const location =
+        req.body.submit === 'save-and-continue' ? `/incidents/${incidentId}/statement/confirm` : `/incidents/`
+
+      return res.redirect(location)
     })
   )
 
