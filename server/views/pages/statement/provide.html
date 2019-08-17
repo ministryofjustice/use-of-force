@@ -4,10 +4,20 @@
 {% from "govuk/components/input/macro.njk" import govukInput %} 
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
-{% from "govuk/components/checkboxes/macro.njk"import govukCheckboxes %} 
+{% from "govuk/components/checkboxes/macro.njk"import govukCheckboxes %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
 
 {% block content %}
 <div class="govuk-body">
+  {% if errors.length > 0 %}
+  {{
+    govukErrorSummary({
+      titleText: 'There is a problem',
+      errorList: errors,
+      attributes: { 'data-qa-errors': true }
+    })
+  }}
+  {% endif %}
   <h1 class="govuk-heading-xl mainHeading">Use of force statement</h1>
 
   <form method="POST">
@@ -37,11 +47,12 @@
           <div class="govuk-grid-column-one-half">
             {{
               govukSelect({
-                id: 'month',
+                id: 'lastTrainingMonth',
                 name: 'lastTrainingMonth',
                 label: {
                   text: 'Month'
                 },
+                errorMessage: errors | findError('lastTrainingMonth'),
                 items: data.months | toSelect('value', 'label', data.lastTrainingMonth)
               })
             }}
@@ -49,13 +60,14 @@
           <div class="govuk-grid-column-one-half">
           {{
             govukInput({
-              id: 'year',
+              id: 'lastTrainingYear',
               name: 'lastTrainingYear',
               value: data.lastTrainingYear,
               classes: 'govuk-!-width-one-quarter',
               label: {
                 text: 'Year'
-              }
+              },
+              errorMessage: errors | findError('lastTrainingYear')
             })
           }}
         </div>
@@ -71,13 +83,14 @@
         %}
         {{
           govukInput({
-            id: 'job-start-year',
+            id: 'jobStartYear',
             name: 'jobStartYear',
             value: data.jobStartYear,
             classes: 'govuk-!-width-one-quarter',
             label: {
               text: 'Year'
-            }
+            },
+            errorMessage: errors | findError('jobStartYear')
           })
         }}
         {% endcall %}
@@ -95,7 +108,8 @@
             label: {
               text: 'Your statement',
               classes: 'govuk-label--s govuk-!-margin-top-4'
-            }
+            },
+            errorMessage: errors | findError('statement')
           })
         }}
       </div>

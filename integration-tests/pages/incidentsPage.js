@@ -24,6 +24,7 @@ const incidentsPage = () =>
       date: () => completeCol(i, 0),
       prisoner: () => completeCol(i, 1),
       reporter: () => completeCol(i, 2),
+      viewButton: () => completeCol(i, 3).find('a'),
       incidentId: () =>
         completeCol(i, 3)
           .find('a')

@@ -64,12 +64,13 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
-      // TODO retrieve statement/errors from flash to re-render on validation error
+      const errors = req.flash('errors')
       const statement = await incidentService.getStatement(req.user.username, incidentId)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       res.render('pages/statement/provide', {
+        errors,
         data: {
           incidentId,
           displayName,
@@ -78,6 +79,35 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
           months: moment.months().map((month, i) => ({ value: i, label: month })),
         },
       })
+    })
+  )
+
+  router.post(
+    '/incidents/:incidentId/statement',
+    asyncMiddleware(async (req, res) => {
+      const { incidentId } = req.params
+
+      const saveAndContinue = req.body.submit === 'save-and-continue'
+
+      const { fields, validate: validationEnabled } = formConfig
+      const validate = validationEnabled && saveAndContinue
+
+      const { extractedFields: statement, errors } = formProcessing.processInput({ validate, fields }, req.body)
+
+      const isValid = isNilOrEmpty(errors)
+
+      // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
+      await incidentService.saveStatement(req.user.username, incidentId, statement)
+
+      if (!isValid) {
+        req.flash('errors', errors)
+        req.flash('userInput', statement)
+        return res.redirect(`/incidents/${incidentId}/statement`)
+      }
+
+      const location = saveAndContinue ? `/incidents/${incidentId}/statement/confirm` : `/incidents/`
+
+      return res.redirect(location)
     })
   )
 
@@ -131,7 +161,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       if (!confirmed) {
         req.flash('errors', [
           {
-            text: 'Check that you agree before sending',
+            text: 'Confirm you agree to send your statement',
             href: '#confirm',
           },
         ])
@@ -140,30 +170,6 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       await incidentService.submitStatement(req.user.username, incidentId)
 
       const location = `/incidents/${incidentId}/statement/submitted`
-
-      return res.redirect(location)
-    })
-  )
-
-  router.post(
-    '/incidents/:incidentId/statement',
-    asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
-
-      const formPageConfig = formConfig
-
-      const { extractedFields: statement, errors } = formProcessing.processInput(formPageConfig, req.body)
-
-      if (!isNilOrEmpty(errors)) {
-        req.flash('errors', errors)
-        req.flash('userInput', statement)
-        return res.redirect(`/incidents/${incidentId}/statement`)
-      }
-
-      await incidentService.saveStatement(req.user.username, incidentId, statement)
-
-      const location =
-        req.body.submit === 'save-and-continue' ? `/incidents/${incidentId}/statement/confirm` : `/incidents/`
 
       return res.redirect(location)
     })
