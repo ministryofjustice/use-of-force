@@ -65,13 +65,13 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     }
   }
 
-  const getIncidentsForUser = async (userId, status) => {
-    const data = await incidentClient.getIncidentsForUser(userId, status)
+  const getStatementsForUser = async (userId, status) => {
+    const data = await incidentClient.getStatementsForUser(userId, status)
     return data.rows
   }
 
-  const getStatement = async (userId, incidentId) => {
-    const statement = await incidentClient.getStatement(userId, incidentId)
+  const getStatement = async (userId, incidentId, status) => {
+    const statement = await incidentClient.getStatement(userId, incidentId, status)
     if (!statement) {
       throw new Error(`Incident: '${incidentId}' does not exist`)
     }
@@ -97,7 +97,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     update,
     submitForm,
     getStatement,
-    getIncidentsForUser,
+    getStatementsForUser,
     getInvolvedStaff,
     saveStatement,
     submitStatement,

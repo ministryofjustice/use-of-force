@@ -30,10 +30,22 @@ const RelocationLocation = {
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
 }
 
+const ReportStatus = {
+  IN_PROGRESS: { value: 'IN_PROGRESS', label: 'In progress' },
+  SUBMITTED: { value: 'SUBMITTED', label: 'Submitted' },
+}
+
+const StatementStatus = {
+  PENDING: { value: 'PENDING', label: 'Pending' },
+  SUBMITTED: { value: 'SUBMITTED', label: 'Submitted' },
+}
+
 module.exports = {
   BodyWornCameras: Object.freeze(BodyWornCameras),
   Cctv: Object.freeze(Cctv),
   ControlAndRestraintPosition: Object.freeze(ControlAndRestraintPosition),
   RelocationLocation: Object.freeze(RelocationLocation),
+  ReportStatus: Object.freeze(ReportStatus),
+  StatementStatus: Object.freeze(StatementStatus),
   toLabel,
 }

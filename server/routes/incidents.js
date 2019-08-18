@@ -5,6 +5,7 @@ const { isNilOrEmpty } = require('../utils/utils')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const statementConfig = require('../config/statement')
 const formProcessing = require('../services/formProcessing')
+const { StatementStatus } = require('../config/types')
 
 const formConfig = {
   ...statementConfig,
@@ -42,15 +43,12 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      const awaitingIncidents = await incidentService.getIncidentsForUser(req.user.username, 'PENDING')
-      const completedIncidents = await incidentService.getIncidentsForUser(req.user.username, 'SUBMITTED')
+      const awaiting = await incidentService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
+      const completed = await incidentService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
 
-      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [
-        ...awaitingIncidents,
-        ...completedIncidents,
-      ])
-      const awaitingStatements = awaitingIncidents.map(toStatement(namesByOffenderNumber))
-      const completedStatements = completedIncidents.map(toStatement(namesByOffenderNumber))
+      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
+      const completedStatements = completed.map(toStatement(namesByOffenderNumber))
 
       res.render('pages/incidents', {
         awaitingStatements,
@@ -65,7 +63,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const { incidentId } = req.params
 
       const errors = req.flash('errors')
-      const statement = await incidentService.getStatement(req.user.username, incidentId)
+      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
@@ -116,32 +114,12 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
-      const statement = await incidentService.getStatement(req.user.username, incidentId)
+      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
       res.render('pages/statement/confirm', {
         errors,
-        data: {
-          incidentId,
-          displayName,
-          offenderNo,
-          ...statement,
-          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
-        },
-      })
-    })
-  )
-
-  router.get(
-    '/incidents/:incidentId/statement/review',
-    asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
-
-      const statement = await incidentService.getStatement(req.user.username, incidentId)
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
-      const { displayName, offenderNo } = offenderDetail
-      res.render('pages/statement/review', {
         data: {
           incidentId,
           displayName,
@@ -180,6 +158,26 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       res.render('pages/statement/submitted', {
         data: {},
+      })
+    })
+  )
+
+  router.get(
+    '/incidents/:incidentId/statement/review',
+    asyncMiddleware(async (req, res) => {
+      const { incidentId } = req.params
+
+      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.SUBMITTED)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+      res.render('pages/statement/review', {
+        data: {
+          incidentId,
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+        },
       })
     })
   )

@@ -1,8 +1,9 @@
 const serviceCreator = require('./incidentService')
+const { StatementStatus } = require('../config/types')
 
 const incidentClient = {
   getCurrentDraftIncident: jest.fn(),
-  getIncidentsForUser: jest.fn(),
+  getStatementsForUser: jest.fn(),
   getStatement: jest.fn(),
   saveStatement: jest.fn(),
   submitStatement: jest.fn(),
@@ -27,7 +28,7 @@ beforeEach(() => {
 
   service = serviceCreator({ incidentClient, elite2ClientBuilder })
   incidentClient.getCurrentDraftIncident.mockReturnValue({ a: 'b' })
-  incidentClient.getIncidentsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+  incidentClient.getStatementsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
@@ -54,36 +55,36 @@ describe('getInvolvedStaff', () => {
   })
 })
 
-describe('getIncidentsForUser', () => {
+describe('getStatementsForUser', () => {
   test('retrieve  details', async () => {
-    const output = await service.getIncidentsForUser('user1', 'STATUS-1')
+    const output = await service.getStatementsForUser('user1', StatementStatus.PENDING)
 
     expect(output).toEqual([{ id: 1 }, { id: 2 }])
 
-    expect(incidentClient.getIncidentsForUser).toBeCalledTimes(1)
-    expect(incidentClient.getIncidentsForUser).toBeCalledWith('user1', 'STATUS-1')
+    expect(incidentClient.getStatementsForUser).toBeCalledTimes(1)
+    expect(incidentClient.getStatementsForUser).toBeCalledWith('user1', StatementStatus.PENDING)
   })
 })
 
-describe('getIncidentWithStatement', () => {
+describe('getStatement', () => {
   test('retrieve details when user is involved', async () => {
     const incident = { id: 1, user_id: 'BOB' }
 
     incidentClient.getStatement.mockReturnValue(incident)
 
-    const output = await service.getStatement('BOB', 1)
+    const output = await service.getStatement('BOB', 1, StatementStatus.PENDING)
 
     expect(output).toEqual(incident)
 
-    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1)
+    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
   })
 
   test('retrieve details when incident is not present', async () => {
     incidentClient.getStatement.mockReturnValue(undefined)
 
-    await expect(service.getStatement('BOB', 1)).rejects.toThrow(new Error("Incident: '1' does not exist"))
+    await expect(service.getStatement('BOB', 1, 'PENDING')).rejects.toThrow(new Error("Incident: '1' does not exist"))
 
-    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1)
+    expect(incidentClient.getStatement).toBeCalledWith('BOB', 1, 'PENDING')
   })
 })
 

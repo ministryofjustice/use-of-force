@@ -1,11 +1,13 @@
 const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
+
 const incidentClient = require('../../server/data/incidentClient')
 
 const getCurrentDraftIncident = bookingId =>
   incidentClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
 
-const getStatement = incidentId => incidentClient.getStatement('Test User', incidentId, db.queryWithoutTransaction)
+const getStatement = ({ incidentId, status }) =>
+  incidentClient.getStatement('Test User', incidentId, status, db.queryWithoutTransaction)
 
 module.exports = {
   clearDb() {
