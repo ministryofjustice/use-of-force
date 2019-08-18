@@ -1,5 +1,5 @@
 const serviceCreator = require('./incidentService')
-const { StatementStatus } = require('../config/types')
+const { ReportStatus, StatementStatus } = require('../config/types')
 
 const incidentClient = {
   getCurrentDraftIncident: jest.fn(),

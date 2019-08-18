@@ -1,5 +1,6 @@
 const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
+const types = require('../../server/config/types')
 
 const incidentClient = require('../../server/data/incidentClient')
 
