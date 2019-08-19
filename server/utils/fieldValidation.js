@@ -8,11 +8,6 @@ const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = re
 const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
 
 const fieldOptions = {
-  requiredString: joi
-    .string()
-    .trim()
-    .required(),
-  requiredNumber: joi.number().required(),
   requiredMonthIndex: joi
     .number()
     .min(0)
@@ -25,6 +20,11 @@ const fieldOptions = {
       .min(1900)
       .max(moment().year())
       .required(),
+  requiredString: joi
+    .string()
+    .trim()
+    .required(),
+  requiredNumber: joi.number().required(),
   requiredBoolean: joi
     .boolean()
     .required()
@@ -69,7 +69,7 @@ const fieldOptions = {
             cameraNum: joi
               .string()
               .required()
-              .error(() => 'Please input the camera number(s)'),
+              .error(() => 'Enter the body-worn camera number'),
           })
         )
         .required(),
@@ -86,15 +86,55 @@ const fieldOptions = {
               .string()
               .trim()
               .required()
-              .error(() => 'Please input the tag name for the evidence'),
+              .error(() => 'Enter the evidence tag number'),
             description: joi
               .string()
               .trim()
               .required()
-              .error(() => 'Please input a description of the evidence'),
+              .error(() => 'Enter a description of the evidence'),
           })
         )
         .required(),
+    }),
+
+  requiredBatonUsed: () =>
+    joi.when('batonDrawn', {
+      is: true,
+      then: joi.valid([true, false]).required(),
+      otherwise: joi.any().optional(),
+    }),
+
+  requiredPavaUsed: () =>
+    joi.when('pavaDrawn', {
+      is: true,
+      then: joi.valid([true, false]).required(),
+      otherwise: joi.any().optional(),
+    }),
+
+  requiredOfficersInvolved: () =>
+    joi.when('guidingHold', {
+      is: true,
+      then: joi.valid([1, 2]).required(),
+      otherwise: joi.any().optional(),
+    }),
+
+  requiredRestraintPositions: () =>
+    joi.when('restraint', {
+      is: true,
+      then: joi
+        .alternatives()
+        .try(
+          joi.array().items(joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')),
+          joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')
+        )
+        .required(),
+    }),
+
+  requiredHandcuffsType: () =>
+    joi.when('handcuffsApplied', {
+      is: true,
+      then: joi.valid(['RATCHET', 'FIXED_BAR']).required(),
+      otherwise: joi.any().optional(),
     }),
 }
 

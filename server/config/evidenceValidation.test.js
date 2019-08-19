@@ -110,11 +110,11 @@ describe('Evidence', () => {
     expect(errors).toEqual([
       {
         href: '#evidenceTagAndDescription[1][evidenceTagReference]',
-        text: 'Please input the tag name for the evidence',
+        text: 'Enter the evidence tag number',
       },
       {
         href: '#evidenceTagAndDescription[2][description]',
-        text: 'Please input a description of the evidence',
+        text: 'Enter a description of the evidence',
       },
     ])
 
@@ -169,7 +169,7 @@ describe('Evidence', () => {
     expect(errors).toEqual([
       {
         href: '#evidenceTagAndDescription[0][description]',
-        text: 'Please input a description of the evidence',
+        text: 'Enter a description of the evidence',
       },
     ])
 
