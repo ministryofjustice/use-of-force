@@ -2,23 +2,18 @@ const serviceCreator = require('./statementService')
 const { StatementStatus } = require('../config/types')
 
 const incidentClient = {
-  getCurrentDraftIncident: jest.fn(),
+  getCurrentDraft: jest.fn(),
   getStatementsForUser: jest.fn(),
   getStatement: jest.fn(),
   saveStatement: jest.fn(),
   submitStatement: jest.fn(),
-  getInvolvedStaff: jest.fn(),
-  deleteInvolvedStaff: jest.fn(),
-  insertInvolvedStaff: jest.fn(),
-  updateDraftIncident: jest.fn(),
-  createDraftIncident: jest.fn(),
 }
 
 let service
 
 beforeEach(() => {
   service = serviceCreator({ incidentClient })
-  incidentClient.getCurrentDraftIncident.mockReturnValue({ a: 'b' })
+  incidentClient.getCurrentDraft.mockReturnValue({ a: 'b' })
   incidentClient.getStatementsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 })
 
@@ -59,10 +54,10 @@ describe('getStatement', () => {
   })
 })
 
-test('should call saveStatement', async () => {
+test('should call save', async () => {
   const statement = {}
 
-  await service.saveStatement('user1', 'incident-1', statement)
+  await service.save('user1', 'incident-1', statement)
 
   expect(incidentClient.saveStatement).toBeCalledTimes(1)
   expect(incidentClient.saveStatement).toBeCalledWith('user1', 'incident-1', statement)

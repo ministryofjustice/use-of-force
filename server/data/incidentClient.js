@@ -2,7 +2,7 @@ const format = require('pg-format')
 const db = require('./dataAccess/db')
 const { ReportStatus, StatementStatus } = require('../config/types')
 
-const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
+const createDraftReport = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
   const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from report where booking_id = $5 and user_id = $2)`
   const result = await db.query({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, status, incident_date, sequence_no, created_date)
@@ -13,7 +13,7 @@ const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo
   return result.rows[0].id
 }
 
-const updateDraftIncident = (reportId, incidentDate, formResponse) => {
+const updateDraftReport = (reportId, incidentDate, formResponse) => {
   return db.query({
     text: `update report r set form_response = $1, incident_date = COALESCE($2, r.incident_date) where r.id = $3`,
     values: [formResponse, incidentDate, reportId],
@@ -23,7 +23,7 @@ const updateDraftIncident = (reportId, incidentDate, formResponse) => {
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
-const submit = (userId, bookingId) => {
+const submitReport = (userId, bookingId) => {
   return db.query({
     text: `update report r set status = $1, submitted_date = CURRENT_TIMESTAMP 
     where user_id = $2
@@ -34,7 +34,7 @@ const submit = (userId, bookingId) => {
   })
 }
 
-const getCurrentDraftIncident = async (userId, bookingId, query = db.query) => {
+const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
   const results = await query({
     text: `select id, incident_date, form_response from report r
           where user_id = $1
@@ -142,10 +142,10 @@ const insertInvolvedStaff = async (reportId, staff) => {
 }
 
 module.exports = {
-  createDraftIncident,
-  updateDraftIncident,
-  submit,
-  getCurrentDraftIncident,
+  createDraftReport,
+  updateDraftReport,
+  submitReport,
+  getCurrentDraftReport,
   getStatementsForUser,
   getStatement,
   getInvolvedStaff,

@@ -41,12 +41,12 @@ context('Submitting details page form', () => {
     return detailsPage
   }
 
-  it('Can login and create a new incident', () => {
+  it('Can login and create a new report', () => {
     cy.login(bookingId)
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraftIncident', { bookingId, formName: 'newIncident' }).then(({ data, staff }) => {
+    cy.task('getCurrentDraft', { bookingId, formName: 'newIncident' }).then(({ data, staff }) => {
       const { incidentDate, ...payload } = data
 
       const incidentDateInMillis = moment(incidentDate).valueOf()

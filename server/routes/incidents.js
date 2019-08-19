@@ -95,7 +95,7 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
       const isValid = isNilOrEmpty(errors)
 
       // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
-      await statementService.saveStatement(req.user.username, reportId, statement)
+      await statementService.save(req.user.username, reportId, statement)
 
       if (!isValid) {
         req.flash('errors', errors)
