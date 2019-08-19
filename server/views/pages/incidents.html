@@ -22,7 +22,7 @@
   <tbody class="govuk-table__body">
       {% for incident in awaitingStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.date}}</td>
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('DD/MM/YYYY - HH:mm')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
@@ -58,7 +58,7 @@
   <tbody class="govuk-table__body">
       {% for incident in completedStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.date}}</td>
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('DD/MM/YYYY - HH:mm')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">

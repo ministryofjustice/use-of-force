@@ -35,7 +35,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
 
   const toStatement = namesByOffenderNumber => incident => ({
     id: incident.id,
-    date: moment(incident.incident_date).format('DD/MM/YYYY - HH:mm'),
+    incidentdate: incident.incident_date,
     staffMemberName: incident.reporter_name,
     offenderName: namesByOffenderNumber[incident.offender_no],
   })
@@ -99,7 +99,6 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
 
       if (!isValid) {
         req.flash('errors', errors)
-        req.flash('userInput', statement)
         return res.redirect(`/incidents/${incidentId}/statement`)
       }
 
@@ -136,6 +135,14 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
       const { confirmed } = req.body
+
+      const errors = await incidentService.validateSavedStatement(req.user.username, incidentId)
+
+      if (!isNilOrEmpty(errors)) {
+        req.flash('errors', errors)
+        return res.redirect(`/incidents/${incidentId}/statement`)
+      }
+
       if (!confirmed) {
         req.flash('errors', [
           {

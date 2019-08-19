@@ -1,5 +1,8 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
+const { StatementStatus } = require('../config/types')
+const statementConfig = require('../config/statement')
+const { validate } = require('../utils/fieldValidation')
 
 module.exports = function createIncidentService({ incidentClient, elite2ClientBuilder }) {
   function getCurrentDraftIncident(userId, bookingId) {
@@ -78,6 +81,12 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return statement
   }
 
+  const validateSavedStatement = async (username, incidentId) => {
+    const statement = await getStatement(username, incidentId, StatementStatus.PENDING)
+    const errors = statementConfig.validate ? validate(statementConfig.fields, statement, true) : []
+    return errors
+  }
+
   const getInvolvedStaff = incidentId => {
     return incidentClient.getInvolvedStaff(incidentId)
   }
@@ -101,5 +110,6 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     getInvolvedStaff,
     saveStatement,
     submitStatement,
+    validateSavedStatement,
   }
 }

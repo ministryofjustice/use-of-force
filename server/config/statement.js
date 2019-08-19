@@ -8,11 +8,6 @@ const toInteger = val => {
 module.exports = {
   fields: [
     {
-      submit: {
-        responseType: 'requiredOneOf_save-and-continue_save-and-return',
-      },
-    },
-    {
       lastTrainingMonth: {
         responseType: 'requiredMonthIndex',
         sanitiser: toInteger,
