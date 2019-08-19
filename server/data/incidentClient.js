@@ -13,10 +13,10 @@ const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo
   return result.rows[0].id
 }
 
-const updateDraftIncident = (incidentId, incidentDate, formResponse) => {
+const updateDraftIncident = (reportId, incidentDate, formResponse) => {
   return db.query({
     text: `update report r set form_response = $1, incident_date = COALESCE($2, r.incident_date) where r.id = $3`,
-    values: [formResponse, incidentDate, incidentId],
+    values: [formResponse, incidentDate, reportId],
   })
 }
 
@@ -58,7 +58,7 @@ const getStatementsForUser = (userId, status, query = db.query) => {
   })
 }
 
-const getStatement = async (userId, incidentId, status, query = db.query) => {
+const getStatement = async (userId, reportId, status, query = db.query) => {
   const results = await query({
     text: `select r.id
     ,      r.booking_id             "bookingId"
@@ -71,14 +71,14 @@ const getStatement = async (userId, incidentId, status, query = db.query) => {
     from report r 
     left join statement s on r.id = s.report_id
     where r.id = $1 and r.user_id = $2 and s.statement_status = $3`,
-    values: [incidentId, userId, status.value],
+    values: [reportId, userId, status.value],
   })
   return results.rows[0]
 }
 
 const saveStatement = (
   userId,
-  incidentId,
+  reportId,
   { lastTrainingMonth, lastTrainingYear, jobStartYear, statement },
   query = db.query
 ) => {
@@ -97,13 +97,13 @@ const saveStatement = (
       jobStartYear,
       statement,
       userId,
-      incidentId,
+      reportId,
       StatementStatus.PENDING.value,
     ],
   })
 }
 
-const submitStatement = (userId, incidentId, query = db.query) => {
+const submitStatement = (userId, reportId, query = db.query) => {
   return query({
     text: `update statement 
     set submitted_date = CURRENT_TIMESTAMP
@@ -111,27 +111,27 @@ const submitStatement = (userId, incidentId, query = db.query) => {
     where user_id = $2
     and report_id = $3
     and statement_status = $4`,
-    values: [StatementStatus.SUBMITTED.value, userId, incidentId, StatementStatus.PENDING.value],
+    values: [StatementStatus.SUBMITTED.value, userId, reportId, StatementStatus.PENDING.value],
   })
 }
 
-const getInvolvedStaff = async (incidentId, query = db.query) => {
+const getInvolvedStaff = async (reportId, query = db.query) => {
   const results = await query({
     text: 'select id, user_id username, name, email from statement where report_id = $1 order by id',
-    values: [incidentId],
+    values: [reportId],
   })
   return results.rows
 }
 
-const deleteInvolvedStaff = incidentId => {
+const deleteInvolvedStaff = reportId => {
   return db.query({
     text: `delete from statement where report_id = $1`,
-    values: [incidentId],
+    values: [reportId],
   })
 }
 
-const insertInvolvedStaff = async (incidentId, staff) => {
-  const rows = staff.map(s => [incidentId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
+const insertInvolvedStaff = async (reportId, staff) => {
+  const rows = staff.map(s => [reportId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
   const results = await db.query({
     text: format(
       'insert into statement (report_id, user_id, name, email, statement_status) VALUES %L returning id',
