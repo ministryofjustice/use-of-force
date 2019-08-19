@@ -113,9 +113,9 @@ const getHref = (fieldConfig, error) => {
 }
 
 module.exports = {
-  validate(fields, formResponse) {
+  validate(fields, formResponse, stripUnknown = false) {
     const formSchema = createSchemaFromConfig(fields)
-    const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown: false, abortEarly: false })
+    const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown, abortEarly: false })
     const fieldsConfig = fields
 
     if (isNilOrEmpty(joiErrors.error)) {

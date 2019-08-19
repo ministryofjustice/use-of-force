@@ -9,6 +9,7 @@ const incidentService = {
   submitStatement: jest.fn(),
   saveStatement: jest.fn(),
   processUserInput: () => ({}),
+  validateSavedStatement: jest.fn(),
 }
 
 const offenderService = {
@@ -20,6 +21,8 @@ const route = createRouter({ authenticationMiddleware, incidentService, offender
 let app
 
 beforeEach(() => {
+  incidentService.validateSavedStatement.mockReturnValue([])
+
   app = appSetup(route)
 })
 
@@ -77,7 +80,7 @@ describe('POST /incidents/:incidentId/statement', () => {
 })
 
 describe('POST /incidents/:incidentId/statement/confirm', () => {
-  it('unconfirmed submit redirects due to validation', () =>
+  it('unconfirmed submit redirects due to no confirmation', () =>
     request(app)
       .post('/incidents/-1/statement/confirm')
       .expect(302)
@@ -89,6 +92,14 @@ describe('POST /incidents/:incidentId/statement/confirm', () => {
       .send('confirmed=confirmed')
       .expect(302)
       .expect('Location', '/incidents/-1/statement/submitted'))
+
+  it('confirmed submit redirects due to form not being complete', () => {
+    incidentService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
+    return request(app)
+      .post('/incidents/-1/statement/confirm')
+      .expect(302)
+      .expect('Location', '/incidents/-1/statement')
+  })
 })
 
 describe('GET /incidents/:incidentId/statement', () => {

@@ -11,7 +11,6 @@ const validatorChecker = formConfig => input => {
 const check = validatorChecker(config)
 
 const validInput = {
-  submit: 'save-and-continue',
   lastTrainingMonth: '11',
   lastTrainingYear: '1999',
   jobStartYear: '1995',
