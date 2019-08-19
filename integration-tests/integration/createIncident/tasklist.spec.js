@@ -1,6 +1,6 @@
 const TasklistPage = require('../../pages/tasklistPage')
 
-context('Submit the incident report', () => {
+context('tasklist', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')

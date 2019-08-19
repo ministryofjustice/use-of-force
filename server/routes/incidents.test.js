@@ -4,7 +4,7 @@ const createRouter = require('./incidents')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const incidentService = {
-  getIncidentsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
+  getStatementsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
   getStatement: () => ({ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }),
   submitStatement: jest.fn(),
   saveStatement: jest.fn(),

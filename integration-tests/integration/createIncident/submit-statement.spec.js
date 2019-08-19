@@ -3,8 +3,9 @@ const IncidentsPage = require('../../pages/incidentsPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const SubmitStatementPage = require('../../pages/submitStatementPage')
 const ViewStatementPage = require('../../pages/viewStatementPage')
+const { StatementStatus } = require('../../../server/config/types')
 
-context('Submit the incident report', () => {
+context('Submit statement', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
@@ -110,7 +111,7 @@ context('Submit the incident report', () => {
     date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
 
     incidentId().then(id =>
-      cy.task('getStatement', id).then(statement => {
+      cy.task('getStatement', { incidentId: id, status: StatementStatus.SUBMITTED }).then(statement => {
         const { id: _, incidentDate, submittedDate, ...vals } = statement
 
         expect(vals).to.deep.equal({

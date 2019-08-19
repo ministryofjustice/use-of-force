@@ -1,5 +1,6 @@
 const format = require('pg-format')
 const db = require('./dataAccess/db')
+const { ReportStatus, StatementStatus } = require('../config/types')
 
 const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo, incidentDate, formResponse }) => {
   const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from incidents where booking_id = $5 and user_id = $2)`
@@ -7,7 +8,7 @@ const createDraftIncident = async ({ userId, bookingId, reporterName, offenderNo
     text: `insert into incidents (form_response, user_id, reporter_name, offender_no, booking_id, status, incident_date, sequence_no, created_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, ${nextSequence}, CURRENT_TIMESTAMP)
             returning id`,
-    values: [formResponse, userId, reporterName, offenderNo, bookingId, 'IN_PROGRESS', incidentDate],
+    values: [formResponse, userId, reporterName, offenderNo, bookingId, ReportStatus.IN_PROGRESS.value, incidentDate],
   })
   return result.rows[0].id
 }
@@ -27,9 +28,9 @@ const submit = (userId, bookingId) => {
     text: `update incidents i set status = $1, submitted_date = CURRENT_TIMESTAMP 
     where user_id = $2
     and booking_id = $3
-    and status = 'IN_PROGRESS'
+    and status = $4
     and i.sequence_no = ${maxSequenceForBooking}`,
-    values: ['SUBMITTED', userId, bookingId],
+    values: [ReportStatus.SUBMITTED.value, userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
 }
 
@@ -40,12 +41,12 @@ const getCurrentDraftIncident = async (userId, bookingId, query = db.query) => {
           and booking_id = $2
           and status = $3
           and i.sequence_no = ${maxSequenceForBooking}`,
-    values: [userId, bookingId, 'IN_PROGRESS'],
+    values: [userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
   return results.rows[0] || {}
 }
 
-const getIncidentsForUser = (userId, status, query = db.query) => {
+const getStatementsForUser = (userId, status, query = db.query) => {
   return query({
     text: `select i.id, i.booking_id, i.reporter_name, i.offender_no, i.incident_date, inv."name"
             from involved_staff inv 
@@ -53,11 +54,11 @@ const getIncidentsForUser = (userId, status, query = db.query) => {
           where i.status = $1 
           and inv.user_id = $2 
           and inv.statement_status = $3`,
-    values: ['SUBMITTED', userId, status],
+    values: ['SUBMITTED', userId, status.value],
   })
 }
 
-const getStatement = async (userId, incidentId, query = db.query) => {
+const getStatement = async (userId, incidentId, status, query = db.query) => {
   const results = await query({
     text: `select i.id
     ,      i.booking_id             "bookingId"
@@ -69,10 +70,10 @@ const getStatement = async (userId, incidentId, query = db.query) => {
     ,      inv.submitted_date       "submittedDate"
     from incidents i 
     left join involved_staff inv on i.id = inv.incident_id
-    where i.id = $1 and i.user_id = $2`,
-    values: [incidentId, userId],
+    where i.id = $1 and i.user_id = $2 and inv.statement_status = $3`,
+    values: [incidentId, userId, status.value],
   })
-  return results.rows[0] || {}
+  return results.rows[0]
 }
 
 const saveStatement = (
@@ -90,7 +91,15 @@ const saveStatement = (
     where user_id = $5
     and incident_id = $6
     and statement_status = $7`,
-    values: [lastTrainingMonth, lastTrainingYear, jobStartYear, statement, userId, incidentId, 'PENDING'],
+    values: [
+      lastTrainingMonth,
+      lastTrainingYear,
+      jobStartYear,
+      statement,
+      userId,
+      incidentId,
+      StatementStatus.PENDING.value,
+    ],
   })
 }
 
@@ -102,7 +111,7 @@ const submitStatement = (userId, incidentId, query = db.query) => {
     where user_id = $2
     and incident_id = $3
     and statement_status = $4`,
-    values: ['SUBMITTED', userId, incidentId, 'PENDING'],
+    values: [StatementStatus.SUBMITTED.value, userId, incidentId, StatementStatus.PENDING.value],
   })
 }
 
@@ -122,7 +131,7 @@ const deleteInvolvedStaff = incidentId => {
 }
 
 const insertInvolvedStaff = async (incidentId, staff) => {
-  const rows = staff.map(s => [incidentId, s.userId, s.name, s.email, 'PENDING'])
+  const rows = staff.map(s => [incidentId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
   const results = await db.query({
     text: format(
       'insert into involved_staff (incident_id, user_id, name, email, statement_status) VALUES %L returning id',
@@ -137,7 +146,7 @@ module.exports = {
   updateDraftIncident,
   submit,
   getCurrentDraftIncident,
-  getIncidentsForUser,
+  getStatementsForUser,
   getStatement,
   getInvolvedStaff,
   deleteInvolvedStaff,
