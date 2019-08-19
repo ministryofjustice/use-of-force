@@ -22,6 +22,7 @@ context('Submit the incident report', () => {
 
     const newIncidentPage = tasklistPage.startNewForm()
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
@@ -46,6 +47,7 @@ context('Submit the incident report', () => {
 
     const newIncidentPage = tasklistPage.startNewForm()
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
@@ -69,6 +71,7 @@ context('Submit the incident report', () => {
       .type('Test User')
 
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()

@@ -25,7 +25,8 @@
       text: "Was positive communication used to de-escalate the situation?",
       name: "positiveCommunication",
       value: data.positiveCommunication,
-      options: yesNoOptions
+      options: yesNoOptions,
+      errorMessage: errors | findError('positiveCommunication')
     })}}
 
     <!-- Q2 -->
@@ -33,7 +34,8 @@
       text: "Were any personal protection techniques used?",
       name: "personalProtectionTechniques",
       value: data.personalProtectionTechniques,
-      options: yesNoOptions
+      options: yesNoOptions,
+      errorMessage: errors | findError('personalProtectionTechniques')
     })}}
 
     <!-- Q3 -->
@@ -42,13 +44,15 @@
         text: "Was a baton drawn?",
         name: "batonDrawn",
         value: data.batonDrawn,
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('batonDrawn')
       },
       followUpQuestion: {
         text: "Was it used?",
         value: data.batonUsed,
         name: "batonUsed",
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('batonUsed')
       }
     })}}
 
@@ -58,13 +62,17 @@
         text: "Was PAVA drawn?",
         name: "pavaDrawn",
         value: data.pavaDrawn,
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('pavaDrawn')
+
       },
       followUpQuestion: {
         text: "Was it used?",
         name: "pavaUsed",
         value: data.pavaUsed,
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('pavaUsed')
+
       }
     }
     )}}
@@ -75,12 +83,15 @@
         text: "Was a guiding hold used?",
         name: "guidingHold",
         value: data.guidingHold,
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('guidingHold')
+
       },
       followUpQuestion: {
         text: "How many officers were involved?",
         name: "guidingHoldOfficersInvolved",
         value: data.guidingHoldOfficersInvolved,
+        errorMessage: errors | findError('guidingHoldOfficersInvolved'),
         options: [{
           value: 1,
           label: "1"
@@ -93,21 +104,25 @@
     })}}
 
     <!-- Q6 -->
+
     {{ incidentMacro.radiosWithNestedCheckboxes({
-          primaryQuestion: {
-            text: "Was control and restraint used?",
-            name: "restraint",
-            value: data.restraint,
-            options: yesNoOptions
-          },
-          followUpQuestion: {
-            text: "What positions were used?",
-            name: "restraintPositions",
-            value: data.restraintPositions or [],
-            options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label')
-          }
-        }) 
-      }}
+      primaryQuestion: {
+        text: "Was control and restraint used?",
+        name: "restraint",
+        value: data.restraint,
+        options: yesNoOptions,
+        errorMessage: errors | findError('restraint')
+      },
+      followUpQuestion: {
+        text: "What positions were used?",
+        name: "restraintPositions",
+        value: data.restraintPositions or [],
+        errorMessage: errors | findError('restraintPositions'),
+        options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label')
+      }
+    }) 
+  }}
+
 
     <!-- Q7 -->
     {{ incidentMacro.radiosWithNestedRadios({
@@ -115,12 +130,14 @@
         text: "Were handcuffs applied?",
         name: "handcuffsApplied",
         value: data.handcuffsApplied,
-        options: yesNoOptions
+        options: yesNoOptions,
+        errorMessage: errors | findError('handcuffsApplied')
       },
       followUpQuestion: {
         text: "Select which type of handcuffs were used",
         name: "handcuffsType",
         value: data.handcuffsType,
+        errorMessage: errors | findError('handcuffsType'),
         options: [{
           value: "RATCHET",
           label: "Ratchet"

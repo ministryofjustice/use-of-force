@@ -30,6 +30,7 @@ context('Submit statement', () => {
       .type('Test User')
 
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
@@ -82,6 +83,7 @@ context('Submit statement', () => {
       .type('Test User')
 
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
@@ -138,6 +140,7 @@ context('Submit statement', () => {
       .type('Test User')
 
     const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()

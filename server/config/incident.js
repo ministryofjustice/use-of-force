@@ -62,28 +62,28 @@ module.exports = {
       {
         positiveCommunication: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was Positive Communication used?',
+          validationMessage: 'Select yes if positive communication was used',
           sanitiser: toBoolean,
         },
       },
       {
         personalProtectionTechniques: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Were Personal Protection techniques used?',
+          validationMessage: 'Select yes if any personal protection techniques were used',
           sanitiser: toBoolean,
         },
       },
       {
         batonDrawn: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was a baton drawn?',
+          validationMessage: 'Select yes if a baton was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         batonUsed: {
-          responseType: 'requiredBoolean',
-          validationMessage: 'Was a baton used?',
+          responseType: 'requiredBatonUsed',
+          validationMessage: 'Select yes if a baton was used',
           sanitiser: toBoolean,
           dependentOn: 'batonDrawn',
           predicate: 'true',
@@ -92,14 +92,14 @@ module.exports = {
       {
         pavaDrawn: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was a pava drawn?',
+          validationMessage: 'Select yes if PAVA was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         pavaUsed: {
-          responseType: 'requiredBoolean',
-          validationMessage: 'Was a pava used?',
+          responseType: 'requiredPavaUsed',
+          validationMessage: 'Select yes if PAVA was used',
           sanitiser: toBoolean,
           dependentOn: 'pavaDrawn',
           predicate: 'true',
@@ -108,14 +108,14 @@ module.exports = {
       {
         guidingHold: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was a guiding hold used?',
+          validationMessage: 'Select yes if a guiding hold was used',
           sanitiser: toBoolean,
         },
       },
       {
         guidingHoldOfficersInvolved: {
-          responseType: 'requiredNumber',
-          validationMessage: 'How many officers were involved?',
+          responseType: 'requiredOfficersInvolved',
+          validationMessage: 'Select how many officers were involved in the guiding hold',
           sanitiser: toInteger,
           dependentOn: 'guidingHold',
           predicate: 'true',
@@ -124,14 +124,14 @@ module.exports = {
       {
         restraint: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was control and restraint used?',
+          validationMessage: 'Select yes if control and restraint was used',
           sanitiser: toBoolean,
         },
       },
       {
         restraintPositions: {
-          responseType: 'requiredString',
-          validationMessage: 'What positions were used?',
+          responseType: 'requiredRestraintPositions',
+          validationMessage: 'Select the control and restraint positions used',
           dependentOn: 'restraint',
           predicate: 'true',
         },
@@ -139,20 +139,20 @@ module.exports = {
       {
         handcuffsApplied: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Were handcuffs applied?',
+          validationMessage: 'Select yes if handcuffs were applied',
           sanitiser: toBoolean,
         },
       },
       {
         handcuffsType: {
-          responseType: 'requiredString',
-          validationMessage: 'What type of handcuffs were used?',
+          responseType: 'requiredHandcuffsType',
+          validationMessage: 'Select the type of handcuffs used',
           dependentOn: 'handcuffsApplied',
           predicate: 'true',
         },
       },
     ],
-    validate: false,
+    validate: true,
     nextPath: {
       path: bookingId => `/form/incident/relocationAndInjuries/${bookingId}`,
     },
