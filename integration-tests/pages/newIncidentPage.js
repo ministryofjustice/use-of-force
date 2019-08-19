@@ -12,22 +12,30 @@ export default () =>
       spontaneous: () => cy.get("[name='plannedUseOfForce'][value='false']"),
     },
 
-    fillForm: () => {
-      cy.get('[data-qa=offender-name]')
-      cy.get('#location').select('Asso A Wing')
-      cy.get('[name="plannedUseOfForce"]').check('true')
-      cy.get('[name="involved[0][username]"]').type('Dr Smith')
-      cy.get('.add-another-staff-member > .button-action > .govuk-button').click()
-      cy.get('[name="involved[1][username]"]').type('Mr Zagato')
-      cy.get('.add-another-staff-member > .button-action > .govuk-button').click()
-      cy.get('[name="involved[2][username]"]').type('Mrs Jones')
-      cy.get('[name="witnesses[0][name]').type('Witness 1')
-      cy.get('.add-another-witness > .button-action > .govuk-button').click()
-      cy.get('[name="witnesses[1][name]').type('Witness two')
-      cy.get('.add-another-witness > .button-action > .govuk-button').click()
-      cy.get('[name="witnesses[2][name]').type('Tom Jones')
-      cy.get('.add-another-staff-member > :nth-child(1) > .govuk-button').click()
-      cy.get('.add-another-witness > :nth-child(2) > .govuk-button').click()
+    fillForm() {
+      this.offenderName().contains('Norman Smith (A1234AC)')
+      this.location().select('Asso A Wing')
+      this.forceType.check('true')
+
+      this.staffInvolved(0)
+        .name()
+        .type('Mr Zagato')
+      this.addAnotherStaff().click()
+
+      this.staffInvolved(1)
+        .name()
+        .type('Mrs Jones')
+
+      this.witnesses(0)
+        .name()
+        .type('Witness 1')
+      this.addAnotherWitness().click()
+
+      this.witnesses(1)
+        .name()
+        .type('Tom Jones')
+      this.addAnotherWitness().click()
+      this.addAnotherWitness().click()
     },
 
     staffInvolved: index => ({
