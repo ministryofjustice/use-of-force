@@ -2,6 +2,7 @@ const TasklistPage = require('../../pages/tasklistPage')
 const IncidentsPage = require('../../pages/incidentsPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const SubmitStatementPage = require('../../pages/submitStatementPage')
+const ViewStatementPage = require('../../pages/viewStatementPage')
 
 context('Submit the incident report', () => {
   const bookingId = 1001
@@ -121,5 +122,56 @@ context('Submit the incident report', () => {
         })
       })
     )
+  })
+
+  it('Can view a submitted report', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    tasklistPage.checkNoPartsComplete()
+
+    const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage
+      .staffInvolved(0)
+      .name()
+      .type('Test User')
+
+    const detailsPage = newIncidentPage.save()
+    const relocationAndInjuriesPage = detailsPage.save()
+    const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.fillForm()
+    const checkAnswersPage = evidencePage.save()
+
+    checkAnswersPage.confirm()
+    checkAnswersPage.clickSubmit()
+
+    const submittedPage = SubmittedPage.verifyOnPage()
+
+    const submitStatementPage = submittedPage.continueToStatement()
+    submitStatementPage.lastTrainingMonth().select('March')
+    submitStatementPage.lastTrainingYear().type('2010')
+    submitStatementPage.jobStartYear().type('1999')
+    submitStatementPage.statement().type('This is my statement')
+
+    const confirmStatementPage = submitStatementPage.submit()
+    confirmStatementPage.offenderName().should('contain', 'Norman Smith')
+    confirmStatementPage.statement().should('contain', 'This is my statement')
+    confirmStatementPage.lastTraining().should('contain', 'March 2010')
+    confirmStatementPage.jobStartYear().should('contain', '1999')
+    confirmStatementPage.confirm().click()
+
+    const statementSubmittedPage = confirmStatementPage.submit()
+
+    const incidentsPage = statementSubmittedPage.finish()
+
+    const { viewButton } = incidentsPage.getCompleteRow(0)
+
+    viewButton().click()
+
+    const viewStatementPage = ViewStatementPage.verifyOnPage()
+    viewStatementPage.offenderName().should('contain', 'Norman Smith')
+    viewStatementPage.statement().should('contain', 'This is my statement')
+    viewStatementPage.lastTraining().should('contain', 'March 2010')
+    viewStatementPage.jobStartYear().should('contain', '1999')
   })
 })

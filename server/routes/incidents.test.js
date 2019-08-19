@@ -61,10 +61,17 @@ describe('POST /incidents/:incidentId/statement', () => {
       .expect(302)
       .expect('Location', '/incidents/'))
 
-  it('save and continue should forward to confirm page', () =>
+  it('save and continue with invalid data will redirect to same page', () =>
     request(app)
       .post('/incidents/-1/statement')
       .send('submit=save-and-continue')
+      .expect(302)
+      .expect('Location', '/incidents/-1/statement'))
+
+  it('save and continue with valid data should forward to confirm page', () =>
+    request(app)
+      .post('/incidents/-1/statement')
+      .send('submit=save-and-continue&statement=bob&jobStartYear=1999&lastTrainingMonth=1&lastTrainingYear=1999')
       .expect(302)
       .expect('Location', '/incidents/-1/statement/confirm'))
 })

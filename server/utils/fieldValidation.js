@@ -1,12 +1,30 @@
 const baseJoi = require('joi')
+const moment = require('moment')
 const dateExtend = require('joi-date-extensions')
 const postcodeExtend = require('joi-postcode')
+
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
 
 const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
 
 const fieldOptions = {
-  requiredString: joi.string().required(),
+  requiredString: joi
+    .string()
+    .trim()
+    .required(),
+  requiredNumber: joi.number().required(),
+  requiredMonthIndex: joi
+    .number()
+    .min(0)
+    .max(11)
+    .required(),
+
+  requiredYearNotInFuture: () =>
+    joi
+      .number()
+      .min(1900)
+      .max(moment().year())
+      .required(),
   requiredBoolean: joi
     .boolean()
     .required()
@@ -38,6 +56,7 @@ const fieldOptions = {
       then: joi.valid(['Yes', 'No']).required(),
       otherwise: joi.any().optional(),
     }),
+  requiredOneOf: (...values) => joi.valid(values).required(),
   requiredYesNoNotKnown: joi.valid(['YES', 'NO', 'NOT_KNOWN']).required(),
   requiredCameraNumber: () =>
     joi.when('bodyWornCamera', {
@@ -105,7 +124,10 @@ module.exports = {
 
     const errors = joiErrors.error.details.map(error => {
       const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
-      const errorMessage = getIn([...error.path, 'validationMessage'], fieldConfig) || error.message
+      const errorMessage =
+        getIn([...error.path, 'validationMessage', error.type], fieldConfig) ||
+        getIn([...error.path, 'validationMessage'], fieldConfig) ||
+        error.message
 
       return {
         text: errorMessage,

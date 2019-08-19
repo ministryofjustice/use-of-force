@@ -1,8 +1,13 @@
-{% extends "../../partials/layout.html" %} {% from "govuk/components/button/macro.njk" import govukButton %} {% from
-"govuk/components/textarea/macro.njk" import govukTextarea %} {% from "govuk/components/input/macro.njk" import
-govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} {% from
-"govuk/components/fieldset/macro.njk" import govukFieldset %} {% from "govuk/components/checkboxes/macro.njk" import
-govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} {% block content %}
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %} 
+{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/select/macro.njk" import govukSelect %} 
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
+
+{% block content %}
 <div class="govuk-body">
   {% if errors.length > 0 %}
   {{
@@ -36,7 +41,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
     <div class="govuk-grid-column-one-half govuk-!-margin-top-5">
       {% call govukFieldset({ legend: { text: "When did you last attend control and restraint basic refresher
       training?", classes: "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="last-training-month">
+      <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="last-training">
         {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }}
       </p>
       {% endcall %}
