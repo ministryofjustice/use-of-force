@@ -10,7 +10,7 @@ const getStatement = ({ incidentId, status }) =>
 
 module.exports = {
   clearDb() {
-    const drops = ['incidents', 'involved_staff'].map(table =>
+    const drops = ['report', 'statement'].map(table =>
       db.queryWithoutTransaction({
         text: format('delete from %I', table),
       })
