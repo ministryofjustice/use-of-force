@@ -190,3 +190,43 @@ describe('update', () => {
     expect(incidentClient.submitStatement).toBeCalledWith('user1', 'incident-1')
   })
 })
+
+describe('validateSavedStatement', () => {
+  test('valid statement', async () => {
+    incidentClient.getStatement.mockReturnValue({
+      lastTrainingMonth: 1,
+      lastTrainingYear: 2000,
+      jobStartYear: 1998,
+      statement: 'A statement',
+    })
+
+    const errors = await service.validateSavedStatement('user-1', 1)
+    expect(errors).toEqual([])
+  })
+
+  test('can cope with additional attributes', async () => {
+    incidentClient.getStatement.mockReturnValue({
+      lastTrainingMonth: 1,
+      lastTrainingYear: 2000,
+      jobStartYear: 1998,
+      statement: 'A statement',
+      id: 1223,
+      bookingId: 'bookingId',
+    })
+
+    const errors = await service.validateSavedStatement('user-1', 1)
+    expect(errors).toEqual([])
+  })
+
+  test('invalid statement', async () => {
+    incidentClient.getStatement.mockReturnValue({})
+
+    const errors = await service.validateSavedStatement('user-1', 1)
+    expect(errors.map(error => error.href)).toEqual([
+      '#lastTrainingMonth',
+      '#lastTrainingYear',
+      '#jobStartYear',
+      '#statement',
+    ])
+  })
+})

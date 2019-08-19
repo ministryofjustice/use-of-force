@@ -1,6 +1,5 @@
 const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
-
 const incidentClient = require('../../server/data/incidentClient')
 
 const getCurrentDraftIncident = bookingId =>
