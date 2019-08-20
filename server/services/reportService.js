@@ -1,16 +1,17 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
 
-module.exports = function createReportService({ incidentClient, elite2ClientBuilder }) {
+module.exports = function createReportService({ incidentClient, elite2ClientBuilder, involvedStaffService }) {
   function getCurrentDraft(userId, bookingId) {
     return incidentClient.getCurrentDraftReport(userId, bookingId)
   }
 
-  async function submit(userId, bookingId) {
-    const form = await getCurrentDraft(userId, bookingId)
+  async function submit(currentUser, bookingId) {
+    const form = await getCurrentDraft(currentUser.username, bookingId)
     if (form.id) {
-      logger.info(`Submitting report for user: ${userId} and booking: ${bookingId}`)
-      await incidentClient.submitReport(userId, bookingId)
+      await involvedStaffService.addCurrentUser(form.id, currentUser)
+      logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
+      await incidentClient.submitReport(currentUser.username, bookingId)
       return form.id
     }
     return false
@@ -25,7 +26,7 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
       incidentDate,
     })
     if (involvedStaff) {
-      await updateInvolvedStaff({ reportId, involvedStaff })
+      await involvedStaffService.update(reportId, involvedStaff)
     }
   }
 
@@ -52,27 +53,9 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
     return id
   }
 
-  async function updateInvolvedStaff({ reportId, involvedStaff = [] }) {
-    await incidentClient.deleteInvolvedStaff(reportId)
-    if (involvedStaff.length) {
-      // TODO The reporting staff may need to be added to the list
-      const staff = involvedStaff.map(user => ({
-        userId: user.username,
-        name: user.name,
-        email: user.email,
-      }))
-      await incidentClient.insertInvolvedStaff(reportId, staff)
-    }
-  }
-
-  const getInvolvedStaff = reportId => {
-    return incidentClient.getInvolvedStaff(reportId)
-  }
-
   return {
     getCurrentDraft,
     update,
     submit,
-    getInvolvedStaff,
   }
 }

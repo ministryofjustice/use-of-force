@@ -245,7 +245,10 @@ module.exports = function createApp({
   app.use(currentUserInContext)
 
   app.use('/', createIncidentsRouter({ authenticationMiddleware, statementService, offenderService }))
-  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, reportService, offenderService }))
+  app.use(
+    '/check-answers/',
+    createCheckAnswersRouter({ authenticationMiddleware, reportService, offenderService, involvedStaffService })
+  )
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use(
     '/form/',

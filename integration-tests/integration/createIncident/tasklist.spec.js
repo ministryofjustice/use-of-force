@@ -7,6 +7,7 @@ context('tasklist', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
   it('Offender details are rendered correctly', () => {

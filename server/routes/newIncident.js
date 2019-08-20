@@ -69,7 +69,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
 
       const input = firstItem(req.flash('userInput'))
 
-      const involved = (input && input.involved) || (formId && (await reportService.getInvolvedStaff(formId))) || []
+      const involved = (input && input.involved) || (formId && (await involvedStaffService.get(formId))) || []
 
       const data = {
         displayName,
@@ -92,13 +92,9 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
     })
   )
 
-  const getAdditonalData = async (res, form, extractedFields) => {
-    if (form === 'newIncident' && extractedFields.involved) {
-      const result = await involvedStaffService.getInvolvedStaff(
-        res.locals.user.token,
-        extractedFields.involved.map(u => u.username)
-      )
-      return result
+  const getAdditonalData = async (res, form, { involved = [] }) => {
+    if (form === 'newIncident') {
+      return involvedStaffService.lookup(res.locals.user.token, involved.map(u => u.username))
     }
     return { additionalFields: [], additionalErrors: [] }
   }
@@ -110,7 +106,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
 
-      const { additionalFields, additionalErrors } = await getAdditonalData(res, form, extractedFields)
+      const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, form, extractedFields)
 
       const allErrors = [...errors, ...additionalErrors]
       const allAdditionalFields = { ...extractedFields, ...additionalFields }

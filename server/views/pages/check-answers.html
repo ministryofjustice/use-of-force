@@ -38,8 +38,8 @@ href: backLink or "/"
           }}
       {{pagesMacros.tableRow({label: 'Offender name',   'data-qa': 'offenderName',      dataValue: data.newIncident.offenderName | title })}}
       {{pagesMacros.tableRow({label: 'Offender number', 'data-qa': 'offenderNumber',    dataValue: data.newIncident.offenderNumber})}}
-      {{pagesMacros.tableRow({label: 'Date of incident',  'data-qa': 'incidentDate',      dataValue: data.newIncident.incidentDate })}}
-      {{pagesMacros.tableRow({label: 'Time of incident',  'data-qa': 'incidentTime',      dataValue: data.newIncident.incidentTime })}}
+      {{pagesMacros.tableRow({label: 'Date of incident',  'data-qa': 'incidentDate',      dataValue: data.newIncident.incidentDate | formatDate('DD/MM/YYYY') })}}
+      {{pagesMacros.tableRow({label: 'Time of incident',  'data-qa': 'incidentTime',      dataValue: data.newIncident.incidentDate | formatDate('HH:mm') })}}
       {{pagesMacros.tableRow({label: 'Location',        'data-qa': 'location',          dataValue: data.newIncident.location  })}}
       {{pagesMacros.tableRow({label: 'Incident type',   'data-qa': 'incidentType',      dataValue: data.newIncident.plannedUseOfForce  })}}
       {{pagesMacros.tableRow({label: 'Staff involved',  'data-qa': 'staffInvolved',     dataValue: data.newIncident.staffInvolved | title })}}
