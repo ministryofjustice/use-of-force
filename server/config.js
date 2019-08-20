@@ -12,8 +12,10 @@ function get(name, fallback, options = {}) {
   throw new Error(`Missing env var ${name}`)
 }
 
+const requiredInProduction = { requireInProduction: true }
+
 module.exports = {
-  sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', { requireInProduction: true }),
+  sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),
@@ -22,27 +24,40 @@ module.exports = {
     port: get('DB_PORT', 5432),
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
+  email: {
+    notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),
+    enabled: get('NOTIFY_ENABLED', true),
+    templates: {
+      REMINDER: get('TEMPLATE_REMINDER', 'c4611599-929f-4f27-94f7-af1ee85fef6d'),
+      OVERDUE: get('TEMPLATE_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
+      STATEMENT_REQUEST: get('TEMPLATE_STATEMENT_REQUEST', '6c231fa9-316d-40c7-8cc0-efee73845009'),
+    },
+  },
   apis: {
     oauth2: {
-      url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true),
-      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
+      url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
+      externalUrl: get(
+        'NOMIS_AUTH_EXTERNAL_URL',
+        get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'),
+        requiredInProduction
+      ),
       timeout: {
-        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000, true),
-        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000, true),
+        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000, requiredInProduction),
+        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000, requiredInProduction),
       },
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
         freeSocketTimeout: 30000,
       },
-      apiClientId: get('API_CLIENT_ID', 'use-of-force-client', true),
+      apiClientId: get('API_CLIENT_ID', 'use-of-force-client', requiredInProduction),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     },
     elite2: {
-      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', true),
+      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000, true),
-        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000, true),
+        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000, requiredInProduction),
+        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000, requiredInProduction),
       },
       agent: {
         maxSockets: 100,
@@ -51,5 +66,5 @@ module.exports = {
       },
     },
   },
-  domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
+  domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
 }
