@@ -34,11 +34,12 @@ const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
 module.exports = function createApp({
-  signInService,
   incidentService,
-  offenderService,
-  userService,
   involvedStaffService,
+  offenderService,
+  signInService,
+  statementService,
+  userService,
 }) {
   const app = express()
 
@@ -243,7 +244,7 @@ module.exports = function createApp({
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/', createIncidentsRouter({ authenticationMiddleware, incidentService, offenderService }))
+  app.use('/', createIncidentsRouter({ authenticationMiddleware, statementService, offenderService }))
   app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, incidentService, offenderService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use(

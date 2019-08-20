@@ -11,7 +11,7 @@ const formConfig = {
   ...statementConfig,
 }
 
-module.exports = function Index({ authenticationMiddleware, incidentService, offenderService }) {
+module.exports = function Index({ authenticationMiddleware, statementService, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -43,8 +43,8 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      const awaiting = await incidentService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
-      const completed = await incidentService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
+      const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
+      const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
@@ -63,7 +63,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const { incidentId } = req.params
 
       const errors = req.flash('errors')
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
+      const statement = await statementService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
@@ -95,7 +95,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const isValid = isNilOrEmpty(errors)
 
       // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
-      await incidentService.saveStatement(req.user.username, incidentId, statement)
+      await statementService.saveStatement(req.user.username, incidentId, statement)
 
       if (!isValid) {
         req.flash('errors', errors)
@@ -113,7 +113,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
+      const statement = await statementService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
@@ -136,7 +136,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const { incidentId } = req.params
       const { confirmed } = req.body
 
-      const errors = await incidentService.validateSavedStatement(req.user.username, incidentId)
+      const errors = await statementService.validateSavedStatement(req.user.username, incidentId)
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
@@ -152,7 +152,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
         ])
         return res.redirect(`/incidents/${incidentId}/statement/confirm`)
       }
-      await incidentService.submitStatement(req.user.username, incidentId)
+      await statementService.submitStatement(req.user.username, incidentId)
 
       const location = `/incidents/${incidentId}/statement/submitted`
 
@@ -174,7 +174,7 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
     asyncMiddleware(async (req, res) => {
       const { incidentId } = req.params
 
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.SUBMITTED)
+      const statement = await statementService.getStatement(req.user.username, incidentId, StatementStatus.SUBMITTED)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       res.render('pages/statement/review', {
