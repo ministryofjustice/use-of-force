@@ -11,6 +11,7 @@ context('Submitting details page form', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubUserDetailsRetrieval', 'AAAA')
     cy.task('stubUserDetailsRetrieval', 'BBBB')
+    cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
   const fillFormAndSave = () => {
@@ -63,6 +64,7 @@ context('Submitting details page form', () => {
       expect(staff).to.deep.equal([
         { userId: 'AAAA', name: 'AAAA name', email: 'AAAA@gov.uk' },
         { userId: 'BBBB', name: 'BBBB name', email: 'BBBB@gov.uk' },
+        { userId: 'Test User', name: 'Test User name', email: 'Test User@gov.uk' },
       ])
     })
   })

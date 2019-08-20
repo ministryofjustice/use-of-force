@@ -14,7 +14,11 @@ const offenderService = {
   getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
 }
 
-const formRoute = createRouter({ reportService, authenticationMiddleware, offenderService })
+const involvedStaffService = {
+  getInvolvedStaff: () => [],
+}
+
+const formRoute = createRouter({ reportService, authenticationMiddleware, offenderService, involvedStaffService })
 
 let app
 
