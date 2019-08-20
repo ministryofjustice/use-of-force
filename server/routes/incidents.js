@@ -11,7 +11,7 @@ const formConfig = {
   ...statementConfig,
 }
 
-module.exports = function Index({ authenticationMiddleware, incidentService, offenderService }) {
+module.exports = function Index({ authenticationMiddleware, statementService, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -43,8 +43,8 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   router.get(
     '/incidents/',
     asyncMiddleware(async (req, res) => {
-      const awaiting = await incidentService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
-      const completed = await incidentService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
+      const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
+      const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
@@ -58,19 +58,19 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   )
 
   router.get(
-    '/incidents/:incidentId/statement',
+    '/incidents/:reportId/statement',
     asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
+      const { reportId } = req.params
 
       const errors = req.flash('errors')
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
+      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       res.render('pages/statement/provide', {
         errors,
         data: {
-          incidentId,
+          reportId,
           displayName,
           offenderNo,
           ...statement,
@@ -81,9 +81,9 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   )
 
   router.post(
-    '/incidents/:incidentId/statement',
+    '/incidents/:reportId/statement',
     asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
+      const { reportId } = req.params
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
 
@@ -95,32 +95,32 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
       const isValid = isNilOrEmpty(errors)
 
       // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
-      await incidentService.saveStatement(req.user.username, incidentId, statement)
+      await statementService.saveStatement(req.user.username, reportId, statement)
 
       if (!isValid) {
         req.flash('errors', errors)
-        return res.redirect(`/incidents/${incidentId}/statement`)
+        return res.redirect(`/incidents/${reportId}/statement`)
       }
 
-      const location = saveAndContinue ? `/incidents/${incidentId}/statement/confirm` : `/incidents/`
+      const location = saveAndContinue ? `/incidents/${reportId}/statement/confirm` : `/incidents/`
 
       return res.redirect(location)
     })
   )
 
   router.get(
-    '/incidents/:incidentId/statement/confirm',
+    '/incidents/:reportId/statement/confirm',
     asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
+      const { reportId } = req.params
 
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.PENDING)
+      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
       res.render('pages/statement/confirm', {
         errors,
         data: {
-          incidentId,
+          reportId,
           displayName,
           offenderNo,
           ...statement,
@@ -131,16 +131,16 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   )
 
   router.post(
-    '/incidents/:incidentId/statement/confirm',
+    '/incidents/:reportId/statement/confirm',
     asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
+      const { reportId } = req.params
       const { confirmed } = req.body
 
-      const errors = await incidentService.validateSavedStatement(req.user.username, incidentId)
+      const errors = await statementService.validateSavedStatement(req.user.username, reportId)
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
-        return res.redirect(`/incidents/${incidentId}/statement`)
+        return res.redirect(`/incidents/${reportId}/statement`)
       }
 
       if (!confirmed) {
@@ -150,18 +150,18 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
             href: '#confirm',
           },
         ])
-        return res.redirect(`/incidents/${incidentId}/statement/confirm`)
+        return res.redirect(`/incidents/${reportId}/statement/confirm`)
       }
-      await incidentService.submitStatement(req.user.username, incidentId)
+      await statementService.submitStatement(req.user.username, reportId)
 
-      const location = `/incidents/${incidentId}/statement/submitted`
+      const location = `/incidents/${reportId}/statement/submitted`
 
       return res.redirect(location)
     })
   )
 
   router.get(
-    '/incidents/:incidentId/statement/submitted',
+    '/incidents/:reportId/statement/submitted',
     asyncMiddleware(async (req, res) => {
       res.render('pages/statement/submitted', {
         data: {},
@@ -170,16 +170,16 @@ module.exports = function Index({ authenticationMiddleware, incidentService, off
   )
 
   router.get(
-    '/incidents/:incidentId/statement/review',
+    '/incidents/:reportId/statement/review',
     asyncMiddleware(async (req, res) => {
-      const { incidentId } = req.params
+      const { reportId } = req.params
 
-      const statement = await incidentService.getStatement(req.user.username, incidentId, StatementStatus.SUBMITTED)
+      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       res.render('pages/statement/review', {
         data: {
-          incidentId,
+          reportId,
           displayName,
           offenderNo,
           ...statement,

@@ -1,8 +1,5 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
-const { StatementStatus } = require('../config/types')
-const statementConfig = require('../config/statement')
-const { validate } = require('../utils/fieldValidation')
 
 module.exports = function createIncidentService({ incidentClient, elite2ClientBuilder }) {
   function getCurrentDraftIncident(userId, bookingId) {
@@ -20,7 +17,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
   }
 
   async function update({ currentUser, formId, bookingId, formObject, incidentDate, involvedStaff }) {
-    const incidentId = await updateIncident({
+    const reportId = await updateIncident({
       currentUser,
       formId,
       bookingId,
@@ -28,7 +25,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
       incidentDate,
     })
     if (involvedStaff) {
-      await updateInvolvedStaff({ incidentId, involvedStaff })
+      await updateInvolvedStaff({ reportId, involvedStaff })
     }
   }
 
@@ -55,8 +52,8 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return id
   }
 
-  async function updateInvolvedStaff({ incidentId, involvedStaff = [] }) {
-    await incidentClient.deleteInvolvedStaff(incidentId)
+  async function updateInvolvedStaff({ reportId, involvedStaff = [] }) {
+    await incidentClient.deleteInvolvedStaff(reportId)
     if (involvedStaff.length) {
       // TODO The reporting staff may need to be added to the list
       const staff = involvedStaff.map(user => ({
@@ -64,52 +61,18 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
         name: user.name,
         email: user.email,
       }))
-      await incidentClient.insertInvolvedStaff(incidentId, staff)
+      await incidentClient.insertInvolvedStaff(reportId, staff)
     }
   }
 
-  const getStatementsForUser = async (userId, status) => {
-    const data = await incidentClient.getStatementsForUser(userId, status)
-    return data.rows
-  }
-
-  const getStatement = async (userId, incidentId, status) => {
-    const statement = await incidentClient.getStatement(userId, incidentId, status)
-    if (!statement) {
-      throw new Error(`Incident: '${incidentId}' does not exist`)
-    }
-    return statement
-  }
-
-  const validateSavedStatement = async (username, incidentId) => {
-    const statement = await getStatement(username, incidentId, StatementStatus.PENDING)
-    const errors = statementConfig.validate ? validate(statementConfig.fields, statement, true) : []
-    return errors
-  }
-
-  const getInvolvedStaff = incidentId => {
-    return incidentClient.getInvolvedStaff(incidentId)
-  }
-
-  const saveStatement = (userId, incidentId, statement) => {
-    logger.info(`Saving statement for user: ${userId} and incident: ${incidentId}`)
-    return incidentClient.saveStatement(userId, incidentId, statement)
-  }
-
-  const submitStatement = (userId, incidentId) => {
-    logger.info(`Submitting statement for user: ${userId} and incident: ${incidentId}`)
-    return incidentClient.submitStatement(userId, incidentId)
+  const getInvolvedStaff = reportId => {
+    return incidentClient.getInvolvedStaff(reportId)
   }
 
   return {
     getCurrentDraftIncident,
     update,
     submitForm,
-    getStatement,
-    getStatementsForUser,
     getInvolvedStaff,
-    saveStatement,
-    submitStatement,
-    validateSavedStatement,
   }
 }

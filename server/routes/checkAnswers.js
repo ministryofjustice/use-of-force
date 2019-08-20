@@ -71,8 +71,8 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         ])
         return res.redirect(`/check-answers/${bookingId}`)
       }
-      const incidentId = await incidentService.submitForm(req.user.username, bookingId)
-      const location = incidentId ? `/submitted/${incidentId}` : `/incidents`
+      const reportId = await incidentService.submitForm(req.user.username, bookingId)
+      const location = reportId ? `/submitted/${reportId}` : `/incidents`
       return res.redirect(location)
     })
   )

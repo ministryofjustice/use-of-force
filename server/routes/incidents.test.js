@@ -3,12 +3,11 @@ const { appSetup } = require('./testutils/appSetup')
 const createRouter = require('./incidents')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const incidentService = {
+const statementService = {
   getStatementsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
   getStatement: () => ({ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }),
   submitStatement: jest.fn(),
   saveStatement: jest.fn(),
-  processUserInput: () => ({}),
   validateSavedStatement: jest.fn(),
 }
 
@@ -16,12 +15,12 @@ const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({}),
 }
-const route = createRouter({ authenticationMiddleware, incidentService, offenderService })
+const route = createRouter({ authenticationMiddleware, statementService, offenderService })
 
 let app
 
 beforeEach(() => {
-  incidentService.validateSavedStatement.mockReturnValue([])
+  statementService.validateSavedStatement.mockReturnValue([])
 
   app = appSetup(route)
 })
@@ -45,7 +44,7 @@ describe('GET /incidents', () => {
       }))
 })
 
-describe('GET /incidents/:incidentId/statement', () => {
+describe('GET /incidents/:reportId/statement', () => {
   it('should render page', () =>
     request(app)
       .get('/incidents/-1/statement')
@@ -56,7 +55,7 @@ describe('GET /incidents/:incidentId/statement', () => {
       }))
 })
 
-describe('POST /incidents/:incidentId/statement', () => {
+describe('POST /incidents/:reportId/statement', () => {
   it('save and return should redirect to incidents page', () =>
     request(app)
       .post('/incidents/-1/statement')
@@ -79,7 +78,7 @@ describe('POST /incidents/:incidentId/statement', () => {
       .expect('Location', '/incidents/-1/statement/confirm'))
 })
 
-describe('POST /incidents/:incidentId/statement/confirm', () => {
+describe('POST /incidents/:reportId/statement/confirm', () => {
   it('unconfirmed submit redirects due to no confirmation', () =>
     request(app)
       .post('/incidents/-1/statement/confirm')
@@ -94,7 +93,7 @@ describe('POST /incidents/:incidentId/statement/confirm', () => {
       .expect('Location', '/incidents/-1/statement/submitted'))
 
   it('confirmed submit redirects due to form not being complete', () => {
-    incidentService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
+    statementService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
     return request(app)
       .post('/incidents/-1/statement/confirm')
       .expect(302)
@@ -102,7 +101,7 @@ describe('POST /incidents/:incidentId/statement/confirm', () => {
   })
 })
 
-describe('GET /incidents/:incidentId/statement', () => {
+describe('GET /incidents/:reportId/statement', () => {
   it('should render page', () =>
     request(app)
       .get('/incidents/-1/statement/submitted')

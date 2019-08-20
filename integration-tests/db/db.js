@@ -5,12 +5,12 @@ const incidentClient = require('../../server/data/incidentClient')
 const getCurrentDraftIncident = bookingId =>
   incidentClient.getCurrentDraftIncident('Test User', bookingId, db.queryWithoutTransaction)
 
-const getStatement = ({ incidentId, status }) =>
-  incidentClient.getStatement('Test User', incidentId, status, db.queryWithoutTransaction)
+const getStatement = ({ reportId, status }) =>
+  incidentClient.getStatement('Test User', reportId, status, db.queryWithoutTransaction)
 
 module.exports = {
   clearDb() {
-    const drops = ['incidents', 'involved_staff'].map(table =>
+    const drops = ['report', 'statement'].map(table =>
       db.queryWithoutTransaction({
         text: format('delete from %I', table),
       })

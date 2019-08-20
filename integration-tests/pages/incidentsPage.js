@@ -25,7 +25,7 @@ const incidentsPage = () =>
       prisoner: () => completeCol(i, 1),
       reporter: () => completeCol(i, 2),
       viewButton: () => completeCol(i, 3).find('a'),
-      incidentId: () =>
+      reportId: () =>
         completeCol(i, 3)
           .find('a')
           .invoke('attr', 'href')
