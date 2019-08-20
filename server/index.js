@@ -14,12 +14,14 @@ const createSignInService = require('./authentication/signInService')
 const createInvolvedStaffService = require('./services/involvedStaffService')
 const createOffenderService = require('./services/offenderService')
 const createUserService = require('./services/userService')
+const { notificationServiceFactory } = require('./services/notificationService')
 
 // pass in dependencies of service
 const incidentService = createIncidentService({ elite2ClientBuilder, incidentClient })
 const offenderService = createOffenderService(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = createInvolvedStaffService({ userService })
+const notificationService = notificationServiceFactory()
 
 const app = createApp({
   incidentService,
@@ -27,6 +29,7 @@ const app = createApp({
   offenderService,
   userService,
   involvedStaffService,
+  notificationService,
 })
 
 module.exports = app
