@@ -5,7 +5,7 @@ const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, toLabel } = require('../config/types')
 
-module.exports = function Index({ incidentService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ reportService, authenticationMiddleware, offenderService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -25,11 +25,10 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const {
-        id,
-        form_response: formObject = {},
-        incident_date: incidentDate,
-      } = await incidentService.getCurrentDraftIncident(req.user.username, bookingId)
+      const { id, form_response: formObject = {}, incident_date: incidentDate } = await reportService.getCurrentDraft(
+        req.user.username,
+        bookingId
+      )
       const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
@@ -37,7 +36,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         formData.newIncident && formData.newIncident.locationId
       )
 
-      const involvedStaff = id ? await incidentService.getInvolvedStaff(id) : []
+      const involvedStaff = id ? await reportService.getInvolvedStaff(id) : []
 
       const data = {
         newIncident: createNewIncidentObj(
@@ -71,7 +70,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
         ])
         return res.redirect(`/check-answers/${bookingId}`)
       }
-      const reportId = await incidentService.submitForm(req.user.username, bookingId)
+      const reportId = await reportService.submit(req.user.username, bookingId)
       const location = reportId ? `/submitted/${reportId}` : `/incidents`
       return res.redirect(location)
     })

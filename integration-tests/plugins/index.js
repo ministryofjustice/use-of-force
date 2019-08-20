@@ -1,7 +1,7 @@
 const auth = require('../mockApis/auth')
 const { resetStubs } = require('../mockApis/wiremock')
 const elite2api = require('../mockApis/elite2api')
-const { clearDb, getCurrentDraftIncident, getStatement } = require('../db/db')
+const { clearDb, getCurrentDraft, getStatement } = require('../db/db')
 
 module.exports = on => {
   on('task', {
@@ -17,7 +17,7 @@ module.exports = on => {
 
     stubLocations: elite2api.stubLocations,
 
-    getCurrentDraftIncident: (userId, bookingId, formName) => getCurrentDraftIncident(userId, bookingId, formName),
+    getCurrentDraft: (userId, bookingId, formName) => getCurrentDraft(userId, bookingId, formName),
 
     stubLocation: elite2api.stubLocation,
 
