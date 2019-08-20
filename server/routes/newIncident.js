@@ -26,14 +26,14 @@ const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
   })
 }
 
-module.exports = function Index({ incidentService, authenticationMiddleware, offenderService, involvedStaffService }) {
+module.exports = function Index({ reportService, authenticationMiddleware, offenderService, involvedStaffService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
     const {
       id: formId,
       incident_date: incidentDate,
       form_response: formObject = {},
-    } = await incidentService.getCurrentDraftIncident(req.user.username, bookingId)
+    } = await reportService.getCurrentDraft(req.user.username, bookingId)
     return { formId, incidentDate, formObject }
   }
 
@@ -69,7 +69,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
 
       const input = firstItem(req.flash('userInput'))
 
-      const involved = (input && input.involved) || (formId && (await incidentService.getInvolvedStaff(formId))) || []
+      const involved = (input && input.involved) || (formId && (await reportService.getInvolvedStaff(formId))) || []
 
       const data = {
         displayName,
@@ -131,7 +131,7 @@ module.exports = function Index({ incidentService, authenticationMiddleware, off
       })
 
       if (updatedPayload || !isNilOrEmpty(extractedFields)) {
-        await incidentService.update({
+        await reportService.update({
           currentUser: res.locals.user,
           formId,
           bookingId: parseInt(bookingId, 10),

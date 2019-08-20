@@ -3,8 +3,8 @@ const { appSetup, user } = require('./testutils/appSetup')
 const createRouter = require('./newIncident')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const incidentService = {
-  getCurrentDraftIncident: jest.fn(),
+const reportService = {
+  getCurrentDraft: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   getUpdatedFormObject: jest.fn(),
@@ -14,20 +14,20 @@ const offenderService = {
   getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
 }
 
-const formRoute = createRouter({ incidentService, authenticationMiddleware, offenderService })
+const formRoute = createRouter({ reportService, authenticationMiddleware, offenderService })
 
 let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  incidentService.getCurrentDraftIncident.mockResolvedValue({})
-  incidentService.getUpdatedFormObject.mockResolvedValue({})
+  reportService.getCurrentDraft.mockResolvedValue({})
+  reportService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
-  incidentService.getCurrentDraftIncident.mockReset()
-  incidentService.getUpdatedFormObject.mockReset({})
-  incidentService.update.mockReset()
+  reportService.getCurrentDraft.mockReset()
+  reportService.getUpdatedFormObject.mockReset({})
+  reportService.update.mockReset()
 })
 
 describe('GET /section/form', () => {
@@ -55,8 +55,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(incidentService.update).toBeCalledTimes(1)
-        expect(incidentService.update).toBeCalledWith({
+        expect(reportService.update).toBeCalledTimes(1)
+        expect(reportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -77,8 +77,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', nextPath)
       .expect(() => {
-        expect(incidentService.update).toBeCalledTimes(1)
-        expect(incidentService.update).toBeCalledWith({
+        expect(reportService.update).toBeCalledTimes(1)
+        expect(reportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,

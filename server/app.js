@@ -34,7 +34,7 @@ const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
 module.exports = function createApp({
-  incidentService,
+  reportService,
   involvedStaffService,
   offenderService,
   signInService,
@@ -245,20 +245,20 @@ module.exports = function createApp({
   app.use(currentUserInContext)
 
   app.use('/', createIncidentsRouter({ authenticationMiddleware, statementService, offenderService }))
-  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, incidentService, offenderService }))
+  app.use('/check-answers/', createCheckAnswersRouter({ authenticationMiddleware, reportService, offenderService }))
   app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use(
     '/form/',
     createNewIncidentRouter({
       authenticationMiddleware,
-      incidentService,
+      reportService,
       offenderService,
       userService,
       involvedStaffService,
     })
   )
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
-  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, incidentService, offenderService }))
+  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, reportService, offenderService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

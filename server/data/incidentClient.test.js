@@ -8,14 +8,14 @@ afterEach(() => {
   db.query.mockReset()
 })
 
-describe('getCurrentDraftIncident', () => {
+describe('getCurrentDraftReport', () => {
   test('it should call query on db', () => {
-    incidentClient.getCurrentDraftIncident('user1')
+    incidentClient.getCurrentDraftReport('user1')
     expect(db.query).toBeCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
-    incidentClient.getCurrentDraftIncident('user1', -1)
+    incidentClient.getCurrentDraftReport('user1', -1)
 
     expect(db.query).toBeCalledWith({
       text: `select id, incident_date, form_response from report r
@@ -28,10 +28,10 @@ describe('getCurrentDraftIncident', () => {
   })
 })
 
-test('createDraftIncident', async () => {
+test('createDraftReport', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }] })
 
-  const id = await incidentClient.createDraftIncident({
+  const id = await incidentClient.createDraftReport({
     userId: 'user1',
     bookingId: 'booking-1',
     reporterName: 'Bob Smith',
@@ -57,8 +57,8 @@ test('createDraftIncident', async () => {
   })
 })
 
-test('updateDraftIncident', () => {
-  incidentClient.updateDraftIncident('formId', 'date-1', {})
+test('updateDraftReport', () => {
+  incidentClient.updateDraftReport('formId', 'date-1', {})
 
   expect(db.query).toBeCalledWith({
     text: 'update report r set form_response = $1, incident_date = COALESCE($2, r.incident_date) where r.id = $3',
@@ -66,8 +66,8 @@ test('updateDraftIncident', () => {
   })
 })
 
-test('submit', () => {
-  incidentClient.submit('user1', 'booking1')
+test('submitReport', () => {
+  incidentClient.submitReport('user1', 'booking1')
 
   expect(db.query).toBeCalledWith({
     text: `update report r set status = $1, submitted_date = CURRENT_TIMESTAMP 
@@ -148,7 +148,7 @@ test('insertInvolvedStaff', async () => {
   })
 })
 
-test('saveStatement', () => {
+test('save', () => {
   incidentClient.saveStatement('user1', 'incident1', {
     lastTrainingMonth: 1,
     lastTrainingYear: 2,

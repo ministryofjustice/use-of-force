@@ -1,4 +1,4 @@
-module.exports = function createIncidentService({ userService }) {
+module.exports = function createReportService({ userService }) {
   async function getInvolvedStaff(token, staffUserNames) {
     if (!staffUserNames.length) {
       return { additionalFields: {}, additionalErrors: [] }
