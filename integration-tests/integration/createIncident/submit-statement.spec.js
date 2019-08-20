@@ -107,13 +107,13 @@ context('Submit statement', () => {
 
     const incidentsPage = statementSubmittedPage.finish()
 
-    const { date, prisoner, reporter, incidentId } = incidentsPage.getCompleteRow(0)
+    const { date, prisoner, reporter, reportId } = incidentsPage.getCompleteRow(0)
     prisoner().should('contain', 'Norman Smith')
     reporter().should('contain', 'James Stuart')
     date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
 
-    incidentId().then(id =>
-      cy.task('getStatement', { incidentId: id, status: StatementStatus.SUBMITTED }).then(statement => {
+    reportId().then(id =>
+      cy.task('getStatement', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {
         const { id: _, incidentDate, submittedDate, ...vals } = statement
 
         expect(vals).to.deep.equal({

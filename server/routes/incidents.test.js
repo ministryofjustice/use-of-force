@@ -44,7 +44,7 @@ describe('GET /incidents', () => {
       }))
 })
 
-describe('GET /incidents/:incidentId/statement', () => {
+describe('GET /incidents/:reportId/statement', () => {
   it('should render page', () =>
     request(app)
       .get('/incidents/-1/statement')
@@ -55,7 +55,7 @@ describe('GET /incidents/:incidentId/statement', () => {
       }))
 })
 
-describe('POST /incidents/:incidentId/statement', () => {
+describe('POST /incidents/:reportId/statement', () => {
   it('save and return should redirect to incidents page', () =>
     request(app)
       .post('/incidents/-1/statement')
@@ -78,7 +78,7 @@ describe('POST /incidents/:incidentId/statement', () => {
       .expect('Location', '/incidents/-1/statement/confirm'))
 })
 
-describe('POST /incidents/:incidentId/statement/confirm', () => {
+describe('POST /incidents/:reportId/statement/confirm', () => {
   it('unconfirmed submit redirects due to no confirmation', () =>
     request(app)
       .post('/incidents/-1/statement/confirm')
@@ -101,7 +101,7 @@ describe('POST /incidents/:incidentId/statement/confirm', () => {
   })
 })
 
-describe('GET /incidents/:incidentId/statement', () => {
+describe('GET /incidents/:reportId/statement', () => {
   it('should render page', () =>
     request(app)
       .get('/incidents/-1/statement/submitted')

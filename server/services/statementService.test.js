@@ -53,7 +53,7 @@ describe('getStatement', () => {
   test('retrieve details when statement is not present', async () => {
     incidentClient.getStatement.mockReturnValue(undefined)
 
-    await expect(service.getStatement('BOB', 1, 'PENDING')).rejects.toThrow(new Error("Incident: '1' does not exist"))
+    await expect(service.getStatement('BOB', 1, 'PENDING')).rejects.toThrow(new Error("Report: '1' does not exist"))
 
     expect(incidentClient.getStatement).toBeCalledWith('BOB', 1, 'PENDING')
   })

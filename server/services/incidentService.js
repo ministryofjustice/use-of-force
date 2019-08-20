@@ -17,7 +17,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
   }
 
   async function update({ currentUser, formId, bookingId, formObject, incidentDate, involvedStaff }) {
-    const incidentId = await updateIncident({
+    const reportId = await updateIncident({
       currentUser,
       formId,
       bookingId,
@@ -25,7 +25,7 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
       incidentDate,
     })
     if (involvedStaff) {
-      await updateInvolvedStaff({ incidentId, involvedStaff })
+      await updateInvolvedStaff({ reportId, involvedStaff })
     }
   }
 
@@ -52,8 +52,8 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
     return id
   }
 
-  async function updateInvolvedStaff({ incidentId, involvedStaff = [] }) {
-    await incidentClient.deleteInvolvedStaff(incidentId)
+  async function updateInvolvedStaff({ reportId, involvedStaff = [] }) {
+    await incidentClient.deleteInvolvedStaff(reportId)
     if (involvedStaff.length) {
       // TODO The reporting staff may need to be added to the list
       const staff = involvedStaff.map(user => ({
@@ -61,12 +61,12 @@ module.exports = function createIncidentService({ incidentClient, elite2ClientBu
         name: user.name,
         email: user.email,
       }))
-      await incidentClient.insertInvolvedStaff(incidentId, staff)
+      await incidentClient.insertInvolvedStaff(reportId, staff)
     }
   }
 
-  const getInvolvedStaff = incidentId => {
-    return incidentClient.getInvolvedStaff(incidentId)
+  const getInvolvedStaff = reportId => {
+    return incidentClient.getInvolvedStaff(reportId)
   }
 
   return {

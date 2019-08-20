@@ -9,28 +9,28 @@ module.exports = function createIncidentService({ incidentClient }) {
     return data.rows
   }
 
-  const getStatement = async (userId, incidentId, status) => {
-    const statement = await incidentClient.getStatement(userId, incidentId, status)
+  const getStatement = async (userId, reportId, status) => {
+    const statement = await incidentClient.getStatement(userId, reportId, status)
     if (!statement) {
-      throw new Error(`Incident: '${incidentId}' does not exist`)
+      throw new Error(`Report: '${reportId}' does not exist`)
     }
     return statement
   }
 
-  const validateSavedStatement = async (username, incidentId) => {
-    const statement = await getStatement(username, incidentId, StatementStatus.PENDING)
+  const validateSavedStatement = async (username, reportId) => {
+    const statement = await getStatement(username, reportId, StatementStatus.PENDING)
     const errors = statementConfig.validate ? validate(statementConfig.fields, statement, true) : []
     return errors
   }
 
-  const saveStatement = (userId, incidentId, statement) => {
-    logger.info(`Saving statement for user: ${userId} and incident: ${incidentId}`)
-    return incidentClient.saveStatement(userId, incidentId, statement)
+  const saveStatement = (userId, reportId, statement) => {
+    logger.info(`Saving statement for user: ${userId} and incident: ${reportId}`)
+    return incidentClient.saveStatement(userId, reportId, statement)
   }
 
-  const submitStatement = (userId, incidentId) => {
-    logger.info(`Submitting statement for user: ${userId} and incident: ${incidentId}`)
-    return incidentClient.submitStatement(userId, incidentId)
+  const submitStatement = (userId, reportId) => {
+    logger.info(`Submitting statement for user: ${userId} and incident: ${reportId}`)
+    return incidentClient.submitStatement(userId, reportId)
   }
 
   return {
