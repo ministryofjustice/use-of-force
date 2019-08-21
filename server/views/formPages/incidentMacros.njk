@@ -198,7 +198,7 @@
       <div class="govuk-radios__item">
         <input class="govuk-radios__input" id="id-{{name}}-{{loop.index}}" name="{{name}}" type="radio"
           value="{{option.value}}" {% if option.value === true %} data-aria-controls="conditional-{{name}}" {% endif %}
-          {% if option.value === question.PrimaryQuestion.value %} checked="checked" {% endif %}>
+          {% if option.value === question.primaryQuestion.value %} checked="checked" {% endif %}>
         <label class="govuk-label govuk-radios__label" for='id-{{name}}-{{loop.index}}'>
           {{option.label}}
         </label>

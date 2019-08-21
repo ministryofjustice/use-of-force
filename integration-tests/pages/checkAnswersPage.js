@@ -5,12 +5,10 @@ const clickSubmit = () => cy.get('[data-submit]').click()
 export default () =>
   page('Check your answers before sending the report', {
     verifyInputs: () => {
-      cy.get('[data-qa="offenderName"]').contains('Norman Smith')
-      cy.get('[data-qa="offenderNumber"]').contains('A1234AC')
       cy.get('[data-qa="incidentDate"]')
         .invoke('text')
         .invoke('trim')
-        .should('match', /^([0-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/(2019|20[2-9][0-9])$/)
+        .should('match', /^([0-2][0-9]|3[0-1]) .*? (2019|20[2-9][0-9])$/)
       cy.get('[data-qa="incidentTime"]')
         .invoke('text')
         .invoke('trim')
@@ -29,10 +27,11 @@ export default () =>
       cy.get('[data-qa="handcuffsUsed"]').contains('Ratchet')
 
       cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')
-      cy.get('[data-qa="compliancy"]').contains('Compliant')
+      cy.get('[data-qa="compliancy"]').contains('Yes')
       cy.get('[data-qa="healthcareStaffPresent"]').contains('Dr Smith')
       cy.get('[data-qa="f213"]').contains('Dr Taylor')
       cy.get('[data-qa="prisonerHospitalisation"]').contains('Yes')
+      cy.get('[data-qa="prisonerInjuries"]').contains('Yes')
       cy.get('[data-qa="staffMedicalAttention"]').contains('Eddie Thomas, Jayne Eyre')
       cy.get('[data-qa="staffHospitalisation"]').contains('Eddie Thomas, Jayne Eyre')
 

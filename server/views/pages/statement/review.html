@@ -1,13 +1,8 @@
-{% extends "../../partials/layout.html" %} 
-{% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/textarea/macro.njk" import govukTextarea %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
-{% from "govuk/components/select/macro.njk" import govukSelect %} 
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
-
-{% block content %}
+{% extends "../../partials/layout.html" %} {% from "govuk/components/button/macro.njk" import govukButton %} {% from
+"govuk/components/textarea/macro.njk" import govukTextarea %} {% from "govuk/components/input/macro.njk" import
+govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} {% from
+"govuk/components/fieldset/macro.njk" import govukFieldset %} {% from "govuk/components/checkboxes/macro.njk" import
+govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} {% block content %}
 <div class="govuk-body">
   {% if errors.length > 0 %}
   {{
@@ -18,11 +13,11 @@
     })
   }}
   {% endif %}
-  <h1 class="govuk-heading-xl mainHeading">Use of force statement - review</h1>
+  <h1 class="govuk-heading-xl mainHeading">Your use of force statement</h1>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full ">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
       <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="offender-name">
         {{ data.displayName }} ({{ data.offenderNo }})
       </p>
@@ -32,7 +27,7 @@
     <div class="govuk-grid-column-full">
       <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
       <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-        {{ data.incidentDate  | formatDate('DD/MM/YYYY - HH:mm')  }}
+        {{ data.incidentDate  | formatDate('DD MMMM YYYY - HH:mm')  }}
       </p>
     </div>
   </div>
@@ -55,33 +50,34 @@
       {% endcall %}
     </div>
   </div>
+  <hr class="govuk-!-margin-top-4" />
   <div class="govuk-grid-row govuk-!-margin-top-4">
-    <div class="govuk-grid-column-full ">
-      <p class="govuk-!-margin-bottom-1 govuk-label--s">Your statement</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-!-margin-bottom-0 govuk-label--s">Statement</p>
+    </div>
+    <div class="govuk-grid-column-one-half ">
+      <p><span class="govuk-label--s">Submitted:</span> {{ data.submittedDate | formatDate('DD MMMM YYYY - HH:mm') }}</p>
     </div>
   </div>
-  <hr />
-  <div class="govuk-grid-row">
+    <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <p class="govuk-!-margin-bottom-1 govuk-label--s">First submitted</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="date-and-time">
-        {{ data.submittedDate | formatDate('DD/MM/YYYY - HH:mm') }}
-      </p>
+      <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
+     </div>
     </div>
-  </div>
+    <hr />
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{
-        govukButton({
-          text: 'Cancel',
-          href: '/',
-          classes: 'govuk-button govuk-button--secondary govuk-!-margin-top-5',
-          attributes: { 'data-qa': 'cancel' }
-        })
-      }}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{
+          govukButton({
+            text: 'Cancel',
+            href: '/',
+            classes: 'govuk-button govuk-button--secondary govuk-!-margin-top-5',
+            attributes: { 'data-qa': 'cancel' }
+          })
+        }}
+      </div>
     </div>
   </div>
+  {% endblock %}
 </div>
-{% endblock %}

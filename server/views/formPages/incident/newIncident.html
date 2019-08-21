@@ -6,10 +6,10 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% block formItems %}
 <div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">New use of force incident</h1>
+  <h1 class="govuk-heading-xl mainHeading">Incident details</h1>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
       <p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="offender-name">
         {{ data.displayName }} ({{ data.offenderNo }})
       </p>
@@ -130,7 +130,7 @@
   <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h3>Other witnesses to the incident</h3>
+      <h3>Witnesses to the incident</h3>
       <div class="add-another-witness">
         {% for staffMember in data.witnesses %} {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{

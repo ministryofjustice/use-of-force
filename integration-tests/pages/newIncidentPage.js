@@ -2,7 +2,7 @@ const page = require('./page')
 const detailsPage = require('./detailsPage')
 
 export default () =>
-  page('New use of force incident', {
+  page('Incident details', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#location'),
 
