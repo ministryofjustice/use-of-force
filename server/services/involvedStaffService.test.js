@@ -4,25 +4,43 @@ const userService = {
   getUsers: jest.fn(),
 }
 
+const incidentClient = {
+  getInvolvedStaff: jest.fn(),
+  deleteInvolvedStaff: jest.fn(),
+  insertInvolvedStaff: jest.fn(),
+}
+
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ userService })
+  service = serviceCreator({ incidentClient, userService })
 })
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('getInvolvedStaff', () => {
-  test('not called when there are no provided users', async () => {
-    const result = await service.getInvolvedStaff('token-1', [])
+describe('get', () => {
+  test('it should call query on db', async () => {
+    await service.get('incident-1')
+    expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
+  })
+})
 
-    expect(result).toEqual({ additionalErrors: [], additionalFields: {} })
+describe('lookup', () => {
+  test('skips lookup if no users provided', async () => {
+    const result = await service.lookup('token-1', [])
+
+    expect(result).toEqual({
+      additionalErrors: [],
+      additionalFields: {
+        involvedStaff: [],
+      },
+    })
     expect(userService.getUsers).not.toBeCalled()
   })
 
-  test('failed as invalid and unavailable users', async () => {
+  test('fails when invalid / unavailable users', async () => {
     userService.getUsers.mockReturnValue({
       exist: [
         {
@@ -39,7 +57,7 @@ describe('getInvolvedStaff', () => {
       success: false,
     })
 
-    const result = await service.getInvolvedStaff('token-1', ['Bob', 'June', 'Jenny'])
+    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
     expect(result).toEqual({
       additionalFields: {},
@@ -51,6 +69,26 @@ describe('getInvolvedStaff', () => {
         {
           href: '#involved[2][username]',
           text: "User with name 'Jenny' has not verified their email address",
+        },
+      ],
+    })
+  })
+
+  test('fails with duplicate users', async () => {
+    const result = await service.lookup('token-1', ['Bob', 'June', 'Bob', 'Jenny', 'Jenny'])
+
+    expect(result).toEqual({
+      additionalFields: {},
+      additionalErrors: [
+        {
+          i: 2,
+          href: '#involved[2][username]',
+          text: "User with name 'Bob' has already been added",
+        },
+        {
+          i: 4,
+          href: '#involved[4][username]',
+          text: "User with name 'Jenny' has already been added",
         },
       ],
     })
@@ -75,7 +113,7 @@ describe('getInvolvedStaff', () => {
       success: true,
     })
 
-    const result = await service.getInvolvedStaff('token-1', ['Bob', 'June', 'Jenny'])
+    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
     expect(result).toEqual({
       additionalFields: {
@@ -106,5 +144,17 @@ describe('getInvolvedStaff', () => {
       },
       additionalErrors: [],
     })
+  })
+})
+
+describe('updateInvolvedStaff', () => {
+  test('should call update and pass in the form when form id is present', async () => {
+    await service.update('form1', [{ name: 'Bob', username: 'BOB', email: 'bob@gov.uk' }])
+
+    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
+    expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [
+      { userId: 'BOB', name: 'Bob', email: 'bob@gov.uk' },
+    ])
   })
 })

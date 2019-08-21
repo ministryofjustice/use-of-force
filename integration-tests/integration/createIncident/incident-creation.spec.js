@@ -11,6 +11,7 @@ context('Logging in', () => {
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
     cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
+    cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
   it('After submitting a report, A user has the ability to start a new report', () => {

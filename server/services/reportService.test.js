@@ -2,11 +2,12 @@ const serviceCreator = require('./reportService')
 
 const incidentClient = {
   getCurrentDraftReport: jest.fn(),
-  getInvolvedStaff: jest.fn(),
-  deleteInvolvedStaff: jest.fn(),
-  insertInvolvedStaff: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
+}
+
+const involvedStaffService = {
+  update: jest.fn(),
 }
 
 const elite2Client = {
@@ -21,7 +22,7 @@ beforeEach(() => {
   const elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
-  service = serviceCreator({ incidentClient, elite2ClientBuilder })
+  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService })
   incidentClient.getCurrentDraftReport.mockReturnValue({ a: 'b' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
@@ -42,16 +43,10 @@ describe('getCurrentDraft', () => {
   })
 })
 
-describe('getInvolvedStaff', () => {
-  test('it should call query on db', async () => {
-    await service.getInvolvedStaff('incident-1')
-    expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
-  })
-})
-
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
+    const involvedStaff = [{ name: 'Bob', username: 'BOB', email: 'bob@gov.uk' }]
 
     await service.update({
       currentUser,
@@ -59,20 +54,16 @@ describe('update', () => {
       formId: 'form1',
       formObject,
       incidentDate: '21/12/2010',
-      involvedStaff: [{ name: 'Bob', username: 'BOB', email: 'bob@gov.uk' }],
+      involvedStaff,
     })
 
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
-    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
-    expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
-    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [
-      { userId: 'BOB', name: 'Bob', email: 'bob@gov.uk' },
-    ])
+    expect(involvedStaffService.update).toBeCalledTimes(1)
+    expect(involvedStaffService.update).toBeCalledWith('form1', involvedStaff)
   })
 
-  test('updates if no-one is present', async () => {
+  test('removes involved staff, if no-one is present in involved staff', async () => {
     const formObject = {
       decision: 'Yes',
       followUp1: 'County',
@@ -90,9 +81,8 @@ describe('update', () => {
 
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(incidentClient.deleteInvolvedStaff).toBeCalledTimes(1)
-    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
-    expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
+    expect(involvedStaffService.update).toBeCalledTimes(1)
+    expect(involvedStaffService.update).toBeCalledWith('form1', [])
   })
 
   test('doesnt update involved staff if non-present', async () => {
@@ -112,8 +102,7 @@ describe('update', () => {
 
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(incidentClient.deleteInvolvedStaff).not.toBeCalled()
-    expect(incidentClient.insertInvolvedStaff).not.toBeCalled()
+    expect(involvedStaffService.update).not.toBeCalled()
   })
 
   test('should call createDraftReport when form id not present', async () => {

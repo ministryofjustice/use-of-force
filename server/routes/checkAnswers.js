@@ -1,11 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const flash = require('connect-flash')
-const moment = require('moment')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, toLabel } = require('../config/types')
 
-module.exports = function Index({ reportService, authenticationMiddleware, offenderService }) {
+module.exports = function Index({ reportService, authenticationMiddleware, offenderService, involvedStaffService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -36,10 +35,11 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
         formData.newIncident && formData.newIncident.locationId
       )
 
-      const involvedStaff = id ? await reportService.getInvolvedStaff(id) : []
+      const involvedStaff = id ? await involvedStaffService.get(id) : []
 
       const data = {
         newIncident: createNewIncidentObj(
+          res.locals.user,
           offenderDetail,
           description,
           formData.newIncident,
@@ -70,7 +70,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
         ])
         return res.redirect(`/check-answers/${bookingId}`)
       }
-      const reportId = await reportService.submit(req.user.username, bookingId)
+      const reportId = await reportService.submit(res.locals.user, bookingId)
       const location = reportId ? `/submitted/${reportId}` : `/incidents`
       return res.redirect(location)
     })
@@ -79,16 +79,22 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
   return router
 }
 
-const createNewIncidentObj = (offenderDetail, description, newIncident = {}, involvedStaff, incidentDate) => {
+const createNewIncidentObj = (
+  currentUser,
+  offenderDetail,
+  description,
+  newIncident = {},
+  involvedStaff,
+  incidentDate
+) => {
   return {
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
     location: description,
     plannedUseOfForce: whenPresent(newIncident.plannedUseOfForce, value => (value ? 'Planned' : 'Spontaneous')),
-    staffInvolved: extractCommaSeparatedList('name', involvedStaff),
+    staffInvolved: extractCommaSeparatedList('name', [...involvedStaff, { name: currentUser.displayName }]),
     witnesses: extractCommaSeparatedList('name', newIncident.witnesses),
-    incidentDate: moment(incidentDate).format('DD/MM/YYYY'),
-    incidentTime: moment(incidentDate).format('HH:mm'),
+    incidentDate,
   }
 }
 
