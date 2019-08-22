@@ -190,7 +190,20 @@ describe('statement', () => {
       lastTrainingYear: 1999,
       lastTrainingMonth: 11,
       jobStartYear: 1995,
-      statement: '   \n   \t   ',
+    })
+  })
+
+  it('surrounding space is trimmed', () => {
+    const input = { ...validInput, statement: '   \n A description  \t   ' }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      lastTrainingYear: 1999,
+      lastTrainingMonth: 11,
+      jobStartYear: 1995,
+      statement: 'A description',
     })
   })
 })
