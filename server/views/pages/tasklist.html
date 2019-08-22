@@ -19,7 +19,7 @@
 {% endmacro %} 
 
 {% block content %}
-<h1 class="govuk-heading-xl mainHeading">Use of force task list</h1>
+<h1 class="govuk-heading-xl mainHeading">Report use of force</h1>
 <div class="govuk-grid-row govuk-body">
   <hr />
   <div class="govuk-grid-column-two-thirds">
@@ -42,12 +42,12 @@
     <li>
       <ul class="app-task-list__items">
         {{  section(name = "new-incident", 
-                  label = "New Incident",  
+                  label = "Incident details",  
                   url = "/form/incident/newIncident/" + bookingId, 
                   value = form.incident.newIncident) }}
 
         {{  section(name = "details", 
-                  label = "Details",  
+                  label = "Use of force details",  
                   url = "/form/incident/details/" + bookingId, 
                   value = form.incident.details) }}
 
@@ -62,7 +62,7 @@
                   value = form.incident.evidence) }}
 
         {{  section(name = "check-answers", 
-                  label = "Check your answers",  
+                  label = "Check then send report",  
                   url = "/check-answers/" + bookingId) }}
       </ul>
     </li>

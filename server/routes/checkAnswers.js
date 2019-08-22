@@ -119,12 +119,11 @@ const createDetailsObj = (details = {}) => {
 const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-    prisonerCompliancy: whenPresent(relocationAndInjuries.relocationCompliancy, value =>
-      value ? 'Compliant' : 'Non-compliant'
-    ),
+    prisonerCompliancy: whenPresent(relocationAndInjuries.relocationCompliancy, value => (value ? 'Yes' : 'No')),
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
     ),
+    prisonerInjuries: whenPresent(relocationAndInjuries.prisonerInjuries, value => (value ? 'Yes' : 'No')),
     f213CompletedBy: relocationAndInjuries.f213CompletedBy,
     prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
     staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>

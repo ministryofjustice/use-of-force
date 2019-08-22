@@ -15,13 +15,13 @@ govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} 
     })
   }}
   {% endif %}
-  <h1 class="govuk-heading-xl mainHeading">Use of force statement - review</h1>
+  <h1 class="govuk-heading-xl mainHeading">Check your statement before submitting it</h1>
 
   <form method="POST">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full ">
-        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="offender-name">
           {{ data.displayName }} ({{ data.offenderNo }})
         </p>
@@ -31,7 +31,7 @@ govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} 
       <div class="govuk-grid-column-full">
         <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-          {{ data.incidentDate | formatDate('DD/MM/YYYY - HH:mm')  }}
+          {{ data.incidentDate | formatDate('DD MMMM YYYY - HH:mm')  }}
         </p>
       </div>
     </div>
@@ -54,19 +54,20 @@ govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} 
         {% endcall %}
       </div>
     </div>
+    <hr class="govuk-!-margin-top-4"/>
     <div class="govuk-grid-row govuk-!-margin-top-4">
       <div class="govuk-grid-column-full ">
-        <p class="govuk-!-margin-bottom-1 govuk-label--s">Your statement</p>
+        <p class="govuk-!-margin-bottom-1 govuk-label--s">Statement</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
       </div>
     </div>
     <hr />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
-        <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you confirm that:</p>
+        <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you agree that:</p>
         <ul class="govuk-!-margin-top-1">
-          <li>the information you've given is correct to the best of your knowledge</li>
-          <li>you wrote the statement independently of other staff involved in the incident</li>
+          <li>it is correct to the best of your knowledge</li>
+          <li>you wrote it independent of other staff involved in the incident</li>
         </ul>
       </div>
     </div>
@@ -93,7 +94,7 @@ govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} 
 
     {{
       govukButton({
-        text: 'Submit',
+        text: 'Agree and submit',
         name: 'submit',
         classes: 'govuk-button',
         attributes: { 'data-qa': 'submit' }

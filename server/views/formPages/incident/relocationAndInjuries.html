@@ -44,38 +44,10 @@
 
     <hr />
   </div>
-  
-  <h2 class="govuk-heading-l govuk-!-margin-top-6">Injuries sustained and healthcare involvement</h2>
+
 
   <div class="govuk-grid-column-two-thirds">
 
-    <!-- Q3 -->
-
-    {{ incidentMacro.radiosWithNestedTextbox({
-        primaryQuestion: {
-          text: "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
-          name: "healthcareInvolved",
-          value: data.healthcareInvolved,
-          options: [{
-            value: true,
-            label: "Yes"
-          }, 
-          {
-            value: false,
-            label: "No"
-          }]
-        },
-        followUpQuestion: {
-          legend: "blank",
-          name: "healthcarePractionerName",
-          value: data.healthcarePractionerName,
-          alertMsg: "",
-          label: "Name"
-        }
-      }) 
-    }}
-    
-    <!-- Q4 -->
 
     {{ govukInput({
       label: {
@@ -101,7 +73,30 @@
       }]
     })}}
 
-  <!-- Q5 -->
+    {{ incidentMacro.radiosWithNestedTextbox({
+        primaryQuestion: {
+          text: "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+          name: "healthcareInvolved",
+          value: data.healthcareInvolved,
+          options: [{
+            value: true,
+            label: "Yes"
+          }, 
+          {
+            value: false,
+            label: "No"
+          }]
+        },
+        followUpQuestion: {
+          legend: "blank",
+          name: "healthcarePractionerName",
+          value: data.healthcarePractionerName,
+          alertMsg: "",
+          label: "Name"
+        }
+      }) 
+    }}
+  
   <div>
       {{ incidentMacro.radio( {
         text: "Did the prisoner need outside hospitalisation at the time?",

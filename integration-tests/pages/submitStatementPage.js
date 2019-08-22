@@ -2,7 +2,7 @@ const page = require('./page')
 const ConfirmStatementPage = require('./confirmStatementPage')
 
 const submitStatementPage = () =>
-  page('Use of force statement', {
+  page('Your use of force statement', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     lastTrainingMonth: () => cy.get('[name=lastTrainingMonth]'),
     lastTrainingYear: () => cy.get('[name=lastTrainingYear]'),

@@ -38,7 +38,7 @@ afterEach(() => {
 describe('GET /section/form', () => {
   test.each`
     path                      | expectedContent
-    ${'incident/newIncident'} | ${'Prisoner involved'}
+    ${'incident/newIncident'} | ${'Prisoner'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/1`)

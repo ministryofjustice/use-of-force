@@ -18,13 +18,13 @@
     })
   }}
   {% endif %}
-  <h1 class="govuk-heading-xl mainHeading">Use of force statement</h1>
+  <h1 class="govuk-heading-xl mainHeading">Your use of force statement</h1>
 
   <form method="POST">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full ">
-        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner involved</p>
+        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="offender-name">
           {{ data.displayName }} ({{ data.offenderNo }})
         </p>
@@ -34,7 +34,7 @@
       <div class="govuk-grid-column-full">
         <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
         <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-          {{ data.incidentDate | formatDate('DD/MM/YYYY - HH:mm')  }}
+          {{ data.incidentDate | formatDate('DD MMMM YYYY - HH:mm')  }}
         </p>
       </div>
     </div>
@@ -106,7 +106,7 @@
             rows: 25,
             cols: 440,
             label: {
-              text: 'Your statement',
+              text: 'Write your statement',
               classes: 'govuk-label--s govuk-!-margin-top-4'
             },
             errorMessage: errors | findError('statement')

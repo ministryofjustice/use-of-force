@@ -51,7 +51,7 @@ describe('GET /incidents/:reportId/statement', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Use of force statement')
+        expect(res.text).toContain('Your use of force statement')
       }))
 })
 

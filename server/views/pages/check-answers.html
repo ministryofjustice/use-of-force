@@ -1,132 +1,282 @@
-{% extends "../partials/layout.html" %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% extends "../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% import "./pagesMacros.njk" as pagesMacros %}
+{% import "./pagesMacros.njk" as pagesMacros %} 
 
 {% block beforeContent %}
 
-  {{ govukBackLink({
+{{ govukBackLink({
 text: "Back",
 href: backLink or "/"
 }) }}
 
-{% endblock %}
-
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
-      {% if errors.length > 0 %}
-        {{
+{% endblock %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
+    {% if errors.length > 0 %}
+    {{
       govukErrorSummary({
         titleText: 'There is a problem',
         errorList: errors,
         attributes: { 'data-qa-errors': true }
       })
     }}
-      {% endif %}
+    {% endif %}
 
     <h1 class="govuk-heading-xl">Check your answers before sending the report</h1>
 
-      {{ pagesMacros.getUserInputs({ 
-              data : data.newIncident, 
-              title : "New incident",  
-              url : "/form/incident/newIncident/" + bookingId
-              })
-          }}
-      {{pagesMacros.tableRow({label: 'Offender name',   'data-qa': 'offenderName',      dataValue: data.newIncident.offenderName | title })}}
-      {{pagesMacros.tableRow({label: 'Offender number', 'data-qa': 'offenderNumber',    dataValue: data.newIncident.offenderNumber})}}
-      {{pagesMacros.tableRow({label: 'Date of incident',  'data-qa': 'incidentDate',      dataValue: data.newIncident.incidentDate | formatDate('DD/MM/YYYY') })}}
-      {{pagesMacros.tableRow({label: 'Time of incident',  'data-qa': 'incidentTime',      dataValue: data.newIncident.incidentDate | formatDate('HH:mm') })}}
-      {{pagesMacros.tableRow({label: 'Location',        'data-qa': 'location',          dataValue: data.newIncident.location  })}}
-      {{pagesMacros.tableRow({label: 'Incident type',   'data-qa': 'incidentType',      dataValue: data.newIncident.plannedUseOfForce  })}}
-      {{pagesMacros.tableRow({label: 'Staff involved',  'data-qa': 'staffInvolved',     dataValue: data.newIncident.staffInvolved | title })}}
-      {{pagesMacros.tableRow({label: 'Witnesses',       'data-qa': 'witnesses',         dataValue: data.newIncident.witnesses | title})}}
+    {{
+      pagesMacros.sectionHeading({
+        data: data.newIncident,
+        title: 'Incident details',
+        url: '/form/incident/newIncident/' + bookingId
+      })
+    }}
+    {{pagesMacros.tableRow({
+              label: 'Date of incident',  
+              'data-qa': 'incidentDate',    
+              dataValue: data.newIncident.incidentDate | formatDate('DD MMMM YYYY') 
+      })
+    }}
+    {{pagesMacros.tableRow({
+              label: 'Time of incident',  
+              'data-qa': 'incidentTime',    
+              dataValue: data.newIncident.incidentDate | formatDate('HH:mm') 
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Location',
+        'data-qa': 'location',
+        dataValue: data.newIncident.location
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Incident type',
+        'data-qa': 'incidentType',
+        dataValue: data.newIncident.plannedUseOfForce
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff involved',
+        'data-qa': 'staffInvolved',
+        dataValue: data.newIncident.staffInvolved | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Witnesses',
+        'data-qa': 'witnesses',
+        dataValue: data.newIncident.witnesses | title
+      })
+    }}
 
-      {{  pagesMacros.getUserInputs({
-                data: data.details,
-                title: "Details", 
-                url: "/form/incident/details/" + bookingId
-            })
-          }}
-      {{pagesMacros.tableRow({label: 'Positive communication used',     'data-qa': 'positiveCommunication',     dataValue: data.details.positiveCommunicationUsed | toYesNo })}}
-      {{pagesMacros.tableRow({label: 'Personal protection techniques',  'data-qa': 'personalProtection',        dataValue: data.details.personalProtectionTechniques | toYesNo })}}
-      {{pagesMacros.tableRow({label: 'Baton drawn',                     'data-qa': 'batonDrawn',                dataValue: data.details.batonDrawn })}}
-      {{pagesMacros.tableRow({label: 'PAVA drawn',                      'data-qa': 'pavaDrawn',                 dataValue: data.details.pavaDrawn })}}
-      {{pagesMacros.tableRow({label: 'Guiding hold used',               'data-qa': 'guidingHold',               dataValue: data.details.guidingHoldUsed | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Control and restraint used',      'data-qa': 'restraintUsed',             dataValue: data.details.controlAndRestraintUsed | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Handcuffs used',                  'data-qa': 'handcuffsUsed',             dataValue: data.details.handcuffsUsed | capitalize })}}
+    {{
+      pagesMacros.sectionHeading({
+        data: data.details,
+        title: 'Use of force details',
+        url: '/form/incident/details/' + bookingId
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was positive communication used to de-escalate the situation?',
+        'data-qa': 'positiveCommunication',
+        dataValue: data.details.positiveCommunicationUsed | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were any personal protection techniques used?',
+        'data-qa': 'personalProtection',
+        dataValue: data.details.personalProtectionTechniques | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was a baton drawn?',
+        'data-qa': 'batonDrawn',
+        dataValue: data.details.batonDrawn
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was PAVA drawn?',
+        'data-qa': 'pavaDrawn',
+        dataValue: data.details.pavaDrawn
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was a guiding hold used?',
+        'data-qa': 'guidingHold',
+        dataValue: data.details.guidingHoldUsed | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was control and restraint used?',
+        'data-qa': 'restraintUsed',
+        dataValue: data.details.controlAndRestraintUsed | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were handcuffs applied?',
+        'data-qa': 'handcuffsUsed',
+        dataValue: data.details.handcuffsUsed | capitalize
+      })
+    }}
 
-      {{  pagesMacros.getUserInputs({
-                data: data.relocationAndInjuries,
-                title: "Relocation and injuries", 
-                url: "/form/incident/relocationAndInjuries/" + bookingId
-            })
-          }}
-      {{pagesMacros.tableRow({label: 'Prisoner relocated to',             'data-qa': 'prisonerRelocation',      dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Relocation compliancy',             'data-qa': 'compliancy',              dataValue: data.relocationAndInjuries.prisonerCompliancy })}}
-      {{pagesMacros.tableRow({label: 'Healthcare staff present',          'data-qa': 'healthcareStaffPresent',  dataValue: data.relocationAndInjuries.healthcareStaffPresent | title })}}
-      {{pagesMacros.tableRow({label: 'F213 completed by',                 'data-qa': 'f213',                    dataValue: data.relocationAndInjuries.f213CompletedBy | title })}}
-      {{pagesMacros.tableRow({label: 'Prisoner required hospitalisation', 'data-qa': 'prisonerHospitalisation', dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo })}}
-      {{pagesMacros.tableRow({label: 'Staff needed medical attention',    'data-qa': 'staffMedicalAttention',   dataValue: data.relocationAndInjuries.staffMedicalAttention |title })}}
-      {{pagesMacros.tableRow({label: 'Staff taken to hospital',           'data-qa': 'staffHospitalisation',    dataValue: data.relocationAndInjuries.staffHospitalisation | title })}}
+    {{
+      pagesMacros.sectionHeading({
+        data: data.relocationAndInjuries,
+        title: 'Relocation and injuries',
+        url: '/form/incident/relocationAndInjuries/' + bookingId
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Where was the prisoner relocated to?',
+        'data-qa': 'prisonerRelocation',
+        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was the prisoner compliant?',
+        'data-qa': 'compliancy',
+        dataValue: data.relocationAndInjuries.prisonerCompliancy
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Who completed the F213 form?',
+        'data-qa': 'f213',
+        dataValue: data.relocationAndInjuries.f213CompletedBy | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Healthcare staff present',
+        'data-qa': 'healthcareStaffPresent',
+        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Did the prisoner sustain any injuries at the time?',
+        'data-qa': 'prisonerInjuries',
+        dataValue: data.relocationAndInjuries.prisonerInjuries | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Did the prisoner need outside hospitalisation at the time?',
+        'data-qa': 'prisonerHospitalisation',
+        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff needed medical attention',
+        'data-qa': 'staffMedicalAttention',
+        dataValue: data.relocationAndInjuries.staffMedicalAttention | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff taken to hospital',
+        'data-qa': 'staffHospitalisation',
+        dataValue: data.relocationAndInjuries.staffHospitalisation | title
+      })
+    }}
 
-      {{  pagesMacros.getUserInputs({
-                data: data.evidence,
-                title: "Evidence", 
-                url: "/form/incident/evidence/" + bookingId
-            })
-          }}
-      {{pagesMacros.tableRow({label: 'Evidence bagged and tagged',    'data-qa': 'evidenceBaggedTagged',      dataValue: data.evidence.evidenceBaggedTagged, type: 'itemPerLine' })}}
-      {{pagesMacros.tableRow({label: 'Photographs taken',             'data-qa': 'photographs',               dataValue: data.evidence.photographs | toYesNo })}}
-      {{pagesMacros.tableRow({label: 'CCTV images',                   'data-qa': 'cctv',                      dataValue: data.evidence.cctv | capitalize })}}
-      {{pagesMacros.tableRow({label: 'Body worn cameras',             'data-qa': 'bodyCameras',               dataValue: data.evidence.bodyCameras | capitalize })}}
-    </div>
+    {{
+      pagesMacros.sectionHeading({
+        data: data.evidence,
+        title: 'Evidence',
+        url: '/form/incident/evidence/' + bookingId
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Evidence bagged and tagged',
+        'data-qa': 'evidenceBaggedTagged',
+        dataValue: data.evidence.evidenceBaggedTagged,
+        type: 'itemPerLine'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were any photographs taken?',
+        'data-qa': 'photographs',
+        dataValue: data.evidence.photographs | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was any part of the incident captured on CCTV?',
+        'data-qa': 'cctv',
+        dataValue: data.evidence.cctv | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was any part of the incident captured on a body-worn camera?',
+        'data-qa': 'bodyCameras',
+        dataValue: data.evidence.bodyCameras | capitalize
+      })
+    }}
+  </div>
 
   <div class="govuk-grid-column-two-thirds">
-
     <h2 class="govuk-heading-m">Now send the report</h2>
     <p class="govuk-body">
-      By sending the report I confirm that the information I provided is correct to the best of my knowledge.
+      By sending this report you are confirming that, to the best of your knowledge, the details you are providing are
+      correct.
     </p>
-      <form method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-        {{
-          govukCheckboxes({
-            idPrefix: 'confirm',
-            name: 'confirmed',
-            classes: 'govuk-checkboxes--small',
-            errorMessage: errors[0],
-            items: [
-              {
-                id: 'confirm',
-                value: 'true',
-                text: 'I agree'
-              }
-            ]
-          })
-        }}
-        {{
-          govukButton({
-            text: 'Send',
-            classes: 'govuk-button',
-            attributes: { 'data-submit': true }
-          })
-        }}
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      {{
+        govukCheckboxes({
+          idPrefix: 'confirm',
+          name: 'confirmed',
+          classes: 'govuk-checkboxes--small',
+          errorMessage: errors[0],
+          items: [
+            {
+              id: 'confirm',
+              value: 'true',
+              text: 'I agree'
+            }
+          ]
+        })
+      }}
+      {{
+        govukButton({
+          text: 'Accept and send',
+          classes: 'govuk-button',
+          attributes: { 'data-submit': true }
+        })
+      }}
 
-        {{ 
-          govukButton({
-            text: "Return to task list",
-            name: "submit",
-            href: '/tasklist/' + bookingId,
-            classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
-            attributes: {'data-qa': 'return-to-tasklist'}
-          })
-        }}
-      </form>
-    </div>
+      {{
+        govukButton({
+          text: 'Return to report use of force',
+          name: 'submit',
+          href: '/tasklist/' + bookingId,
+          classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3',
+          attributes: { 'data-qa': 'return-to-tasklist' }
+        })
+      }}
+    </form>
   </div>
+</div>
 
 {% endblock %}

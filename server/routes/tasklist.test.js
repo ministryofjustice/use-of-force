@@ -31,6 +31,6 @@ describe('GET /task-list', () => {
       .get('/-35')
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Use of force task list')
+        expect(res.text).toContain('Report use of force')
       }))
 })
