@@ -104,7 +104,7 @@
     })}}
 
     <!-- Q6 -->
-
+    <div id="control-and-restraint">
     {{ incidentMacro.radiosWithNestedCheckboxes({
       primaryQuestion: {
         text: "Was control and restraint used?",
@@ -122,31 +122,17 @@
       }
     }) 
   }}
+  </div>
 
 
     <!-- Q7 -->
-    {{ incidentMacro.radiosWithNestedRadios({
-      primaryQuestion: {
-        text: "Were handcuffs applied?",
-        name: "handcuffsApplied",
-        value: data.handcuffsApplied,
-        options: yesNoOptions,
-        errorMessage: errors | findError('handcuffsApplied')
-      },
-      followUpQuestion: {
-        text: "Select which type of handcuffs were used",
-        name: "handcuffsType",
-        value: data.handcuffsType,
-        errorMessage: errors | findError('handcuffsType'),
-        options: [{
-          value: "RATCHET",
-          label: "Ratchet"
-        }, {
-          value: "FIXED_BAR",
-          label: "Fixed bar"
-        }]
-      }
-      })}}
+    {{ incidentMacro.radio( {
+      text: "Were handcuffs applied?",
+      name: "handcuffsApplied",
+      value: data.handcuffsApplied,
+      options: yesNoOptions,
+      errorMessage: errors | findError('handcuffsApplied')
+    })}}
   </div>
 </div>
 

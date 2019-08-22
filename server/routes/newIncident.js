@@ -62,11 +62,6 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
       const { formId, formObject, incidentDate } = await loadForm(req)
       const date = incidentDate ? moment(incidentDate) : moment()
 
-      const dateAndTime = {
-        date: date.format('DD/MM/YYYY'),
-        time: date.format('HH:mm'),
-      }
-
       const input = firstItem(req.flash('userInput'))
 
       const involved = (input && input.involved) || (formId && (await involvedStaffService.get(formId))) || []
@@ -74,7 +69,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
       const data = {
         displayName,
         offenderNo,
-        dateAndTime,
+        date,
         locations,
         involved,
       }

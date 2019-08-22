@@ -1,29 +1,21 @@
-{% extends "../partials/layout.html" %} 
-
-{% macro section(name, label, url, value) %}
+{% extends "../partials/layout.html" %} {% macro section(name, label, url, value) %}
 <li class="app-task-list__item">
   <a href="{{ url }}" class="govuk-link" data-qa-{{name}}-link>{{ label }}</a>
   {% if value %}
   <strong class="govuk-tag app-task-list__task-completed" data-qa-{{name}}-completed>Completed</strong>
   {% endif %}
 </li>
-{% endmacro %} 
-
-{% macro field(name, label, value) %}
-<div class="govuk-grid-column-one-quarter">
-  <p class="govuk-!-margin-bottom-1 govuk-label--xs">{{ label }}</p>
-  <p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="{{ name }}">
-    {{ value }}
-  </p>
-</div>
-{% endmacro %} 
-
-{% block content %}
+{% endmacro %} {% macro field(name, label, value) %}
+<p class="govuk-!-margin-bottom-1 govuk-label--xs">{{ label }}</p>
+<p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="{{ name }}">
+  {{ value }}
+</p>
+{% endmacro %} {% block content %}
 <h1 class="govuk-heading-xl mainHeading">Report use of force</h1>
 <div class="govuk-grid-row govuk-body">
   <hr />
-  <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-column-one-quarter">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-half">
       <img
         src="/api/offender/{{ bookingId }}/image"
         height="150"
@@ -32,9 +24,17 @@
         data-qa="offender-image"
       />
     </div>
-    {{ field(name='offender-name', label='Name', value=data.displayName) }}
-    {{ field(name='nomis-id', label='NOMIS ID', value=data.offenderNo) }}
-    {{ field(name='dob', label='Date of Birth', value=data.dateOfBirth) }}
+    <div class="govuk-grid-column-one-half">
+      {{ field(name='offender-name', label='Name', value=data.displayName) }}
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-one-quarter">
+      {{ field(name='nomis-id', label='NOMIS ID', value=data.offenderNo) }}
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      {{ field(name='dob', label='Date of Birth', value=data.dateOfBirth | formatDate('DD MMMM YYYY')) }}
+    </div>
   </div>
 </div>
 <div class="govuk-grid-row govuk-body">

@@ -22,13 +22,14 @@ module.exports = {
     return getCurrentDraft(bookingId)
       .then(form => ({
         id: form.id,
-        data: { incidentDate: form.incident_date, ...form.form_response.incident[formName] },
+        incidentDate: form.incident_date,
+        payload: { ...form.form_response.incident[formName] },
       }))
-      .then(({ id, data }) =>
+      .then(({ id, incidentDate, payload }) =>
         incidentClient
           .getInvolvedStaff(id, db.queryWithoutTransaction)
           .then(staff => staff.map(s => ({ userId: s.username, name: s.name, email: s.email })))
-          .then(staff => ({ data, staff }))
+          .then(staff => ({ payload, incidentDate, staff }))
       )
   },
 

@@ -11,7 +11,10 @@ const toBoolean = val => (val == null ? null : val === 'true')
 const toInteger = val => (val == null ? null : parseInt(val, 10))
 
 const toDate = val => {
-  const date = moment(val, 'DD/MM/YYYY-HH:mm')
+  if (!val) {
+    return null
+  }
+  const date = moment(val)
   return date.isValid() ? date.toDate() : null
 }
 
@@ -141,14 +144,6 @@ module.exports = {
           responseType: 'requiredBoolean',
           validationMessage: 'Select yes if handcuffs were applied',
           sanitiser: toBoolean,
-        },
-      },
-      {
-        handcuffsType: {
-          responseType: 'requiredHandcuffsType',
-          validationMessage: 'Select the type of handcuffs used',
-          dependentOn: 'handcuffsApplied',
-          predicate: 'true',
         },
       },
     ],

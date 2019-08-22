@@ -129,13 +129,6 @@ const fieldOptions = {
         )
         .required(),
     }),
-
-  requiredHandcuffsType: () =>
-    joi.when('handcuffsApplied', {
-      is: true,
-      then: joi.valid(['RATCHET', 'FIXED_BAR']).required(),
-      otherwise: joi.any().optional(),
-    }),
 }
 
 const getHref = (fieldConfig, error) => {

@@ -70,7 +70,7 @@ const getStatement = async (userId, reportId, status, query = db.query) => {
     ,      s.submitted_date         "submittedDate"
     from report r 
     left join statement s on r.id = s.report_id
-    where r.id = $1 and r.user_id = $2 and s.statement_status = $3`,
+    where r.id = $1 and s.user_id = $2 and s.statement_status = $3`,
     values: [reportId, userId, status.value],
   })
   return results.rows[0]

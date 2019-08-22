@@ -16,7 +16,7 @@ context('tasklist', () => {
     const tasklistPage = TasklistPage.visit(bookingId)
     tasklistPage.checkNoPartsComplete()
     tasklistPage.offenderName().contains('Norman Smith')
-    tasklistPage.dob().contains('26/12/2000')
+    tasklistPage.dob().contains('26 December 2000')
     tasklistPage.nomisId().contains('A1234AC')
     tasklistPage.offenderImage().should('be.visible')
   })
