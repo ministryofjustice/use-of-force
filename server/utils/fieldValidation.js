@@ -129,6 +129,38 @@ const fieldOptions = {
         )
         .required(),
     }),
+
+  requiredMemberOfHealthcare: () =>
+    joi.when('healthcareInvolved', {
+      is: true,
+      then: joi
+        .string()
+        .trim()
+        .required(),
+      otherwise: joi.any().optional(),
+    }),
+
+  requiredStaffNeedingMedicalAttention: () =>
+    joi.when('staffMedicalAttention', {
+      is: true,
+      then: joi
+        .array()
+        .min(1)
+        .items(
+          joi.object().keys({
+            name: joi
+              .string()
+              .trim()
+              .required()
+              .error(() => 'Enter the name of who needed medical attention'),
+            hospitalisation: joi
+              .valid([true, false])
+              .required()
+              .error(() => 'Select yes if the staff member had to go to hospital'),
+          })
+        )
+        .required(),
+    }),
 }
 
 const getHref = (fieldConfig, error) => {
