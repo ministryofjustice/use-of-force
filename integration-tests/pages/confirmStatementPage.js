@@ -7,7 +7,6 @@ const confirmStatementPage = () =>
     statement: () => cy.get('[data-qa=statement]'),
     lastTraining: () => cy.get('[data-qa=last-training]'),
     jobStartYear: () => cy.get('[data-qa=job-start-year]'),
-    confirm: () => cy.get('#confirm'),
 
     submit: () => {
       cy.get('[data-qa=submit]').click()

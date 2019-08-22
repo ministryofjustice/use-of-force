@@ -44,6 +44,7 @@ module.exports = {
         responseType: 'requiredString',
         validationMessage: 'Enter your statement',
         fieldType: EXTRACTED,
+        sanitiser: val => (val ? val.trim() : null),
       },
     },
   ],
