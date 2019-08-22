@@ -38,7 +38,7 @@ describe('getOffenderDetails', () => {
 
     expect(result).toEqual({
       ...details,
-      dateOfBirth: '31/12/1980',
+      dateOfBirth: '1980-12-31',
       displayName: 'Sam Smith',
       locations: [{ locationType: 'WING', userDescription: 'Wing A' }],
     })

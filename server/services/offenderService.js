@@ -25,7 +25,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
         locations: filteredLocations,
         displayName,
         ...result,
-        dateOfBirth: formatDate(dateOfBirth),
+        dateOfBirth,
       }
     } catch (error) {
       logger.error(error, 'Error during getOffenderDetails')

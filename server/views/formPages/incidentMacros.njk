@@ -79,8 +79,8 @@
         {% if question.followUpQuestion %}
         <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{name1}}">
           <div class="{{govukFormGroupErrorInner}}">
-            <fieldset class="govuk-fieldset ">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend govuk-!-font-weight-bold">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend">
                     {{question.followUpQuestion.text}}
                   </legend>
     
@@ -155,7 +155,7 @@
         <div class="govuk-radios__conditional clear-both" data-module="govuk-checkboxes" id="conditional-{{name}}">
           <div class="{{govukFormGroupErrorInner}}">
             <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend govuk-!-font-weight-bold">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
                 {{question.followUpQuestion.text}}
               </legend>
                 <span class="govuk-error-message">

@@ -1,10 +1,8 @@
 {% extends "../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
-{% from "govuk/components/panel/macro.njk" import govukPanel %} 
 
 {% block beforeContent %}
-
 {{ govukBackLink({
   text: "Back",
   href: backLink or "/check-answers/" + bookingId
@@ -13,11 +11,12 @@
 {% endblock %} {% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-two-thirds">
-    {{
-      govukPanel({
-        titleText: 'This report has been sent to the use of force coordinator'
-      })
-    }}
+    <div class="govuk-panel info-panel">
+      <h1 class="govuk-panel__title">
+        This report has been sent to the use of force coordinator
+      </h1>
+    </div>
+
     <p>You need to write your statement.</p>
     <p>We will email all officers and witnesses involved to ask them to write their statements.</p>
 
