@@ -107,7 +107,7 @@ test('getStatement', () => {
     ,      s.submitted_date         "submittedDate"
     from report r 
     left join statement s on r.id = s.report_id
-    where r.id = $1 and r.user_id = $2 and s.statement_status = $3`,
+    where r.id = $1 and s.user_id = $2 and s.statement_status = $3`,
     values: ['incident-1', 'user-1', StatementStatus.PENDING.value],
   })
 })

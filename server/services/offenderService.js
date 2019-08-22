@@ -1,5 +1,5 @@
 const logger = require('../../log.js')
-const { isNilOrEmpty, properCaseName, formatDate } = require('../utils/utils')
+const { isNilOrEmpty, properCaseName } = require('../utils/utils')
 
 module.exports = function createOffendersService(elite2ClientBuilder) {
   const getOffenderDetails = async (token, bookingId) => {
@@ -25,7 +25,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
         locations: filteredLocations,
         displayName,
         ...result,
-        dateOfBirth: formatDate(dateOfBirth),
+        dateOfBirth,
       }
     } catch (error) {
       logger.error(error, 'Error during getOffenderDetails')
