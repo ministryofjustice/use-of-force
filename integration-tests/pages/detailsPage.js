@@ -15,7 +15,6 @@ export default () =>
       cy.get('[name="restraint"]').check('true')
       cy.get('[name="restraintPositions"]').check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       cy.get('[name="handcuffsApplied"]').check('true')
-      cy.get('[name="handcuffsType"]').check('RATCHET')
     },
 
     save: () => {

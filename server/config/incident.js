@@ -146,14 +146,6 @@ module.exports = {
           sanitiser: toBoolean,
         },
       },
-      {
-        handcuffsType: {
-          responseType: 'requiredHandcuffsType',
-          validationMessage: 'Select the type of handcuffs used',
-          dependentOn: 'handcuffsApplied',
-          predicate: 'true',
-        },
-      },
     ],
     validate: true,
     nextPath: {

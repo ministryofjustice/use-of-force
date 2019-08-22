@@ -24,7 +24,6 @@ export default () =>
       cy.get('[data-qa="pavaDrawn"]').contains('Yes - and used')
       cy.get('[data-qa="guidingHold"]').contains('Yes - two officers involved')
       cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back, face down, kneeling')
-      cy.get('[data-qa="handcuffsUsed"]').contains('Ratchet')
 
       cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')
       cy.get('[data-qa="compliancy"]').contains('Yes')

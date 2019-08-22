@@ -110,9 +110,6 @@ const createDetailsObj = (details = {}) => {
     controlAndRestraintUsed: whenPresent(details.restraint, value =>
       value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
     ),
-    handcuffsUsed: whenPresent(details.handcuffsApplied, value =>
-      value ? typeOfHandcuffsUsed(details.handcuffsType) : 'No'
-    ),
   }
 }
 
@@ -178,10 +175,6 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
   return guidingHoldOfficersInvolved === 1 ? 'Yes - one officer involved' : 'Yes - two officers involved'
-}
-
-const typeOfHandcuffsUsed = handcuffsType => {
-  return handcuffsType === 'RATCHET' ? 'ratchet' : 'fixed bar'
 }
 
 const extractCommaSeparatedList = (attr, dataArray = []) => {
