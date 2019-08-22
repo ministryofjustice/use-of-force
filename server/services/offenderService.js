@@ -1,5 +1,5 @@
 const logger = require('../../log.js')
-const { isNilOrEmpty, properCaseName, formatDate } = require('../utils/utils')
+const { isNilOrEmpty, properCaseName } = require('../utils/utils')
 
 module.exports = function createOffendersService(elite2ClientBuilder) {
   const getOffenderDetails = async (token, bookingId) => {
