@@ -166,7 +166,7 @@
                 {% for option in question.followUpQuestion.options %}
 
                 <div class="govuk-checkboxes__item ">
-                  <input class="govuk-checkboxes__input" {% if loop.index === 1 %} id={{name}} {% else %} id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}" type="checkbox" value="{{option.value}}"
+                  <input class="govuk-checkboxes__input" {% if loop.index === 1 %} id={{name}} {% else %} id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}[{{loop.index}}]" type="checkbox" value="{{option.value}}"
                     {% if option.value in question.followUpQuestion.value %} checked {% endif %}>
                   <label class="govuk-label govuk-checkboxes__label" {% if loop.index === 1 %} for={{name}} {% else %}
                     for="id-{{name}}-{{loop.index}}" {% endif %}>
