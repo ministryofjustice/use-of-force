@@ -57,8 +57,6 @@ context('Submit statement', () => {
     submitStatementPage.statement().type('This is my statement')
 
     const confirmStatementPage = submitStatementPage.submit()
-    confirmStatementPage.confirm().click()
-
     const statementSubmittedPage = confirmStatementPage.submit()
 
     {
@@ -101,7 +99,6 @@ context('Submit statement', () => {
     submitStatementPage.statement().type('This is my statement')
 
     const confirmStatementPage = submitStatementPage.submit()
-    confirmStatementPage.confirm().click()
 
     const statementSubmittedPage = confirmStatementPage.submit()
 
@@ -162,7 +159,6 @@ context('Submit statement', () => {
     confirmStatementPage.statement().should('contain', 'This is my statement')
     confirmStatementPage.lastTraining().should('contain', 'March 2010')
     confirmStatementPage.jobStartYear().should('contain', '1999')
-    confirmStatementPage.confirm().click()
 
     const statementSubmittedPage = confirmStatementPage.submit()
 

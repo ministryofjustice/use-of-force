@@ -79,12 +79,6 @@ describe('POST /incidents/:reportId/statement', () => {
 })
 
 describe('POST /incidents/:reportId/statement/confirm', () => {
-  it('unconfirmed submit redirects due to no confirmation', () =>
-    request(app)
-      .post('/incidents/-1/statement/confirm')
-      .expect(302)
-      .expect('Location', '/incidents/-1/statement/confirm'))
-
   it('confirmed submit redirects to submitted', () =>
     request(app)
       .post('/incidents/-1/statement/confirm')

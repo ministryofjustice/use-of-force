@@ -134,7 +134,6 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
     '/incidents/:reportId/statement/confirm',
     asyncMiddleware(async (req, res) => {
       const { reportId } = req.params
-      const { confirmed } = req.body
 
       const errors = await statementService.validateSavedStatement(req.user.username, reportId)
 
@@ -143,15 +142,6 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
         return res.redirect(`/incidents/${reportId}/statement`)
       }
 
-      if (!confirmed) {
-        req.flash('errors', [
-          {
-            text: 'Confirm you agree to send your statement',
-            href: '#confirm',
-          },
-        ])
-        return res.redirect(`/incidents/${reportId}/statement/confirm`)
-      }
       await statementService.submitStatement(req.user.username, reportId)
 
       const location = `/incidents/${reportId}/statement/submitted`
