@@ -21,7 +21,6 @@ beforeEach(() => {
     restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
-    handcuffsType: 'RATCHET',
   }
 })
 
@@ -44,7 +43,6 @@ describe('Details page - overall', () => {
       restraint: true,
       restraintPositions: ['STANDING', 'FACE_DOWN'],
       handcuffsApplied: true,
-      handcuffsType: 'RATCHET',
     })
   })
 
@@ -289,7 +287,7 @@ describe('Details page inputs', () => {
     expect(formResponse.restraintPositions).toEqual(['STANDING', 'FACE_DOWN'])
   })
 
-  it("Not selecting an option for 'handcuffs applied' returns a validation error message plus 'handcuffs type' is undefined", () => {
+  it("Not selecting an option for 'handcuffs applied' returns a validation error message", () => {
     const input = {
       ...validInput,
       handcuffsApplied: undefined,
@@ -303,34 +301,5 @@ describe('Details page inputs', () => {
       },
     ])
     expect(formResponse.handcuffsAplied).toBe(undefined)
-    expect(formResponse.handcuffsType).toBe(undefined)
-  })
-
-  it("Selecting Yes to 'handcuffs applied' but nothing for 'handcuffs type' returns a validation error message", () => {
-    const input = {
-      ...validInput,
-      handcuffsType: undefined,
-    }
-    const { errors, formResponse } = check(input)
-
-    expect(errors).toEqual([
-      {
-        href: '#handcuffsType',
-        text: 'Select the type of handcuffs used',
-      },
-    ])
-    expect(formResponse.handcuffsApplied).toEqual(true)
-    expect(formResponse.handcuffsType).toBe(undefined)
-  })
-
-  it("Selecting 'Ratchet' for 'handcuffs type' returns no errors", () => {
-    const input = {
-      ...validInput,
-    }
-    const { errors, formResponse } = check(input)
-
-    expect(errors).toEqual([])
-    expect(formResponse.handcuffsApplied).toEqual(true)
-    expect(formResponse.handcuffsType).toEqual('RATCHET')
   })
 })
