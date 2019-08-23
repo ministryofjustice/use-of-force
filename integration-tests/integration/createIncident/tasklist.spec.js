@@ -30,6 +30,7 @@ context('tasklist', () => {
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationPage = detailsPage.save()
+    relocationPage.fillForm()
     const evidencePage = relocationPage.save()
     evidencePage.fillForm()
     evidencePage.save()

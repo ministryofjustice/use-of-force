@@ -157,70 +157,77 @@ module.exports = {
       {
         prisonerRelocation: {
           responseType: 'requiredString',
-          validationMessage: 'Where was the prisoner relocated to?',
+          validationMessage: 'Select where the prisoner was relocated to',
         },
       },
       {
         relocationCompliancy: {
           responseType: 'requiredBoolean',
-          validationMessage: 'What type of relocation was it?',
-          sanitiser: toBoolean,
-        },
-      },
-      {
-        healthcareInvolved: {
-          responseType: 'requiredBoolean',
-          validationMessage: 'Was a a healthcare practioner involved?',
-          sanitiser: toBoolean,
-        },
-      },
-      {
-        healthcarePractionerName: {
-          responseType: 'requiredString',
-          validationMessage: 'Name of healthcare practioner',
-          dependentOn: 'healthcareInvolved',
-          predicate: 'true',
-        },
-      },
-      {
-        prisonerInjuries: {
-          responseType: 'requiredBoolean',
-          validationMessage: 'Did the prisoner sustain any injuries?',
+          validationMessage: 'Select yes if the prisoner was compliant',
           sanitiser: toBoolean,
         },
       },
       {
         f213CompletedBy: {
           responseType: 'requiredString',
-          validationMessage: 'Who completed the f213 form?',
+          validationMessage: 'Enter the name of who completed the F213 form',
+        },
+      },
+      {
+        prisonerInjuries: {
+          responseType: 'requiredBoolean',
+          validationMessage: 'Select yes if the prisoner sustained any injuries',
+          sanitiser: toBoolean,
+        },
+      },
+      {
+        healthcareInvolved: {
+          responseType: 'requiredBoolean',
+          validationMessage: 'Select yes if a member of healthcare was present during the incident',
+          sanitiser: toBoolean,
+        },
+      },
+      {
+        healthcarePractionerName: {
+          responseType: 'requiredMemberOfHealthcare',
+          validationMessage: 'Enter the name of the member of healthcare',
+          dependentOn: 'healthcareInvolved',
+          predicate: 'true',
         },
       },
       {
         prisonerHospitalisation: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Did the prisoner need outside hospitalisation?',
+          validationMessage: 'Select yes if the prisoner needed outside hospitalisation',
           sanitiser: toBoolean,
         },
       },
       {
         staffMedicalAttention: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Did a member of staff need medical attention at the time?',
+          validationMessage: 'Select yes if a staff member needed medical attention',
           sanitiser: toBoolean,
         },
       },
       {
         staffNeedingMedicalAttention: {
+          responseType: 'requiredStaffNeedingMedicalAttention',
+          validationMessage: "Enter the staff member's name and whether they went to hospital",
+
           sanitiser: values => {
             return removeEmptyValues(['name', 'hospitalisation'])(values).map(({ name, hospitalisation }) => ({
               name,
               hospitalisation: toBoolean(hospitalisation),
             }))
           },
+          dependentOn: 'staffMedicalAttention',
+          firstFieldName: 'staffMedicalAttention',
+          predicate: 'true',
         },
       },
     ],
-    validate: false,
+
+    validate: true,
     nextPath: {
       path: bookingId => `/form/incident/evidence/${bookingId}`,
     },
@@ -270,7 +277,7 @@ module.exports = {
           sanitiser: removeEmptyValues(['cameraNum']),
           dependentOn: 'bodyWornCamera',
           predicate: 'YES',
-          validationMessage: 'Please input the camera number',
+          validationMessage: 'Enter the body-worn camera number',
           firstFieldName: 'bodyWornCameraNumbers[0][cameraNum]',
         },
       },
