@@ -64,14 +64,14 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
 
       const input = firstItem(req.flash('userInput'))
 
-      const involved = (input && input.involved) || (formId && (await involvedStaffService.get(formId))) || []
+      const involvedStaff = (input && input.involvedStaff) || (formId && (await involvedStaffService.get(formId))) || []
 
       const data = {
         displayName,
         offenderNo,
         date,
         locations,
-        involved,
+        involvedStaff,
       }
 
       renderForm({ req, res, formObject, data, section, form })
@@ -87,9 +87,9 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
     })
   )
 
-  const getAdditonalData = async (res, form, { involved = [] }) => {
+  const getAdditonalData = async (res, form, { involvedStaff = [] }) => {
     if (form === 'newIncident') {
-      return involvedStaffService.lookup(res.locals.user.token, involved.map(u => u.username))
+      return involvedStaffService.lookup(res.locals.user.token, involvedStaff.map(u => u.username))
     }
     return { additionalFields: [], additionalErrors: [] }
   }
@@ -101,14 +101,14 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
 
-      const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, form, extractedFields)
+      const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, form, payloadFields)
 
       const allErrors = [...errors, ...additionalErrors]
-      const allAdditionalFields = { ...extractedFields, ...additionalFields }
+      const formPayload = { ...payloadFields, ...additionalFields }
 
       if (!isNilOrEmpty(allErrors)) {
         req.flash('errors', allErrors)
-        req.flash('userInput', { ...payloadFields, ...extractedFields })
+        req.flash('userInput', formPayload)
         return res.redirect(`/form/${section}/${form}/${bookingId}`)
       }
 
@@ -116,7 +116,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
 
       const updatedPayload = await formProcessing.mergeIntoPayload({
         formObject,
-        formPayload: payloadFields,
+        formPayload,
         formSection: section,
         formName: form,
       })
@@ -127,7 +127,7 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
           formId,
           bookingId: parseInt(bookingId, 10),
           formObject: updatedPayload,
-          ...allAdditionalFields,
+          ...extractedFields,
         })
       }
 

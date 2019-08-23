@@ -76,20 +76,20 @@
     <div class="govuk-grid-column-full">
       <h3>Staff involved in use of force</h3>
       <div class="add-another-staff-member">
-        {% for staffMember in data.involved %} {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {% for staffMember in data.involvedStaff %} {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{
           govukInput({
             label: {
               html: 'Username'
             },
             classes: 'govuk-!-width-one-third',
-            id: 'involved[' + loop.index0 + '][username]',
-            name: 'involved[' + loop.index0 + '][username]',
+            id: 'involvedStaff[' + loop.index0 + '][username]',
+            name: 'involvedStaff[' + loop.index0 + '][username]',
             value: staffMember.username,
-            errorMessage: errors | findError('involved[' + loop.index0 + '][username]'),
+            errorMessage: errors | findError('involvedStaff[' + loop.index0 + '][username]'),
             attributes: {
-              'data-name': 'involved[%index%][username]',
-              'data-id': 'involved[%index%][username]'
+              'data-name': 'involvedStaff[%index%][username]',
+              'data-id': 'involvedStaff[%index%][username]'
             }
           })
         }}
@@ -105,12 +105,12 @@
               html: 'Username'
             },
             classes: 'govuk-!-width-one-third',
-            id: 'involved[0][username]',
-            name: 'involved[0][username]',
-            errorMessage: errors | findError('involved[0][username]'),
+            id: 'involvedStaff[0][username]',
+            name: 'involvedStaff[0][username]',
+            errorMessage: errors | findError('involvedStaff[0][username]'),
             attributes: {
-              'data-name': 'involved[%index%][username]',
-              'data-id': 'involved[%index%][username]'
+              'data-name': 'involvedStaff[%index%][username]',
+              'data-id': 'involvedStaff[%index%][username]'
             }
           })
         }}

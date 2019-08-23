@@ -7,6 +7,12 @@ const submittedPage = () =>
       cy.get('[data-qa=continue-to-statement]').click()
       return SubmitStatementPage.verifyOnPage()
     },
+    getReportId: () => {
+      return cy.url().then(url => {
+        const match = url.match(/.*submitted\/(.*)/)
+        return match[1]
+      })
+    },
   })
 
 export default {
