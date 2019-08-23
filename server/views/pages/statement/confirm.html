@@ -1,59 +1,48 @@
-{% extends "../../partials/layout.html" %} 
-{% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/textarea/macro.njk" import govukTextarea %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
-{% from "govuk/components/select/macro.njk" import govukSelect %} 
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
-
-{% block content %}
+{% extends "../../partials/layout.html" %} {% from "govuk/components/button/macro.njk" import govukButton %} {% from
+"govuk/components/textarea/macro.njk" import govukTextarea %} {% from "govuk/components/input/macro.njk" import
+govukInput %} {% from "govuk/components/select/macro.njk" import govukSelect %} {% from
+"govuk/components/fieldset/macro.njk" import govukFieldset %} {% from "govuk/components/checkboxes/macro.njk" import
+govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} {% block content %}
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">Check your statement before submitting it</h1>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full ">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="offender-name">
-        {{ data.displayName }} ({{ data.offenderNo }})
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">Prisoner:&nbsp;</span>
+        <span data-qa="offender-name">
+          {{ data.displayName }} ({{ data.offenderNo }})
+        </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">Date and time of incident:&nbsp;</span>
+        <span data-qa="date-and-time">
+          {{ data.incidentDate | formatDate('DD MMMM YYYY - HH:mm')  }}
+        </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">When did you last attend control and restraint basic refresher
+          training?:&nbsp;</span>
+        <span data-qa="last-training">
+          {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }}
+        </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">What year did you join the prison service?:&nbsp;</span>
+        <span data-qa="job-start-year">
+          {{ data.jobStartYear }}
+        </span>
       </p>
     </div>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-        {{ data.incidentDate | formatDate('DD MMMM YYYY - HH:mm')  }}
-      </p>
-    </div>
-  </div>
-  <hr />
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half govuk-!-margin-top-5">
-      {% call govukFieldset({ legend: { text: "When did you last attend control and restraint basic refresher
-      training?", classes: "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="last-training">
-        {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }}
-      </p>
-      {% endcall %}
-    </div>
-    <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
-      {% call govukFieldset({ legend: { text: "What year did you join the prison service?", classes:
-      "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs" data-qa="job-start-year">
-        {{ data.jobStartYear }}
-      </p>
-      {% endcall %}
-    </div>
-  </div>
-  <hr class="govuk-!-margin-top-4" />
+  <hr class="govuk-!-margin-top-2" />
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-full ">
       <p class="govuk-!-margin-bottom-1 govuk-label--s">Statement</p>
       <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
     </div>
   </div>
-  <hr />
+  <hr class="govuk-!-margin-top-2" />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you agree that:</p>
