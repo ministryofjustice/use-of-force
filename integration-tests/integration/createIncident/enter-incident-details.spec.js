@@ -47,7 +47,7 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'newIncident' }).then(({ payload, incidentDate, staff }) => {
+    cy.task('getCurrentDraft', { bookingId, formName: 'newIncident' }).then(({ payload, incidentDate }) => {
       const incidentDateInMillis = moment(incidentDate).valueOf()
       const nowInMillis = moment().valueOf()
 
@@ -58,11 +58,21 @@ context('Submitting details page form', () => {
         locationId: 357591,
         plannedUseOfForce: true,
         witnesses: [{ name: '1111' }],
+        involvedStaff: [
+          {
+            email: 'AAAA@gov.uk',
+            name: 'AAAA name',
+            staffId: 231232,
+            username: 'AAAA',
+          },
+          {
+            email: 'BBBB@gov.uk',
+            name: 'BBBB name',
+            staffId: 231232,
+            username: 'BBBB',
+          },
+        ],
       })
-      expect(staff).to.deep.equal([
-        { userId: 'AAAA', name: 'AAAA name', email: 'AAAA@gov.uk' },
-        { userId: 'BBBB', name: 'BBBB name', email: 'BBBB@gov.uk' },
-      ])
     })
   })
 

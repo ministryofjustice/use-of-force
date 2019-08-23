@@ -12,6 +12,8 @@ context('Submit the incident report', () => {
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
+    cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
   })
 
   it('A form cannot be submitted until confirmed', () => {
@@ -21,6 +23,7 @@ context('Submit the incident report', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
@@ -36,7 +39,21 @@ context('Submit the incident report', () => {
     cy.focused().check()
     checkAnswersPage.clickSubmit()
 
-    SubmittedPage.verifyOnPage()
+    const submittedPage = SubmittedPage.verifyOnPage()
+
+    submittedPage
+      .getReportId()
+      .then(reportId =>
+        cy
+          .task('getAllStatementsForReport', reportId)
+          .then(staff =>
+            expect(staff).to.deep.equal([
+              { name: 'Mr Zagato name', email: 'Mr Zagato@gov.uk', userid: 'Mr Zagato', status: 'PENDING' },
+              { name: 'Mrs Jones name', email: 'Mrs Jones@gov.uk', userid: 'Mrs Jones', status: 'PENDING' },
+              { name: 'Test User name', email: 'Test User@gov.uk', userid: 'Test User', status: 'PENDING' },
+            ])
+          )
+      )
   })
 
   it('Can defer submitting form', () => {

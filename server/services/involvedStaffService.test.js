@@ -7,7 +7,7 @@ const userService = {
 const incidentClient = {
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
-  insertInvolvedStaff: jest.fn(),
+  createStatements: jest.fn(),
 }
 
 let service
@@ -63,11 +63,11 @@ describe('lookup', () => {
       additionalFields: {},
       additionalErrors: [
         {
-          href: '#involved[1][username]',
+          href: '#involvedStaff[1][username]',
           text: "User with name 'June' does not have a new nomis account",
         },
         {
-          href: '#involved[2][username]',
+          href: '#involvedStaff[2][username]',
           text: "User with name 'Jenny' has not verified their email address",
         },
       ],
@@ -82,12 +82,12 @@ describe('lookup', () => {
       additionalErrors: [
         {
           i: 2,
-          href: '#involved[2][username]',
+          href: '#involvedStaff[2][username]',
           text: "User with name 'Bob' has already been added",
         },
         {
           i: 4,
-          href: '#involved[4][username]',
+          href: '#involvedStaff[4][username]',
           text: "User with name 'Jenny' has already been added",
         },
       ],
@@ -98,15 +98,24 @@ describe('lookup', () => {
     userService.getUsers.mockReturnValue({
       exist: [
         {
+          staffId: 3,
           i: 2,
-          email: 'an@email.com',
+          email: 'an@email',
           exists: true,
           name: 'Bob Smith',
           username: 'Bob',
           verified: true,
         },
-        { i: 0, exists: true, email: 'bn@email.com', username: 'June', verified: true },
-        { i: 1, exists: true, email: 'cn@email.com', username: 'Jenny', verified: true },
+        { staffId: 1, i: 0, exists: true, email: 'bn@email', username: 'June', name: 'June Smith', verified: true },
+        {
+          staffId: 2,
+          i: 1,
+          exists: true,
+          email: 'cn@email',
+          username: 'Jenny',
+          name: 'Jenny Walker',
+          verified: true,
+        },
       ],
       missing: [],
       notVerified: [],
@@ -119,26 +128,22 @@ describe('lookup', () => {
       additionalFields: {
         involvedStaff: [
           {
-            exists: true,
-            i: 0,
-            email: 'bn@email.com',
+            staffId: 1,
+            email: 'bn@email',
             username: 'June',
-            verified: true,
+            name: 'June Smith',
           },
           {
-            exists: true,
-            i: 1,
-            email: 'cn@email.com',
+            staffId: 2,
+            email: 'cn@email',
             username: 'Jenny',
-            verified: true,
+            name: 'Jenny Walker',
           },
           {
-            email: 'an@email.com',
-            exists: true,
-            i: 2,
-            name: 'Bob Smith',
+            staffId: 3,
+            email: 'an@email',
             username: 'Bob',
-            verified: true,
+            name: 'Bob Smith',
           },
         ],
       },
@@ -147,14 +152,119 @@ describe('lookup', () => {
   })
 })
 
-describe('updateInvolvedStaff', () => {
-  test('should call update and pass in the form when form id is present', async () => {
-    await service.update('form1', [{ name: 'Bob', username: 'BOB', email: 'bob@gov.uk' }])
-
-    expect(incidentClient.deleteInvolvedStaff).toBeCalledWith('form1')
-    expect(incidentClient.insertInvolvedStaff).toBeCalledTimes(1)
-    expect(incidentClient.insertInvolvedStaff).toBeCalledWith('form1', [
-      { userId: 'BOB', name: 'Bob', email: 'bob@gov.uk' },
+describe('save', () => {
+  test('when user has already added themselves', async () => {
+    incidentClient.getInvolvedStaff.mockReturnValue([
+      {
+        staffId: 1,
+        email: 'bn@email',
+        username: 'June',
+        name: 'June Smith',
+      },
+      {
+        staffId: 2,
+        email: 'cn@email',
+        username: 'Jenny',
+        name: 'Jenny Walker',
+      },
+      {
+        staffId: 3,
+        email: 'an@email',
+        username: 'Bob',
+        name: 'Bob Smith',
+      },
     ])
+
+    await service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+
+    expect(incidentClient.createStatements).toBeCalledWith('form1', [
+      { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
+      {
+        email: 'cn@email',
+        name: 'Jenny Walker',
+        staffId: 2,
+        userId: 'Jenny',
+      },
+      {
+        email: 'an@email',
+        name: 'Bob Smith',
+        staffId: 3,
+        userId: 'Bob',
+      },
+    ])
+  })
+
+  test('when user is not already added', async () => {
+    incidentClient.getInvolvedStaff.mockReturnValue([
+      {
+        staffId: 1,
+        email: 'bn@email',
+        username: 'June',
+        name: 'June Smith',
+      },
+      {
+        staffId: 2,
+        email: 'cn@email',
+        username: 'Jenny',
+        name: 'Jenny Walker',
+      },
+    ])
+
+    userService.getUsers.mockReturnValue({
+      success: true,
+      exist: [
+        {
+          staffId: 3,
+          email: 'an@email',
+          username: 'Bob',
+          name: 'Bob Smith',
+        },
+      ],
+    })
+
+    await service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+
+    expect(incidentClient.createStatements).toBeCalledWith('form1', [
+      { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
+      {
+        email: 'cn@email',
+        name: 'Jenny Walker',
+        staffId: 2,
+        userId: 'Jenny',
+      },
+      {
+        email: 'an@email',
+        name: 'Bob Smith',
+        staffId: 3,
+        userId: 'Bob',
+      },
+    ])
+  })
+
+  test('fail to find current user', async () => {
+    incidentClient.getInvolvedStaff.mockReturnValue([
+      {
+        staffId: 1,
+        email: 'bn@email',
+        username: 'June',
+        name: 'June Smith',
+      },
+      {
+        staffId: 2,
+        email: 'cn@email',
+        username: 'Jenny',
+        name: 'Jenny Walker',
+      },
+    ])
+
+    userService.getUsers.mockReturnValue({
+      success: false,
+      exist: [],
+      missing: [{}],
+    })
+
+    await expect(service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })).rejects.toThrow(
+      `Could not retrieve user details for 'Bob', missing: 'true', not verified: 'false'`
+    )
   })
 })

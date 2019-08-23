@@ -110,7 +110,7 @@ context('Submit statement', () => {
     date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
 
     reportId().then(id =>
-      cy.task('getStatement', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {
+      cy.task('getStatementForUser', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {
         const { id: _, incidentDate, submittedDate, ...vals } = statement
 
         expect(vals).to.deep.equal({

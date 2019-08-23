@@ -113,38 +113,46 @@ test('getStatement', () => {
 })
 
 test('getInvolvedStaff', async () => {
-  const expected = [{ id: 1 }, { id: 2 }]
+  const expected = [
+    {
+      form_response: {
+        incident: {
+          newIncident: {
+            involvedStaff: [
+              {
+                name: 'AAA User',
+              },
+              {
+                name: 'BBB User',
+              },
+            ],
+          },
+        },
+      },
+    },
+  ]
   db.query.mockReturnValue({ rows: expected })
 
   const result = await incidentClient.getInvolvedStaff('incident-1')
 
-  expect(result).toEqual(expected)
+  expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(db.query).toBeCalledWith({
-    text: `select id, user_id username, name, email from statement where report_id = $1 order by id`,
+    text: `select form_response from report where id = $1`,
     values: ['incident-1'],
   })
 })
 
-test('deleteInvolvedStaff', () => {
-  incidentClient.deleteInvolvedStaff('incident-1')
-
-  expect(db.query).toBeCalledWith({
-    text: `delete from statement where report_id = $1`,
-    values: ['incident-1'],
-  })
-})
-
-test('insertInvolvedStaff', async () => {
+test('createStatements', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 
-  const ids = await incidentClient.insertInvolvedStaff('incident-1', [
-    { userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
-    { userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
+  const ids = await incidentClient.createStatements('incident-1', [
+    { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
+    { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
   ])
 
   expect(ids).toEqual([1, 2])
   expect(db.query).toBeCalledWith({
-    text: `insert into statement (report_id, user_id, name, email, statement_status) VALUES ('incident-1', '1', 'aaaa', 'aaaa@gov.uk', 'PENDING'), ('incident-1', '2', 'bbbb', 'bbbb@gov.uk', 'PENDING') returning id`,
+    text: `insert into statement (report_id, staff_id, user_id, name, email, statement_status) VALUES ('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'PENDING'), ('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'PENDING') returning id`,
   })
 })
 
@@ -162,6 +170,7 @@ test('save', () => {
     ,   last_training_year = $2
     ,   job_start_year = $3
     ,   statement = $4
+    ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $5
     and report_id = $6
     and statement_status = $7`,
@@ -176,6 +185,7 @@ test('submitStatement', () => {
     text: `update statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
+    ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $2
     and report_id = $3
     and statement_status = $4`,

@@ -1,7 +1,7 @@
 const auth = require('../mockApis/auth')
 const { resetStubs } = require('../mockApis/wiremock')
 const elite2api = require('../mockApis/elite2api')
-const { clearDb, getCurrentDraft, getStatement } = require('../db/db')
+const { clearDb, getCurrentDraft, getStatementForUser, getAllStatementsForReport } = require('../db/db')
 
 module.exports = on => {
   on('task', {
@@ -21,7 +21,9 @@ module.exports = on => {
 
     stubLocation: elite2api.stubLocation,
 
-    getStatement,
+    getStatementForUser,
+
+    getAllStatementsForReport,
 
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
   })

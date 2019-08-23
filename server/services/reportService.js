@@ -9,7 +9,7 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
   async function submit(currentUser, bookingId) {
     const form = await getCurrentDraft(currentUser.username, bookingId)
     if (form.id) {
-      await involvedStaffService.addCurrentUser(form.id, currentUser)
+      await involvedStaffService.save(form.id, currentUser)
       logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
       await incidentClient.submitReport(currentUser.username, bookingId)
       return form.id
@@ -17,20 +17,7 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
     return false
   }
 
-  async function update({ currentUser, formId, bookingId, formObject, incidentDate, involvedStaff }) {
-    const reportId = await updateReport({
-      currentUser,
-      formId,
-      bookingId,
-      formObject,
-      incidentDate,
-    })
-    if (involvedStaff) {
-      await involvedStaffService.update(reportId, involvedStaff)
-    }
-  }
-
-  async function updateReport({ currentUser, formId, bookingId, formObject, incidentDate }) {
+  async function update({ currentUser, formId, bookingId, formObject, incidentDate }) {
     const { username: userId, token, displayName: reporterName } = currentUser
     if (formId) {
       if (!isNilOrEmpty(formObject)) {

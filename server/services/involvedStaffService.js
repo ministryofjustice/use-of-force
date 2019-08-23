@@ -3,18 +3,6 @@ module.exports = function createReportService({ incidentClient, userService }) {
     return incidentClient.getInvolvedStaff(reportId)
   }
 
-  const update = async (reportId, involvedStaff = []) => {
-    await incidentClient.deleteInvolvedStaff(reportId)
-    if (involvedStaff.length) {
-      const staff = involvedStaff.map(user => ({
-        userId: user.username,
-        name: user.name,
-        email: user.email,
-      }))
-      await incidentClient.insertInvolvedStaff(reportId, staff)
-    }
-  }
-
   async function lookup(token, usernames) {
     if (!usernames.length) {
       return {
@@ -23,7 +11,6 @@ module.exports = function createReportService({ incidentClient, userService }) {
       }
     }
 
-    // Could possibly replace this info with a sanitisation step
     const duplicates = getDuplicates(usernames)
     if (duplicates.length) {
       return {
@@ -35,7 +22,12 @@ module.exports = function createReportService({ incidentClient, userService }) {
     const { exist = [], missing = [], notVerified = [], success } = await userService.getUsers(token, usernames)
 
     if (success) {
-      const involvedStaff = exist.sort(({ i }, { i: j }) => i - j)
+      const involvedStaff = exist
+        .sort(({ i }, { i: j }) => i - j)
+        .map(user => {
+          const { name, email, staffId, username } = user
+          return { name, email, staffId, username }
+        })
       return {
         additionalFields: { involvedStaff },
         additionalErrors: [],
@@ -45,26 +37,40 @@ module.exports = function createReportService({ incidentClient, userService }) {
     return { additionalFields: {}, additionalErrors: getAdditionalErrors(missing, notVerified) }
   }
 
-  const addCurrentUser = async (reportId, currentUser) => {
-    const involvedStaff = await get(reportId)
-
-    if (involvedStaff.find(user => currentUser.username === user.username)) {
-      // user has already been added, so nothing left to do
-      return
+  const getStaffRequiringStatements = async (currentUser, addedStaff) => {
+    const userAlreadyAdded = addedStaff.find(user => currentUser.username === user.username)
+    if (userAlreadyAdded) {
+      return addedStaff
     }
-
     // If current user hasn't added themselves, then add them to the list.
-    const { exist, success, missing, notVerified } = await userService.getUsers(currentUser.token, [
+    const { success, exist = [], missing = [], notVerified = [] } = await userService.getUsers(currentUser.token, [
       currentUser.username,
     ])
 
     if (!success) {
       throw new Error(
-        `Could not retrieve user details for ${currentUser.username}, missing: '${missing}', not verified; ${notVerified}`
+        `Could not retrieve user details for '${currentUser.username}', missing: '${Boolean(
+          missing.length
+        )}', not verified: '${Boolean(notVerified.length)}'`
       )
     }
 
-    await update(reportId, [...involvedStaff, ...exist])
+    return [...addedStaff, ...exist]
+  }
+
+  const save = async (reportId, currentUser) => {
+    const involvedStaff = await get(reportId)
+
+    const staffToCreateStatmentsFor = await getStaffRequiringStatements(currentUser, involvedStaff)
+
+    const staff = staffToCreateStatmentsFor.map(user => ({
+      staffId: user.staffId,
+      userId: user.username,
+      name: user.name,
+      email: user.email,
+    }))
+
+    await incidentClient.createStatements(reportId, staff)
   }
 
   const getAdditionalErrors = (missing, notVerified) => {
@@ -97,14 +103,13 @@ module.exports = function createReportService({ incidentClient, userService }) {
   const buildErrors = (staffMembers, errorBuilder) =>
     staffMembers.map(staff => ({
       text: errorBuilder(staff.username),
-      href: `#involved[${staff.i}][username]`,
+      href: `#involvedStaff[${staff.i}][username]`,
       i: staff.i,
     }))
 
   return {
     get,
-    update,
+    save,
     lookup,
-    addCurrentUser,
   }
 }
