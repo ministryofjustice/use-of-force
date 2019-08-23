@@ -60,16 +60,6 @@ module.exports = function Index({ reportService, authenticationMiddleware, offen
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const { confirmed } = req.body
-      if (!confirmed) {
-        req.flash('errors', [
-          {
-            text: 'Check that you agree before submitting',
-            href: '#confirm',
-          },
-        ])
-        return res.redirect(`/check-answers/${bookingId}`)
-      }
       const reportId = await reportService.submit(res.locals.user, bookingId)
       const location = reportId ? `/submitted/${reportId}` : `/incidents`
       return res.redirect(location)

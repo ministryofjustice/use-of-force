@@ -33,13 +33,6 @@ context('Submit the incident report', () => {
     const checkAnswersPage = evidencePage.save()
 
     checkAnswersPage.clickSubmit()
-
-    checkAnswersPage.checkStillOnPage()
-    checkAnswersPage.errorSummary().contains('There is a problem')
-    checkAnswersPage.errorLink('Check that you agree before submitting').click()
-    cy.focused().check()
-    checkAnswersPage.clickSubmit()
-
     const submittedPage = SubmittedPage.verifyOnPage()
 
     submittedPage
@@ -98,7 +91,6 @@ context('Submit the incident report', () => {
     evidencePage.fillForm()
 
     const checkAnswersPage = evidencePage.save()
-    checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
 
     SubmittedPage.verifyOnPage()
