@@ -45,23 +45,25 @@ href: backLink or "/"
     }}
     {{
       pagesMacros.tableRow({
-        label: 'Incident type',
+        label: 'Was the use of force planned?',
         'data-qa': 'incidentType',
-        dataValue: data.newIncident.plannedUseOfForce
+        dataValue: data.newIncident.plannedUseOfForce | toYesNo
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Staff involved',
         'data-qa': 'staffInvolved',
-        dataValue: data.newIncident.staffInvolved | title
+        dataValue: data.newIncident.staffInvolved,
+        type: 'itemPerLine'
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Witnesses',
         'data-qa': 'witnesses',
-        dataValue: data.newIncident.witnesses | title
+        dataValue: data.newIncident.witnesses,
+        type: 'itemPerLine'
       })
     }}
 
@@ -133,7 +135,7 @@ href: backLink or "/"
       pagesMacros.tableRow({
         label: 'Was the prisoner compliant?',
         'data-qa': 'compliancy',
-        dataValue: data.relocationAndInjuries.prisonerCompliancy
+        dataValue: data.relocationAndInjuries.prisonerCompliancy | toYesNo
       })
     }}
     {{
@@ -154,7 +156,7 @@ href: backLink or "/"
       pagesMacros.tableRow({
         label: 'Did the prisoner sustain any injuries at the time?',
         'data-qa': 'prisonerInjuries',
-        dataValue: data.relocationAndInjuries.prisonerInjuries | title
+        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo
       })
     }}
     {{
@@ -166,16 +168,18 @@ href: backLink or "/"
     }}
     {{
       pagesMacros.tableRow({
-        label: 'Staff needed medical attention',
+        label: 'Staff who needed medical attention',
         'data-qa': 'staffMedicalAttention',
-        dataValue: data.relocationAndInjuries.staffMedicalAttention | title
+        dataValue: data.relocationAndInjuries.staffMedicalAttention,
+        type: 'itemPerLine'
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Staff taken to hospital',
         'data-qa': 'staffHospitalisation',
-        dataValue: data.relocationAndInjuries.staffHospitalisation | title
+        dataValue: data.relocationAndInjuries.staffHospitalisation,
+        type: 'itemPerLine'
       })
     }}
 

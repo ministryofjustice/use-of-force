@@ -19,7 +19,14 @@
         &ndash;
       {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}
         {%for item in dataItem.dataValue %}
-        {{item.tag}}<br/>{{item.description}} <br/><br/>
+          {%for value in item %}
+            {{value}} 
+            {% if not loop.last %}<br/>{% endif %}
+          {% endfor%}
+          <br/>
+          {%if item.length > 1 and not loop.last %}
+          <br/>
+          {% endif %}
         {% endfor %}
       {% else %}
       {{dataItem.dataValue}}
