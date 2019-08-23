@@ -34,7 +34,6 @@ context('Logging in', () => {
     tasklistPageAfterAllPartsComplete.checkAllPartsComplete()
 
     checkAnswersPage = tasklistPageAfterAllPartsComplete.goToAnswerPage()
-    checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
     SubmittedPage.verifyOnPage()
 
