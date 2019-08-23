@@ -71,6 +71,11 @@ AddAnother.prototype.resetItem = function(item) {
       el.value = ''
     }
   })
+  item.find('.govuk-error-message').remove()
+  const classesToReset = ['govuk-form-group--error', 'govuk-input--error', 'govuk-textarea--error']
+  classesToReset.forEach(function(c) {
+    item.find('.' + c).removeClass(c)
+  })
 }
 
 AddAnother.prototype.onRemoveButtonClick = function(e) {
