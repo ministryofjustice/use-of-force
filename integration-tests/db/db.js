@@ -5,9 +5,17 @@ const incidentClient = require('../../server/data/incidentClient')
 const getCurrentDraft = bookingId =>
   incidentClient.getCurrentDraftReport('Test User', bookingId, db.queryWithoutTransaction)
 
-const getStatement = ({ reportId, status }) =>
+const getStatementForUser = ({ reportId, status }) =>
   incidentClient.getStatement('Test User', reportId, status, db.queryWithoutTransaction)
 
+const getAllStatementsForReport = reportId => {
+  return db
+    .queryWithoutTransaction({
+      text: `select s."name", s.email, s.user_id userId, statement_status status from statement s where s.report_id = $1`,
+      values: [reportId],
+    })
+    .then(result => result.rows || [])
+}
 module.exports = {
   clearDb() {
     const drops = ['report', 'statement'].map(table =>
@@ -19,19 +27,13 @@ module.exports = {
   },
 
   getCurrentDraft({ bookingId, formName }) {
-    return getCurrentDraft(bookingId)
-      .then(form => ({
-        id: form.id,
-        incidentDate: form.incident_date,
-        payload: { ...form.form_response.incident[formName] },
-      }))
-      .then(({ id, incidentDate, payload }) =>
-        incidentClient
-          .getInvolvedStaff(id, db.queryWithoutTransaction)
-          .then(staff => staff.map(s => ({ userId: s.username, name: s.name, email: s.email })))
-          .then(staff => ({ payload, incidentDate, staff }))
-      )
+    return getCurrentDraft(bookingId).then(form => ({
+      id: form.id,
+      incidentDate: form.incident_date,
+      payload: { ...form.form_response.incident[formName] },
+    }))
   },
 
-  getStatement,
+  getStatementForUser,
+  getAllStatementsForReport,
 }

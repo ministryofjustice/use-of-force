@@ -4,10 +4,11 @@ const incidentClient = {
   getCurrentDraftReport: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
+  submitReport: jest.fn(),
 }
 
 const involvedStaffService = {
-  update: jest.fn(),
+  save: jest.fn(),
 }
 
 const elite2Client = {
@@ -23,12 +24,25 @@ beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
   service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService })
-  incidentClient.getCurrentDraftReport.mockReturnValue({ a: 'b' })
+  incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
 afterEach(() => {
   jest.resetAllMocks()
+})
+
+describe('submit', () => {
+  test('it should save statements and submit the report', async () => {
+    const result = await service.submit(currentUser, 'booking-1')
+
+    expect(result).toEqual('form-1')
+    expect(involvedStaffService.save).toBeCalledTimes(1)
+    expect(involvedStaffService.save).toBeCalledWith('form-1', currentUser)
+
+    expect(incidentClient.submitReport).toBeCalledTimes(1)
+    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1')
+  })
 })
 
 describe('getCurrentDraft', () => {
@@ -39,7 +53,7 @@ describe('getCurrentDraft', () => {
 
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1')
-    expect(output).toEqual({ a: 'b' })
+    expect(output).toEqual({ id: 'form-1', a: 'b' })
   })
 })
 
@@ -59,50 +73,6 @@ describe('update', () => {
 
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(involvedStaffService.update).toBeCalledTimes(1)
-    expect(involvedStaffService.update).toBeCalledWith('form1', involvedStaff)
-  })
-
-  test('removes involved staff, if no-one is present in involved staff', async () => {
-    const formObject = {
-      decision: 'Yes',
-      followUp1: 'County',
-      followUp2: 'Town',
-    }
-
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject,
-      involvedStaff: [],
-      incidentDate: '21/12/2010',
-    })
-
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(involvedStaffService.update).toBeCalledTimes(1)
-    expect(involvedStaffService.update).toBeCalledWith('form1', [])
-  })
-
-  test('doesnt update involved staff if non-present', async () => {
-    const formObject = {
-      decision: 'Yes',
-      followUp1: 'County',
-      followUp2: 'Town',
-    }
-
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject,
-      incidentDate: '21/12/2010',
-    })
-
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
-    expect(involvedStaffService.update).not.toBeCalled()
   })
 
   test('should call createDraftReport when form id not present', async () => {

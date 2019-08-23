@@ -88,6 +88,7 @@ const saveStatement = (
     ,   last_training_year = $2
     ,   job_start_year = $3
     ,   statement = $4
+    ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $5
     and report_id = $6
     and statement_status = $7`,
@@ -108,6 +109,7 @@ const submitStatement = (userId, reportId, query = db.query) => {
     text: `update statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
+    ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $2
     and report_id = $3
     and statement_status = $4`,
@@ -117,24 +119,22 @@ const submitStatement = (userId, reportId, query = db.query) => {
 
 const getInvolvedStaff = async (reportId, query = db.query) => {
   const results = await query({
-    text: 'select id, user_id username, name, email from statement where report_id = $1 order by id',
+    text: 'select form_response from report where id = $1',
     values: [reportId],
   })
-  return results.rows
+
+  if (results.rows.length) {
+    const { form_response: { incident: { newIncident: { involvedStaff = [] } = {} } = {} } = {} } = results.rows[0]
+    return involvedStaff
+  }
+  return []
 }
 
-const deleteInvolvedStaff = reportId => {
-  return db.query({
-    text: `delete from statement where report_id = $1`,
-    values: [reportId],
-  })
-}
-
-const insertInvolvedStaff = async (reportId, staff) => {
-  const rows = staff.map(s => [reportId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
+const createStatements = async (reportId, staff) => {
+  const rows = staff.map(s => [reportId, s.staffId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
   const results = await db.query({
     text: format(
-      'insert into statement (report_id, user_id, name, email, statement_status) VALUES %L returning id',
+      'insert into statement (report_id, staff_id, user_id, name, email, statement_status) VALUES %L returning id',
       rows
     ),
   })
@@ -149,8 +149,7 @@ module.exports = {
   getStatementsForUser,
   getStatement,
   getInvolvedStaff,
-  deleteInvolvedStaff,
-  insertInvolvedStaff,
+  createStatements,
   saveStatement,
   submitStatement,
 }
