@@ -37,7 +37,6 @@ context('Submit statement', () => {
     evidencePage.fillForm()
     const checkAnswersPage = evidencePage.save()
 
-    checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
 
     {
@@ -89,7 +88,6 @@ context('Submit statement', () => {
     evidencePage.fillForm()
     const checkAnswersPage = evidencePage.save()
 
-    checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
 
     const submittedPage = SubmittedPage.verifyOnPage()
@@ -145,8 +143,6 @@ context('Submit statement', () => {
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
     const checkAnswersPage = evidencePage.save()
-
-    checkAnswersPage.confirm()
     checkAnswersPage.clickSubmit()
 
     const submittedPage = SubmittedPage.verifyOnPage()

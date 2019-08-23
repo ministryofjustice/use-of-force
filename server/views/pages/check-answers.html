@@ -2,7 +2,6 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% import "./pagesMacros.njk" as pagesMacros %} 
 
@@ -16,16 +15,6 @@ href: backLink or "/"
 {% endblock %} {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
-    {% if errors.length > 0 %}
-    {{
-      govukErrorSummary({
-        titleText: 'There is a problem',
-        errorList: errors,
-        attributes: { 'data-qa-errors': true }
-      })
-    }}
-    {% endif %}
-
     <h1 class="govuk-heading-xl">Check your answers before sending the report</h1>
 
     {{
@@ -236,21 +225,6 @@ href: backLink or "/"
     </p>
     <form method="post">
       <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-      {{
-        govukCheckboxes({
-          idPrefix: 'confirm',
-          name: 'confirmed',
-          classes: 'govuk-checkboxes--small',
-          errorMessage: errors[0],
-          items: [
-            {
-              id: 'confirm',
-              value: 'true',
-              text: 'I agree'
-            }
-          ]
-        })
-      }}
       {{
         govukButton({
           text: 'Accept and send',
