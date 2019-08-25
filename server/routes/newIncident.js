@@ -107,7 +107,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       }
 
       const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
-      const location = req.body.submit === 'save-and-continue' ? nextPath : `/tasklist/${bookingId}`
+      const location = req.body.submit === 'save-and-continue' ? nextPath : `/report/${bookingId}/report-use-of-force`
       return res.redirect(location)
     },
   }

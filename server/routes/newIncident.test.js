@@ -74,7 +74,7 @@ describe('POST save and continue /section/form', () => {
 describe('POST save and return to tasklist', () => {
   test.each`
     userInput                        | nextPath
-    ${{ submit: 'save-and-return' }} | ${'/tasklist/1'}
+    ${{ submit: 'save-and-return' }} | ${'/report/1/report-use-of-force'}
   `('should render', ({ userInput, nextPath }) =>
     request(app)
       .post(`/report/1/incident-details`)
