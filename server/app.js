@@ -19,7 +19,7 @@ const createCheckAnswersRouter = require('./routes/checkAnswers')
 const createSubmittedRouter = require('./routes/submitted')
 const createTasklistRouter = require('./routes/tasklist')
 const createApiRouter = require('./routes/api')
-const createIncidentsRouter = require('./routes/incidents')
+const createRouter = require('./routes/')
 
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
@@ -244,7 +244,7 @@ module.exports = function createApp({
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/', createIncidentsRouter({ authenticationMiddleware, statementService, offenderService }))
+  app.use('/', createRouter({ authenticationMiddleware, statementService, offenderService }))
   app.use(
     '/check-answers/',
     createCheckAnswersRouter({ authenticationMiddleware, reportService, offenderService, involvedStaffService })

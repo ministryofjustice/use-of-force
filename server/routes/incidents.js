@@ -1,8 +1,5 @@
-const express = require('express')
 const moment = require('moment')
-const flash = require('connect-flash')
 const { isNilOrEmpty } = require('../utils/utils')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
 const statementConfig = require('../config/statement')
 const formProcessing = require('../services/formProcessing')
 const { StatementStatus } = require('../config/types')
@@ -11,23 +8,7 @@ const formConfig = {
   ...statementConfig,
 }
 
-module.exports = function Index({ authenticationMiddleware, statementService, offenderService }) {
-  const router = express.Router()
-
-  router.use(authenticationMiddleware())
-  router.use(flash())
-
-  router.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-      res.locals.csrfToken = req.csrfToken()
-    }
-    next()
-  })
-
-  router.get('/', (req, res) => {
-    res.redirect('/incidents')
-  })
-
+module.exports = function IncidentRoutes({ statementService, offenderService }) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offender_no)
     return offenderService.getOffenderNames(token, offenderNos)
@@ -40,9 +21,10 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
     offenderName: namesByOffenderNumber[incident.offender_no],
   })
 
-  router.get(
-    '/incidents/',
-    asyncMiddleware(async (req, res) => {
+  return {
+    redirectToViewIncidents: (req, res) => res.redirect('/incidents'),
+
+    viewIncidents: async (req, res) => {
       const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
 
@@ -54,12 +36,15 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
         awaitingStatements,
         completedStatements,
       })
-    })
-  )
+    },
 
-  router.get(
-    '/incidents/:reportId/statement',
-    asyncMiddleware(async (req, res) => {
+    viewSubmitted: async (req, res) => {
+      res.render('pages/statement/submitted', {
+        data: {},
+      })
+    },
+
+    viewStatementEntry: async (req, res) => {
       const { reportId } = req.params
 
       const errors = req.flash('errors')
@@ -77,12 +62,9 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
           months: moment.months().map((month, i) => ({ value: i, label: month })),
         },
       })
-    })
-  )
+    },
 
-  router.post(
-    '/incidents/:reportId/statement',
-    asyncMiddleware(async (req, res) => {
+    enterStatement: async (req, res) => {
       const { reportId } = req.params
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
@@ -105,12 +87,9 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
       const location = saveAndContinue ? `/incidents/${reportId}/statement/confirm` : `/incidents/`
 
       return res.redirect(location)
-    })
-  )
+    },
 
-  router.get(
-    '/incidents/:reportId/statement/confirm',
-    asyncMiddleware(async (req, res) => {
+    viewConfirmation: async (req, res) => {
       const { reportId } = req.params
 
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
@@ -127,12 +106,9 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
           lastTrainingMonth: moment.months(statement.lastTrainingMonth),
         },
       })
-    })
-  )
+    },
 
-  router.post(
-    '/incidents/:reportId/statement/confirm',
-    asyncMiddleware(async (req, res) => {
+    confirmStatement: async (req, res) => {
       const { reportId } = req.params
 
       const errors = await statementService.validateSavedStatement(req.user.username, reportId)
@@ -147,21 +123,9 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
       const location = `/incidents/${reportId}/statement/submitted`
 
       return res.redirect(location)
-    })
-  )
+    },
 
-  router.get(
-    '/incidents/:reportId/statement/submitted',
-    asyncMiddleware(async (req, res) => {
-      res.render('pages/statement/submitted', {
-        data: {},
-      })
-    })
-  )
-
-  router.get(
-    '/incidents/:reportId/statement/review',
-    asyncMiddleware(async (req, res) => {
+    reviewStatement: async (req, res) => {
       const { reportId } = req.params
 
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
@@ -176,8 +140,6 @@ module.exports = function Index({ authenticationMiddleware, statementService, of
           lastTrainingMonth: moment.months(statement.lastTrainingMonth),
         },
       })
-    })
-  )
-
-  return router
+    },
+  }
 }
