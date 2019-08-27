@@ -98,4 +98,23 @@ context('Submitting details page form', () => {
     detailsPage.restraintPositions.onBack().should('not.be.checked')
     detailsPage.handcuffsApplied().should('have.value', 'true')
   })
+
+  it('Displays validation messages', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
+    const detailsPage = newIncidentPage.save()
+    detailsPage.postiveCommunication().check('true')
+    detailsPage.personalProtectionTechniques().check('true')
+    detailsPage.pavaDrawn().check('true')
+    detailsPage.pavaUsed().check('true')
+    detailsPage.guidingHold().check('true')
+    detailsPage.guidingHoldOfficersInvolved.check('2')
+    detailsPage.restraint().check('false')
+    detailsPage.handcuffsApplied().check('true')
+    detailsPage.clickSave()
+    detailsPage.errorSummary().contains('Select yes if a baton was drawn')
+  })
 })
