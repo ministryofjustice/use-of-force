@@ -8,7 +8,7 @@ const formConfig = {
   ...statementConfig,
 }
 
-module.exports = function IncidentRoutes({ statementService, offenderService }) {
+module.exports = function CreateReportRoutes({ statementService, offenderService }) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offender_no)
     return offenderService.getOffenderNames(token, offenderNos)
@@ -22,8 +22,8 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
   })
 
   return {
-    viewReportCreated: async (req, res) => {
-      res.render('pages/submitted', { data: res.locals.formObject, reportId: req.params.reportId })
+    viewReportSent: async (req, res) => {
+      res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId })
     },
 
     viewIncidents: async (req, res) => {
@@ -40,13 +40,13 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       })
     },
 
-    viewSubmitted: async (req, res) => {
-      res.render('pages/statement/submitted', {
+    viewStatementSubmitted: async (req, res) => {
+      res.render('pages/statement/statement-submitted', {
         data: {},
       })
     },
 
-    viewStatementEntry: async (req, res) => {
+    viewWriteYourStatement: async (req, res) => {
       const { reportId } = req.params
 
       const errors = req.flash('errors')
@@ -54,7 +54,7 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
-      res.render('pages/statement/provide', {
+      res.render('pages/statement/write-your-statement', {
         errors,
         data: {
           reportId,
@@ -66,7 +66,7 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       })
     },
 
-    enterStatement: async (req, res) => {
+    submitWriteYourStatement: async (req, res) => {
       const { reportId } = req.params
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
@@ -91,14 +91,14 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       return res.redirect(location)
     },
 
-    viewConfirmation: async (req, res) => {
+    viewCheckYourStatement: async (req, res) => {
       const { reportId } = req.params
 
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
-      res.render('pages/statement/confirm', {
+      res.render('pages/statement/check-your-statement', {
         errors,
         data: {
           reportId,
@@ -110,7 +110,7 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       })
     },
 
-    confirmStatement: async (req, res) => {
+    submitCheckYourStatement: async (req, res) => {
       const { reportId } = req.params
 
       const errors = await statementService.validateSavedStatement(req.user.username, reportId)
@@ -127,13 +127,13 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       return res.redirect(location)
     },
 
-    reviewStatement: async (req, res) => {
+    viewYourStatement: async (req, res) => {
       const { reportId } = req.params
 
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
-      res.render('pages/statement/review', {
+      res.render('pages/statement/your-statement', {
         data: {
           reportId,
           displayName,
