@@ -102,6 +102,6 @@ describe('GET /incidents/:reportId/statement', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Statement submitted')
+        expect(res.text).toContain('Your statement has been submitted')
       }))
 })
