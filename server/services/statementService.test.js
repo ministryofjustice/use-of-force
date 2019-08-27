@@ -7,6 +7,7 @@ const incidentClient = {
   getStatement: jest.fn(),
   saveStatement: jest.fn(),
   submitStatement: jest.fn(),
+  getAdditionalComments: jest.fn(),
 }
 
 let service
@@ -43,6 +44,8 @@ describe('getStatement', () => {
     expect(output).toEqual(incident)
 
     expect(incidentClient.getStatement).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
+
+    expect(incidentClient.getAdditionalComments).toBeCalled()
   })
 
   test('retrieve details when statement is not present', async () => {

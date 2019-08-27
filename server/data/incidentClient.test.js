@@ -97,7 +97,7 @@ test('getStatement', () => {
   incidentClient.getStatement('user-1', 'incident-1', StatementStatus.PENDING)
 
   expect(db.query).toBeCalledWith({
-    text: `select r.id
+    text: `select s.id
     ,      r.booking_id             "bookingId"
     ,      r.incident_date          "incidentDate"
     ,      s.last_training_month    "lastTrainingMonth"
@@ -109,6 +109,19 @@ test('getStatement', () => {
     left join statement s on r.id = s.report_id
     where r.id = $1 and s.user_id = $2 and s.statement_status = $3`,
     values: ['incident-1', 'user-1', StatementStatus.PENDING.value],
+  })
+})
+
+test('getAdditionalComments', () => {
+  incidentClient.getAdditionalComments(48)
+
+  expect(db.query).toBeCalledWith({
+    text: `select  
+    s.additional_comment "additionalComment",
+    s.date_submitted   "dateSubmitted" 
+    from statement_amendments s
+    where s.statement_id = $1`,
+    values: [48],
   })
 })
 
