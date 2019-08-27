@@ -117,7 +117,7 @@ test('getInvolvedStaff', async () => {
     {
       form_response: {
         incident: {
-          newIncident: {
+          incidentDetails: {
             involvedStaff: [
               {
                 name: 'AAA User',

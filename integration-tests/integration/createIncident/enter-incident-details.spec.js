@@ -47,7 +47,7 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'newIncident' }).then(({ payload, incidentDate }) => {
+    cy.task('getCurrentDraft', { bookingId, formName: 'incidentDetails' }).then(({ payload, incidentDate }) => {
       const incidentDateInMillis = moment(incidentDate).valueOf()
       const nowInMillis = moment().valueOf()
 

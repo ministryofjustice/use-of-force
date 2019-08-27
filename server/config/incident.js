@@ -19,7 +19,7 @@ const toDate = val => {
 }
 
 module.exports = {
-  newIncident: {
+  incidentDetails: {
     fields: [
       {
         incidentDate: {

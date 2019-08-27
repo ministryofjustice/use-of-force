@@ -2,11 +2,11 @@ const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, 
 const { properCaseFullName } = require('../utils/utils')
 
 module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService }) {
-  const createNewIncidentObj = (
+  const createIncidentDetailsObj = (
     currentUser,
     offenderDetail,
     description,
-    newIncident = {},
+    incidentDetails = {},
     involvedStaff,
     incidentDate
   ) => {
@@ -14,12 +14,14 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       offenderName: offenderDetail.displayName,
       offenderNumber: offenderDetail.offenderNo,
       location: description,
-      plannedUseOfForce: newIncident.plannedUseOfForce,
+      plannedUseOfForce: incidentDetails.plannedUseOfForce,
       staffInvolved: [
         ...involvedStaff.map(staff => [properCaseFullName(staff.name)]),
         ...(involvedStaff.find(staff => staff.username === currentUser.username) ? [] : [[currentUser.displayName]]),
       ],
-      witnesses: newIncident.witnesses ? newIncident.witnesses.map(staff => [properCaseFullName(staff.name)]) : [],
+      witnesses: incidentDetails.witnesses
+        ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])
+        : [],
       incidentDate,
     }
   }
@@ -126,17 +128,17 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
-        formData.newIncident && formData.newIncident.locationId
+        formData.incidentDetails && formData.incidentDetails.locationId
       )
 
       const involvedStaff = id ? await involvedStaffService.get(id) : []
 
       const data = {
-        newIncident: createNewIncidentObj(
+        incidentDetails: createIncidentDetailsObj(
           res.locals.user,
           offenderDetail,
           description,
-          formData.newIncident,
+          formData.incidentDetails,
           involvedStaff,
           incidentDate
         ),

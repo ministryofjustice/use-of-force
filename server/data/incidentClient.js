@@ -124,7 +124,7 @@ const getInvolvedStaff = async (reportId, query = db.query) => {
   })
 
   if (results.rows.length) {
-    const { form_response: { incident: { newIncident: { involvedStaff = [] } = {} } = {} } = {} } = results.rows[0]
+    const { form_response: { incident: { incidentDetails: { involvedStaff = [] } = {} } = {} } = {} } = results.rows[0]
     return involvedStaff
   }
   return []
