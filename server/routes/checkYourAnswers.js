@@ -114,7 +114,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
   }
 
   return {
-    viewCheckYourAnswers: async (req, res) => {
+    view: async (req, res) => {
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
@@ -146,7 +146,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         evidence: createEvidenceObj(formData.evidence),
       }
 
-      res.render('pages/check-answers', { data, bookingId, errors })
+      res.render('pages/check-your-answers', { data, bookingId, errors })
     },
 
     submit: async (req, res) => {

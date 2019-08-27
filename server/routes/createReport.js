@@ -41,7 +41,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
   }
 
   return {
-    viewNewIncident: async (req, res) => {
+    viewIncidentDetails: async (req, res) => {
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
       const { displayName, offenderNo, locations } = offenderDetail
@@ -66,12 +66,12 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       renderForm({ req, res, formObject, data, form })
     },
 
-    viewForm: form => async (req, res) => {
+    view: form => async (req, res) => {
       const { formObject } = await loadForm(req)
       renderForm({ req, res, formObject, form })
     },
 
-    updateForm: form => async (req, res) => {
+    submit: form => async (req, res) => {
       const { bookingId } = req.params
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)

@@ -3,9 +3,9 @@ const flash = require('connect-flash')
 const bodyParser = require('body-parser')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const IncidentRoutes = require('./incidents')
-const NewIncidentRoutes = require('./newIncident')
-const CheckYourAnswerRoutes = require('./checkAnswers')
-const TasklistRoutes = require('./tasklist')
+const CreateReportRoutes = require('./createReport')
+const CheckYourAnswerRoutes = require('./checkYourAnswers')
+const ReportUseOfForce = require('./reportUseOfForce')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -18,7 +18,7 @@ module.exports = function Index({
 
   const incidents = IncidentRoutes({ statementService, offenderService })
 
-  const newIncidents = NewIncidentRoutes({
+  const createReport = CreateReportRoutes({
     reportService,
     offenderService,
     involvedStaffService,
@@ -26,7 +26,7 @@ module.exports = function Index({
 
   const checkYourAnswers = CheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
 
-  const tasklist = TasklistRoutes({ reportService, offenderService })
+  const reportUseOfForce = ReportUseOfForce({ reportService, offenderService })
 
   router.use(authenticationMiddleware())
   router.use(bodyParser.urlencoded({ extended: false }))
@@ -44,29 +44,29 @@ module.exports = function Index({
   const get = (path, handler) => router.get(path, asyncMiddleware(handler))
   const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
-  get(reportPath('report-use-of-force'), tasklist.viewTasklist)
+  get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  get(reportPath('incident-details'), newIncidents.viewNewIncident)
-  post(reportPath('incident-details'), newIncidents.updateForm('newIncident'))
-  get(reportPath('use-of-force-details'), newIncidents.viewForm('details'))
-  post(reportPath('use-of-force-details'), newIncidents.updateForm('details'))
-  get(reportPath('relocation-and-injuries'), newIncidents.viewForm('relocationAndInjuries'))
-  post(reportPath('relocation-and-injuries'), newIncidents.updateForm('relocationAndInjuries'))
-  get(reportPath('evidence'), newIncidents.viewForm('evidence'))
-  post(reportPath('evidence'), newIncidents.updateForm('evidence'))
+  get(reportPath('incident-details'), createReport.viewIncidentDetails)
+  post(reportPath('incident-details'), createReport.submit('newIncident'))
+  get(reportPath('use-of-force-details'), createReport.view('details'))
+  post(reportPath('use-of-force-details'), createReport.submit('details'))
+  get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
+  post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
+  get(reportPath('evidence'), createReport.view('evidence'))
+  post(reportPath('evidence'), createReport.submit('evidence'))
 
-  get(reportPath('check-your-answers'), checkYourAnswers.viewCheckYourAnswers)
+  get(reportPath('check-your-answers'), checkYourAnswers.view)
   post(reportPath('check-your-answers'), checkYourAnswers.submit)
 
-  get('/:reportId/report-sent', incidents.viewReportCreated)
+  get('/:reportId/report-sent', incidents.viewReportSent)
 
   get('/', incidents.viewIncidents)
-  get('/:reportId/write-your-statement', incidents.viewStatementEntry)
-  post('/:reportId/write-your-statement', incidents.enterStatement)
-  get('/:reportId/check-your-statement', incidents.viewConfirmation)
-  post('/:reportId/check-your-statement', incidents.confirmStatement)
-  get('/:reportId/statement-submitted', incidents.viewSubmitted)
-  get('/:reportId/your-statement', incidents.reviewStatement)
+  get('/:reportId/write-your-statement', incidents.viewWriteYourStatement)
+  post('/:reportId/write-your-statement', incidents.submitWriteYourStatement)
+  get('/:reportId/check-your-statement', incidents.viewCheckYourStatement)
+  post('/:reportId/check-your-statement', incidents.submitCheckYourStatement)
+  get('/:reportId/statement-submitted', incidents.viewStatementSubmitted)
+  get('/:reportId/your-statement', incidents.viewYourStatement)
 
   return router
 }
