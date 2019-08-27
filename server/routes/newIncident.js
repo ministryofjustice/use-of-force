@@ -9,12 +9,12 @@ const formConfig = {
   ...incidentConfig,
 }
 
-const renderForm = ({ req, res, formObject, section, form, data = {} }) => {
+const renderForm = ({ req, res, formObject, form, data = {} }) => {
   const backLink = req.get('Referrer')
   const { bookingId } = req.params
-  const pageData = firstItem(req.flash('userInput')) || getIn([section, form], formObject)
+  const pageData = firstItem(req.flash('userInput')) || getIn(['incident', form], formObject)
   const errors = req.flash('errors')
-  res.render(`formPages/${section}/${form}`, {
+  res.render(`formPages/incident/${form}`, {
     data: { bookingId, ...pageData, ...data, types },
     formName: form,
     backLink,
@@ -46,7 +46,6 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
       const { displayName, offenderNo, locations } = offenderDetail
 
-      const section = 'incident'
       const form = 'newIncident'
 
       const { formId, formObject, incidentDate } = await loadForm(req)
@@ -64,17 +63,16 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         involvedStaff,
       }
 
-      renderForm({ req, res, formObject, data, section, form })
+      renderForm({ req, res, formObject, data, form })
     },
 
-    viewReportForm: async (req, res) => {
-      const { section, form } = req.params
+    viewReportForm: form => async (req, res) => {
       const { formObject } = await loadForm(req)
-      renderForm({ req, res, formObject, section, form })
+      renderForm({ req, res, formObject, form })
     },
 
-    updateReportForm: async (req, res) => {
-      const { section, form, bookingId } = req.params
+    updateReportForm: form => async (req, res) => {
+      const { bookingId } = req.params
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
 
@@ -86,7 +84,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       if (!isNilOrEmpty(allErrors)) {
         req.flash('errors', allErrors)
         req.flash('userInput', formPayload)
-        return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        return res.redirect(`/form/incident/${form}/${bookingId}`)
       }
 
       const { formId, formObject } = await loadForm(req)
@@ -94,7 +92,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const updatedPayload = await formProcessing.mergeIntoPayload({
         formObject,
         formPayload,
-        formSection: section,
+        formSection: 'incident',
         formName: form,
       })
 
