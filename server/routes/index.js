@@ -39,9 +39,29 @@ module.exports = function Index({
     next()
   })
 
+  router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
+
   router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
-  router.get('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.viewReportForm))
-  router.post('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.updateReportForm))
+
+  router.get(
+    '/form/incident/:form/:bookingId',
+    asyncMiddleware((req, res) => {
+      const { form } = req.params
+      return newIncidents.viewReportForm(form)(req, res)
+    })
+  )
+
+  router.post(
+    '/form/incident/:form/:bookingId',
+    asyncMiddleware((req, res) => {
+      const { form } = req.params
+      return newIncidents.updateReportForm(form)(req, res)
+    })
+  )
+
+  router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
+  router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
+
   router.get('/submitted/:reportId', asyncMiddleware(incidents.viewReportCreated))
 
   router.get('/', incidents.redirectToViewIncidents)
@@ -52,11 +72,6 @@ module.exports = function Index({
   router.post('/incidents/:reportId/statement/confirm', asyncMiddleware(incidents.confirmStatement))
   router.get('/incidents/:reportId/statement/submitted', asyncMiddleware(incidents.viewSubmitted))
   router.get('/incidents/:reportId/statement/review', asyncMiddleware(incidents.reviewStatement))
-
-  router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
-  router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
-
-  router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
 
   return router
 }
