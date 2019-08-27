@@ -22,6 +22,10 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
   })
 
   return {
+    viewReportCreated: async (req, res) => {
+      res.render('pages/submitted', { data: res.locals.formObject, reportId: req.params.reportId })
+    },
+
     redirectToViewIncidents: (req, res) => res.redirect('/incidents'),
 
     viewIncidents: async (req, res) => {

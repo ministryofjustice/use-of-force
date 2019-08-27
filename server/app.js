@@ -14,8 +14,6 @@ const sassMiddleware = require('node-sass-middleware')
 const { createNamespace } = require('cls-hooked')
 
 const healthcheckFactory = require('./services/healthcheck')
-const createSubmittedRouter = require('./routes/submitted')
-const createTasklistRouter = require('./routes/tasklist')
 const createApiRouter = require('./routes/api')
 const createRouter = require('./routes/')
 
@@ -247,9 +245,7 @@ module.exports = function createApp({
     createRouter({ authenticationMiddleware, statementService, offenderService, reportService, involvedStaffService })
   )
 
-  app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
-  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, reportService, offenderService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

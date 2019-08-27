@@ -5,6 +5,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const IncidentRoutes = require('./incidents')
 const NewIncidentRoutes = require('./newIncident')
 const CheckYourAnswerRoutes = require('./checkAnswers')
+const TasklistRoutes = require('./tasklist')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -25,6 +26,8 @@ module.exports = function Index({
 
   const checkYourAnswers = CheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
 
+  const tasklist = TasklistRoutes({ reportService, offenderService })
+
   router.use(authenticationMiddleware())
   router.use(bodyParser.urlencoded({ extended: false }))
   router.use(flash())
@@ -36,6 +39,11 @@ module.exports = function Index({
     next()
   })
 
+  router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
+  router.get('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.viewReportForm))
+  router.post('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.updateReportForm))
+  router.get('/submitted/:reportId', asyncMiddleware(incidents.viewReportCreated))
+
   router.get('/', incidents.redirectToViewIncidents)
   router.get('/incidents/', asyncMiddleware(incidents.viewIncidents))
   router.get('/incidents/:reportId/statement', asyncMiddleware(incidents.viewStatementEntry))
@@ -45,12 +53,10 @@ module.exports = function Index({
   router.get('/incidents/:reportId/statement/submitted', asyncMiddleware(incidents.viewSubmitted))
   router.get('/incidents/:reportId/statement/review', asyncMiddleware(incidents.reviewStatement))
 
-  router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
-  router.get('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.viewReportForm))
-  router.post('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.updateReportForm))
-
   router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
   router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
+
+  router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
 
   return router
 }
