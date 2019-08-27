@@ -39,36 +39,34 @@ module.exports = function Index({
     next()
   })
 
-  router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
+  const reportPath = formName => `/report/:bookingId/${formName}`
 
-  router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
-  router.post('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.updateReportForm('newIncident')))
-  router.get('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.viewReportForm('details')))
-  router.post('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.updateReportForm('details')))
-  router.get(
-    '/form/incident/relocationAndInjuries/:bookingId',
-    asyncMiddleware(newIncidents.viewReportForm('relocationAndInjuries'))
-  )
-  router.post(
-    '/form/incident/relocationAndInjuries/:bookingId',
-    asyncMiddleware(newIncidents.updateReportForm('relocationAndInjuries'))
-  )
-  router.get('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.viewReportForm('evidence')))
-  router.post('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.updateReportForm('evidence')))
+  const get = (path, handler) => router.get(path, asyncMiddleware(handler))
+  const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
-  router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
-  router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
+  get(reportPath('report-use-of-force'), tasklist.viewTasklist)
 
-  router.get('/submitted/:reportId', asyncMiddleware(incidents.viewReportCreated))
+  get(reportPath('incident-details'), newIncidents.viewNewIncident)
+  post(reportPath('incident-details'), newIncidents.updateForm('newIncident'))
+  get(reportPath('use-of-force-details'), newIncidents.viewForm('details'))
+  post(reportPath('use-of-force-details'), newIncidents.updateForm('details'))
+  get(reportPath('relocation-and-injuries'), newIncidents.viewForm('relocationAndInjuries'))
+  post(reportPath('relocation-and-injuries'), newIncidents.updateForm('relocationAndInjuries'))
+  get(reportPath('evidence'), newIncidents.viewForm('evidence'))
+  post(reportPath('evidence'), newIncidents.updateForm('evidence'))
 
-  router.get('/', incidents.redirectToViewIncidents)
-  router.get('/incidents/', asyncMiddleware(incidents.viewIncidents))
-  router.get('/incidents/:reportId/statement', asyncMiddleware(incidents.viewStatementEntry))
-  router.post('/incidents/:reportId/statement', asyncMiddleware(incidents.enterStatement))
-  router.get('/incidents/:reportId/statement/confirm', asyncMiddleware(incidents.viewConfirmation))
-  router.post('/incidents/:reportId/statement/confirm', asyncMiddleware(incidents.confirmStatement))
-  router.get('/incidents/:reportId/statement/submitted', asyncMiddleware(incidents.viewSubmitted))
-  router.get('/incidents/:reportId/statement/review', asyncMiddleware(incidents.reviewStatement))
+  get(reportPath('check-your-answers'), checkYourAnswers.viewCheckYourAnswers)
+  post(reportPath('check-your-answers'), checkYourAnswers.submit)
+
+  get('/:reportId/report-sent', incidents.viewReportCreated)
+
+  get('/', incidents.viewIncidents)
+  get('/:reportId/write-your-statement', incidents.viewStatementEntry)
+  post('/:reportId/write-your-statement', incidents.enterStatement)
+  get('/:reportId/check-your-statement', incidents.viewConfirmation)
+  post('/:reportId/check-your-statement', incidents.confirmStatement)
+  get('/:reportId/statement-submitted', incidents.viewSubmitted)
+  get('/:reportId/your-statement', incidents.reviewStatement)
 
   return router
 }

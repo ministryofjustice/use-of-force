@@ -27,7 +27,7 @@
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/incidents/{{ incident.id }}/statement"
+              href="/{{ incident.id }}/write-your-statement"
               role="button"
               draggable="false"
               class="govuk-button govuk-button"
@@ -63,7 +63,7 @@
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/incidents/{{ incident.id }}/statement/review"
+              href="/{{ incident.id }}/your-statement"
               role="button"
               draggable="false"
               class="govuk-button govuk-button--secondary"

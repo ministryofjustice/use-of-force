@@ -37,11 +37,11 @@ afterEach(() => {
 
 describe('GET /section/form', () => {
   test.each`
-    path                           | expectedContent
-    ${'form/incident/newIncident'} | ${'Prisoner'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    expectedContent
+    ${'Prisoner'}
+  `('should render $expectedContent for $path', ({ expectedContent }) =>
     request(app)
-      .get(`/${path}/1`)
+      .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
@@ -51,11 +51,11 @@ describe('GET /section/form', () => {
 
 describe('POST save and continue /section/form', () => {
   test.each`
-    sectionName   | formName         | userInput                          | nextPath
-    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-continue' }} | ${'/form/incident/details/1'}
-  `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
+    userInput                          | nextPath
+    ${{ submit: 'save-and-continue' }} | ${'/report/1/use-of-force-details'}
+  `('should render', ({ userInput, nextPath }) =>
     request(app)
-      .post(`/form/${sectionName}/${formName}/1`)
+      .post(`/report/1/incident-details`)
       .send(userInput)
       .expect(302)
       .expect('Location', nextPath)
@@ -73,11 +73,11 @@ describe('POST save and continue /section/form', () => {
 
 describe('POST save and return to tasklist', () => {
   test.each`
-    sectionName   | formName         | userInput                        | nextPath
-    ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-return' }} | ${'/tasklist/1'}
-  `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
+    userInput                        | nextPath
+    ${{ submit: 'save-and-return' }} | ${'/report/1/report-use-of-force'}
+  `('should render', ({ userInput, nextPath }) =>
     request(app)
-      .post(`/form/${sectionName}/${formName}/1`)
+      .post(`/report/1/incident-details`)
       .send(userInput)
       .expect(302)
       .expect('Location', nextPath)

@@ -32,7 +32,7 @@ const tasklistPage = () =>
 
 export default {
   visit: bookingId => {
-    cy.visit(`/tasklist/${bookingId}`)
+    cy.visit(`/report/${bookingId}/report-use-of-force`)
     return tasklistPage()
   },
   verifyOnPage: tasklistPage,
