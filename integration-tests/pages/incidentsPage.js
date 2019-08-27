@@ -29,14 +29,14 @@ const incidentsPage = () =>
         completeCol(i, 3)
           .find('a')
           .invoke('attr', 'href')
-          .then(link => link.match(/incidents\/(.*?)\/statement/)[1]),
+          .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
   })
 
 export default {
   verifyOnPage: incidentsPage,
   goTo: () => {
-    cy.visit('/incidents/')
+    cy.visit('/')
     return incidentsPage()
   },
 }

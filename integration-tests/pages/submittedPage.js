@@ -9,7 +9,7 @@ const submittedPage = () =>
     },
     getReportId: () => {
       return cy.url().then(url => {
-        const match = url.match(/.*submitted\/(.*)/)
+        const match = url.match(/.*\/(.*)\/report-sent/)
         return match[1]
       })
     },

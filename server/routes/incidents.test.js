@@ -25,18 +25,10 @@ beforeEach(() => {
   app = appSetup(route)
 })
 
-describe('GET /', () => {
-  it('should redirect to /incidents', () =>
-    request(app)
-      .get('/')
-      .expect(302)
-      .expect('Location', '/incidents'))
-})
-
 describe('GET /incidents', () => {
   it('should render page', () =>
     request(app)
-      .get('/incidents/')
+      .get('/')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -44,10 +36,10 @@ describe('GET /incidents', () => {
       }))
 })
 
-describe('GET /incidents/:reportId/statement', () => {
+describe('GET /:reportId/write-your-statement', () => {
   it('should render page', () =>
     request(app)
-      .get('/incidents/-1/statement')
+      .get('/-1/write-your-statement')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -55,50 +47,50 @@ describe('GET /incidents/:reportId/statement', () => {
       }))
 })
 
-describe('POST /incidents/:reportId/statement', () => {
+describe('POST /:reportId/write-your-statement', () => {
   it('save and return should redirect to incidents page', () =>
     request(app)
-      .post('/incidents/-1/statement')
+      .post('/-1/write-your-statement')
       .send('submit=save-and-return')
       .expect(302)
-      .expect('Location', '/incidents/'))
+      .expect('Location', '/'))
 
   it('save and continue with invalid data will redirect to same page', () =>
     request(app)
-      .post('/incidents/-1/statement')
+      .post('/-1/write-your-statement')
       .send('submit=save-and-continue')
       .expect(302)
-      .expect('Location', '/incidents/-1/statement'))
+      .expect('Location', '/-1/write-your-statement'))
 
   it('save and continue with valid data should forward to confirm page', () =>
     request(app)
-      .post('/incidents/-1/statement')
+      .post('/-1/write-your-statement')
       .send('submit=save-and-continue&statement=bob&jobStartYear=1999&lastTrainingMonth=1&lastTrainingYear=1999')
       .expect(302)
-      .expect('Location', '/incidents/-1/statement/confirm'))
+      .expect('Location', '/-1/check-your-statement'))
 })
 
-describe('POST /incidents/:reportId/statement/confirm', () => {
-  it('confirmed submit redirects to submitted', () =>
+describe('POST /:reportId/check-your-statement', () => {
+  it('submit redirects to submitted', () =>
     request(app)
-      .post('/incidents/-1/statement/confirm')
+      .post('/-1/check-your-statement')
       .send('confirmed=confirmed')
       .expect(302)
-      .expect('Location', '/incidents/-1/statement/submitted'))
+      .expect('Location', '/-1/statement-submitted'))
 
-  it('confirmed submit redirects due to form not being complete', () => {
+  it('submit redirects due to form not being complete', () => {
     statementService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
     return request(app)
-      .post('/incidents/-1/statement/confirm')
+      .post('/-1/check-your-statement')
       .expect(302)
-      .expect('Location', '/incidents/-1/statement')
+      .expect('Location', '/-1/write-your-statement')
   })
 })
 
-describe('GET /incidents/:reportId/statement', () => {
+describe('GET /:reportId/statement-submitted', () => {
   it('should render page', () =>
     request(app)
-      .get('/incidents/-1/statement/submitted')
+      .get('/-1/statement-submitted')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

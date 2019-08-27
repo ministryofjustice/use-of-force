@@ -152,7 +152,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
     submit: async (req, res) => {
       const { bookingId } = req.params
       const reportId = await reportService.submit(res.locals.user, bookingId)
-      const location = reportId ? `/submitted/${reportId}` : `/incidents`
+      const location = reportId ? `/${reportId}/report-sent` : `/`
       return res.redirect(location)
     },
   }

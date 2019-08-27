@@ -26,8 +26,6 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
       res.render('pages/submitted', { data: res.locals.formObject, reportId: req.params.reportId })
     },
 
-    redirectToViewIncidents: (req, res) => res.redirect('/incidents'),
-
     viewIncidents: async (req, res) => {
       const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
@@ -85,10 +83,10 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
 
       if (!isValid) {
         req.flash('errors', errors)
-        return res.redirect(`/incidents/${reportId}/statement`)
+        return res.redirect(`/${reportId}/write-your-statement`)
       }
 
-      const location = saveAndContinue ? `/incidents/${reportId}/statement/confirm` : `/incidents/`
+      const location = saveAndContinue ? `/${reportId}/check-your-statement` : `/`
 
       return res.redirect(location)
     },
@@ -119,12 +117,12 @@ module.exports = function IncidentRoutes({ statementService, offenderService }) 
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
-        return res.redirect(`/incidents/${reportId}/statement`)
+        return res.redirect(`/${reportId}/write-your-statement`)
       }
 
       await statementService.submitStatement(req.user.username, reportId)
 
-      const location = `/incidents/${reportId}/statement/submitted`
+      const location = `/${reportId}/statement-submitted`
 
       return res.redirect(location)
     },
