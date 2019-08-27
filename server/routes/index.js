@@ -42,22 +42,19 @@ module.exports = function Index({
   router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
 
   router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
-
+  router.post('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.updateReportForm('newIncident')))
+  router.get('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.viewReportForm('details')))
+  router.post('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.updateReportForm('details')))
   router.get(
-    '/form/incident/:form/:bookingId',
-    asyncMiddleware((req, res) => {
-      const { form } = req.params
-      return newIncidents.viewReportForm(form)(req, res)
-    })
+    '/form/incident/relocationAndInjuries/:bookingId',
+    asyncMiddleware(newIncidents.viewReportForm('relocationAndInjuries'))
   )
-
   router.post(
-    '/form/incident/:form/:bookingId',
-    asyncMiddleware((req, res) => {
-      const { form } = req.params
-      return newIncidents.updateReportForm(form)(req, res)
-    })
+    '/form/incident/relocationAndInjuries/:bookingId',
+    asyncMiddleware(newIncidents.updateReportForm('relocationAndInjuries'))
   )
+  router.get('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.viewReportForm('evidence')))
+  router.post('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.updateReportForm('evidence')))
 
   router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
   router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
