@@ -1,8 +1,10 @@
 const express = require('express')
 const flash = require('connect-flash')
+const bodyParser = require('body-parser')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const IncidentRoutes = require('./incidents')
 const NewIncidentRoutes = require('./newIncident')
+const CheckYourAnswerRoutes = require('./checkAnswers')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -21,7 +23,10 @@ module.exports = function Index({
     involvedStaffService,
   })
 
+  const checkYourAnswers = CheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
+
   router.use(authenticationMiddleware())
+  router.use(bodyParser.urlencoded({ extended: false }))
   router.use(flash())
 
   router.use((req, res, next) => {
@@ -43,6 +48,9 @@ module.exports = function Index({
   router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
   router.get('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.viewReportForm))
   router.post('/form/:section/:form/:bookingId', asyncMiddleware(newIncidents.updateReportForm))
+
+  router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
+  router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
 
   return router
 }

@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { appSetup } = require('./testutils/appSetup')
-const createRouter = require('./checkAnswers')
+const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const reportService = {
@@ -26,7 +26,7 @@ beforeEach(() => {
 describe('GET /check-answers', () => {
   it('should render page content', () =>
     request(app)
-      .get('/-35')
+      .get('/check-answers/-35')
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Check your answers')
