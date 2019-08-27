@@ -23,10 +23,10 @@ beforeEach(() => {
   offenderService.getLocation.mockResolvedValue({})
 })
 
-describe('GET /check-answers', () => {
+describe('GET /check-your-answers', () => {
   it('should render page content', () =>
     request(app)
-      .get('/check-answers/-35')
+      .get('/report/-35/check-your-answers')
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Check your answers')

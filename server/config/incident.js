@@ -284,7 +284,7 @@ module.exports = {
     ],
     validate: true,
     nextPath: {
-      path: bookingId => `/check-answers/${bookingId}`,
+      path: bookingId => `/report/${bookingId}/check-your-answers`,
     },
   },
 }

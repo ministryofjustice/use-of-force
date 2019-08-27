@@ -39,21 +39,21 @@ module.exports = function Index({
     next()
   })
 
-  router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
+  const reportPath = formName => `/report/:bookingId/${formName}`
 
-  const formPath = formName => `/report/:bookingId/${formName}`
+  router.get(reportPath('report-use-of-force'), asyncMiddleware(tasklist.viewTasklist))
 
-  router.get(formPath('incident-details'), asyncMiddleware(newIncidents.viewNewIncident))
-  router.post(formPath('incident-details'), asyncMiddleware(newIncidents.updateForm('newIncident')))
-  router.get(formPath('use-of-force-details'), asyncMiddleware(newIncidents.viewForm('details')))
-  router.post(formPath('use-of-force-details'), asyncMiddleware(newIncidents.updateForm('details')))
-  router.get(formPath('relocation-and-injuries'), asyncMiddleware(newIncidents.viewForm('relocationAndInjuries')))
-  router.post(formPath('relocation-and-injuries'), asyncMiddleware(newIncidents.updateForm('relocationAndInjuries')))
-  router.get(formPath('evidence'), asyncMiddleware(newIncidents.viewForm('evidence')))
-  router.post(formPath('evidence'), asyncMiddleware(newIncidents.updateForm('evidence')))
+  router.get(reportPath('incident-details'), asyncMiddleware(newIncidents.viewNewIncident))
+  router.post(reportPath('incident-details'), asyncMiddleware(newIncidents.updateForm('newIncident')))
+  router.get(reportPath('use-of-force-details'), asyncMiddleware(newIncidents.viewForm('details')))
+  router.post(reportPath('use-of-force-details'), asyncMiddleware(newIncidents.updateForm('details')))
+  router.get(reportPath('relocation-and-injuries'), asyncMiddleware(newIncidents.viewForm('relocationAndInjuries')))
+  router.post(reportPath('relocation-and-injuries'), asyncMiddleware(newIncidents.updateForm('relocationAndInjuries')))
+  router.get(reportPath('evidence'), asyncMiddleware(newIncidents.viewForm('evidence')))
+  router.post(reportPath('evidence'), asyncMiddleware(newIncidents.updateForm('evidence')))
 
-  router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
-  router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))
+  router.get(reportPath('check-your-answers'), asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
+  router.post(reportPath('check-your-answers'), asyncMiddleware(checkYourAnswers.submit))
 
   router.get('/submitted/:reportId', asyncMiddleware(incidents.viewReportCreated))
 

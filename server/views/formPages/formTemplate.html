@@ -7,7 +7,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: backLink or '/check-answers/' + bookingId
+    href: backLink or '/report/' + bookingId + '/check-your-answers'
   }) }}
 {% endblock %}
 
