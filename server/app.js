@@ -14,12 +14,8 @@ const sassMiddleware = require('node-sass-middleware')
 const { createNamespace } = require('cls-hooked')
 
 const healthcheckFactory = require('./services/healthcheck')
-const createNewIncidentRouter = require('./routes/newIncident')
-const createCheckAnswersRouter = require('./routes/checkAnswers')
-const createSubmittedRouter = require('./routes/submitted')
-const createTasklistRouter = require('./routes/tasklist')
 const createApiRouter = require('./routes/api')
-const createIncidentsRouter = require('./routes/incidents')
+const createRouter = require('./routes/')
 
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
@@ -244,24 +240,12 @@ module.exports = function createApp({
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
 
-  app.use('/', createIncidentsRouter({ authenticationMiddleware, statementService, offenderService }))
   app.use(
-    '/check-answers/',
-    createCheckAnswersRouter({ authenticationMiddleware, reportService, offenderService, involvedStaffService })
+    '/',
+    createRouter({ authenticationMiddleware, statementService, offenderService, reportService, involvedStaffService })
   )
-  app.use('/submitted/', createSubmittedRouter({ authenticationMiddleware }))
-  app.use(
-    '/form/',
-    createNewIncidentRouter({
-      authenticationMiddleware,
-      reportService,
-      offenderService,
-      userService,
-      involvedStaffService,
-    })
-  )
+
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
-  app.use('/tasklist/', createTasklistRouter({ authenticationMiddleware, reportService, offenderService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

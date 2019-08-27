@@ -1,14 +1,6 @@
-const express = require('express')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
-
-module.exports = function Index({ reportService, offenderService, authenticationMiddleware }) {
-  const router = express.Router()
-
-  router.use(authenticationMiddleware())
-
-  router.get(
-    '/:bookingId',
-    asyncMiddleware(async (req, res) => {
+module.exports = function TasklistRoutes({ reportService, offenderService }) {
+  return {
+    viewTasklist: async (req, res) => {
       const { bookingId } = req.params
       const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
         res.locals.user.token,
@@ -20,8 +12,6 @@ module.exports = function Index({ reportService, offenderService, authentication
         bookingId: req.params.bookingId,
         form,
       })
-    })
-  )
-
-  return router
+    },
+  }
 }

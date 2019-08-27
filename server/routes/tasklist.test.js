@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { appSetup } = require('./testutils/appSetup')
-const createRouter = require('./tasklist')
+const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const reportService = {
@@ -28,7 +28,7 @@ afterEach(() => {
 describe('GET /task-list', () => {
   it('should render page content', () =>
     request(app)
-      .get('/-35')
+      .get('/tasklist/-35')
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')

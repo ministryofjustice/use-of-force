@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { appSetup, user } = require('./testutils/appSetup')
-const createRouter = require('./newIncident')
+const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const reportService = {
@@ -37,8 +37,8 @@ afterEach(() => {
 
 describe('GET /section/form', () => {
   test.each`
-    path                      | expectedContent
-    ${'incident/newIncident'} | ${'Prisoner'}
+    path                           | expectedContent
+    ${'form/incident/newIncident'} | ${'Prisoner'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/1`)
@@ -55,7 +55,7 @@ describe('POST save and continue /section/form', () => {
     ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-continue' }} | ${'/form/incident/details/1'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
-      .post(`/${sectionName}/${formName}/1`)
+      .post(`/form/${sectionName}/${formName}/1`)
       .send(userInput)
       .expect(302)
       .expect('Location', nextPath)
@@ -77,7 +77,7 @@ describe('POST save and return to tasklist', () => {
     ${'incident'} | ${'newIncident'} | ${{ submit: 'save-and-return' }} | ${'/tasklist/1'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
-      .post(`/${sectionName}/${formName}/1`)
+      .post(`/form/${sectionName}/${formName}/1`)
       .send(userInput)
       .expect(302)
       .expect('Location', nextPath)

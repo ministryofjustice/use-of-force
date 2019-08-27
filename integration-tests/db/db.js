@@ -11,7 +11,7 @@ const getStatementForUser = ({ reportId, status }) =>
 const getAllStatementsForReport = reportId => {
   return db
     .queryWithoutTransaction({
-      text: `select s."name", s.email, s.user_id userId, statement_status status from statement s where s.report_id = $1`,
+      text: `select s."name", s.email, s.user_id userId, statement_status status from statement s where s.report_id = $1 order by id`,
       values: [reportId],
     })
     .then(result => result.rows || [])
