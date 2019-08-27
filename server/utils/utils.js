@@ -39,6 +39,15 @@ const properCaseName = name =>
         .map(properCase)
         .join('-')
 
+const properCaseFullName = name =>
+  isBlank(name)
+    ? ''
+    : name
+        .split(/(\s+)/)
+        .filter(s => s.trim().length)
+        .map(properCaseName)
+        .join(' ')
+
 const formatDate = val => (isBlank(val) ? '' : moment(val, 'YYYY-MM-DD').format('DD/MM/YYYY'))
 const formatTimestampToDateTime = val => moment(val).format('DD/MM/YYYY - HH:mm')
 
@@ -49,6 +58,7 @@ module.exports = {
   getFieldDetail,
   getFieldName,
   properCaseName,
+  properCaseFullName,
   getIn: R.path,
   equals: R.equals,
   firstItem: R.head,

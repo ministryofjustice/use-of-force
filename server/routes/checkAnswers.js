@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, toLabel } = require('../config/types')
+const { properCaseFullName } = require('../utils/utils')
 
 module.exports = function Index({ reportService, authenticationMiddleware, offenderService, involvedStaffService }) {
   const router = express.Router()
@@ -81,9 +82,12 @@ const createNewIncidentObj = (
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
     location: description,
-    plannedUseOfForce: whenPresent(newIncident.plannedUseOfForce, value => (value ? 'Planned' : 'Spontaneous')),
-    staffInvolved: extractCommaSeparatedList('name', [...involvedStaff, { name: currentUser.displayName }]),
-    witnesses: extractCommaSeparatedList('name', newIncident.witnesses),
+    plannedUseOfForce: newIncident.plannedUseOfForce,
+    staffInvolved: [
+      ...involvedStaff.map(staff => [properCaseFullName(staff.name)]),
+      ...(involvedStaff.find(staff => staff.username === currentUser.username) ? [] : [[currentUser.displayName]]),
+    ],
+    witnesses: newIncident.witnesses ? newIncident.witnesses.map(staff => [properCaseFullName(staff.name)]) : [],
     incidentDate,
   }
 }
@@ -106,17 +110,19 @@ const createDetailsObj = (details = {}) => {
 const createRelocationObj = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-    prisonerCompliancy: whenPresent(relocationAndInjuries.relocationCompliancy, value => (value ? 'Yes' : 'No')),
+    prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
     ),
-    prisonerInjuries: whenPresent(relocationAndInjuries.prisonerInjuries, value => (value ? 'Yes' : 'No')),
+    prisonerInjuries: relocationAndInjuries.prisonerInjuries,
     f213CompletedBy: relocationAndInjuries.f213CompletedBy,
     prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
     staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-      value ? `${extractCommaSeparatedList('name', relocationAndInjuries.staffNeedingMedicalAttention)}` : 'No'
+      value ? relocationAndInjuries.staffNeedingMedicalAttention.map(staff => [properCaseFullName(staff.name)]) : 'None'
     ),
-    staffHospitalisation: staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention),
+    staffHospitalisation: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
+      value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
+    ),
   }
 }
 
@@ -127,7 +133,7 @@ const createEvidenceObj = (evidence = {}) => {
     cctv: toLabel(Cctv, evidence.cctvRecording),
     bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
       value === Cctv.YES.value
-        ? extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers) || 'Yes'
+        ? `Yes - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || 'Yes'
         : toLabel(BodyWornCameras, value)
     ),
   }
@@ -139,7 +145,7 @@ const wasWeaponUsed = weaponUsed => {
   if (weaponUsed == null) {
     return undefined
   }
-  return weaponUsed ? 'Yes - and used' : 'Yes - and not used'
+  return weaponUsed ? 'Yes and used' : 'Yes and not used'
 }
 
 const getRestraintPositions = positions => {
@@ -147,11 +153,11 @@ const getRestraintPositions = positions => {
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
-  const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === true).map(staff => staff.name)
-  if (hospitalisedStaff.length === 0 && staffMembers.length > 0) {
-    return 'No'
+  const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === true)
+  if (hospitalisedStaff.length === 0) {
+    return 'None'
   }
-  return hospitalisedStaff.join(', ')
+  return hospitalisedStaff.map(staff => [properCaseFullName(staff.name)])
 }
 
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
@@ -159,12 +165,12 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
     return 'No'
   }
   return tagsAndEvidence.map(item => {
-    return { tag: item.evidenceTagReference, description: item.description }
+    return [item.evidenceTagReference, item.description]
   })
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
-  return guidingHoldOfficersInvolved === 1 ? 'Yes - one officer involved' : 'Yes - two officers involved'
+  return guidingHoldOfficersInvolved === 1 ? 'Yes - 1 officer involved' : 'Yes - 2 officers involved'
 }
 
 const extractCommaSeparatedList = (attr, dataArray = []) => {
