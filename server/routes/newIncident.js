@@ -66,12 +66,12 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       renderForm({ req, res, formObject, data, form })
     },
 
-    viewReportForm: form => async (req, res) => {
+    viewForm: form => async (req, res) => {
       const { formObject } = await loadForm(req)
       renderForm({ req, res, formObject, form })
     },
 
-    updateReportForm: form => async (req, res) => {
+    updateForm: form => async (req, res) => {
       const { bookingId } = req.params
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)

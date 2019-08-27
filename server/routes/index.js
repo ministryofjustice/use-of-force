@@ -41,20 +41,16 @@ module.exports = function Index({
 
   router.get('/tasklist/:bookingId', asyncMiddleware(tasklist.viewTasklist))
 
-  router.get('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.viewNewIncident))
-  router.post('/form/incident/newIncident/:bookingId', asyncMiddleware(newIncidents.updateReportForm('newIncident')))
-  router.get('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.viewReportForm('details')))
-  router.post('/form/incident/details/:bookingId', asyncMiddleware(newIncidents.updateReportForm('details')))
-  router.get(
-    '/form/incident/relocationAndInjuries/:bookingId',
-    asyncMiddleware(newIncidents.viewReportForm('relocationAndInjuries'))
-  )
-  router.post(
-    '/form/incident/relocationAndInjuries/:bookingId',
-    asyncMiddleware(newIncidents.updateReportForm('relocationAndInjuries'))
-  )
-  router.get('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.viewReportForm('evidence')))
-  router.post('/form/incident/evidence/:bookingId', asyncMiddleware(newIncidents.updateReportForm('evidence')))
+  const formPath = formName => `/report/:bookingId/${formName}`
+
+  router.get(formPath('incident-details'), asyncMiddleware(newIncidents.viewNewIncident))
+  router.post(formPath('incident-details'), asyncMiddleware(newIncidents.updateForm('newIncident')))
+  router.get(formPath('use-of-force-details'), asyncMiddleware(newIncidents.viewForm('details')))
+  router.post(formPath('use-of-force-details'), asyncMiddleware(newIncidents.updateForm('details')))
+  router.get(formPath('relocation-and-injuries'), asyncMiddleware(newIncidents.viewForm('relocationAndInjuries')))
+  router.post(formPath('relocation-and-injuries'), asyncMiddleware(newIncidents.updateForm('relocationAndInjuries')))
+  router.get(formPath('evidence'), asyncMiddleware(newIncidents.viewForm('evidence')))
+  router.post(formPath('evidence'), asyncMiddleware(newIncidents.updateForm('evidence')))
 
   router.get('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.viewCheckYourAnswers))
   router.post('/check-answers/:bookingId', asyncMiddleware(checkYourAnswers.submit))

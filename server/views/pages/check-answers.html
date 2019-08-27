@@ -21,7 +21,7 @@ href: backLink or "/"
       pagesMacros.sectionHeading({
         data: data.newIncident,
         title: 'Incident details',
-        url: '/form/incident/newIncident/' + bookingId
+        url: '/report/' + bookingId + '/incident-details'
       })
     }}
     {{pagesMacros.tableRow({
@@ -71,7 +71,7 @@ href: backLink or "/"
       pagesMacros.sectionHeading({
         data: data.details,
         title: 'Use of force details',
-        url: '/form/incident/details/' + bookingId
+        url: '/report/' + bookingId + '/use-of-force-details'
       })
     }}
     {{
@@ -121,7 +121,7 @@ href: backLink or "/"
       pagesMacros.sectionHeading({
         data: data.relocationAndInjuries,
         title: 'Relocation and injuries',
-        url: '/form/incident/relocationAndInjuries/' + bookingId
+        url: '/report/' + bookingId + '/relocation-and-injuries'
       })
     }}
     {{
@@ -187,7 +187,7 @@ href: backLink or "/"
       pagesMacros.sectionHeading({
         data: data.evidence,
         title: 'Evidence',
-        url: '/form/incident/evidence/' + bookingId
+        url: '/report/' + bookingId + '/evidence'
       })
     }}
     {{

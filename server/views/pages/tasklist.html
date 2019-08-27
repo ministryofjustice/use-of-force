@@ -43,22 +43,22 @@
       <ul class="app-task-list__items">
         {{  section(name = "new-incident", 
                   label = "Incident details",  
-                  url = "/form/incident/newIncident/" + bookingId, 
+                  url = "/report/" + bookingId + "/incident-details", 
                   value = form.incident.newIncident) }}
 
         {{  section(name = "details", 
                   label = "Use of force details",  
-                  url = "/form/incident/details/" + bookingId, 
+                  url = "/report/" + bookingId + "/use-of-force-details", 
                   value = form.incident.details) }}
 
         {{  section(name = "relocation-and-injuries", 
                   label = "Relocation and Injuries",  
-                  url = "/form/incident/relocationAndInjuries/" + bookingId, 
+                  url = "/report/" + bookingId + "/relocation-and-injuries", 
                   value = form.incident.relocationAndInjuries) }}
 
         {{  section(name = "evidence", 
                   label = "Evidence",  
-                  url = "/form/incident/evidence/" + bookingId, 
+                  url = "/report/" + bookingId + "/evidence", 
                   value = form.incident.evidence) }}
 
         {{  section(name = "check-answers", 
