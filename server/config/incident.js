@@ -6,9 +6,21 @@ const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneO
 
 const hasAtLeastOneOf = attrs => input => attrs.find(attr => !isBlank(input[attr]))
 
-const toBoolean = val => (val == null ? null : val === 'true')
+const toBoolean = val => {
+  switch (val) {
+    case 'true':
+      return true
+    case 'false':
+      return false
+    default:
+      return null
+  }
+}
 
-const toInteger = val => (val == null ? null : parseInt(val, 10))
+const toInteger = val => {
+  const number = parseInt(val, 10)
+  return Number.isNaN(number) ? null : number
+}
 
 const toDate = val => {
   if (!val) {
@@ -19,11 +31,11 @@ const toDate = val => {
 }
 
 module.exports = {
-  newIncident: {
+  incidentDetails: {
     fields: [
       {
         incidentDate: {
-          responseType: 'requiredString',
+          responseType: 'any',
           sanitiser: toDate,
           fieldType: EXTRACTED,
         },
@@ -31,29 +43,33 @@ module.exports = {
       {
         locationId: {
           responseType: 'requiredNumber',
-          validationMessage: 'Where did the incident occur?',
+          validationMessage: 'Select the location of the incident',
           sanitiser: toInteger,
         },
       },
       {
         plannedUseOfForce: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Was the use of force planned?',
+          validationMessage: 'Select yes if the use of force was planned',
           sanitiser: toBoolean,
         },
       },
       {
         involvedStaff: {
+          responseType: 'requiredInvolvedStaff',
+          validationMessage: 'Enter the name of the staff member involved in the use of force incident',
           sanitiser: removeEmptyValues(['username']),
+          firstFieldName: 'involvedStaff[0][username]',
         },
       },
       {
         witnesses: {
+          responseType: 'any',
           sanitiser: removeEmptyValues(['name']),
         },
       },
     ],
-    validate: false,
+    validate: true,
     nextPath: {
       path: bookingId => `/report/${bookingId}/use-of-force-details`,
     },

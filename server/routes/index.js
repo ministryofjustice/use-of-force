@@ -47,7 +47,7 @@ module.exports = function Index({
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
   get(reportPath('incident-details'), createReport.viewIncidentDetails)
-  post(reportPath('incident-details'), createReport.submit('newIncident'))
+  post(reportPath('incident-details'), createReport.submit('incidentDetails'))
   get(reportPath('use-of-force-details'), createReport.view('details'))
   post(reportPath('use-of-force-details'), createReport.submit('details'))
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))

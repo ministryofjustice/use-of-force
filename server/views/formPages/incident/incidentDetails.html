@@ -29,9 +29,10 @@
     <div class="govuk-grid-column-full">
       {{
         govukSelect({
-          id: 'location',
+          id: 'locationId',
           name: 'locationId',
           classes: 'govuk-!-width-one-third',
+          errorMessage: errors | findError('locationId'),
           label: {
             text: 'Location of incident:',
             isPageHeading: false,
@@ -49,6 +50,7 @@
         classes: "govuk-radios--inline",
         idPrefix: "plannedUseOfForce",
         name: "plannedUseOfForce",
+        errorMessage: errors | findError('plannedUseOfForce'),
         fieldset: {
           legend: {
             text: "Was the use of force planned?",

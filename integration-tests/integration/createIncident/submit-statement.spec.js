@@ -14,6 +14,8 @@ context('Submit statement', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
+    cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
+    cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
     cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
@@ -24,11 +26,7 @@ context('Submit statement', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage
-      .staffInvolved(0)
-      .name()
-      .type('Test User')
-
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
@@ -75,11 +73,7 @@ context('Submit statement', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage
-      .staffInvolved(0)
-      .name()
-      .type('Test User')
-
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
@@ -131,11 +125,7 @@ context('Submit statement', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage
-      .staffInvolved(0)
-      .name()
-      .type('Test User')
-
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()

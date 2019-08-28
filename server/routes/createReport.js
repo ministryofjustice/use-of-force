@@ -34,7 +34,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
   }
 
   const getAdditonalData = async (res, form, { involvedStaff = [] }) => {
-    if (form === 'newIncident') {
+    if (form === 'incidentDetails') {
       return involvedStaffService.lookup(res.locals.user.token, involvedStaff.map(u => u.username))
     }
     return { additionalFields: [], additionalErrors: [] }
@@ -46,8 +46,6 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
       const { displayName, offenderNo, locations } = offenderDetail
 
-      const form = 'newIncident'
-
       const { formId, formObject, incidentDate } = await loadForm(req)
       const date = incidentDate ? moment(incidentDate) : moment()
 
@@ -56,6 +54,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const involvedStaff = (input && input.involvedStaff) || (formId && (await involvedStaffService.get(formId))) || []
 
       const data = {
+        ...input,
         displayName,
         offenderNo,
         date,
@@ -63,7 +62,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         involvedStaff,
       }
 
-      renderForm({ req, res, formObject, data, form })
+      renderForm({ req, res, formObject, data, form: 'incidentDetails' })
     },
 
     view: form => async (req, res) => {

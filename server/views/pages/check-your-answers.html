@@ -19,7 +19,7 @@ href: backLink or "/"
 
     {{
       pagesMacros.sectionHeading({
-        data: data.newIncident,
+        data: data.incidentDetails,
         title: 'Incident details',
         url: '/report/' + bookingId + '/incident-details'
       })
@@ -27,34 +27,34 @@ href: backLink or "/"
     {{pagesMacros.tableRow({
               label: 'Date of incident',  
               'data-qa': 'incidentDate',    
-              dataValue: data.newIncident.incidentDate | formatDate('DD MMMM YYYY') 
+              dataValue: data.incidentDetails.incidentDate | formatDate('DD MMMM YYYY') 
       })
     }}
     {{pagesMacros.tableRow({
               label: 'Time of incident',  
               'data-qa': 'incidentTime',    
-              dataValue: data.newIncident.incidentDate | formatDate('HH:mm') 
+              dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm') 
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Location',
         'data-qa': 'location',
-        dataValue: data.newIncident.location
+        dataValue: data.incidentDetails.location
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Was the use of force planned?',
         'data-qa': 'incidentType',
-        dataValue: data.newIncident.plannedUseOfForce | toYesNo
+        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Staff involved',
         'data-qa': 'staffInvolved',
-        dataValue: data.newIncident.staffInvolved,
+        dataValue: data.incidentDetails.staffInvolved,
         type: 'itemPerLine'
       })
     }}
@@ -62,7 +62,7 @@ href: backLink or "/"
       pagesMacros.tableRow({
         label: 'Witnesses',
         'data-qa': 'witnesses',
-        dataValue: data.newIncident.witnesses,
+        dataValue: data.incidentDetails.witnesses,
         type: 'itemPerLine'
       })
     }}

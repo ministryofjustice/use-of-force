@@ -267,13 +267,13 @@ describe('Details page inputs', () => {
   it("Selecting just 1 option for 'restraint positions' returns no errors", () => {
     const input = {
       ...validInput,
-      restraintPositions: 'KNEELING',
+      restraintPositions: ['KNEELING'],
     }
     const { errors, formResponse } = check(input)
 
     expect(errors).toEqual([])
     expect(formResponse.restraint).toBe(true)
-    expect(formResponse.restraintPositions).toEqual('KNEELING')
+    expect(formResponse.restraintPositions).toEqual(['KNEELING'])
   })
 
   it("Selecting 'Standing' and 'Face Down' for 'restraint positions' returns no errors", () => {

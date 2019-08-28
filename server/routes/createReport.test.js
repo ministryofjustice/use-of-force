@@ -1,4 +1,5 @@
 const request = require('supertest')
+const moment = require('moment')
 const { appSetup, user } = require('./testutils/appSetup')
 const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
@@ -50,45 +51,71 @@ describe('GET /section/form', () => {
 })
 
 describe('POST save and continue /section/form', () => {
-  test.each`
-    userInput                          | nextPath
-    ${{ submit: 'save-and-continue' }} | ${'/report/1/use-of-force-details'}
-  `('should render', ({ userInput, nextPath }) =>
+  test('should redirect to next page', () =>
     request(app)
       .post(`/report/1/incident-details`)
-      .send(userInput)
+      .send({
+        submit: 'save-and-continue',
+        incidentDate: '2019-08-27T13:59:33+01:00',
+        locationId: -1,
+        plannedUseOfForce: 'true',
+        involvedStaff: [{ username: 'User bob' }, { username: '' }],
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
       .expect(302)
-      .expect('Location', nextPath)
+      .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
         expect(reportService.update).toBeCalledTimes(1)
         expect(reportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          formObject: { incident: { newIncident: {} } },
+          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          formObject: {
+            incident: {
+              incidentDetails: {
+                locationId: -1,
+                plannedUseOfForce: true,
+                involvedStaff: [{ username: 'User bob' }],
+                witnesses: [{ name: 'User bob' }],
+              },
+            },
+          },
         })
-      })
-  )
+      }))
 })
 
 describe('POST save and return to tasklist', () => {
-  test.each`
-    userInput                        | nextPath
-    ${{ submit: 'save-and-return' }} | ${'/report/1/report-use-of-force'}
-  `('should render', ({ userInput, nextPath }) =>
+  test('should render', () =>
     request(app)
       .post(`/report/1/incident-details`)
-      .send(userInput)
+      .send({
+        submit: 'save-and-return',
+        incidentDate: '2019-08-27T13:59:33+01:00',
+        locationId: -1,
+        plannedUseOfForce: 'true',
+        involvedStaff: [{ username: 'User bob' }, { username: '' }],
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
       .expect(302)
-      .expect('Location', nextPath)
+      .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
         expect(reportService.update).toBeCalledTimes(1)
         expect(reportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          formObject: { incident: { newIncident: {} } },
+          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          formObject: {
+            incident: {
+              incidentDetails: {
+                locationId: -1,
+                plannedUseOfForce: true,
+                involvedStaff: [{ username: 'User bob' }],
+                witnesses: [{ name: 'User bob' }],
+              },
+            },
+          },
         })
-      })
-  )
+      }))
 })

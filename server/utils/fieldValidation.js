@@ -1,13 +1,14 @@
 const baseJoi = require('joi')
 const moment = require('moment')
 const dateExtend = require('joi-date-extensions')
-const postcodeExtend = require('joi-postcode')
 
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
 
-const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
+const joi = baseJoi.extend(dateExtend)
 
 const fieldOptions = {
+  any: joi.any(),
+
   requiredMonthIndex: joi
     .number()
     .min(0)
@@ -20,44 +21,48 @@ const fieldOptions = {
       .min(1900)
       .max(moment().year())
       .required(),
+
   requiredString: joi
     .string()
     .trim()
     .required(),
+
   requiredNumber: joi.number().required(),
+
   requiredBoolean: joi
     .boolean()
     .required()
     .strict(),
+
   optionalBoolean: joi
     .boolean()
     .optional()
     .strict(),
+
   optionalString: joi
     .string()
     .allow('')
     .optional(),
+
   requiredDay: joi
     .date()
     .format('DD')
     .required(),
+
   requiredMonth: joi
     .date()
     .format('MM')
     .required(),
+
   requiredYear: joi
     .date()
     .format('YYYY')
     .required(),
-  requiredPostcode: joi.postcode().required(),
-  requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
-    joi.when(requiredItem, {
-      is: requiredAnswer,
-      then: joi.valid(['Yes', 'No']).required(),
-      otherwise: joi.any().optional(),
-    }),
+
   requiredOneOf: (...values) => joi.valid(values).required(),
+
   requiredYesNoNotKnown: joi.valid(['YES', 'NO', 'NOT_KNOWN']).required(),
+
   requiredCameraNumber: () =>
     joi.when('bodyWornCamera', {
       is: 'YES',
@@ -74,6 +79,7 @@ const fieldOptions = {
         )
         .required(),
     }),
+
   requiredTagAndDescription: () =>
     joi.when('baggedEvidence', {
       is: true,
@@ -101,21 +107,18 @@ const fieldOptions = {
     joi.when('batonDrawn', {
       is: true,
       then: joi.valid([true, false]).required(),
-      otherwise: joi.any().optional(),
     }),
 
   requiredPavaUsed: () =>
     joi.when('pavaDrawn', {
       is: true,
       then: joi.valid([true, false]).required(),
-      otherwise: joi.any().optional(),
     }),
 
   requiredOfficersInvolved: () =>
     joi.when('guidingHold', {
       is: true,
       then: joi.valid([1, 2]).required(),
-      otherwise: joi.any().optional(),
     }),
 
   requiredRestraintPositions: () =>
@@ -123,10 +126,7 @@ const fieldOptions = {
       is: true,
       then: joi
         .alternatives()
-        .try(
-          joi.array().items(joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')),
-          joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')
-        )
+        .try(joi.array().items(joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')))
         .required(),
     }),
 
@@ -137,8 +137,19 @@ const fieldOptions = {
         .string()
         .trim()
         .required(),
-      otherwise: joi.any().optional(),
     }),
+
+  requiredInvolvedStaff: joi
+    .array()
+    .min(1)
+    .items(
+      joi.object().keys({
+        username: joi
+          .string()
+          .trim()
+          .required(),
+      })
+    ),
 
   requiredStaffNeedingMedicalAttention: () =>
     joi.when('staffMedicalAttention', {
