@@ -7,6 +7,8 @@ const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = re
 const joi = baseJoi.extend(dateExtend)
 
 const fieldOptions = {
+  any: joi.any(),
+
   requiredMonthIndex: joi
     .number()
     .min(0)
@@ -136,6 +138,18 @@ const fieldOptions = {
         .trim()
         .required(),
     }),
+
+  requiredInvolvedStaff: joi
+    .array()
+    .min(1)
+    .items(
+      joi.object().keys({
+        username: joi
+          .string()
+          .trim()
+          .required(),
+      })
+    ),
 
   requiredStaffNeedingMedicalAttention: () =>
     joi.when('staffMedicalAttention', {

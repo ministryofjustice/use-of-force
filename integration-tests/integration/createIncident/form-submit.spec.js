@@ -57,6 +57,7 @@ context('Submit the incident report', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
@@ -78,11 +79,7 @@ context('Submit the incident report', () => {
     tasklistPage.checkNoPartsComplete()
 
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage
-      .staffInvolved(0)
-      .name()
-      .type('Test User')
-
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()

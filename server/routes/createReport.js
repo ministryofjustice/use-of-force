@@ -54,6 +54,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const involvedStaff = (input && input.involvedStaff) || (formId && (await involvedStaffService.get(formId))) || []
 
       const data = {
+        ...input,
         displayName,
         offenderNo,
         date,

@@ -7,7 +7,10 @@ context('tasklist', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
+    cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
   })
 
   it('Offender details are rendered correctly', () => {
@@ -27,6 +30,7 @@ context('tasklist', () => {
     const tasklistPage = TasklistPage.visit(bookingId)
     tasklistPage.checkNoPartsComplete()
     const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
     detailsPage.fillForm()
     const relocationPage = detailsPage.save()
