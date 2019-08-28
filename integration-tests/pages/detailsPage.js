@@ -42,8 +42,16 @@ export default () =>
       this.handcuffsApplied().check('true')
     },
 
-    save: () => {
+    errorSummary() {
+      return cy.get('.govuk-error-summary')
+    },
+
+    clickSave() {
       cy.get('[data-qa="save-and-continue"]').click()
+    },
+
+    save() {
+      this.clickSave()
       return relocationAndInjuriesPage()
     },
   })

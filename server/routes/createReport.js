@@ -84,7 +84,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       if (!isNilOrEmpty(allErrors)) {
         req.flash('errors', allErrors)
         req.flash('userInput', formPayload)
-        return res.redirect(`/form/incident/${form}/${bookingId}`)
+        return res.redirect(req.originalUrl)
       }
 
       const { formId, formObject } = await loadForm(req)
