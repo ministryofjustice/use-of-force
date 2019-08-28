@@ -72,15 +72,19 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
     submit: form => async (req, res) => {
       const { bookingId } = req.params
+      const saveAndContinue = req.body.submit === 'save-and-continue'
 
-      const { payloadFields, extractedFields, errors } = formProcessing.processInput(formConfig[form], req.body)
+      const { fields, validate: validationEnabled } = formConfig[form]
+      const validate = validationEnabled && saveAndContinue
+
+      const { payloadFields, extractedFields, errors } = formProcessing.processInput({ validate, fields }, req.body)
 
       const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, form, payloadFields)
 
       const allErrors = [...errors, ...additionalErrors]
       const formPayload = { ...payloadFields, ...additionalFields }
 
-      if (!isNilOrEmpty(allErrors)) {
+      if (saveAndContinue && !isNilOrEmpty(allErrors)) {
         req.flash('errors', allErrors)
         req.flash('userInput', formPayload)
         return res.redirect(req.originalUrl)
@@ -106,7 +110,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       }
 
       const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
-      const location = req.body.submit === 'save-and-continue' ? nextPath : `/report/${bookingId}/report-use-of-force`
+      const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
       return res.redirect(location)
     },
   }

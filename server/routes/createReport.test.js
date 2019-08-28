@@ -83,10 +83,25 @@ describe('POST save and continue /section/form', () => {
           },
         })
       }))
+
+  test('Submitting invalid update is not allowed and user redirected to same page', () =>
+    request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submit: 'save-and-continue',
+        incidentDate: '2019-08-27T13:59:33+01:00',
+        locationId: -1,
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/incident-details')
+      .expect(() => {
+        expect(reportService.update).not.toBeCalled()
+      }))
 })
 
 describe('POST save and return to tasklist', () => {
-  test('should render', () =>
+  test('successfully submit valid update', () =>
     request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -112,6 +127,34 @@ describe('POST save and return to tasklist', () => {
                 locationId: -1,
                 plannedUseOfForce: true,
                 involvedStaff: [{ username: 'User bob' }],
+                witnesses: [{ name: 'User bob' }],
+              },
+            },
+          },
+        })
+      }))
+  test('Submitting invalid update is allowed', () =>
+    request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submit: 'save-and-return',
+        incidentDate: '2019-08-27T13:59:33+01:00',
+        locationId: -1,
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/report-use-of-force')
+      .expect(() => {
+        expect(reportService.update).toBeCalledTimes(1)
+        expect(reportService.update).toBeCalledWith({
+          currentUser: user,
+          bookingId: 1,
+          formId: undefined,
+          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          formObject: {
+            incident: {
+              incidentDetails: {
+                locationId: -1,
                 witnesses: [{ name: 'User bob' }],
               },
             },
