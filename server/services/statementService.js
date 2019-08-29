@@ -14,7 +14,8 @@ module.exports = function createReportService({ incidentClient }) {
     if (!statement) {
       throw new Error(`Report: '${reportId}' does not exist`)
     }
-    return statement
+    const additionalComments = await incidentClient.getAdditionalComments(statement.id)
+    return { additionalComments, ...statement }
   }
 
   const validateSavedStatement = async (username, reportId) => {

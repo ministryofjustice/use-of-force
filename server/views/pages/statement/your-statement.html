@@ -60,17 +60,58 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
   </div>
   <hr />
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{
-        govukButton({
-          text: 'Return to use of force incidents',
-          href: '/',
-          classes: 'govuk-button govuk-!-margin-top-5',
-          attributes: { 'data-qa': 'cancel' }
-        })
-      }}
+  {% for comment in data.additionalComments %}
+    <div class="govuk-grid-row govuk-!-margin-top-4">
+      <div class="govuk-grid-column-one-half">
+        <p class="govuk-!-margin-bottom-0 govuk-label--s">Additional comment</p>
+      </div>
+      <div class="govuk-grid-column-one-half ">
+        <p>
+          <span class="govuk-label--s">Submitted:</span> {{ comment.dateSubmitted | formatDate('DD MMMM YYYY - HH:mm') }}
+        </p>
+      </div>
     </div>
-  </div>
+  {{comment.additionalComment}}<hr/>
+  {% endfor %}
+
+  <form method="POST">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukTextarea({
+            id: 'additionalContent',
+            name: 'additionalContent',
+            rows: 15,
+            cols: 200,
+            label: {
+              text: 'Additional comments',
+              classes: 'govuk-label--m govuk-!-margin-top-4'
+            }          
+          })
+        }}
+      </div>
+    </div>
+   
+    {{
+      govukButton({
+        text: 'Save additional comments',
+        name: 'submit',
+        value: 'submit',
+        classes: 'govuk-button  govuk-!-margin-top-5',
+        attributes: { 'data-qa': 'save-and-continue' }
+      })
+    }}
+    {{
+      govukButton({
+        text: 'Cancel',
+        href: '/',
+        classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3 govuk-!-margin-top-5',
+        attributes: { 'data-qa': 'cancel' }
+      })
+    }}
+  </form>
+</div>
 </div>
 {% endblock %}
+
