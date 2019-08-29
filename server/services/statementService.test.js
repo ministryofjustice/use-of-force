@@ -35,17 +35,33 @@ describe('getStatementsForUser', () => {
 
 describe('getStatement', () => {
   test('retrieve details when user is involved', async () => {
-    const incident = { id: 1, user_id: 'BOB' }
-
-    incidentClient.getStatement.mockReturnValue(incident)
+    const statement = { id: 1, user_id: 'BOB' }
+    const comment = 'Some additional text'
+    incidentClient.getStatement.mockReturnValue(statement)
+    incidentClient.getAdditionalComments.mockReturnValue([
+      {
+        id: 1,
+        statement_id: 1,
+        additional_comment: comment,
+        data_submitted: '2019-03-05 01:03:28',
+      },
+    ])
 
     const output = await service.getStatement('BOB', 1, StatementStatus.PENDING)
 
-    expect(output).toEqual(incident)
+    expect(output).toEqual({
+      ...statement,
+      additionalComments: [
+        {
+          id: 1,
+          statement_id: 1,
+          additional_comment: comment,
+          data_submitted: '2019-03-05 01:03:28',
+        },
+      ],
+    })
 
     expect(incidentClient.getStatement).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
-
-    expect(incidentClient.getAdditionalComments).toBeCalled()
   })
 
   test('retrieve details when statement is not present', async () => {
