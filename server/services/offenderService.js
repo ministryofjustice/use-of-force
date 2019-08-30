@@ -38,7 +38,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     return elite2Client.getOffenderImage(bookingId)
   }
 
-  const fullName = ({ firstName, lastName }) => `${properCaseName(firstName)} ${properCaseName(lastName)}`
+  const fullName = ({ firstName, lastName }) => `${properCaseName(lastName)}, ${properCaseName(firstName)}`
 
   const getOffenderNames = async (token, offenderNos) => {
     if (offenderNos.length === 0) {
