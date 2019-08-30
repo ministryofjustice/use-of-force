@@ -26,7 +26,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
     }
   }
 
-  const createDetailsObj = (details = {}) => {
+  const createUseOfForceDetailsObj = (details = {}) => {
     return {
       positiveCommunicationUsed: details.positiveCommunication,
       personalProtectionTechniques: details.personalProtectionTechniques,
@@ -143,7 +143,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
           incidentDate
         ),
         offenderDetail,
-        details: createDetailsObj(formData.details),
+        useOfForceDetails: createUseOfForceDetailsObj(formData.useOfForceDetails),
         relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
         evidence: createEvidenceObj(formData.evidence),
       }

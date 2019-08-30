@@ -85,7 +85,7 @@ module.exports = {
     },
   },
 
-  details: {
+  useOfForceDetails: {
     fields: [
       {
         positiveCommunication: {
