@@ -9,6 +9,7 @@ const statementService = {
   submitStatement: jest.fn(),
   save: jest.fn(),
   validateSavedStatement: jest.fn(),
+  saveAdditionalComment: jest.fn(),
 }
 
 const offenderService = {
@@ -95,5 +96,28 @@ describe('GET /:reportId/statement-submitted', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Your statement has been submitted')
+      }))
+})
+
+describe('GET /:reportId/your-statement', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/-1/your-statement')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Your use of force statement')
+      }))
+})
+
+describe('POST /:reportId/your-statement', () => {
+  it('should save ammendment', () =>
+    request(app)
+      .post('/-1/your-statement')
+      .send('additionalContent=statement1&submit=true')
+      .expect(302)
+      .expect('Location', '/-1/your-statement')
+      .expect(res => {
+        expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
       }))
 })

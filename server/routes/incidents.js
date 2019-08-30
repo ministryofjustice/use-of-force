@@ -131,22 +131,26 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const { reportId } = req.params
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
 
-      if (req.body.submit && req.body.additionalContent.trim().length) {
-        await statementService.saveAdditionalComment(statement.id, req.body.additionalContent)
-        res.redirect(`/${reportId}/your-statement`)
-      } else {
-        const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
-        const { displayName, offenderNo } = offenderDetail
-        res.render('pages/statement/your-statement', {
-          data: {
-            reportId,
-            displayName,
-            offenderNo,
-            ...statement,
-            lastTrainingMonth: moment.months(statement.lastTrainingMonth),
-          },
-        })
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+      res.render('pages/statement/your-statement', {
+        data: {
+          reportId,
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+        },
+      })
+    },
+
+    saveAdditionalComment: async (req, res) => {
+      const { reportId } = req.params
+      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
+      if (req.body.additionalComment && req.body.additionalComment.trim().length) {
+        await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
       }
+      return res.redirect(`/${reportId}/your-statement`)
     },
   }
 }
