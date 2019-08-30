@@ -137,3 +137,46 @@ describe('Involved staff', () => {
     })
   })
 })
+
+describe('Witenesses', () => {
+  it('None present', () => {
+    const input = { ...validInput, witnesses: [] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'User bob' }],
+    })
+  })
+
+  it('Invalid keys are stripped out', () => {
+    const input = { ...validInput, witnesses: [{ name: 'bob', age: 21 }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      witnesses: [{ name: 'bob' }],
+      involvedStaff: [{ username: 'User bob' }],
+    })
+  })
+
+  it('names are trimmed', () => {
+    const input = { ...validInput, witnesses: [{ name: '  bob    ' }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      witnesses: [{ name: 'bob' }],
+      involvedStaff: [{ username: 'User bob' }],
+    })
+  })
+})

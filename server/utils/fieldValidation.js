@@ -63,81 +63,74 @@ const fieldOptions = {
 
   requiredYesNoNotKnown: joi.valid(['YES', 'NO', 'NOT_KNOWN']).required(),
 
-  requiredCameraNumber: () =>
-    joi.when('bodyWornCamera', {
-      is: 'YES',
-      then: joi
-        .array()
-        .min(1)
-        .items(
-          joi.object().keys({
-            cameraNum: joi
-              .string()
-              .required()
-              .error(() => 'Enter the body-worn camera number'),
-          })
-        )
-        .required(),
-    }),
+  requiredCameraNumber: joi.when('bodyWornCamera', {
+    is: 'YES',
+    then: joi
+      .array()
+      .min(1)
+      .items(
+        joi.object().keys({
+          cameraNum: joi
+            .string()
+            .required()
+            .error(() => 'Enter the body-worn camera number'),
+        })
+      )
+      .required(),
+  }),
 
-  requiredTagAndDescription: () =>
-    joi.when('baggedEvidence', {
-      is: true,
-      then: joi
-        .array()
-        .min(1)
-        .items(
-          joi.object().keys({
-            evidenceTagReference: joi
-              .string()
-              .trim()
-              .required()
-              .error(() => 'Enter the evidence tag number'),
-            description: joi
-              .string()
-              .trim()
-              .required()
-              .error(() => 'Enter a description of the evidence'),
-          })
-        )
-        .required(),
-    }),
+  requiredTagAndDescription: joi.when('baggedEvidence', {
+    is: true,
+    then: joi
+      .array()
+      .min(1)
+      .items(
+        joi.object().keys({
+          evidenceTagReference: joi
+            .string()
+            .trim()
+            .required()
+            .error(() => 'Enter the evidence tag number'),
+          description: joi
+            .string()
+            .trim()
+            .required()
+            .error(() => 'Enter a description of the evidence'),
+        })
+      )
+      .required(),
+  }),
 
-  requiredBatonUsed: () =>
-    joi.when('batonDrawn', {
-      is: true,
-      then: joi.valid([true, false]).required(),
-    }),
+  requiredBatonUsed: joi.when('batonDrawn', {
+    is: true,
+    then: joi.valid([true, false]).required(),
+  }),
 
-  requiredPavaUsed: () =>
-    joi.when('pavaDrawn', {
-      is: true,
-      then: joi.valid([true, false]).required(),
-    }),
+  requiredPavaUsed: joi.when('pavaDrawn', {
+    is: true,
+    then: joi.valid([true, false]).required(),
+  }),
 
-  requiredOfficersInvolved: () =>
-    joi.when('guidingHold', {
-      is: true,
-      then: joi.valid([1, 2]).required(),
-    }),
+  requiredOfficersInvolved: joi.when('guidingHold', {
+    is: true,
+    then: joi.valid([1, 2]).required(),
+  }),
 
-  requiredRestraintPositions: () =>
-    joi.when('restraint', {
-      is: true,
-      then: joi
-        .alternatives()
-        .try(joi.array().items(joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')))
-        .required(),
-    }),
+  requiredRestraintPositions: joi.when('restraint', {
+    is: true,
+    then: joi
+      .alternatives()
+      .try(joi.array().items(joi.string().valid('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')))
+      .required(),
+  }),
 
-  requiredMemberOfHealthcare: () =>
-    joi.when('healthcareInvolved', {
-      is: true,
-      then: joi
-        .string()
-        .trim()
-        .required(),
-    }),
+  requiredMemberOfHealthcare: joi.when('healthcareInvolved', {
+    is: true,
+    then: joi
+      .string()
+      .trim()
+      .required(),
+  }),
 
   optionalInvolvedStaff: joi.array().items(
     joi.object().keys({
@@ -166,27 +159,26 @@ const fieldOptions = {
     })
   ),
 
-  requiredStaffNeedingMedicalAttention: () =>
-    joi.when('staffMedicalAttention', {
-      is: true,
-      then: joi
-        .array()
-        .min(1)
-        .items(
-          joi.object().keys({
-            name: joi
-              .string()
-              .trim()
-              .required()
-              .error(() => 'Enter the name of who needed medical attention'),
-            hospitalisation: joi
-              .valid([true, false])
-              .required()
-              .error(() => 'Select yes if the staff member had to go to hospital'),
-          })
-        )
-        .required(),
-    }),
+  requiredStaffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
+    is: true,
+    then: joi
+      .array()
+      .min(1)
+      .items(
+        joi.object().keys({
+          name: joi
+            .string()
+            .trim()
+            .required()
+            .error(() => 'Enter the name of who needed medical attention'),
+          hospitalisation: joi
+            .valid([true, false])
+            .required()
+            .error(() => 'Select yes if the staff member had to go to hospital'),
+        })
+      )
+      .required(),
+  }),
 }
 
 const getHref = (fieldConfig, error) => {
