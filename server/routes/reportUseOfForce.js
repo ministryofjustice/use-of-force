@@ -1,5 +1,3 @@
-const { check: statusChecker } = require('../services/reportStatusChecker')
-
 module.exports = function ReportUseOfForceRoutes({ reportService, offenderService }) {
   return {
     view: async (req, res) => {
@@ -9,7 +7,7 @@ module.exports = function ReportUseOfForceRoutes({ reportService, offenderServic
         bookingId
       )
       const { form_response: form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
-      const status = statusChecker(form)
+      const status = reportService.getReportStatus(form)
       res.render('pages/report-use-of-force', {
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },
         bookingId: req.params.bookingId,

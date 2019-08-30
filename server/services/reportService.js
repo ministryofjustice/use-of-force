@@ -1,5 +1,6 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
+const { check: getReportStatus } = require('../services/reportStatusChecker')
 
 module.exports = function createReportService({ incidentClient, elite2ClientBuilder, involvedStaffService }) {
   function getCurrentDraft(userId, bookingId) {
@@ -44,5 +45,6 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
     getCurrentDraft,
     update,
     submit,
+    getReportStatus,
   }
 }
