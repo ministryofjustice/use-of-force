@@ -7,7 +7,7 @@ const validatorChecker = formConfig => input => {
 }
 
 let validInput = {}
-const check = validatorChecker(config.details)
+const check = validatorChecker(config.useOfForceDetails)
 beforeEach(() => {
   validInput = {
     positiveCommunication: 'true',

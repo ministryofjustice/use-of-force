@@ -37,7 +37,7 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'details' }).then(({ payload }) => {
+    cy.task('getCurrentDraft', { bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
       expect(payload).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,
@@ -59,7 +59,7 @@ context('Submitting details page form', () => {
 
     fillFormAndSave({ restraintPositions: ['STANDING'] })
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'details' }).then(({ payload }) => {
+    cy.task('getCurrentDraft', { bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
       expect(payload).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,

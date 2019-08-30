@@ -19,7 +19,6 @@ href: backLink or "/"
 
     {{
       pagesMacros.sectionHeading({
-        data: data.incidentDetails,
         title: 'Incident details',
         url: '/report/' + bookingId + '/incident-details'
       })
@@ -69,7 +68,6 @@ href: backLink or "/"
 
     {{
       pagesMacros.sectionHeading({
-        data: data.details,
         title: 'Use of force details',
         url: '/report/' + bookingId + '/use-of-force-details'
       })
@@ -78,48 +76,47 @@ href: backLink or "/"
       pagesMacros.tableRow({
         label: 'Was positive communication used to de-escalate the situation?',
         'data-qa': 'positiveCommunication',
-        dataValue: data.details.positiveCommunicationUsed | toYesNo
+        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Were any personal protection techniques used?',
         'data-qa': 'personalProtection',
-        dataValue: data.details.personalProtectionTechniques | toYesNo
+        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Was a baton drawn?',
         'data-qa': 'batonDrawn',
-        dataValue: data.details.batonDrawn
+        dataValue: data.useOfForceDetails.batonDrawn
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Was PAVA drawn?',
         'data-qa': 'pavaDrawn',
-        dataValue: data.details.pavaDrawn
+        dataValue: data.useOfForceDetails.pavaDrawn
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Was a guiding hold used?',
         'data-qa': 'guidingHold',
-        dataValue: data.details.guidingHoldUsed | capitalize
+        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize
       })
     }}
     {{
       pagesMacros.tableRow({
         label: 'Was control and restraint used?',
         'data-qa': 'restraintUsed',
-        dataValue: data.details.controlAndRestraintUsed | capitalize
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
 
     {{
       pagesMacros.sectionHeading({
-        data: data.relocationAndInjuries,
         title: 'Relocation and injuries',
         url: '/report/' + bookingId + '/relocation-and-injuries'
       })
@@ -185,7 +182,6 @@ href: backLink or "/"
 
     {{
       pagesMacros.sectionHeading({
-        data: data.evidence,
         title: 'Evidence',
         url: '/report/' + bookingId + '/evidence'
       })
