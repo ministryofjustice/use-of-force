@@ -129,6 +129,7 @@ module.exports = function createApp({
     '../assets/js',
     '../node_modules/govuk-frontend/govuk/assets',
     '../node_modules/govuk-frontend',
+    '../node_modules/@ministryofjustice/frontend/',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
   })
