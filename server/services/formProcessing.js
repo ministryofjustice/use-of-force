@@ -61,13 +61,10 @@ const processInput = ({ validate: shouldValidate, fields }, userInput) => {
   return { payloadFields, extractedFields, errors }
 }
 
-const mergeIntoPayload = ({ formObject, formPayload, formSection, formName }) => {
+const mergeIntoPayload = ({ formObject, formPayload, formName }) => {
   const updatedFormObject = {
     ...formObject,
-    [formSection]: {
-      ...formObject[formSection],
-      [formName]: formPayload,
-    },
+    [formName]: formPayload,
   }
 
   const payloadChanged = !equals(formObject, updatedFormObject)
