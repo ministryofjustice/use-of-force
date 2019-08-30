@@ -9,9 +9,9 @@
   {% endif %}
   {% switch value %}
     {% case 'INCOMPLETE' %}
-    <strong class="govuk-tag app-task-list__task-completed">INCOMPLETE</strong>
+    <strong class="govuk-tag moj-tag--black float-right">INCOMPLETE</strong>
     {% case 'COMPLETE' %}
-    <strong class="govuk-tag app-task-list__task-completed">COMPLETE</strong>
+    <strong class="govuk-tag moj-tag--blue float-right">COMPLETE</strong>
     {% default %}
   {% endswitch %}
 </li>
