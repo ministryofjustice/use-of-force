@@ -139,17 +139,32 @@ const fieldOptions = {
         .required(),
     }),
 
-  requiredInvolvedStaff: joi
-    .array()
-    .min(1)
-    .items(
-      joi.object().keys({
-        username: joi
-          .string()
-          .trim()
-          .required(),
-      })
-    ),
+  optionalInvolvedStaff: joi.array().items(
+    joi.object().keys({
+      username: joi
+        .string()
+        .trim()
+        .required(),
+    })
+  ),
+
+  optionalInvolvedStaffWhenPersisted: joi.array().items(
+    joi.object().keys({
+      username: joi
+        .string()
+        .trim()
+        .required(),
+      name: joi
+        .string()
+        .trim()
+        .required(),
+      email: joi
+        .string()
+        .trim()
+        .required(),
+      staffId: joi.number().required(),
+    })
+  ),
 
   requiredStaffNeedingMedicalAttention: () =>
     joi.when('staffMedicalAttention', {
@@ -212,6 +227,12 @@ module.exports = {
     })
 
     return errors
+  },
+
+  isValid(schemaName, fieldValue) {
+    const joiFieldItem = fieldOptions[schemaName]
+    const joiErrors = joi.validate(fieldValue, joiFieldItem, { stripUnknown: false, abortEarly: false })
+    return isNilOrEmpty(joiErrors.error)
   },
 }
 
