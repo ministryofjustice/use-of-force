@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { getIn, isNilOrEmpty, firstItem } = require('../utils/utils')
+const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
 const formProcessing = require('../services/formProcessing')
@@ -12,7 +12,7 @@ const formConfig = {
 const renderForm = ({ req, res, formObject, form, data = {} }) => {
   const backLink = req.get('Referrer')
   const { bookingId } = req.params
-  const pageData = firstItem(req.flash('userInput')) || getIn(['incident', form], formObject)
+  const pageData = firstItem(req.flash('userInput')) || formObject[form]
   const errors = req.flash('errors')
   res.render(`formPages/incident/${form}`, {
     data: { bookingId, ...pageData, ...data, types },
@@ -95,7 +95,6 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const updatedPayload = await formProcessing.mergeIntoPayload({
         formObject,
         formPayload,
-        formSection: 'incident',
         formName: form,
       })
 

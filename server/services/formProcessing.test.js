@@ -3,24 +3,16 @@ const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {
-    section1: '',
-    section2: '',
-    section3: {},
-    section4: {
-      form1: {},
-      form2: { answer: 'answer' },
-    },
+    form1: {},
+    form2: { answer: 'answer' },
   }
 
   const form = {
     ...baseForm,
-    section4: {
-      ...baseForm.section4,
-      form3: {
-        decision: '',
-        followUp1: '',
-        followUp2: '',
-      },
+    form3: {
+      decision: '',
+      followUp1: '',
+      followUp2: '',
     },
   }
 
@@ -34,19 +26,15 @@ describe('mergeIntoPayload', () => {
     const output = await mergeIntoPayload({
       formObject: baseForm,
       formPayload,
-      formSection: 'section4',
       formName: 'form3',
     })
 
     expect(output).toEqual({
       ...form,
-      section4: {
-        ...form.section4,
-        form3: {
-          decision: 'Yes',
-          followUp1: 'County',
-          followUp2: 'Town',
-        },
+      form3: {
+        decision: 'Yes',
+        followUp1: 'County',
+        followUp2: 'Town',
       },
     })
   })
@@ -55,26 +43,20 @@ describe('mergeIntoPayload', () => {
     const formPayload = { answer: 'answer' }
 
     const existingForm = {
-      section1: '',
-      section2: '',
-      section3: {},
-      section4: {
-        form1: {},
-        form2: { answer: 'answer' },
-      },
+      form1: {},
+      form2: { answer: 'answer' },
     }
 
     const output = await mergeIntoPayload({
       formObject: existingForm,
       formPayload,
-      formSection: 'section4',
       formName: 'form2',
     })
 
     expect(output).toEqual(false)
   })
 
-  it('should add new sections and forms to the form if they dont exist', async () => {
+  it('should add new forms to the form if they dont exist', async () => {
     const formPayload = {
       decision: 'Yes',
       followUp1: 'County',
@@ -84,18 +66,15 @@ describe('mergeIntoPayload', () => {
     const output = await mergeIntoPayload({
       formObject: baseForm,
       formPayload,
-      formSection: 'section5',
       formName: 'form1',
     })
 
     const expectedForm = {
       ...baseForm,
-      section5: {
-        form1: {
-          decision: 'Yes',
-          followUp1: 'County',
-          followUp2: 'Town',
-        },
+      form1: {
+        decision: 'Yes',
+        followUp1: 'County',
+        followUp2: 'Town',
       },
     }
     expect(output).toEqual(expectedForm)

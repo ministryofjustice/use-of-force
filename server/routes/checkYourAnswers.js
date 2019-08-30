@@ -120,11 +120,10 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       const errors = req.flash('errors')
       const { bookingId } = req.params
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-      const { id, form_response: formObject = {}, incident_date: incidentDate } = await reportService.getCurrentDraft(
+      const { id, form_response: formData = {}, incident_date: incidentDate } = await reportService.getCurrentDraft(
         req.user.username,
         bookingId
       )
-      const formData = formObject.incident || {}
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,

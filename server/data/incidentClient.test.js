@@ -129,17 +129,15 @@ test('getInvolvedStaff', async () => {
   const expected = [
     {
       form_response: {
-        incident: {
-          incidentDetails: {
-            involvedStaff: [
-              {
-                name: 'AAA User',
-              },
-              {
-                name: 'BBB User',
-              },
-            ],
-          },
+        incidentDetails: {
+          involvedStaff: [
+            {
+              name: 'AAA User',
+            },
+            {
+              name: 'BBB User',
+            },
+          ],
         },
       },
     },

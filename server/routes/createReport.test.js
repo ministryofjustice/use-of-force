@@ -72,13 +72,11 @@ describe('POST save and continue /section/form', () => {
           formId: undefined,
           incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
           formObject: {
-            incident: {
-              incidentDetails: {
-                locationId: -1,
-                plannedUseOfForce: true,
-                involvedStaff: [{ username: 'User bob' }],
-                witnesses: [{ name: 'User bob' }],
-              },
+            incidentDetails: {
+              locationId: -1,
+              plannedUseOfForce: true,
+              involvedStaff: [{ username: 'User bob' }],
+              witnesses: [{ name: 'User bob' }],
             },
           },
         })
@@ -122,13 +120,11 @@ describe('POST save and return to tasklist', () => {
           formId: undefined,
           incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
           formObject: {
-            incident: {
-              incidentDetails: {
-                locationId: -1,
-                plannedUseOfForce: true,
-                involvedStaff: [{ username: 'User bob' }],
-                witnesses: [{ name: 'User bob' }],
-              },
+            incidentDetails: {
+              locationId: -1,
+              plannedUseOfForce: true,
+              involvedStaff: [{ username: 'User bob' }],
+              witnesses: [{ name: 'User bob' }],
             },
           },
         })
@@ -152,11 +148,9 @@ describe('POST save and return to tasklist', () => {
           formId: undefined,
           incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
           formObject: {
-            incident: {
-              incidentDetails: {
-                locationId: -1,
-                witnesses: [{ name: 'User bob' }],
-              },
+            incidentDetails: {
+              locationId: -1,
+              witnesses: [{ name: 'User bob' }],
             },
           },
         })
