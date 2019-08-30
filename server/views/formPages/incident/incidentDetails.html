@@ -19,7 +19,7 @@
     <div class="govuk-grid-column-full">
       <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
       <p class="govuk-!-margin-bottom-5 govuk-label--s" data-date-and-time>
-        {{ data.date | formatDate('DD MMMM YYYY') }} - {{ data.date | formatDate('HH:mm') }}
+        {{ data.date | formatDate('D MMMM YYYY') }} - {{ data.date | formatDate('HH:mm') }}
         <input type="hidden" name="incidentDate" value="{{ data.date | formatDate() }}">
       </p>
     </div>

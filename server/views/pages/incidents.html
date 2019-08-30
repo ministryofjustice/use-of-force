@@ -12,9 +12,9 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Date</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Use of force reporter</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
     </tr>
   </thead>
@@ -22,7 +22,7 @@
   <tbody class="govuk-table__body">
       {% for incident in awaitingStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('DD/MM/YYYY - HH:mm')}}</td>
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
@@ -48,9 +48,9 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Date</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Use of force reporter</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
     </tr>
   </thead>
@@ -58,7 +58,7 @@
   <tbody class="govuk-table__body">
       {% for incident in completedStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('DD/MM/YYYY - HH:mm')}}</td>
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
