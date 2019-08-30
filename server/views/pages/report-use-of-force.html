@@ -1,16 +1,30 @@
-{% extends "../partials/layout.html" %} {% macro section(name, label, url, value) %}
-<li class="app-task-list__item">
+{% extends "../partials/layout.html" %}
+
+{% macro section(name, label, url, value) %}
+<li class="app-task-list__item" data-qa-{{name}}={{value}}>
+  {% if url %}
   <a href="{{ url }}" class="govuk-link" data-qa-{{name}}-link>{{ label }}</a>
-  {% if value %}
-  <strong class="govuk-tag app-task-list__task-completed" data-qa-{{name}}-completed>Completed</strong>
+  {% else %}
+  <span>{{ label }}</span>
   {% endif %}
+  {% switch value %}
+    {% case 'INCOMPLETE' %}
+    <strong class="govuk-tag app-task-list__task-completed">INCOMPLETE</strong>
+    {% case 'COMPLETE' %}
+    <strong class="govuk-tag app-task-list__task-completed">COMPLETE</strong>
+    {% default %}
+  {% endswitch %}
 </li>
-{% endmacro %} {% macro field(name, label, value) %}
+{% endmacro %}
+
+{% macro field(name, label, value) %}
 <p class="govuk-!-margin-bottom-1 govuk-label--xs">{{ label }}</p>
 <p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="{{ name }}">
   {{ value }}
 </p>
-{% endmacro %} {% block content %}
+{% endmacro %}
+
+{% block content %}
 <h1 class="govuk-heading-xl mainHeading">Report use of force</h1>
 <div class="govuk-grid-row govuk-body">
   <hr />
@@ -41,29 +55,30 @@
   <ol class="app-task-list">
     <li>
       <ul class="app-task-list__items">
+
         {{  section(name = "new-incident", 
                   label = "Incident details",  
                   url = "/report/" + bookingId + "/incident-details", 
-                  value = form.incidentDetails) }}
+                  value = status.incidentDetails) }}
 
         {{  section(name = "details", 
                   label = "Use of force details",  
                   url = "/report/" + bookingId + "/use-of-force-details", 
-                  value = form.useOfForceDetails) }}
+                  value = status.useOfForceDetails) }}
 
         {{  section(name = "relocation-and-injuries", 
                   label = "Relocation and Injuries",  
                   url = "/report/" + bookingId + "/relocation-and-injuries", 
-                  value = form.relocationAndInjuries) }}
+                  value = status.relocationAndInjuries) }}
 
         {{  section(name = "evidence", 
                   label = "Evidence",  
                   url = "/report/" + bookingId + "/evidence", 
-                  value = form.evidence) }}
+                  value = status.evidence) }}
 
         {{  section(name = "check-answers", 
                   label = "Check then send report",  
-                  url = "/report/" + bookingId + '/check-your-answers') }}
+                  url = status.complete and "/report/" + bookingId + '/check-your-answers') }}
       </ul>
     </li>
   </ol>

@@ -20,8 +20,6 @@ context('Submit the incident report', () => {
     cy.login(bookingId)
 
     const tasklistPage = TasklistPage.visit(bookingId)
-    tasklistPage.checkNoPartsComplete()
-
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
@@ -54,8 +52,6 @@ context('Submit the incident report', () => {
     cy.login(bookingId)
 
     const tasklistPage = TasklistPage.visit(bookingId)
-    tasklistPage.checkNoPartsComplete()
-
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()
@@ -76,8 +72,6 @@ context('Submit the incident report', () => {
     cy.login(bookingId)
 
     const tasklistPage = TasklistPage.visit(bookingId)
-    tasklistPage.checkNoPartsComplete()
-
     const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.fillForm()
     const detailsPage = newIncidentPage.save()

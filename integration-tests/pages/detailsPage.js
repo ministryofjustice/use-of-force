@@ -54,4 +54,8 @@ export default () =>
       this.clickSave()
       return relocationAndInjuriesPage()
     },
+
+    saveAndReturnToUseOfForce() {
+      return cy.get('[data-qa="save-and-return"]').click()
+    },
   })
