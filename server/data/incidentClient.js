@@ -60,7 +60,7 @@ const getStatementsForUser = (userId, status, query = db.query) => {
 
 const getStatement = async (userId, reportId, status, query = db.query) => {
   const results = await query({
-    text: `select r.id
+    text: `select s.id
     ,      r.booking_id             "bookingId"
     ,      r.incident_date          "incidentDate"
     ,      s.last_training_month    "lastTrainingMonth"
@@ -74,6 +74,18 @@ const getStatement = async (userId, reportId, status, query = db.query) => {
     values: [reportId, userId, status.value],
   })
   return results.rows[0]
+}
+
+const getAdditionalComments = async statementId => {
+  const results = await db.query({
+    text: `select  
+    s.additional_comment "additionalComment",
+    s.date_submitted   "dateSubmitted" 
+    from statement_amendments s
+    where s.statement_id = $1`,
+    values: [statementId],
+  })
+  return results.rows
 }
 
 const saveStatement = (
@@ -152,4 +164,5 @@ module.exports = {
   createStatements,
   saveStatement,
   submitStatement,
+  getAdditionalComments,
 }
