@@ -76,7 +76,7 @@ describe('getOffenders', () => {
     const offenderNos = ['AAA', 'BBB', 'AAA']
     const names = await service.getOffenderNames(token, offenderNos)
 
-    expect(names).toEqual({ AAA: 'Sam Smith', BBB: 'Ben Smith' })
+    expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
     expect(elite2ClientBuilder).toBeCalledWith(token)
     expect(elite2Client.getOffenders).toBeCalledWith(['AAA', 'BBB'])
   })

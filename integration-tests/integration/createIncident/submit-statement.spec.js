@@ -40,9 +40,9 @@ context('Submit statement', () => {
     {
       const incidentsPage = IncidentsPage.goTo()
       const { date, prisoner, reporter, startButton } = incidentsPage.getTodoRow(0)
-      prisoner().should('contain', 'Norman Smith')
+      prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
-      date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
 
       startButton().click()
     }
@@ -60,9 +60,9 @@ context('Submit statement', () => {
     {
       const incidentsPage = statementSubmittedPage.finish()
       const { date, prisoner, reporter } = incidentsPage.getCompleteRow(0)
-      prisoner().should('contain', 'Norman Smith')
+      prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
-      date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
   })
 
@@ -99,9 +99,9 @@ context('Submit statement', () => {
     const incidentsPage = statementSubmittedPage.finish()
 
     const { date, prisoner, reporter, reportId } = incidentsPage.getCompleteRow(0)
-    prisoner().should('contain', 'Norman Smith')
+    prisoner().should('contain', 'Smith, Norman')
     reporter().should('contain', 'James Stuart')
-    date().should(elem => expect(elem.text()).to.match(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/))
+    date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
 
     reportId().then(id =>
       cy.task('getStatementForUser', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {
