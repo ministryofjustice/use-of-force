@@ -48,10 +48,6 @@ describe('Incident details page - overall', () => {
         href: '#plannedUseOfForce',
         text: 'Select yes if the use of force was planned',
       },
-      {
-        href: '#involvedStaff[0][username]',
-        text: 'Enter the name of the staff member involved in the use of force incident',
-      },
     ])
 
     expect(formResponse).toEqual({})
@@ -101,19 +97,42 @@ describe('Planned use of force', () => {
 
 describe('Involved staff', () => {
   it('None present', () => {
-    const input = { ...validInput, involvedStaff: [{ username: '' }] }
+    const input = { ...validInput, involvedStaff: [] }
     const { errors, formResponse } = check(input)
 
-    expect(errors).toEqual([
-      {
-        href: '#involvedStaff[0][username]',
-        text: 'Enter the name of the staff member involved in the use of force incident',
-      },
-    ])
+    expect(errors).toEqual([])
 
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('Invalid keys are stripped out', () => {
+    const input = { ...validInput, involvedStaff: [{ username: 'bob', age: 21 }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'bob' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('Usernames are trimmed', () => {
+    const input = { ...validInput, involvedStaff: [{ username: '  bob    ' }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'bob' }],
       witnesses: [{ name: 'User bob' }],
     })
   })

@@ -1,6 +1,7 @@
 const moment = require('moment')
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
+const { validate, isValid } = require('../utils/fieldValidation')
 
 const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs))
 
@@ -56,9 +57,10 @@ module.exports = {
       },
       {
         involvedStaff: {
-          responseType: 'requiredInvolvedStaff',
+          responseType: 'optionalInvolvedStaff',
           validationMessage: 'Enter the name of the staff member involved in the use of force incident',
-          sanitiser: removeEmptyValues(['username']),
+          sanitiser: values =>
+            removeEmptyValues(['username'])(values).map(({ username }) => ({ username: username.trim() })),
           firstFieldName: 'involvedStaff[0][username]',
         },
       },
@@ -70,6 +72,14 @@ module.exports = {
       },
     ],
     validate: true,
+    isComplete(values) {
+      return (
+        // It's possible to store invalid usernames which haven't been validated against the auth server.
+        // The separate check ensures that all involvedStaff have the correct extra fields that are stored against them once validated.
+        validate(this.fields, values, true).length === 0 &&
+        isValid('optionalInvolvedStaffWhenPersisted', values.involvedStaff)
+      )
+    },
     nextPath: {
       path: bookingId => `/report/${bookingId}/use-of-force-details`,
     },
@@ -163,6 +173,9 @@ module.exports = {
       },
     ],
     validate: true,
+    isComplete(values) {
+      return validate(this.fields, values).length === 0
+    },
     nextPath: {
       path: bookingId => `/report/${bookingId}/relocation-and-injuries`,
     },
@@ -242,8 +255,10 @@ module.exports = {
         },
       },
     ],
-
     validate: true,
+    isComplete(values) {
+      return validate(this.fields, values).length === 0
+    },
     nextPath: {
       path: bookingId => `/report/${bookingId}/evidence`,
     },
@@ -299,6 +314,9 @@ module.exports = {
       },
     ],
     validate: true,
+    isComplete(values) {
+      return validate(this.fields, values).length === 0
+    },
     nextPath: {
       path: bookingId => `/report/${bookingId}/check-your-answers`,
     },
