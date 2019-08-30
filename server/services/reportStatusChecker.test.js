@@ -48,6 +48,7 @@ describe('statusCheck', () => {
     const output = check({})
 
     expect(output).toEqual({
+      complete: false,
       incidentDetails: SectionStatus.NOT_STARTED,
       useOfForceDetails: SectionStatus.NOT_STARTED,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
@@ -61,6 +62,7 @@ describe('statusCheck', () => {
     const output = check(partiallyCompleteReport)
 
     expect(output).toEqual({
+      complete: false,
       incidentDetails: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
@@ -72,6 +74,7 @@ describe('statusCheck', () => {
     const output = check(validReport)
 
     expect(output).toEqual({
+      complete: true,
       incidentDetails: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
@@ -96,6 +99,7 @@ describe('statusCheck', () => {
     const output = check(invalidReport)
 
     expect(output).toEqual({
+      complete: false,
       incidentDetails: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.INCOMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
@@ -117,6 +121,7 @@ describe('statusCheck', () => {
     const output = check(invalidReport)
 
     expect(output).toEqual({
+      complete: false,
       incidentDetails: SectionStatus.INCOMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,

@@ -1,9 +1,9 @@
 const config = require('../config/incident')
 
 const SectionStatus = Object.freeze({
-  NOT_STARTED: 'not_started',
-  INCOMPLETE: 'incomplete',
-  COMPLETE: 'complete',
+  NOT_STARTED: 'NOT_STARTED',
+  INCOMPLETE: 'INCOMPLETE',
+  COMPLETE: 'COMPLETE',
 })
 
 const getStatus = (fieldConfig, sectionValues) => {
@@ -17,8 +17,11 @@ const getStatus = (fieldConfig, sectionValues) => {
 module.exports = {
   SectionStatus,
   check: report => {
-    return Object.keys(config).reduce((previous, key) => {
+    const result = Object.keys(config).reduce((previous, key) => {
       return { ...previous, [key]: getStatus(config[key], report[key]) }
     }, {})
+
+    const complete = !Object.values(result).some(value => value !== SectionStatus.COMPLETE)
+    return { ...result, complete }
   },
 }
