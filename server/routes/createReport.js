@@ -103,7 +103,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
           currentUser: res.locals.user,
           formId,
           bookingId: parseInt(bookingId, 10),
-          formObject: updatedPayload,
+          formObject: updatedPayload || {},
           ...extractedFields,
         })
       }

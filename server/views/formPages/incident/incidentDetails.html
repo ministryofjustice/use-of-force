@@ -78,45 +78,40 @@
     <div class="govuk-grid-column-full">
       <h3>Other staff involved in use of force</h3>
       <div class="add-another-staff-member">
-        {% for staffMember in data.involvedStaff %} {% call govukFieldset({ classes: 'add-another__item' }) %}
+
+        {% macro addStaffMember(index, value, showRemove) %}
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
         {{
           govukInput({
             label: {
               html: 'Username'
             },
             classes: 'govuk-!-width-one-third',
-            id: 'involvedStaff[' + loop.index0 + '][username]',
-            name: 'involvedStaff[' + loop.index0 + '][username]',
-            value: staffMember.username,
-            errorMessage: errors | findError('involvedStaff[' + loop.index0 + '][username]'),
+            id: 'involvedStaff[' + index + '][username]',
+            name: 'involvedStaff[' + index + '][username]',
+            value: value,
+            errorMessage: errors | findError('involvedStaff[' + index + '][username]'),
             attributes: {
               'data-name': 'involvedStaff[%index%][username]',
               'data-id': 'involvedStaff[%index%][username]'
             }
           })
         }}
-        {% if loop.length != 1 %}
+        {% if showRemove %}
         <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
           Remove
         </button>
-        {% endif %}
-        {% endcall %} {% else %} {% call govukFieldset({ classes: 'add-another__item' }) %}
-        {{
-          govukInput({
-            label: {
-              html: 'Username'
-            },
-            classes: 'govuk-!-width-one-third',
-            id: 'involvedStaff[0][username]',
-            name: 'involvedStaff[0][username]',
-            errorMessage: errors | findError('involvedStaff[0][username]'),
-            attributes: {
-              'data-name': 'involvedStaff[%index%][username]',
-              'data-id': 'involvedStaff[%index%][username]'
-            }
-          })
-        }}
-        {% endcall %} {% endfor %}
+        {% endif %}  
+        {% endcall %} 
+        {% endmacro %}
+
+
+
+        {% for staffMember in data.involvedStaff %} 
+          {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
+        {% else %} 
+          {{ addStaffMember(index = 0, value = null, showRemove = false) }}
+        {% endfor %}
         <div class="button-action">
           {{
             govukButton({
@@ -134,43 +129,38 @@
     <div class="govuk-grid-column-full">
       <h3>Witnesses to the incident</h3>
       <div class="add-another-witness">
-        {% for staffMember in data.witnesses %} {% call govukFieldset({ classes: 'add-another__item' }) %}
-        {{
-          govukInput({
-            label: {
-              html: 'Name'
-            },
-            classes: 'govuk-!-width-one-third',
-            id: 'witnesses[' + loop.index0 + '][name]',
-            name: 'witnesses[' + loop.index0 + '][name]',
-            value: staffMember.name,
-            attributes: {
-              'data-name': 'witnesses[%index%][name]',
-              'data-id': 'witnesses[%index%][name]'
-            }
-          })
-        }}
-        {% if loop.length != 1 %}
-        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-          Remove
-        </button>
-        {% endif  %}
-        {% endcall %} {% else %} {% call govukFieldset({ classes: 'add-another__item' }) %}
-        {{
-          govukInput({
-            label: {
-              html: 'Name'
-            },
-            classes: 'govuk-!-width-one-third',
-            id: 'witnesses[0][name]',
-            name: 'witnesses[0][name]',
-            attributes: {
-              'data-name': 'witnesses[%index%][name]',
-              'data-id': 'witnesses[%index%][name]'
-            }
-          })
-        }}
-        {% endcall %} {% endfor %}
+
+        {% macro addWitness(index, value, showRemove) %}
+          {% call govukFieldset({ classes: 'add-another__item' }) %}
+            {{
+              govukInput({
+                label: {
+                  html: 'Name'
+                },
+                classes: 'govuk-!-width-one-third',
+                id: 'witnesses[' + index + '][name]',
+                name: 'witnesses[' + index + '][name]',
+                value: value,
+                attributes: {
+                  'data-name': 'witnesses[%index%][name]',
+                  'data-id': 'witnesses[%index%][name]'
+                }
+              })
+            }}
+            {% if showRemove %}
+            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+              Remove
+            </button>
+            {% endif  %}
+          {% endcall %} 
+        {% endmacro %}
+
+
+        {% for witness in data.witnesses %} 
+          {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
+        {% else %} 
+          {{ addWitness(index = 0, value = null, showRemove = false) }}
+       {% endfor %}
         <div class="button-action">
           {{
             govukButton({
