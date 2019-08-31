@@ -114,10 +114,10 @@ describe('POST /:reportId/your-statement', () => {
   it('should save ammendment', () =>
     request(app)
       .post('/-1/your-statement')
-      .send('additionalContent=statement1&submit=true')
+      .send('additionalComment=statement1&submit=true')
       .expect(302)
       .expect('Location', '/-1/your-statement')
-      .expect(res => {
+      .expect(() => {
         expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
       }))
 })

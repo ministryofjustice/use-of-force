@@ -73,7 +73,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-qa="statement">{{comment.additionalComment}}</p>
+        <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-loop={{loop.index}} data-qa="viewAdditionalComment">{{comment.additionalComment}}</p>
       </div>
     </div>
   <hr/>
@@ -89,6 +89,7 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
             name: 'additionalComment',
             rows: 15,
             cols: 200,
+            attributes: { 'data-qa': 'additionalComment' },
             label: {
               text: 'Additional comments',
               classes: 'govuk-label--m govuk-!-margin-top-4'
