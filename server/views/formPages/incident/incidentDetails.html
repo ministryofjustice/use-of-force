@@ -81,12 +81,13 @@
 
         {% macro addStaffMember(index, value, showRemove) %}
         {% call govukFieldset({ classes: 'add-another__item' }) %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
         {{
           govukInput({
             label: {
               html: 'Username'
             },
-            classes: 'govuk-!-width-one-third',
             id: 'involvedStaff[' + index + '][username]',
             name: 'involvedStaff[' + index + '][username]',
             value: value,
@@ -97,11 +98,15 @@
             }
           })
         }}
+      </div>
+      <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
         {% if showRemove %}
-        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
           Remove
         </button>
         {% endif %}  
+      </div>
+    </div>
         {% endcall %} 
         {% endmacro %}
 
@@ -116,7 +121,7 @@
           {{
             govukButton({
               text: 'Add another member of staff',
-              classes: 'govuk-button--secondary  add-another__add-button  govuk-!-margin-bottom-4',
+              classes: 'govuk-button--secondary  add-another__add-button',
               attributes: { 'data-qa-add-another-staff': true }
             })
           }}
@@ -132,29 +137,33 @@
 
         {% macro addWitness(index, value, showRemove) %}
           {% call govukFieldset({ classes: 'add-another__item' }) %}
-            {{
-              govukInput({
-                label: {
-                  html: 'Name'
-                },
-                classes: 'govuk-!-width-one-third',
-                id: 'witnesses[' + index + '][name]',
-                name: 'witnesses[' + index + '][name]',
-                value: value,
-                attributes: {
-                  'data-name': 'witnesses[%index%][name]',
-                  'data-id': 'witnesses[%index%][name]'
-                }
-              })
-            }}
-            {% if showRemove %}
-            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-              Remove
-            </button>
-            {% endif  %}
-          {% endcall %} 
+          <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-third">
+                {{
+                  govukInput({
+                    label: {
+                      html: 'Name'
+                    },
+                    id: 'witnesses[' + index + '][name]',
+                    name: 'witnesses[' + index + '][name]',
+                    value: value,
+                    attributes: {
+                      'data-name': 'witnesses[%index%][name]',
+                      'data-id': 'witnesses[%index%][name]'
+                    }
+                  })
+                }}
+              </div>
+              <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+                {% if showRemove %}
+                  <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+                  Remove
+                  </button>
+                {% endif  %}
+              </div>
+          </div>
+          {% endcall %}
         {% endmacro %}
-
 
         {% for witness in data.witnesses %} 
           {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
@@ -165,7 +174,7 @@
           {{
             govukButton({
               text: 'Add another witness',
-              classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+              classes: 'govuk-button--secondary  add-another__add-button',
               attributes: { 'data-qa-add-another-witness': true }
             })
           }}
@@ -178,7 +187,7 @@
 <script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
-  new AddAnother($('.add-another-staff-member'))
-  new AddAnother($('.add-another-witness'))
+  new AddAnother($('.add-another-staff-member'), '.remove-button-container')
+  new AddAnother($('.add-another-witness'), '.remove-button-container')
 </script>
 {% endblock %}

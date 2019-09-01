@@ -158,42 +158,42 @@
           <!-- add another starts here   -->
 
           <div class="add-another-staff-needing-medical-attention">
-
-
-            {%  for staffMember in  data.staffNeedingMedicalAttention %}
+          {% macro addStaffNeedingMedicalAttentiob(index, staffMember, showRemove) %}
             {% call govukFieldset({ classes: 'add-another__item' }) %}
-            {{
-                    govukInput({
-                      label: {
-                        html: 'Name of who needed medical attention'
-                      },
-                      id: 'staffNeedingMedicalAttention[' + loop.index0 + '][name]',
-                      name: 'staffNeedingMedicalAttention[' + loop.index0 + '][name]',
-                      value: staffMember.name,
-                      errorMessage:  errors | findError('staffNeedingMedicalAttention[' + loop.index0 + '][name]'),
-                      attributes: {
-                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffNeedingMedicalAttention[%index%][name]'
-                      }
-                    })
-                  }}
-
-            {{ govukRadios({
+              {{ govukInput({
+                label: {
+                  html: 'Name of who needed medical attention'
+                },
+                id: 'staffNeedingMedicalAttention[' + index + '][name]',
+                name: 'staffNeedingMedicalAttention[' + index + '][name]',
+                value: staffMember.name,
+                errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][name]'),
+                attributes: {
+                  'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                  'data-id': 'staffNeedingMedicalAttention[%index%][name]'
+                }
+                })
+              }}
+  
+              
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                  {{ govukRadios({
                     classes: "govuk-radios--inline",
-                    name: 'staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]',
+                    name: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
                     fieldset: {
                       legend: {
                         text: "Did they go to hospital?"
                       }
                     },
-                    errorMessage:  errors | findError('staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]'),
+                    errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][hospitalisation]'),
 
                     items: [
                       {
                         value: true,
                         text: "Yes",
                         checked: staffMember.hospitalisation === true,
-                        id: 'staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]',
+                        id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
                         errorMessage: errorMsgHosp,
                         attributes: {
                           'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
@@ -205,75 +205,34 @@
                         text: "No",
                         checked: staffMember.hospitalisation === false,
                         'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        id: 'staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]-no',
-                        errorMessage: errors | findError("staffNeedingMedicalAttention[' + loop.index0 + '][hospitalisation]"),
+                        id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]-no',
+                        errorMessage: errors | findError("staffNeedingMedicalAttention[' + index + '][hospitalisation]"),
                         attributes: {
                           'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
                           'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-no'
                         }
-                      }
-                    ]
-                  }) }}
-
-            {% if loop.length != 0 %}
-            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-              Remove
-            </button>
-            {% endif  %}
-
-            {% endcall %}
-            {% else %}
-            {% call govukFieldset({ classes: 'add-another__item' }) %}
-            {{
-                    govukInput({
-                      label: {
-                        html: 'Name of who needed medical attention'
-                      },
-                      id: 'staffNeedingMedicalAttention[0][name]',
-                      name: 'staffNeedingMedicalAttention[0][name]',
-                      errorMessage:  errors | findError('staffNeedingMedicalAttention[0][name]'),
-                      attributes: {
-                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        'data-id': 'staffNeedingMedicalAttention[%index%][name]'
-                      }
+                      }]
                     })
                   }}
-            {{ govukRadios({
-                    classes: "govuk-radios--inline",
-                    name: 'staffNeedingMedicalAttention[0][hospitalisation]',
-                    fieldset: {
-                      legend: {
-                        text: "Did they go to hospital?"
-                      }
-                    },
-                    errorMessage:  errors | findError('staffNeedingMedicalAttention[0][hospitalisation]'),
-                    items: [
-                      {
-                        value: true,
-                        text: "Yes",
-                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        id: 'staffNeedingMedicalAttention[0][hospitalisation]',
-                        attributes: {
-                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
-                          'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-yes'
-                        }
-                      },
-                      {
-                        value: false,
-                        text: "No",
-                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        id: 'staffNeedingMedicalAttention[0][hospitalisation]-no',
-                        errorMessage: errors | findError("staffNeedingMedicalAttention[0][hospitalisation]"),
-                        attributes: {
-                          'data-name': 'staffNeedingMedicalAttention[%index%][[hospitalisation]',
-                          'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-no'
-                        }
-                      }
-                    ]
-                  }) }}
-
+                </div>
+                <div class="govuk-grid-column-one-half">
+                  <div class="govuk-!-margin-top-6 float-right remove-button-container">
+                  {% if showRemove %}
+                    <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button ">
+                    Remove
+                    </button>
+                  {% endif  %}
+                  </div>
+                </div>
+              </div>
             {% endcall %}
-            {% endfor %}
+          {% endmacro %}
+
+          {%  for staffMember in  data.staffNeedingMedicalAttention %}
+            {{ addStaffNeedingMedicalAttentiob(index = loop.index0, staffMember = staffMember, showRemove = loop.length != 1) }}
+          {% else %}
+            {{ addStaffNeedingMedicalAttentiob(index = 0, staffMember = null, showRemove = false) }}
+          {% endfor %}
             <div class="button-action">
               {{
                   govukButton({
@@ -296,7 +255,7 @@
 <script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
-  new AddAnother($('.add-another-staff-needing-medical-attention'))
+  new AddAnother($('.add-another-staff-needing-medical-attention'), '.remove-button-container')
 </script>
 
 

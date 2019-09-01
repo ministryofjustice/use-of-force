@@ -3,8 +3,9 @@
  */
 var AddAnother = {}
 
-AddAnother = function(container) {
+AddAnother = function(container, removeContainerSelector) {
   this.container = $(container)
+  this.removeContainerSelector = removeContainerSelector
   this.container.on('click', '.add-another__remove-button', $.proxy(this, 'onRemoveButtonClick'))
   this.container.on('click', '.add-another__add-button', $.proxy(this, 'onAddButtonClick'))
   this.container.find('.add-another__add-button, add-another__remove-button').prop('type', 'button')
@@ -58,9 +59,11 @@ AddAnother.prototype.updateAttributes = function(index, item) {
 }
 
 AddAnother.prototype.createRemoveButton = function(item) {
-  item.append(
-    '<button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">Remove</button>'
-  )
+  item
+    .find(this.removeContainerSelector)
+    .append(
+      '<button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">Remove</button>'
+    )
 }
 
 AddAnother.prototype.resetItem = function(item) {

@@ -25,7 +25,9 @@ export default () =>
       cy.get('[name="bodyWornCameraNumbers[1][cameraNum]"]').type('456')
       cy.get('[data-qa-add-another-camera = true]').click()
       cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('789')
-      cy.get('.add-another-camera > :nth-child(2) > .govuk-button').click()
+      cy.get('.add-another-camera .add-another__remove-button')
+        .eq(1)
+        .click()
       cy.get('[data-qa-add-another-camera = true]').click()
       cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('456')
     },
