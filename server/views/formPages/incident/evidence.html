@@ -49,86 +49,57 @@
 
               <!-- add another starts here -->
 
-              <div class="add-another-tag">
-                {% for evidenceTagAndDescription in data.evidenceTagAndDescription %}
-
+              <div class="add-another-evidence">
+                {% macro addEvidence(index, evidenceTagAndDescription, showRemove) %}
                   {% call govukFieldset({ classes: 'add-another__item' }) %}
-                  {{
-                    govukInput({
+                    {{
+                      govukInput({
+                        label: {
+                          html: 'Tag number'
+                        },
+                        classes: 'govuk-!-width-one-third',
+                        id: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
+                        name: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
+                        value: evidenceTagAndDescription.evidenceTagReference,
+                        errorMessage: errors | findError('evidenceTagAndDescription[' + index + '][evidenceTagReference]'),
+                        attributes: {
+                          'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
+                          'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
+                        }
+                      })
+                    }}
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+                      
+                    {{ govukTextarea({
+                      name: 'evidenceTagAndDescription[' + index + '][description]',
+                      id: 'evidenceTagAndDescription[' + index + '][description]',
+                      value: evidenceTagAndDescription.description,
+                      errorMessage: errors | findError('evidenceTagAndDescription[' + index + '][description]'),
                       label: {
-                        html: 'Tag number'
+                        text: "Description of evidence"
                       },
-                      classes: 'govuk-!-width-one-third',
-                      id: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
-                      name: 'evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]',
-                      value: evidenceTagAndDescription.evidenceTagReference,
-                      errorMessage: errors | findError('evidenceTagAndDescription[' + loop.index0 + '][evidenceTagReference]'),
-                      attributes: {
-                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
-                        'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
+                      attributes:{
+                        'data-id': 'evidenceTagAndDescription[%index%][description]',
+                        'data-name': 'evidenceTagAndDescription[%index%][description]'
                       }
-                    })
-                  }}
-
-                  {{ govukTextarea({
-                    name: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
-                    id: 'evidenceTagAndDescription[' + loop.index0 + '][description]',
-                    classes: 'govuk-!-width-two-thirds',
-                    value: evidenceTagAndDescription.description,
-                    errorMessage: errors | findError('evidenceTagAndDescription[' + loop.index0 + '][description]'),
-
-                    label: {
-                      text: "Description of evidence"
-                    },
-                    attributes:{
-                      'data-id': 'evidenceTagAndDescription[%index%][description]',
-                      'data-name': 'evidenceTagAndDescription[%index%][description]'
-                    }
-                  }) }}
-
-                  {% if loop.length != 1 %}
-                    <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-                      Remove
-                    </button>
-                  {% endif %}
-
+                    }) }}
+                    </div>
+                    <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6"></div>  
+                    {% if showRemove %}
+                      <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                        Remove
+                      </button>
+                    {% endif %}
+                  </div>
                   {% endcall %}
+                {% endmacro %}
+
+                {% for item in data.evidenceTagAndDescription %}
+                  {{ addEvidence(index = loop.index0, evidenceTagAndDescription = item, showRemove = loop.length != 1) }}
                 {% else %}
-                  {% call govukFieldset({ classes: 'add-another__item' }) %}
-
-                  {{
-                    govukInput({
-                      label: {
-                        html: 'Tag number'
-                      },
-                      classes: 'govuk-!-width-one-third',
-                      id: 'evidenceTagAndDescription[0][evidenceTagReference]',
-                      name: 'evidenceTagAndDescription[0][evidenceTagReference]',
-                      errorMessage: errors | findError('evidenceTagAndDescription[0][evidenceTagReference]'),
-                      attributes: {
-                        'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
-                        'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
-                      }
-                    })
-                  }}
-                  {{ govukTextarea({
-                    id: 'evidenceTagAndDescription[0][description]',
-                    name: 'evidenceTagAndDescription[0][description]',
-                    classes: "govuk-!-width-two-thirds",
-                    value: data.evidenceTagAndDescription[0].description,
-                    errorMessage: errors | findError('evidenceTagAndDescription[0][description]'),
-
-                    label: {
-                      text: "Description of evidence"
-                    },
-                    attributes: {
-                      'data-id': 'evidenceTagAndDescription[%index%][description]',
-                      'data-name': 'evidenceTagAndDescription[%index%][description]'
-                    }
-                  }) }}
-
-                  {% endcall %}
-                {% endfor %}
+                  {{ addEvidence(index = 0, evidenceTagAndDescription = null, showRemove = false) }}
+                {% endfor %}  
                 <div class="button-action">
                   {{
                   govukButton({
@@ -244,55 +215,42 @@
               <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="body-worn-camera-conditional">
 
                 <!-- add another starts here -->
-
                 <div class="add-another-camera" id="bodyWornCameraNumbers">
+                  {% macro addCameraNumber(index, value, showRemove) %}
+                    {% call govukFieldset({ classes: 'add-another__item' }) %}
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-one-third">
+                        {{
+                        govukInput({
+                          label: {
+                            html: 'Camera number'
+                          },
+                          id: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
+                          name: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
+                          value: value,
+                          errorMessage: errors | findError('bodyWornCameraNumbers[' + index + '][cameraNum]'),
+                          attributes: {
+                            'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+                            'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
+                          }
+                          })
+                        }}
+                        </div>
+                        <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+                          {% if showRemove %}
+                            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                            Remove
+                            </button>
+                          {% endif  %}
+                        </div>
+                    </div>  
+                    {% endcall %}
+                  {% endmacro%}
+
                   {% for camera in data.bodyWornCameraNumbers %}
-
-                    {% call govukFieldset({ classes: 'add-another__item' }) %}
-                    {{
-                      govukInput({
-                        label: {
-                          html: 'Camera number'
-                        },
-                        classes: 'govuk-!-width-one-third',
-                        id: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
-                        name: 'bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]',
-                        value: camera.cameraNum,
-                        errorMessage: errors | findError('bodyWornCameraNumbers[' + loop.index0 + '][cameraNum]'),
-                        attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
-                        }
-                      })
-                    }}
-
-                    {% if loop.length != 1 %}
-                      <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-                        Remove
-                      </button>
-                    {% endif %}
-
-                    {% endcall %}
+                    {{ addCameraNumber(index = loop.index0, value = camera.cameraNum, showRemove = loop.length != 1) }}
                   {% else %}
-                    {% call govukFieldset({ classes: 'add-another__item' }) %}
-
-                    {{
-                      govukInput({
-                        label: {
-                          html: 'Camera number'
-                        },
-                        classes: 'govuk-!-width-one-third',
-                        id: 'bodyWornCameraNumbers[0][cameraNum]',
-                        name: 'bodyWornCameraNumbers[0][cameraNum]',
-                        errorMessage:errors | findError('bodyWornCameraNumbers[0][cameraNum]'),
-                        attributes: {
-                          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
-                          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
-                        }
-                      })
-                    }}
-
-                    {% endcall %}
+                    {{ addCameraNumber(index = 0, value = null, showRemove = false) }}
                   {% endfor %}
                   <div class="button-action">
                     {{
@@ -335,7 +293,7 @@
   <script src="/assets/js/jquery.min.js"></script>
   <script src="/assets/add-another.js"></script>
   <script>
-    new AddAnother($('.add-another-tag'))
-    new AddAnother($('.add-another-camera'))
+    new AddAnother($('.add-another-evidence'), '.remove-button-container')
+    new AddAnother($('.add-another-camera'), '.remove-button-container')
   </script>
 {% endblock %}
