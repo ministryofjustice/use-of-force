@@ -41,8 +41,15 @@ module.exports = function createReportService({ incidentClient, elite2ClientBuil
     return id
   }
 
+  async function isDraftComplete(username, bookingId) {
+    const { form_response: formData = {} } = await getCurrentDraft(username, bookingId)
+    const { complete } = getReportStatus(formData)
+    return complete
+  }
+
   return {
     getCurrentDraft,
+    isDraftComplete,
     update,
     submit,
     getReportStatus,

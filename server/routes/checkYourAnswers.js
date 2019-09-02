@@ -162,11 +162,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
     submit: async (req, res) => {
       const { bookingId } = req.params
 
-      const { form_response: formData = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
-
-      const { complete } = reportService.getReportStatus(formData)
-
-      if (!complete) {
+      if (!reportService.isDraftComplete(req.user.username, bookingId)) {
         throw new Error('Report is not complete')
       }
 

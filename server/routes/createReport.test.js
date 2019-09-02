@@ -9,6 +9,7 @@ const reportService = {
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   getUpdatedFormObject: jest.fn(),
+  isDraftComplete: jest.fn(),
 }
 
 const offenderService = {
@@ -129,6 +130,7 @@ describe('POST save and return to tasklist', () => {
           },
         })
       }))
+
   test('Submitting invalid update is allowed', () =>
     request(app)
       .post(`/report/1/incident-details`)
@@ -155,4 +157,50 @@ describe('POST save and return to tasklist', () => {
           },
         })
       }))
+})
+
+describe('Submitting evidence page', () => {
+  test.each`
+    submitType             | formComplete | nextPath
+    ${'save-and-return'}   | ${true}      | ${'/report/1/report-use-of-force'}
+    ${'save-and-return'}   | ${false}     | ${'/report/1/report-use-of-force'}
+    ${'save-and-continue'} | ${true}      | ${'/report/1/check-your-answers'}
+    ${'save-and-continue'} | ${false}     | ${'/report/1/report-use-of-force'}
+  `(
+    'should redirect to $nextPath for when submit type is $submitType and form is complete: $formComplete',
+    ({ submitType, formComplete, nextPath }) => {
+      reportService.isDraftComplete.mockReturnValue(formComplete)
+      return request(app)
+        .post(`/report/1/evidence`)
+        .send({
+          submit: submitType,
+          baggedEvidence: 'true',
+          bodyWornCamera: 'YES',
+          bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
+          cctvRecording: 'YES',
+          evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+          photographsTaken: 'true',
+        })
+        .expect(302)
+        .expect('Location', nextPath)
+        .expect(() => {
+          expect(reportService.update).toBeCalledTimes(1)
+          expect(reportService.update).toBeCalledWith({
+            currentUser: user,
+            bookingId: 1,
+            formId: undefined,
+            formObject: {
+              evidence: {
+                baggedEvidence: true,
+                bodyWornCamera: 'YES',
+                bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
+                cctvRecording: 'YES',
+                evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+                photographsTaken: true,
+              },
+            },
+          })
+        })
+    }
+  )
 })
