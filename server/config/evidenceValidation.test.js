@@ -125,8 +125,8 @@ describe('Evidence', () => {
       cctvRecording: 'YES',
       evidenceTagAndDescription: [
         { description: 'A Description', evidenceTagReference: '12345' },
-        { description: 'A Description', evidenceTagReference: '' },
-        { description: '', evidenceTagReference: '12345' },
+        { description: 'A Description' },
+        { evidenceTagReference: '12345' },
       ],
       photographsTaken: true,
     })
@@ -179,7 +179,7 @@ describe('Evidence', () => {
       bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
       cctvRecording: 'YES',
       photographsTaken: true,
-      evidenceTagAndDescription: [{ description: '    ', evidenceTagReference: 'ref-1' }],
+      evidenceTagAndDescription: [{ description: '', evidenceTagReference: 'ref-1' }],
     })
   })
 
@@ -278,6 +278,26 @@ describe('Body Worn Cameras', () => {
       baggedEvidence: true,
       bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: 'AAA' }],
+      cctvRecording: 'YES',
+      evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+      photographsTaken: true,
+    })
+  })
+
+  it('Conditional field selected: Yes, unknown fields are ignored, known fields are trimmed', () => {
+    const input = {
+      ...validInput,
+      bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: '    AAA  ', age: '29' }, { cameraNum: '' }, { cameraNum: 'BBB' }],
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: 'BBB' }],
       cctvRecording: 'YES',
       evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
       photographsTaken: true,
