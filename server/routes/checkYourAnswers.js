@@ -21,7 +21,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       ],
       witnesses: incidentDetails.witnesses
         ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])
-        : [],
+        : 'None',
       incidentDate,
     }
   }
@@ -119,11 +119,20 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
     view: async (req, res) => {
       const errors = req.flash('errors')
       const { bookingId } = req.params
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+
       const { id, form_response: formData = {}, incident_date: incidentDate } = await reportService.getCurrentDraft(
         req.user.username,
         bookingId
       )
+
+      const { complete } = reportService.getReportStatus(formData)
+
+      if (!complete) {
+        // User should not be on this page if form is not complete.
+        return res.redirect(`/`)
+      }
+
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, parseInt(bookingId, 10))
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
@@ -147,11 +156,20 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         evidence: createEvidenceObj(formData.evidence),
       }
 
-      res.render('pages/check-your-answers', { data, bookingId, errors })
+      return res.render('pages/check-your-answers', { data, bookingId, errors })
     },
 
     submit: async (req, res) => {
       const { bookingId } = req.params
+
+      const { form_response: formData = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
+
+      const { complete } = reportService.getReportStatus(formData)
+
+      if (!complete) {
+        throw new Error('Report is not complete')
+      }
+
       const reportId = await reportService.submit(res.locals.user, bookingId)
       const location = reportId ? `/${reportId}/report-sent` : `/`
       return res.redirect(location)

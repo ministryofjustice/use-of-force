@@ -88,8 +88,6 @@ context('Submit the incident report', () => {
 
     cy.go('back')
 
-    checkAnswersPage.clickSubmit()
-
     IncidentsPage.verifyOnPage()
   })
 })
