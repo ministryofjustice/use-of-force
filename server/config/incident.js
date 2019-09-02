@@ -3,7 +3,10 @@ const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 const { validate, isValid } = require('../utils/fieldValidation')
 
-const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs))
+const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs))
+
+const withoutKeysNotIn = attrs => value =>
+  attrs.reduce((previous, attr) => (value[attr] ? { ...previous, [attr]: value[attr].trim() } : previous), {})
 
 const hasAtLeastOneOf = attrs => input => attrs.find(attr => !isBlank(input[attr]))
 
@@ -17,6 +20,8 @@ const toBoolean = val => {
       return null
   }
 }
+
+const trimmedString = val => (val ? val.trim() : null)
 
 const toInteger = val => {
   const number = parseInt(val, 10)
@@ -59,8 +64,7 @@ module.exports = {
         involvedStaff: {
           responseType: 'optionalInvolvedStaff',
           validationMessage: 'Enter the name of the staff member involved in the use of force incident',
-          sanitiser: values =>
-            removeEmptyValues(['username'])(values).map(({ username }) => ({ username: username.trim() })),
+          sanitiser: removeEmptyValues(['username']),
           firstFieldName: 'involvedStaff[0][username]',
         },
       },
@@ -186,40 +190,43 @@ module.exports = {
       {
         prisonerRelocation: {
           responseType: 'requiredString',
+          sanitiser: trimmedString,
           validationMessage: 'Select where the prisoner was relocated to',
         },
       },
       {
         relocationCompliancy: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Select yes if the prisoner was compliant',
           sanitiser: toBoolean,
+          validationMessage: 'Select yes if the prisoner was compliant',
         },
       },
       {
         f213CompletedBy: {
           responseType: 'requiredString',
+          sanitiser: trimmedString,
           validationMessage: 'Enter the name of who completed the F213 form',
         },
       },
       {
         prisonerInjuries: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Select yes if the prisoner sustained any injuries',
           sanitiser: toBoolean,
+          validationMessage: 'Select yes if the prisoner sustained any injuries',
         },
       },
       {
         healthcareInvolved: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Select yes if a member of healthcare was present during the incident',
           sanitiser: toBoolean,
+          validationMessage: 'Select yes if a member of healthcare was present during the incident',
         },
       },
       {
         healthcarePractionerName: {
           responseType: 'requiredMemberOfHealthcare',
           validationMessage: 'Enter the name of the member of healthcare',
+          sanitiser: trimmedString,
           dependentOn: 'healthcareInvolved',
           predicate: 'true',
         },
@@ -227,15 +234,15 @@ module.exports = {
       {
         prisonerHospitalisation: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Select yes if the prisoner needed outside hospitalisation',
           sanitiser: toBoolean,
+          validationMessage: 'Select yes if the prisoner needed outside hospitalisation',
         },
       },
       {
         staffMedicalAttention: {
           responseType: 'requiredBoolean',
-          validationMessage: 'Select yes if a staff member needed medical attention',
           sanitiser: toBoolean,
+          validationMessage: 'Select yes if a staff member needed medical attention',
         },
       },
       {
