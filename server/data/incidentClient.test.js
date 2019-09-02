@@ -125,6 +125,15 @@ test('getAdditionalComments', () => {
   })
 })
 
+test('saveAdditionalComment', () => {
+  incidentClient.saveAdditionalComment(50, 'Another comment made')
+  expect(db.query).toBeCalledWith({
+    text: `insert into statement_amendments (statement_id, additional_comment)
+            values ($1, $2)`,
+    values: [50, 'Another comment made'],
+  })
+})
+
 test('getInvolvedStaff', async () => {
   const expected = [
     {

@@ -71,7 +71,12 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
         </p>
       </div>
     </div>
-  {{comment.additionalComment}}<hr/>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-loop={{loop.index}} data-qa="viewAdditionalComment">{{comment.additionalComment}}</p>
+      </div>
+    </div>
+  <hr/>
   {% endfor %}
 
   <form method="POST">
@@ -80,10 +85,11 @@ govukCheckboxes %} {% from "govuk/components/error-summary/macro.njk" import gov
       <div class="govuk-grid-column-two-thirds">
         {{
           govukTextarea({
-            id: 'additionalContent',
-            name: 'additionalContent',
+            id: 'additionalComment',
+            name: 'additionalComment',
             rows: 15,
             cols: 200,
+            attributes: { 'data-qa': 'additionalComment' },
             label: {
               text: 'Additional comments',
               classes: 'govuk-label--m govuk-!-margin-top-4'
