@@ -31,6 +31,14 @@ module.exports = {
     const ns = getNamespace('request.scope')
     return ns.get('transactionalClient').query(text, params)
   },
+
+  commitAndStartNewTransaction: async () => {
+    const ns = getNamespace('request.scope')
+    const client = ns.get('transactionalClient')
+    await client.query('COMMIT')
+    await client.query('BEGIN')
+  },
+
   inTransaction: async callback => {
     const client = await pool.connect()
     const ns = getNamespace('request.scope')

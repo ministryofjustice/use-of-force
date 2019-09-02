@@ -176,10 +176,10 @@ jobs:
 
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               # publish to docker hub as the tag
-             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-             docker tag mojdigitalstudio/use-of-force:$APP_VERSION mojdigitalstudio/use-of-force:latest
-             docker push mojdigitalstudio/use-of-force:$APP_VERSION
-             docker push mojdigitalstudio/use-of-force:latest
+              docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+              docker tag mojdigitalstudio/use-of-force:$APP_VERSION mojdigitalstudio/use-of-force:latest
+              docker push mojdigitalstudio/use-of-force:$APP_VERSION
+              docker push mojdigitalstudio/use-of-force:latest
             fi
   deploy_dev:
     executor: deployer

@@ -154,6 +154,7 @@ const createStatements = async (reportId, staff) => {
 }
 
 module.exports = {
+  commitAndStartNewTransaction: db.commitAndStartNewTransaction,
   createDraftReport,
   updateDraftReport,
   submitReport,

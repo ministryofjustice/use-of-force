@@ -22,7 +22,12 @@ const userService = createUserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = createInvolvedStaffService({ incidentClient, userService })
 const notificationService = notificationServiceFactory()
 const offenderService = createOffenderService(elite2ClientBuilder)
-const reportService = createReportService({ elite2ClientBuilder, incidentClient, involvedStaffService })
+const reportService = createReportService({
+  elite2ClientBuilder,
+  incidentClient,
+  involvedStaffService,
+  notificationService,
+})
 const statementService = createStatementService({ incidentClient })
 
 const app = createApp({

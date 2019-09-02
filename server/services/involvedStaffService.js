@@ -71,6 +71,7 @@ module.exports = function createReportService({ incidentClient, userService }) {
     }))
 
     await incidentClient.createStatements(reportId, staff)
+    return staff
   }
 
   const getAdditionalErrors = (missing, notVerified) => {
