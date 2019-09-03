@@ -157,4 +157,26 @@ context('Submit statement', () => {
     viewStatementPage.lastTraining().should('contain', 'March 2010')
     viewStatementPage.jobStartYear().should('contain', '1999')
   })
+
+  it('Can exit to page showing list of all incidents, after completing report but before creating statement', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    const newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.fillForm()
+    const detailsPage = newIncidentPage.save()
+    detailsPage.fillForm()
+    const relocationAndInjuriesPage = detailsPage.save()
+    relocationAndInjuriesPage.fillForm()
+    const evidencePage = relocationAndInjuriesPage.save()
+    evidencePage.fillForm()
+    const checkAnswersPage = evidencePage.save()
+    checkAnswersPage.clickSubmit()
+
+    SubmittedPage.verifyOnPage()
+      .exit()
+      .click()
+
+    IncidentsPage.verifyOnPage()
+  })
 })
