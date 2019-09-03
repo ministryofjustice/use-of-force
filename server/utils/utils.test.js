@@ -1,4 +1,4 @@
-const { properCaseName, properCaseFullName, formatDate } = require('./utils')
+const { properCaseName, properCaseFullName } = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -44,14 +44,5 @@ describe('properCaseFullName', () => {
     expect(properCaseFullName('JAMES robert MONTGOMERY-FOSTER-SMYTH-WALLACE-BOB')).toEqual(
       'James Robert Montgomery-Foster-Smyth-Wallace-Bob'
     )
-  })
-})
-
-describe('formatDate', () => {
-  it('null string', () => {
-    expect(formatDate(null)).toEqual('')
-  })
-  it('correct date', () => {
-    expect(formatDate('2010-12-30')).toEqual('30/12/2010')
   })
 })

@@ -1,24 +1,19 @@
 const R = require('ramda')
-const moment = require('moment')
 
-const isNilOrEmpty = item => {
-  return R.isEmpty(item) || R.isNil(item)
-}
+const isNilOrEmpty = item => R.isEmpty(item) || R.isNil(item)
 
-const getFieldDetail = (fieldPath, fieldConfig) => {
-  return R.pipe(
+const getFieldDetail = (fieldPath, fieldConfig) =>
+  R.pipe(
     R.values,
     R.head,
     R.path(fieldPath)
   )(fieldConfig)
-}
 
-const getFieldName = fieldConfig => {
-  return R.pipe(
+const getFieldName = fieldConfig =>
+  R.pipe(
     R.keys,
     R.head
   )(fieldConfig)
-}
 
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -48,12 +43,7 @@ const properCaseFullName = name =>
         .map(properCaseName)
         .join(' ')
 
-const formatDate = val => (isBlank(val) ? '' : moment(val, 'YYYY-MM-DD').format('DD/MM/YYYY'))
-const formatTimestampToDateTime = val => moment(val).format('DD/MM/YYYY - HH:mm')
-
 module.exports = {
-  formatDate,
-  formatTimestampToDateTime,
   isNilOrEmpty,
   getFieldDetail,
   getFieldName,
@@ -63,6 +53,5 @@ module.exports = {
   equals: R.equals,
   firstItem: R.head,
   mergeWithRight: R.mergeDeepRight,
-  pickBy: R.pickBy,
   isBlank,
 }

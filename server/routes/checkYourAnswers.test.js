@@ -5,8 +5,9 @@ const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const reportService = {
   getCurrentDraft: jest.fn(),
-  getReportStatus: jest.fn(),
+  isDraftComplete: jest.fn(),
   submit: jest.fn(),
+  getReportStatus: jest.fn(),
 }
 
 const offenderService = {
@@ -51,7 +52,7 @@ describe('GET /check-your-answers', () => {
 
 describe('POST /check-your-answers', () => {
   it('Allow submit if report is complete', async () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.isDraftComplete.mockReturnValue(true)
     reportService.submit.mockReturnValue(2)
 
     await request(app)
@@ -62,7 +63,7 @@ describe('POST /check-your-answers', () => {
   })
 
   it('An error is throw if the report is not complete', async () => {
-    reportService.getReportStatus.mockReturnValue({ complete: false })
+    reportService.isDraftComplete.mockReturnValue(false)
 
     await request(app)
       .post('/report/-35/check-your-answers')

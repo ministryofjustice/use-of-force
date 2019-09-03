@@ -40,6 +40,15 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     return { additionalFields: [], additionalErrors: [] }
   }
 
+  const getSubmitRedirectLocation = async (username, payloadFields, form, bookingId, saveAndContinue) => {
+    if (form === 'evidence' && !(await reportService.isDraftComplete(username, bookingId))) {
+      return `/report/${bookingId}/report-use-of-force`
+    }
+    const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
+    const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
+    return location
+  }
+
   return {
     viewIncidentDetails: async (req, res) => {
       const { bookingId } = req.params
@@ -108,8 +117,13 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         })
       }
 
-      const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
-      const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
+      const location = await getSubmitRedirectLocation(
+        req.user.username,
+        payloadFields,
+        form,
+        bookingId,
+        saveAndContinue
+      )
       return res.redirect(location)
     },
   }
