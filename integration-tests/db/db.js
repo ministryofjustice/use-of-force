@@ -27,10 +27,10 @@ module.exports = {
   },
 
   getCurrentDraft({ bookingId, formName }) {
-    return getCurrentDraft(bookingId).then(form => ({
-      id: form.id,
-      incidentDate: form.incident_date,
-      payload: { ...form.form_response[formName] },
+    return getCurrentDraft(bookingId).then(report => ({
+      id: report.id,
+      incidentDate: report.incidentDate,
+      payload: { ...report.form[formName] },
     }))
   },
 

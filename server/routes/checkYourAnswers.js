@@ -120,12 +120,9 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       const errors = req.flash('errors')
       const { bookingId } = req.params
 
-      const { id, form_response: formData = {}, incident_date: incidentDate } = await reportService.getCurrentDraft(
-        req.user.username,
-        bookingId
-      )
+      const { id, form = {}, incidentDate } = await reportService.getCurrentDraft(req.user.username, bookingId)
 
-      const { complete } = reportService.getReportStatus(formData)
+      const { complete } = reportService.getReportStatus(form)
 
       if (!complete) {
         // User should not be on this page if form is not complete.
@@ -136,7 +133,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
 
       const { description = '' } = await offenderService.getLocation(
         res.locals.user.token,
-        formData.incidentDetails && formData.incidentDetails.locationId
+        form.incidentDetails && form.incidentDetails.locationId
       )
 
       const involvedStaff = id ? await involvedStaffService.get(id) : []
@@ -146,14 +143,14 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
           res.locals.user,
           offenderDetail,
           description,
-          formData.incidentDetails,
+          form.incidentDetails,
           involvedStaff,
           incidentDate
         ),
         offenderDetail,
-        useOfForceDetails: createUseOfForceDetailsObj(formData.useOfForceDetails),
-        relocationAndInjuries: createRelocationObj(formData.relocationAndInjuries),
-        evidence: createEvidenceObj(formData.evidence),
+        useOfForceDetails: createUseOfForceDetailsObj(form.useOfForceDetails),
+        relocationAndInjuries: createRelocationObj(form.relocationAndInjuries),
+        evidence: createEvidenceObj(form.evidence),
       }
 
       return res.render('pages/check-your-answers', { data, bookingId, errors })

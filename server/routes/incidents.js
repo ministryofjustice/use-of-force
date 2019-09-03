@@ -10,15 +10,15 @@ const formConfig = {
 
 module.exports = function CreateReportRoutes({ statementService, offenderService }) {
   const getOffenderNames = (token, incidents) => {
-    const offenderNos = incidents.map(incident => incident.offender_no)
+    const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
   }
 
   const toStatement = namesByOffenderNumber => incident => ({
     id: incident.id,
-    incidentdate: incident.incident_date,
-    staffMemberName: incident.reporter_name,
-    offenderName: namesByOffenderNumber[incident.offender_no],
+    incidentdate: incident.incidentDate,
+    staffMemberName: incident.reporterName,
+    offenderName: namesByOffenderNumber[incident.offenderNo],
   })
 
   return {

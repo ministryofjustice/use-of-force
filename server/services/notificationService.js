@@ -70,7 +70,7 @@ module.exports = {
       sendEmail: args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
     }
 
-    const notifyClient = config.email.enabled ? new NotifyClient(config.email.notifyKey) : stubClient
+    const notifyClient = config.email.enabled === true ? new NotifyClient(config.email.notifyKey) : stubClient
     return createNotificationService(notifyClient)
   },
 }
