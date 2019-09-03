@@ -13,8 +13,8 @@ module.exports = function createReportService({
   }
 
   async function isDraftComplete(username, bookingId) {
-    const { form_response: formData = {} } = await getCurrentDraft(username, bookingId)
-    const { complete } = getReportStatus(formData)
+    const { form = {} } = await getCurrentDraft(username, bookingId)
+    const { complete } = getReportStatus(form)
     return complete
   }
 
@@ -42,8 +42,8 @@ module.exports = function createReportService({
   }
 
   const requestStatements = (currentUser, incidentDate, staffMembers) => {
-    const staffExcludingCurrentUser = staffMembers.filter(staff => staff.username !== currentUser.username)
-    return staffExcludingCurrentUser.map(staff =>
+    const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
+    return staffExcludingReporter.map(staff =>
       notificationService.sendStatementRequest(staff.email, {
         involvedName: staff.name,
         reporterName: currentUser.displayName,
@@ -53,7 +53,7 @@ module.exports = function createReportService({
   }
 
   async function submit(currentUser, bookingId) {
-    const { id, incident_date: incidentDate } = await getCurrentDraft(currentUser.username, bookingId)
+    const { id, incidentDate } = await getCurrentDraft(currentUser.username, bookingId)
     if (id) {
       const staff = await involvedStaffService.save(id, currentUser)
       logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)

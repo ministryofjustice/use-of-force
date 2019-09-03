@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
-    "start-feature": "PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5433 NODE_ENV=development node $NODE_DEBUG_OPTION server.js | bunyan -o short",
-    "start-feature:dev": "PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5433 NODE_ENV=development nodemon $NODE_DEBUG_OPTION server.js | bunyan -o short",
+    "start-feature": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5433 NODE_ENV=development node $NODE_DEBUG_OPTION server.js | bunyan -o short",
+    "start-feature:dev": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5433 NODE_ENV=development nodemon $NODE_DEBUG_OPTION server.js | bunyan -o short",
     "build": "npm run css-build",
     "css-build": "./bin/build-css",
     "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",

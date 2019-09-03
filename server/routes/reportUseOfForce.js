@@ -6,7 +6,7 @@ module.exports = function ReportUseOfForceRoutes({ reportService, offenderServic
         res.locals.user.token,
         bookingId
       )
-      const { form_response: form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
+      const { form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
       const status = reportService.getReportStatus(form)
       res.render('pages/report-use-of-force', {
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },

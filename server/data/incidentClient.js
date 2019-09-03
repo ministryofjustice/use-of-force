@@ -36,7 +36,7 @@ const submitReport = (userId, bookingId) => {
 
 const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
   const results = await query({
-    text: `select id, incident_date, form_response from report r
+    text: `select id, incident_date "incidentDate", form_response "form" from report r
           where user_id = $1
           and booking_id = $2
           and status = $3
@@ -48,7 +48,11 @@ const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
 
 const getStatementsForUser = (userId, status, query = db.query) => {
   return query({
-    text: `select r.id, r.booking_id, r.reporter_name, r.offender_no, r.incident_date, s."name"
+    text: `select r.id
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            , s."name"
             from statement s 
             inner join report r on s.report_id = r.id   
           where r.status = $1 
@@ -80,7 +84,7 @@ const getAdditionalComments = async statementId => {
   const results = await db.query({
     text: `select  
     s.additional_comment "additionalComment",
-    s.date_submitted   "dateSubmitted" 
+    s.date_submitted     "dateSubmitted" 
     from statement_amendments s
     where s.statement_id = $1`,
     values: [statementId],
@@ -139,12 +143,12 @@ const submitStatement = (userId, reportId, query = db.query) => {
 
 const getInvolvedStaff = async (reportId, query = db.query) => {
   const results = await query({
-    text: 'select form_response from report where id = $1',
+    text: 'select form_response "form" from report where id = $1',
     values: [reportId],
   })
 
   if (results.rows.length) {
-    const { form_response: { incidentDetails: { involvedStaff = [] } = {} } = {} } = results.rows[0]
+    const { form: { incidentDetails: { involvedStaff = [] } = {} } = {} } = results.rows[0]
     return involvedStaff
   }
   return []

@@ -9,14 +9,14 @@ const formConfig = {
   ...incidentConfig,
 }
 
-const renderForm = ({ req, res, formObject, form, data = {} }) => {
+const renderForm = ({ req, res, form, formName, data = {} }) => {
   const backLink = req.get('Referrer')
   const { bookingId } = req.params
-  const pageData = firstItem(req.flash('userInput')) || formObject[form]
+  const pageData = firstItem(req.flash('userInput')) || form[formName]
   const errors = req.flash('errors')
-  res.render(`formPages/incident/${form}`, {
+  res.render(`formPages/incident/${formName}`, {
     data: { bookingId, ...pageData, ...data, types },
-    formName: form,
+    formName,
     backLink,
     errors,
   })
@@ -25,12 +25,8 @@ const renderForm = ({ req, res, formObject, form, data = {} }) => {
 module.exports = function NewIncidentRoutes({ reportService, offenderService, involvedStaffService }) {
   const loadForm = async req => {
     const { bookingId } = req.params
-    const {
-      id: formId,
-      incident_date: incidentDate,
-      form_response: formObject = {},
-    } = await reportService.getCurrentDraft(req.user.username, bookingId)
-    return { formId, incidentDate, formObject }
+    const { id: formId, incidentDate, form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
+    return { formId, incidentDate, form }
   }
 
   const getAdditonalData = async (res, form, { involvedStaff = [] }) => {
@@ -55,7 +51,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
       const { displayName, offenderNo, locations } = offenderDetail
 
-      const { formId, formObject, incidentDate } = await loadForm(req)
+      const { formId, form, incidentDate } = await loadForm(req)
       const date = incidentDate ? moment(incidentDate) : moment()
 
       const input = firstItem(req.flash('userInput'))
@@ -71,24 +67,24 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         involvedStaff,
       }
 
-      renderForm({ req, res, formObject, data, form: 'incidentDetails' })
+      renderForm({ req, res, form, data, formName: 'incidentDetails' })
     },
 
-    view: form => async (req, res) => {
-      const { formObject } = await loadForm(req)
-      renderForm({ req, res, formObject, form })
+    view: formName => async (req, res) => {
+      const { form } = await loadForm(req)
+      renderForm({ req, res, form, formName })
     },
 
-    submit: form => async (req, res) => {
+    submit: formName => async (req, res) => {
       const { bookingId } = req.params
       const saveAndContinue = req.body.submit === 'save-and-continue'
 
-      const { fields, validate: validationEnabled } = formConfig[form]
+      const { fields, validate: validationEnabled } = formConfig[formName]
       const validate = validationEnabled && saveAndContinue
 
       const { payloadFields, extractedFields, errors } = formProcessing.processInput({ validate, fields }, req.body)
 
-      const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, form, payloadFields)
+      const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, formName, payloadFields)
 
       const allErrors = [...errors, ...additionalErrors]
       const formPayload = { ...payloadFields, ...additionalFields }
@@ -99,12 +95,12 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         return res.redirect(req.originalUrl)
       }
 
-      const { formId, formObject } = await loadForm(req)
+      const { formId, form } = await loadForm(req)
 
       const updatedPayload = await formProcessing.mergeIntoPayload({
-        formObject,
+        formObject: form,
         formPayload,
-        formName: form,
+        formName,
       })
 
       if (updatedPayload || !isNilOrEmpty(extractedFields)) {
@@ -120,7 +116,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const location = await getSubmitRedirectLocation(
         req.user.username,
         payloadFields,
-        form,
+        formName,
         bookingId,
         saveAndContinue
       )

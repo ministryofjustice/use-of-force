@@ -29,7 +29,7 @@ beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
   service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService })
-  incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incident_date: 'today' })
+  incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
@@ -54,9 +54,9 @@ describe('submit', () => {
 
   test('it should send statements requests out', async () => {
     involvedStaffService.save.mockReturnValue([
-      { username: 'USER_1', name: 'June', email: 'user1@example.com' },
-      { username: currentUser.username, name: 'Tracy', email: 'user2@example.com' },
-      { username: 'USER_3', name: 'Alice', email: 'user3@example.com' },
+      { userId: 'USER_1', name: 'June', email: 'user1@example.com' },
+      { userId: currentUser.username, name: 'Tracy', email: 'user2@example.com' },
+      { userId: 'USER_3', name: 'Alice', email: 'user3@example.com' },
     ])
 
     await service.submit(currentUser, 'booking-1')
@@ -77,7 +77,7 @@ describe('getCurrentDraft', () => {
 
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1')
-    expect(output).toEqual({ id: 'form-1', a: 'b', incident_date: 'today' })
+    expect(output).toEqual({ id: 'form-1', a: 'b', incidentDate: 'today' })
   })
 })
 

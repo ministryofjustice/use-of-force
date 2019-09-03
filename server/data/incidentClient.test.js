@@ -18,7 +18,7 @@ describe('getCurrentDraftReport', () => {
     incidentClient.getCurrentDraftReport('user1', -1)
 
     expect(db.query).toBeCalledWith({
-      text: `select id, incident_date, form_response from report r
+      text: `select id, incident_date "incidentDate", form_response "form" from report r
           where user_id = $1
           and booking_id = $2
           and status = $3
@@ -83,7 +83,11 @@ test('getStatementsForUser', () => {
   incidentClient.getStatementsForUser('user1', StatementStatus.PENDING)
 
   expect(db.query).toBeCalledWith({
-    text: `select r.id, r.booking_id, r.reporter_name, r.offender_no, r.incident_date, s."name"
+    text: `select r.id
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            , s."name"
             from statement s 
             inner join report r on s.report_id = r.id   
           where r.status = $1 
@@ -118,7 +122,7 @@ test('getAdditionalComments', () => {
   expect(db.query).toBeCalledWith({
     text: `select  
     s.additional_comment "additionalComment",
-    s.date_submitted   "dateSubmitted" 
+    s.date_submitted     "dateSubmitted" 
     from statement_amendments s
     where s.statement_id = $1`,
     values: [48],
@@ -137,7 +141,7 @@ test('saveAdditionalComment', () => {
 test('getInvolvedStaff', async () => {
   const expected = [
     {
-      form_response: {
+      form: {
         incidentDetails: {
           involvedStaff: [
             {
@@ -157,7 +161,7 @@ test('getInvolvedStaff', async () => {
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(db.query).toBeCalledWith({
-    text: `select form_response from report where id = $1`,
+    text: `select form_response "form" from report where id = $1`,
     values: ['incident-1'],
   })
 })
