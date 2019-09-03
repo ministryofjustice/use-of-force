@@ -13,9 +13,9 @@ const createNotificationService = emailClient => {
       .add(3, 'days')
       .format('dddd D MMMM')
 
-  const sendReminder = async (emailAddress, { reporterName, incidentDate }) => {
+  const sendReminder = async (emailAddress, { reporterName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.REMINDER, emailAddress, {
+      .sendEmail(config.email.templates.involvedStaff.REMINDER, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
@@ -26,11 +26,10 @@ const createNotificationService = emailClient => {
       })
       .then(response => logger.info(response))
       .catch(err => logger.error(err))
-  }
 
-  const sendStatementOverdue = async (emailAddress, { reporterName, incidentDate }) => {
+  const sendStatementOverdue = async (emailAddress, { reporterName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.OVERDUE, emailAddress, {
+      .sendEmail(config.email.templates.involvedStaff.OVERDUE, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
@@ -40,11 +39,10 @@ const createNotificationService = emailClient => {
       })
       .then(response => logger.info(response))
       .catch(err => logger.error(err))
-  }
 
-  const sendStatementRequest = async (emailAddress, { reporterName, involvedName, incidentDate }) => {
+  const sendStatementRequest = async (emailAddress, { reporterName, involvedName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.STATEMENT_REQUEST, emailAddress, {
+      .sendEmail(config.email.templates.involvedStaff.REQUEST, emailAddress, {
         personalisation: {
           INVOLVED_NAME: involvedName,
           REPORTER_NAME: reporterName,
@@ -54,9 +52,8 @@ const createNotificationService = emailClient => {
         },
         reference: null,
       })
-      .then(response => logger.info(response))
-      .catch(err => logger.error(err))
-  }
+      .then(({ body }) => logger.info(`Send statement request, successful for: '${involvedName}'`, body))
+      .catch(({ body }) => logger.error(`Send statement request, failed for: '${involvedName}'`, body))
 
   return {
     sendReminder,

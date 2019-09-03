@@ -5,6 +5,11 @@ const incidentClient = {
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
+  commitAndStartNewTransaction: jest.fn(),
+}
+
+const notificationService = {
+  sendStatementRequest: jest.fn(),
 }
 
 const involvedStaffService = {
@@ -23,8 +28,8 @@ beforeEach(() => {
   const elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
-  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService })
-  incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b' })
+  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService })
+  incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incident_date: 'today' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
 })
 
@@ -34,6 +39,8 @@ afterEach(() => {
 
 describe('submit', () => {
   test('it should save statements and submit the report', async () => {
+    involvedStaffService.save.mockReturnValue([])
+
     const result = await service.submit(currentUser, 'booking-1')
 
     expect(result).toEqual('form-1')
@@ -42,6 +49,23 @@ describe('submit', () => {
 
     expect(incidentClient.submitReport).toBeCalledTimes(1)
     expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1')
+    expect(incidentClient.commitAndStartNewTransaction).toBeCalledTimes(1)
+  })
+
+  test('it should send statements requests out', async () => {
+    involvedStaffService.save.mockReturnValue([
+      { username: 'USER_1', name: 'June', email: 'user1@example.com' },
+      { username: currentUser.username, name: 'Tracy', email: 'user2@example.com' },
+      { username: 'USER_3', name: 'Alice', email: 'user3@example.com' },
+    ])
+
+    await service.submit(currentUser, 'booking-1')
+
+    expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
+    expect(notificationService.sendStatementRequest.mock.calls).toEqual([
+      ['user1@example.com', { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith' }],
+      ['user3@example.com', { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith' }],
+    ])
   })
 })
 
@@ -53,7 +77,7 @@ describe('getCurrentDraft', () => {
 
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1')
-    expect(output).toEqual({ id: 'form-1', a: 'b' })
+    expect(output).toEqual({ id: 'form-1', a: 'b', incident_date: 'today' })
   })
 })
 

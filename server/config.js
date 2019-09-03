@@ -28,9 +28,15 @@ module.exports = {
     notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),
     enabled: get('NOTIFY_ENABLED', true),
     templates: {
-      REMINDER: get('TEMPLATE_REMINDER', 'c4611599-929f-4f27-94f7-af1ee85fef6d'),
-      OVERDUE: get('TEMPLATE_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
-      STATEMENT_REQUEST: get('TEMPLATE_STATEMENT_REQUEST', '6c231fa9-316d-40c7-8cc0-efee73845009'),
+      involvedStaff: {
+        REQUEST: get('TEMPLATE_INVOLVED_REQUEST', '6c231fa9-316d-40c7-8cc0-efee73845009'),
+        REMINDER: get('TEMPLATE_INVOLVED_REMINDER', 'a8c8f449-b605-4a7c-9324-cd0840cdb758'),
+        OVERDUE: get('TEMPLATE_INVOLVED_OVERDUE', '9cd692a0-68c6-4e33-b38a-595e84422841'),
+      },
+      reporter: {
+        REMINDER: get('TEMPLATE_REPORTER_REMINDER', 'c4611599-929f-4f27-94f7-af1ee85fef6d'),
+        OVERDUE: get('TEMPLATE_REPORTER_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
+      },
     },
   },
   apis: {

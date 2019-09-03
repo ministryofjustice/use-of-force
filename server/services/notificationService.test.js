@@ -21,7 +21,7 @@ describe('send notifications', () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
     await service.sendReminder('user@email.com', { reporterName: 'Jane Smith', incidentDate })
 
-    expect(client.sendEmail).toBeCalledWith(config.email.templates.REMINDER, 'user@email.com', {
+    expect(client.sendEmail).toBeCalledWith(config.email.templates.involvedStaff.REMINDER, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Friday 15 February',
         INCIDENT_DATE: 'Tuesday 12 February',
@@ -36,7 +36,7 @@ describe('send notifications', () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
     await service.sendStatementOverdue('user@email.com', { reporterName: 'Jane Smith', incidentDate })
 
-    expect(client.sendEmail).toBeCalledWith(config.email.templates.OVERDUE, 'user@email.com', {
+    expect(client.sendEmail).toBeCalledWith(config.email.templates.involvedStaff.OVERDUE, 'user@email.com', {
       personalisation: {
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
@@ -54,7 +54,7 @@ describe('send notifications', () => {
       incidentDate,
     })
 
-    expect(client.sendEmail).toBeCalledWith(config.email.templates.STATEMENT_REQUEST, 'user@email.com', {
+    expect(client.sendEmail).toBeCalledWith(config.email.templates.involvedStaff.REQUEST, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Friday 15 February',
         INCIDENT_DATE: 'Tuesday 12 February',
