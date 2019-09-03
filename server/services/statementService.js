@@ -34,11 +34,17 @@ module.exports = function createReportService({ incidentClient }) {
     return incidentClient.submitStatement(userId, reportId)
   }
 
+  const saveAdditionalComment = (statementId, additionalComment) => {
+    logger.info(`Saving additional comment for statement with id: ${statementId}`)
+    return incidentClient.saveAdditionalComment(statementId, additionalComment)
+  }
+
   return {
     getStatement,
     getStatementsForUser,
     save,
     submitStatement,
     validateSavedStatement,
+    saveAdditionalComment,
   }
 }

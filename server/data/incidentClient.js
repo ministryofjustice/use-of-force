@@ -88,6 +88,14 @@ const getAdditionalComments = async statementId => {
   return results.rows
 }
 
+const saveAdditionalComment = (statementId, additionalComment) => {
+  return db.query({
+    text: `insert into statement_amendments (statement_id, additional_comment)
+            values ($1, $2)`,
+    values: [statementId, additionalComment],
+  })
+}
+
 const saveStatement = (
   userId,
   reportId,
@@ -166,4 +174,5 @@ module.exports = {
   saveStatement,
   submitStatement,
   getAdditionalComments,
+  saveAdditionalComment,
 }

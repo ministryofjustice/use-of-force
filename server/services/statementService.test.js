@@ -8,6 +8,7 @@ const incidentClient = {
   saveStatement: jest.fn(),
   submitStatement: jest.fn(),
   getAdditionalComments: jest.fn(),
+  saveAdditionalComment: jest.fn(),
 }
 
 let service
@@ -16,10 +17,18 @@ beforeEach(() => {
   service = serviceCreator({ incidentClient })
   incidentClient.getCurrentDraft.mockReturnValue({ a: 'b' })
   incidentClient.getStatementsForUser.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+  incidentClient.saveAdditionalComment(50, 'Some new comment')
 })
 
 afterEach(() => {
   jest.resetAllMocks()
+})
+
+describe('saveAdditionalComment', () => {
+  test('save a new comment', async () => {
+    await service.saveAdditionalComment(50, 'Some new comment')
+    expect(incidentClient.saveAdditionalComment).toBeCalledWith(50, 'Some new comment')
+  })
 })
 
 describe('getStatementsForUser', () => {
