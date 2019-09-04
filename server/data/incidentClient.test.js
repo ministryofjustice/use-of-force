@@ -92,7 +92,8 @@ test('getStatementsForUser', () => {
             inner join report r on s.report_id = r.id   
           where r.status = $1 
           and s.user_id = $2 
-          and s.statement_status = $3`,
+          and s.statement_status = $3
+          order by r.incident_date`,
     values: [ReportStatus.SUBMITTED.value, 'user1', StatementStatus.PENDING.value],
   })
 })

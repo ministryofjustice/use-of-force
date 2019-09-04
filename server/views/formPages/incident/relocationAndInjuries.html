@@ -157,74 +157,73 @@
           id="staff-medical-attention--conditional">
           <!-- add another starts here   -->
 
-          <div class="add-another-staff-needing-medical-attention">
+          <div class="add-another-staff-needing-medical-attention list">
           {% macro addStaffNeedingMedicalAttentiob(index, staffMember, showRemove) %}
-            {% call govukFieldset({ classes: 'add-another__item' }) %}
-              {{ govukInput({
-                label: {
-                  html: 'Name of who needed medical attention'
-                },
-                id: 'staffNeedingMedicalAttention[' + index + '][name]',
-                name: 'staffNeedingMedicalAttention[' + index + '][name]',
-                value: staffMember.name,
-                errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][name]'),
-                attributes: {
-                  'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                  'data-id': 'staffNeedingMedicalAttention[%index%][name]'
-                }
-                })
-              }}
-  
-              
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-half">
-                  {{ govukRadios({
-                    classes: "govuk-radios--inline",
-                    name: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
-                    fieldset: {
-                      legend: {
-                        text: "Did they go to hospital?"
-                      }
-                    },
-                    errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][hospitalisation]'),
-
-                    items: [
-                      {
-                        value: true,
-                        text: "Yes",
-                        checked: staffMember.hospitalisation === true,
-                        id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
-                        errorMessage: errorMsgHosp,
-                        attributes: {
-                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
-                          'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-yes'
-                        }
-                      },
-                      {
-                        value: false,
-                        text: "No",
-                        checked: staffMember.hospitalisation === false,
-                        'data-name': 'staffNeedingMedicalAttention[%index%][name]',
-                        id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]-no',
-                        errorMessage: errors | findError("staffNeedingMedicalAttention[' + index + '][hospitalisation]"),
-                        attributes: {
-                          'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
-                          'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-no'
-                        }
-                      }]
-                    })
-                  }}
-                </div>
-                <div class="govuk-grid-column-one-half">
-                  <div class="govuk-!-margin-top-6 float-right remove-button-container">
+            {% call govukFieldset({ classes: 'add-another__item list-item' }) %}
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-half">
+                {{ govukInput({
+                  label: {
+                    html: 'Name of who needed medical attention'
+                  },
+                  id: 'staffNeedingMedicalAttention[' + index + '][name]',
+                  name: 'staffNeedingMedicalAttention[' + index + '][name]',
+                  value: staffMember.name,
+                  errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][name]'),
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][name]'
+                  }
+                  })
+                }}
+              </div>
+              <div class="govuk-grid-column-one-half">
+                  <div class="govuk-!-margin-top-6 remove-button-container">
                   {% if showRemove %}
                     <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button ">
                     Remove
                     </button>
                   {% endif  %}
-                  </div>
                 </div>
               </div>
+            </div>
+            {{ govukRadios({
+              classes: "govuk-radios--inline",
+              name: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
+              fieldset: {
+                legend: {
+                  text: "Did they go to hospital?"
+                }
+              },
+              errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][hospitalisation]'),
+
+              items: [
+                {
+                  value: true,
+                  text: "Yes",
+                  checked: staffMember.hospitalisation === true,
+                  id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
+                  errorMessage: errorMsgHosp,
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-yes'
+                  }
+                },
+                {
+                  value: false,
+                  text: "No",
+                  checked: staffMember.hospitalisation === false,
+                  'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                  id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]-no',
+                  errorMessage: errors | findError("staffNeedingMedicalAttention[' + index + '][hospitalisation]"),
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-no'
+                  }
+                }]
+              })
+            }}
+            <hr class="govuk-grid-column-two-thirds"/>
             {% endcall %}
           {% endmacro %}
 

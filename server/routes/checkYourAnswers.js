@@ -16,8 +16,10 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       location: description,
       plannedUseOfForce: incidentDetails.plannedUseOfForce,
       staffInvolved: [
-        ...involvedStaff.map(staff => [properCaseFullName(staff.name)]),
-        ...(involvedStaff.find(staff => staff.username === currentUser.username) ? [] : [[currentUser.displayName]]),
+        ...(involvedStaff.find(staff => staff.username === currentUser.username)
+          ? []
+          : [[`${currentUser.displayName} - ${currentUser.username}`]]),
+        ...involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.username}`]),
       ],
       witnesses: incidentDetails.witnesses
         ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])

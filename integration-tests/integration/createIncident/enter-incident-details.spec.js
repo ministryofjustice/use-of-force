@@ -17,7 +17,7 @@ context('Submitting details page form', () => {
   const fillFormAndSave = () => {
     const tasklistPage = TasklistPage.visit(bookingId)
     const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
+    newIncidentPage.offenderName().contains('Norman Smith')
     newIncidentPage.location().select('Asso A Wing')
     newIncidentPage.forceType.check('true')
 
@@ -83,7 +83,7 @@ context('Submitting details page form', () => {
     detailsPage.back().click()
 
     const updatedIncidentPage = newIncidentPageFactory()
-    updatedIncidentPage.offenderName().contains('Norman Smith (A1234AC)')
+    updatedIncidentPage.offenderName().contains('Norman Smith')
     updatedIncidentPage.location().contains('Asso A Wing')
     updatedIncidentPage.forceType.planned().should('be.checked')
 
