@@ -49,15 +49,17 @@
 
               <!-- add another starts here -->
 
-              <div class="add-another-evidence">
+              <div class="add-another-evidence list">
                 {% macro addEvidence(index, evidenceTagAndDescription, showRemove) %}
-                  {% call govukFieldset({ classes: 'add-another__item' }) %}
+                  {% call govukFieldset({ classes: 'add-another__item list-item' }) %}
+                  <div class="govuk-grid-row">
+                      <div class="govuk-grid-column-one-quarter ">
+                
                     {{
                       govukInput({
                         label: {
                           html: 'Tag number'
                         },
-                        classes: 'govuk-!-width-one-third',
                         id: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
                         name: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
                         value: evidenceTagAndDescription.evidenceTagReference,
@@ -68,9 +70,17 @@
                         }
                       })
                     }}
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-two-thirds">
-                      
+                  </div>
+                    <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+                    {% if showRemove %}
+                      <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+                        Remove
+                      </button>
+                    {% endif %}
+                  </div>
+                  </div>
+                      <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">   
                     {{ govukTextarea({
                       name: 'evidenceTagAndDescription[' + index + '][description]',
                       id: 'evidenceTagAndDescription[' + index + '][description]',
@@ -84,14 +94,10 @@
                         'data-name': 'evidenceTagAndDescription[%index%][description]'
                       }
                     }) }}
-                    </div>
-                    <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6"></div>  
-                    {% if showRemove %}
-                      <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
-                        Remove
-                      </button>
-                    {% endif %}
                   </div>
+              </div>
+
+                  <hr class="govuk-grid-column-two-thirds"/>
                   {% endcall %}
                 {% endmacro %}
 
@@ -100,7 +106,7 @@
                 {% else %}
                   {{ addEvidence(index = 0, evidenceTagAndDescription = null, showRemove = false) }}
                 {% endfor %}  
-                <div class="button-action">
+                <div class="button-action  govuk-!-margin-top-5">
                   {{
                   govukButton({
                     text: 'Add another',

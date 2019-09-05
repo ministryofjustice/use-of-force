@@ -6,25 +6,44 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% block formItems %}
 <div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">Incident details</h1>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
-      <p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="offender-name">
-        {{ data.displayName }} ({{ data.offenderNo }})
-      </p>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
-      <p class="govuk-!-margin-bottom-5 govuk-label--s" data-date-and-time>
-        {{ data.date | formatDate('D MMMM YYYY') }} - {{ data.date | formatDate('HH:mm') }}
-        <input type="hidden" name="incidentDate" value="{{ data.date | formatDate() }}">
-      </p>
+      <h1 class="govuk-heading-xl mainHeading">Incident details</h1>
+      <div class="govuk-!-margin-bottom-6">
+        <p class="govuk-!-margin-bottom-1">
+          <span class="govuk-label--s">Prisoner:&nbsp;</span>
+          <span data-qa="offender-name"> {{ data.displayName }}</span>
+        </p>
+        <p>
+          <span class="govuk-label--s">Date of incident:&nbsp;</span>
+          <span data-qa="date-and-time">
+            {{ data.date | formatDate('D MMMM YYYY') }}
+            <input type="hidden" name="incidentDate" value="{{ data.date | formatDate() }}">  
+          </span>
+        </p>
+      </div>    
     </div>
   </div>
   <hr />
+  <div class="govuk-grid-row govuk-!-margin-top-3">
+    <div class="govuk-grid-column-full">
+      {{
+        govukInput({
+          label: {
+            text: 'Time of incident:'
+          },
+          id: 'timeOfIncident',
+          name: 'timeOfIncident',
+          classes: "govuk-input--width-4",
+          hint: {
+            text: "Use the 24 hour clock. For example, 14:30."
+          },
+          value: data.date | formatDate('HH:mm') ,
+          errorMessage: errors | findError('timeOfIncident')
+        })
+      }}
+    </div>
+  </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{
@@ -76,7 +95,7 @@
   <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h3>Other staff involved in use of force</h3>
+      <h3 class="govuk-!-margin-bottom-1">Other staff involved in use of force</h3>
       <span class="govuk-hint">
         You do not have to add yourself
       </span>
@@ -113,8 +132,6 @@
         {% endcall %} 
         {% endmacro %}
 
-
-
         {% for staffMember in data.involvedStaff %} 
           {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
         {% else %} 
@@ -137,7 +154,6 @@
     <div class="govuk-grid-column-full">
       <h3>Witnesses to the incident</h3>
       <div class="add-another-witness">
-
         {% macro addWitness(index, value, showRemove) %}
           {% call govukFieldset({ classes: 'add-another__item' }) %}
           <div class="govuk-grid-row">
@@ -172,7 +188,7 @@
           {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
         {% else %} 
           {{ addWitness(index = 0, value = null, showRemove = false) }}
-       {% endfor %}
+        {% endfor %}
         <div class="button-action">
           {{
             govukButton({

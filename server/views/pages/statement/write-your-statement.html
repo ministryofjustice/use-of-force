@@ -23,21 +23,19 @@
   <form method="POST">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full ">
-        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Prisoner</p>
-        <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="offender-name">
-          {{ data.displayName }} ({{ data.offenderNo }})
-        </p>
-      </div>
-    </div>
-    <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <p class="govuk-!-margin-bottom-1 govuk-label--xs">Date and time of incident</p>
-        <p class="govuk-!-margin-bottom-1 govuk-label--s" data-qa="date-and-time">
-          {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }}
+        <p class="govuk-!-margin-bottom-1">
+          <span class="govuk-label--s">Prisoner:&nbsp;</span>
+          <span data-qa="offender-name"> {{ data.displayName }} ({{ data.offenderNo }}) </span>
+        </p>
+        <p class="govuk-!-margin-bottom-1">
+          <span class="govuk-label--s">Date and time of incident:&nbsp;</span>
+          <span data-qa="date-and-time">
+            {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }}
+          </span>
         </p>
       </div>
-    </div>
+    </div>    
     <hr />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half govuk-!-margin-top-5">
@@ -63,7 +61,7 @@
               id: 'lastTrainingYear',
               name: 'lastTrainingYear',
               value: data.lastTrainingYear,
-              classes: 'govuk-!-width-one-quarter',
+              classes: 'govuk-input--width-4',
               label: {
                 text: 'Year'
               },
@@ -86,7 +84,7 @@
             id: 'jobStartYear',
             name: 'jobStartYear',
             value: data.jobStartYear,
-            classes: 'govuk-!-width-one-quarter',
+            classes: 'govuk-input--width-4',
             label: {
               text: 'Year'
             },

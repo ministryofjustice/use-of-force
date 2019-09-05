@@ -57,7 +57,8 @@ const getStatementsForUser = (userId, status, query = db.query) => {
             inner join report r on s.report_id = r.id   
           where r.status = $1 
           and s.user_id = $2 
-          and s.statement_status = $3`,
+          and s.statement_status = $3
+          order by r.incident_date`,
     values: ['SUBMITTED', userId, status.value],
   })
 }
