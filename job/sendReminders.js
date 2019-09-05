@@ -1,6 +1,10 @@
-const moment = require('moment')
-const logger = require('../log')
+const incidentClient = require('../server/data/incidentClient')
+const db = require('../server/data/dataAccess/db')
 
-logger.info(`send reminders job fired at: ${moment()}`)
+const reminderPoller = require('./reminders/reminderPoller')
+const reminderSender = require('./reminders/reminderSender')
 
-new Promise(done => setTimeout(done, 60 * 1000)).then(() => logger.info(`send reminders job ended at: ${moment()}`))
+const sendReminder = reminderSender()
+const poll = reminderPoller(db, incidentClient, sendReminder)
+
+poll()

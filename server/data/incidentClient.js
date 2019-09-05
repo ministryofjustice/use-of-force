@@ -166,6 +166,27 @@ const createStatements = async (reportId, staff) => {
   return results.rows.map(row => row.id)
 }
 
+// Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
+const getNextNotificationReminder = async () => {
+  const {
+    rows: [row],
+  } = db.query({
+    text: `select s.id
+          ,       s.name
+          ,       r.booking_id             "bookingId"
+          ,       r.reporter_name          "reporterName"
+          ,       r.incident_date          "incidentDate"
+          from report r
+          left join statement s on r.id = s.report_id
+          where next_reminder_date < now() and s.statement_status = $1
+          order by id
+          for update of statement skip locked
+          LIMIT 1`,
+    values: [StatementStatus.PENDING.value],
+  })
+  return row
+}
+
 module.exports = {
   commitAndStartNewTransaction: db.commitAndStartNewTransaction,
   createDraftReport,
@@ -180,4 +201,5 @@ module.exports = {
   submitStatement,
   getAdditionalComments,
   saveAdditionalComment,
+  getNextNotificationReminder,
 }
