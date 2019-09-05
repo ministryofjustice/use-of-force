@@ -29,7 +29,7 @@
       "server/**/*.{js,jsx,mjs}"
     ],
     "testMatch": [
-      "<rootDir>/(server)/**/?(*.)(spec|test).{js,jsx,mjs}"
+      "<rootDir>/(server|job)/**/?(*.)(spec|test).{js,jsx,mjs}"
     ],
     "testEnvironment": "node",
     "reporters": [

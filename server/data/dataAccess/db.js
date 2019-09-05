@@ -45,8 +45,9 @@ module.exports = {
     ns.set('transactionalClient', client)
     try {
       await client.query('BEGIN')
-      await callback()
+      const result = await callback()
       await client.query('COMMIT')
+      return result
     } catch (error) {
       await client.query('ROLLBACK')
       throw error
