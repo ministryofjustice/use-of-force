@@ -3,6 +3,7 @@ const { isNilOrEmpty } = require('../utils/utils')
 const statementConfig = require('../config/statement')
 const formProcessing = require('../services/formProcessing')
 const { StatementStatus } = require('../config/types')
+const { links } = require('../config.js')
 
 const formConfig = {
   ...statementConfig,
@@ -23,7 +24,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
   return {
     viewReportSent: async (req, res) => {
-      res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId })
+      res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId, links })
     },
 
     viewIncidents: async (req, res) => {

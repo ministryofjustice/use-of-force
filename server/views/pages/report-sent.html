@@ -28,6 +28,15 @@
         attributes: { 'data-qa': 'continue-to-statement' }
       })
     }}
+
+    {{
+      govukButton({
+        text: 'Exit',
+        href: links.exitUrl,
+        classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3 ',
+        attributes: { 'data-qa': 'exit' }
+      })
+    }}
   </div>
 </div>
 {% endblock %}

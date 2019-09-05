@@ -66,5 +66,8 @@ env:
 
   - name: INGRESS_URL
     value: 'https://{{ .Values.ingress.host }}'
+  
+  -name: EXIT_LOCATION_URL
+    value: {{ .Values.env.EXIT_LOCATION_URL | quote }}
 
 {{- end -}}
