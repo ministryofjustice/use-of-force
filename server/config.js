@@ -74,6 +74,7 @@ module.exports = {
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {
+    emailUrl: get('EMAIL_LOCATION_URL', '/', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
 }

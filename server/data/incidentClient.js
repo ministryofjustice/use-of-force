@@ -169,17 +169,17 @@ const createStatements = async (reportId, staff) => {
 // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
 const getNextNotificationReminder = async () => {
   const result = await db.query({
-    text: `select s.id
-          ,       s.name
-          ,       r.booking_id             "bookingId"
+    text: `select s.id                     "statementId"
+          ,       s.email                  "recipientEmail" 
+          ,       s.name                   "recipientName"
+          ,       s.next_reminder_date     "nextReminderDate"  
           ,       r.reporter_name          "reporterName"
-          ,       r.incident_date          "incidentDate"
           ,       r.submitted_date         "submittedDate"
           ,       r.user_id = s.user_id    "isReporter"
           from statement s
           left join report r on r.id = s.report_id
           where next_reminder_date < now() and s.statement_status = $1
-          order by id
+          order by s.id
           for update of s skip locked
           LIMIT 1`,
     values: [StatementStatus.PENDING.value],
@@ -189,6 +189,12 @@ const getNextNotificationReminder = async () => {
   } = result
   return reminder
 }
+
+const setNextReminderDate = (statementId, nextDate) =>
+  db.query({
+    text: 'update statement set next_reminder_date = $1, updated_date = now() where id = $2',
+    values: [nextDate, statementId],
+  })
 
 module.exports = {
   commitAndStartNewTransaction: db.commitAndStartNewTransaction,
@@ -205,4 +211,5 @@ module.exports = {
   getAdditionalComments,
   saveAdditionalComment,
   getNextNotificationReminder,
+  setNextReminderDate,
 }

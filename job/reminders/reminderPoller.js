@@ -5,7 +5,7 @@ module.exports = (db, incidentClient, sendReminder) => {
   const processReminder = async () => {
     const reminder = await incidentClient.getNextNotificationReminder()
     if (reminder) {
-      sendReminder(reminder)
+      await sendReminder(reminder)
     }
     return reminder
   }
@@ -16,7 +16,7 @@ module.exports = (db, incidentClient, sendReminder) => {
     let result = true
     let count = 0
 
-    while (result && count < 100) {
+    while (result && count < 1) {
       result = await db.inTransaction(processReminder)
       count += result ? 1 : 0
     }
