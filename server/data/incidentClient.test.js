@@ -227,11 +227,13 @@ test('getNextNotificationReminder', () => {
           ,       r.booking_id             "bookingId"
           ,       r.reporter_name          "reporterName"
           ,       r.incident_date          "incidentDate"
-          from report r
-          left join statement s on r.id = s.report_id
+          ,       r.submitted_date         "submittedDate"
+          ,       r.user_id = s.user_id    "isReporter"
+          from statement s
+          left join report r on r.id = s.report_id
           where next_reminder_date < now() and s.statement_status = $1
           order by id
-          for update of statement skip locked
+          for update of s skip locked
           LIMIT 1`,
     values: [StatementStatus.PENDING.value],
   })
