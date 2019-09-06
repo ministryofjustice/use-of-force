@@ -1,6 +1,13 @@
 const { NotifyClient } = require('notifications-node-client')
 const moment = require('moment')
-const config = require('../config')
+const {
+  links: { emailUrl },
+  email: {
+    enabled,
+    notifyKey,
+    templates: { involvedStaff, reporter },
+  },
+} = require('../config')
 const logger = require('../../log')
 
 const createNotificationService = emailClient => {
@@ -13,52 +20,94 @@ const createNotificationService = emailClient => {
       .add(3, 'days')
       .format('dddd D MMMM')
 
-  const sendReminder = async (emailAddress, { reporterName, incidentDate }) =>
+  const sendReporterStatementReminder = async (emailAddress, { reporterName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.involvedStaff.REMINDER, emailAddress, {
+      .sendEmail(reporter.REMINDER, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
           DEADLINE_DATE: asDeadline(incidentDate),
+          LINK: emailUrl,
         },
         reference: null,
       })
-      .then(response => logger.info(response))
-      .catch(err => logger.error(err))
+      .then(({ body }) => logger.info(`Send statement reminder, successful for reporter: '${reporterName}'`, body))
+      .catch(({ message }) => logger.error(`Send statement reminder, failed for reporter: '${reporterName}'`, message))
 
-  const sendStatementOverdue = async (emailAddress, { reporterName, incidentDate }) =>
+  const sendInvolvedStaffStatementReminder = async (emailAddress, { involvedName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.involvedStaff.OVERDUE, emailAddress, {
+      .sendEmail(involvedStaff.REMINDER, emailAddress, {
+        personalisation: {
+          INVOLVED_NAME: involvedName,
+          INCIDENT_DATE: asDate(incidentDate),
+          INCIDENT_TIME: asTime(incidentDate),
+          DEADLINE_DATE: asDeadline(incidentDate),
+          LINK: emailUrl,
+        },
+        reference: null,
+      })
+      .then(({ body }) =>
+        logger.info(`Send statement reminder, successful for involved staff: '${involvedName}'`, body)
+      )
+      .catch(({ message }) =>
+        logger.error(`Send statement reminder, failed for involved staff: '${involvedName}'`, message)
+      )
+
+  const sendReporterStatementOverdue = async (emailAddress, { reporterName, incidentDate }) =>
+    emailClient
+      .sendEmail(reporter.OVERDUE, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          LINK: emailUrl,
         },
         reference: null,
       })
-      .then(response => logger.info(response))
-      .catch(err => logger.error(err))
+      .then(({ body }) => logger.info(`Send statement overdue, successful for reporter: '${reporterName}'`, body))
+      .catch(({ message }) => logger.error(`Send statement overdue, failed for reporter: '${reporterName}'`, message))
+
+  const sendInvolvedStaffStatementOverdue = async (emailAddress, { involvedName, incidentDate }) =>
+    emailClient
+      .sendEmail(involvedStaff.OVERDUE, emailAddress, {
+        personalisation: {
+          INVOLVED_NAME: involvedName,
+          INCIDENT_DATE: asDate(incidentDate),
+          INCIDENT_TIME: asTime(incidentDate),
+          LINK: emailUrl,
+        },
+        reference: null,
+      })
+      .then(({ body }) => logger.info(`Send statement overdue, successful for involved staff: '${involvedName}'`, body))
+      .catch(({ message }) =>
+        logger.error(`Send statement overdue, failed for involved staff: '${involvedName}'`, message)
+      )
 
   const sendStatementRequest = async (emailAddress, { reporterName, involvedName, incidentDate }) =>
     emailClient
-      .sendEmail(config.email.templates.involvedStaff.REQUEST, emailAddress, {
+      .sendEmail(involvedStaff.REQUEST, emailAddress, {
         personalisation: {
           INVOLVED_NAME: involvedName,
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
           DEADLINE_DATE: asDeadline(incidentDate),
+          LINK: emailUrl,
         },
         reference: null,
       })
-      .then(({ body }) => logger.info(`Send statement request, successful for: '${involvedName}'`, body))
-      .catch(({ body }) => logger.error(`Send statement request, failed for: '${involvedName}'`, body))
+      .then(({ body }) => logger.info(`Send statement request, successful for involved staff: '${involvedName}'`, body))
+      .catch(({ message }) =>
+        logger.error(`Send statement request, failed for involved staff: '${involvedName}'`, message)
+      )
 
   return {
-    sendReminder,
-    sendStatementOverdue,
     sendStatementRequest,
+    sendReporterStatementReminder,
+    sendInvolvedStaffStatementReminder,
+    sendReporterStatementOverdue,
+    sendInvolvedStaffStatementOverdue,
   }
 }
 
@@ -70,7 +119,7 @@ module.exports = {
       sendEmail: args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
     }
 
-    const notifyClient = config.email.enabled === true ? new NotifyClient(config.email.notifyKey) : stubClient
+    const notifyClient = enabled === true ? new NotifyClient(notifyKey) : stubClient
     return createNotificationService(notifyClient)
   },
 }

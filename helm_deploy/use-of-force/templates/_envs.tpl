@@ -70,4 +70,6 @@ env:
   - name: EXIT_LOCATION_URL
     value: {{ .Values.env.EXIT_LOCATION_URL | quote }}
 
+  - name: EMAIL_LOCATION_URL
+    value: {{ .Values.env.EMAIL_LOCATION_URL | quote }}
 {{- end -}}
