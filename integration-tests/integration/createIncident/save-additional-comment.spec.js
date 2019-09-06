@@ -2,6 +2,7 @@ const TasklistPage = require('../../pages/tasklistPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const ViewStatementPage = require('../../pages/viewStatementPage')
 const IncidentsPage = require('../../pages/incidentsPage')
+const ViewAddCommentPage = require('../../pages/addAdditionalCommentPage')
 
 context('Add comments to statement', () => {
   const bookingId = 1001
@@ -52,17 +53,34 @@ context('Add comments to statement', () => {
     const { viewButton } = incidentsPage.getCompleteRow(0)
     viewButton().click()
 
-    const pageComponent = ViewStatementPage.verifyOnPage()
+    let pageComponent = ViewStatementPage.verifyOnPage()
+    pageComponent.addComment().click()
 
+    pageComponent = ViewAddCommentPage.verifyOnPage()
+    pageComponent.additionalComment().should('be.empty')
     pageComponent.additionalComment().type('Some new comment 1')
     pageComponent.save().click()
+
+    pageComponent = IncidentsPage.verifyOnPage()
+    pageComponent.viewStatement().click()
+
+    pageComponent = ViewStatementPage.verifyOnPage()
+    pageComponent.addComment().click()
+
+    pageComponent = ViewAddCommentPage.verifyOnPage()
     pageComponent.viewAdditionalComment(1).should('contain', 'Some new comment 1')
     pageComponent.additionalComment().should('be.empty')
     pageComponent.additionalComment(2).type('Some new comment 2')
     pageComponent.save().click()
+
+    pageComponent = IncidentsPage.verifyOnPage()
+    pageComponent.viewStatement().click()
+
+    pageComponent = ViewStatementPage.verifyOnPage()
+    pageComponent.viewAdditionalComment(1).should('contain', 'Some new comment 1')
     pageComponent.viewAdditionalComment(2).should('contain', 'Some new comment 2')
-    pageComponent.additionalComment().should('be.empty')
-    pageComponent.cancel().click()
+    pageComponent.continue().click()
+
     IncidentsPage.verifyOnPage()
   })
 })

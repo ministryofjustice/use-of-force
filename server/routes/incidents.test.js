@@ -110,13 +110,13 @@ describe('GET /:reportId/your-statement', () => {
       }))
 })
 
-describe('POST /:reportId/your-statement', () => {
-  it('should save ammendment', () =>
+describe('POST /:reportId/add-comment-to-statement', () => {
+  it('should save amendment', () =>
     request(app)
-      .post('/-1/your-statement')
+      .post('/-1/add-comment-to-statement')
       .send('additionalComment=statement1&submit=true')
       .expect(302)
-      .expect('Location', '/-1/your-statement')
+      .expect('Location', '/')
       .expect(() => {
         expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
       }))

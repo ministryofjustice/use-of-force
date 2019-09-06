@@ -1,17 +1,18 @@
 const page = require('./page')
 
-const viewStatementPage = () =>
-  page('Your use of force statement', {
+const addCommentPage = () =>
+  page('Add a comment to your statement', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     statement: () => cy.get('[data-qa=statement]'),
     lastTraining: () => cy.get('[data-qa=last-training]'),
     jobStartYear: () => cy.get('[data-qa=job-start-year]'),
+    additionalComment: () => cy.get('[data-qa="additional-comment"]'),
     viewAdditionalComment: index => cy.get(`[data-qa="viewAdditionalComment"][data-loop=${index}]`),
 
-    addComment: () => cy.get('[data-qa="add-comment"]'),
-    continue: () => cy.get('[data-qa=continue]'),
+    save: () => cy.get('[data-qa=save]'),
+    cancel: () => cy.get('[data-qa=cancel]'),
   })
 
 export default {
-  verifyOnPage: viewStatementPage,
+  verifyOnPage: addCommentPage,
 }

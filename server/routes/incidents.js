@@ -151,7 +151,27 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       if (req.body.additionalComment && req.body.additionalComment.trim().length) {
         await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
       }
-      return res.redirect(`/${reportId}/your-statement`)
+      return res.redirect(`/`)
+    },
+
+    addCommentToStatement: async (req, res) => {
+      const { reportId } = req.params
+      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+
+      if (req.body.additionalComment && req.body.additionalComment.trim().length) {
+        await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
+      }
+      return res.render('pages/statement/add-comment-to-statement', {
+        data: {
+          reportId,
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+        },
+      })
     },
   }
 }
