@@ -74,12 +74,12 @@ describe('getNextReminderDate', () => {
   })
 
   test('end of month', async () => {
-    checkGetNextReminderDate('2020-02-28 23:59:59').toEqual('2020-02-29 23:59:59')
-    checkGetNextReminderDate('2020-02-29 23:59:59').toEqual('2020-03-01 23:59:59')
+    checkGetNextReminderDate('2019-09-30 21:26:17').toEqual('2019-10-01 21:26:17')
   })
 
   test('leap year', async () => {
-    checkGetNextReminderDate('2019-09-30 21:26:17').toEqual('2019-10-01 21:26:17')
+    checkGetNextReminderDate('2020-02-28 23:59:59').toEqual('2020-02-29 23:59:59')
+    checkGetNextReminderDate('2020-02-29 23:59:59').toEqual('2020-03-01 23:59:59')
   })
 })
 

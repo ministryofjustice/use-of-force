@@ -1,3 +1,4 @@
+const moment = require('moment')
 const serviceCreator = require('./involvedStaffService')
 
 const userService = {
@@ -153,6 +154,14 @@ describe('lookup', () => {
 })
 
 describe('save', () => {
+  let reportSubmittedDate
+  let expectedFirstReminderDate
+
+  beforeEach(() => {
+    reportSubmittedDate = moment('2019-09-06 21:26:18')
+    expectedFirstReminderDate = moment('2019-09-07 21:26:18')
+  })
+
   test('when user has already added themselves', async () => {
     incidentClient.getInvolvedStaff.mockReturnValue([
       {
@@ -175,9 +184,9 @@ describe('save', () => {
       },
     ])
 
-    await service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
 
-    expect(incidentClient.createStatements).toBeCalledWith('form1', [
+    expect(incidentClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
       { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
       {
         email: 'cn@email',
@@ -222,9 +231,9 @@ describe('save', () => {
       ],
     })
 
-    await service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
 
-    expect(incidentClient.createStatements).toBeCalledWith('form1', [
+    expect(incidentClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
       { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
       {
         email: 'cn@email',
@@ -263,8 +272,8 @@ describe('save', () => {
       missing: [{}],
     })
 
-    await expect(service.save('form1', { name: 'Bob Smith', staffId: 3, username: 'Bob' })).rejects.toThrow(
-      `Could not retrieve user details for 'Bob', missing: 'true', not verified: 'false'`
-    )
+    await expect(
+      service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    ).rejects.toThrow(`Could not retrieve user details for 'Bob', missing: 'true', not verified: 'false'`)
   })
 })

@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 module.exports = function createReportService({ incidentClient, userService }) {
   const get = reportId => {
     return incidentClient.getInvolvedStaff(reportId)
@@ -58,7 +60,7 @@ module.exports = function createReportService({ incidentClient, userService }) {
     return [...addedStaff, ...exist]
   }
 
-  const save = async (reportId, currentUser) => {
+  const save = async (reportId, reportSubmittedDate, currentUser) => {
     const involvedStaff = await get(reportId)
 
     const staffToCreateStatmentsFor = await getStaffRequiringStatements(currentUser, involvedStaff)
@@ -70,7 +72,8 @@ module.exports = function createReportService({ incidentClient, userService }) {
       email: user.email,
     }))
 
-    await incidentClient.createStatements(reportId, staff)
+    const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
+    await incidentClient.createStatements(reportId, firstReminderDate.toDate(), staff)
     return staff
   }
 

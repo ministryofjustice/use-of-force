@@ -1,3 +1,4 @@
+const moment = require('moment')
 const serviceCreator = require('./reportService')
 
 const incidentClient = {
@@ -41,14 +42,15 @@ describe('submit', () => {
   test('it should save statements and submit the report', async () => {
     involvedStaffService.save.mockReturnValue([])
 
-    const result = await service.submit(currentUser, 'booking-1')
+    const now = moment('2019-09-06 21:26:18')
+    const result = await service.submit(currentUser, 'booking-1', now)
 
     expect(result).toEqual('form-1')
     expect(involvedStaffService.save).toBeCalledTimes(1)
-    expect(involvedStaffService.save).toBeCalledWith('form-1', currentUser)
+    expect(involvedStaffService.save).toBeCalledWith('form-1', now, currentUser)
 
     expect(incidentClient.submitReport).toBeCalledTimes(1)
-    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1')
+    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1', now.toDate())
     expect(incidentClient.commitAndStartNewTransaction).toBeCalledTimes(1)
   })
 

@@ -23,14 +23,14 @@ const updateDraftReport = (reportId, incidentDate, formResponse) => {
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
-const submitReport = (userId, bookingId) => {
+const submitReport = (userId, bookingId, submittedDate) => {
   return db.query({
-    text: `update report r set status = $1, submitted_date = CURRENT_TIMESTAMP 
-    where user_id = $2
-    and booking_id = $3
-    and status = $4
+    text: `update report r set status = $1, submitted_date = $2
+    where user_id = $3
+    and booking_id = $4
+    and status = $5
     and r.sequence_no = ${maxSequenceForBooking}`,
-    values: [ReportStatus.SUBMITTED.value, userId, bookingId, ReportStatus.IN_PROGRESS.value],
+    values: [ReportStatus.SUBMITTED.value, submittedDate, userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
 }
 
@@ -155,11 +155,19 @@ const getInvolvedStaff = async (reportId, query = db.query) => {
   return []
 }
 
-const createStatements = async (reportId, staff) => {
-  const rows = staff.map(s => [reportId, s.staffId, s.userId, s.name, s.email, StatementStatus.PENDING.value])
+const createStatements = async (reportId, firstReminder, staff) => {
+  const rows = staff.map(s => [
+    reportId,
+    s.staffId,
+    s.userId,
+    s.name,
+    s.email,
+    firstReminder,
+    StatementStatus.PENDING.value,
+  ])
   const results = await db.query({
     text: format(
-      'insert into statement (report_id, staff_id, user_id, name, email, statement_status) VALUES %L returning id',
+      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, statement_status) VALUES %L returning id',
       rows
     ),
   })
@@ -175,6 +183,7 @@ const getNextNotificationReminder = async () => {
           ,       s.next_reminder_date     "nextReminderDate"  
           ,       r.reporter_name          "reporterName"
           ,       r.submitted_date         "submittedDate"
+          ,       r.incident_date          "incidentDate"
           ,       r.user_id = s.user_id    "isReporter"
           from statement s
           left join report r on r.id = s.report_id
