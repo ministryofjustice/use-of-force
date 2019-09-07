@@ -32,8 +32,8 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     },
 
     viewMyStatements: async (req, res) => {
-      const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
-      const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
+      const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
+      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
@@ -47,8 +47,8 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     },
 
     viewMyReports: async (req, res) => {
-      const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
-      const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
+      const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
+      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))

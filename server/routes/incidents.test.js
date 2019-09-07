@@ -4,7 +4,7 @@ const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const statementService = {
-  getStatementsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
+  getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
   getStatement: () => ({
     id: 1,
     booking_id: 2,
