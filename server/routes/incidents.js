@@ -23,11 +23,15 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
   })
 
   return {
+    redirectToHomePage: async (req, res) => {
+      res.redirect('/my-statements')
+    },
+
     viewReportSent: async (req, res) => {
       res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId, links })
     },
 
-    viewIncidents: async (req, res) => {
+    viewMyStatements: async (req, res) => {
       const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
 
@@ -35,9 +39,25 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
       const completedStatements = completed.map(toStatement(namesByOffenderNumber))
 
-      res.render('pages/incidents', {
+      res.render('pages/my-statements', {
         awaitingStatements,
         completedStatements,
+        selectedTab: 'my-statements',
+      })
+    },
+
+    viewMyReports: async (req, res) => {
+      const awaiting = await statementService.getStatementsForUser(req.user.username, StatementStatus.PENDING)
+      const completed = await statementService.getStatementsForUser(req.user.username, StatementStatus.SUBMITTED)
+
+      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
+      const completedStatements = completed.map(toStatement(namesByOffenderNumber))
+
+      res.render('pages/my-reports', {
+        awaitingStatements,
+        completedStatements,
+        selectedTab: 'my-reports',
       })
     },
 

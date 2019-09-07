@@ -36,6 +36,25 @@ describe('GET /incidents', () => {
   it('should render page', () =>
     request(app)
       .get('/')
+      .expect(302)
+      .expect('Location', '/my-statements'))
+})
+
+describe('GET /my-statements', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/my-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+      }))
+})
+
+describe('GET /my-reports', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/my-reports')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

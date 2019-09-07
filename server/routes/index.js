@@ -60,7 +60,10 @@ module.exports = function Index({
 
   get('/:reportId/report-sent', incidents.viewReportSent)
 
-  get('/', incidents.viewIncidents)
+  get('/', incidents.redirectToHomePage)
+  get('/my-statements', incidents.viewMyStatements)
+  get('/my-reports', incidents.viewMyReports)
+
   get('/:reportId/write-your-statement', incidents.viewWriteYourStatement)
   post('/:reportId/write-your-statement', incidents.submitWriteYourStatement)
   get('/:reportId/check-your-statement', incidents.viewCheckYourStatement)
