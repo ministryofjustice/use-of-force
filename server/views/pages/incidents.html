@@ -1,10 +1,9 @@
-{% extends "../partials/layout.html" %} 
+{% extends "../partials/incidentPage.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %} 
 
-{% block content %}
-<h1 class="govuk-heading-xl mainHeading">Use of force incidents</h1>
-
+{% block tabContent %}
+<section class="govuk-tabs__panel" id="past-day">
 <table class="govuk-table incidents" data-qa="statements-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
@@ -77,5 +76,5 @@
 
   </tbody>
 </table>
-
+</section>
 {% endblock %}
