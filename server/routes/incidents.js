@@ -154,7 +154,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       return res.redirect(`/`)
     },
 
-    addCommentToStatement: async (req, res) => {
+    viewAddCommentToStatement: async (req, res) => {
       const { reportId } = req.params
       const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)

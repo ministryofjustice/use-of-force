@@ -67,7 +67,7 @@ module.exports = function Index({
   post('/:reportId/check-your-statement', incidents.submitCheckYourStatement)
   get('/:reportId/statement-submitted', incidents.viewStatementSubmitted)
   get('/:reportId/your-statement', incidents.viewYourStatement)
-  get('/:reportId/add-comment-to-statement', incidents.addCommentToStatement)
+  get('/:reportId/add-comment-to-statement', incidents.viewAddCommentToStatement)
   post('/:reportId/add-comment-to-statement', incidents.saveAdditionalComment)
 
   return router

@@ -5,7 +5,13 @@ const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const statementService = {
   getStatementsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
-  getStatement: () => ({ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }),
+  getStatement: () => ({
+    id: 1,
+    booking_id: 2,
+    created_date: '12/12/2018',
+    user_id: 'ITAG_USER',
+    statement: 'Some initial statement',
+  }),
   submitStatement: jest.fn(),
   save: jest.fn(),
   validateSavedStatement: jest.fn(),
@@ -14,15 +20,15 @@ const statementService = {
 
 const offenderService = {
   getOffenderNames: () => [],
-  getOffenderDetails: () => ({}),
+  getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
+
 const route = createRouter({ authenticationMiddleware, statementService, offenderService })
 
 let app
 
 beforeEach(() => {
   statementService.validateSavedStatement.mockReturnValue([])
-
   app = appSetup(route)
 })
 
@@ -119,5 +125,19 @@ describe('POST /:reportId/add-comment-to-statement', () => {
       .expect('Location', '/')
       .expect(() => {
         expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
+      }))
+})
+
+describe('GET /:reportId/add-comment-to-statement', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/-1/add-comment-to-statement')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add a comment to your statement')
+        expect(res.text).toContain(1)
+        expect(res.text).toContain('Jimmy Choo')
+        expect(res.text).toContain('123456')
+        expect(res.text).toContain('Some initial statement')
       }))
 })
