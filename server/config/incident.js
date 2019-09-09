@@ -5,6 +5,12 @@ const { validate, isValid } = require('../utils/fieldValidation')
 
 const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs))
 
+const sanitiseUsernames = (inputs = []) =>
+  inputs
+    .filter(hasAtLeastOneOf(['username']))
+    .map(withoutKeysNotIn(['username']))
+    .map(({ username }) => ({ username: username.toUpperCase() }))
+
 const withoutKeysNotIn = attrs => value =>
   attrs.reduce((previous, attr) => (value[attr] ? { ...previous, [attr]: value[attr].trim() } : previous), {})
 
@@ -64,7 +70,7 @@ module.exports = {
         involvedStaff: {
           responseType: 'optionalInvolvedStaff',
           validationMessage: 'Enter the name of the staff member involved in the use of force incident',
-          sanitiser: removeEmptyValues(['username']),
+          sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0][username]',
         },
       },

@@ -14,7 +14,7 @@ beforeEach(() => {
     incidentDate: '2019-08-27T13:59:33+01:00',
     locationId: -1,
     plannedUseOfForce: 'true',
-    involvedStaff: [{ username: 'User bob' }, { username: '' }],
+    involvedStaff: [{ username: 'itag_user' }, { username: '' }],
     witnesses: [{ name: 'User bob' }, { name: '' }],
   }
 })
@@ -30,7 +30,7 @@ describe('Incident details page - overall', () => {
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
       witnesses: [{ name: 'User bob' }],
     })
   })
@@ -69,7 +69,7 @@ describe('Incident location', () => {
 
     expect(formResponse).toEqual({
       plannedUseOfForce: true,
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
       witnesses: [{ name: 'User bob' }],
     })
   })
@@ -89,7 +89,7 @@ describe('Planned use of force', () => {
 
     expect(formResponse).toEqual({
       locationId: -1,
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
       witnesses: [{ name: 'User bob' }],
     })
   })
@@ -110,7 +110,7 @@ describe('Involved staff', () => {
   })
 
   it('Invalid keys are stripped out', () => {
-    const input = { ...validInput, involvedStaff: [{ username: 'bob', age: 21 }] }
+    const input = { ...validInput, involvedStaff: [{ username: 'ITAG_USER', age: 21 }] }
     const { errors, formResponse } = check(input)
 
     expect(errors).toEqual([])
@@ -118,12 +118,12 @@ describe('Involved staff', () => {
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
-      involvedStaff: [{ username: 'bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
       witnesses: [{ name: 'User bob' }],
     })
   })
 
-  it('Usernames are trimmed', () => {
+  it('Usernames are trimmed and uppercased', () => {
     const input = { ...validInput, involvedStaff: [{ username: '  bob    ' }] }
     const { errors, formResponse } = check(input)
 
@@ -132,7 +132,7 @@ describe('Involved staff', () => {
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
-      involvedStaff: [{ username: 'bob' }],
+      involvedStaff: [{ username: 'BOB' }],
       witnesses: [{ name: 'User bob' }],
     })
   })
@@ -148,7 +148,7 @@ describe('Witenesses', () => {
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
     })
   })
 
@@ -162,7 +162,7 @@ describe('Witenesses', () => {
       locationId: -1,
       plannedUseOfForce: true,
       witnesses: [{ name: 'bob' }],
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
     })
   })
 
@@ -176,7 +176,7 @@ describe('Witenesses', () => {
       locationId: -1,
       plannedUseOfForce: true,
       witnesses: [{ name: 'bob' }],
-      involvedStaff: [{ username: 'User bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
     })
   })
 })
