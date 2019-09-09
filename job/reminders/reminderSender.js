@@ -18,6 +18,7 @@ module.exports = (notificationService, incidentClient) => {
       await notificationService.sendReporterStatementOverdue(reminder.recipientEmail, {
         reporterName: reminder.reporterName,
         incidentDate: reminder.incidentDate,
+        reportSubmittedDate: reminder.submittedDate,
       })
     } else {
       await notificationService.sendInvolvedStaffStatementOverdue(reminder.recipientEmail, {

@@ -63,12 +63,19 @@ describe('submit', () => {
       { userId: 'USER_3', name: 'Alice', email: 'user3@example.com' },
     ])
 
-    await service.submit(currentUser, 'booking-1')
+    const now = moment('2019-09-06 21:26:18')
+    await service.submit(currentUser, 'booking-1', now)
 
     expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
-      ['user1@example.com', { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith' }],
-      ['user3@example.com', { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith' }],
+      [
+        'user1@example.com',
+        { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith', reportSubmittedDate: now },
+      ],
+      [
+        'user3@example.com',
+        { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith', reportSubmittedDate: now },
+      ],
     ])
   })
 })
