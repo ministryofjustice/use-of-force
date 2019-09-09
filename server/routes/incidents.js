@@ -2,14 +2,14 @@ const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
 const statementConfig = require('../config/statement')
 const formProcessing = require('../services/formProcessing')
-const { StatementStatus } = require('../config/types')
+const { ReportStatus, StatementStatus } = require('../config/types')
 const { links } = require('../config.js')
 
 const formConfig = {
   ...statementConfig,
 }
 
-module.exports = function CreateReportRoutes({ statementService, offenderService }) {
+module.exports = function CreateReportRoutes({ statementService, reportService, offenderService }) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
@@ -17,6 +17,14 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
   const toStatement = namesByOffenderNumber => incident => ({
     id: incident.id,
+    incidentdate: incident.incidentDate,
+    staffMemberName: incident.reporterName,
+    offenderName: namesByOffenderNumber[incident.offenderNo],
+  })
+
+  const toReport = namesByOffenderNumber => incident => ({
+    id: incident.id,
+    bookingId: incident.bookingId,
     incidentdate: incident.incidentDate,
     staffMemberName: incident.reporterName,
     offenderName: namesByOffenderNumber[incident.offenderNo],
@@ -47,16 +55,16 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     },
 
     viewMyReports: async (req, res) => {
-      const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
-      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
+      const awaiting = await reportService.getReports(req.user.username, ReportStatus.IN_PROGRESS)
+      const completed = await reportService.getReports(req.user.username, ReportStatus.SUBMITTED)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
-      const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
-      const completedStatements = completed.map(toStatement(namesByOffenderNumber))
+      const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
+      const completedReports = completed.map(toReport(namesByOffenderNumber))
 
       res.render('pages/my-reports', {
-        awaitingStatements,
-        completedStatements,
+        awaitingReports,
+        completedReports,
         selectedTab: 'my-reports',
       })
     },

@@ -13,6 +13,11 @@ module.exports = function createReportService({
     return incidentClient.getCurrentDraftReport(userId, bookingId)
   }
 
+  async function getReports(userId, status) {
+    const result = await incidentClient.getReports(userId, status)
+    return result.rows
+  }
+
   async function isDraftComplete(username, bookingId) {
     const { form = {} } = await getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)
@@ -72,6 +77,7 @@ module.exports = function createReportService({
   }
 
   return {
+    getReports,
     getCurrentDraft,
     isDraftComplete,
     update,

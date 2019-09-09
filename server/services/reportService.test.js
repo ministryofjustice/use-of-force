@@ -1,8 +1,10 @@
 const moment = require('moment')
 const serviceCreator = require('./reportService')
+const { ReportStatus } = require('../config/types')
 
 const incidentClient = {
   getCurrentDraftReport: jest.fn(),
+  getReports: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
@@ -80,6 +82,15 @@ describe('getCurrentDraft', () => {
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1')
     expect(output).toEqual({ id: 'form-1', a: 'b', incidentDate: 'today' })
+  })
+})
+
+describe('getReports', () => {
+  test('it should call query on db', async () => {
+    incidentClient.getReports.mockReturnValue({ rows: [{ id: 1 }] })
+    const result = await service.getReports('user1', ReportStatus.SUBMITTED)
+    expect(result).toEqual([{ id: 1 }])
+    expect(incidentClient.getReports).toBeCalledWith('user1', ReportStatus.SUBMITTED)
   })
 })
 

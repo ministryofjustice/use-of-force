@@ -19,14 +19,14 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for incident in awaitingStatements %}
+      {% for incident in awaitingReports %}
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/{{ incident.id }}/write-your-statement"
+              href="/report/{{ incident.bookingId }}/report-use-of-force"
               role="button"
               draggable="false"
               class="govuk-button govuk-button"
@@ -55,14 +55,14 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for incident in completedStatements %}
+      {% for incident in completedReports %}
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{incident.offenderName}}</td>
           <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/{{ incident.id }}/your-statement"
+              href="/report/{{ incident.bookingId }}/report-use-of-force"
               role="button"
               draggable="false"
               class="govuk-button govuk-button--secondary"

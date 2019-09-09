@@ -16,7 +16,7 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
-  const incidents = IncidentRoutes({ statementService, offenderService })
+  const incidents = IncidentRoutes({ statementService, reportService, offenderService })
 
   const createReport = CreateReportRoutes({
     reportService,

@@ -18,12 +18,15 @@ const statementService = {
   saveAdditionalComment: jest.fn(),
 }
 
+const reportService = {
+  getReports: () => [],
+}
+
 const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
-
-const route = createRouter({ authenticationMiddleware, statementService, offenderService })
+const route = createRouter({ authenticationMiddleware, reportService, statementService, offenderService })
 
 let app
 

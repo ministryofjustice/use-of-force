@@ -28,6 +28,23 @@ describe('getCurrentDraftReport', () => {
   })
 })
 
+test('getReports', () => {
+  incidentClient.getReports('user1', ReportStatus.IN_PROGRESS)
+
+  expect(db.query).toBeCalledWith({
+    text: `select r.id
+            , r.booking_id    "bookingId"
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            from report r
+          where r.status = $1
+          and r.user_id = $2
+          order by r.incident_date`,
+    values: [ReportStatus.IN_PROGRESS.value, 'user1'],
+  })
+})
+
 test('createDraftReport', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }] })
 
