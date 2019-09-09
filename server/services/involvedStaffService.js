@@ -1,6 +1,7 @@
 const moment = require('moment')
 
-module.exports = function createReportService({ incidentClient, statementsClient, userService }) {  const get = reportId => {
+module.exports = function createReportService({ incidentClient, statementsClient, userService }) {
+  const get = reportId => {
     return incidentClient.getInvolvedStaff(reportId)
   }
 
