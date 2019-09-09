@@ -24,11 +24,18 @@ afterEach(() => {
 describe('send reporter notifications', () => {
   test('sendReporterStatementReminder', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    await service.sendReporterStatementReminder('user@email.com', { reporterName: 'Jane Smith', incidentDate })
+    const submittedDate = new Date(2019, 1, 13, 16, 45)
+
+    await service.sendReporterStatementReminder('user@email.com', {
+      reporterName: 'Jane Smith',
+      incidentDate,
+      reportSubmittedDate: submittedDate,
+    })
 
     expect(client.sendEmail).toBeCalledWith(reporter.REMINDER, 'user@email.com', {
       personalisation: {
-        DEADLINE_DATE: 'Friday 15 February',
+        DEADLINE_DATE: 'Saturday 16 February',
+        DEADLINE_TIME: '16:45',
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
         REPORTER_NAME: 'Jane Smith',
@@ -57,11 +64,18 @@ describe('send reporter notifications', () => {
 describe('send involved staff notifications', () => {
   test('sendInvolvedStaffStatementReminder', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    await service.sendInvolvedStaffStatementReminder('user@email.com', { involvedName: 'Jane Smith', incidentDate })
+    const submittedDate = new Date(2019, 1, 13, 16, 45)
+
+    await service.sendInvolvedStaffStatementReminder('user@email.com', {
+      involvedName: 'Jane Smith',
+      incidentDate,
+      reportSubmittedDate: submittedDate,
+    })
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REMINDER, 'user@email.com', {
       personalisation: {
-        DEADLINE_DATE: 'Friday 15 February',
+        DEADLINE_DATE: 'Saturday 16 February',
+        DEADLINE_TIME: '16:45',
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
         INVOLVED_NAME: 'Jane Smith',
@@ -88,15 +102,19 @@ describe('send involved staff notifications', () => {
 
   test('sendStatementRequest', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
+    const submittedDate = new Date(2019, 1, 13, 16, 45)
+
     await service.sendStatementRequest('user@email.com', {
       reporterName: 'Jane Smith',
       involvedName: 'Thelma Jones',
       incidentDate,
+      reportSubmittedDate: submittedDate,
     })
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {
       personalisation: {
-        DEADLINE_DATE: 'Friday 15 February',
+        DEADLINE_DATE: 'Saturday 16 February',
+        DEADLINE_TIME: '16:45',
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
         REPORTER_NAME: 'Jane Smith',
