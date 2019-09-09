@@ -2,7 +2,9 @@ const express = require('express')
 const flash = require('connect-flash')
 const bodyParser = require('body-parser')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const IncidentRoutes = require('./incidents')
+
+const CreateIncidentRoutes = require('./incidents')
+const CreateStatementRoutes = require('./statements')
 const CreateReportRoutes = require('./createReport')
 const CheckYourAnswerRoutes = require('./checkYourAnswers')
 const ReportUseOfForce = require('./reportUseOfForce')
@@ -16,7 +18,8 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
-  const incidents = IncidentRoutes({ statementService, reportService, offenderService })
+  const incidents = CreateIncidentRoutes({ reportService, offenderService })
+  const statements = CreateStatementRoutes({ statementService, offenderService })
 
   const createReport = CreateReportRoutes({
     reportService,
@@ -61,17 +64,17 @@ module.exports = function Index({
   get('/:reportId/report-sent', incidents.viewReportSent)
 
   get('/', incidents.redirectToHomePage)
-  get('/my-statements', incidents.viewMyStatements)
   get('/my-reports', incidents.viewMyReports)
 
-  get('/:reportId/write-your-statement', incidents.viewWriteYourStatement)
-  post('/:reportId/write-your-statement', incidents.submitWriteYourStatement)
-  get('/:reportId/check-your-statement', incidents.viewCheckYourStatement)
-  post('/:reportId/check-your-statement', incidents.submitCheckYourStatement)
-  get('/:reportId/statement-submitted', incidents.viewStatementSubmitted)
-  get('/:reportId/your-statement', incidents.viewYourStatement)
-  get('/:reportId/add-comment-to-statement', incidents.viewAddCommentToStatement)
-  post('/:reportId/add-comment-to-statement', incidents.saveAdditionalComment)
+  get('/my-statements', statements.viewMyStatements)
+  get('/:reportId/write-your-statement', statements.viewWriteYourStatement)
+  post('/:reportId/write-your-statement', statements.submitWriteYourStatement)
+  get('/:reportId/check-your-statement', statements.viewCheckYourStatement)
+  post('/:reportId/check-your-statement', statements.submitCheckYourStatement)
+  get('/:reportId/statement-submitted', statements.viewStatementSubmitted)
+  get('/:reportId/your-statement', statements.viewYourStatement)
+  get('/:reportId/add-comment-to-statement', statements.viewAddCommentToStatement)
+  post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
 
   return router
 }
