@@ -67,15 +67,15 @@ test('updateDraftReport', () => {
 })
 
 test('submitReport', () => {
-  incidentClient.submitReport('user1', 'booking1')
+  incidentClient.submitReport('user1', 'booking1', 'date1')
 
   expect(db.query).toBeCalledWith({
-    text: `update report r set status = $1, submitted_date = CURRENT_TIMESTAMP 
-    where user_id = $2
-    and booking_id = $3
-    and status = $4
+    text: `update report r set status = $1, submitted_date = $2
+    where user_id = $3
+    and booking_id = $4
+    and status = $5
     and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
-    values: [ReportStatus.SUBMITTED.value, 'user1', 'booking1', ReportStatus.IN_PROGRESS.value],
+    values: [ReportStatus.SUBMITTED.value, 'date1', 'user1', 'booking1', ReportStatus.IN_PROGRESS.value],
   })
 })
 
@@ -170,14 +170,17 @@ test('getInvolvedStaff', async () => {
 test('createStatements', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
 
-  const ids = await incidentClient.createStatements('incident-1', [
+  const ids = await incidentClient.createStatements('incident-1', 'date1', [
     { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
     { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
   ])
 
   expect(ids).toEqual([1, 2])
   expect(db.query).toBeCalledWith({
-    text: `insert into statement (report_id, staff_id, user_id, name, email, statement_status) VALUES ('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'PENDING'), ('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'PENDING') returning id`,
+    text:
+      `insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, statement_status) VALUES ` +
+      `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'PENDING'), ` +
+      `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'PENDING') returning id`,
   })
 })
 
@@ -228,6 +231,7 @@ test('getNextNotificationReminder', () => {
           ,       s.next_reminder_date     "nextReminderDate"  
           ,       r.reporter_name          "reporterName"
           ,       r.submitted_date         "submittedDate"
+          ,       r.incident_date          "incidentDate"
           ,       r.user_id = s.user_id    "isReporter"
           from statement s
           left join report r on r.id = s.report_id

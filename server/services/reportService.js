@@ -1,3 +1,4 @@
+const moment = require('moment')
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
 const { check: getReportStatus } = require('../services/reportStatusChecker')
@@ -52,12 +53,13 @@ module.exports = function createReportService({
     )
   }
 
-  async function submit(currentUser, bookingId) {
+  async function submit(currentUser, bookingId, now = moment()) {
     const { id, incidentDate } = await getCurrentDraft(currentUser.username, bookingId)
     if (id) {
-      const staff = await involvedStaffService.save(id, currentUser)
+      const reportSubmittedDate = now
+      const staff = await involvedStaffService.save(id, reportSubmittedDate, currentUser)
       logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
-      await incidentClient.submitReport(currentUser.username, bookingId)
+      await incidentClient.submitReport(currentUser.username, bookingId, reportSubmittedDate.toDate())
 
       // Always ensure report is persisted before sending out notifications
       await incidentClient.commitAndStartNewTransaction()
