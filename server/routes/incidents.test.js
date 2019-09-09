@@ -4,7 +4,7 @@ const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const statementService = {
-  getStatementsForUser: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
+  getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
   getStatement: () => ({
     id: 1,
     booking_id: 2,
@@ -18,12 +18,15 @@ const statementService = {
   saveAdditionalComment: jest.fn(),
 }
 
+const reportService = {
+  getReports: () => [],
+}
+
 const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
-
-const route = createRouter({ authenticationMiddleware, statementService, offenderService })
+const route = createRouter({ authenticationMiddleware, reportService, statementService, offenderService })
 
 let app
 
@@ -36,6 +39,25 @@ describe('GET /incidents', () => {
   it('should render page', () =>
     request(app)
       .get('/')
+      .expect(302)
+      .expect('Location', '/my-statements'))
+})
+
+describe('GET /my-statements', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/my-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+      }))
+})
+
+describe('GET /my-reports', () => {
+  it('should render page', () =>
+    request(app)
+      .get('/my-reports')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

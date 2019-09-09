@@ -5,6 +5,7 @@ require('./utils/azure-appinsights')
 const createApp = require('./app')
 
 const incidentClient = require('./data/incidentClient')
+const statementsClient = require('./data/statementsClient')
 const elite2ClientBuilder = require('./data/elite2ClientBuilder')
 const authClientBuilder = require('./data/authClientBuilder')
 
@@ -19,7 +20,7 @@ const { notificationServiceFactory } = require('./services/notificationService')
 
 // pass in dependencies of service
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = createInvolvedStaffService({ incidentClient, userService })
+const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService })
 const notificationService = notificationServiceFactory()
 const offenderService = createOffenderService(elite2ClientBuilder)
 const reportService = createReportService({
@@ -28,7 +29,7 @@ const reportService = createReportService({
   involvedStaffService,
   notificationService,
 })
-const statementService = createStatementService({ incidentClient })
+const statementService = createStatementService({ statementsClient })
 
 const app = createApp({
   involvedStaffService,

@@ -8,13 +8,16 @@ const userService = {
 const incidentClient = {
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
+}
+
+const statementsClient = {
   createStatements: jest.fn(),
 }
 
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ incidentClient, userService })
+  service = serviceCreator({ incidentClient, statementsClient, userService })
 })
 
 afterEach(() => {
@@ -186,7 +189,7 @@ describe('save', () => {
 
     await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
 
-    expect(incidentClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
+    expect(statementsClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
       { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
       {
         email: 'cn@email',
@@ -232,8 +235,7 @@ describe('save', () => {
     })
 
     await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
-
-    expect(incidentClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
+    expect(statementsClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
       { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
       {
         email: 'cn@email',

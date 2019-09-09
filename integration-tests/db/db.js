@@ -1,12 +1,13 @@
 const format = require('pg-format')
 const db = require('../../server/data/dataAccess/db')
 const incidentClient = require('../../server/data/incidentClient')
+const statementsClient = require('../../server/data/statementsClient')
 
 const getCurrentDraft = bookingId =>
   incidentClient.getCurrentDraftReport('Test User', bookingId, db.queryWithoutTransaction)
 
 const getStatementForUser = ({ reportId, status }) =>
-  incidentClient.getStatement('Test User', reportId, status, db.queryWithoutTransaction)
+  statementsClient.getStatement('Test User', reportId, status, db.queryWithoutTransaction)
 
 const getAllStatementsForReport = reportId => {
   return db

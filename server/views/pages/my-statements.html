@@ -1,0 +1,80 @@
+{% extends "../partials/incidentPage.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/table/macro.njk" import govukTable %} 
+
+{% block tabContent %}
+<section class="govuk-tabs__panel" id="past-day">
+<table class="govuk-table incidents" data-qa="statements-todo">
+  <caption class="govuk-table__caption govuk-heading-m">
+    Not completed
+  </caption>
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+      {% for incident in awaitingStatements %}
+      <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell">{{incident.offenderName}}</td>
+          <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-1">
+            <a
+              href="/{{ incident.id }}/write-your-statement"
+              role="button"
+              draggable="false"
+              class="govuk-button govuk-button"
+            >
+              Start
+            </a>
+          </td>
+      </tr>  
+      {% endfor %}
+
+  </tbody>
+</table>
+
+<table class="govuk-table incidents" data-qa="statements-complete">
+  <caption class="govuk-table__caption govuk-heading-m">
+    Completed
+  </caption>
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+      {% for incident in completedStatements %}
+      <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell">{{incident.offenderName}}</td>
+          <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-1">
+            <a
+              href="/{{ incident.id }}/your-statement"
+              role="button"
+              draggable="false"
+              class="govuk-button govuk-button--secondary"
+              data-qa="view-statement"
+            >
+            View
+            </a>
+          </td>
+      </tr>  
+      {% endfor %}
+
+  </tbody>
+</table>
+</section>
+{% endblock %}

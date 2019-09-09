@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-module.exports = function createReportService({ incidentClient, userService }) {
+module.exports = function createReportService({ incidentClient, statementsClient, userService }) {
   const get = reportId => {
     return incidentClient.getInvolvedStaff(reportId)
   }
@@ -73,7 +73,7 @@ module.exports = function createReportService({ incidentClient, userService }) {
     }))
 
     const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
-    await incidentClient.createStatements(reportId, firstReminderDate.toDate(), staff)
+    await statementsClient.createStatements(reportId, firstReminderDate.toDate(), staff)
     return staff
   }
 

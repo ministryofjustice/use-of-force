@@ -1,0 +1,26 @@
+{% extends "./layout.html" %} 
+
+    {% block content %}
+    <h1 class="govuk-heading-xl mainHeading">Use of force incidents</h1>
+
+    <div class="govuk-tabs">
+    <h2 class="govuk-tabs__title">
+        Contents
+    </h2>
+    <ul class="govuk-tabs__list">
+        <li class="govuk-tabs__list-item {% if selectedTab === 'my-statements' %} govuk-tabs__list-item--selected {% endif %}">
+        <a class="govuk-tabs__tab" data-qa="my-statements-link" href="/my-statements">
+            My statements
+        </a>
+        </li>
+        <li class="govuk-tabs__list-item {% if selectedTab === 'my-reports' %} govuk-tabs__list-item--selected {% endif %}">
+        <a class="govuk-tabs__tab" data-qa="my-reports-link" href="/my-reports">
+            My reports
+        </a>
+        </li>
+    </ul>
+
+    {% block tabContent %} 
+    {% endblock %}
+    </div>
+{% endblock %}
