@@ -12,8 +12,8 @@ context('Submit the incident report', () => {
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Test User')
-    cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
-    cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
+    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
   })
 
   it('A form cannot be submitted until confirmed', () => {
@@ -40,8 +40,8 @@ context('Submit the incident report', () => {
           .task('getAllStatementsForReport', reportId)
           .then(staff =>
             expect(staff).to.deep.equal([
-              { name: 'Mr Zagato name', email: 'Mr Zagato@gov.uk', userid: 'Mr Zagato', status: 'PENDING' },
-              { name: 'Mrs Jones name', email: 'Mrs Jones@gov.uk', userid: 'Mrs Jones', status: 'PENDING' },
+              { name: 'MR ZAGATO name', email: 'MR ZAGATO@gov.uk', userid: 'MR ZAGATO', status: 'PENDING' },
+              { name: 'MRS JONES name', email: 'MRS JONES@gov.uk', userid: 'MRS JONES', status: 'PENDING' },
               { name: 'Test User name', email: 'Test User@gov.uk', userid: 'Test User', status: 'PENDING' },
             ])
           )
