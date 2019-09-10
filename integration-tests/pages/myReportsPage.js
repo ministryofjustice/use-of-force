@@ -31,7 +31,6 @@ const myReportsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
-    viewStatement: () => cy.get('[data-qa="view-statement"]'),
 
     selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
     myReportsTab: () => cy.get('[data-qa="my-reports-link"]'),

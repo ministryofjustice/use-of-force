@@ -98,7 +98,7 @@ const submitStatement = (userId, reportId, query = db.query) => {
   })
 }
 
-const createStatements = async (reportId, firstReminder, staff) => {
+const createStatements = async (reportId, firstReminder, staff, query = db.query) => {
   const rows = staff.map(s => [
     reportId,
     s.staffId,
@@ -108,7 +108,7 @@ const createStatements = async (reportId, firstReminder, staff) => {
     firstReminder,
     StatementStatus.PENDING.value,
   ])
-  const results = await db.query({
+  const results = await query({
     text: format(
       'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, statement_status) VALUES %L returning id',
       rows

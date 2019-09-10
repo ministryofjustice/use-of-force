@@ -1,6 +1,8 @@
 const TasklistPage = require('../../pages/tasklistPage')
 const IncidentsPage = require('../../pages/incidentsPage')
 const SubmittedPage = require('../../pages/submittedPage')
+const { ReportStatus } = require('../../../server/config/types')
+const { expectedPayload } = require('../seedData')
 
 context('Submit the incident report', () => {
   const bookingId = 1001
@@ -16,7 +18,7 @@ context('Submit the incident report', () => {
     cy.task('stubUserDetailsRetrieval', 'MRS JONES')
   })
 
-  it('A form cannot be submitted until confirmed', () => {
+  it('Submitting a form', () => {
     cy.login(bookingId)
 
     const tasklistPage = TasklistPage.visit(bookingId)
@@ -46,48 +48,55 @@ context('Submit the incident report', () => {
             ])
           )
       )
-  })
 
-  it('Can defer submitting form', () => {
-    cy.login(bookingId)
-
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
-
-    checkAnswersPage.backToTasklist().click()
-
-    TasklistPage.verifyOnPage()
+    submittedPage
+      .getReportId()
+      .then(reportId => cy.task('getPayload', reportId).then(payload => expect(payload).to.deep.equal(expectedPayload)))
   })
 
   it('After submitting, can not resubmit, go on to view all incidents', () => {
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
+    cy.task('seedReport', {
+      status: ReportStatus.IN_PROGRESS,
+      involvedStaff: [],
+    })
 
-    const checkAnswersPage = evidencePage.save()
+    let tasklistPage = TasklistPage.visit(bookingId)
+    let checkAnswersPage = tasklistPage.goToAnswerPage()
+
+    checkAnswersPage.backToTasklist().click()
+
+    tasklistPage = TasklistPage.verifyOnPage()
+
+    checkAnswersPage = tasklistPage.goToAnswerPage()
     checkAnswersPage.clickSubmit()
 
     SubmittedPage.verifyOnPage()
 
     cy.go('back')
 
+    IncidentsPage.verifyOnPage()
+  })
+
+  it('Can exit after completing report and before creating statement', () => {
+    cy.login(bookingId)
+
+    cy.task('seedReport', {
+      status: ReportStatus.IN_PROGRESS,
+      involvedStaff: [],
+    })
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    const checkAnswersPage = tasklistPage.goToAnswerPage()
+
+    checkAnswersPage.clickSubmit()
+
+    SubmittedPage.verifyOnPage()
+      .exit()
+      .click()
+
+    // Exit location is configurable - in dev this points to incidents page
     IncidentsPage.verifyOnPage()
   })
 })
