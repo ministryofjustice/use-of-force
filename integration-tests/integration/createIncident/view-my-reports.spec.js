@@ -37,9 +37,9 @@ context('Submit statement', () => {
     newIncidentPage.save()
 
     const incidentsPage = IncidentsPage.goTo()
-    incidentsPage.selectedTab().contains('My statements')
+    incidentsPage.selectedTab().contains('Your statements')
     incidentsPage.myReportsTab().click()
-    incidentsPage.selectedTab().contains('My reports')
+    incidentsPage.selectedTab().contains('Your reports')
 
     const myReportsPage = MyReportsPage.verifyOnPage()
 
