@@ -18,7 +18,7 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
-  const incidents = CreateIncidentRoutes({ reportService, offenderService })
+  const incidents = CreateIncidentRoutes({ reportService, involvedStaffService, offenderService })
   const statements = CreateStatementRoutes({ statementService, offenderService })
 
   const createReport = CreateReportRoutes({
@@ -64,9 +64,10 @@ module.exports = function Index({
   get('/:reportId/report-sent', incidents.viewReportSent)
 
   get('/', incidents.redirectToHomePage)
-  get('/my-reports', incidents.viewMyReports)
+  get('/your-reports', incidents.viewYourReports)
+  get('/:reportId/your-report', incidents.viewYourReport)
 
-  get('/my-statements', statements.viewMyStatements)
+  get('/your-statements', statements.viewYourStatements)
   get('/:reportId/write-your-statement', statements.viewWriteYourStatement)
   post('/:reportId/write-your-statement', statements.submitWriteYourStatement)
   get('/:reportId/check-your-statement', statements.viewCheckYourStatement)

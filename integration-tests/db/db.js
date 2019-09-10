@@ -9,7 +9,7 @@ const getCurrentDraft = bookingId =>
   incidentClient.getCurrentDraftReport('Test User', bookingId, db.queryWithoutTransaction)
 
 const getStatementForUser = ({ reportId, status }) =>
-  statementsClient.getStatement('Test User', reportId, status, db.queryWithoutTransaction)
+  statementsClient.getStatementForUser('Test User', reportId, status, db.queryWithoutTransaction)
 
 const getAllStatementsForReport = reportId => {
   return db

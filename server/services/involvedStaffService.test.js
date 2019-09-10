@@ -6,6 +6,7 @@ const userService = {
 }
 
 const incidentClient = {
+  getDraftInvolvedStaff: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
 }
@@ -24,9 +25,16 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('get', () => {
+describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
-    await service.get('incident-1')
+    await service.getDraftInvolvedStaff('incident-1')
+    expect(incidentClient.getDraftInvolvedStaff).toBeCalledTimes(1)
+  })
+})
+
+describe('getInvolvedStaff', () => {
+  test('it should call query on db', async () => {
+    await service.getInvolvedStaff('incident-1')
     expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
   })
 })
@@ -166,7 +174,7 @@ describe('save', () => {
   })
 
   test('when user has already added themselves', async () => {
-    incidentClient.getInvolvedStaff.mockReturnValue([
+    incidentClient.getDraftInvolvedStaff.mockReturnValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -207,7 +215,7 @@ describe('save', () => {
   })
 
   test('when user is not already added', async () => {
-    incidentClient.getInvolvedStaff.mockReturnValue([
+    incidentClient.getDraftInvolvedStaff.mockReturnValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -253,7 +261,7 @@ describe('save', () => {
   })
 
   test('fail to find current user', async () => {
-    incidentClient.getInvolvedStaff.mockReturnValue([
+    incidentClient.getDraftInvolvedStaff.mockReturnValue([
       {
         staffId: 1,
         email: 'bn@email',

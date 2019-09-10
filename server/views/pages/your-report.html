@@ -1,0 +1,227 @@
+{% extends "../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "./pagesMacros.njk" as pagesMacros %} 
+
+{% block beforeContent %}
+
+{{ govukBackLink({
+text: "Back",
+href: backLink or "/"
+}) }}
+
+{% endblock %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
+    <h1 class="govuk-heading-xl">Your report</h1>
+
+    {{
+      pagesMacros.sectionHeading({
+        title: 'Incident details'
+      })
+    }}
+    {{pagesMacros.tableRow({
+              label: 'Date of incident',  
+              'data-qa': 'incidentDate',    
+              dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY')
+      })
+    }}
+    {{pagesMacros.tableRow({
+              label: 'Time of incident',  
+              'data-qa': 'incidentTime',    
+              dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm') 
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Location',
+        'data-qa': 'location',
+        dataValue: data.incidentDetails.location
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was the use of force planned?',
+        'data-qa': 'incidentType',
+        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff involved',
+        'data-qa': 'staffInvolved',
+        dataValue: data.incidentDetails.staffInvolved,
+        type: 'itemPerLine'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Witnesses',
+        'data-qa': 'witnesses',
+        dataValue: data.incidentDetails.witnesses,
+        type: 'itemPerLine'
+      })
+    }}
+
+    {{
+      pagesMacros.sectionHeading({
+        title: 'Use of force details'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was positive communication used to de-escalate the situation?',
+        'data-qa': 'positiveCommunication',
+        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were any personal protection techniques used?',
+        'data-qa': 'personalProtection',
+        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was a baton drawn?',
+        'data-qa': 'batonDrawn',
+        dataValue: data.useOfForceDetails.batonDrawn
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was PAVA drawn?',
+        'data-qa': 'pavaDrawn',
+        dataValue: data.useOfForceDetails.pavaDrawn
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was a guiding hold used?',
+        'data-qa': 'guidingHold',
+        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was control and restraint used?',
+        'data-qa': 'restraintUsed',
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
+      })
+    }}
+
+    {{
+      pagesMacros.sectionHeading({
+        title: 'Relocation and injuries'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Where was the prisoner relocated to?',
+        'data-qa': 'prisonerRelocation',
+        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was the prisoner compliant?',
+        'data-qa': 'compliancy',
+        dataValue: data.relocationAndInjuries.prisonerCompliancy | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Who completed the F213 form?',
+        'data-qa': 'f213',
+        dataValue: data.relocationAndInjuries.f213CompletedBy | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Healthcare staff present',
+        'data-qa': 'healthcareStaffPresent',
+        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Did the prisoner sustain any injuries at the time?',
+        'data-qa': 'prisonerInjuries',
+        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Did the prisoner need outside hospitalisation at the time?',
+        'data-qa': 'prisonerHospitalisation',
+        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff who needed medical attention',
+        'data-qa': 'staffMedicalAttention',
+        dataValue: data.relocationAndInjuries.staffMedicalAttention,
+        type: 'itemPerLine'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Staff taken to hospital',
+        'data-qa': 'staffHospitalisation',
+        dataValue: data.relocationAndInjuries.staffHospitalisation,
+        type: 'itemPerLine'
+      })
+    }}
+
+    {{
+      pagesMacros.sectionHeading({
+        title: 'Evidence'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Evidence bagged and tagged',
+        'data-qa': 'evidenceBaggedTagged',
+        dataValue: data.evidence.evidenceBaggedTagged,
+        type: 'itemPerLine'
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were any photographs taken?',
+        'data-qa': 'photographs',
+        dataValue: data.evidence.photographs | toYesNo
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was any part of the incident captured on CCTV?',
+        'data-qa': 'cctv',
+        dataValue: data.evidence.cctv | capitalize
+      })
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Was any part of the incident captured on a body-worn camera?',
+        'data-qa': 'bodyCameras',
+        dataValue: data.evidence.bodyCameras | capitalize
+      })
+    }}
+
+    {{
+      govukButton({
+        text: 'Continue',
+        name: 'continue',
+        href: '/your-reports',
+        classes: 'govuk-button  govuk-!-margin-top-5',
+        attributes: { 'data-qa': 'continue' }
+      })
+    }}
+  </div>
+</div>
+
+{% endblock %}

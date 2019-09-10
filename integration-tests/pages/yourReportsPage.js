@@ -12,7 +12,7 @@ const completeCol = (i, j) =>
     .find('td')
     .eq(j)
 
-const myReportsPage = () =>
+const yourReportsPage = () =>
   page('Use of force incidents', {
     getTodoRow: i => ({
       date: () => todoCol(i, 0),
@@ -33,13 +33,13 @@ const myReportsPage = () =>
     }),
 
     selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
-    myReportsTab: () => cy.get('[data-qa="my-reports-link"]'),
+    yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
   })
 
 export default {
-  verifyOnPage: myReportsPage,
+  verifyOnPage: yourReportsPage,
   goTo: () => {
     cy.visit('/')
-    return myReportsPage()
+    return yourReportsPage()
   },
 }

@@ -9,9 +9,9 @@ module.exports = function createReportService({
   involvedStaffService,
   notificationService,
 }) {
-  function getCurrentDraft(userId, bookingId) {
-    return incidentClient.getCurrentDraftReport(userId, bookingId)
-  }
+  const getCurrentDraft = (userId, bookingId) => incidentClient.getCurrentDraftReport(userId, bookingId)
+
+  const getReport = (userId, reportId) => incidentClient.getReport(userId, reportId)
 
   async function getReports(userId, status) {
     const result = await incidentClient.getReports(userId, status)
@@ -78,6 +78,7 @@ module.exports = function createReportService({
   }
 
   return {
+    getReport,
     getReports,
     getCurrentDraft,
     isDraftComplete,

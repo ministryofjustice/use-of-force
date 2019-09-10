@@ -40,13 +40,13 @@ describe('GET /incidents', () => {
     request(app)
       .get('/')
       .expect(302)
-      .expect('Location', '/my-statements'))
+      .expect('Location', '/your-statements'))
 })
 
-describe('GET /my-reports', () => {
+describe('GET /your-reports', () => {
   it('should render page', () =>
     request(app)
-      .get('/my-reports')
+      .get('/your-reports')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

@@ -27,8 +27,8 @@ test('getStatements', () => {
   })
 })
 
-test('getStatement', () => {
-  statementsClient.getStatement('user-1', 'incident-1', StatementStatus.PENDING)
+test('getStatementForUser', () => {
+  statementsClient.getStatementForUser('user-1', 'incident-1', StatementStatus.PENDING)
 
   expect(db.query).toBeCalledWith({
     text: `select s.id

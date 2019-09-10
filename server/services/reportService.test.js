@@ -5,6 +5,7 @@ const { ReportStatus } = require('../config/types')
 const incidentClient = {
   getCurrentDraftReport: jest.fn(),
   getReports: jest.fn(),
+  getReport: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
@@ -89,6 +90,14 @@ describe('getCurrentDraft', () => {
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1')
     expect(output).toEqual({ id: 'form-1', a: 'b', incidentDate: 'today' })
+  })
+})
+
+describe('getReport', () => {
+  test('it should call query on db', async () => {
+    await service.getReport('user1', 'report1')
+    expect(incidentClient.getReport).toBeCalledTimes(1)
+    expect(incidentClient.getReport).toBeCalledWith('user1', 'report1')
   })
 })
 

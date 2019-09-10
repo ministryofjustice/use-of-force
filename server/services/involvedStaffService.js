@@ -1,9 +1,9 @@
 const moment = require('moment')
 
 module.exports = function createReportService({ incidentClient, statementsClient, userService }) {
-  const get = reportId => {
-    return incidentClient.getInvolvedStaff(reportId)
-  }
+  const getDraftInvolvedStaff = reportId => incidentClient.getDraftInvolvedStaff(reportId)
+
+  const getInvolvedStaff = reportId => incidentClient.getInvolvedStaff(reportId)
 
   async function lookup(token, usernames) {
     if (!usernames.length) {
@@ -61,7 +61,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
   }
 
   const save = async (reportId, reportSubmittedDate, currentUser) => {
-    const involvedStaff = await get(reportId)
+    const involvedStaff = await getDraftInvolvedStaff(reportId)
 
     const staffToCreateStatmentsFor = await getStaffRequiringStatements(currentUser, involvedStaff)
 
@@ -112,7 +112,8 @@ module.exports = function createReportService({ incidentClient, statementsClient
     }))
 
   return {
-    get,
+    getInvolvedStaff,
+    getDraftInvolvedStaff,
     save,
     lookup,
   }
