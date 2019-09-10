@@ -13,8 +13,8 @@ context('Add comments to statement', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'Mr Zagato')
-    cy.task('stubUserDetailsRetrieval', 'Mrs Jones')
+    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
     cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 

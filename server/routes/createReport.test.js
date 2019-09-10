@@ -76,7 +76,7 @@ describe('POST save and continue /section/form', () => {
             incidentDetails: {
               locationId: -1,
               plannedUseOfForce: true,
-              involvedStaff: [{ username: 'User bob' }],
+              involvedStaff: [{ username: 'USER BOB' }],
               witnesses: [{ name: 'User bob' }],
             },
           },
@@ -124,7 +124,7 @@ describe('POST save and return to tasklist', () => {
             incidentDetails: {
               locationId: -1,
               plannedUseOfForce: true,
-              involvedStaff: [{ username: 'User bob' }],
+              involvedStaff: [{ username: 'USER BOB' }],
               witnesses: [{ name: 'User bob' }],
             },
           },
