@@ -1,125 +1,14 @@
-const { BodyWornCameras, Cctv, RelocationLocation, ControlAndRestraintPosition, toLabel } = require('../config/types')
 const { properCaseFullName } = require('../utils/utils')
+const reportSummary = require('./model/reportSummary')
 
 module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService }) {
-  const createIncidentDetailsObj = (
-    currentUser,
-    offenderDetail,
-    description,
-    incidentDetails = {},
-    involvedStaff,
-    incidentDate
-  ) => {
-    return {
-      offenderName: offenderDetail.displayName,
-      offenderNumber: offenderDetail.offenderNo,
-      location: description,
-      plannedUseOfForce: incidentDetails.plannedUseOfForce,
-      staffInvolved: [
-        ...(involvedStaff.find(staff => staff.username === currentUser.username)
-          ? []
-          : [[`${currentUser.displayName} - ${currentUser.username}`]]),
-        ...involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.username}`]),
-      ],
-      witnesses: incidentDetails.witnesses
-        ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])
-        : 'None',
-      incidentDate,
-    }
-  }
-
-  const createUseOfForceDetailsObj = (details = {}) => {
-    return {
-      positiveCommunicationUsed: details.positiveCommunication,
-      personalProtectionTechniques: details.personalProtectionTechniques,
-      batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : 'No')),
-      pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : 'No')),
-      guidingHoldUsed: whenPresent(details.guidingHold, value =>
-        value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : 'No'
-      ),
-      controlAndRestraintUsed: whenPresent(details.restraint, value =>
-        value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
-      ),
-    }
-  }
-
-  const createRelocationObj = (relocationAndInjuries = {}) => {
-    return {
-      prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-      prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
-      healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
-        value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
-      ),
-      prisonerInjuries: relocationAndInjuries.prisonerInjuries,
-      f213CompletedBy: relocationAndInjuries.f213CompletedBy,
-      prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
-      staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-        value
-          ? relocationAndInjuries.staffNeedingMedicalAttention.map(staff => [properCaseFullName(staff.name)])
-          : 'None'
-      ),
-      staffHospitalisation: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-        value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
-      ),
-    }
-  }
-
-  const createEvidenceObj = (evidence = {}) => {
-    return {
-      evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
-      photographs: evidence.photographsTaken,
-      cctv: toLabel(Cctv, evidence.cctvRecording),
-      bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
-        value === Cctv.YES.value
-          ? `Yes - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || 'Yes'
-          : toLabel(BodyWornCameras, value)
-      ),
-    }
-  }
-
-  const whenPresent = (value, present) => (value == null ? undefined : present(value))
-
-  const wasWeaponUsed = weaponUsed => {
-    if (weaponUsed == null) {
-      return undefined
-    }
-    return weaponUsed ? 'Yes and used' : 'Yes and not used'
-  }
-
-  const getRestraintPositions = positions => {
-    return positions == null
-      ? ''
-      : `Yes - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
-  }
-
-  const staffTakenToHospital = (staffMembers = []) => {
-    const hospitalisedStaff = staffMembers.filter(staff => staff.hospitalisation === true)
-    if (hospitalisedStaff.length === 0) {
-      return 'None'
-    }
-    return hospitalisedStaff.map(staff => [properCaseFullName(staff.name)])
-  }
-
-  const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
-    if (evidenceYesNo === false) {
-      return 'No'
-    }
-    return tagsAndEvidence.map(item => {
-      return [item.evidenceTagReference, item.description]
-    })
-  }
-
-  const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
-    return guidingHoldOfficersInvolved === 1 ? 'Yes - 1 officer involved' : 'Yes - 2 officers involved'
-  }
-
-  const extractCommaSeparatedList = (attr, dataArray = []) => {
-    return dataArray.map(element => element[attr]).join(', ')
-  }
+  const currentUserIfNotPresent = (involvedStaff, currentUser) =>
+    involvedStaff.find(staff => staff.username === currentUser.username)
+      ? []
+      : [[`${currentUser.displayName} - ${currentUser.username}`]]
 
   return {
     view: async (req, res) => {
-      const errors = req.flash('errors')
       const { bookingId } = req.params
 
       const { id, form = {}, incidentDate } = await reportService.getCurrentDraft(req.user.username, bookingId)
@@ -133,29 +22,21 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
 
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, parseInt(bookingId, 10))
 
-      const { description = '' } = await offenderService.getLocation(
+      const { description: locationDescription = '' } = await offenderService.getLocation(
         res.locals.user.token,
-        form.incidentDetails && form.incidentDetails.locationId
+        form.incidentDetails.locationId
       )
 
-      const involvedStaff = id ? await involvedStaffService.get(id) : []
+      const involvedStaff = await involvedStaffService.get(id)
 
-      const data = {
-        incidentDetails: createIncidentDetailsObj(
-          res.locals.user,
-          offenderDetail,
-          description,
-          form.incidentDetails,
-          involvedStaff,
-          incidentDate
-        ),
-        offenderDetail,
-        useOfForceDetails: createUseOfForceDetailsObj(form.useOfForceDetails),
-        relocationAndInjuries: createRelocationObj(form.relocationAndInjuries),
-        evidence: createEvidenceObj(form.evidence),
-      }
+      const involvedStaffNames = [
+        ...currentUserIfNotPresent(involvedStaff, res.locals.user),
+        ...involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.username}`]),
+      ]
 
-      return res.render('pages/check-your-answers', { data, bookingId, errors })
+      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate)
+
+      return res.render('pages/check-your-answers', { data, bookingId })
     },
 
     submit: async (req, res) => {

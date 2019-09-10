@@ -15,13 +15,22 @@ const offenderService = {
   getLocation: jest.fn(),
 }
 
-const checkAnswersRoute = createRouter({ authenticationMiddleware, reportService, offenderService })
+const involvedStaffService = {
+  get: () => [],
+}
+
+const checkAnswersRoute = createRouter({
+  authenticationMiddleware,
+  reportService,
+  offenderService,
+  involvedStaffService,
+})
 
 let app
 
 beforeEach(() => {
   app = appSetup(checkAnswersRoute)
-  reportService.getCurrentDraft.mockResolvedValue({})
+  reportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   offenderService.getLocation.mockResolvedValue({})
