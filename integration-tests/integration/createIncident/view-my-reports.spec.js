@@ -1,6 +1,7 @@
 const TasklistPage = require('../../pages/tasklistPage')
 const IncidentsPage = require('../../pages/incidentsPage')
 const MyReportsPage = require('../../pages/myReportsPage')
+const { ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
   const bookingId = 1001
@@ -19,21 +20,19 @@ context('Submit statement', () => {
   it('A user can submit their statement from incidents page', () => {
     cy.login(bookingId)
 
-    let tasklistPage = TasklistPage.visit(bookingId)
-    let newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      involvedStaff: [
+        {
+          userId: 'Test User',
+          name: 'Test User name',
+          email: 'Test User@gov.uk',
+        },
+      ],
+    })
 
-    checkAnswersPage.clickSubmit()
-
-    tasklistPage = TasklistPage.visit(bookingId)
-    newIncidentPage = tasklistPage.startNewForm()
+    const tasklistPage = TasklistPage.visit(bookingId)
+    const newIncidentPage = tasklistPage.startNewForm()
     newIncidentPage.fillForm()
     newIncidentPage.save()
 

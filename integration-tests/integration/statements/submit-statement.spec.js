@@ -3,7 +3,7 @@ const IncidentsPage = require('../../pages/incidentsPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const SubmitStatementPage = require('../../pages/submitStatementPage')
 const ViewStatementPage = require('../../pages/viewStatementPage')
-const { StatementStatus } = require('../../../server/config/types')
+const { StatementStatus, ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
   const bookingId = 1001
@@ -14,26 +14,22 @@ context('Submit statement', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
     cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
   it('A user can submit their statement from incidents page', () => {
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
-
-    checkAnswersPage.clickSubmit()
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      involvedStaff: [
+        {
+          userId: 'Test User',
+          name: 'Test User name',
+          email: 'Test User@gov.uk',
+        },
+      ],
+    })
 
     {
       const incidentsPage = IncidentsPage.goTo()
@@ -67,16 +63,13 @@ context('Submit statement', () => {
   it('A user can submit their own statement after submitting report', () => {
     cy.login(bookingId)
 
+    cy.task('seedReport', {
+      status: ReportStatus.IN_PROGRESS,
+      involvedStaff: [],
+    })
+
     const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
+    const checkAnswersPage = tasklistPage.goToAnswerPage()
 
     checkAnswersPage.clickSubmit()
 
@@ -114,24 +107,27 @@ context('Submit statement', () => {
     )
   })
 
-  it('Can view a submitted report', () => {
+  it('Can view a submitted statement', () => {
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
-    checkAnswersPage.clickSubmit()
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      involvedStaff: [
+        {
+          userId: 'Test User',
+          name: 'Test User name',
+          email: 'Test User@gov.uk',
+        },
+      ],
+    })
 
-    const submittedPage = SubmittedPage.verifyOnPage()
+    let incidentsPage = IncidentsPage.goTo()
+    incidentsPage
+      .getTodoRow(0)
+      .startButton()
+      .click()
 
-    const submitStatementPage = submittedPage.continueToStatement()
+    const submitStatementPage = SubmitStatementPage.verifyOnPage()
     submitStatementPage.lastTrainingMonth().select('March')
     submitStatementPage.lastTrainingYear().type('2010')
     submitStatementPage.jobStartYear().type('1999')
@@ -145,38 +141,17 @@ context('Submit statement', () => {
 
     const statementSubmittedPage = confirmStatementPage.submit()
 
-    const incidentsPage = statementSubmittedPage.finish()
+    incidentsPage = statementSubmittedPage.finish()
 
-    const { viewButton } = incidentsPage.getCompleteRow(0)
-
-    viewButton().click()
+    incidentsPage
+      .getCompleteRow(0)
+      .viewButton()
+      .click()
 
     const viewStatementPage = ViewStatementPage.verifyOnPage()
     viewStatementPage.offenderName().should('contain', 'Norman Smith')
     viewStatementPage.statement().should('contain', 'This is my statement')
     viewStatementPage.lastTraining().should('contain', 'March 2010')
     viewStatementPage.jobStartYear().should('contain', '1999')
-  })
-
-  it('Can exit to page showing list of all incidents, after completing report but before creating statement', () => {
-    cy.login(bookingId)
-
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
-    relocationAndInjuriesPage.fillForm()
-    const evidencePage = relocationAndInjuriesPage.save()
-    evidencePage.fillForm()
-    const checkAnswersPage = evidencePage.save()
-    checkAnswersPage.clickSubmit()
-
-    SubmittedPage.verifyOnPage()
-      .exit()
-      .click()
-
-    IncidentsPage.verifyOnPage()
   })
 })
