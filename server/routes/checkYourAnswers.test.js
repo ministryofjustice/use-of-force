@@ -16,7 +16,7 @@ const offenderService = {
 }
 
 const involvedStaffService = {
-  get: () => [],
+  getDraftInvolvedStaff: () => [],
 }
 
 const checkAnswersRoute = createRouter({

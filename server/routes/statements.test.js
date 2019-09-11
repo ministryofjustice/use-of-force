@@ -5,7 +5,7 @@ const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
 const statementService = {
   getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
-  getStatement: () => ({
+  getStatementForUser: () => ({
     id: 1,
     booking_id: 2,
     created_date: '12/12/2018',
@@ -31,10 +31,10 @@ beforeEach(() => {
   app = appSetup(route)
 })
 
-describe('GET /my-statements', () => {
+describe('GET /your-statements', () => {
   it('should render page', () =>
     request(app)
-      .get('/my-statements')
+      .get('/your-statements')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

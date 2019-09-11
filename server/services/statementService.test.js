@@ -3,7 +3,7 @@ const { StatementStatus } = require('../config/types')
 
 const statementsClient = {
   getStatements: jest.fn(),
-  getStatement: jest.fn(),
+  getStatementForUser: jest.fn(),
   saveStatement: jest.fn(),
   submitStatement: jest.fn(),
   getAdditionalComments: jest.fn(),
@@ -40,11 +40,11 @@ describe('getStatements', () => {
   })
 })
 
-describe('getStatement', () => {
+describe('getStatementForUser', () => {
   test('retrieve details when user is involved', async () => {
     const statement = { id: 1, user_id: 'BOB' }
     const comment = 'Some additional text'
-    statementsClient.getStatement.mockReturnValue(statement)
+    statementsClient.getStatementForUser.mockReturnValue(statement)
     statementsClient.getAdditionalComments.mockReturnValue([
       {
         id: 1,
@@ -54,7 +54,7 @@ describe('getStatement', () => {
       },
     ])
 
-    const output = await service.getStatement('BOB', 1, StatementStatus.PENDING)
+    const output = await service.getStatementForUser('BOB', 1, StatementStatus.PENDING)
 
     expect(output).toEqual({
       ...statement,
@@ -68,15 +68,17 @@ describe('getStatement', () => {
       ],
     })
 
-    expect(statementsClient.getStatement).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
+    expect(statementsClient.getStatementForUser).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
   })
 
   test('retrieve details when statement is not present', async () => {
-    statementsClient.getStatement.mockReturnValue(undefined)
+    statementsClient.getStatementForUser.mockReturnValue(undefined)
 
-    await expect(service.getStatement('BOB', 1, 'PENDING')).rejects.toThrow(new Error("Report: '1' does not exist"))
+    await expect(service.getStatementForUser('BOB', 1, 'PENDING')).rejects.toThrow(
+      new Error("Report: '1' does not exist")
+    )
 
-    expect(statementsClient.getStatement).toBeCalledWith('BOB', 1, 'PENDING')
+    expect(statementsClient.getStatementForUser).toBeCalledWith('BOB', 1, 'PENDING')
   })
 })
 
@@ -98,7 +100,7 @@ test('should call submitStatement', async () => {
 
 describe('validateSavedStatement', () => {
   test('valid statement', async () => {
-    statementsClient.getStatement.mockReturnValue({
+    statementsClient.getStatementForUser.mockReturnValue({
       lastTrainingMonth: 1,
       lastTrainingYear: 2000,
       jobStartYear: 1998,
@@ -110,7 +112,7 @@ describe('validateSavedStatement', () => {
   })
 
   test('can cope with additional attributes', async () => {
-    statementsClient.getStatement.mockReturnValue({
+    statementsClient.getStatementForUser.mockReturnValue({
       lastTrainingMonth: 1,
       lastTrainingYear: 2000,
       jobStartYear: 1998,
@@ -124,7 +126,7 @@ describe('validateSavedStatement', () => {
   })
 
   test('invalid statement', async () => {
-    statementsClient.getStatement.mockReturnValue({})
+    statementsClient.getStatementForUser.mockReturnValue({})
 
     const errors = await service.validateSavedStatement('user-1', 1)
     expect(errors.map(error => error.href)).toEqual([

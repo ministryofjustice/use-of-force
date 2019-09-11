@@ -19,7 +19,7 @@ const getStatements = (userId, status, query = db.query) => {
   })
 }
 
-const getStatement = async (userId, reportId, status, query = db.query) => {
+const getStatementForUser = async (userId, reportId, status, query = db.query) => {
   const results = await query({
     text: `select s.id
     ,      r.booking_id             "bookingId"
@@ -119,7 +119,7 @@ const createStatements = async (reportId, firstReminder, staff, query = db.query
 
 module.exports = {
   getStatements,
-  getStatement,
+  getStatementForUser,
   createStatements,
   saveStatement,
   submitStatement,

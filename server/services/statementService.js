@@ -9,8 +9,8 @@ module.exports = function createStatementService({ statementsClient }) {
     return data.rows
   }
 
-  const getStatement = async (userId, reportId, status) => {
-    const statement = await statementsClient.getStatement(userId, reportId, status)
+  const getStatementForUser = async (userId, reportId, status) => {
+    const statement = await statementsClient.getStatementForUser(userId, reportId, status)
     if (!statement) {
       throw new Error(`Report: '${reportId}' does not exist`)
     }
@@ -19,7 +19,7 @@ module.exports = function createStatementService({ statementsClient }) {
   }
 
   const validateSavedStatement = async (username, reportId) => {
-    const statement = await getStatement(username, reportId, StatementStatus.PENDING)
+    const statement = await getStatementForUser(username, reportId, StatementStatus.PENDING)
     const errors = statementConfig.validate ? validate(statementConfig.fields, statement, true) : []
     return errors
   }
@@ -40,7 +40,7 @@ module.exports = function createStatementService({ statementsClient }) {
   }
 
   return {
-    getStatement,
+    getStatementForUser,
     getStatements,
     save,
     submitStatement,

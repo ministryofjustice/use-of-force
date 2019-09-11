@@ -45,6 +45,16 @@ test('getReports', () => {
   })
 })
 
+test('getReport', () => {
+  incidentClient.getReport('user1', 'report1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select id, incident_date "incidentDate", form_response "form", booking_id "bookingId" from report r
+          where user_id = $1 and id = $2`,
+    values: ['user1', 'report1'],
+  })
+})
+
 test('createDraftReport', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1 }] })
 
@@ -96,7 +106,7 @@ test('submitReport', () => {
   })
 })
 
-test('getInvolvedStaff', async () => {
+test('getDraftInvolvedStaff', async () => {
   const expected = [
     {
       form: {
@@ -115,11 +125,29 @@ test('getInvolvedStaff', async () => {
   ]
   db.query.mockReturnValue({ rows: expected })
 
-  const result = await incidentClient.getInvolvedStaff('incident-1')
+  const result = await incidentClient.getDraftInvolvedStaff('incident-1')
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(db.query).toBeCalledWith({
     text: `select form_response "form" from report where id = $1`,
+    values: ['incident-1'],
+  })
+})
+
+test('getInvolvedStaff', async () => {
+  const expected = [{ name: 'AAA User' }, { name: 'BBB User' }]
+  db.query.mockReturnValue({ rows: expected })
+
+  const result = await incidentClient.getInvolvedStaff('incident-1')
+
+  expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
+  expect(db.query).toBeCalledWith({
+    text: `select s.id     "statementId"
+    ,      s.user_id       "userId"
+    ,      s.name          "name"
+    ,      s.email         "email"
+    from statement s 
+    where s.report_id = $1`,
     values: ['incident-1'],
   })
 })

@@ -56,7 +56,8 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
       const input = firstItem(req.flash('userInput'))
 
-      const involvedStaff = (input && input.involvedStaff) || (formId && (await involvedStaffService.get(formId))) || []
+      const involvedStaff =
+        (input && input.involvedStaff) || (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
 
       const data = {
         ...input,

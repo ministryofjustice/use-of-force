@@ -22,7 +22,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
   })
 
   return {
-    viewMyStatements: async (req, res) => {
+    viewYourStatements: async (req, res) => {
       const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
 
@@ -30,10 +30,10 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
       const completedStatements = completed.map(toStatement(namesByOffenderNumber))
 
-      res.render('pages/my-statements', {
+      res.render('pages/your-statements', {
         awaitingStatements,
         completedStatements,
-        selectedTab: 'my-statements',
+        selectedTab: 'your-statements',
       })
     },
 
@@ -47,7 +47,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const { reportId } = req.params
 
       const errors = req.flash('errors')
-      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
+      const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
@@ -91,7 +91,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     viewCheckYourStatement: async (req, res) => {
       const { reportId } = req.params
 
-      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.PENDING)
+      const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
@@ -126,7 +126,11 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
     viewYourStatement: async (req, res) => {
       const { reportId } = req.params
-      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
+      const statement = await statementService.getStatementForUser(
+        req.user.username,
+        reportId,
+        StatementStatus.SUBMITTED
+      )
 
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
@@ -143,7 +147,11 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
     saveAdditionalComment: async (req, res) => {
       const { reportId } = req.params
-      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
+      const statement = await statementService.getStatementForUser(
+        req.user.username,
+        reportId,
+        StatementStatus.SUBMITTED
+      )
       if (req.body.additionalComment && req.body.additionalComment.trim().length) {
         await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
       }
@@ -152,7 +160,11 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
     viewAddCommentToStatement: async (req, res) => {
       const { reportId } = req.params
-      const statement = await statementService.getStatement(req.user.username, reportId, StatementStatus.SUBMITTED)
+      const statement = await statementService.getStatementForUser(
+        req.user.username,
+        reportId,
+        StatementStatus.SUBMITTED
+      )
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 

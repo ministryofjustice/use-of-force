@@ -45,6 +45,15 @@ const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
   return results.rows[0] || {}
 }
 
+const getReport = async (userId, reportId, query = db.query) => {
+  const results = await query({
+    text: `select id, incident_date "incidentDate", form_response "form", booking_id "bookingId" from report r
+          where user_id = $1 and id = $2`,
+    values: [userId, reportId],
+  })
+  return results.rows[0] || {}
+}
+
 const getReports = (userId, status, query = db.query) => {
   return query({
     text: `select r.id
@@ -60,7 +69,7 @@ const getReports = (userId, status, query = db.query) => {
   })
 }
 
-const getInvolvedStaff = async (reportId, query = db.query) => {
+const getDraftInvolvedStaff = async (reportId, query = db.query) => {
   const results = await query({
     text: 'select form_response "form" from report where id = $1',
     values: [reportId],
@@ -71,6 +80,19 @@ const getInvolvedStaff = async (reportId, query = db.query) => {
     return involvedStaff
   }
   return []
+}
+
+const getInvolvedStaff = async (reportId, query = db.query) => {
+  const results = await query({
+    text: `select s.id     "statementId"
+    ,      s.user_id       "userId"
+    ,      s.name          "name"
+    ,      s.email         "email"
+    from statement s 
+    where s.report_id = $1`,
+    values: [reportId],
+  })
+  return results.rows
 }
 
 // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
@@ -110,8 +132,10 @@ module.exports = {
   updateDraftReport,
   submitReport,
   getCurrentDraftReport,
+  getReport,
   getReports,
   getInvolvedStaff,
+  getDraftInvolvedStaff,
   getNextNotificationReminder,
   setNextReminderDate,
 }

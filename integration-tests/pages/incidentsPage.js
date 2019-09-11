@@ -33,7 +33,7 @@ const incidentsPage = () =>
     }),
 
     selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
-    myReportsTab: () => cy.get('[data-qa="my-reports-link"]'),
+    yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
   })
 
 export default {

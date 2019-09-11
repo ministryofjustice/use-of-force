@@ -27,7 +27,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         form.incidentDetails.locationId
       )
 
-      const involvedStaff = await involvedStaffService.get(id)
+      const involvedStaff = await involvedStaffService.getDraftInvolvedStaff(id)
 
       const involvedStaffNames = [
         ...currentUserIfNotPresent(involvedStaff, res.locals.user),

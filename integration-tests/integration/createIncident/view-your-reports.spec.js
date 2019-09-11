@@ -1,6 +1,6 @@
 const TasklistPage = require('../../pages/tasklistPage')
 const IncidentsPage = require('../../pages/incidentsPage')
-const MyReportsPage = require('../../pages/myReportsPage')
+const YourReportsPage = require('../../pages/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
@@ -37,21 +37,21 @@ context('Submit statement', () => {
     newIncidentPage.save()
 
     const incidentsPage = IncidentsPage.goTo()
-    incidentsPage.selectedTab().contains('My statements')
-    incidentsPage.myReportsTab().click()
-    incidentsPage.selectedTab().contains('My reports')
+    incidentsPage.selectedTab().contains('Your statements')
+    incidentsPage.yourReportsTab().click()
+    incidentsPage.selectedTab().contains('Your reports')
 
-    const myReportsPage = MyReportsPage.verifyOnPage()
+    const yourReportsPage = YourReportsPage.verifyOnPage()
 
     {
-      const { date, prisoner, reporter } = myReportsPage.getCompleteRow(0)
+      const { date, prisoner, reporter } = yourReportsPage.getCompleteRow(0)
       prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
 
     {
-      const { startButton, date, prisoner, reporter } = myReportsPage.getTodoRow(0)
+      const { startButton, date, prisoner, reporter } = yourReportsPage.getTodoRow(0)
       prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
