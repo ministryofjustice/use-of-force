@@ -1,7 +1,15 @@
 const page = require('./page')
 
 const viewYourReportPage = () =>
-  page('Your report', {
+  page('Use of force report', {
+    reporterName: () => cy.get('[data-qa="reporter-name"]'),
+
+    submittedDate: () => cy.get('[data-qa="submitted-date"]'),
+
+    prisonerName: () => cy.get('[data-qa="prisoner-name"]'),
+
+    prisonNumber: () => cy.get('[data-qa="prison-number"]'),
+
     verifyInputs: () => {
       cy.get('[data-qa="incidentDate"]')
         .invoke('text')

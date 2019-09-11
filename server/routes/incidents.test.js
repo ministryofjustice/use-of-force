@@ -3,36 +3,31 @@ const { appSetup } = require('./testutils/appSetup')
 const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
-const statementService = {
-  getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
-  getStatement: () => ({
-    id: 1,
-    booking_id: 2,
-    created_date: '12/12/2018',
-    user_id: 'ITAG_USER',
-    statement: 'Some initial statement',
-  }),
-  submitStatement: jest.fn(),
-  save: jest.fn(),
-  validateSavedStatement: jest.fn(),
-  saveAdditionalComment: jest.fn(),
-}
-
 const reportService = {
   getReports: () => [],
+  getReport: jest.fn(),
 }
 
 const offenderService = {
   getOffenderNames: () => [],
+  getLocation: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
-const route = createRouter({ authenticationMiddleware, reportService, statementService, offenderService })
+
+const involvedStaffService = {
+  getInvolvedStaff: () => [],
+}
+
+const route = createRouter({ authenticationMiddleware, reportService, involvedStaffService, offenderService })
 
 let app
 
 beforeEach(() => {
-  statementService.validateSavedStatement.mockReturnValue([])
   app = appSetup(route)
+})
+
+afterEach(() => {
+  jest.resetAllMocks()
 })
 
 describe('GET /incidents', () => {
@@ -52,4 +47,24 @@ describe('GET /your-reports', () => {
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
       }))
+})
+
+describe('GET /your-report', () => {
+  it('should render page', () => {
+    reportService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    return request(app)
+      .get('/1/your-report')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force report')
+      })
+  })
+
+  it('should fail to render page when no report', () => {
+    reportService.getReport.mockReturnValue(undefined)
+    return request(app)
+      .get('/1/your-report')
+      .expect(500)
+  })
 })

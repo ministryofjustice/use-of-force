@@ -1,9 +1,13 @@
 const format = require('pg-format')
-const db = require('../../server/data/dataAccess/db')
+
+const moment = require('moment')
+
 const { expectedPayload } = require('../integration/seedData')
+const db = require('../../server/data/dataAccess/db')
 const incidentClient = require('../../server/data/incidentClient')
 const statementsClient = require('../../server/data/statementsClient')
 const { ReportStatus } = require('../../server/config/types')
+const { equals } = require('../../server/utils/utils')
 
 const getCurrentDraft = bookingId =>
   incidentClient.getCurrentDraftReport('Test User', bookingId, db.queryWithoutTransaction)
@@ -36,7 +40,7 @@ const seedReport = ({
   payload = expectedPayload,
   involvedStaff = [],
 }) => {
-  const submittedDate = status === ReportStatus.SUBMITTED ? '2019-09-10 10:30:43.122' : null
+  const submittedDate = equals(status, ReportStatus.SUBMITTED) ? moment('2019-09-10 10:30:43.122').toDate() : null
   return db
     .queryWithoutTransaction({
       text: `INSERT INTO report
