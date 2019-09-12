@@ -23,20 +23,30 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
     const { exist = [], missing = [], notVerified = [], success } = await userService.getUsers(token, usernames)
 
-    if (success) {
-      const involvedStaff = exist
-        .sort(({ i }, { i: j }) => i - j)
-        .map(user => {
-          const { name, email, staffId, username } = user
-          return { name, email, staffId, username }
-        })
-      return {
-        additionalFields: { involvedStaff },
-        additionalErrors: [],
-      }
+    if (!success) {
+      const error = new Error('Contains one or more users with unverified emails')
+      error.notVerified = notVerified
+      throw error
     }
 
-    return { additionalFields: {}, additionalErrors: getAdditionalErrors(missing, notVerified) }
+    const existingStaff = exist.map(user => {
+      const { i, name, email, staffId, username } = user
+      return { i, name, email, staffId, username }
+    })
+
+    const missingStaff = missing.map(user => {
+      const { i, username } = user
+      return { i, username, missing: true }
+    })
+
+    const involvedStaff = [...existingStaff, ...missingStaff]
+      .sort(({ i }, { i: j }) => i - j)
+      .map(({ i, ...rest }) => rest)
+
+    return {
+      additionalFields: { involvedStaff },
+      additionalErrors: [],
+    }
   }
 
   const getStaffRequiringStatements = async (currentUser, addedStaff) => {
@@ -75,20 +85,6 @@ module.exports = function createReportService({ incidentClient, statementsClient
     const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
     await statementsClient.createStatements(reportId, firstReminderDate.toDate(), staff)
     return staff
-  }
-
-  const getAdditionalErrors = (missing, notVerified) => {
-    const missingErrors = buildErrors(
-      missing,
-      username => `User with name '${username}' does not have a new nomis account`
-    )
-
-    const notVerifiedErrors = buildErrors(
-      notVerified,
-      username => `User with name '${username}' has not verified their email address`
-    )
-
-    return [...missingErrors, ...notVerifiedErrors].sort(({ i }, { i: j }) => i - j).map(({ i, ...error }) => error)
   }
 
   const getDuplicates = usernames => {
