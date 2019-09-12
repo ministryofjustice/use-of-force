@@ -22,10 +22,10 @@ const viewYourReportPage = () =>
       cy.get('[data-qa="location"]').contains('ASSO A Wing')
       cy.get('[data-qa="incidentType"]').contains('Yes')
       cy.get('[data-qa="staffInvolved"]')
-        .contains('Mr Zagato Name - MR ZAGATO')
-        .contains('Mrs Jones Name - MRS JONES')
+        .contains('MR_ZAGATO')
+        .contains('MRS_JONES')
       cy.get('[data-qa="witnesses"]')
-        .contains('Witness 1')
+        .contains('Witness A')
         .contains('Tom Jones')
 
       cy.get('[data-qa="positiveCommunication"]').contains('Yes')

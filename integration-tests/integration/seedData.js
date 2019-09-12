@@ -12,11 +12,11 @@ const expectedPayload = {
     ],
   },
   incidentDetails: {
-    witnesses: [{ name: 'Witness 1' }, { name: 'Tom Jones' }],
+    witnesses: [{ name: 'Witness A' }, { name: 'Tom Jones' }],
     locationId: 357591,
     involvedStaff: [
-      { name: 'MR ZAGATO name', email: 'MR ZAGATO@gov.uk', staffId: 231232, username: 'MR ZAGATO' },
-      { name: 'MRS JONES name', email: 'MRS JONES@gov.uk', staffId: 231232, username: 'MRS JONES' },
+      { name: 'MR_ZAGATO name', email: 'MR_ZAGATO@gov.uk', staffId: 231232, username: 'MR_ZAGATO' },
+      { name: 'MRS_JONES name', email: 'MRS_JONES@gov.uk', staffId: 231232, username: 'MRS_JONES' },
     ],
     plannedUseOfForce: true,
   },

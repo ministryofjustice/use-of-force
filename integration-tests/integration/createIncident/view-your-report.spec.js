@@ -13,8 +13,8 @@ context('Submit statement', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
     cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
@@ -26,14 +26,14 @@ context('Submit statement', () => {
       submittedDate: '2019-09-04 11:27:52',
       involvedStaff: [
         {
-          userId: 'MR ZAGATO',
-          name: 'MR ZAGATO name',
-          email: 'MR ZAGATO@gov.uk',
+          userId: 'MR_ZAGATO',
+          name: 'MR_ZAGATO name',
+          email: 'MR_ZAGATO@gov.uk',
         },
         {
-          userId: 'MRS JONES',
-          name: 'MRS JONES name',
-          email: 'MR ZAGATO@gov.uk',
+          userId: 'MRS_JONES',
+          name: 'MRS_JONES name',
+          email: 'MR_ZAGATO@gov.uk',
         },
         {
           userId: 'Test User',

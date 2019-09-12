@@ -124,11 +124,18 @@ const fieldOptions = {
       .required(),
   }),
 
+  f213CompletedBy: joi
+    .string()
+    .trim()
+    .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, '213')
+    .required(),
+
   requiredMemberOfHealthcare: joi.when('healthcareInvolved', {
     is: true,
     then: joi
       .string()
       .trim()
+      .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'HealthcarePractitioner')
       .required(),
   }),
 
@@ -137,7 +144,7 @@ const fieldOptions = {
       username: joi
         .string()
         .trim()
-        .required(),
+        .regex(/^[a-zA-Z_]{2,50}$/, 'Username'),
     })
   ),
 
@@ -146,6 +153,7 @@ const fieldOptions = {
       username: joi
         .string()
         .trim()
+        .regex(/^[a-zA-Z_]{2,50}$/, 'Username')
         .required(),
       name: joi
         .string()
@@ -156,6 +164,15 @@ const fieldOptions = {
         .trim()
         .required(),
       staffId: joi.number().required(),
+    })
+  ),
+
+  optionalWitnesses: joi.array().items(
+    joi.object().keys({
+      name: joi
+        .string()
+        .trim()
+        .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'Witnesses'),
     })
   ),
 
@@ -170,7 +187,8 @@ const fieldOptions = {
             .string()
             .trim()
             .required()
-            .error(() => 'Enter the name of who needed medical attention'),
+            .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'StaffMedicalAttention'),
+
           hospitalisation: joi
             .valid([true, false])
             .required()
@@ -200,17 +218,28 @@ module.exports = {
     const formSchema = createSchemaFromConfig(fields)
     const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown, abortEarly: false })
     const fieldsConfig = fields
-
     if (isNilOrEmpty(joiErrors.error)) {
       return []
     }
 
     const errors = joiErrors.error.details.map(error => {
       const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
-      const errorMessage =
-        getIn([...error.path, 'validationMessage', error.type], fieldConfig) ||
+      let errorMessage = null
+      errorMessage =
+        getIn([error.path[0], 'validationMessage', error.type], fieldConfig) ||
         getIn([...error.path, 'validationMessage'], fieldConfig) ||
         error.message
+      if (typeof fieldConfig[Object.keys(fieldConfig)[0]].validationMessage === 'object') {
+        if (error.type === 'string.regex.name') {
+          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['string.regex.name']
+        } else if (error.type === 'string.base') {
+          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['any.required']
+        } else if (error.type === 'any.required') {
+          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['any.required']
+        } else if (error.type === 'array.min') {
+          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['array.min']
+        }
+      }
 
       return {
         text: errorMessage,

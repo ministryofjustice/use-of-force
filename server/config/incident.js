@@ -69,14 +69,17 @@ module.exports = {
       {
         involvedStaff: {
           responseType: 'optionalInvolvedStaff',
-          validationMessage: 'Enter the name of the staff member involved in the use of force incident',
+          validationMessage: { 'string.regex.name': 'Usernames can only contain letters and an underscore' },
           sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0][username]',
         },
       },
       {
         witnesses: {
-          responseType: 'any',
+          responseType: 'optionalWitnesses',
+          validationMessage: {
+            'string.regex.name': 'Witness names can only contain letters, spaces, hyphens, apostrophe',
+          },
           sanitiser: removeEmptyValues(['name']),
         },
       },
@@ -209,9 +212,12 @@ module.exports = {
       },
       {
         f213CompletedBy: {
-          responseType: 'requiredString',
+          responseType: 'f213CompletedBy',
           sanitiser: trimmedString,
-          validationMessage: 'Enter the name of who completed the F213 form',
+          validationMessage: {
+            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'any.required': 'Enter the name of who completed the F213 form',
+          },
         },
       },
       {
@@ -231,7 +237,11 @@ module.exports = {
       {
         healthcarePractionerName: {
           responseType: 'requiredMemberOfHealthcare',
-          validationMessage: 'Enter the name of the member of healthcare',
+          validationMessage: {
+            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'any.required': 'Enter the name of the member of healthcare',
+          },
+
           sanitiser: trimmedString,
           dependentOn: 'healthcareInvolved',
           predicate: 'true',
@@ -254,7 +264,11 @@ module.exports = {
       {
         staffNeedingMedicalAttention: {
           responseType: 'requiredStaffNeedingMedicalAttention',
-          validationMessage: "Enter the staff member's name and whether they went to hospital",
+          validationMessage: {
+            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'array.min': "Enter the staff member's name and whether they went to hospital",
+            'any.required': 'Enter the name of who needed medical attention',
+          },
 
           sanitiser: values => {
             return removeEmptyValues(['name', 'hospitalisation'])(values).map(({ name, hospitalisation }) => ({

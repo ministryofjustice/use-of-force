@@ -14,8 +14,8 @@ context('Submit the incident report', () => {
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Test User')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
   })
 
   it('Submitting a form', () => {
@@ -42,8 +42,8 @@ context('Submit the incident report', () => {
           .task('getAllStatementsForReport', reportId)
           .then(staff =>
             expect(staff).to.deep.equal([
-              { name: 'MR ZAGATO name', email: 'MR ZAGATO@gov.uk', userid: 'MR ZAGATO', status: 'PENDING' },
-              { name: 'MRS JONES name', email: 'MRS JONES@gov.uk', userid: 'MRS JONES', status: 'PENDING' },
+              { name: 'MR_ZAGATO name', email: 'MR_ZAGATO@gov.uk', userid: 'MR_ZAGATO', status: 'PENDING' },
+              { name: 'MRS_JONES name', email: 'MRS_JONES@gov.uk', userid: 'MRS_JONES', status: 'PENDING' },
               { name: 'Test User name', email: 'Test User@gov.uk', userid: 'Test User', status: 'PENDING' },
             ])
           )

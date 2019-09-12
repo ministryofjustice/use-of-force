@@ -35,7 +35,7 @@ context('Submitting details page form', () => {
     newIncidentPage
       .witnesses(0)
       .name()
-      .type('1111')
+      .type('jimmy-ray')
     newIncidentPage.addAnotherWitness().click()
     newIncidentPage.addAnotherWitness().click()
     newIncidentPage.addAnotherWitness().click()
@@ -58,7 +58,7 @@ context('Submitting details page form', () => {
       expect(payload).to.deep.equal({
         locationId: 357591,
         plannedUseOfForce: true,
-        witnesses: [{ name: '1111' }],
+        witnesses: [{ name: 'jimmy-ray' }],
         involvedStaff: [
           {
             email: 'AAAA@gov.uk',
@@ -108,7 +108,7 @@ context('Submitting details page form', () => {
     updatedIncidentPage
       .witnesses(0)
       .name()
-      .should('have.value', '1111')
+      .should('have.value', 'jimmy-ray')
 
     // Should't be able to remove sole item
     updatedIncidentPage
