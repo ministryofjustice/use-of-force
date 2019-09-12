@@ -47,11 +47,17 @@ const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
 
 const getReport = async (userId, reportId, query = db.query) => {
   const results = await query({
-    text: `select id, incident_date "incidentDate", form_response "form", booking_id "bookingId" from report r
+    text: `select id
+          , incident_date "incidentDate"
+          , submitted_date "submittedDate"
+          , reporter_name "reporterName"
+          , form_response "form"
+          , booking_id "bookingId"
+          from report r
           where user_id = $1 and id = $2`,
     values: [userId, reportId],
   })
-  return results.rows[0] || {}
+  return results.rows[0]
 }
 
 const getReports = (userId, status, query = db.query) => {

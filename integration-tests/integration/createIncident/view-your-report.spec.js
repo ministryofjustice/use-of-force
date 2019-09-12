@@ -23,6 +23,7 @@ context('Submit statement', () => {
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
+      submittedDate: '2019-09-04 11:27:52',
       involvedStaff: [
         {
           userId: 'MR ZAGATO',
@@ -55,7 +56,12 @@ context('Submit statement', () => {
       .click()
 
     const yourReportPage = YourReportPage.verifyOnPage()
+    yourReportPage.reporterName().contains('James Stuart')
+    yourReportPage.prisonerName().contains('Norman Smith')
+    yourReportPage.prisonNumber().contains('A1234AC')
+    yourReportPage.submittedDate().contains('10 September 2019, 10:30')
     yourReportPage.verifyInputs()
+
     yourReportPage.continue().click()
 
     IncidentsPage.verifyOnPage()

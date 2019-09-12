@@ -102,7 +102,7 @@ describe('send', () => {
     })
   })
 
-  describe('involved staff', async () => {
+  describe('involved staff', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
       await send({ isReporter: false, nextReminderDate: now, submittedDate: notOverdue, statementId: -1 }, now)
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledTimes(1)

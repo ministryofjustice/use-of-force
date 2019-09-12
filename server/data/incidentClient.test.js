@@ -49,7 +49,13 @@ test('getReport', () => {
   incidentClient.getReport('user1', 'report1')
 
   expect(db.query).toBeCalledWith({
-    text: `select id, incident_date "incidentDate", form_response "form", booking_id "bookingId" from report r
+    text: `select id
+          , incident_date "incidentDate"
+          , submitted_date "submittedDate"
+          , reporter_name "reporterName"
+          , form_response "form"
+          , booking_id "bookingId"
+          from report r
           where user_id = $1 and id = $2`,
     values: ['user1', 'report1'],
   })

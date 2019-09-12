@@ -44,7 +44,13 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     viewYourReport: async (req, res) => {
       const { reportId } = req.params
 
-      const { id, form = {}, incidentDate, bookingId } = await reportService.getReport(req.user.username, reportId)
+      const result = await reportService.getReport(req.user.username, reportId)
+
+      if (!result) {
+        throw new Error(`Report does not exist: ${reportId}`)
+      }
+
+      const { id, form, incidentDate, bookingId, reporterName, submittedDate } = result
 
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
 
@@ -57,7 +63,11 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const involvedStaffNames = involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.userId}`])
 
-      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate)
+      const data = {
+        reporterName,
+        submittedDate,
+        ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate),
+      }
 
       return res.render('pages/your-report', { data, bookingId })
     },
