@@ -52,7 +52,7 @@ describe('lookup', () => {
     expect(userService.getUsers).not.toBeCalled()
   })
 
-  test('fails when invalid / unavailable users', async () => {
+  test('fails when invalid users', async () => {
     userService.getUsers.mockReturnValue({
       exist: [
         {
@@ -69,23 +69,40 @@ describe('lookup', () => {
       success: false,
     })
 
+    await expect(service.lookup('token-1', ['Bob', 'June', 'Jenny'])).rejects.toThrow(
+      'Contains one or more users with unverified emails'
+    )
+  })
+
+  test('succeeds when unavailable users', async () => {
+    userService.getUsers.mockReturnValue({
+      exist: [
+        {
+          i: 0,
+          email: 'an@email.com',
+          exists: true,
+          name: 'Bob Smith',
+          username: 'Bob',
+          verified: true,
+        },
+      ],
+      missing: [{ i: 1, exists: false, username: 'June', verified: true }],
+      notVerified: [],
+      success: true,
+    })
+
     const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
     expect(result).toEqual({
-      additionalFields: {},
-      additionalErrors: [
-        {
-          href: '#involvedStaff[1][username]',
-          text: "User with name 'June' does not have a new nomis account",
-        },
-        {
-          href: '#involvedStaff[2][username]',
-          text: "User with name 'Jenny' has not verified their email address",
-        },
-      ],
+      additionalErrors: [],
+      additionalFields: {
+        involvedStaff: [
+          { email: 'an@email.com', name: 'Bob Smith', staffId: undefined, username: 'Bob' },
+          { missing: true, username: 'June' },
+        ],
+      },
     })
   })
-
   test('fails with duplicate users', async () => {
     const result = await service.lookup('token-1', ['Bob', 'June', 'Bob', 'Jenny', 'Jenny'])
 

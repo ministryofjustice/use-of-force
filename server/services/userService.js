@@ -39,7 +39,7 @@ module.exports = function createUserService(elite2ClientBuilder, authClientBuild
         exist,
         missing,
         notVerified,
-        success: missing.length === 0 && notVerified.length === 0,
+        success: notVerified.length === 0,
       }
     } catch (error) {
       logger.error('Error during getEmails: ', error.stack)

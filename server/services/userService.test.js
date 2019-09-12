@@ -107,7 +107,7 @@ describe('getUsers', () => {
       ],
       missing: [{ i: 1, exists: false, username: 'June', verified: true }],
       notVerified: [],
-      success: false,
+      success: true,
     })
   })
 
