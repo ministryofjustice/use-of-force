@@ -18,7 +18,6 @@ module.exports = (notificationService, incidentClient) => {
       await notificationService.sendReporterStatementOverdue(reminder.recipientEmail, {
         reporterName: reminder.reporterName,
         incidentDate: reminder.incidentDate,
-        reportSubmittedDate: reminder.submittedDate,
       })
     } else {
       await notificationService.sendInvolvedStaffStatementOverdue(reminder.recipientEmail, {
@@ -34,11 +33,13 @@ module.exports = (notificationService, incidentClient) => {
       await notificationService.sendReporterStatementReminder(reminder.recipientEmail, {
         reporterName: reminder.reporterName,
         incidentDate: reminder.incidentDate,
+        reportSubmittedDate: reminder.submittedDate,
       })
     } else {
       await notificationService.sendInvolvedStaffStatementReminder(reminder.recipientEmail, {
         involvedName: reminder.recipientName,
         incidentDate: reminder.incidentDate,
+        reportSubmittedDate: reminder.submittedDate,
       })
     }
     const nextReminderDate = getNextReminderDate(reminder)
