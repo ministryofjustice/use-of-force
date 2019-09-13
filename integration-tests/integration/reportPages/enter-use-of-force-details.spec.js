@@ -8,8 +8,8 @@ context('Submitting details page form', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
   })
 
   const fillFormAndSave = ({ restraintPositions = ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'] } = {}) => {

@@ -136,9 +136,31 @@ describe('Involved staff', () => {
       witnesses: [{ name: 'User bob' }],
     })
   })
+
+  it('Username throws error when format incorrect', () => {
+    const input = { ...validInput, involvedStaff: [{ username: 'User bob' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#involvedStaff[0][username]',
+        text: 'Usernames can only contain letters and an underscore',
+      },
+    ])
+  })
 })
 
-describe('Witenesses', () => {
+describe('Witnesses', () => {
+  it('Witnesses throws error when format incorrect', () => {
+    const input = { ...validInput, witnesses: [{ name: 'User bob 9' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#witnesses[0][name]',
+        text: 'Witness names can only contain letters, spaces, hyphens, apostrophe',
+      },
+    ])
+  })
+
   it('None present', () => {
     const input = { ...validInput, witnesses: [] }
     const { errors, formResponse } = check(input)
