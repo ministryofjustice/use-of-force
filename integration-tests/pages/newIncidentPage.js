@@ -1,7 +1,7 @@
 const page = require('./page')
 const detailsPage = require('./detailsPage')
 
-export default () =>
+const incidentDetailsPage = () =>
   page('Incident details', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#locationId'),
@@ -72,4 +72,8 @@ export default () =>
       cy.get('[data-qa="save-and-continue"]').click()
       return detailsPage()
     },
+
+    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
   })
+
+export default { verifyOnPage: incidentDetailsPage }

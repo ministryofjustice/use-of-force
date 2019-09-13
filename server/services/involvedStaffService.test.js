@@ -6,9 +6,11 @@ const userService = {
 }
 
 const incidentClient = {
+  getCurrentDraftReport: jest.fn(),
   getDraftInvolvedStaff: jest.fn(),
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
+  updateDraftReport: jest.fn(),
 }
 
 const statementsClient = {
@@ -29,6 +31,46 @@ describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
     await service.getDraftInvolvedStaff('incident-1')
     expect(incidentClient.getDraftInvolvedStaff).toBeCalledTimes(1)
+  })
+})
+
+describe('removeMissingDraftInvolvedStaff', () => {
+  test('should not blow up with missing data', async () => {
+    incidentClient.getCurrentDraftReport.mockReturnValue({ id: 1 })
+    await service.removeMissingDraftInvolvedStaff('incident-1')
+    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
+    expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, { incidentDetails: { involvedStaff: [] } })
+  })
+
+  test('should remove missing staff', async () => {
+    incidentClient.getCurrentDraftReport.mockReturnValue({
+      id: 1,
+      form: {
+        evidence: {
+          baggedEvidence: true,
+        },
+        incidentDetails: {
+          locationId: -1,
+          involvedStaff: [
+            { name: 'user1', missing: false },
+            { name: 'user2', missing: true },
+            { name: 'user3', missing: false },
+            { name: 'user4', missing: true },
+          ],
+        },
+      },
+    })
+    await service.removeMissingDraftInvolvedStaff('incident-1')
+    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
+    expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, {
+      evidence: {
+        baggedEvidence: true,
+      },
+      incidentDetails: {
+        locationId: -1,
+        involvedStaff: [{ name: 'user1', missing: false }, { name: 'user3', missing: false }],
+      },
+    })
   })
 })
 

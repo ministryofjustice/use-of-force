@@ -51,6 +51,9 @@ module.exports = function Index({
 
   get(reportPath('incident-details'), createReport.viewIncidentDetails)
   post(reportPath('incident-details'), createReport.submit('incidentDetails'))
+  get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
+  post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
+
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))

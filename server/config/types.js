@@ -40,6 +40,11 @@ const StatementStatus = {
   SUBMITTED: { value: 'SUBMITTED', label: 'Submitted' },
 }
 
+const Destinations = {
+  CONTINUE: 'continue',
+  TASKLIST: 'back-to-task-list',
+}
+
 module.exports = {
   BodyWornCameras: Object.freeze(BodyWornCameras),
   Cctv: Object.freeze(Cctv),
@@ -47,5 +52,6 @@ module.exports = {
   RelocationLocation: Object.freeze(RelocationLocation),
   ReportStatus: Object.freeze(ReportStatus),
   StatementStatus: Object.freeze(StatementStatus),
+  Destinations: Object.freeze(Destinations),
   toLabel,
 }

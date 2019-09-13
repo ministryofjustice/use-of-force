@@ -3,6 +3,20 @@ const moment = require('moment')
 module.exports = function createReportService({ incidentClient, statementsClient, userService }) {
   const getDraftInvolvedStaff = reportId => incidentClient.getDraftInvolvedStaff(reportId)
 
+  const removeMissingDraftInvolvedStaff = async (userId, bookingId) => {
+    const { id, form = {} } = await incidentClient.getCurrentDraftReport(userId, bookingId)
+
+    const { incidentDetails = {} } = form
+    const { involvedStaff = [] } = incidentDetails
+    const updatedInvolvedStaff = involvedStaff.filter(staff => !staff.missing)
+
+    const updatedFormObject = {
+      ...form,
+      incidentDetails: { ...incidentDetails, involvedStaff: updatedInvolvedStaff },
+    }
+    await incidentClient.updateDraftReport(id, null, updatedFormObject)
+  }
+
   const getInvolvedStaff = reportId => incidentClient.getInvolvedStaff(reportId)
 
   async function lookup(token, usernames) {
@@ -109,6 +123,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
   return {
     getInvolvedStaff,
+    removeMissingDraftInvolvedStaff,
     getDraftInvolvedStaff,
     save,
     lookup,

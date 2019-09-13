@@ -3,6 +3,7 @@ const moment = require('moment')
 const { appSetup, user } = require('./testutils/appSetup')
 const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const types = require('../config/types')
 
 const reportService = {
   getCurrentDraft: jest.fn(),
@@ -17,8 +18,9 @@ const offenderService = {
 }
 
 const involvedStaffService = {
-  get: () => [],
   lookup: () => [],
+  removeMissingDraftInvolvedStaff: jest.fn(),
+  getDraftInvolvedStaff: jest.fn(),
 }
 
 const formRoute = createRouter({ reportService, authenticationMiddleware, offenderService, involvedStaffService })
@@ -32,9 +34,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  reportService.getCurrentDraft.mockReset()
-  reportService.getUpdatedFormObject.mockReset({})
-  reportService.update.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('GET /section/form', () => {
@@ -203,4 +203,57 @@ describe('Submitting evidence page', () => {
         })
     }
   )
+})
+
+describe('User name does not exists', () => {
+  test('view when no missing users', async () => {
+    return request(app)
+      .get(`/report/1/username-does-not-exist`)
+      .expect(302)
+      .expect('Location', '/report/1/incident-details')
+  })
+
+  test('view when missing users', async () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ userId: 1, missing: true }])
+    return request(app)
+      .get(`/report/1/username-does-not-exist`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('A username you have entered does not exist')
+      })
+  })
+
+  test('submit and back to task list', async () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+
+    return request(app)
+      .post(`/report/1/username-does-not-exist`)
+      .send({
+        nextDestination: types.Destinations.TASKLIST,
+      })
+      .expect(302)
+      .expect('Location', '/report/1/report-use-of-force')
+      .expect(() => {
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
+      })
+  })
+
+  test('submit and back to task list', async () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+
+    return request(app)
+      .post(`/report/1/username-does-not-exist`)
+      .send({
+        nextDestination: types.Destinations.CONTINUE,
+      })
+      .expect(302)
+      .expect('Location', '/report/1/use-of-force-details')
+      .expect(() => {
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
+      })
+  })
 })

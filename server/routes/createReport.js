@@ -36,10 +36,21 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     return { additionalFields: [], additionalErrors: [] }
   }
 
-  const getSubmitRedirectLocation = async (username, payloadFields, form, bookingId, saveAndContinue) => {
+  const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, saveAndContinue) => {
+    const { username } = req.user
     if (form === 'evidence' && !(await reportService.isDraftComplete(username, bookingId))) {
       return `/report/${bookingId}/report-use-of-force`
     }
+
+    if (
+      form === 'incidentDetails' &&
+      payloadFields.involvedStaff &&
+      payloadFields.involvedStaff.some(staff => staff.missing)
+    ) {
+      req.flash('nextDestination', saveAndContinue ? types.Destinations.CONTINUE : types.Destinations.TASKLIST)
+      return `/report/${bookingId}/username-does-not-exist`
+    }
+
     const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
     const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
     return location
@@ -69,6 +80,41 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       }
 
       renderForm({ req, res, form, data, formName: 'incidentDetails' })
+    },
+
+    viewUsernameDoesNotExist: async (req, res) => {
+      const { bookingId } = req.params
+      const { formId } = await loadForm(req)
+      const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
+      const missingUsers = involvedStaff.filter(staff => staff.missing).map(staff => staff.username)
+      if (!missingUsers.length) {
+        return res.redirect(`/report/${bookingId}/incident-details`)
+      }
+      const nextDestination = req.flash('nextDestination')
+      return res.render(`formPages/incident/username-does-not-exist`, {
+        data: { bookingId, missingUsers, nextDestination },
+      })
+    },
+
+    submitUsernameDoesNotExist: async (req, res) => {
+      const { bookingId } = req.params
+      const { formId } = await loadForm(req)
+      const nextDestination = req.body.nextDestination || types.Destinations.TASKLIST
+
+      if (formId) {
+        await involvedStaffService.removeMissingDraftInvolvedStaff(req.user.username, parseInt(bookingId, 10))
+      }
+
+      switch (nextDestination) {
+        case types.Destinations.TASKLIST: {
+          return res.redirect(`/report/${bookingId}/report-use-of-force`)
+        }
+        case types.Destinations.CONTINUE: {
+          return res.redirect(`/report/${bookingId}/use-of-force-details`)
+        }
+        default:
+          throw new Error(`unexpected state: ${nextDestination}`)
+      }
     },
 
     view: formName => async (req, res) => {
@@ -114,13 +160,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
         })
       }
 
-      const location = await getSubmitRedirectLocation(
-        req.user.username,
-        payloadFields,
-        formName,
-        bookingId,
-        saveAndContinue
-      )
+      const location = await getSubmitRedirectLocation(req, formPayload, formName, bookingId, saveAndContinue)
       return res.redirect(location)
     },
   }
