@@ -60,6 +60,20 @@ const getReport = async (userId, reportId, query = db.query) => {
   return results.rows[0]
 }
 
+const getReportsForReviewer = async (status, query = db.query) => {
+  return query({
+    text: `select r.id
+            , r.booking_id    "bookingId"
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            from report r
+          where r.status = $1
+          order by r.incident_date`,
+    values: [status.value],
+  })
+}
+
 const getReports = (userId, status, query = db.query) => {
   return query({
     text: `select r.id
@@ -144,4 +158,5 @@ module.exports = {
   getDraftInvolvedStaff,
   getNextNotificationReminder,
   setNextReminderDate,
+  getReportsForReviewer,
 }
