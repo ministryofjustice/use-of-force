@@ -1,4 +1,4 @@
-const newIncidentPage = require('./newIncidentPage')
+const NewIncidentPage = require('./newIncidentPage')
 const checkAnswersPage = require('./checkAnswersPage')
 const detailsPage = require('./detailsPage')
 const page = require('./page')
@@ -7,7 +7,7 @@ const tasklistPage = () =>
   page('Report use of force', {
     startNewForm: () => {
       cy.get('[data-qa-new-incident-link]').click()
-      return newIncidentPage()
+      return NewIncidentPage.verifyOnPage()
     },
     goToUseOfForceDetailsPage: () => {
       cy.get('[data-qa-details-link]').click()

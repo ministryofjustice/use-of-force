@@ -1,6 +1,7 @@
 const moment = require('moment')
 const TasklistPage = require('../../pages/tasklistPage')
-const newIncidentPageFactory = require('../../pages/newIncidentPage')
+const NewIncidentPage = require('../../pages/newIncidentPage')
+const UserDoesNotExistPage = require('../../pages/userDoesNotExistPage')
 
 context('Submitting details page form', () => {
   const bookingId = 1001
@@ -82,7 +83,7 @@ context('Submitting details page form', () => {
     const detailsPage = fillFormAndSave()
     detailsPage.back().click()
 
-    const updatedIncidentPage = newIncidentPageFactory()
+    const updatedIncidentPage = NewIncidentPage.verifyOnPage()
     updatedIncidentPage.offenderName().contains('Norman Smith')
     updatedIncidentPage.location().contains('Asso A Wing')
     updatedIncidentPage.forceType.planned().should('be.checked')
@@ -113,6 +114,80 @@ context('Submitting details page form', () => {
     updatedIncidentPage
       .witnesses(0)
       .remove()
+      .should('not.exist')
+  })
+
+  it('Adding missing involved staff', () => {
+    cy.login(bookingId)
+
+    const tasklistPage = TasklistPage.visit(bookingId)
+    let newIncidentPage = tasklistPage.startNewForm()
+    newIncidentPage.offenderName().contains('Norman Smith')
+    newIncidentPage.location().select('Asso A Wing')
+    newIncidentPage.forceType.check('true')
+
+    newIncidentPage
+      .staffInvolved(0)
+      .name()
+      .type('AAAA')
+    newIncidentPage.addAnotherStaff().click()
+    newIncidentPage
+      .staffInvolved(1)
+      .name()
+      .type('CCCC')
+    newIncidentPage.addAnotherStaff().click()
+    newIncidentPage
+      .staffInvolved(2)
+      .name()
+      .type('BBBB')
+    newIncidentPage.addAnotherStaff().click()
+    newIncidentPage
+      .staffInvolved(3)
+      .name()
+      .type('DDDD')
+
+    newIncidentPage.clickSave()
+    let userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
+    userDoesNotExistPage.missingUsers().then(users => expect(users).to.deep.equal(['CCCC', 'DDDD']))
+    userDoesNotExistPage.return().click()
+
+    newIncidentPage = NewIncidentPage.verifyOnPage()
+
+    newIncidentPage
+      .staffInvolved(0)
+      .name()
+      .should('have.value', 'AAAA')
+    newIncidentPage
+      .staffInvolved(1)
+      .name()
+      .should('have.value', 'CCCC')
+    newIncidentPage
+      .staffInvolved(2)
+      .name()
+      .should('have.value', 'BBBB')
+    newIncidentPage
+      .staffInvolved(3)
+      .name()
+      .should('have.value', 'DDDD')
+
+    newIncidentPage.clickSave()
+    userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
+    userDoesNotExistPage.continue().click()
+
+    cy.go('back')
+
+    newIncidentPage = NewIncidentPage.verifyOnPage()
+    newIncidentPage
+      .staffInvolved(0)
+      .name()
+      .should('have.value', 'AAAA')
+    newIncidentPage
+      .staffInvolved(1)
+      .name()
+      .should('have.value', 'BBBB')
+    newIncidentPage
+      .staffInvolved(3)
+      .name()
       .should('not.exist')
   })
 })
