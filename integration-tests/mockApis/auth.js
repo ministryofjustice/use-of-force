@@ -1,4 +1,26 @@
+const jwt = require('jsonwebtoken')
 const { stubFor, getRequests } = require('./wiremock')
+
+const createToken = () => {
+  const payload = {
+    user_name: 'ITAG_USER',
+    scope: ['read', 'write'],
+    auth_source: 'nomis',
+    authorities: [
+      'ROLE_MAINTAIN_ACCESS_ROLES_ADMIN',
+      'ROLE_CATEGORISATION_SECURITY',
+      'ROLE_GLOBAL_SEARCH',
+      'ROLE_CREATE_CATEGORISATION',
+      'ROLE_OMIC_ADMIN',
+      'ROLE_APPROVE_CATEGORISATION',
+    ],
+    jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
+    client_id: 'use-of-force-client',
+  }
+
+  const token = jwt.sign(payload, 'secret', { expiresIn: '1h' })
+  return token
+}
 
 const getLoginUrl = () =>
   getRequests().then(data => {
@@ -63,11 +85,11 @@ const token = () =>
         Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
-        access_token: 'token',
+        access_token: createToken(),
         token_type: 'bearer',
         refresh_token: 'refresh',
         user_name: 'Test User',
-        expires_in: 599,
+        expires_in: 600,
         scope: 'read write',
         internalUser: true,
       },
