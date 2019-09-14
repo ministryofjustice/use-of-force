@@ -35,7 +35,7 @@ beforeEach(() => {
 
   service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService })
   incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
-  elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
+  elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
 afterEach(() => {
@@ -151,6 +151,7 @@ describe('update', () => {
     expect(incidentClient.createDraftReport).toBeCalledWith({
       userId: 'user1',
       bookingId: 1,
+      agencyId: 'MDI',
       offenderNo: 'AA123ABC',
       reporterName: 'Bob Smith',
       formResponse: formObject,
