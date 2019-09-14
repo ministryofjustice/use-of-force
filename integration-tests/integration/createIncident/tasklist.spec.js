@@ -9,8 +9,8 @@ context('tasklist', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'Test User')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
   })
 
   it('Progress of report is tracked as parts are filled in', () => {

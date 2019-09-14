@@ -60,7 +60,7 @@ describe('POST save and continue /section/form', () => {
         incidentDate: '2019-08-27T13:59:33+01:00',
         locationId: -1,
         plannedUseOfForce: 'true',
-        involvedStaff: [{ username: 'User bob' }, { username: '' }],
+        involvedStaff: [{ username: 'User_bob' }, { username: '' }],
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -76,7 +76,7 @@ describe('POST save and continue /section/form', () => {
             incidentDetails: {
               locationId: -1,
               plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER BOB' }],
+              involvedStaff: [{ username: 'USER_BOB' }],
               witnesses: [{ name: 'User bob' }],
             },
           },
@@ -108,7 +108,7 @@ describe('POST save and return to tasklist', () => {
         incidentDate: '2019-08-27T13:59:33+01:00',
         locationId: -1,
         plannedUseOfForce: 'true',
-        involvedStaff: [{ username: 'User bob' }, { username: '' }],
+        involvedStaff: [{ username: 'User_bob' }, { username: '' }],
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -124,7 +124,7 @@ describe('POST save and return to tasklist', () => {
             incidentDetails: {
               locationId: -1,
               plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER BOB' }],
+              involvedStaff: [{ username: 'USER_BOB' }],
               witnesses: [{ name: 'User bob' }],
             },
           },

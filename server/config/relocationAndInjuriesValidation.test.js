@@ -84,7 +84,7 @@ describe('Relocation and Injuries page - overall', () => {
 })
 
 describe('Relocation and Injuries page inputs', () => {
-  it("Not selecting an option for 'prisoner relocation' returns a validation error message", () => {
+  it('Not selecting an option for prisoner relocation returns a validation error message', () => {
     const input = {
       ...validInput,
       prisonerRelocation: undefined,
@@ -98,7 +98,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Not selecting an option for 'Was the prisoner compliant' returns a validation error message", () => {
+  it('Not selecting an option for Was the prisoner compliant returns a validation error message', () => {
     const input = {
       ...validInput,
       relocationCompliancy: undefined,
@@ -112,7 +112,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Not entering anything in the 'Who completed the F213 form' field returns a validation error message", () => {
+  it('Not entering anything in the Who completed the F213 form field returns a validation error message', () => {
     const input = {
       ...validInput,
       f213CompletedBy: '',
@@ -126,7 +126,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Not selecting an option for 'Did the prisoner sustain any injuries' returns a validation error message", () => {
+  it('Not selecting an option for Did the prisoner sustain any injuries returns a validation error message', () => {
     const input = {
       ...validInput,
       prisonerInjuries: undefined,
@@ -140,7 +140,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Not selecting an option for 'Was a member of healthcare present' returns validation error message plus 'healthcarePractionerName' is undefined", () => {
+  it('Not selecting an option for Was a member of healthcare present returns validation error message plus healthcarePractionerName is undefined', () => {
     const input = {
       ...validInput,
       healthcareInvolved: undefined,
@@ -157,7 +157,7 @@ describe('Relocation and Injuries page inputs', () => {
     expect(formResponse.healthcarePractionerName).toBe(undefined)
   })
 
-  it("Selecting Yes for 'Was a member of healthcare present' but nothing in 'healthcarePractionerName' returns validation error message", () => {
+  it('Selecting Yes for Was a member of healthcare present but nothing in healthcarePractionerName returns validation error message', () => {
     const input = {
       ...validInput,
       healthcareInvolved: 'true',
@@ -175,7 +175,7 @@ describe('Relocation and Injuries page inputs', () => {
     expect(formResponse.healthcarePractionerName).toBe(undefined)
   })
 
-  it("Not selecting an option for 'Did the prisoner need outside hospitalisation' returns a validation error message", () => {
+  it('Not selecting an option for Did the prisoner need outside hospitalisation returns a validation error message', () => {
     const input = {
       ...validInput,
       prisonerHospitalisation: undefined,
@@ -189,7 +189,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Not selecting an option for 'Did a member of staff need medical attention' returns a  validation error message", () => {
+  it('Not selecting an option for Did a member of staff need medical attention returns a  validation error message', () => {
     const input = {
       ...validInput,
       staffMedicalAttention: undefined,
@@ -204,7 +204,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Selecting Yes for 'Did a member of staff need medical attention' but not inputting anything in the subsequent input fields returns a  validation error message", () => {
+  it('Selecting Yes for Did a member of staff need medical attention but not inputting anything in the subsequent input fields returns a  validation error message', () => {
     const input = {
       ...validInput,
       staffNeedingMedicalAttention: [],
@@ -219,7 +219,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Selecting Yes for 'Did a member of staff need medical attention' and inputting a string for 'Name of who needed medical attention'  but not selecting subsequent radio button  returns a  validation error message", () => {
+  it('Selecting Yes for Did a member of staff need medical attention and inputting a string for Name of who needed medical attention but not selecting subsequent radio button  returns a  validation error message', () => {
     const input = {
       ...validInput,
       staffNeedingMedicalAttention: [{ name: 'Person Someone', hospitalisation: undefined }],
@@ -234,7 +234,7 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
-  it("Selecting Yes for 'Did a member of staff need medical attention' and selecting subsequent a radio button for 'Did they go to hospital'  but then nothing for 'Name of who needed medical attention' returns a validation error message", () => {
+  it('Selecting Yes for Did a member of staff need medical attention and selecting subsequent a radio button for Did they go to hospital  but then nothing for Name of who needed medical attention returns a validation error message', () => {
     const input = {
       ...validInput,
       staffNeedingMedicalAttention: [{ name: undefined, hospitalisation: 'false' }],
@@ -245,6 +245,33 @@ describe('Relocation and Injuries page inputs', () => {
       {
         href: '#staffNeedingMedicalAttention[0][name]',
         text: 'Enter the name of who needed medical attention',
+      },
+    ])
+  })
+
+  it('Staff needing medical attention throws error when staffname format incorrect', () => {
+    const input = { ...validInput, staffNeedingMedicalAttention: [{ name: 'Staff name 9', hospitalisation: 'true' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#staffNeedingMedicalAttention[0][name]',
+        text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+      },
+    ])
+  })
+
+  it('Selecting Yes for Was a member of healthcare present but using wrong format for  healthcarePractionerName  throws an error', () => {
+    const input = {
+      ...validInput,
+      healthcareInvolved: 'true',
+      healthcarePractionerName: 'Jim Smith 99',
+    }
+    const { errors, formResponse } = check(input)
+    expect(formResponse.healthcareInvolved).toEqual(true)
+    expect(errors).toEqual([
+      {
+        href: '#healthcarePractionerName',
+        text: 'Names may only contain letters, spaces, hyphens or apostrophes',
       },
     ])
   })
