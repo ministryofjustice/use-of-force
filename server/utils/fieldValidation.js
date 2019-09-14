@@ -6,6 +6,8 @@ const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = re
 
 const joi = baseJoi.extend(dateExtend)
 
+const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
+
 const fieldOptions = {
   any: joi.any(),
 
@@ -127,7 +129,7 @@ const fieldOptions = {
   f213CompletedBy: joi
     .string()
     .trim()
-    .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, '213')
+    .regex(namePattern, '213')
     .required(),
 
   requiredMemberOfHealthcare: joi.when('healthcareInvolved', {
@@ -135,7 +137,7 @@ const fieldOptions = {
     then: joi
       .string()
       .trim()
-      .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'HealthcarePractitioner')
+      .regex(namePattern, 'HealthcarePractitioner')
       .required(),
   }),
 
@@ -172,7 +174,7 @@ const fieldOptions = {
       name: joi
         .string()
         .trim()
-        .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'Witnesses'),
+        .regex(namePattern, 'Witnesses'),
     })
   ),
 
@@ -187,7 +189,7 @@ const fieldOptions = {
             .string()
             .trim()
             .required()
-            .regex(/^[a-zA-Z][a-zA-Z\s-'.]{0,48}[a-zA-Z]$/, 'StaffMedicalAttention'),
+            .regex(namePattern, 'StaffMedicalAttention'),
 
           hospitalisation: joi
             .valid([true, false])
@@ -229,17 +231,6 @@ module.exports = {
         getIn([error.path[0], 'validationMessage', error.type], fieldConfig) ||
         getIn([...error.path, 'validationMessage'], fieldConfig) ||
         error.message
-      if (typeof fieldConfig[Object.keys(fieldConfig)[0]].validationMessage === 'object') {
-        if (error.type === 'string.regex.name') {
-          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['string.regex.name']
-        } else if (error.type === 'string.base') {
-          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['any.required']
-        } else if (error.type === 'any.required') {
-          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['any.required']
-        } else if (error.type === 'array.min') {
-          errorMessage = fieldConfig[Object.keys(fieldConfig)[0]].validationMessage['array.min']
-        }
-      }
 
       return {
         text: errorMessage,
