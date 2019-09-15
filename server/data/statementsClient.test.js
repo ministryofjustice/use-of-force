@@ -19,11 +19,10 @@ test('getStatements', () => {
             , s."name"
             from statement s 
             inner join report r on s.report_id = r.id   
-          where r.status = $1 
-          and s.user_id = $2 
-          and s.statement_status = $3
+          where s.user_id = $1
+          and s.statement_status = $2
           order by r.incident_date`,
-    values: [ReportStatus.SUBMITTED.value, 'user1', StatementStatus.PENDING.value],
+    values: ['user1', StatementStatus.PENDING.value],
   })
 })
 
@@ -119,5 +118,14 @@ test('submitStatement', () => {
     and report_id = $3
     and statement_status = $4`,
     values: [StatementStatus.SUBMITTED.value, 'user1', 'incident1', StatementStatus.PENDING.value],
+  })
+})
+
+test('getNumberOfPendingStatements', () => {
+  statementsClient.getNumberOfPendingStatements('report1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
+    values: ['report1', StatementStatus.PENDING.value],
   })
 })

@@ -1,3 +1,4 @@
+const format = require('pg-format')
 const db = require('./dataAccess/db')
 const { ReportStatus, StatementStatus } = require('../config/types')
 
@@ -57,6 +58,17 @@ const submitReport = (userId, bookingId, submittedDate) => {
   })
 }
 
+const markCompleted = reportId => {
+  return db.query({
+    text: `update report r
+            set status = $1
+            ,   updated_date = now()
+          where id = $2
+          and status = $3`,
+    values: [ReportStatus.COMPLETE.value, reportId, ReportStatus.SUBMITTED.value],
+  })
+}
+
 const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
   const results = await query({
     text: `select id, incident_date "incidentDate", form_response "form" from report r
@@ -98,18 +110,22 @@ const getReportsForReviewer = async (status, query = db.query) => {
   })
 }
 
-const getReports = (userId, status, query = db.query) => {
+const getReports = (userId, statuses, query = db.query) => {
+  const statusValues = statuses.map(status => status.value)
   return query({
-    text: `select r.id
+    text: format(
+      `select r.id
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
             from report r
-          where r.status = $1
-          and r.user_id = $2
+          where r.status in (%L)
+          and r.user_id = %L
           order by r.incident_date`,
-    values: [status.value, userId],
+      statusValues,
+      userId
+    ),
   })
 }
 
@@ -176,6 +192,7 @@ module.exports = {
   createDraftReport,
   updateDraftReport,
   submitReport,
+  markCompleted,
   getCurrentDraftReport,
   getReport,
   getReports,

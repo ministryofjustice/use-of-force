@@ -1,6 +1,10 @@
 const serviceCreator = require('./statementService')
 const { StatementStatus } = require('../config/types')
 
+const incidentClient = {
+  markCompleted: jest.fn(),
+}
+
 const statementsClient = {
   getStatements: jest.fn(),
   getStatementForUser: jest.fn(),
@@ -8,13 +12,14 @@ const statementsClient = {
   submitStatement: jest.fn(),
   getAdditionalComments: jest.fn(),
   saveAdditionalComment: jest.fn(),
+  getNumberOfPendingStatements: jest.fn(),
 }
 
 let service
 
 describe('statmentService', () => {
   beforeEach(() => {
-    service = serviceCreator({ statementsClient })
+    service = serviceCreator({ statementsClient, incidentClient })
     statementsClient.getStatements.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
     statementsClient.saveAdditionalComment(50, 'Some new comment')
   })
@@ -92,11 +97,28 @@ describe('statmentService', () => {
     expect(statementsClient.saveStatement).toBeCalledWith('user1', 'incident-1', statement)
   })
 
-  test('should call submitStatement', async () => {
-    await service.submitStatement('user1', 'incident-1')
+  describe('submitStatement', () => {
+    test('does not mark report as complete if still pending statements', async () => {
+      statementsClient.getNumberOfPendingStatements.mockReturnValue(1)
 
-    expect(statementsClient.submitStatement).toBeCalledTimes(1)
-    expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
+      await service.submitStatement('user1', 'incident-1')
+
+      expect(statementsClient.submitStatement).toBeCalledTimes(1)
+      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
+
+      expect(incidentClient.markCompleted).not.toHaveBeenCalled()
+    })
+
+    test('marks report as complete if no pending statements', async () => {
+      statementsClient.getNumberOfPendingStatements.mockReturnValue(0)
+
+      await service.submitStatement('user1', 'incident-1')
+
+      expect(statementsClient.submitStatement).toBeCalledTimes(1)
+      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
+
+      expect(incidentClient.markCompleted).toHaveBeenCalledWith('incident-1')
+    })
   })
 
   describe('validateSavedStatement', () => {

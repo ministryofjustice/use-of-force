@@ -3,7 +3,7 @@ const { StatementStatus } = require('../config/types')
 const statementConfig = require('../config/statement')
 const { validate } = require('../utils/fieldValidation')
 
-module.exports = function createStatementService({ statementsClient }) {
+module.exports = function createStatementService({ statementsClient, incidentClient }) {
   const getStatements = async (userId, status) => {
     const data = await statementsClient.getStatements(userId, status)
     return data.rows
@@ -29,9 +29,16 @@ module.exports = function createStatementService({ statementsClient }) {
     return statementsClient.saveStatement(userId, reportId, statement)
   }
 
-  const submitStatement = (userId, reportId) => {
+  const submitStatement = async (userId, reportId) => {
     logger.info(`Submitting statement for user: ${userId} and report: ${reportId}`)
-    return statementsClient.submitStatement(userId, reportId)
+    await statementsClient.submitStatement(userId, reportId)
+
+    const pendingStatementCount = await statementsClient.getNumberOfPendingStatements(reportId)
+
+    if (pendingStatementCount === 0) {
+      logger.info(`All statements complete on : ${reportId}, marking as complete`)
+      await incidentClient.markCompleted(reportId)
+    }
   }
 
   const saveAdditionalComment = (statementId, additionalComment) => {

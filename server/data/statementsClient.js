@@ -11,11 +11,10 @@ const getStatements = (userId, status, query = db.query) => {
             , s."name"
             from statement s 
             inner join report r on s.report_id = r.id   
-          where r.status = $1 
-          and s.user_id = $2 
-          and s.statement_status = $3
+          where s.user_id = $1
+          and s.statement_status = $2
           order by r.incident_date`,
-    values: ['SUBMITTED', userId, status.value],
+    values: [userId, status.value],
   })
 }
 
@@ -98,6 +97,14 @@ const submitStatement = (userId, reportId, query = db.query) => {
   })
 }
 
+const getNumberOfPendingStatements = async reportId => {
+  const { rows } = await db.query({
+    text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
+    values: [reportId, StatementStatus.PENDING.value],
+  })
+  return parseInt(rows[0].count, 10)
+}
+
 const createStatements = async (reportId, firstReminder, overdueDate, staff, query = db.query) => {
   const rows = staff.map(s => [
     reportId,
@@ -126,4 +133,5 @@ module.exports = {
   submitStatement,
   getAdditionalComments,
   saveAdditionalComment,
+  getNumberOfPendingStatements,
 }
