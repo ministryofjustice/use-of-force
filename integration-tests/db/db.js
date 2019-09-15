@@ -53,7 +53,13 @@ const seedReport = ({
     .then(
       result =>
         involvedStaff.length &&
-        statementsClient.createStatements(result.rows[0].id, new Date(), involvedStaff, db.queryWithoutTransaction)
+        statementsClient.createStatements(
+          result.rows[0].id,
+          new Date(),
+          new Date(),
+          involvedStaff,
+          db.queryWithoutTransaction
+        )
     )
 }
 

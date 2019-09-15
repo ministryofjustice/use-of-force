@@ -147,9 +147,10 @@ const getNextNotificationReminder = async () => {
           ,       s.name                   "recipientName"
           ,       s.next_reminder_date     "nextReminderDate"  
           ,       r.reporter_name          "reporterName"
-          ,       r.submitted_date         "submittedDate"
           ,       r.incident_date          "incidentDate"
           ,       r.user_id = s.user_id    "isReporter"
+          ,       s.overdue_date           "overdueDate"
+          ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
           where next_reminder_date < now() and s.statement_status = $1

@@ -47,11 +47,12 @@ describe('submit', () => {
     involvedStaffService.save.mockReturnValue([])
 
     const now = moment('2019-09-06 21:26:18')
+    const deadline = moment(now).add(3, 'days')
     const result = await service.submit(currentUser, 'booking-1', now)
 
     expect(result).toEqual('form-1')
     expect(involvedStaffService.save).toBeCalledTimes(1)
-    expect(involvedStaffService.save).toBeCalledWith('form-1', now, currentUser)
+    expect(involvedStaffService.save).toBeCalledWith('form-1', now, deadline, currentUser)
 
     expect(incidentClient.submitReport).toBeCalledTimes(1)
     expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1', now.toDate())
@@ -66,17 +67,18 @@ describe('submit', () => {
     ])
 
     const now = moment('2019-09-06 21:26:18')
-    await service.submit(currentUser, 'booking-1', now)
+    const deadline = moment(now).add(3, 'days')
+    await service.submit(currentUser, 'booking-1', now, deadline)
 
     expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
       [
         'user1@example.com',
-        { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith', reportSubmittedDate: now },
+        { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith', overdueDate: deadline },
       ],
       [
         'user3@example.com',
-        { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith', reportSubmittedDate: now },
+        { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith', overdueDate: deadline },
       ],
     ])
   })

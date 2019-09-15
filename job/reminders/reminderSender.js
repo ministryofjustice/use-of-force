@@ -2,12 +2,6 @@ const moment = require('moment')
 const logger = require('../../log')
 
 module.exports = (notificationService, incidentClient) => {
-  const isOverdue = (now, { submittedDate }) => {
-    const startdate = moment(submittedDate)
-    const daysSinceReportSubmitted = now.diff(startdate, 'days')
-    return daysSinceReportSubmitted >= 3
-  }
-
   const getNextReminderDate = ({ nextReminderDate }) => {
     const startdate = moment(nextReminderDate)
     return startdate.add(1, 'day').toDate()
@@ -33,13 +27,13 @@ module.exports = (notificationService, incidentClient) => {
       await notificationService.sendReporterStatementReminder(reminder.recipientEmail, {
         reporterName: reminder.reporterName,
         incidentDate: reminder.incidentDate,
-        reportSubmittedDate: reminder.submittedDate,
+        overdueDate: reminder.overdueDate,
       })
     } else {
       await notificationService.sendInvolvedStaffStatementReminder(reminder.recipientEmail, {
         involvedName: reminder.recipientName,
         incidentDate: reminder.incidentDate,
-        reportSubmittedDate: reminder.submittedDate,
+        overdueDate: reminder.overdueDate,
       })
     }
     const nextReminderDate = getNextReminderDate(reminder)
@@ -47,12 +41,10 @@ module.exports = (notificationService, incidentClient) => {
   }
 
   return {
-    isOverdue,
     getNextReminderDate,
-    send: (reminder, now = moment()) => {
+    send: reminder => {
       logger.info('processing reminder', reminder)
-
-      return isOverdue(now, reminder) ? handleOverdue(reminder) : handleReminder(reminder)
+      return reminder.isOverdue ? handleOverdue(reminder) : handleReminder(reminder)
     },
   }
 }

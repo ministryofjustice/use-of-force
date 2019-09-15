@@ -16,54 +16,7 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-const { isOverdue, getNextReminderDate, send } = reminderSender(notificationService, incidentClient)
-
-describe('isOverdue', () => {
-  const checkIsOverdue = ({ now, submitted }) => expect(isOverdue(moment(now), { submittedDate: moment(submitted) }))
-
-  test('now is not overdue', async () => {
-    checkIsOverdue({ submitted: '2019-09-06 21:26:17', now: '2019-09-06 21:26:17' }).toEqual(false)
-  })
-
-  test('submitted in the future is not overdue', async () => {
-    checkIsOverdue({ submitted: '2019-09-06 21:26:18Z', now: '2019-09-06 21:26:17' }).toEqual(false)
-    checkIsOverdue({ submitted: '2019-09-07 21:26:17Z', now: '2019-09-06 21:26:17' }).toEqual(false)
-  })
-
-  test('check around boundary', async () => {
-    checkIsOverdue({ submitted: '2019-09-06 21:26:17', now: '2019-09-09 21:26:16' }).toEqual(false)
-    checkIsOverdue({ submitted: '2019-09-06 21:26:17', now: '2019-09-09 21:26:17' }).toEqual(true)
-  })
-
-  test('check submitted around leap year', async () => {
-    checkIsOverdue({ submitted: '2020-02-28 23:59:59', now: '2020-03-02 23:59:58' }).toEqual(false)
-    checkIsOverdue({ submitted: '2020-02-28 23:59:59', now: '2020-03-02 23:59:59' }).toEqual(true)
-
-    checkIsOverdue({ submitted: '2020-02-29 23:59:59', now: '2020-03-03 23:59:58' }).toEqual(false)
-    checkIsOverdue({ submitted: '2020-02-29 23:59:59', now: '2020-03-03 23:59:59' }).toEqual(true)
-
-    checkIsOverdue({ submitted: '2020-03-01 00:00:00', now: '2020-03-03 23:59:59' }).toEqual(false)
-    checkIsOverdue({ submitted: '2020-03-01 00:00:00', now: '2020-03-04 00:00:00' }).toEqual(true)
-  })
-
-  test('check now is around leap year', async () => {
-    checkIsOverdue({ submitted: '2020-02-25 23:59:58', now: '2020-02-28 23:59:59' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-25 23:59:59', now: '2020-02-28 23:59:59' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-26 00:00:00', now: '2020-02-28 23:59:59' }).toEqual(false)
-
-    checkIsOverdue({ submitted: '2020-02-25 23:59:59', now: '2020-02-29 00:00:00' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-26 00:00:00', now: '2020-02-29 00:00:00' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-26 00:00:01', now: '2020-02-29 00:00:00' }).toEqual(false)
-
-    checkIsOverdue({ submitted: '2020-02-26 23:59:58', now: '2020-02-29 23:59:59' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-26 23:59:59', now: '2020-02-29 23:59:59' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-27 00:00:00', now: '2020-02-29 23:59:59' }).toEqual(false)
-
-    checkIsOverdue({ submitted: '2020-02-26 23:59:59', now: '2020-03-01 00:00:00' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-27 00:00:00', now: '2020-03-01 00:00:00' }).toEqual(true)
-    checkIsOverdue({ submitted: '2020-02-27 00:00:01', now: '2020-03-01 00:00:00' }).toEqual(false)
-  })
-})
+const { getNextReminderDate, send } = reminderSender(notificationService, incidentClient)
 
 describe('getNextReminderDate', () => {
   const checkGetNextReminderDate = val =>
@@ -89,8 +42,8 @@ describe('send', () => {
   const incidentDate = moment('2019-09-05 21:26:17')
   const reporterName = 'Officer Smith'
   const now = moment('2019-09-06 21:26:17')
-  const overdue = moment('2019-09-02 21:26:17')
-  const notOverdue = moment('2019-09-05 21:26:17')
+  const overdue = moment(now).add(-1, 'day')
+  const notOverdue = moment(now).add(1, 'day')
 
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
@@ -101,7 +54,8 @@ describe('send', () => {
           reporterName,
           recipientEmail,
           nextReminderDate: now,
-          submittedDate: notOverdue,
+          overdueDate: notOverdue,
+          isOverdue: false,
           statementId: -1,
         },
         now
@@ -110,7 +64,7 @@ describe('send', () => {
       expect(notificationService.sendReporterStatementReminder).toBeCalledTimes(1)
       expect(notificationService.sendReporterStatementReminder).toBeCalledWith(recipientEmail, {
         incidentDate,
-        reportSubmittedDate: notOverdue,
+        overdueDate: notOverdue,
         reporterName,
       })
 
@@ -125,7 +79,8 @@ describe('send', () => {
           reporterName,
           recipientEmail,
           nextReminderDate: now,
-          submittedDate: overdue,
+          overdueDate: overdue,
+          isOverdue: true,
           statementId: -1,
         },
         now
@@ -151,7 +106,8 @@ describe('send', () => {
           recipientEmail,
           recipientName: involvedName,
           nextReminderDate: now,
-          submittedDate: notOverdue,
+          overdueDate: notOverdue,
+          isOverdue: false,
           statementId: -1,
         },
         now
@@ -160,7 +116,7 @@ describe('send', () => {
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledTimes(1)
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledWith(recipientEmail, {
         incidentDate,
-        reportSubmittedDate: notOverdue,
+        overdueDate: notOverdue,
         involvedName,
       })
 
@@ -176,7 +132,8 @@ describe('send', () => {
           recipientEmail,
           recipientName: involvedName,
           nextReminderDate: now,
-          submittedDate: overdue,
+          overdueDate: overdue,
+          isOverdue: true,
           statementId: -1,
         },
         now

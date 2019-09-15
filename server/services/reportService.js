@@ -53,14 +53,14 @@ module.exports = function createReportService({
     return id
   }
 
-  const requestStatements = (currentUser, incidentDate, reportSubmittedDate, staffMembers) => {
+  const requestStatements = (currentUser, incidentDate, overdueDate, staffMembers) => {
     const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
     return staffExcludingReporter.map(staff =>
       notificationService.sendStatementRequest(staff.email, {
         involvedName: staff.name,
         reporterName: currentUser.displayName,
         incidentDate,
-        reportSubmittedDate,
+        overdueDate,
       })
     )
   }
@@ -69,14 +69,16 @@ module.exports = function createReportService({
     const { id, incidentDate } = await getCurrentDraft(currentUser.username, bookingId)
     if (id) {
       const reportSubmittedDate = now
-      const staff = await involvedStaffService.save(id, reportSubmittedDate, currentUser)
+      const overdueDate = moment(reportSubmittedDate).add(3, 'days')
+
+      const staff = await involvedStaffService.save(id, reportSubmittedDate, overdueDate, currentUser)
       logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
       await incidentClient.submitReport(currentUser.username, bookingId, reportSubmittedDate.toDate())
 
       // Always ensure report is persisted before sending out notifications
       await incidentClient.commitAndStartNewTransaction()
 
-      await requestStatements(currentUser, incidentDate, reportSubmittedDate, staff)
+      await requestStatements(currentUser, incidentDate, overdueDate, staff)
 
       return id
     }
