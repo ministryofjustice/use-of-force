@@ -1,4 +1,4 @@
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const AllIncidentsPage = require('../../pages/allIncidentsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
@@ -31,15 +31,13 @@ context('All incidents page', () => {
       ],
     })
 
-    const incidentsPage = IncidentsPage.goTo()
+    const allIncidentsPage = AllIncidentsPage.goTo()
 
-    incidentsPage
+    allIncidentsPage
       .allTabs()
       .then(allTabs => expect(allTabs).to.deep.equal(['All incidents', 'Your statements', 'Your reports']))
 
-    incidentsPage.selectedTab().contains('All incidents')
-
-    const allIncidentsPage = AllIncidentsPage.verifyOnPage()
+    allIncidentsPage.selectedTab().contains('All incidents')
 
     {
       const { date, prisoner, reporter } = allIncidentsPage.getTodoRow(0)
@@ -53,10 +51,10 @@ context('All incidents page', () => {
     cy.task('stubLogin')
     cy.login(bookingId)
 
-    const incidentsPage = IncidentsPage.goTo()
+    const yourStatementsPage = YourStatementsPage.goTo()
 
-    incidentsPage.allTabs().then(allTabs => expect(allTabs).to.deep.equal(['Your statements', 'Your reports']))
+    yourStatementsPage.allTabs().then(allTabs => expect(allTabs).to.deep.equal(['Your statements', 'Your reports']))
 
-    incidentsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.selectedTab().contains('Your statements')
   })
 })

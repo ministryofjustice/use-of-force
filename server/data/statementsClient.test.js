@@ -1,6 +1,6 @@
 const statementsClient = require('./statementsClient')
 const db = require('./dataAccess/db')
-const { ReportStatus, StatementStatus } = require('../config/types')
+const { StatementStatus } = require('../config/types')
 
 jest.mock('../../server/data/dataAccess/db')
 

@@ -1,5 +1,5 @@
 const TasklistPage = require('../../pages/tasklistPage')
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const SubmitStatementPage = require('../../pages/submitStatementPage')
 const ViewStatementPage = require('../../pages/viewStatementPage')
@@ -32,8 +32,8 @@ context('Submit statement', () => {
     })
 
     {
-      const incidentsPage = IncidentsPage.goTo()
-      const { date, prisoner, reporter, startButton } = incidentsPage.getTodoRow(0)
+      const yourStatementsPage = YourStatementsPage.goTo()
+      const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
       prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
@@ -121,8 +121,8 @@ context('Submit statement', () => {
       ],
     })
 
-    let incidentsPage = IncidentsPage.goTo()
-    incidentsPage
+    let yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage
       .getTodoRow(0)
       .startButton()
       .click()
@@ -141,9 +141,9 @@ context('Submit statement', () => {
 
     const statementSubmittedPage = confirmStatementPage.submit()
 
-    incidentsPage = statementSubmittedPage.finish()
+    yourStatementsPage = statementSubmittedPage.finish()
 
-    incidentsPage
+    yourStatementsPage
       .getCompleteRow(0)
       .viewButton()
       .click()

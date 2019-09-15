@@ -12,7 +12,7 @@ const completeCol = (i, j) =>
     .find('td')
     .eq(j)
 
-const incidentsPage = () =>
+const yourStatementsPage = () =>
   page('Use of force incidents', {
     getTodoRow: i => ({
       date: () => todoCol(i, 0),
@@ -42,12 +42,13 @@ const incidentsPage = () =>
         )
       ),
     yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
+    allIncidentsTab: () => cy.get('[data-qa="all-incidents-link"]'),
   })
 
 export default {
-  verifyOnPage: incidentsPage,
+  verifyOnPage: yourStatementsPage,
   goTo: () => {
-    cy.visit('/')
-    return incidentsPage()
+    cy.visit('/your-statements')
+    return yourStatementsPage()
   },
 }

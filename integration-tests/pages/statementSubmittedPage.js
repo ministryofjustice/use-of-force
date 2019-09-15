@@ -1,5 +1,5 @@
 const page = require('./page')
-const IncidentsPage = require('./incidentsPage')
+const IncidentsPage = require('./yourStatementsPage')
 
 const submitStatementPage = () =>
   page('Your statement has been submitted', {
