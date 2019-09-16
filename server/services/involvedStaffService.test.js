@@ -225,11 +225,14 @@ describe('lookup', () => {
 
 describe('save', () => {
   let reportSubmittedDate
+  let overdueDate
+
   let expectedFirstReminderDate
 
   beforeEach(() => {
     reportSubmittedDate = moment('2019-09-06 21:26:18')
     expectedFirstReminderDate = moment('2019-09-07 21:26:18')
+    overdueDate = moment(reportSubmittedDate).add(3, 'days')
   })
 
   test('when user has already added themselves', async () => {
@@ -254,23 +257,28 @@ describe('save', () => {
       },
     ])
 
-    await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    await service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
 
-    expect(statementsClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
-      { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
-      {
-        email: 'cn@email',
-        name: 'Jenny Walker',
-        staffId: 2,
-        userId: 'Jenny',
-      },
-      {
-        email: 'an@email',
-        name: 'Bob Smith',
-        staffId: 3,
-        userId: 'Bob',
-      },
-    ])
+    expect(statementsClient.createStatements).toBeCalledWith(
+      'form1',
+      expectedFirstReminderDate.toDate(),
+      overdueDate.toDate(),
+      [
+        { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
+        {
+          email: 'cn@email',
+          name: 'Jenny Walker',
+          staffId: 2,
+          userId: 'Jenny',
+        },
+        {
+          email: 'an@email',
+          name: 'Bob Smith',
+          staffId: 3,
+          userId: 'Bob',
+        },
+      ]
+    )
   })
 
   test('when user is not already added', async () => {
@@ -301,22 +309,27 @@ describe('save', () => {
       ],
     })
 
-    await service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
-    expect(statementsClient.createStatements).toBeCalledWith('form1', expectedFirstReminderDate.toDate(), [
-      { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
-      {
-        email: 'cn@email',
-        name: 'Jenny Walker',
-        staffId: 2,
-        userId: 'Jenny',
-      },
-      {
-        email: 'an@email',
-        name: 'Bob Smith',
-        staffId: 3,
-        userId: 'Bob',
-      },
-    ])
+    await service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    expect(statementsClient.createStatements).toBeCalledWith(
+      'form1',
+      expectedFirstReminderDate.toDate(),
+      overdueDate.toDate(),
+      [
+        { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
+        {
+          email: 'cn@email',
+          name: 'Jenny Walker',
+          staffId: 2,
+          userId: 'Jenny',
+        },
+        {
+          email: 'an@email',
+          name: 'Bob Smith',
+          staffId: 3,
+          userId: 'Bob',
+        },
+      ]
+    )
   })
 
   test('fail to find current user', async () => {
@@ -342,7 +355,7 @@ describe('save', () => {
     })
 
     await expect(
-      service.save('form1', reportSubmittedDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+      service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
     ).rejects.toThrow(`Could not retrieve user details for 'Bob', missing: 'true', not verified: 'false'`)
   })
 })

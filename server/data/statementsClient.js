@@ -98,7 +98,7 @@ const submitStatement = (userId, reportId, query = db.query) => {
   })
 }
 
-const createStatements = async (reportId, firstReminder, staff, query = db.query) => {
+const createStatements = async (reportId, firstReminder, overdueDate, staff, query = db.query) => {
   const rows = staff.map(s => [
     reportId,
     s.staffId,
@@ -106,11 +106,12 @@ const createStatements = async (reportId, firstReminder, staff, query = db.query
     s.name,
     s.email,
     firstReminder,
+    overdueDate,
     StatementStatus.PENDING.value,
   ])
   const results = await query({
     text: format(
-      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, statement_status) VALUES %L returning id',
+      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id',
       rows
     ),
   })

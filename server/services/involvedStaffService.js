@@ -84,7 +84,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
     return [...addedStaff, ...exist]
   }
 
-  const save = async (reportId, reportSubmittedDate, currentUser) => {
+  const save = async (reportId, reportSubmittedDate, overdueDate, currentUser) => {
     const involvedStaff = await getDraftInvolvedStaff(reportId)
 
     const staffToCreateStatmentsFor = await getStaffRequiringStatements(currentUser, involvedStaff)
@@ -97,7 +97,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
     }))
 
     const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
-    await statementsClient.createStatements(reportId, firstReminderDate.toDate(), staff)
+    await statementsClient.createStatements(reportId, firstReminderDate.toDate(), overdueDate.toDate(), staff)
     return staff
   }
 

@@ -24,12 +24,12 @@ afterEach(() => {
 describe('send reporter notifications', () => {
   test('sendReporterStatementReminder', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    const submittedDate = new Date(2019, 1, 13, 16, 45)
+    const overdueDate = new Date(2019, 1, 16, 16, 45)
 
     await service.sendReporterStatementReminder('user@email.com', {
       reporterName: 'Jane Smith',
       incidentDate,
-      reportSubmittedDate: submittedDate,
+      overdueDate,
     })
 
     expect(client.sendEmail).toBeCalledWith(reporter.REMINDER, 'user@email.com', {
@@ -64,12 +64,12 @@ describe('send reporter notifications', () => {
 describe('send involved staff notifications', () => {
   test('sendInvolvedStaffStatementReminder', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    const submittedDate = new Date(2019, 1, 13, 16, 45)
+    const overdueDate = new Date(2019, 1, 16, 16, 45)
 
     await service.sendInvolvedStaffStatementReminder('user@email.com', {
       involvedName: 'Jane Smith',
       incidentDate,
-      reportSubmittedDate: submittedDate,
+      overdueDate,
     })
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REMINDER, 'user@email.com', {
@@ -102,13 +102,13 @@ describe('send involved staff notifications', () => {
 
   test('sendStatementRequest', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    const submittedDate = new Date(2019, 1, 13, 16, 45)
+    const overdueDate = new Date(2019, 1, 16, 16, 45)
 
     await service.sendStatementRequest('user@email.com', {
       reporterName: 'Jane Smith',
       involvedName: 'Thelma Jones',
       incidentDate,
-      reportSubmittedDate: submittedDate,
+      overdueDate,
     })
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {

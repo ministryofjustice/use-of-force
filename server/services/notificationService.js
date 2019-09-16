@@ -15,25 +15,15 @@ const createNotificationService = emailClient => {
 
   const asTime = date => moment(date).format('HH:mm')
 
-  const asDeadlineDate = date =>
-    moment(date)
-      .add(3, 'days')
-      .format('dddd D MMMM')
-
-  const asDeadlineTime = date =>
-    moment(date)
-      .add(3, 'days')
-      .format('HH:mm')
-
-  const sendReporterStatementReminder = async (emailAddress, { reporterName, incidentDate, reportSubmittedDate }) =>
+  const sendReporterStatementReminder = async (emailAddress, { reporterName, incidentDate, overdueDate }) =>
     emailClient
       .sendEmail(reporter.REMINDER, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
-          DEADLINE_DATE: asDeadlineDate(reportSubmittedDate),
-          DEADLINE_TIME: asDeadlineTime(reportSubmittedDate),
+          DEADLINE_DATE: asDate(overdueDate),
+          DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
         },
         reference: null,
@@ -41,18 +31,15 @@ const createNotificationService = emailClient => {
       .then(({ body }) => logger.info(`Send statement reminder, successful for reporter: '${reporterName}'`, body))
       .catch(({ message }) => logger.error(`Send statement reminder, failed for reporter: '${reporterName}'`, message))
 
-  const sendInvolvedStaffStatementReminder = async (
-    emailAddress,
-    { involvedName, incidentDate, reportSubmittedDate }
-  ) =>
+  const sendInvolvedStaffStatementReminder = async (emailAddress, { involvedName, incidentDate, overdueDate }) =>
     emailClient
       .sendEmail(involvedStaff.REMINDER, emailAddress, {
         personalisation: {
           INVOLVED_NAME: involvedName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
-          DEADLINE_DATE: asDeadlineDate(reportSubmittedDate),
-          DEADLINE_TIME: asDeadlineTime(reportSubmittedDate),
+          DEADLINE_DATE: asDate(overdueDate),
+          DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
         },
         reference: null,
@@ -94,10 +81,7 @@ const createNotificationService = emailClient => {
         logger.error(`Send statement overdue, failed for involved staff: '${involvedName}'`, message)
       )
 
-  const sendStatementRequest = async (
-    emailAddress,
-    { reporterName, involvedName, incidentDate, reportSubmittedDate }
-  ) =>
+  const sendStatementRequest = async (emailAddress, { reporterName, involvedName, incidentDate, overdueDate }) =>
     emailClient
       .sendEmail(involvedStaff.REQUEST, emailAddress, {
         personalisation: {
@@ -105,8 +89,8 @@ const createNotificationService = emailClient => {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
-          DEADLINE_DATE: asDeadlineDate(reportSubmittedDate),
-          DEADLINE_TIME: asDeadlineTime(reportSubmittedDate),
+          DEADLINE_DATE: asDate(overdueDate),
+          DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
         },
         reference: null,
