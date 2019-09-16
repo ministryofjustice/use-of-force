@@ -11,6 +11,8 @@ const incidentClient = {
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
   commitAndStartNewTransaction: jest.fn(),
+  getIncompleteReportsForReviewer: jest.fn(),
+  getCompletedReportsForReviewer: jest.fn(),
 }
 
 const notificationService = {
@@ -115,10 +117,11 @@ describe('getReports', () => {
 
 describe('getReportsForReviewer', () => {
   test('it should call query on db', async () => {
-    incidentClient.getReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
-    const result = await service.getReportsForReviewer(ReportStatus.SUBMITTED)
-    expect(result).toEqual([{ id: 1 }])
-    expect(incidentClient.getReportsForReviewer).toBeCalledWith(ReportStatus.SUBMITTED)
+    incidentClient.getIncompleteReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
+    incidentClient.getCompletedReportsForReviewer.mockReturnValue({ rows: [{ id: 2 }] })
+
+    const result = await service.getReportsForReviewer()
+    expect(result).toEqual({ awaiting: [{ id: 1 }], completed: [{ id: 2 }] })
   })
 })
 

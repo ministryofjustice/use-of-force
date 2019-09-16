@@ -58,7 +58,7 @@ context('Submit statement', () => {
     yourReportPage.reporterName().contains('James Stuart')
     yourReportPage.prisonerName().contains('Norman Smith')
     yourReportPage.prisonNumber().contains('A1234AC')
-    yourReportPage.submittedDate().contains('10 September 2019, 10:30')
+    yourReportPage.submittedDate().contains(/4 September 2019, \d{2}:\d{2}/)
     yourReportPage.verifyInputs()
 
     yourReportPage.continue().click()

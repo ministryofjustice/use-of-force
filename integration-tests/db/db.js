@@ -39,8 +39,9 @@ const seedReport = ({
   bookingId = 1001,
   payload = expectedPayload,
   involvedStaff = [],
+  submittedDate = moment('2019-09-10 10:30:43.122').toDate(),
 }) => {
-  const submittedDate = equals(status, ReportStatus.SUBMITTED) ? moment('2019-09-10 10:30:43.122').toDate() : null
+  const submitDate = equals(status, ReportStatus.SUBMITTED) ? submittedDate : null
   return db
     .queryWithoutTransaction({
       text: `INSERT INTO report
@@ -48,7 +49,7 @@ const seedReport = ({
       VALUES($1, $2, $3, $4, $5, $6, 'A1234AC', 'James Stuart', '2019-09-10 09:57:40.000')
       returning id;
       `,
-      values: [payload, userId, bookingId, '2019-09-10 09:57:43.122', status.value, submittedDate],
+      values: [payload, userId, bookingId, '2019-09-10 09:57:43.122', status.value, submitDate],
     })
     .then(
       result =>
@@ -56,7 +57,9 @@ const seedReport = ({
         statementsClient.createStatements(
           result.rows[0].id,
           new Date(),
-          new Date(),
+          moment(submittedDate)
+            .add(3, 'd')
+            .toDate(),
           involvedStaff,
           db.queryWithoutTransaction
         )

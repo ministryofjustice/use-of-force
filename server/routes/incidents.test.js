@@ -7,7 +7,7 @@ const userSupplier = jest.fn()
 
 const reportService = {
   getReports: () => [],
-  getReportsForReviewer: () => [],
+  getReportsForReviewer: () => ({ awaiting: [], completed: [] }),
   getReport: jest.fn(),
 }
 

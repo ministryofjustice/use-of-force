@@ -4,17 +4,19 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel" id="past-day">
-<table class="govuk-table incidents" data-qa="incidents-todo">
+<table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
   </caption>
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+      <th class="govuk-table__header medium-col" scope="col">Date</th>
+      <th class="govuk-table__header large-col" scope="col">Prisoner</th>
+      <th class="govuk-table__header large-col" scope="col">Reporter</th>
+      <th class="govuk-table__header small-col" scope="col">Report</th>
+      <th class="govuk-table__header medium-col" scope="col">Statements</th>
+      <th class="govuk-table__header very-small-col" scope="col"></th>
     </tr>
   </thead>
 
@@ -24,15 +26,26 @@
           <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{report.offenderName}}</td>
           <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell govuk-!-padding-top-1">
+          <td class="govuk-table__cell">
             <a
               href="/report/{{ report.bookingId }}/report-use-of-force"
-              role="button"
               draggable="false"
-              class="govuk-button govuk-button"
             >
-              Continue report
+              View report
             </a>
+          </td>
+          <td class="govuk-table__cell">
+            <a
+              href="/report/{{ report.bookingId }}/report-use-of-force"
+              draggable="false"
+            >
+              View statements 
+            </a>
+          </td>
+          <td class="govuk-table__cell">
+            {% if report.isOverdue %}
+              <span data-qa="overdue" class="govuk-tag moj-tag--red">OVERDUE</span>
+            {% endif %}
           </td>
       </tr>  
       {% endfor %}
@@ -40,36 +53,46 @@
   </tbody>
 </table>
 
-<table class="govuk-table incidents" data-qa="incidents-complete">
+<table class="govuk-table reviewer-incidents" data-qa="incidents-complete">
   <caption class="govuk-table__caption govuk-heading-m">
     Completed
   </caption>
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+        <th class="govuk-table__header date" scope="col">Date</th>
+        <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
+        <th class="govuk-table__header reporter" scope="col">Reporter</th>
+        <th class="govuk-table__header report" scope="col">Report</th>
+        <th class="govuk-table__header statements" scope="col">Statements</th>
+        <th class="govuk-table__header overdue" scope="col"></th>
     </tr>
   </thead>
 
   <tbody class="govuk-table__body">
       {% for report in completedReports %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{report.offenderName}}</td>
-          <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell govuk-!-padding-top-1">
-            <a
-              href="/{{ report.id }}/your-report"
-              role="button"
-              draggable="false"
-              class="govuk-button govuk-button--secondary"
-            >
+        <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+        <td class="govuk-table__cell">{{report.offenderName}}</td>
+        <td class="govuk-table__cell">{{report.staffMemberName}}</td>
+        <td class="govuk-table__cell">
+          <a
+            href="/report/{{ report.bookingId }}/report-use-of-force"
+            draggable="false"
+          >
             View report
-            </a>
-          </td>
+          </a>
+        </td>
+        <td class="govuk-table__cell">
+          <a
+            href="/report/{{ report.bookingId }}/report-use-of-force"
+            draggable="false"
+          >
+            View statements 
+          </a>
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>  
       {% endfor %}
 

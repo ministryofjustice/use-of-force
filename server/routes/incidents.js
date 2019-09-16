@@ -14,6 +14,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     bookingId: incident.bookingId,
     incidentdate: incident.incidentDate,
     staffMemberName: incident.reporterName,
+    isOverdue: incident.isOverdue,
     offenderName: namesByOffenderNumber[incident.offenderNo],
   })
 
@@ -32,8 +33,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         return res.redirect('/your-statements')
       }
 
-      const awaiting = await reportService.getReportsForReviewer(ReportStatus.SUBMITTED)
-      const completed = await reportService.getReportsForReviewer(ReportStatus.COMPLETE)
+      const { awaiting, completed } = await reportService.getReportsForReviewer()
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
