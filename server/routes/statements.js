@@ -60,6 +60,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
           ...statement,
           months: moment.months().map((month, i) => ({ value: i, label: month })),
         },
+        pageTitle: 'Your use of force statement',
       })
     },
 

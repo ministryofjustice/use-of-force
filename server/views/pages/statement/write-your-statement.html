@@ -1,11 +1,11 @@
-{% extends "../../partials/layout.html" %} 
-{% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/textarea/macro.njk" import govukTextarea %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% extends "../../partials/layout.html" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/checkboxes/macro.njk"import govukCheckboxes %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
 <div class="govuk-body">
@@ -18,45 +18,50 @@
     })
   }}
   {% endif %}
-  <h1 class="govuk-heading-xl mainHeading">Your use of force statement</h1>
 
+  <h1 class="govuk-heading-xl mainHeading">{{pageTitle}}</h1>
+  
   <form method="POST">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <p class="govuk-!-margin-bottom-1">
-          <span class="govuk-label--s">Prisoner:&nbsp;</span>
-          <span data-qa="offender-name"> {{ data.displayName }} ({{ data.offenderNo }}) </span>
+          <span class="govuk-label--s">Prisoner</span><br />
+          <span data-qa="offender-name"> {{ data.displayName }} </span>
         </p>
         <p class="govuk-!-margin-bottom-1">
-          <span class="govuk-label--s">Date and time of incident:&nbsp;</span>
+          <span class="govuk-label--s">Date and time of incident</span><br />
           <span data-qa="date-and-time">
             {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }}
           </span>
         </p>
       </div>
-    </div>    
-    <hr />
+    </div>
+
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half govuk-!-margin-top-5">
-        {% call govukFieldset({ legend: { text: "When did you last attend control and restraint basic refresher
-        training?", classes: "govuk-fieldset__legend--s govuk-!-width-two-thirds"} }) %}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
+      <div class="govuk-grid-column-full govuk-!-margin-top-5">
+        {% call govukFieldset({ 
+          legend: { text: "When did you last attend control and restraint basic refresher training?", 
+          classes: "govuk-fieldset__legend--s "} 
+          }) 
+        %}
+
+        <div class="govuk-grid-row govuk-grid-column-one-half govuk-!-padding-0">
+          <div class="govuk-grid-column-one-quarter">
             {{
-              govukSelect({
-                id: 'lastTrainingMonth',
-                name: 'lastTrainingMonth',
-                label: {
-                  text: 'Month'
-                },
-                errorMessage: errors | findError('lastTrainingMonth'),
-                items: data.months | toSelect('value', 'label', data.lastTrainingMonth)
-              })
-            }}
+            govukSelect({
+              id: 'lastTrainingMonth',
+              name: 'lastTrainingMonth',
+              label: {
+                text: 'Month'
+              },
+              errorMessage: errors | findError('lastTrainingMonth'),
+              items: data.months | toSelect('value', 'label', data.lastTrainingMonth)
+            })
+          }}
           </div>
-          <div class="govuk-grid-column-one-half">
-          {{
+          <div class="govuk-grid-column-one-quarter">
+            {{
             govukInput({
               id: 'lastTrainingYear',
               name: 'lastTrainingYear',
@@ -66,13 +71,17 @@
                 text: 'Year'
               },
               errorMessage: errors | findError('lastTrainingYear')
-            })
-          }}
+              })
+            }}
+          </div>
         </div>
+        {% endcall %}
       </div>
-      {% endcall %}
-      </div>
-      <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-margin-top-1">
+
         {% call govukFieldset({ 
           legend: { 
             text: "What year did you join the prison service?", 
@@ -94,6 +103,8 @@
         {% endcall %}
       </div>
     </div>
+    <hr />
+
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
         {{
@@ -111,7 +122,7 @@
           })
         }}
       </div>
-      <div class="govuk-grid-column-one-half">
+      <div class="govuk-grid-column-one-half govuk-body">
         <h3 class="govuk-label--s">What to include in your statement</h3>
         <p>
           You should include:
@@ -138,7 +149,7 @@
         </ul>
       </div>
     </div>
-   
+
     {{
       govukButton({
         text: 'Save and continue',
