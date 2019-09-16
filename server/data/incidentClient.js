@@ -49,9 +49,9 @@ const submitReport = (userId, bookingId, submittedDate) => {
             set status = $1
             ,   submitted_date = $2
             ,   updated_date = now()
-          where user_id = $3
-          and booking_id = $4
-          and status = $5
+          where r.user_id = $3
+          and r.booking_id = $4
+          and r.status = $5
           and r.sequence_no = ${maxSequenceForBooking}`,
     values: [ReportStatus.SUBMITTED.value, submittedDate, userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
@@ -60,9 +60,9 @@ const submitReport = (userId, bookingId, submittedDate) => {
 const getCurrentDraftReport = async (userId, bookingId, query = db.query) => {
   const results = await query({
     text: `select id, incident_date "incidentDate", form_response "form" from report r
-          where user_id = $1
-          and booking_id = $2
-          and status = $3
+          where r.user_id = $1
+          and r.booking_id = $2
+          and r.status = $3
           and r.sequence_no = ${maxSequenceForBooking}`,
     values: [userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
@@ -78,7 +78,7 @@ const getReport = async (userId, reportId, query = db.query) => {
           , form_response "form"
           , booking_id "bookingId"
           from report r
-          where user_id = $1 and id = $2`,
+          where r.user_id = $1 and r.id = $2`,
     values: [userId, reportId],
   })
   return results.rows[0]
@@ -153,7 +153,7 @@ const getNextNotificationReminder = async () => {
           ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
-          where next_reminder_date < now() and s.statement_status = $1
+          where s.next_reminder_date < now() and s.statement_status = $1
           order by s.id
           for update of s skip locked
           LIMIT 1`,
