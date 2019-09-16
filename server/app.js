@@ -11,6 +11,7 @@ const passport = require('passport')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const sassMiddleware = require('node-sass-middleware')
+
 const { createNamespace } = require('cls-hooked')
 
 const healthcheckFactory = require('./services/healthcheck')
@@ -21,6 +22,7 @@ const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
 const populateCurrentUser = require('./middleware/populateCurrentUser')
+const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 
 const config = require('../server/config')
 
@@ -230,6 +232,7 @@ module.exports = function createApp({
     }
     res.redirect(authLogoutUrl)
   })
+
   // Setup user thread-local
   app.use(async (req, res, next) => {
     if (req.user && req.user.username) {
@@ -240,6 +243,8 @@ module.exports = function createApp({
 
   const currentUserInContext = populateCurrentUser(userService)
   app.use(currentUserInContext)
+
+  app.use(authorisationMiddleware)
 
   app.use(
     '/',
