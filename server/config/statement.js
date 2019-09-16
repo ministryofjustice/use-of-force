@@ -2,7 +2,7 @@ const { EXTRACTED } = require('./fieldType')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
-  return number > 32767 || number < -32768 ? null : number
+  return number > 32767 || number < -32768 || Number.isNaN(number) ? null : number
 }
 
 module.exports = {

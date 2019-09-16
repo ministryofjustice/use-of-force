@@ -59,11 +59,7 @@ it('no values supplied', () => {
     ])
   )
 
-  expect(formResponse).toEqual({
-    jobStartYear: NaN,
-    lastTrainingMonth: NaN,
-    lastTrainingYear: NaN,
-  })
+  expect(formResponse).toEqual({})
 })
 
 describe('lastTrainingMonth', () => {
@@ -80,7 +76,6 @@ describe('lastTrainingMonth', () => {
 
     expect(formResponse).toEqual({
       lastTrainingYear: 1999,
-      lastTrainingMonth: NaN,
       jobStartYear: 1995,
       statement: 'A statement about the incident',
     })
@@ -125,7 +120,6 @@ describe('lastTrainingYear', () => {
     expect(formResponse).toEqual({
       jobStartYear: 1995,
       lastTrainingMonth: 11,
-      lastTrainingYear: NaN,
       statement: 'A statement about the incident',
     })
   })
@@ -167,7 +161,6 @@ describe('jobStartYear', () => {
     ])
 
     expect(formResponse).toEqual({
-      jobStartYear: NaN,
       lastTrainingYear: 1999,
       lastTrainingMonth: 11,
       statement: 'A statement about the incident',

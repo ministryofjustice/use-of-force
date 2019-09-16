@@ -45,6 +45,16 @@ describe('validate', () => {
       text: '"year" must be less than or equal to 2019',
     }
 
+    const yearMustBeANumber = {
+      href: '#year',
+      text: '"year" must be a number',
+    }
+
+    const yearIsRequired = {
+      href: '#year',
+      text: '"year" is required',
+    }
+
     test('This month of this year valid', () => {
       expect(validate(fields, { month: '9', year: '2019' })).toEqual([])
     })
@@ -59,6 +69,14 @@ describe('validate', () => {
 
     test('Last month of previous year valid', () => {
       expect(validate(fields, { month: '11', year: '2018' })).toEqual([])
+    })
+
+    test('year is not a number', () => {
+      expect(validate(fields, { month: '1', year: 'xxxx' })).toEqual([yearMustBeANumber])
+    })
+
+    test('no month or year', () => {
+      expect(validate(fields, {})).toEqual(expect.arrayContaining([yearIsRequired, selectMonth]))
     })
   })
 })
