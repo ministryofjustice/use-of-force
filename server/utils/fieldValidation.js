@@ -17,6 +17,26 @@ const fieldOptions = {
     .max(11)
     .required(),
 
+  requiredMonthIndexNotInFuture: yearRef =>
+    joi
+      .number()
+      .min(0)
+      .when(joi.ref(yearRef), {
+        is: joi
+          .number()
+          .less(moment().year())
+          .required(),
+        then: joi
+          .number()
+          .max(11)
+          .required(),
+        otherwise: joi
+          .number()
+          .max(moment().month())
+          .required(),
+      })
+      .required(),
+
   requiredYearNotInFuture: () =>
     joi
       .number()
