@@ -33,6 +33,7 @@ const RelocationLocation = {
 const ReportStatus = {
   IN_PROGRESS: { value: 'IN_PROGRESS', label: 'In progress' },
   SUBMITTED: { value: 'SUBMITTED', label: 'Submitted' },
+  COMPLETE: { value: 'COMPLETE', label: 'Complete' },
 }
 
 const StatementStatus = {

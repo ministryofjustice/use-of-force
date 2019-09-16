@@ -8,10 +8,17 @@
         Contents
     </h2>
     <ul class="govuk-tabs__list">
+        {% if user.isReviewer %}
+        <li class="govuk-tabs__list-item {% if selectedTab === 'all-incidents' %} govuk-tabs__list-item--selected {% endif %}">
+            <a class="govuk-tabs__tab" data-qa="all-incidents-link" href="/all-incidents">
+                All incidents
+            </a>
+        </li>
+        {% endif %}
         <li class="govuk-tabs__list-item {% if selectedTab === 'your-statements' %} govuk-tabs__list-item--selected {% endif %}">
-        <a class="govuk-tabs__tab" data-qa="your-statements-link" href="/your-statements">
-            Your statements
-        </a>
+            <a class="govuk-tabs__tab" data-qa="your-statements-link" href="/your-statements">
+                Your statements
+            </a>
         </li>
         <li class="govuk-tabs__list-item {% if selectedTab === 'your-reports' %} govuk-tabs__list-item--selected {% endif %}">
         <a class="govuk-tabs__tab" data-qa="your-reports-link" href="/your-reports">

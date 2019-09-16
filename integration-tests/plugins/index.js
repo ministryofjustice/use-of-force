@@ -16,7 +16,11 @@ module.exports = on => {
 
     getLoginUrl: auth.getLoginUrl,
 
-    stubLogin: () => Promise.all([auth.stubLogin(), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
+    stubLogin: () =>
+      Promise.all([auth.stubLogin({ isReviewer: false }), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
+
+    stubReviewerLogin: () =>
+      Promise.all([auth.stubLogin({ isReviewer: true }), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
 
     stubOffenderDetails: elite2api.stubOffenderDetails,
 
