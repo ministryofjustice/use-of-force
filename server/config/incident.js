@@ -216,7 +216,7 @@ module.exports = {
           sanitiser: trimmedString,
           validationMessage: {
             'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-            'any.required': 'Enter the name of who completed the F213 form',
+            'string.base': 'Enter the name of who completed the F213 form',
           },
         },
       },
@@ -239,7 +239,7 @@ module.exports = {
           responseType: 'requiredMemberOfHealthcare',
           validationMessage: {
             'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-            'any.required': 'Enter the name of the member of healthcare',
+            'string.base': 'Enter the name of the member of healthcare',
           },
 
           sanitiser: trimmedString,
