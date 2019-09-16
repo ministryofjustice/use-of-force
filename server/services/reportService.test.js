@@ -5,6 +5,7 @@ const { ReportStatus } = require('../config/types')
 const incidentClient = {
   getCurrentDraftReport: jest.fn(),
   getReports: jest.fn(),
+  getReportsForReviewer: jest.fn(),
   getReport: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
@@ -34,7 +35,7 @@ beforeEach(() => {
 
   service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService })
   incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
-  elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC' })
+  elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
 afterEach(() => {
@@ -110,6 +111,15 @@ describe('getReports', () => {
   })
 })
 
+describe('getReportsForReviewer', () => {
+  test('it should call query on db', async () => {
+    incidentClient.getReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
+    const result = await service.getReportsForReviewer(ReportStatus.SUBMITTED)
+    expect(result).toEqual([{ id: 1 }])
+    expect(incidentClient.getReportsForReviewer).toBeCalledWith(ReportStatus.SUBMITTED)
+  })
+})
+
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
@@ -141,6 +151,7 @@ describe('update', () => {
     expect(incidentClient.createDraftReport).toBeCalledWith({
       userId: 'user1',
       bookingId: 1,
+      agencyId: 'MDI',
       offenderNo: 'AA123ABC',
       reporterName: 'Bob Smith',
       formResponse: formObject,

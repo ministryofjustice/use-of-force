@@ -18,6 +18,11 @@ module.exports = function createReportService({
     return result.rows
   }
 
+  async function getReportsForReviewer(status) {
+    const result = await incidentClient.getReportsForReviewer(status)
+    return result.rows
+  }
+
   async function isDraftComplete(username, bookingId) {
     const { form = {} } = await getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)
@@ -34,11 +39,12 @@ module.exports = function createReportService({
       return formId
     }
     const elite2Client = elite2ClientBuilder(token)
-    const { offenderNo } = await elite2Client.getOffenderDetails(bookingId)
+    const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftReport({
       userId,
       reporterName,
       bookingId,
+      agencyId,
       offenderNo,
       incidentDate,
       formResponse: formObject,
@@ -80,6 +86,7 @@ module.exports = function createReportService({
   return {
     getReport,
     getReports,
+    getReportsForReviewer,
     getCurrentDraft,
     isDraftComplete,
     update,

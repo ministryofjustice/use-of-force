@@ -33,6 +33,14 @@ const incidentsPage = () =>
     }),
 
     selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
+    allTabs: () =>
+      cy.get(`.govuk-tabs__list-item`).spread((...rest) =>
+        rest.map(element =>
+          Cypress.$(element)
+            .text()
+            .trim()
+        )
+      ),
     yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
   })
 

@@ -17,7 +17,7 @@ context('Submit statement', () => {
     cy.task('stubUserDetailsRetrieval', 'Test User')
   })
 
-  it('A user can submit their statement from incidents page', () => {
+  it('A user can view all of their reports', () => {
     cy.login(bookingId)
 
     cy.task('seedReport', {
@@ -44,16 +44,14 @@ context('Submit statement', () => {
     const yourReportsPage = YourReportsPage.verifyOnPage()
 
     {
-      const { date, prisoner, reporter } = yourReportsPage.getCompleteRow(0)
+      const { date, prisoner } = yourReportsPage.getCompleteRow(0)
       prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
 
     {
-      const { startButton, date, prisoner, reporter } = yourReportsPage.getTodoRow(0)
+      const { startButton, date, prisoner } = yourReportsPage.getTodoRow(0)
       prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
 
       startButton().click()

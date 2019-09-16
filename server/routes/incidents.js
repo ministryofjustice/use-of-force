@@ -19,11 +19,31 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
   return {
     redirectToHomePage: async (req, res) => {
-      res.redirect('/your-statements')
+      const location = res.locals.user.isReviewer ? '/all-incidents' : '/your-statements'
+      res.redirect(location)
     },
 
     viewReportSent: async (req, res) => {
       res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId, links })
+    },
+
+    viewAllIncidents: async (req, res) => {
+      if (!res.locals.user.isReviewer) {
+        return res.redirect('/your-statements')
+      }
+
+      const awaiting = await reportService.getReportsForReviewer(ReportStatus.SUBMITTED)
+      const completed = await reportService.getReportsForReviewer(ReportStatus.COMPLETE)
+
+      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
+      const completedReports = completed.map(toReport(namesByOffenderNumber))
+
+      return res.render('pages/all-incidents', {
+        awaitingReports,
+        completedReports,
+        selectedTab: 'all-incidents',
+      })
     },
 
     viewYourReports: async (req, res) => {

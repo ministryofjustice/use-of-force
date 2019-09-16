@@ -1,10 +1,13 @@
 const request = require('supertest')
-const { appSetup } = require('./testutils/appSetup')
+const { appSetup, user, reviewerUser } = require('./testutils/appSetup')
 const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
+const userSupplier = jest.fn()
+
 const reportService = {
   getReports: () => [],
+  getReportsForReviewer: () => [],
   getReport: jest.fn(),
 }
 
@@ -23,7 +26,8 @@ const route = createRouter({ authenticationMiddleware, reportService, involvedSt
 let app
 
 beforeEach(() => {
-  app = appSetup(route)
+  userSupplier.mockReturnValue(user)
+  app = appSetup(route, userSupplier)
 })
 
 afterEach(() => {
@@ -47,6 +51,28 @@ describe('GET /your-reports', () => {
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
       }))
+})
+
+describe('GET /all-incidents', () => {
+  it('should render page for reviewer', async () => {
+    userSupplier.mockReturnValue(reviewerUser)
+
+    return request(app)
+      .get('/all-incidents')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+      })
+  })
+
+  it('should redirect if not reviewer', async () => {
+    userSupplier.mockReturnValue(user)
+    return request(app)
+      .get('/all-incidents')
+      .expect(302)
+      .expect('Location', '/your-statements')
+  })
 })
 
 describe('GET /your-report', () => {
