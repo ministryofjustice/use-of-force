@@ -47,8 +47,11 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     },
 
     viewYourReports: async (req, res) => {
-      const awaiting = await reportService.getReports(req.user.username, ReportStatus.IN_PROGRESS)
-      const completed = await reportService.getReports(req.user.username, ReportStatus.SUBMITTED)
+      const awaiting = await reportService.getReports(req.user.username, [ReportStatus.IN_PROGRESS])
+      const completed = await reportService.getReports(req.user.username, [
+        ReportStatus.SUBMITTED,
+        ReportStatus.COMPLETE,
+      ])
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))

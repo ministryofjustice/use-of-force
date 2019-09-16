@@ -107,9 +107,9 @@ describe('getReport', () => {
 describe('getReports', () => {
   test('it should call query on db', async () => {
     incidentClient.getReports.mockReturnValue({ rows: [{ id: 1 }] })
-    const result = await service.getReports('user1', ReportStatus.SUBMITTED)
+    const result = await service.getReports('user1', [ReportStatus.SUBMITTED])
     expect(result).toEqual([{ id: 1 }])
-    expect(incidentClient.getReports).toBeCalledWith('user1', ReportStatus.SUBMITTED)
+    expect(incidentClient.getReports).toBeCalledWith('user1', [ReportStatus.SUBMITTED])
   })
 })
 

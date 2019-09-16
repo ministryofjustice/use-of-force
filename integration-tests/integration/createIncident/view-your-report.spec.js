@@ -1,6 +1,5 @@
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const YourReportPage = require('../../pages/yourReportPage')
-
 const YourReportsPage = require('../../pages/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -43,12 +42,12 @@ context('Submit statement', () => {
       ],
     })
 
-    const incidentsPage = IncidentsPage.goTo()
-    incidentsPage.selectedTab().contains('Your statements')
-    incidentsPage.yourReportsTab().click()
-    incidentsPage.selectedTab().contains('Your reports')
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.yourReportsTab().click()
 
     const yourReportsPage = YourReportsPage.verifyOnPage()
+    yourReportsPage.selectedTab().contains('Your reports')
 
     yourReportsPage
       .getCompleteRow(0)
@@ -64,6 +63,6 @@ context('Submit statement', () => {
 
     yourReportPage.continue().click()
 
-    IncidentsPage.verifyOnPage()
+    YourStatementsPage.verifyOnPage()
   })
 })

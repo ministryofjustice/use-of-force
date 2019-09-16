@@ -29,7 +29,7 @@ const reportService = createReportService({
   involvedStaffService,
   notificationService,
 })
-const statementService = createStatementService({ statementsClient })
+const statementService = createStatementService({ statementsClient, incidentClient })
 
 const app = createApp({
   involvedStaffService,

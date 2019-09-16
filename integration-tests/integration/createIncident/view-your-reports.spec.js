@@ -1,5 +1,5 @@
 const TasklistPage = require('../../pages/tasklistPage')
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const YourReportsPage = require('../../pages/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -36,10 +36,10 @@ context('Submit statement', () => {
     newIncidentPage.fillForm()
     newIncidentPage.save()
 
-    const incidentsPage = IncidentsPage.goTo()
-    incidentsPage.selectedTab().contains('Your statements')
-    incidentsPage.yourReportsTab().click()
-    incidentsPage.selectedTab().contains('Your reports')
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.yourReportsTab().click()
+    yourStatementsPage.selectedTab().contains('Your reports')
 
     const yourReportsPage = YourReportsPage.verifyOnPage()
 

@@ -1,5 +1,5 @@
 const TasklistPage = require('../../pages/tasklistPage')
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const SubmittedPage = require('../../pages/submittedPage')
 const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
@@ -76,7 +76,7 @@ context('Submit the incident report', () => {
 
     cy.go('back')
 
-    IncidentsPage.verifyOnPage()
+    YourStatementsPage.verifyOnPage()
   })
 
   it('Can exit after completing report and before creating statement', () => {
@@ -96,7 +96,7 @@ context('Submit the incident report', () => {
       .exit()
       .click()
 
-    // Exit location is configurable - in dev this points to incidents page
-    IncidentsPage.verifyOnPage()
+    // Exit location is configurable - in dev this points to / which for this user redirects to 'Your statements'
+    YourStatementsPage.verifyOnPage()
   })
 })

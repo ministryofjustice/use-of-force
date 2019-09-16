@@ -29,7 +29,7 @@ describe('getCurrentDraftReport', () => {
 })
 
 test('getReports', () => {
-  incidentClient.getReports('user1', ReportStatus.IN_PROGRESS)
+  incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED])
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
@@ -38,10 +38,9 @@ test('getReports', () => {
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
             from report r
-          where r.status = $1
-          and r.user_id = $2
+          where r.status in ('IN_PROGRESS','SUBMITTED')
+          and r.user_id = 'user1'
           order by r.incident_date`,
-    values: [ReportStatus.IN_PROGRESS.value, 'user1'],
   })
 })
 
@@ -134,6 +133,19 @@ test('submitReport', () => {
           and r.status = $5
           and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
     values: [ReportStatus.SUBMITTED.value, 'date1', 'user1', 'booking1', ReportStatus.IN_PROGRESS.value],
+  })
+})
+
+test('markCompleted', () => {
+  incidentClient.markCompleted('report1')
+
+  expect(db.query).toBeCalledWith({
+    text: `update report r
+            set status = $1
+            ,   updated_date = now()
+          where id = $2
+          and status = $3`,
+    values: [ReportStatus.COMPLETE.value, 'report1', ReportStatus.SUBMITTED.value],
   })
 })
 

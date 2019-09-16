@@ -14,7 +14,19 @@ const completeCol = (i, j) =>
 
 const incidentsPage = () =>
   page('Use of force incidents', {
+    getTodoRows: () =>
+      cy
+        .get('[data-qa=incidents-todo]')
+        .find('tbody')
+        .find('tr'),
+    getCompleteRows: () =>
+      cy
+        .get('[data-qa=incidents-complete]')
+        .find('tbody')
+        .find('tr'),
+
     getTodoRow: i => ({
+      row: () => cy.get('[data-qa=incidents-todo]'),
       date: () => todoCol(i, 0),
       prisoner: () => todoCol(i, 1),
       reporter: () => todoCol(i, 2),
@@ -31,15 +43,23 @@ const incidentsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
-
+    allTabs: () =>
+      cy.get(`.govuk-tabs__list-item`).spread((...rest) =>
+        rest.map(element =>
+          Cypress.$(element)
+            .text()
+            .trim()
+        )
+      ),
     selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
     yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
+    yourStatementsTab: () => cy.get('[data-qa="your-statements-link"]'),
   })
 
 export default {
   verifyOnPage: incidentsPage,
   goTo: () => {
-    cy.visit('/')
+    cy.visit('/all-incidents')
     return incidentsPage()
   },
 }

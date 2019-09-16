@@ -1,7 +1,7 @@
 const SubmittedStatementPage = require('../../pages/submitStatementPage')
 
 const ViewStatementPage = require('../../pages/viewStatementPage')
-const IncidentsPage = require('../../pages/incidentsPage')
+const YourStatementsPage = require('../../pages/yourStatementsPage')
 const ViewAddCommentPage = require('../../pages/addAdditionalCommentPage')
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -29,9 +29,9 @@ context('Add comments to statement', () => {
   it('A user can select a specific statement, add to it and then return back to statements page', () => {
     cy.login(bookingId)
 
-    let incidentsPage = IncidentsPage.goTo()
+    let yourStatementsPage = YourStatementsPage.goTo()
 
-    incidentsPage
+    yourStatementsPage
       .getTodoRow(0)
       .startButton()
       .click()
@@ -44,8 +44,8 @@ context('Add comments to statement', () => {
 
     const confirmStatementPage = submitStatementPage.submit()
     const statementSubmittedPage = confirmStatementPage.submit()
-    incidentsPage = statementSubmittedPage.finish()
-    incidentsPage
+    yourStatementsPage = statementSubmittedPage.finish()
+    yourStatementsPage
       .getCompleteRow(0)
       .viewButton()
       .click()
@@ -58,8 +58,8 @@ context('Add comments to statement', () => {
     viewAddCommentPage.additionalComment().type('Some new comment 1')
     viewAddCommentPage.save().click()
 
-    incidentsPage = IncidentsPage.verifyOnPage()
-    incidentsPage
+    yourStatementsPage = YourStatementsPage.verifyOnPage()
+    yourStatementsPage
       .getCompleteRow(0)
       .viewButton()
       .click()
@@ -73,8 +73,8 @@ context('Add comments to statement', () => {
     viewAddCommentPage.additionalComment(2).type('Some new comment 2')
     viewAddCommentPage.save().click()
 
-    incidentsPage = IncidentsPage.verifyOnPage()
-    incidentsPage
+    yourStatementsPage = YourStatementsPage.verifyOnPage()
+    yourStatementsPage
       .getCompleteRow(0)
       .viewButton()
       .click()
@@ -84,6 +84,6 @@ context('Add comments to statement', () => {
     viewStatementPage.viewAdditionalComment(2).should('contain', 'Some new comment 2')
     viewStatementPage.continue().click()
 
-    IncidentsPage.verifyOnPage()
+    YourStatementsPage.verifyOnPage()
   })
 })
