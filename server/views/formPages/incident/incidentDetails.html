@@ -166,6 +166,7 @@
                     id: 'witnesses[' + index + '][name]',
                     name: 'witnesses[' + index + '][name]',
                     value: value,
+                    errorMessage: errors | findError('witnesses[' + index + '][name]'),
                     attributes: {
                       'data-name': 'witnesses[%index%][name]',
                       'data-id': 'witnesses[%index%][name]'
