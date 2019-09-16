@@ -15,9 +15,20 @@ const user = {
   token: 'token',
   username: 'user1',
   displayName: 'First Last',
+  isReviewer: false,
 }
 
-const appSetup = route => {
+const reviewerUser = {
+  firstName: 'first',
+  lastName: 'last',
+  userId: 'id',
+  token: 'token',
+  username: 'user1',
+  displayName: 'First Last',
+  isReviewer: true,
+}
+
+const appSetup = (route, userSupplier = () => user) => {
   const app = express()
 
   const ns = createNamespace('request.scope')
@@ -36,7 +47,7 @@ const appSetup = route => {
   nunjucksSetup(app, path)
 
   app.use((req, res, next) => {
-    req.user = user
+    req.user = userSupplier()
     res.locals = {}
     res.locals.user = req.user
     next()
@@ -54,4 +65,4 @@ const appSetup = route => {
   return app
 }
 
-module.exports = { appSetup, user }
+module.exports = { appSetup, user, reviewerUser }

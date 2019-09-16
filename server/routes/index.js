@@ -67,6 +67,7 @@ module.exports = function Index({
   get('/:reportId/report-sent', incidents.viewReportSent)
 
   get('/', incidents.redirectToHomePage)
+  get('/all-incidents', incidents.viewAllIncidents)
   get('/your-reports', incidents.viewYourReports)
   get('/:reportId/your-report', incidents.viewYourReport)
 

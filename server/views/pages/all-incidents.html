@@ -4,7 +4,7 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel" id="past-day">
-<table class="govuk-table incidents" data-qa="statements-todo">
+<table class="govuk-table incidents" data-qa="incidents-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
   </caption>
@@ -13,6 +13,7 @@
     <tr class="govuk-table__row">
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
     </tr>
   </thead>
@@ -22,6 +23,7 @@
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{report.offenderName}}</td>
+          <td class="govuk-table__cell">{{report.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
               href="/report/{{ report.bookingId }}/report-use-of-force"
@@ -38,7 +40,7 @@
   </tbody>
 </table>
 
-<table class="govuk-table incidents" data-qa="statements-complete">
+<table class="govuk-table incidents" data-qa="incidents-complete">
   <caption class="govuk-table__caption govuk-heading-m">
     Completed
   </caption>
@@ -47,6 +49,7 @@
     <tr class="govuk-table__row">
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
+      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
       <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
     </tr>
   </thead>
@@ -56,6 +59,7 @@
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{report.offenderName}}</td>
+          <td class="govuk-table__cell">{{report.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
               href="/{{ report.id }}/your-report"
