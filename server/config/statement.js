@@ -1,16 +1,16 @@
 const { EXTRACTED } = require('./fieldType')
 
-const toInteger = val => {
+const toSmallInt = val => {
   const number = parseInt(val, 10)
-  return Number.isNaN(number) ? null : number
+  return number > 32767 || number < -32768 || Number.isNaN(number) ? null : number
 }
 
 module.exports = {
   fields: [
     {
       lastTrainingMonth: {
-        responseType: 'requiredMonthIndex',
-        sanitiser: toInteger,
+        responseType: 'requiredMonthIndexNotInFuture_lastTrainingYear',
+        sanitiser: toSmallInt,
         validationMessage: 'Select the month you last attended refresher training',
         fieldType: EXTRACTED,
       },
@@ -18,7 +18,7 @@ module.exports = {
     {
       lastTrainingYear: {
         responseType: 'requiredYearNotInFuture',
-        sanitiser: toInteger,
+        sanitiser: toSmallInt,
         fieldType: EXTRACTED,
         validationMessage: {
           'number.base': 'Enter the year you last attended refresher training',
@@ -30,7 +30,7 @@ module.exports = {
     {
       jobStartYear: {
         responseType: 'requiredYearNotInFuture',
-        sanitiser: toInteger,
+        sanitiser: toSmallInt,
         fieldType: EXTRACTED,
         validationMessage: {
           'number.base': 'Enter the year you joined the prison service',

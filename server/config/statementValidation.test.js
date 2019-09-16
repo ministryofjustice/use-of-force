@@ -1,6 +1,5 @@
 const moment = require('moment')
 const config = require('./statement.js')
-
 const formProcessing = require('../services/formProcessing')
 
 const validatorChecker = formConfig => input => {
@@ -17,9 +16,13 @@ const validInput = {
   statement: 'A statement about the incident',
 }
 
+jest.mock('moment', () => () => ({
+  year: () => 2019,
+  month: () => 9,
+}))
+
 it('successful input', () => {
-  const input = validInput
-  const { errors, formResponse } = check(input)
+  const { errors, formResponse } = check(validInput)
 
   expect(errors).toEqual([])
 
@@ -35,24 +38,26 @@ it('no values supplied', () => {
   const input = { submit: 'save-and-continue' }
   const { errors, formResponse } = check(input)
 
-  expect(errors).toEqual([
-    {
-      href: '#lastTrainingMonth',
-      text: 'Select the month you last attended refresher training',
-    },
-    {
-      href: '#lastTrainingYear',
-      text: 'Enter the year you last attended refresher training',
-    },
-    {
-      href: '#jobStartYear',
-      text: 'Enter the year you joined the prison service',
-    },
-    {
-      href: '#statement',
-      text: 'Enter your statement',
-    },
-  ])
+  expect(errors).toEqual(
+    expect.arrayContaining([
+      {
+        href: '#lastTrainingMonth',
+        text: 'Select the month you last attended refresher training',
+      },
+      {
+        href: '#lastTrainingYear',
+        text: 'Enter the year you last attended refresher training',
+      },
+      {
+        href: '#jobStartYear',
+        text: 'Enter the year you joined the prison service',
+      },
+      {
+        href: '#statement',
+        text: 'Enter your statement',
+      },
+    ])
+  )
 
   expect(formResponse).toEqual({})
 })
@@ -106,6 +111,10 @@ describe('lastTrainingYear', () => {
         href: '#lastTrainingYear',
         text: 'Enter the year you last attended refresher training',
       },
+      {
+        href: '#lastTrainingMonth',
+        text: 'Select the month you last attended refresher training',
+      },
     ])
 
     expect(formResponse).toEqual({
@@ -123,6 +132,10 @@ describe('lastTrainingYear', () => {
       {
         href: '#lastTrainingYear',
         text: 'Enter the year you last attended refresher training which is not in the future',
+      },
+      {
+        href: '#lastTrainingMonth',
+        text: 'Select the month you last attended refresher training',
       },
     ])
 
