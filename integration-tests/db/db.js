@@ -63,14 +63,20 @@ const seedReport = ({
     )
 }
 
+const deleteRows = table =>
+  db.queryWithoutTransaction({
+    text: format('delete from %I', table),
+  })
+
+const clearAllTables = async () => {
+  await deleteRows('statement_amendments')
+  await deleteRows('statement')
+  await deleteRows('report')
+}
+
 module.exports = {
   clearDb() {
-    const drops = ['report', 'statement'].map(table =>
-      db.queryWithoutTransaction({
-        text: format('delete from %I', table),
-      })
-    )
-    return Promise.all(drops)
+    return clearAllTables()
   },
 
   getCurrentDraft({ bookingId, formName }) {
