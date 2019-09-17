@@ -6,6 +6,7 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% set pageTitle = 'Your use of force statement' %}
 
 {% block content %}
 <div class="govuk-body">
@@ -18,7 +19,7 @@
     })
   }}
   {% endif %}
-  <h1 class="govuk-heading-xl mainHeading">Your use of force statement</h1>
+  <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full ">

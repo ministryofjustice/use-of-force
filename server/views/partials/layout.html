@@ -1,7 +1,9 @@
 {% extends "govuk/template.njk" %}
 
+{% set pageTitle = pageTitle | default('GOV.UK - Use of force') %}
+
 {% block pageTitle %}
-  {{ pageTitle }}
+{{ pageTitle }}
 {% endblock %}
 
 {% block head %}
