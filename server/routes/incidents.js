@@ -33,7 +33,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         return res.redirect('/your-statements')
       }
 
-      const { awaiting, completed } = await reportService.getReportsForReviewer()
+      const { awaiting, completed } = await reportService.getReportsForReviewer(res.locals.user.activeCaseLoadId)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))

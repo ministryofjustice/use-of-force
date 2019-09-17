@@ -47,10 +47,10 @@ test('getReports', () => {
 test('getIncompleteReportsForReviewer', () => {
   const isOverdue = `(select count(*) from "statement" s
                       where r.id = s.report_id 
-                      and s.statement_status = $2
+                      and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
-  incidentClient.getIncompleteReportsForReviewer()
+  incidentClient.getIncompleteReportsForReviewer('agency-1')
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
@@ -61,13 +61,14 @@ test('getIncompleteReportsForReviewer', () => {
             , ${isOverdue}     "isOverdue"
             from report r
           where r.status = $1
+          and   r.agency_id = $2
           order by r.incident_date`,
-    values: [ReportStatus.SUBMITTED.value, StatementStatus.PENDING.value],
+    values: [ReportStatus.SUBMITTED.value, 'agency-1', StatementStatus.PENDING.value],
   })
 })
 
 test('getCompletedReportsForReviewer', () => {
-  incidentClient.getCompletedReportsForReviewer()
+  incidentClient.getCompletedReportsForReviewer('agency-1')
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
@@ -77,8 +78,9 @@ test('getCompletedReportsForReviewer', () => {
             , r.incident_date  "incidentDate"
             from report r
           where r.status = $1
+          and   r.agency_id = $2
           order by r.incident_date`,
-    values: [ReportStatus.COMPLETE.value],
+    values: [ReportStatus.COMPLETE.value, 'agency-1'],
   })
 })
 
