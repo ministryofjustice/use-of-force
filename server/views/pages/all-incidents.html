@@ -28,8 +28,9 @@
           <td class="govuk-table__cell">{{report.staffMemberName}}</td>
           <td class="govuk-table__cell">
             <a
-              href="/report/{{ report.bookingId }}/report-use-of-force"
+              href="/{{ report.id }}/view-report"
               draggable="false"
+              class="govuk-link" 
             >
               View report
             </a>
@@ -38,6 +39,7 @@
             <a
               href="/report/{{ report.bookingId }}/report-use-of-force"
               draggable="false"
+              class="govuk-link"
             >
               View statements 
             </a>
@@ -77,8 +79,9 @@
         <td class="govuk-table__cell">{{report.staffMemberName}}</td>
         <td class="govuk-table__cell">
           <a
-            href="/report/{{ report.bookingId }}/report-use-of-force"
-            draggable="false"
+          href="/{{ report.id }}/view-report"
+          draggable="false"
+          class="govuk-link" 
           >
             View report
           </a>
@@ -87,6 +90,7 @@
           <a
             href="/report/{{ report.bookingId }}/report-use-of-force"
             draggable="false"
+            class="govuk-link" 
           >
             View statements 
           </a>

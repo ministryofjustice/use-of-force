@@ -96,6 +96,21 @@ const getReport = async (userId, reportId, query = db.query) => {
   return results.rows[0]
 }
 
+const getReportForReviewer = async (reportId, query = db.query) => {
+  const results = await query({
+    text: `select id
+          , incident_date "incidentDate"
+          , submitted_date "submittedDate"
+          , reporter_name "reporterName"
+          , form_response "form"
+          , booking_id "bookingId"
+          from report r
+          where r.id = $1`,
+    values: [reportId],
+  })
+  return results.rows[0]
+}
+
 const getIncompleteReportsForReviewer = async (agencyId, query = db.query) => {
   const isOverdue = `(select count(*) from "statement" s
                       where r.id = s.report_id 
@@ -222,6 +237,7 @@ module.exports = {
   getDraftInvolvedStaff,
   getNextNotificationReminder,
   setNextReminderDate,
+  getReportForReviewer,
   getCompletedReportsForReviewer,
   getIncompleteReportsForReviewer,
 }
