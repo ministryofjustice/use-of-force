@@ -44,19 +44,41 @@ test('getReports', () => {
   })
 })
 
-test('getReportsForReviewer', () => {
-  incidentClient.getReportsForReviewer(ReportStatus.IN_PROGRESS)
+test('getIncompleteReportsForReviewer', () => {
+  const isOverdue = `(select count(*) from "statement" s
+                      where r.id = s.report_id 
+                      and s.statement_status = $2
+                      and s.overdue_date <= now()) > 0`
+
+  incidentClient.getIncompleteReportsForReviewer()
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
-            , r.booking_id    "bookingId"
-            , r.reporter_name "reporterName"
-            , r.offender_no   "offenderNo"
-            , r.incident_date "incidentDate"
+            , r.booking_id     "bookingId"
+            , r.reporter_name  "reporterName"
+            , r.offender_no    "offenderNo"
+            , r.incident_date  "incidentDate"
+            , ${isOverdue}     "isOverdue"
             from report r
           where r.status = $1
           order by r.incident_date`,
-    values: [ReportStatus.IN_PROGRESS.value],
+    values: [ReportStatus.SUBMITTED.value, StatementStatus.PENDING.value],
+  })
+})
+
+test('getCompletedReportsForReviewer', () => {
+  incidentClient.getCompletedReportsForReviewer()
+
+  expect(db.query).toBeCalledWith({
+    text: `select r.id
+            , r.booking_id     "bookingId"
+            , r.reporter_name  "reporterName"
+            , r.offender_no    "offenderNo"
+            , r.incident_date  "incidentDate"
+            from report r
+          where r.status = $1
+          order by r.incident_date`,
+    values: [ReportStatus.COMPLETE.value],
   })
 })
 

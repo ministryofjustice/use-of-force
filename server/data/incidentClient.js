@@ -96,17 +96,37 @@ const getReport = async (userId, reportId, query = db.query) => {
   return results.rows[0]
 }
 
-const getReportsForReviewer = async (status, query = db.query) => {
+const getIncompleteReportsForReviewer = async (query = db.query) => {
+  const isOverdue = `(select count(*) from "statement" s
+                      where r.id = s.report_id 
+                      and s.statement_status = $2
+                      and s.overdue_date <= now()) > 0`
+
   return query({
     text: `select r.id
-            , r.booking_id    "bookingId"
-            , r.reporter_name "reporterName"
-            , r.offender_no   "offenderNo"
-            , r.incident_date "incidentDate"
+            , r.booking_id     "bookingId"
+            , r.reporter_name  "reporterName"
+            , r.offender_no    "offenderNo"
+            , r.incident_date  "incidentDate"
+            , ${isOverdue}     "isOverdue"
             from report r
           where r.status = $1
           order by r.incident_date`,
-    values: [status.value],
+    values: [ReportStatus.SUBMITTED.value, StatementStatus.PENDING.value],
+  })
+}
+
+const getCompletedReportsForReviewer = async (query = db.query) => {
+  return query({
+    text: `select r.id
+            , r.booking_id     "bookingId"
+            , r.reporter_name  "reporterName"
+            , r.offender_no    "offenderNo"
+            , r.incident_date  "incidentDate"
+            from report r
+          where r.status = $1
+          order by r.incident_date`,
+    values: [ReportStatus.COMPLETE.value],
   })
 }
 
@@ -200,5 +220,6 @@ module.exports = {
   getDraftInvolvedStaff,
   getNextNotificationReminder,
   setNextReminderDate,
-  getReportsForReviewer,
+  getCompletedReportsForReviewer,
+  getIncompleteReportsForReviewer,
 }

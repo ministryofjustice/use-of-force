@@ -124,3 +124,14 @@ header.govuk-header
 
 .list .list-item:last-of-type hr
   display: none
+
+.reviewer-incidents  
+  @include govuk-media-query($from: tablet)
+  .prisoner, .reporter
+    width: 20% !important
+  .date, .statements
+    width: 18% !important
+  .report
+    width: 13.33% !important
+  .overdue
+    width: 10% !important
