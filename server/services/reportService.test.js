@@ -120,8 +120,11 @@ describe('getReportsForReviewer', () => {
     incidentClient.getIncompleteReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
     incidentClient.getCompletedReportsForReviewer.mockReturnValue({ rows: [{ id: 2 }] })
 
-    const result = await service.getReportsForReviewer()
+    const result = await service.getReportsForReviewer('agency-1')
     expect(result).toEqual({ awaiting: [{ id: 1 }], completed: [{ id: 2 }] })
+
+    expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
+    expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
   })
 })
 

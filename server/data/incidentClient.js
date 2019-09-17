@@ -96,10 +96,10 @@ const getReport = async (userId, reportId, query = db.query) => {
   return results.rows[0]
 }
 
-const getIncompleteReportsForReviewer = async (query = db.query) => {
+const getIncompleteReportsForReviewer = async (agencyId, query = db.query) => {
   const isOverdue = `(select count(*) from "statement" s
                       where r.id = s.report_id 
-                      and s.statement_status = $2
+                      and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
   return query({
@@ -111,12 +111,13 @@ const getIncompleteReportsForReviewer = async (query = db.query) => {
             , ${isOverdue}     "isOverdue"
             from report r
           where r.status = $1
+          and   r.agency_id = $2
           order by r.incident_date`,
-    values: [ReportStatus.SUBMITTED.value, StatementStatus.PENDING.value],
+    values: [ReportStatus.SUBMITTED.value, agencyId, StatementStatus.PENDING.value],
   })
 }
 
-const getCompletedReportsForReviewer = async (query = db.query) => {
+const getCompletedReportsForReviewer = async (agencyId, query = db.query) => {
   return query({
     text: `select r.id
             , r.booking_id     "bookingId"
@@ -125,8 +126,9 @@ const getCompletedReportsForReviewer = async (query = db.query) => {
             , r.incident_date  "incidentDate"
             from report r
           where r.status = $1
+          and   r.agency_id = $2
           order by r.incident_date`,
-    values: [ReportStatus.COMPLETE.value],
+    values: [ReportStatus.COMPLETE.value, agencyId],
   })
 }
 
