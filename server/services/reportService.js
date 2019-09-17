@@ -18,9 +18,9 @@ module.exports = function createReportService({
     return result.rows
   }
 
-  async function getReportsForReviewer() {
-    const awaiting = await incidentClient.getIncompleteReportsForReviewer()
-    const completed = await incidentClient.getCompletedReportsForReviewer()
+  async function getReportsForReviewer(agencyId) {
+    const awaiting = await incidentClient.getIncompleteReportsForReviewer(agencyId)
+    const completed = await incidentClient.getCompletedReportsForReviewer(agencyId)
 
     return { completed: completed.rows, awaiting: awaiting.rows }
   }

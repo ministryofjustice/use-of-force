@@ -21,9 +21,27 @@ context('All incidents page', () => {
     cy.task('stubReviewerLogin')
     cy.login(bookingId)
 
+    // A report which on the current reviewers caseload, which is displayed
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
+      agencyId: 'MDI',
+      bookingId: 1001,
+      involvedStaff: [
+        {
+          userId: 'Test User',
+          name: 'Test User name',
+          email: 'Test User@gov.uk',
+        },
+      ],
+    })
+
+    // A report which isn't on the current reviewers caseload, which isn't displayed
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      submittedDate: moment().toDate(),
+      agencyId: 'LEI',
+      bookingId: 1002,
       involvedStaff: [
         {
           userId: 'Test User',
@@ -34,6 +52,8 @@ context('All incidents page', () => {
     })
 
     const allIncidentsPage = AllIncidentsPage.goTo()
+    allIncidentsPage.getTodoRows().should('have.length', 1)
+    allIncidentsPage.getCompleteRows().should('have.length', 0)
 
     allIncidentsPage
       .allTabs()
