@@ -76,7 +76,7 @@ describe('validate', () => {
     })
 
     test('no month or year', () => {
-      expect(validate(fields, {})).toEqual(expect.arrayContaining([yearIsRequired, selectMonth]))
+      expect(validate(fields, {})).toEqual(expect.arrayContaining([yearIsRequired]))
     })
   })
 })

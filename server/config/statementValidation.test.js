@@ -111,10 +111,6 @@ describe('lastTrainingYear', () => {
         href: '#lastTrainingYear',
         text: 'Enter the year you last attended refresher training',
       },
-      {
-        href: '#lastTrainingMonth',
-        text: 'Select the month you last attended refresher training',
-      },
     ])
 
     expect(formResponse).toEqual({
@@ -132,10 +128,6 @@ describe('lastTrainingYear', () => {
       {
         href: '#lastTrainingYear',
         text: 'Enter the year you last attended refresher training which is not in the future',
-      },
-      {
-        href: '#lastTrainingMonth',
-        text: 'Select the month you last attended refresher training',
       },
     ])
 

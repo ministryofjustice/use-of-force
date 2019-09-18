@@ -15,9 +15,11 @@ services:
 
   elite2-api:
     image: mojdigitalstudio/elite2-api:latest
+    networks:
+      - hmpps
     container_name: elite2-api
     depends_on:
-    - oauth-server
+      - oauth-server
     ports:
       - "8080:8080"
     healthcheck:
@@ -28,15 +30,15 @@ services:
   use-of-force-db:
     image: postgres
     networks:
-    - hmpps
+      - hmpps
     container_name: use-of-force-db
     restart: always
     ports:
       - "5432:5432"
     environment:
-    - POSTGRES_PASSWORD=use-of-force
-    - POSTGRES_USER=use-of-force
-    - POSTGRES_DB=use-of-force
+      - POSTGRES_PASSWORD=use-of-force
+      - POSTGRES_USER=use-of-force
+      - POSTGRES_DB=use-of-force
 
   use-of-force:
     build: .
@@ -51,15 +53,15 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
     environment:
-    - PORT=3000
-    - DB_USER=use-of-force
-    - DB_PASS=use-of-force
-    - DB_SERVER=use-of-force-db
-    - DB_NAME=use-of-force
-    - DB_SSL_ENABLED=no
-    - NOMIS_AUTH_URL=http://oauth-server:8080/auth
-    - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
-    - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
+      - PORT=3000
+      - DB_USER=use-of-force
+      - DB_PASS=use-of-force
+      - DB_SERVER=use-of-force-db
+      - DB_NAME=use-of-force
+      - DB_SSL_ENABLED=no
+      - NOMIS_AUTH_URL=http://oauth-server:8080/auth
+      - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
+      - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
 
 networks:
   hmpps:
