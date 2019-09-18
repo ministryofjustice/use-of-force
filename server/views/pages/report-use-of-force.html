@@ -1,5 +1,7 @@
 {% extends "../partials/layout.html" %}
 
+{% set pageTitle = 'Report use of force' %}
+
 {% macro section(name, label, url, value) %}
 <li class="app-task-list__item" data-qa-{{name}}={{value}}>
   {% if url %}
@@ -25,7 +27,7 @@
 {% endmacro %}
 
 {% block content %}
-<h1 class="govuk-heading-xl mainHeading">Report use of force</h1>
+<h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 <div class="govuk-grid-row govuk-body">
   <hr />
   <div class="govuk-grid-column-one-third">

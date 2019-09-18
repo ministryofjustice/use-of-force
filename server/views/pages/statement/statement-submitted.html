@@ -2,12 +2,14 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 
+{% set pageTitle = 'Your statement has been submitted' %}
+
 {% block content %}
 
 {{
     govukPanel({
         classes: "govuk-!-width-one-half",
-        titleText: "Your statement has been submitted"
+        titleText:  pageTitle 
     }) 
 }}  
 

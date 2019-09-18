@@ -4,11 +4,14 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
+
+{% set pageTitle = 'Incident details' %}
+
 {% block formItems %}
 <div class="govuk-body">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl mainHeading">Incident details</h1>
+      <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
       <div class="govuk-!-margin-bottom-6">
         <p class="govuk-!-margin-bottom-1">
           <span class="govuk-label--s">Prisoner:&nbsp;</span>

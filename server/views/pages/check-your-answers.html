@@ -12,10 +12,14 @@ text: "Back",
 href: backLink or "/"
 }) }}
 
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% set pageTitle = 'Check your answers before sending the report' %}
+
+{% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
-    <h1 class="govuk-heading-xl">Check your answers before sending the report</h1>
+    <h1 class="govuk-heading-xl"> {{pageTitle}} </h1>
 
     {{
       pagesMacros.sectionHeading({

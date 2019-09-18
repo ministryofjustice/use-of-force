@@ -2,6 +2,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
 
+{% set pageTitle = 'A username you have entered does not exist' %}
+
 {% block beforeContent %}
 
 {{ govukBackLink({
@@ -14,7 +16,7 @@ href: backLink or "/"
 {% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
-    <h1 class="govuk-heading-xl">A username you have entered does not exist</h1>
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
 
     <p>
       You have entered a username which does not exist:
