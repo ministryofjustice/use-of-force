@@ -1,6 +1,11 @@
 {% extends "govuk/template.njk" %}
 
+{% block pageTitle %}
+  {{ pageTitle }}
+{% endblock %}
+
 {% block head %}
+
 <!--[if !IE 8]><!-->
 <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
 <!--<![endif]-->

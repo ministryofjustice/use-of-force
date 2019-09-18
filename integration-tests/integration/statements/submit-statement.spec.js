@@ -42,7 +42,7 @@ context('Submit statement', () => {
     }
 
     const submitStatementPage = SubmitStatementPage.verifyOnPage()
-    submitStatementPage.offenderName().contains('Norman Smith (A1234AC)')
+    submitStatementPage.offenderName().contains('Norman Smith')
     submitStatementPage.lastTrainingMonth().select('March')
     submitStatementPage.lastTrainingYear().type('2010')
     submitStatementPage.jobStartYear().type('1999')
