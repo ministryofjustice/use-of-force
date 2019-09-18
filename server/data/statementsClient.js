@@ -36,6 +36,19 @@ const getStatementForUser = async (userId, reportId, status, query = db.query) =
   return results.rows[0]
 }
 
+const getStatementsForReviewer = async reportId => {
+  const results = await db.query({
+    text: `select id
+            ,      name
+            ,      overdue_date <= now()    "isOverdue"
+            ,      statement_status = $1    "isSubmitted"
+            from statement where report_id = $2
+            order by name`,
+    values: [StatementStatus.SUBMITTED.value, reportId],
+  })
+  return results.rows
+}
+
 const getAdditionalComments = async statementId => {
   const results = await db.query({
     text: `select  
@@ -128,6 +141,7 @@ const createStatements = async (reportId, firstReminder, overdueDate, staff, que
 module.exports = {
   getStatements,
   getStatementForUser,
+  getStatementsForReviewer,
   createStatements,
   saveStatement,
   submitStatement,

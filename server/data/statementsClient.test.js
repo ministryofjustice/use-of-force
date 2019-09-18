@@ -129,3 +129,17 @@ test('getNumberOfPendingStatements', () => {
     values: ['report1', StatementStatus.PENDING.value],
   })
 })
+
+test('getStatementsForReviewer', () => {
+  statementsClient.getStatementsForReviewer('report1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select id
+            ,      name
+            ,      overdue_date <= now()    "isOverdue"
+            ,      statement_status = $1    "isSubmitted"
+            from statement where report_id = $2
+            order by name`,
+    values: [StatementStatus.SUBMITTED.value, 'report1'],
+  })
+})

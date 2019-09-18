@@ -1,0 +1,93 @@
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+<div class="govuk-body">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-xl">Use of force incident</h1>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <div class="govuk-!-margin-bottom-1">
+              <p class="govuk-!-margin-bottom-1">
+                <span class="govuk-label--s">Created by:&nbsp;</span>
+                <span data-qa="reporter-name"> {{ data.reporterName }}</span>
+              </p>
+              <p class="govuk-!-margin-bottom-1">
+                <span class="govuk-label--s">Date and time:&nbsp;</span>
+                <span data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm')}}</span>
+              </p>
+              <p class="govuk-!-margin-bottom-1">
+                <span class="govuk-label--s">Prisoner name:&nbsp;</span>
+                <span data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</span>
+              </p>
+              <p class="govuk-!-margin-bottom-1">
+                <span class="govuk-label--s">Prisoner number:&nbsp;</span>
+                <span data-qa="prison-number"> {{ data.offenderDetail.offenderNo }}</span>
+              </p>
+          </div>    
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-3">
+    <div class="govuk-grid-column-full">    
+      <a
+      href="/{{ data.reportId }}/view-report"
+      draggable="false"
+      class="govuk-link"
+      >
+        View report
+      </a>
+  
+      <ul class="govuk-!-margin-left-3">
+          {% for missingUser in data.missingUsers %}
+          <li data-qa="missing-user">{{missingUser}}</li>
+          {% endfor %}     
+      </ul>
+
+
+      <table class="govuk-table govuk-!-width-one-third" data-qa="statements">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Officer</th>
+            <th class="govuk-table__header" scope="col">Statement</th>
+          </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+            {% for statement in data.statements %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{statement.name }}</td>
+              <td class="govuk-table__cell">
+                {% if statement.isSubmitted %}
+                <a
+                  href= {{ '/' + statement.id + '/view-statement' }}
+                  draggable="false"
+                  class="govuk-link">
+                    View statement
+                </a>
+                {% elseif statement.isOverdue %}
+                  <span data-qa="overdue" class="govuk-tag moj-tag--red">OVERDUE</span>
+                {% endif %}
+              </td>
+            </tr>  
+            {% endfor %}
+
+        </tbody>
+      </table>
+      <a
+        href="/all-incidents"
+        draggable="false"
+        class="govuk-link"
+        data-qa="return-link"
+        >
+        Return to use of force incidents
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

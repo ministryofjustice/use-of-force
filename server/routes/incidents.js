@@ -3,7 +3,7 @@ const { links } = require('../config.js')
 const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
-module.exports = function CreateReportRoutes({ reportService, involvedStaffService, offenderService }) {
+module.exports = function CreateReportRoutes({ reportService, involvedStaffService, offenderService, reviewService }) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
@@ -111,6 +111,28 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
       const data = await buildReportData(report, res)
 
       return res.render('pages/reviewer/view-report', { data })
+    },
+
+    reviewStatements: async (req, res) => {
+      if (!res.locals.user.isReviewer) {
+        return res.redirect('/')
+      }
+
+      const { reportId } = req.params
+
+      const report = await reportService.getReportForReviewer(reportId)
+
+      if (!report) {
+        throw new Error(`Report does not exist: ${reportId}`)
+      }
+
+      const { bookingId, reporterName, submittedDate } = report
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+
+      const statements = await reviewService.getStatements(reportId)
+
+      const data = { reportId, reporterName, submittedDate, offenderDetail, statements }
+      return res.render('pages/reviewer/view-statements', { data })
     },
   }
 }

@@ -16,6 +16,8 @@ const createOffenderService = require('./services/offenderService')
 const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
+const createReviewService = require('./services/reviewService')
+
 const { notificationServiceFactory } = require('./services/notificationService')
 
 // pass in dependencies of service
@@ -30,6 +32,7 @@ const reportService = createReportService({
   notificationService,
 })
 const statementService = createStatementService({ statementsClient, incidentClient })
+const reviewService = createReviewService({ statementsClient })
 
 const app = createApp({
   involvedStaffService,
@@ -39,6 +42,7 @@ const app = createApp({
   signInService: createSignInService(),
   statementService,
   userService,
+  reviewService,
 })
 
 module.exports = app
