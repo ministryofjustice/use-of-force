@@ -100,12 +100,10 @@ describe('statmentService', () => {
   describe('submitStatement', () => {
     test('does not mark report as complete if still pending statements', async () => {
       statementsClient.getNumberOfPendingStatements.mockReturnValue(1)
-
       await service.submitStatement('user1', 'incident-1')
 
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
       expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
-
       expect(incidentClient.markCompleted).not.toHaveBeenCalled()
     })
 
@@ -153,7 +151,7 @@ describe('statmentService', () => {
 
       const errors = await service.validateSavedStatement('user-1', 1)
       expect(errors.map(error => error.href)).toEqual(
-        expect.arrayContaining(['#lastTrainingMonth', '#lastTrainingYear', '#jobStartYear', '#statement'])
+        expect.arrayContaining(['#lastTrainingYear', '#jobStartYear', '#statement'])
       )
     })
   })
