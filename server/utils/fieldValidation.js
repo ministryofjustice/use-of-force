@@ -1,10 +1,14 @@
-const baseJoi = require('joi')
+const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
 const moment = require('moment')
-const dateExtend = require('joi-date-extensions')
+const R = require('ramda')
 
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
 
-const joi = baseJoi.extend(dateExtend)
+const setErrorMessage = message =>
+  R.map(e => {
+    e.message = message
+    return e
+  })
 
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 
@@ -22,18 +26,31 @@ const fieldOptions = {
       .number()
       .min(0)
       .when(joi.ref(yearRef), {
-        is: joi
-          .number()
-          .less(moment().year())
-          .required(),
-        then: joi
-          .number()
-          .max(11)
-          .required(),
-        otherwise: joi
-          .number()
-          .max(moment().month())
-          .required(),
+        switch: [
+          {
+            is: joi
+              .number()
+              .less(moment().year())
+              .required(),
+            then: joi
+              .number()
+              .integer()
+              .max(11)
+              .required(),
+          },
+          {
+            is: joi
+              .number()
+              .valid(moment().year())
+              .required(),
+            then: joi
+              .number()
+              .integer()
+              .max(moment().month())
+              .required(),
+            otherwise: joi.any().optional(),
+          },
+        ],
       })
       .required(),
 
@@ -83,7 +100,7 @@ const fieldOptions = {
 
   requiredOneOf: (...values) => joi.valid(values).required(),
 
-  requiredYesNoNotKnown: joi.valid(['YES', 'NO', 'NOT_KNOWN']).required(),
+  requiredYesNoNotKnown: joi.valid('YES', 'NO', 'NOT_KNOWN').required(),
 
   requiredCameraNumber: joi.when('bodyWornCamera', {
     is: 'YES',
@@ -91,33 +108,33 @@ const fieldOptions = {
       .array()
       .min(1)
       .items(
-        joi.object().keys({
+        joi.object({
           cameraNum: joi
             .string()
             .required()
-            .error(() => 'Enter the body-worn camera number'),
+            .error(setErrorMessage('Enter the body-worn camera number')),
         })
       )
       .required(),
   }),
 
-  requiredTagAndDescription: joi.when('baggedEvidence', {
+  requiredTagAndDescription: joi.when(joi.ref('baggedEvidence'), {
     is: true,
     then: joi
       .array()
       .min(1)
       .items(
-        joi.object().keys({
+        joi.object({
           evidenceTagReference: joi
             .string()
             .trim()
             .required()
-            .error(() => 'Enter the evidence tag number'),
+            .error(setErrorMessage('Enter the evidence tag number')),
           description: joi
             .string()
             .trim()
             .required()
-            .error(() => 'Enter a description of the evidence'),
+            .error(setErrorMessage('Enter a description of the evidence')),
         })
       )
       .required(),
@@ -125,17 +142,17 @@ const fieldOptions = {
 
   requiredBatonUsed: joi.when('batonDrawn', {
     is: true,
-    then: joi.valid([true, false]).required(),
+    then: joi.valid(true, false).required(),
   }),
 
   requiredPavaUsed: joi.when('pavaDrawn', {
     is: true,
-    then: joi.valid([true, false]).required(),
+    then: joi.valid(true, false).required(),
   }),
 
   requiredOfficersInvolved: joi.when('guidingHold', {
     is: true,
-    then: joi.valid([1, 2]).required(),
+    then: joi.valid(1, 2).required(),
   }),
 
   requiredRestraintPositions: joi.when('restraint', {
@@ -162,7 +179,7 @@ const fieldOptions = {
   }),
 
   optionalInvolvedStaff: joi.array().items(
-    joi.object().keys({
+    joi.object({
       username: joi
         .string()
         .trim()
@@ -171,7 +188,7 @@ const fieldOptions = {
   ),
 
   optionalInvolvedStaffWhenPersisted: joi.array().items(
-    joi.object().keys({
+    joi.object({
       username: joi
         .string()
         .trim()
@@ -190,7 +207,7 @@ const fieldOptions = {
   ),
 
   optionalWitnesses: joi.array().items(
-    joi.object().keys({
+    joi.object({
       name: joi
         .string()
         .trim()
@@ -204,7 +221,7 @@ const fieldOptions = {
       .array()
       .min(1)
       .items(
-        joi.object().keys({
+        joi.object({
           name: joi
             .string()
             .trim()
@@ -212,9 +229,10 @@ const fieldOptions = {
             .regex(namePattern, 'StaffMedicalAttention'),
 
           hospitalisation: joi
-            .valid([true, false])
+            .any()
+            .valid(true, false)
             .required()
-            .error(() => 'Select yes if the staff member had to go to hospital'),
+            .error(setErrorMessage('Select yes if the staff member had to go to hospital')),
         })
       )
       .required(),
@@ -238,7 +256,7 @@ const getHref = (fieldConfig, error) => {
 module.exports = {
   validate(fields, formResponse, stripUnknown = false) {
     const formSchema = createSchemaFromConfig(fields)
-    const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown, abortEarly: false })
+    const joiErrors = formSchema.validate(formResponse, { stripUnknown, abortEarly: false })
     const fieldsConfig = fields
     if (isNilOrEmpty(joiErrors.error)) {
       return []
@@ -246,8 +264,8 @@ module.exports = {
 
     const errors = joiErrors.error.details.map(error => {
       const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
-      let errorMessage = null
-      errorMessage =
+
+      const errorMessage =
         getIn([error.path[0], 'validationMessage', error.type], fieldConfig) ||
         getIn([...error.path, 'validationMessage'], fieldConfig) ||
         error.message
@@ -263,7 +281,7 @@ module.exports = {
 
   isValid(schemaName, fieldValue) {
     const joiFieldItem = fieldOptions[schemaName]
-    const joiErrors = joi.validate(fieldValue, joiFieldItem, { stripUnknown: false, abortEarly: false })
+    const joiErrors = joiFieldItem.validate(fieldValue, { stripUnknown: false, abortEarly: false })
     return isNilOrEmpty(joiErrors.error)
   },
 }

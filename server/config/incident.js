@@ -69,7 +69,7 @@ module.exports = {
       {
         involvedStaff: {
           responseType: 'optionalInvolvedStaff',
-          validationMessage: { 'string.regex.name': 'Usernames can only contain letters and an underscore' },
+          validationMessage: { 'string.pattern.name': 'Usernames can only contain letters and an underscore' },
           sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0][username]',
         },
@@ -78,7 +78,7 @@ module.exports = {
         witnesses: {
           responseType: 'optionalWitnesses',
           validationMessage: {
-            'string.regex.name': 'Witness names can only contain letters, spaces, hyphens, apostrophe',
+            'string.pattern.name': 'Witness names can only contain letters, spaces, hyphens, apostrophe',
           },
           sanitiser: removeEmptyValues(['name']),
         },
@@ -215,7 +215,7 @@ module.exports = {
           responseType: 'f213CompletedBy',
           sanitiser: trimmedString,
           validationMessage: {
-            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'string.base': 'Enter the name of who completed the F213 form',
           },
         },
@@ -238,7 +238,7 @@ module.exports = {
         healthcarePractionerName: {
           responseType: 'requiredMemberOfHealthcare',
           validationMessage: {
-            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'string.base': 'Enter the name of the member of healthcare',
           },
 
@@ -265,7 +265,7 @@ module.exports = {
         staffNeedingMedicalAttention: {
           responseType: 'requiredStaffNeedingMedicalAttention',
           validationMessage: {
-            'string.regex.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'array.min': "Enter the staff member's name and whether they went to hospital",
             'any.required': 'Enter the name of who needed medical attention',
           },
