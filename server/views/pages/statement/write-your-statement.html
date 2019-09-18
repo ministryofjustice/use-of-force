@@ -7,6 +7,8 @@
 {% from "govuk/components/checkboxes/macro.njk"import govukCheckboxes %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
+{% set pageTitle = 'Your use of force statement' %}
+
 {% block content %}
 <div class="govuk-body">
   {% if errors.length > 0 %}
