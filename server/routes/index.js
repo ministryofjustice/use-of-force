@@ -67,7 +67,6 @@ module.exports = function Index({
   get('/:reportId/report-sent', incidents.viewReportSent)
 
   get('/', incidents.redirectToHomePage)
-  get('/all-incidents', incidents.viewAllIncidents)
   get('/your-reports', incidents.viewYourReports)
   get('/:reportId/your-report', incidents.viewYourReport)
 
@@ -80,6 +79,10 @@ module.exports = function Index({
   get('/:reportId/your-statement', statements.viewYourStatement)
   get('/:reportId/add-comment-to-statement', statements.viewAddCommentToStatement)
   post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
+
+  // Reviewer
+  get('/all-incidents', incidents.viewAllIncidents)
+  get('/:reportId/view-report', incidents.reviewReport)
 
   return router
 }

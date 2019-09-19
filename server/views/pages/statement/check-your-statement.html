@@ -7,9 +7,11 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
 
+{% set pageTitle = 'Check your statement before submitting it' %}
+
 {% block content %}
 <div class="govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">Check your statement before submitting it</h1>
+  <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }} </h1>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full ">

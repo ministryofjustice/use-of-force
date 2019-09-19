@@ -36,6 +36,7 @@ const getPayload = reportId => {
 const seedReport = ({
   status,
   userId = 'Test User',
+  reporterName = 'James Stuart',
   bookingId = 1001,
   payload = expectedPayload,
   involvedStaff = [],
@@ -47,10 +48,10 @@ const seedReport = ({
     .queryWithoutTransaction({
       text: `INSERT INTO report
       (form_response, user_id, booking_id, created_date, status, submitted_date, offender_no, reporter_name, incident_date, agency_id)
-      VALUES($1, $2, $3, $4, $5, $6, 'A1234AC', 'James Stuart', '2019-09-10 09:57:40.000', $7)
+      VALUES($1, $2, $3, $4, $5, $6, 'A1234AC', $7, '2019-09-10 09:57:40.000', $8)
       returning id;
       `,
-      values: [payload, userId, bookingId, '2019-09-10 09:57:43.122', status.value, submitDate, agencyId],
+      values: [payload, userId, bookingId, '2019-09-10 09:57:43.122', status.value, submitDate, reporterName, agencyId],
     })
     .then(
       result =>

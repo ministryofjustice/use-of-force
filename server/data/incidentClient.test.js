@@ -44,6 +44,22 @@ test('getReports', () => {
   })
 })
 
+test('getReportForReviewer', () => {
+  incidentClient.getReportForReviewer('report1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select id
+          , incident_date "incidentDate"
+          , submitted_date "submittedDate"
+          , reporter_name "reporterName"
+          , form_response "form"
+          , booking_id "bookingId"
+          from report r
+          where r.id = $1`,
+    values: ['report1'],
+  })
+})
+
 test('getIncompleteReportsForReviewer', () => {
   const isOverdue = `(select count(*) from "statement" s
                       where r.id = s.report_id 

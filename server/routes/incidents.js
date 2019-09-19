@@ -18,6 +18,24 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     offenderName: namesByOffenderNumber[incident.offenderNo],
   })
 
+  const buildReportData = async (report, res) => {
+    const { id, form, incidentDate, bookingId, reporterName, submittedDate } = report
+    const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+    const { description: locationDescription = '' } = await offenderService.getLocation(
+      res.locals.user.token,
+      form.incidentDetails.locationId
+    )
+    const involvedStaff = await involvedStaffService.getInvolvedStaff(id)
+    const involvedStaffNames = involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.userId}`])
+
+    return {
+      reporterName,
+      submittedDate,
+      bookingId,
+      ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate),
+    }
+  }
+
   return {
     redirectToHomePage: async (req, res) => {
       const location = res.locals.user.isReviewer ? '/all-incidents' : '/your-statements'
@@ -30,7 +48,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
     viewAllIncidents: async (req, res) => {
       if (!res.locals.user.isReviewer) {
-        return res.redirect('/your-statements')
+        return res.redirect('/')
       }
 
       const { awaiting, completed } = await reportService.getReportsForReviewer(res.locals.user.activeCaseLoadId)
@@ -66,33 +84,33 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
     viewYourReport: async (req, res) => {
       const { reportId } = req.params
+      const report = await reportService.getReport(req.user.username, reportId)
 
-      const result = await reportService.getReport(req.user.username, reportId)
-
-      if (!result) {
+      if (!report) {
         throw new Error(`Report does not exist: ${reportId}`)
       }
 
-      const { id, form, incidentDate, bookingId, reporterName, submittedDate } = result
+      const data = await buildReportData(report, res)
 
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      return res.render('pages/your-report', { data })
+    },
 
-      const { description: locationDescription = '' } = await offenderService.getLocation(
-        res.locals.user.token,
-        form.incidentDetails.locationId
-      )
+    reviewReport: async (req, res) => {
+      const { reportId } = req.params
 
-      const involvedStaff = await involvedStaffService.getInvolvedStaff(id)
-
-      const involvedStaffNames = involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.userId}`])
-
-      const data = {
-        reporterName,
-        submittedDate,
-        ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate),
+      if (!res.locals.user.isReviewer) {
+        return res.redirect('/')
       }
 
-      return res.render('pages/your-report', { data, bookingId })
+      const report = await reportService.getReportForReviewer(reportId)
+
+      if (!report) {
+        throw new Error(`Report does not exist: ${reportId}`)
+      }
+
+      const data = await buildReportData(report, res)
+
+      return res.render('pages/reviewer/view-report', { data })
     },
   }
 }
