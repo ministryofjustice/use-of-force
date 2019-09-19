@@ -4,9 +4,10 @@ const { ReportStatus } = require('../config/types')
 
 const incidentClient = {
   getCurrentDraftReport: jest.fn(),
-  getReports: jest.fn(),
-  getReportsForReviewer: jest.fn(),
   getReport: jest.fn(),
+  getReports: jest.fn(),
+  getReportForReviewer: jest.fn(),
+  getReportsForReviewer: jest.fn(),
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
@@ -112,6 +113,14 @@ describe('getReports', () => {
     const result = await service.getReports('user1', [ReportStatus.SUBMITTED])
     expect(result).toEqual([{ id: 1 }])
     expect(incidentClient.getReports).toBeCalledWith('user1', [ReportStatus.SUBMITTED])
+  })
+})
+
+describe('getReportForReviewer', () => {
+  test('it should call query on db', async () => {
+    await service.getReportForReviewer('report1')
+    expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
+    expect(incidentClient.getReportForReviewer).toBeCalledWith('report1')
   })
 })
 

@@ -71,7 +71,7 @@ describe('GET /all-incidents', () => {
     return request(app)
       .get('/all-incidents')
       .expect(302)
-      .expect('Location', '/your-statements')
+      .expect('Location', '/')
   })
 })
 
