@@ -1,4 +1,4 @@
-const { properCaseName, properCaseFullName } = require('./utils')
+const { properCaseName, properCaseFullName, isNilOrEmpty } = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -44,5 +44,14 @@ describe('properCaseFullName', () => {
     expect(properCaseFullName('JAMES robert MONTGOMERY-FOSTER-SMYTH-WALLACE-BOB')).toEqual(
       'James Robert Montgomery-Foster-Smyth-Wallace-Bob'
     )
+  })
+})
+
+describe('nilOrEmpty', () => {
+  it('is empty', () => {
+    expect(isNilOrEmpty(null)).toBe(true)
+    expect(isNilOrEmpty(undefined)).toBe(true)
+    expect(isNilOrEmpty('')).toBe(true)
+    expect(isNilOrEmpty('x')).toBe(false)
   })
 })

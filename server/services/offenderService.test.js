@@ -40,7 +40,7 @@ describe('getOffenderDetails', () => {
       ...details,
       dateOfBirth: '1980-12-31',
       displayName: 'Sam Smith',
-      locations: [{ locationType: 'WING', userDescription: 'Wing A' }],
+      locations: [],
     })
   })
 
