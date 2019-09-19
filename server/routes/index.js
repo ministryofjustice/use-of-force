@@ -15,10 +15,11 @@ module.exports = function Index({
   offenderService,
   reportService,
   involvedStaffService,
+  reviewService,
 }) {
   const router = express.Router()
 
-  const incidents = CreateIncidentRoutes({ reportService, involvedStaffService, offenderService })
+  const incidents = CreateIncidentRoutes({ reportService, involvedStaffService, offenderService, reviewService })
   const statements = CreateStatementRoutes({ statementService, offenderService })
 
   const createReport = CreateReportRoutes({
@@ -83,6 +84,7 @@ module.exports = function Index({
   // Reviewer
   get('/all-incidents', incidents.viewAllIncidents)
   get('/:reportId/view-report', incidents.reviewReport)
+  get('/:reportId/view-statements', incidents.reviewStatements)
 
   return router
 }

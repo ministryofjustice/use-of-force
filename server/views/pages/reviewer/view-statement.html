@@ -1,0 +1,106 @@
+{% extends "../../partials/layout.html" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+<div class="govuk-body">
+  {% if errors.length > 0 %}
+  {{
+    govukErrorSummary({
+      titleText: 'There is a problem',
+      errorList: errors,
+      attributes: { 'data-qa-errors': true }
+    })
+  }}
+  {% endif %}
+  <h1 class="govuk-heading-xl mainHeading">Your use of force statement</h1>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full ">
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">Prisoner:&nbsp;</span>
+        <span data-qa="offender-name"> {{ data.displayName }} ({{ data.offenderNo }}) </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">Date and time of incident:&nbsp;</span>
+        <span data-qa="date-and-time">
+          {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }}
+        </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">When did you last attend control and restraint basic refresher
+          training?:&nbsp;</span>
+        <span data-qa="last-training"> {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }} </span>
+      </p>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">What year did you join the prison service?:&nbsp;</span>
+        <span data-qa="job-start-year">
+          {{ data.jobStartYear }}
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <hr class="govuk-!-margin-top-2" />
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-!-margin-bottom-0 govuk-label--s">Statement</p>
+    </div>
+    <div class="govuk-grid-column-one-half ">
+      <p>
+        <span class="govuk-label--s">Submitted:</span> {{ data.submittedDate | formatDate('D MMMM YYYY - HH:mm') }}
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
+    </div>
+  </div>
+  <hr />
+
+  {% for comment in data.additionalComments %}
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-!-margin-bottom-0 govuk-label--s">Additional comment</p>
+    </div>
+    <div class="govuk-grid-column-one-half ">
+      <p>
+        <span class="govuk-label--s">Submitted:</span> {{ comment.dateSubmitted | formatDate('D MMMM YYYY - HH:mm') }}
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-loop={{loop.index}}
+        data-qa="viewAdditionalComment">{{comment.additionalComment}}</p>
+    </div>
+  </div>
+  <hr />
+  {% endfor %}
+
+  {{
+      govukButton({
+        text: 'Continue',
+        name: 'continue',
+        href: '/',
+        classes: 'govuk-button  govuk-!-margin-top-5',
+        attributes: { 'data-qa': 'continue' }
+      })
+    }}
+
+  {{
+        govukButton({
+          text: 'Add comment',
+          href:  '/' + data.reportId + '/add-comment-to-statement',
+          classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3 govuk-!-margin-top-5',
+          attributes: { 'data-qa': 'add-comment' }
+        })
+      }}
+</div>
+{% endblock %}

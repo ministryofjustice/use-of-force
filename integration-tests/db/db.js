@@ -42,6 +42,9 @@ const seedReport = ({
   involvedStaff = [],
   agencyId = 'MDI',
   submittedDate = moment('2019-09-10 10:30:43.122').toDate(),
+  overdueDate = moment(submittedDate)
+    .add(3, 'd')
+    .toDate(),
 }) => {
   const submitDate = equals(status, ReportStatus.SUBMITTED) ? submittedDate : null
   return db
@@ -59,9 +62,7 @@ const seedReport = ({
         statementsClient.createStatements(
           result.rows[0].id,
           new Date(),
-          moment(submittedDate)
-            .add(3, 'd')
-            .toDate(),
+          overdueDate,
           involvedStaff,
           db.queryWithoutTransaction
         )

@@ -38,6 +38,7 @@ module.exports = function createApp({
   signInService,
   statementService,
   userService,
+  reviewService,
 }) {
   const app = express()
 
@@ -248,7 +249,14 @@ module.exports = function createApp({
 
   app.use(
     '/',
-    createRouter({ authenticationMiddleware, statementService, offenderService, reportService, involvedStaffService })
+    createRouter({
+      authenticationMiddleware,
+      statementService,
+      offenderService,
+      reportService,
+      involvedStaffService,
+      reviewService,
+    })
   )
 
   app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
