@@ -1,10 +1,11 @@
 const moment = require('moment')
 const AllIncidentsPage = require('../../pages/allIncidentsPage')
 const ViewStatementsPage = require('../../pages/viewStatementsPage')
+const ReviewStatementPage = require('../../pages/reviewStatementPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
-context('view review page', () => {
+context('view statement page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
@@ -37,11 +38,6 @@ context('view review page', () => {
           name: 'Test User name',
           email: 'Test User@gov.uk',
         },
-        {
-          userId: 'ANOTHER_USER',
-          name: 'Another user name',
-          email: 'Anneother Test User@gov.uk',
-        },
       ],
     })
 
@@ -59,71 +55,27 @@ context('view review page', () => {
       viewStatementsPage.prisonerName().contains('Norman Smith')
       viewStatementsPage.prisonNumber().contains('A1234AC')
 
-      viewStatementsPage
-        .statements()
-        .then(result =>
-          expect(result).to.deep.equal([
-            { username: 'Another user name', link: '', isOverdue: false },
-            { username: 'Test User name', link: '', isOverdue: false },
-          ])
-        )
+      viewStatementsPage.getReportId().then(reportId => cy.task('submitStatement', { userId: 'Test User', reportId }))
 
-      viewStatementsPage.return().click()
+      cy.reload()
 
-      AllIncidentsPage.verifyOnPage()
+      viewStatementsPage.statements().then(result => {
+        expect(result).to.deep.equal([{ username: 'Test User name', link: 'View statement', isOverdue: false }])
+      })
+
+      viewStatementsPage.statementLink(0).click()
+
+      const reviewStatementPage = ReviewStatementPage.verifyOnPageForUser('Test User name')
+
+      reviewStatementPage.offenderName().contains('Norman Smith')
+      reviewStatementPage.dateAndTime().contains(/10 September 2019 - \d{2}:\d{2}/)
+
+      reviewStatementPage.lastTraining().contains('March 2018')
+      reviewStatementPage.jobStartYear().contains('2017')
+      reviewStatementPage.statement().contains('Things happened')
+      reviewStatementPage.continue().click()
+
+      ViewStatementsPage.verifyOnPage()
     }
-  })
-
-  it('A reviewer can view overdue statements for a specific report', () => {
-    cy.task('stubReviewerLogin')
-    cy.login(bookingId)
-
-    cy.task('seedReport', {
-      status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      overdueDate: moment()
-        .add(-1, 'day')
-        .toDate(),
-      userId: 'Test User',
-      reporterName: 'James Stuart',
-      agencyId: 'MDI',
-      bookingId,
-      involvedStaff: [
-        {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
-        },
-        {
-          userId: 'ANOTHER_USER',
-          name: 'Another user name',
-          email: 'Anneother Test User@gov.uk',
-        },
-      ],
-    })
-
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-
-    const { viewStatementsButton } = allIncidentsPage.getTodoRow(0)
-    viewStatementsButton().click()
-
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.reporterName().contains('James Stuart')
-    viewStatementsPage.prisonerName().contains('Norman Smith')
-    viewStatementsPage.prisonNumber().contains('A1234AC')
-
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'Another user name', link: 'OVERDUE', isOverdue: true },
-          { username: 'Test User name', link: 'OVERDUE', isOverdue: true },
-        ])
-      )
-
-    viewStatementsPage.return().click()
-
-    AllIncidentsPage.verifyOnPage()
   })
 })

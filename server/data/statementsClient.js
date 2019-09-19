@@ -36,6 +36,26 @@ const getStatementForUser = async (userId, reportId, status, query = db.query) =
   return results.rows[0]
 }
 
+const getStatementForReviewer = async (statementId, query = db.query) => {
+  const results = await query({
+    text: `select s.id
+    ,      r.id                     "reportId"
+    ,      s.name
+    ,      r.booking_id             "bookingId"
+    ,      r.incident_date          "incidentDate"
+    ,      s.last_training_month    "lastTrainingMonth"
+    ,      s.last_training_year     "lastTrainingYear"
+    ,      s.job_start_year         "jobStartYear"
+    ,      s.statement
+    ,      s.submitted_date         "submittedDate"
+    from report r
+    left join statement s on r.id = s.report_id
+    where s.id = $1`,
+    values: [statementId],
+  })
+  return results.rows[0]
+}
+
 const getStatementsForReviewer = async reportId => {
   const results = await db.query({
     text: `select id
@@ -141,6 +161,7 @@ const createStatements = async (reportId, firstReminder, overdueDate, staff, que
 module.exports = {
   getStatements,
   getStatementForUser,
+  getStatementForReviewer,
   getStatementsForReviewer,
   createStatements,
   saveStatement,

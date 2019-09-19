@@ -6,6 +6,7 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %} 
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %} 
+{% import "../statementDetailMacro.njk" as statementDetail %}
 
 {% set pageTitle = 'Check your statement before submitting it' %}
 
@@ -13,43 +14,8 @@
 <div class="govuk-body">
   <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }} </h1>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full ">
-      <p class="govuk-!-margin-bottom-1">
-        <span class="govuk-label--s">Prisoner:&nbsp;</span>
-        <span data-qa="offender-name">
-          {{ data.displayName }} ({{ data.offenderNo }})
-        </span>
-      </p>
-      <p class="govuk-!-margin-bottom-1">
-        <span class="govuk-label--s">Date and time of incident:&nbsp;</span>
-        <span data-qa="date-and-time">
-          {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }}
-        </span>
-      </p>
-      <p class="govuk-!-margin-bottom-1">
-        <span class="govuk-label--s">When did you last attend control and restraint basic refresher
-          training?:&nbsp;</span>
-        <span data-qa="last-training">
-          {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }}
-        </span>
-      </p>
-      <p class="govuk-!-margin-bottom-1">
-        <span class="govuk-label--s">What year did you join the prison service?:&nbsp;</span>
-        <span data-qa="job-start-year">
-          {{ data.jobStartYear }}
-        </span>
-      </p>
-    </div>
-  </div>
-  <hr class="govuk-!-margin-top-2" />
-  <div class="govuk-grid-row govuk-!-margin-top-4">
-    <div class="govuk-grid-column-full ">
-      <p class="govuk-!-margin-bottom-1 govuk-label--s">Statement</p>
-      <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
-    </div>
-  </div>
-  <hr class="govuk-!-margin-top-2" />
+  {{ statementDetail.detail(data) }}
+  
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <p class="govuk-label--s govuk-!-margin-bottom-0">By submitting this statement you agree that:</p>

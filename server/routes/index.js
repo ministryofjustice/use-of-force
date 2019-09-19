@@ -85,6 +85,7 @@ module.exports = function Index({
   get('/all-incidents', incidents.viewAllIncidents)
   get('/:reportId/view-report', incidents.reviewReport)
   get('/:reportId/view-statements', incidents.reviewStatements)
+  get('/:statementId/view-statement', incidents.reviewStatement)
 
   return router
 }

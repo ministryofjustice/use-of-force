@@ -1,3 +1,4 @@
+const moment = require('moment')
 const { ReportStatus } = require('../config/types')
 const { links } = require('../config.js')
 const { properCaseFullName } = require('../utils/utils')
@@ -133,6 +134,32 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const data = { reportId, reporterName, submittedDate, offenderDetail, statements }
       return res.render('pages/reviewer/view-statements', { data })
+    },
+
+    reviewStatement: async (req, res) => {
+      if (!res.locals.user.isReviewer) {
+        return res.redirect('/')
+      }
+
+      const { statementId } = req.params
+
+      const statement = await reviewService.getStatement(statementId)
+
+      if (!statement) {
+        throw new Error(`Statement does not exist: ${statementId}`)
+      }
+
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const { displayName, offenderNo } = offenderDetail
+
+      return res.render('pages/reviewer/view-statement', {
+        data: {
+          displayName,
+          offenderNo,
+          ...statement,
+          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
+        },
+      })
     },
   }
 }

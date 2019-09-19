@@ -69,6 +69,21 @@ const seedReport = ({
     )
 }
 
+const submitStatement = ({ userId, reportId }) =>
+  statementsClient
+    .saveStatement(
+      userId,
+      reportId,
+      {
+        lastTrainingMonth: 2,
+        lastTrainingYear: 2018,
+        jobStartYear: 2017,
+        statement: 'Things happened',
+      },
+      db.queryWithoutTransaction
+    )
+    .then(() => statementsClient.submitStatement(userId, reportId, db.queryWithoutTransaction))
+
 const deleteRows = table =>
   db.queryWithoutTransaction({
     text: format('delete from %I', table),
@@ -97,4 +112,5 @@ module.exports = {
   getAllStatementsForReport,
   getPayload,
   seedReport,
+  submitStatement,
 }
