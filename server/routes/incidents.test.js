@@ -8,6 +8,7 @@ const userSupplier = jest.fn()
 const reportService = {
   getReports: () => [],
   getReportsForReviewer: () => ({ awaiting: [], completed: [] }),
+  getReportForReviewer: jest.fn(),
   getReport: jest.fn(),
 }
 
@@ -17,11 +18,21 @@ const offenderService = {
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
 
+const reviewService = {
+  getStatements: jest.fn(),
+}
+
 const involvedStaffService = {
   getInvolvedStaff: () => [],
 }
 
-const route = createRouter({ authenticationMiddleware, reportService, involvedStaffService, offenderService })
+const route = createRouter({
+  authenticationMiddleware,
+  reportService,
+  involvedStaffService,
+  offenderService,
+  reviewService,
+})
 
 let app
 
@@ -91,6 +102,40 @@ describe('GET /your-report', () => {
     reportService.getReport.mockReturnValue(undefined)
     return request(app)
       .get('/1/your-report')
+      .expect(500)
+  })
+})
+
+describe('GET /view-statements', () => {
+  it('should render page if reviewer', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    reportService.getReportForReviewer.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getStatements.mockReturnValue([])
+    return request(app)
+      .get('/1/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incident')
+      })
+  })
+
+  it('should redirect if not reviewer', () => {
+    userSupplier.mockReturnValue(user)
+    reportService.getReportForReviewer.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getStatements.mockReturnValue([])
+    return request(app)
+      .get('/1/view-statements')
+      .expect(302)
+      .expect('Location', '/')
+  })
+
+  it('should error if report doesnt exist', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    reportService.getReportForReviewer.mockReturnValue(null)
+    reviewService.getStatements.mockReturnValue([])
+    return request(app)
+      .get('/1/view-statements')
       .expect(500)
   })
 })

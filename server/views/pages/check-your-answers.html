@@ -18,10 +18,10 @@ href: backLink or "/"
 {% set pageTitle = 'Check your answers before sending the report' %}
 
 {% block content %}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
     <h1 class="govuk-heading-xl"> {{pageTitle}} </h1>
-  
     {{
       reportDetail.detail(data, bookingId)
     }}
