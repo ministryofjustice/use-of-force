@@ -1,5 +1,6 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty, properCaseName } = require('../utils/utils')
+const locationsFilter = require('./locationsFilter')
 
 module.exports = function createOffendersService(elite2ClientBuilder) {
   const getOffenderDetails = async (token, bookingId) => {
@@ -12,17 +13,15 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
         return []
       }
 
-      const locations = await elite2Client.getLocations(result.agencyId)
+      const unfilteredLocations = await elite2Client.getLocations(result.agencyId)
+      const locations = locationsFilter(unfilteredLocations)
 
       const displayName = `${properCaseName(result.firstName)} ${properCaseName(result.lastName)}`
 
-      const filteredLocations = locations.filter(
-        agy => agy.userDescription && !['CELL', 'BOX'].includes(agy.locationType)
-      )
       const { dateOfBirth } = result
 
       return {
-        locations: filteredLocations,
+        locations,
         displayName,
         ...result,
         dateOfBirth,
