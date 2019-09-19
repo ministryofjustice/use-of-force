@@ -146,19 +146,6 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       })
     },
 
-    saveAdditionalComment: async (req, res) => {
-      const { reportId } = req.params
-      const statement = await statementService.getStatementForUser(
-        req.user.username,
-        reportId,
-        StatementStatus.SUBMITTED
-      )
-      if (req.body.additionalComment && req.body.additionalComment.trim().length) {
-        await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
-      }
-      return res.redirect(`/`)
-    },
-
     viewAddCommentToStatement: async (req, res) => {
       const { reportId } = req.params
       const statement = await statementService.getStatementForUser(
@@ -169,9 +156,6 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
-      if (req.body.additionalComment && req.body.additionalComment.trim().length) {
-        await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
-      }
       return res.render('pages/statement/add-comment-to-statement', {
         data: {
           reportId,
@@ -181,6 +165,19 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
           lastTrainingMonth: moment.months(statement.lastTrainingMonth),
         },
       })
+    },
+
+    saveAdditionalComment: async (req, res) => {
+      const { reportId } = req.params
+      const statement = await statementService.getStatementForUser(
+        req.user.username,
+        reportId,
+        StatementStatus.SUBMITTED
+      )
+      if (req.body.additionalComment && req.body.additionalComment.trim().length) {
+        await statementService.saveAdditionalComment(statement.id, req.body.additionalComment)
+      }
+      return res.redirect(`/your-statements`)
     },
   }
 }
