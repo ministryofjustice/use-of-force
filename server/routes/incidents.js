@@ -52,7 +52,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         return res.redirect('/')
       }
 
-      const { awaiting, completed } = await reportService.getReportsForReviewer(res.locals.user.activeCaseLoadId)
+      const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId)
 
       const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
@@ -103,11 +103,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         return res.redirect('/')
       }
 
-      const report = await reportService.getReportForReviewer(reportId)
-
-      if (!report) {
-        throw new Error(`Report does not exist: ${reportId}`)
-      }
+      const report = await reviewService.getReport(reportId)
 
       const data = await buildReportData(report, res)
 
@@ -121,11 +117,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const { reportId } = req.params
 
-      const report = await reportService.getReportForReviewer(reportId)
-
-      if (!report) {
-        throw new Error(`Report does not exist: ${reportId}`)
-      }
+      const report = await reviewService.getReport(reportId)
 
       const { bookingId, reporterName, submittedDate } = report
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
@@ -144,10 +136,6 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
       const { statementId } = req.params
 
       const statement = await reviewService.getStatement(statementId)
-
-      if (!statement) {
-        throw new Error(`Statement does not exist: ${statementId}`)
-      }
 
       const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail

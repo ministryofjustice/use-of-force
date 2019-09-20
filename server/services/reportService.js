@@ -18,15 +18,6 @@ module.exports = function createReportService({
     return result.rows
   }
 
-  const getReportForReviewer = reportId => incidentClient.getReportForReviewer(reportId)
-
-  async function getReportsForReviewer(agencyId) {
-    const awaiting = await incidentClient.getIncompleteReportsForReviewer(agencyId)
-    const completed = await incidentClient.getCompletedReportsForReviewer(agencyId)
-
-    return { completed: completed.rows, awaiting: awaiting.rows }
-  }
-
   async function isDraftComplete(username, bookingId) {
     const { form = {} } = await getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)
@@ -92,8 +83,6 @@ module.exports = function createReportService({
   return {
     getReport,
     getReports,
-    getReportForReviewer,
-    getReportsForReviewer,
     getCurrentDraft,
     isDraftComplete,
     update,

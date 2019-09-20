@@ -32,7 +32,7 @@ const reportService = createReportService({
   notificationService,
 })
 const statementService = createStatementService({ statementsClient, incidentClient })
-const reviewService = createReviewService({ statementsClient })
+const reviewService = createReviewService({ statementsClient, incidentClient })
 
 const app = createApp({
   involvedStaffService,
