@@ -1,9 +1,10 @@
 const page = require('./page')
-const checkAnswersPage = require('./checkAnswersPage')
+const CheckAnswersPage = require('./checkAnswersPage')
 
-export default () =>
+const evidencePage = () =>
   page('Evidence', {
-    fillForm: () => {
+    photosTaken: () => cy.get('[name="photographsTaken"]'),
+    fillForm() {
       cy.get('[name="baggedEvidence"]').check('true')
       cy.get('[name="evidenceTagAndDescription[0][evidenceTagReference]"]').type('Bagged evidence 1')
       cy.get('[name="evidenceTagAndDescription[0][description]"]').type(
@@ -17,7 +18,7 @@ export default () =>
       cy.get('[data-qa-add-another-tag = true]').click()
       cy.get('[name="evidenceTagAndDescription[2][evidenceTagReference]"]').type('Bagged evidence 3')
       cy.get('[name="evidenceTagAndDescription[2][description]"]').type('Clothes samples')
-      cy.get('[name="photographsTaken"]').check('true')
+      this.photosTaken().check('true')
       cy.get('[name="cctvRecording"]').check('NOT_KNOWN')
       cy.get('[name="bodyWornCamera"]').check('YES')
       cy.get('[name="bodyWornCameraNumbers[0][cameraNum]"]').type('123')
@@ -34,6 +35,10 @@ export default () =>
 
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
-      return checkAnswersPage()
+      return CheckAnswersPage.verifyOnPage()
     },
+    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
+
+export default { verifyOnPage: evidencePage }

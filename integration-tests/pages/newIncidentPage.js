@@ -1,5 +1,5 @@
 const page = require('./page')
-const detailsPage = require('./detailsPage')
+const UseOfForceDetailsPage = require('./detailsPage')
 
 const incidentDetailsPage = () =>
   page('Incident details', {
@@ -70,10 +70,10 @@ const incidentDetailsPage = () =>
 
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
-      return detailsPage()
+      return UseOfForceDetailsPage.verifyOnPage()
     },
-
     clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
 
 export default { verifyOnPage: incidentDetailsPage }

@@ -2,9 +2,19 @@ const page = require('./page')
 
 const clickSubmit = () => cy.get('[data-submit]').click()
 
-export default () =>
+const checkAnswersPage = () =>
   page('Check your answers before sending the report', {
-    verifyInputs: () => {
+    editIncidentDetailsLink: () => cy.get('[data-qa="incidentDetails-link"'),
+    editUseOfForceDetailsLink: () => cy.get('[data-qa="useOfForceDetails-link"'),
+    editRelocationAndInjuriesLink: () => cy.get('[data-qa="relocationAndInjuries-link"'),
+    editEvidenceLink: () => cy.get('[data-qa="evidence-link"'),
+
+    useOfForcePlanned: () => cy.get('[data-qa="incidentType"]'),
+    positiveCommunicationUsed: () => cy.get('[data-qa="positiveCommunication"]'),
+    prisonerCompliant: () => cy.get('[data-qa="compliancy"]'),
+    photosTaken: () => cy.get('[data-qa="photographs"]'),
+
+    verifyInputs() {
       cy.get('[data-qa="incidentDate"]')
         .invoke('text')
         .invoke('trim')
@@ -14,7 +24,7 @@ export default () =>
         .invoke('trim')
         .should('match', /\d{2}:\d{2}/)
       cy.get('[data-qa="location"]').contains('ASSO A Wing')
-      cy.get('[data-qa="incidentType"]').contains('Yes')
+      this.useOfForcePlanned().contains('Yes')
       cy.get('[data-qa="staffInvolved"]')
         .contains('MR_ZAGATO')
         .contains('MRS_JONES')
@@ -22,7 +32,7 @@ export default () =>
         .contains('Witness A')
         .contains('Tom Jones')
 
-      cy.get('[data-qa="positiveCommunication"]').contains('Yes')
+      this.positiveCommunicationUsed().contains('Yes')
       cy.get('[data-qa="personalProtection"]').contains('Yes')
       cy.get('[data-qa="batonDrawn"]').contains('Yes and used')
       cy.get('[data-qa="pavaDrawn"]').contains('Yes and used')
@@ -30,7 +40,7 @@ export default () =>
       cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back, face down, kneeling')
 
       cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')
-      cy.get('[data-qa="compliancy"]').contains('Yes')
+      this.prisonerCompliant().contains('Yes')
       cy.get('[data-qa="healthcareStaffPresent"]').contains('Dr Smith')
       cy.get('[data-qa="f213"]').contains('Dr Taylor')
       cy.get('[data-qa="prisonerHospitalisation"]').contains('Yes')
@@ -49,7 +59,7 @@ export default () =>
         .contains('This evidence was collected from the prisoner 2')
         .contains('Bagged evidence 3')
         .contains('Clothes samples')
-      cy.get('[data-qa="photographs"]').contains('Yes')
+      this.photosTaken().contains('Yes')
       cy.get('[data-qa="cctv"]').contains('Not known')
       cy.get('[data-qa="bodyCameras"]').contains('Yes - 123, 789, 456')
     },
@@ -57,3 +67,5 @@ export default () =>
     clickSubmit,
     backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),
   })
+
+export default { verifyOnPage: checkAnswersPage }
