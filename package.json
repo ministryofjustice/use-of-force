@@ -62,7 +62,8 @@
       ".circleci/*",
       "migrations/*",
       "node_modules/*",
-      "test/*"
+      "test/*",
+      "integration-tests/*"
     ],
     "delay": "2500",
     "ext": "js,json,html,njk"

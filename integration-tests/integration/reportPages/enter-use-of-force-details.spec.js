@@ -1,5 +1,5 @@
 const TasklistPage = require('../../pages/tasklistPage')
-const useOfForceDetailsPageFactory = require('../../pages/detailsPage')
+const UseOfForceDetailsPage = require('../../pages/detailsPage')
 
 context('Submitting details page form', () => {
   const bookingId = 1001
@@ -82,7 +82,7 @@ context('Submitting details page form', () => {
     const relocationAndInjuriesPage = fillFormAndSave({ restraintPositions: ['STANDING', 'KNEELING'] })
     relocationAndInjuriesPage.back().click()
 
-    const detailsPage = useOfForceDetailsPageFactory()
+    const detailsPage = UseOfForceDetailsPage.verifyOnPage()
     detailsPage.postiveCommunication().should('have.value', 'true')
     detailsPage.personalProtectionTechniques().should('have.value', 'true')
     detailsPage.batonDrawn().should('have.value', 'true')

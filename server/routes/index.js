@@ -50,20 +50,32 @@ module.exports = function Index({
 
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  get(reportPath('incident-details'), createReport.viewIncidentDetails)
+  get(reportPath('incident-details'), createReport.viewIncidentDetails({ edit: false }))
   post(reportPath('incident-details'), createReport.submit('incidentDetails'))
+  get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
+  post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
+
   get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
   post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
 
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
+  get(reportPath('edit-use-of-force-details'), createReport.viewEdit('useOfForceDetails'))
+  post(reportPath('edit-use-of-force-details'), createReport.submitEdit('useOfForceDetails'))
+
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
   post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
+  get(reportPath('edit-relocation-and-injuries'), createReport.viewEdit('relocationAndInjuries'))
+  post(reportPath('edit-relocation-and-injuries'), createReport.submitEdit('relocationAndInjuries'))
+
   get(reportPath('evidence'), createReport.view('evidence'))
   post(reportPath('evidence'), createReport.submit('evidence'))
+  get(reportPath('edit-evidence'), createReport.viewEdit('evidence'))
+  post(reportPath('edit-evidence'), createReport.submitEdit('evidence'))
 
   get(reportPath('check-your-answers'), checkYourAnswers.view)
   post(reportPath('check-your-answers'), checkYourAnswers.submit)
+  get(`${reportPath('cancel-edit')}/:formName`, createReport.cancelEdit)
 
   get('/:reportId/report-sent', incidents.viewReportSent)
 

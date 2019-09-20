@@ -1,6 +1,6 @@
 const NewIncidentPage = require('./newIncidentPage')
-const checkAnswersPage = require('./checkAnswersPage')
-const detailsPage = require('./detailsPage')
+const CheckAnswersPage = require('./checkAnswersPage')
+const UseOfForceDetailsPage = require('./detailsPage')
 const page = require('./page')
 
 const tasklistPage = () =>
@@ -11,12 +11,12 @@ const tasklistPage = () =>
     },
     goToUseOfForceDetailsPage: () => {
       cy.get('[data-qa-details-link]').click()
-      return detailsPage()
+      return UseOfForceDetailsPage.verifyOnPage()
     },
     checkYourAnswersLink: () => cy.get('[data-qa-check-answers-link]'),
     goToAnswerPage() {
       this.checkYourAnswersLink().click()
-      return checkAnswersPage()
+      return CheckAnswersPage.verifyOnPage()
     },
     offenderName: () => cy.get('[data-qa="offender-name"]'),
     nomisId: () => cy.get('[data-qa="nomis-id"]'),

@@ -4,7 +4,7 @@
     {{obj.title}}
     {% if obj.url %}  
       <span class="govuk-body govuk-!-margin-top-1 float-right">
-        <a class="govuk-link" href= '{{obj.url}}' >
+        <a class="govuk-link" data-qa='{{obj.id}}-link' href='{{obj.url}}' >
           Change<span class="govuk-visually-hidden"> {{obj.title}} </span>
         </a>
       </span>

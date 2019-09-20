@@ -1,7 +1,7 @@
 const page = require('./page')
-const relocationAndInjuriesPage = require('./relocationAndInjuriesPage')
+const RelocationAndInjuriesPage = require('./relocationAndInjuriesPage')
 
-export default () =>
+const useOfForceDetailsPage = () =>
   page('Use of force details', {
     postiveCommunication: () => cy.get('[name="positiveCommunication"]'),
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
@@ -46,16 +46,17 @@ export default () =>
       return cy.get('.govuk-error-summary')
     },
 
-    clickSave() {
-      cy.get('[data-qa="save-and-continue"]').click()
-    },
+    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
 
     save() {
       this.clickSave()
-      return relocationAndInjuriesPage()
+      return RelocationAndInjuriesPage.verifyOnPage()
     },
 
     saveAndReturnToUseOfForce() {
       return cy.get('[data-qa="save-and-return"]').click()
     },
   })
+
+export default { verifyOnPage: useOfForceDetailsPage }

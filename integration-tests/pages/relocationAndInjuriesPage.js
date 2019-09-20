@@ -1,11 +1,12 @@
 const page = require('./page')
-const evidencePage = require('./evidencePage')
+const EvidencePage = require('./evidencePage')
 
-export default () =>
+const relocationAndInjuriesPage = () =>
   page('Relocation and injuries', {
-    fillForm: () => {
+    prisonerCompliant: () => cy.get('[name="relocationCompliancy"]'),
+    fillForm() {
       cy.get('[name="prisonerRelocation"]').select('Segregation unit')
-      cy.get('[name="relocationCompliancy"]').check('true')
+      this.prisonerCompliant().check('true')
       cy.get('[name="healthcareInvolved"]').check('true')
       cy.get('[name="healthcarePractionerName"]').type('Dr Smith')
       cy.get('[name="prisonerInjuries"]').check('true')
@@ -26,6 +27,10 @@ export default () =>
     },
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
-      return evidencePage()
+      return EvidencePage.verifyOnPage()
     },
+    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
+
+export default { verifyOnPage: relocationAndInjuriesPage }

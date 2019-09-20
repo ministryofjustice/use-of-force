@@ -28,20 +28,42 @@
 
   {% endblock %}
 
-  {{ govukButton({
-    text: "Save and continue",
-    name: "submit",
-    value: 'save-and-continue',
-    attributes: {'data-qa': 'save-and-continue'}
-  }) }}
+  {% if editMode %}
 
-  {{ govukButton({
-    text: "Save and return to report use of force",
-    name: "submit",
-    value: 'save-and-return',
-    classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
-    attributes: {'data-qa': 'save-and-return'}
-  }) }}
+    {{ govukButton({
+      text: "Save",
+      name: "submit",
+      value: 'save-and-continue',
+      attributes: {'data-qa': 'save-and-continue'}
+    }) }}
+
+    {{ govukButton({
+      text: "Cancel",
+      name: "submit",
+      href: '/report/' + data.bookingId + '/cancel-edit/' + formName,
+      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {'data-qa': 'cancel'}
+    }) }}
+
+
+  {% else %}
+
+    {{ govukButton({
+      text: "Save and continue",
+      name: "submit",
+      value: 'save-and-continue',
+      attributes: {'data-qa': 'save-and-continue'}
+    }) }}
+
+    {{ govukButton({
+      text: "Save and return to report use of force",
+      name: "submit",
+      value: 'save-and-return',
+      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {'data-qa': 'save-and-return'}
+    }) }}
+
+  {% endif %}
 
 </form>
 
