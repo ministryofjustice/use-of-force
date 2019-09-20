@@ -43,11 +43,14 @@ href: backLink or "/"
             attributes: { 'data-qa': 'continue', 'data-submit': true }
           })
         }}
+
+        {% set formName = 'edit-incident-details' if data.nextDestination == 'check-your-answers'  else 'incident-details' %}
+
         {{
           govukButton({
             text: 'Return to incident details',
             name: 'submit',
-            href: '/report/' + data.bookingId + '/incident-details',
+            href:  '/report/' + data.bookingId + '/' + formName,
             classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3',
             attributes: { 'data-qa': 'return-to-incident-details' }
           })

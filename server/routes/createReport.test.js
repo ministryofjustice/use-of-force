@@ -159,6 +159,53 @@ describe('POST save and return to tasklist', () => {
       }))
 })
 
+describe('POST save and return to check-your-answers', () => {
+  test('successfully submit valid update', () =>
+    request(app)
+      .post(`/report/1/edit-incident-details`)
+      .send({
+        submit: 'save-and-continue',
+        incidentDate: '2019-08-27T13:59:33+01:00',
+        locationId: -1,
+        plannedUseOfForce: 'true',
+        involvedStaff: [{ username: 'User_bob' }, { username: '' }],
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/check-your-answers')
+      .expect(() => {
+        expect(reportService.update).toBeCalledTimes(1)
+        expect(reportService.update).toBeCalledWith({
+          currentUser: user,
+          bookingId: 1,
+          formId: undefined,
+          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          formObject: {
+            incidentDetails: {
+              locationId: -1,
+              plannedUseOfForce: true,
+              involvedStaff: [{ username: 'USER_BOB' }],
+              witnesses: [{ name: 'User bob' }],
+            },
+          },
+        })
+      }))
+
+  test('Submitting invalid update is not allowed', () =>
+    request(app)
+      .post(`/report/1/edit-incident-details`)
+      .send({
+        submit: 'save-and-continue',
+        locationId: -1,
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/edit-incident-details')
+      .expect(() => {
+        expect(reportService.update).not.toBeCalled()
+      }))
+})
+
 describe('Submitting evidence page', () => {
   test.each`
     submitType             | formComplete | nextPath
@@ -241,7 +288,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and back to task list', async () => {
+  test('submit and continue on', async () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -256,4 +303,51 @@ describe('User name does not exists', () => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
+
+  test('submit and return to check-your-answers', async () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+
+    return request(app)
+      .post(`/report/1/username-does-not-exist`)
+      .send({
+        nextDestination: types.Destinations.CHECK_YOUR_ANSWERS,
+      })
+      .expect(302)
+      .expect('Location', '/report/1/check-your-answers')
+      .expect(() => {
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
+      })
+  })
+})
+
+describe('Cancelling from edit', () => {
+  test('standard form', () => {
+    return request(app)
+      .get(`/report/1/cancel-edit/evidence`)
+      .expect(302)
+      .expect('Location', '/report/1/check-your-answers')
+  })
+
+  test('Incident details - has no missing staff', () => {
+    reportService.getCurrentDraft.mockResolvedValue({
+      id: 'form-1',
+      form: { incidentDetails: { involvedStaff: [{ userId: 1, missing: false }] } },
+    })
+    return request(app)
+      .get(`/report/1/cancel-edit/incidentDetails`)
+      .expect(302)
+      .expect('Location', '/report/1/check-your-answers')
+  })
+})
+
+test('Incident details - has missing staff', () => {
+  reportService.getCurrentDraft.mockResolvedValue({
+    id: 'form-1',
+    form: { incidentDetails: { involvedStaff: [{ userId: 1, missing: true }] } },
+  })
+  return request(app)
+    .get(`/report/1/cancel-edit/incidentDetails`)
+    .expect(302)
+    .expect('Location', '/report/1/username-does-not-exist')
 })

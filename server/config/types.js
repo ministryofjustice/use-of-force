@@ -44,6 +44,7 @@ const StatementStatus = {
 const Destinations = {
   CONTINUE: 'continue',
   TASKLIST: 'back-to-task-list',
+  CHECK_YOUR_ANSWERS: 'check-your-answers',
 }
 
 module.exports = {
