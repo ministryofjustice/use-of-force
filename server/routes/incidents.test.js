@@ -7,8 +7,6 @@ const userSupplier = jest.fn()
 
 const reportService = {
   getReports: () => [],
-  getReportsForReviewer: () => ({ awaiting: [], completed: [] }),
-  getReportForReviewer: jest.fn(),
   getReport: jest.fn(),
 }
 
@@ -20,6 +18,8 @@ const offenderService = {
 
 const reviewService = {
   getStatements: jest.fn(),
+  getReports: () => ({ awaiting: [], completed: [] }),
+  getReport: jest.fn(),
 }
 
 const involvedStaffService = {
@@ -109,7 +109,7 @@ describe('GET /your-report', () => {
 describe('GET /view-statements', () => {
   it('should render page if reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reportService.getReportForReviewer.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
     reviewService.getStatements.mockReturnValue([])
     return request(app)
       .get('/1/view-statements')
@@ -122,7 +122,7 @@ describe('GET /view-statements', () => {
 
   it('should redirect if not reviewer', () => {
     userSupplier.mockReturnValue(user)
-    reportService.getReportForReviewer.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
     reviewService.getStatements.mockReturnValue([])
     return request(app)
       .get('/1/view-statements')
@@ -132,7 +132,7 @@ describe('GET /view-statements', () => {
 
   it('should error if report doesnt exist', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reportService.getReportForReviewer.mockReturnValue(null)
+    reviewService.getReport.mockReturnValue(null)
     reviewService.getStatements.mockReturnValue([])
     return request(app)
       .get('/1/view-statements')

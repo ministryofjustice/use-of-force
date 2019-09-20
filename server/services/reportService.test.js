@@ -116,27 +116,6 @@ describe('getReports', () => {
   })
 })
 
-describe('getReportForReviewer', () => {
-  test('it should call query on db', async () => {
-    await service.getReportForReviewer('report1')
-    expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
-    expect(incidentClient.getReportForReviewer).toBeCalledWith('report1')
-  })
-})
-
-describe('getReportsForReviewer', () => {
-  test('it should call query on db', async () => {
-    incidentClient.getIncompleteReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
-    incidentClient.getCompletedReportsForReviewer.mockReturnValue({ rows: [{ id: 2 }] })
-
-    const result = await service.getReportsForReviewer('agency-1')
-    expect(result).toEqual({ awaiting: [{ id: 1 }], completed: [{ id: 2 }] })
-
-    expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
-    expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
-  })
-})
-
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
