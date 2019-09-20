@@ -143,3 +143,24 @@ test('getStatementsForReviewer', () => {
     values: [StatementStatus.SUBMITTED.value, 'report1'],
   })
 })
+
+test('getStatementForReviewer', () => {
+  statementsClient.getStatementForReviewer('statement1')
+
+  expect(db.query).toBeCalledWith({
+    text: `select s.id
+    ,      r.id                     "reportId"
+    ,      s.name
+    ,      r.booking_id             "bookingId"
+    ,      r.incident_date          "incidentDate"
+    ,      s.last_training_month    "lastTrainingMonth"
+    ,      s.last_training_year     "lastTrainingYear"
+    ,      s.job_start_year         "jobStartYear"
+    ,      s.statement
+    ,      s.submitted_date         "submittedDate"
+    from report r
+    left join statement s on r.id = s.report_id
+    where s.id = $1`,
+    values: ['statement1'],
+  })
+})

@@ -8,6 +8,7 @@ const {
   getAllStatementsForReport,
   seedReport,
   getPayload,
+  submitStatement,
 } = require('../db/db')
 
 module.exports = on => {
@@ -41,5 +42,7 @@ module.exports = on => {
     seedReport,
 
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
+
+    submitStatement,
   })
 }

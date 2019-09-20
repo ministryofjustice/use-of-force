@@ -10,6 +10,13 @@ const viewStatementsPage = () =>
 
     prisonNumber: () => cy.get('[data-qa="prison-number"]'),
 
+    getReportId: () => {
+      return cy.url().then(url => {
+        const match = url.match(/.*\/(.*)\/view-statements/)
+        return match[1]
+      })
+    },
+
     statements: () =>
       cy
         .get(`[data-qa="statements"]`)
@@ -26,6 +33,16 @@ const viewStatementsPage = () =>
             }
           })
         ),
+
+    reportLink: () => cy.get('[data-qa="report-link"]'),
+
+    statementLink: index =>
+      cy
+        .get(`[data-qa="statements"]`)
+        .find('.govuk-table__body tr')
+        .eq(index)
+        .find('a'),
+
     return: () => cy.get('[data-qa=return-link]'),
   })
 
