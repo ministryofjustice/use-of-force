@@ -17,6 +17,21 @@ module.exports = (app, path) => {
     return null
   })
 
+  njkEnv.addFilter('findErrors', (errors, formFieldIds) => {
+    const fieldIds = formFieldIds.map(field => `#${field}`)
+    const errorIds = errors.map(error => error.href)
+    const firstPresentFieldError = fieldIds.find(fieldId => errorIds.includes(fieldId))
+    if (firstPresentFieldError) {
+      return { text: errors.find(error => error.href === firstPresentFieldError).text }
+    }
+    return null
+  })
+
+  njkEnv.addFilter('hasErrorWithPrefix', (errorsArray, prefixes) => {
+    const formattedPrefixes = prefixes.map(field => `#${field}`)
+    return errorsArray.some(error => formattedPrefixes.some(prefix => error.href.startsWith(prefix)))
+  })
+
   njkEnv.addFilter('formatDate', (value, format) => {
     return value ? moment(value).format(format) : null
   })

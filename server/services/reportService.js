@@ -26,10 +26,12 @@ module.exports = function createReportService({
 
   async function update({ currentUser, formId, bookingId, formObject, incidentDate }) {
     const { username: userId, token, displayName: reporterName } = currentUser
+    const incidentDateValue = incidentDate ? incidentDate.value : null
+    const formValue = !isNilOrEmpty(formObject) ? formObject : null
     if (formId) {
-      if (!isNilOrEmpty(formObject)) {
+      if (incidentDateValue || formValue) {
         logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-        await incidentClient.updateDraftReport(formId, incidentDate, formObject)
+        await incidentClient.updateDraftReport(formId, incidentDateValue, formValue)
       }
       return formId
     }
@@ -41,7 +43,7 @@ module.exports = function createReportService({
       bookingId,
       agencyId,
       offenderNo,
-      incidentDate,
+      incidentDate: incidentDateValue,
       formResponse: formObject,
     })
     logger.info(`Created new report with id: ${id} for user: ${userId} on booking: ${bookingId}`)

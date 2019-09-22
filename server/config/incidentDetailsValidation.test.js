@@ -11,7 +11,10 @@ let validInput = {}
 const check = validatorChecker(config.incidentDetails)
 beforeEach(() => {
   validInput = {
-    incidentDate: '2019-08-27T13:59:33+01:00',
+    incidentDate: {
+      date: { day: '15', month: '1', year: '2019' },
+      time: '12:45',
+    },
     locationId: -1,
     plannedUseOfForce: 'true',
     involvedStaff: [{ username: 'itag_user' }, { username: '' }],
@@ -26,7 +29,26 @@ describe('Incident details page - overall', () => {
 
     expect(errors).toEqual([])
 
-    expect(extractedFields).toEqual({ incidentDate: moment('2019-08-27T12:59:33.000Z').toDate() })
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: 15,
+          month: 1,
+          year: 2019,
+        },
+        raw: {
+          day: '15',
+          month: '1',
+          time: '12:45',
+          year: '2019',
+        },
+        value: moment('2019-01-15T12:45:00.000Z').toDate(),
+        time: '12:45',
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
     expect(formResponse).toEqual({
       locationId: -1,
       plannedUseOfForce: true,
@@ -41,6 +63,22 @@ describe('Incident details page - overall', () => {
 
     expect(errors).toEqual([
       {
+        href: '#incidentDate[date][day]',
+        text: '"incidentDate.date.day" must be a number',
+      },
+      {
+        href: '#incidentDate[date][month]',
+        text: '"incidentDate.date.month" must be a number',
+      },
+      {
+        href: '#incidentDate[date][year]',
+        text: '"incidentDate.date.year" must be a number',
+      },
+      {
+        href: '#incidentDate[time]',
+        text: '"incidentDate.time" is required',
+      },
+      {
         href: '#locationId',
         text: 'Select the location of the incident',
       },
@@ -51,7 +89,47 @@ describe('Incident details page - overall', () => {
     ])
 
     expect(formResponse).toEqual({})
-    expect(extractedFields).toEqual({})
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: null,
+          month: null,
+          year: null,
+        },
+
+        raw: {
+          day: undefined,
+          month: undefined,
+          time: undefined,
+          year: undefined,
+        },
+        time: undefined,
+        value: null,
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+  })
+})
+
+describe('Incident date', () => {
+  it('Not a boolean', () => {
+    const input = { ...validInput, plannedUseOfForce: 'not a bool' }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#plannedUseOfForce',
+        text: 'Select yes if the use of force was planned',
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
   })
 })
 

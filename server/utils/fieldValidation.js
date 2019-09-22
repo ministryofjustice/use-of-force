@@ -102,6 +102,33 @@ const fieldOptions = {
 
   requiredYesNoNotKnown: joi.valid('YES', 'NO', 'NOT_KNOWN').required(),
 
+  requiredIncidentDate: joi.object({
+    date: joi.object({
+      day: joi.number().required(),
+      month: joi.number().required(),
+      year: joi.number().required(),
+    }),
+    time: joi
+      .string()
+      .trim()
+      .regex(/^(0[0-9]|1[0-9]|2[0-3]|[0-9])[:.][0-5][0-9]$/)
+      .required(),
+    raw: joi.any(),
+    value: joi.date().allow(null),
+    isInvalidDate: joi
+      .boolean()
+      .invalid(true)
+      .required(),
+    isFutureDate: joi
+      .boolean()
+      .invalid(true)
+      .required(),
+    isFutureDateTime: joi
+      .boolean()
+      .invalid(true)
+      .required(),
+  }),
+
   requiredCameraNumber: joi.when('bodyWornCamera', {
     is: 'YES',
     then: joi

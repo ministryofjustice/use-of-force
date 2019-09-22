@@ -1,7 +1,7 @@
-const moment = require('moment')
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 const { validate, isValid } = require('../utils/fieldValidation')
+const toDate = require('../utils/dateSanitiser')
 
 const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs))
 
@@ -34,20 +34,12 @@ const toInteger = val => {
   return Number.isNaN(number) ? null : number
 }
 
-const toDate = val => {
-  if (!val) {
-    return null
-  }
-  const date = moment(val)
-  return date.isValid() ? date.toDate() : null
-}
-
 module.exports = {
   incidentDetails: {
     fields: [
       {
         incidentDate: {
-          responseType: 'any',
+          responseType: 'requiredIncidentDate',
           sanitiser: toDate,
           fieldType: EXTRACTED,
         },
