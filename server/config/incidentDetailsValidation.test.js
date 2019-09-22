@@ -64,19 +64,19 @@ describe('Incident details page - overall', () => {
     expect(errors).toEqual([
       {
         href: '#incidentDate[date][day]',
-        text: '"incidentDate.date.day" must be a number',
+        text: 'Enter the date',
       },
       {
         href: '#incidentDate[date][month]',
-        text: '"incidentDate.date.month" must be a number',
+        text: 'Enter the month',
       },
       {
         href: '#incidentDate[date][year]',
-        text: '"incidentDate.date.year" must be a number',
+        text: 'Enter the year',
       },
       {
         href: '#incidentDate[time]',
-        text: '"incidentDate.time" is required',
+        text: 'Enter the time of the incident',
       },
       {
         href: '#locationId',
@@ -277,6 +277,298 @@ describe('Witnesses', () => {
       plannedUseOfForce: true,
       witnesses: [{ name: 'bob' }],
       involvedStaff: [{ username: 'ITAG_USER' }],
+    })
+  })
+})
+
+describe('incidentDate', () => {
+  it('invalid time format', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day: '15', month: '1', year: '2019' },
+        time: '12345',
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[time]',
+        text: 'Enter the time in the correct format',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: 15,
+          month: 1,
+          year: 2019,
+        },
+        raw: {
+          day: '15',
+          month: '1',
+          time: '12345',
+          year: '2019',
+        },
+        value: null,
+        time: '12345',
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('invalid date', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day: '29', month: '2', year: '2019' },
+        time: '12:45',
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[isInvalidDate]',
+        text: 'Enter a valid date using the correct numbers for the given month',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: 29,
+          month: 2,
+          year: 2019,
+        },
+        raw: {
+          day: '29',
+          month: '2',
+          time: '12:45',
+          year: '2019',
+        },
+        value: null,
+        time: '12:45',
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: true,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('Missing day', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { month: '2', year: '2019' },
+        time: '12:45',
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[date][day]',
+        text: 'Enter the date',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: null,
+          month: 2,
+          year: 2019,
+        },
+        raw: {
+          day: undefined,
+          month: '2',
+          time: '12:45',
+          year: '2019',
+        },
+        value: null,
+        time: '12:45',
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('Missing time', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day: '28', month: '2', year: '2019' },
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[time]',
+        text: 'Enter the time of the incident',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: 28,
+          month: 2,
+          year: 2019,
+        },
+        raw: {
+          day: '28',
+          month: '2',
+          time: undefined,
+          year: '2019',
+        },
+        value: null,
+        time: undefined,
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('time in the future', () => {
+    const now = moment()
+    const day = now.format('D')
+    const month = now.format('M')
+    const year = now.format('YYYY')
+    const timeInTheFuture = moment(now)
+      .seconds(0)
+      .milliseconds(0)
+      .add(2, 'minute')
+    const time = timeInTheFuture.format('HH:mm')
+
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day, month, year },
+        time,
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[isFutureDateTime]',
+        text: 'Enter a time which is not in the future',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: now.date(),
+          month: now.month() + 1,
+          year: now.year(),
+        },
+        raw: {
+          day,
+          month,
+          time,
+          year,
+        },
+        value: timeInTheFuture.toDate(),
+        time,
+        isFutureDate: false,
+        isFutureDateTime: true,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('date in the future', () => {
+    const now = moment()
+    const dateInTheFuture = moment(now)
+      .seconds(0)
+      .milliseconds(0)
+      .add(1, 'day')
+
+    const day = dateInTheFuture.format('D')
+    const month = now.format('M')
+    const year = now.format('YYYY')
+    const time = now.format('HH:mm')
+
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day, month, year },
+        time,
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[isFutureDate]',
+        text: 'Enter a date that is not in the future',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: dateInTheFuture.date(),
+          month: dateInTheFuture.month() + 1,
+          year: dateInTheFuture.year(),
+        },
+        raw: {
+          day,
+          month,
+          time,
+          year,
+        },
+        value: dateInTheFuture.toDate(),
+        time,
+        isFutureDate: true,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
     })
   })
 })
