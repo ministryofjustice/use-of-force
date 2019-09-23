@@ -110,7 +110,6 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       incidentDate: getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       involvedStaff,
-      months: moment.months().map((month, i) => ({ value: i, label: month })),
     }
 
     renderForm({ req, res, form, data, formName: 'incidentDetails', editMode })

@@ -51,14 +51,16 @@
             classes: "govuk-input--width-2" + errorClass('incidentDate[date][day]'),
             name: "incidentDate[date][day]",
             label: "Day",
-            value: data.incidentDate.day
+            value: data.incidentDate.day,
+            attributes: { 'data-qa': 'incident-date-day' }
           },
           {
             id: "incidentDate[date][month]",
             classes: "govuk-input--width-2" + errorClass('incidentDate[date][month]'),
             name: "incidentDate[date][month] ",
             label: "Month",
-            value: data.incidentDate.month
+            value: data.incidentDate.month,
+            attributes: { 'data-qa': 'incident-date-month' }
           },
 
           {
@@ -66,7 +68,8 @@
             classes: "govuk-input--width-4" + errorClass('incidentDate[date][year]'),
             name: "incidentDate[date][year]",
             label: "Year",
-            value: data.incidentDate.year
+            value: data.incidentDate.year,
+            attributes: { 'data-qa': 'incident-date-year' }
           }
         ]
         }) }}
@@ -89,7 +92,8 @@
             text: "Use the 24 hour clock. For example, 14:30."
           },
           value: data.incidentDate.time,
-          errorMessage: errors | findErrors(['incidentDate[time]', 'incidentDate[isFutureDateTime]'])
+          errorMessage: errors | findErrors(['incidentDate[time]', 'incidentDate[isFutureDateTime]']),
+          attributes: { 'data-qa': 'incident-date-time' }
         })
       }}
     </div>

@@ -43,6 +43,55 @@ context('Submitting details page form', () => {
     return detailsPage
   }
 
+  it('Can edit date', () => {
+    cy.login(bookingId)
+
+    fillFormAndSave()
+
+    cy.go('back')
+
+    let incidentDetailsPage = NewIncidentPage.verifyOnPage()
+
+    incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
+    incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
+    incidentDetailsPage.incidentDateTime.year().should('not.be.visible')
+    incidentDetailsPage.incidentDateTime.readOnlyView().should('be.visible')
+
+    incidentDetailsPage.incidentDateTime.change().click()
+
+    incidentDetailsPage.incidentDateTime.day().should('be.visible')
+    incidentDetailsPage.incidentDateTime.month().should('be.visible')
+    incidentDetailsPage.incidentDateTime.year().should('be.visible')
+    incidentDetailsPage.incidentDateTime.readOnlyView().should('not.be.visible')
+
+    incidentDetailsPage.incidentDateTime
+      .day()
+      .clear()
+      .type('1')
+    incidentDetailsPage.incidentDateTime
+      .month()
+      .clear()
+      .type('1')
+    incidentDetailsPage.incidentDateTime
+      .year()
+      .clear()
+      .type('2011')
+    incidentDetailsPage.incidentDateTime
+      .time()
+      .clear()
+      .type('11:11')
+    incidentDetailsPage.save()
+    cy.go('back')
+
+    incidentDetailsPage = NewIncidentPage.verifyOnPage()
+    incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
+    incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
+    incidentDetailsPage.incidentDateTime.year().should('not.be.visible')
+
+    incidentDetailsPage.incidentDateTime.readOnlyView().contains('1 January 2011')
+    incidentDetailsPage.incidentDateTime.time().should('have.value', '11:11')
+  })
+
   it('Can login and create a new report', () => {
     cy.login(bookingId)
 

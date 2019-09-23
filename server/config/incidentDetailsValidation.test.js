@@ -461,6 +461,59 @@ describe('incidentDate', () => {
     })
   })
 
+  it('Wrong types', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day: 'aaa', month: 'bbb', year: 'ccc' },
+        time: '12:34',
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[date][day]',
+        text: 'Enter the date',
+      },
+      {
+        href: '#incidentDate[date][month]',
+        text: 'Enter the month',
+      },
+      {
+        href: '#incidentDate[date][year]',
+        text: 'Enter the year',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: null,
+          month: null,
+          year: null,
+        },
+        raw: {
+          day: 'aaa',
+          month: 'bbb',
+          time: '12:34',
+          year: 'ccc',
+        },
+        value: null,
+        time: '12:34',
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
   it('time in the future', () => {
     const now = moment()
     const day = now.format('D')
