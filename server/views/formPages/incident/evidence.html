@@ -297,11 +297,11 @@
     <!-- end of govuk-grid-column-full-->
   </div>
   <!-- end of govuk-grid-row-->
+{% endblock %}
 
-  <script src="/assets/js/jquery.min.js"></script>
-  <script src="/assets/add-another.js"></script>
-  <script>
-    new AddAnother($('.add-another-evidence'), '.remove-button-container')
+{% block script %}
+<script>
+   new AddAnother($('.add-another-evidence'), '.remove-button-container')
     new AddAnother($('.add-another-camera'), '.remove-button-container')
-  </script>
+</script>
 {% endblock %}

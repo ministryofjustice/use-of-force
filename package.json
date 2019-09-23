@@ -112,7 +112,6 @@
     "http-errors": "~1.6.3",
     "@hapi/joi": "^16.0.1",
     "@hapi/joi-date": "^2.0.0",
-    "jquery": "^3.4.1",
     "jwt-decode": "^2.2.0",
     "knex": "^0.16.5",
     "moment": "^2.24.0",
