@@ -4,6 +4,7 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% set pageTitle = 'Incident details' %}
 
@@ -17,14 +18,63 @@
           <span class="govuk-label--s">Prisoner:&nbsp;</span>
           <span data-qa="offender-name"> {{ data.displayName }}</span>
         </p>
-        <p>
+        {% set formattedDate = data.incidentDate.value | formatDate('D MMMM YYYY') %}
+        {% set editMode = not formattedDate or errors | hasErrorWithPrefix(['incidentDate[value]','incidentDate[date]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']) %}
+        <p id="read-date" class="{{'hidden' if editMode }}">
           <span class="govuk-label--s">Date of incident:&nbsp;</span>
           <span data-qa="date-and-time">
-            {{ data.date | formatDate('D MMMM YYYY') }}
-            <input type="hidden" name="incidentDate" value="{{ data.date | formatDate() }}">  
+            {{ formattedDate }} &nbsp;<a id="change-date" href="" class="govuk-link">Change</a>
           </span>
         </p>
-      </div>    
+        <div id="edit-date" class="edit-incident-date {{'hidden' if not editMode }}">
+        {% macro errorClass(field) -%}
+          {{ ' govuk-input--error' if errors | hasErrorWithPrefix([field, 'incidentDate[value]', 'incidentDate[isFutureDate]']) else '' }}
+        {%- endmacro %}
+        {{ govukDateInput({
+          id: "incident-date",
+          fieldset: {
+            legend: {
+              text: "Date of incident:",
+              isPageHeading: false,
+              classes: "govuk-label--s"
+            }
+          },
+          errorMessage: errors | findErrors(
+            ['incidentDate[date][day]', 'incidentDate[date][month]', 'incidentDate[date][year]',
+            'incidentDate[isInvalidDate]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']),
+          hint: {
+            text: "For example, 27 3 2007"
+          },
+          items: [
+          {
+            id: "incidentDate[date][day]",
+            classes: "govuk-input--width-2" + errorClass('incidentDate[date][day]'),
+            name: "incidentDate[date][day]",
+            label: "Day",
+            value: data.incidentDate.day,
+            attributes: { 'data-qa': 'incident-date-day' }
+          },
+          {
+            id: "incidentDate[date][month]",
+            classes: "govuk-input--width-2" + errorClass('incidentDate[date][month]'),
+            name: "incidentDate[date][month] ",
+            label: "Month",
+            value: data.incidentDate.month,
+            attributes: { 'data-qa': 'incident-date-month' }
+          },
+
+          {
+            id: "incidentDate[date][year]",
+            classes: "govuk-input--width-4" + errorClass('incidentDate[date][year]'),
+            name: "incidentDate[date][year]",
+            label: "Year",
+            value: data.incidentDate.year,
+            attributes: { 'data-qa': 'incident-date-year' }
+          }
+        ]
+        }) }}
+        </div>
+      </div>
     </div>
   </div>
   <hr />
@@ -35,14 +85,15 @@
           label: {
             text: 'Time of incident:'
           },
-          id: 'timeOfIncident',
-          name: 'timeOfIncident',
+          id: 'incidentDate[time]',
+          name: 'incidentDate[time]',
           classes: "govuk-input--width-4",
           hint: {
             text: "Use the 24 hour clock. For example, 14:30."
           },
-          value: data.date | formatDate('HH:mm') ,
-          errorMessage: errors | findError('timeOfIncident')
+          value: data.incidentDate.time,
+          errorMessage: errors | findErrors(['incidentDate[time]', 'incidentDate[isFutureDateTime]']),
+          attributes: { 'data-qa': 'incident-date-time' }
         })
       }}
     </div>
@@ -107,8 +158,8 @@
         {% macro addStaffMember(index, value, showRemove) %}
         {% call govukFieldset({ classes: 'add-another__item' }) %}
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-third">
-        {{
+          <div class="govuk-grid-column-one-third">
+            {{
           govukInput({
             label: {
               html: 'Username'
@@ -122,23 +173,23 @@
               'data-id': 'involvedStaff[%index%][username]'
             }
           })
-        }}
-      </div>
-      <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
-        {% if showRemove %}
-        <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
-          Remove
-        </button>
-        {% endif %}  
-      </div>
-    </div>
-        {% endcall %} 
+            }}
+          </div>
+          <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+            {% if showRemove %}
+            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+              Remove
+            </button>
+            {% endif %}
+          </div>
+        </div>
+        {% endcall %}
         {% endmacro %}
-
-        {% for staffMember in data.involvedStaff %} 
-          {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
-        {% else %} 
-          {{ addStaffMember(index = 0, value = null, showRemove = false) }}
+        
+        {% for staffMember in data.involvedStaff %}
+        {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
+        {% else %}
+        {{ addStaffMember(index = 0, value = null, showRemove = false) }}
         {% endfor %}
         <div class="button-action">
           {{
@@ -159,9 +210,9 @@
       <div class="add-another-witness">
         {% macro addWitness(index, value, showRemove) %}
           {% call govukFieldset({ classes: 'add-another__item' }) %}
-          <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-third">
-                {{
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            {{
                   govukInput({
                     label: {
                       html: 'Name'
@@ -175,23 +226,23 @@
                       'data-id': 'witnesses[%index%][name]'
                     }
                   })
-                }}
-              </div>
-              <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
-                {% if showRemove %}
-                  <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
-                  Remove
-                  </button>
-                {% endif  %}
-              </div>
+            }}
           </div>
-          {% endcall %}
-        {% endmacro %}
-
-        {% for witness in data.witnesses %} 
-          {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
-        {% else %} 
-          {{ addWitness(index = 0, value = null, showRemove = false) }}
+          <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+            {% if showRemove %}
+              <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+              Remove
+              </button>
+            {% endif  %}
+          </div>
+        </div>
+        {% endcall %} 
+      {% endmacro %}
+      
+      {% for witness in data.witnesses %}
+        {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
+        {% else %}
+        {{ addWitness(index = 0, value = null, showRemove = false) }}
         {% endfor %}
         <div class="button-action">
           {{
@@ -210,7 +261,13 @@
 <script src="/assets/js/jquery.min.js"></script>
 <script src="/assets/add-another.js"></script>
 <script>
-  new AddAnother($('.add-another-staff-member'), '.remove-button-container')
-  new AddAnother($('.add-another-witness'), '.remove-button-container')
+  $(document).ready(function() {
+    new AddAnother($('.add-another-staff-member'), '.remove-button-container')
+    new AddAnother($('.add-another-witness'), '.remove-button-container')
+    $('#change-date').click(function(e) {
+      $('#read-date, #edit-date').toggle()
+      return false
+    })
+  })
 </script>
 {% endblock %}

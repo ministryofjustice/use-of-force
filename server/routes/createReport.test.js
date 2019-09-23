@@ -1,9 +1,9 @@
 const request = require('supertest')
-const moment = require('moment')
 const { appSetup, user } = require('./testutils/appSetup')
 const createRouter = require('./index')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 const types = require('../config/types')
+const incidentDateSanitiser = require('../utils/dateSanitiser')
 
 const reportService = {
   getCurrentDraft: jest.fn(),
@@ -57,7 +57,10 @@ describe('POST save and continue /section/form', () => {
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-continue',
-        incidentDate: '2019-08-27T13:59:33+01:00',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
         locationId: -1,
         plannedUseOfForce: 'true',
         involvedStaff: [{ username: 'User_bob' }, { username: '' }],
@@ -71,7 +74,7 @@ describe('POST save and continue /section/form', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -88,7 +91,10 @@ describe('POST save and continue /section/form', () => {
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-continue',
-        incidentDate: '2019-08-27T13:59:33+01:00',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -105,7 +111,10 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-return',
-        incidentDate: '2019-08-27T13:59:33+01:00',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
         locationId: -1,
         plannedUseOfForce: 'true',
         involvedStaff: [{ username: 'User_bob' }, { username: '' }],
@@ -119,7 +128,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -136,7 +145,10 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-return',
-        incidentDate: '2019-08-27T13:59:33+01:00',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -148,7 +160,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -165,7 +177,10 @@ describe('POST save and return to check-your-answers', () => {
       .post(`/report/1/edit-incident-details`)
       .send({
         submit: 'save-and-continue',
-        incidentDate: '2019-08-27T13:59:33+01:00',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
         locationId: -1,
         plannedUseOfForce: 'true',
         involvedStaff: [{ username: 'User_bob' }, { username: '' }],
@@ -179,7 +194,7 @@ describe('POST save and return to check-your-answers', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: moment('2019-08-27T13:59:33+01:00').toDate(),
+          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,

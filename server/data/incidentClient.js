@@ -33,7 +33,7 @@ const createDraftReport = async ({
 const updateDraftReport = (reportId, incidentDate, formResponse) => {
   return db.query({
     text: `update report r
-            set form_response = $1
+            set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
             ,   updated_date = now()
             where r.id = $3`,

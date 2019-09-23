@@ -1,7 +1,7 @@
-const moment = require('moment')
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 const { validate, isValid } = require('../utils/fieldValidation')
+const toDate = require('../utils/dateSanitiser')
 
 const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs))
 
@@ -34,22 +34,25 @@ const toInteger = val => {
   return Number.isNaN(number) ? null : number
 }
 
-const toDate = val => {
-  if (!val) {
-    return null
-  }
-  const date = moment(val)
-  return date.isValid() ? date.toDate() : null
-}
-
 module.exports = {
   incidentDetails: {
     fields: [
       {
         incidentDate: {
-          responseType: 'any',
+          responseType: 'requiredIncidentDate',
           sanitiser: toDate,
           fieldType: EXTRACTED,
+          validationMessage: {
+            'incidentDate.date.day.number.base': 'Enter the date',
+            'incidentDate.date.month.number.base': 'Enter the month',
+            'incidentDate.date.year.number.base': 'Enter the year',
+            'incidentDate.time.any.required': 'Enter the time of the incident',
+            'incidentDate.time.string.pattern.base': 'Enter the time in the correct format',
+            'incidentDate.isInvalidDate.any.invalid':
+              'Enter a valid date using the correct numbers for the given month',
+            'incidentDate.isFutureDateTime.any.invalid': 'Enter a time which is not in the future',
+            'incidentDate.isFutureDate.any.invalid': 'Enter a date that is not in the future',
+          },
         },
       },
       {

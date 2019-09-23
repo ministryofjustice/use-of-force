@@ -48,6 +48,15 @@ const incidentDetailsPage = () =>
         .click()
     },
 
+    incidentDateTime: {
+      change: () => cy.get('#change-date'),
+      day: () => cy.get('[data-qa=incident-date-day]'),
+      month: () => cy.get('[data-qa=incident-date-month]'),
+      year: () => cy.get('[data-qa=incident-date-year]'),
+      time: () => cy.get('[data-qa=incident-date-time]'),
+      readOnlyView: () => cy.get('#read-date'),
+    },
+
     staffInvolved: index => ({
       name: () => cy.get(`#involvedStaff\\[${index}\\]\\[username\\]`),
       remove: () =>
