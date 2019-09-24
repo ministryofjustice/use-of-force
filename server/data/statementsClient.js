@@ -9,6 +9,7 @@ const getStatements = (userId, status, query = db.query) => {
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
             , s."name"
+            , s.in_progress   "inProgress"
             from statement s 
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
@@ -102,6 +103,7 @@ const saveStatement = (
     ,   job_start_year = $3
     ,   statement = $4
     ,   updated_date = CURRENT_TIMESTAMP
+    ,   in_progress = true
     where user_id = $5
     and report_id = $6
     and statement_status = $7`,

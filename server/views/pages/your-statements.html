@@ -19,19 +19,19 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for incident in awaitingStatements %}
+      {% for statement in awaitingStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{incident.offenderName}}</td>
-          <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
+          <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell">{{statement.offenderName}}</td>
+          <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/{{ incident.id }}/write-your-statement"
+              href="/{{ statement.id }}/write-your-statement"
               role="button"
               draggable="false"
-              class="govuk-button govuk-button"
+              class="govuk-button govuk-button govuk-!-width-three-quarters"
             >
-              Start
+              {{ 'Continue statement' if statement.inProgress else 'Start statement' }}
             </a>
           </td>
       </tr>  
@@ -55,19 +55,19 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for incident in completedStatements %}
+      {% for statement in completedStatements %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{incident.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{incident.offenderName}}</td>
-          <td class="govuk-table__cell">{{incident.staffMemberName}}</td>
+          <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell">{{statement.offenderName}}</td>
+          <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
-              href="/{{ incident.id }}/your-statement"
+              href="/{{ statement.id }}/your-statement"
               role="button"
               draggable="false"
-              class="govuk-button govuk-button--secondary"
+              class="govuk-button govuk-button--secondary govuk-!-width-three-quarters"
             >
-            View
+            View statement
             </a>
           </td>
       </tr>  

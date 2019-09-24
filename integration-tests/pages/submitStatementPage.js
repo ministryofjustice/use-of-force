@@ -9,6 +9,7 @@ const submitStatementPage = () =>
     jobStartYear: () => cy.get('[name=jobStartYear]'),
     statement: () => cy.get('[name=statement]'),
 
+    saveAndExit: () => cy.get('[data-qa=submit]'),
     submit: () => {
       cy.get('[data-qa=submit]').click()
       return ConfirmStatementPage.verifyOnPage()
