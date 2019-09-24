@@ -250,12 +250,10 @@
 </div> <!-- end of column two thirds -->
 </div> <!-- end of grid row-->
 
+{% endblock %}
 
-<script src="/assets/js/jquery.min.js"></script>
-<script src="/assets/add-another.js"></script>
+{% block script %}
 <script>
   new AddAnother($('.add-another-staff-needing-medical-attention'), '.remove-button-container')
 </script>
-
-
 {% endblock %}
