@@ -8,9 +8,10 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% import "../statementDetailMacro.njk" as statementDetail %}
 
+{% set pageTitle = 'Use of force statement' %}
+
 {% block content %}
 <div class="govuk-body">
-  {% set pageTitle = 'Use of force statement' %}
   <div class="govuk-grid-row">
     <h1 class="govuk-heading-xl mainHeading">{{ data.name}}'s statement</h1>
  
