@@ -1,3 +1,8 @@
+// Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
+// In particular, applicationinsights automatically collects bunyan logs
+// eslint-disable-next-line import/no-unresolved
+require('./utils/azure-appinsights')('use-of-force-reminder-job')
+
 const { createNamespace } = require('cls-hooked')
 const logger = require('../log')
 const { notificationServiceFactory } = require('../server/services/notificationService')
