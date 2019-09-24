@@ -36,12 +36,12 @@ describe('poll for reminders', () => {
     expect(sendReminder).toBeCalledTimes(1)
   })
 
-  test('infinite reminders - only process 100 reminders in one go', async () => {
+  test('infinite reminders - only process 50 reminders in one go', async () => {
     incidentClient.getNextNotificationReminder.mockResolvedValue({ reminder: 1 })
 
     const count = await poll()
 
-    expect(count).toEqual(1)
-    expect(sendReminder).toBeCalledTimes(1)
+    expect(count).toEqual(50)
+    expect(sendReminder).toBeCalledTimes(50)
   })
 })
