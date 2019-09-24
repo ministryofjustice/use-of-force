@@ -257,9 +257,9 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
-<script src="/assets/js/jquery.min.js"></script>
-<script src="/assets/add-another.js"></script>
+{% block script %}
 <script>
   $(document).ready(function() {
     new AddAnother($('.add-another-staff-member'), '.remove-button-container')
