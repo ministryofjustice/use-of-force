@@ -37,16 +37,34 @@ context('Submit statement', () => {
       prisoner().should('contain', 'Smith, Norman')
       reporter().should('contain', 'James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-
+      startButton().should('contain.text', 'Start statement')
       startButton().click()
     }
 
-    const submitStatementPage = SubmitStatementPage.verifyOnPage()
+    let submitStatementPage = SubmitStatementPage.verifyOnPage()
     submitStatementPage.offenderName().contains('Norman Smith')
     submitStatementPage.lastTrainingMonth().select('March')
     submitStatementPage.lastTrainingYear().type('2010')
     submitStatementPage.jobStartYear().type('1999')
     submitStatementPage.statement().type('This is my statement')
+    submitStatementPage.saveAndExit().click()
+
+    {
+      const yourStatementsPage = YourStatementsPage.goTo()
+      const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
+      prisoner().should('contain', 'Smith, Norman')
+      reporter().should('contain', 'James Stuart')
+      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      startButton().should('contain.text', 'Continue statement')
+      startButton().click()
+    }
+
+    submitStatementPage = SubmitStatementPage.verifyOnPage()
+    submitStatementPage.offenderName().contains('Norman Smith')
+    submitStatementPage.lastTrainingMonth().contains('March')
+    submitStatementPage.lastTrainingYear().should('have.value', '2010')
+    submitStatementPage.jobStartYear().should('have.value', '1999')
+    submitStatementPage.statement().should('have.value', 'This is my statement')
 
     const confirmStatementPage = submitStatementPage.submit()
     const statementSubmittedPage = confirmStatementPage.submit()

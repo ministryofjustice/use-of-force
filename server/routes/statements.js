@@ -18,6 +18,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     id: incident.id,
     incidentdate: incident.incidentDate,
     staffMemberName: incident.reporterName,
+    inProgress: incident.inProgress,
     offenderName: namesByOffenderNumber[incident.offenderNo],
   })
 
