@@ -126,6 +126,20 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
+  it('Entering a single space in the Who completed the F213 form field returns a validation error object containing two error messages', () => {
+    const input = {
+      ...validInput,
+      f213CompletedBy: ' ',
+    }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#f213CompletedBy',
+        text: 'Enter the name of who completed the F213 form',
+      },
+    ])
+  })
+
   it('Not selecting an option for Did the prisoner sustain any injuries returns a validation error message', () => {
     const input = {
       ...validInput,
@@ -162,6 +176,24 @@ describe('Relocation and Injuries page inputs', () => {
       ...validInput,
       healthcareInvolved: 'true',
       healthcarePractionerName: undefined,
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#healthcarePractionerName',
+        text: 'Enter the name of the member of healthcare',
+      },
+    ])
+    expect(formResponse.healthcareInvolved).toEqual(true)
+    expect(formResponse.healthcarePractionerName).toBe(undefined)
+  })
+
+  it('Selecting Yes for Was a member of healthcare present and single space in healthcarePractionerName returns a validation error object containing two error messages', () => {
+    const input = {
+      ...validInput,
+      healthcareInvolved: 'true',
+      healthcarePractionerName: ' ',
     }
     const { errors, formResponse } = check(input)
 
@@ -238,6 +270,21 @@ describe('Relocation and Injuries page inputs', () => {
     const input = {
       ...validInput,
       staffNeedingMedicalAttention: [{ name: undefined, hospitalisation: 'false' }],
+    }
+    const { errors } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#staffNeedingMedicalAttention[0][name]',
+        text: 'Enter the name of who needed medical attention',
+      },
+    ])
+  })
+
+  it('Selecting Yes for Did a member of staff need medical attention and selecting subsequent a radio button for Did they go to hospital  but then a single space for Name of who needed medical attention returns a validation error message', () => {
+    const input = {
+      ...validInput,
+      staffNeedingMedicalAttention: [{ name: ' ', hospitalisation: 'false' }],
     }
     const { errors } = check(input)
 

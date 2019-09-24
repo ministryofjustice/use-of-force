@@ -79,4 +79,50 @@ describe('validate', () => {
       expect(validate(fields, {})).toEqual(expect.arrayContaining([yearIsRequired]))
     })
   })
+
+  describe('name pattern (f213CompletedBy)', () => {
+    const fields = [
+      {
+        f213CompletedBy: {
+          responseType: 'f213CompletedBy',
+          validationMessage: {
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'string.base': 'Enter the name of who completed the F213 form',
+          },
+        },
+      },
+    ]
+
+    it('matching value succeeds', () => {
+      expect(isValid('f213CompletedBy', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe(true)
+      expect(isValid('f213CompletedBy', 'abcdefghijklmnopqrstuvwxyz')).toBe(true)
+      expect(isValid('f213CompletedBy', 'aa')).toBe(true)
+      expect(isValid('f213CompletedBy', "a- .'a")).toBe(true)
+    })
+
+    it('failures', () => {
+      expect(isValid('f213CompletedBy', '')).toBe(false)
+      expect(isValid('f213CompletedBy', ' ')).toBe(false)
+      expect(isValid('f213CompletedBy', 'a')).toBe(false)
+      expect(isValid('f213CompletedBy', '-a')).toBe(false)
+      expect(isValid('f213CompletedBy', ' a')).toBe(false)
+      expect(isValid('f213CompletedBy', '.a')).toBe(false)
+    })
+
+    it('should accept a valid f213CompletedBy value', () => {
+      expect(validate(fields, { f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ' })).toEqual([])
+    })
+
+    it('should reject an invalid f213CompletedBy value', () => {
+      expect(validate(fields, { f213CompletedBy: '' })).toEqual([
+        {
+          href: '#f213CompletedBy',
+          text: {
+            'string.base': 'Enter the name of who completed the F213 form',
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+          },
+        },
+      ])
+    })
+  })
 })
