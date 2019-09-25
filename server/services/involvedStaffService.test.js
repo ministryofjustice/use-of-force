@@ -111,13 +111,9 @@ describe('lookup', () => {
       success: false,
     })
 
-    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
-    expect(result).toEqual({
-      additionalErrors: [
-        { href: '#involvedStaff[2][username]', i: 2, text: "User with name 'Jenny' does not have an e-mail address" },
-      ],
-      additionalFields: {},
-    })
+    await expect(service.lookup('token-1', ['Bob', 'June', 'Jenny'])).rejects.toThrow(
+      'Contains one or more users with unverified emails'
+    )
   })
 
   test('succeeds when unavailable users', async () => {
