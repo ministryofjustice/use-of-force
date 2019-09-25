@@ -11,6 +11,7 @@ const setErrorMessage = message =>
   })
 
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
+const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
 const fieldOptions = {
   any: joi.any(),
@@ -210,7 +211,7 @@ const fieldOptions = {
       username: joi
         .string()
         .trim()
-        .regex(/^[a-zA-Z_]{2,50}$/, 'Username'),
+        .regex(usernamePattern, 'Username'),
     })
   ),
 
@@ -219,7 +220,7 @@ const fieldOptions = {
       username: joi
         .string()
         .trim()
-        .regex(/^[a-zA-Z_]{2,50}$/, 'Username')
+        .regex(usernamePattern, 'Username')
         .required(),
       name: joi
         .string()
