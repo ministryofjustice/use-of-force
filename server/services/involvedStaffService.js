@@ -38,9 +38,13 @@ module.exports = function createReportService({ incidentClient, statementsClient
     const { exist = [], missing = [], notVerified = [], success } = await userService.getUsers(token, usernames)
 
     if (!success) {
-      const error = new Error('Contains one or more users with unverified emails')
-      error.notVerified = notVerified
-      throw error
+      return {
+        additionalFields: {},
+        additionalErrors: buildErrors(
+          notVerified,
+          username => `User with name '${username}' does not have an e-mail address`
+        ),
+      }
     }
 
     const existingStaff = exist.map(user => {

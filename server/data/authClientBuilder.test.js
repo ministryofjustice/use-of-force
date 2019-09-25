@@ -54,6 +54,16 @@ describe('authClient', () => {
       const output = await client.getEmail(userName)
       expect(output).toEqual({ username: 'Bob', exists: false, verified: false })
     })
+
+    it('username offends the auth service', async () => {
+      fakeApi
+        .get(`/api/user/${userName}/email`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(400)
+
+      const output = await client.getEmail(userName)
+      expect(output).toEqual({ username: 'Bob', exists: false, verified: false })
+    })
   })
 
   describe('getUser', () => {
