@@ -79,6 +79,17 @@ describe('sanitiser', () => {
         isFutureDateTime: false,
         isInvalidDate: false,
       }))
+
+    test('double 00', () =>
+      check({ date: { day: '1', month: '1', year: '2019' }, time: '00.00' }).toEqual({
+        raw: { day: '1', month: '1', year: '2019', time: '00.00' },
+        date: { day: 1, month: 1, year: 2019 },
+        time: '00.00',
+        value: toDate('2019-01-01T00:00:00.000Z'),
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      }))
   })
 
   describe('missing data', () => {

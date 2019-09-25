@@ -17,7 +17,8 @@ const toDate = ({ date, months, years }) =>
     : null
 
 const toDateTime = ({ minutes, hours, date, months, years }) => {
-  return minutes && hours && date && months && years
+  const allPresent = [minutes, hours, date, months, years].every(number => Number.isInteger(number))
+  return allPresent
     ? moment({
         years,
         months: months - 1,
