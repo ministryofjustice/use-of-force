@@ -196,6 +196,7 @@ const getInvolvedStaff = async (reportId, query = db.query) => {
 const getNextNotificationReminder = async () => {
   const result = await db.query({
     text: `select s.id                     "statementId"
+          ,       r.id                     "reportId"
           ,       s.email                  "recipientEmail" 
           ,       s.name                   "recipientName"
           ,       s.next_reminder_date     "nextReminderDate"  

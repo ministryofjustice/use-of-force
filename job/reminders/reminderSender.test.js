@@ -44,29 +44,43 @@ describe('send', () => {
   const now = moment('2019-09-06 21:26:17')
   const overdue = moment(now).add(-1, 'day')
   const notOverdue = moment(now).add(1, 'day')
+  const statementId = -1
+  const reportId = -2
+
+  const reminder = {
+    incidentDate,
+    reporterName,
+    recipientEmail,
+    recipientName: involvedName,
+    reportId,
+    statementId,
+  }
+
+  const expectedContext = { reportId, statementId }
 
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
       await send(
         {
+          ...reminder,
           isReporter: true,
-          incidentDate,
-          reporterName,
-          recipientEmail,
           nextReminderDate: now,
           overdueDate: notOverdue,
           isOverdue: false,
-          statementId: -1,
         },
         now
       )
 
       expect(notificationService.sendReporterStatementReminder).toBeCalledTimes(1)
-      expect(notificationService.sendReporterStatementReminder).toBeCalledWith(recipientEmail, {
-        incidentDate,
-        overdueDate: notOverdue,
-        reporterName,
-      })
+      expect(notificationService.sendReporterStatementReminder).toBeCalledWith(
+        recipientEmail,
+        {
+          incidentDate,
+          overdueDate: notOverdue,
+          reporterName,
+        },
+        expectedContext
+      )
 
       expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate())
     })
@@ -74,10 +88,8 @@ describe('send', () => {
     test('sendReporterStatementOverdue', async () => {
       await send(
         {
+          ...reminder,
           isReporter: true,
-          incidentDate,
-          reporterName,
-          recipientEmail,
           nextReminderDate: now,
           overdueDate: overdue,
           isOverdue: true,
@@ -87,10 +99,14 @@ describe('send', () => {
       )
 
       expect(notificationService.sendReporterStatementOverdue).toBeCalledTimes(1)
-      expect(notificationService.sendReporterStatementOverdue).toBeCalledWith(recipientEmail, {
-        incidentDate,
-        reporterName,
-      })
+      expect(notificationService.sendReporterStatementOverdue).toBeCalledWith(
+        recipientEmail,
+        {
+          incidentDate,
+          reporterName,
+        },
+        expectedContext
+      )
 
       expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null)
     })
@@ -100,25 +116,25 @@ describe('send', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
       await send(
         {
+          ...reminder,
           isReporter: false,
-          incidentDate,
-          reporterName,
-          recipientEmail,
-          recipientName: involvedName,
           nextReminderDate: now,
           overdueDate: notOverdue,
           isOverdue: false,
-          statementId: -1,
         },
         now
       )
 
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledTimes(1)
-      expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledWith(recipientEmail, {
-        incidentDate,
-        overdueDate: notOverdue,
-        involvedName,
-      })
+      expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledWith(
+        recipientEmail,
+        {
+          incidentDate,
+          overdueDate: notOverdue,
+          involvedName,
+        },
+        expectedContext
+      )
 
       expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate())
     })
@@ -126,24 +142,24 @@ describe('send', () => {
     test('sendInvolvedStaffStatementOverdue', async () => {
       await send(
         {
+          ...reminder,
           isReporter: false,
-          incidentDate,
-          reporterName,
-          recipientEmail,
-          recipientName: involvedName,
           nextReminderDate: now,
           overdueDate: overdue,
           isOverdue: true,
-          statementId: -1,
         },
         now
       )
 
       expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledTimes(1)
-      expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledWith(recipientEmail, {
-        incidentDate,
-        involvedName,
-      })
+      expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledWith(
+        recipientEmail,
+        {
+          incidentDate,
+          involvedName,
+        },
+        expectedContext
+      )
 
       expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null)
     })

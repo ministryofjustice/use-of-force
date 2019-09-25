@@ -6,15 +6,22 @@ const {
   },
 } = require('../config')
 
+const reporterName = 'Jane Smith'
+const involvedName = 'Thelma Jones'
+
 const client = {
   sendEmail: jest.fn(),
 }
+const eventPublisher = {
+  publish: jest.fn(),
+}
 
 let service
+const context = { id1: 1, id2: 'b' }
 
 beforeEach(() => {
   client.sendEmail.mockResolvedValue('response 1')
-  service = createNotificationService(client)
+  service = createNotificationService(client, eventPublisher)
 })
 
 afterEach(() => {
@@ -26,11 +33,7 @@ describe('send reporter notifications', () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
     const overdueDate = new Date(2019, 1, 16, 16, 45)
 
-    await service.sendReporterStatementReminder('user@email.com', {
-      reporterName: 'Jane Smith',
-      incidentDate,
-      overdueDate,
-    })
+    await service.sendReporterStatementReminder('user@email.com', { reporterName, incidentDate, overdueDate }, context)
 
     expect(client.sendEmail).toBeCalledWith(reporter.REMINDER, 'user@email.com', {
       personalisation: {
@@ -43,11 +46,16 @@ describe('send reporter notifications', () => {
       },
       reference: null,
     })
+
+    expect(eventPublisher.publish).toBeCalledWith({
+      name: 'SendReporterStatementReminderSuccess',
+      properties: { id1: 1, id2: 'b', incidentDate, reporterName },
+    })
   })
 
   test('sendReporterStatementOverdue', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    await service.sendReporterStatementOverdue('user@email.com', { reporterName: 'Jane Smith', incidentDate })
+    await service.sendReporterStatementOverdue('user@email.com', { reporterName, incidentDate }, context)
 
     expect(client.sendEmail).toBeCalledWith(reporter.OVERDUE, 'user@email.com', {
       personalisation: {
@@ -58,6 +66,11 @@ describe('send reporter notifications', () => {
       },
       reference: null,
     })
+
+    expect(eventPublisher.publish).toBeCalledWith({
+      name: 'SendReporterStatementOverdueSuccess',
+      properties: { id1: 1, id2: 'b', incidentDate, reporterName },
+    })
   })
 })
 
@@ -66,11 +79,11 @@ describe('send involved staff notifications', () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
     const overdueDate = new Date(2019, 1, 16, 16, 45)
 
-    await service.sendInvolvedStaffStatementReminder('user@email.com', {
-      involvedName: 'Jane Smith',
-      incidentDate,
-      overdueDate,
-    })
+    await service.sendInvolvedStaffStatementReminder(
+      'user@email.com',
+      { involvedName, incidentDate, overdueDate },
+      context
+    )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REMINDER, 'user@email.com', {
       personalisation: {
@@ -78,25 +91,35 @@ describe('send involved staff notifications', () => {
         DEADLINE_TIME: '16:45',
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
-        INVOLVED_NAME: 'Jane Smith',
+        INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
       },
       reference: null,
+    })
+
+    expect(eventPublisher.publish).toBeCalledWith({
+      name: 'SendInvolvedStaffStatementReminderSuccess',
+      properties: { id1: 1, id2: 'b', incidentDate, involvedName },
     })
   })
 
   test('sendInvolvedStaffStatementOverdue', async () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
-    await service.sendInvolvedStaffStatementOverdue('user@email.com', { involvedName: 'Jane Smith', incidentDate })
+    await service.sendInvolvedStaffStatementOverdue('user@email.com', { involvedName, incidentDate }, context)
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.OVERDUE, 'user@email.com', {
       personalisation: {
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '15:45',
-        INVOLVED_NAME: 'Jane Smith',
+        INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
       },
       reference: null,
+    })
+
+    expect(eventPublisher.publish).toBeCalledWith({
+      name: 'SendInvolvedStaffStatementOverdueSuccess',
+      properties: { id1: 1, id2: 'b', incidentDate, involvedName },
     })
   })
 
@@ -104,12 +127,11 @@ describe('send involved staff notifications', () => {
     const incidentDate = new Date(2019, 1, 12, 15, 45)
     const overdueDate = new Date(2019, 1, 16, 16, 45)
 
-    await service.sendStatementRequest('user@email.com', {
-      reporterName: 'Jane Smith',
-      involvedName: 'Thelma Jones',
-      incidentDate,
-      overdueDate,
-    })
+    await service.sendStatementRequest(
+      'user@email.com',
+      { reporterName, involvedName, incidentDate, overdueDate },
+      context
+    )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {
       personalisation: {

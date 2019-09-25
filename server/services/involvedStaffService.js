@@ -97,8 +97,13 @@ module.exports = function createReportService({ incidentClient, statementsClient
     }))
 
     const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
-    await statementsClient.createStatements(reportId, firstReminderDate.toDate(), overdueDate.toDate(), staff)
-    return staff
+    const userIdsToStatementIds = await statementsClient.createStatements(
+      reportId,
+      firstReminderDate.toDate(),
+      overdueDate.toDate(),
+      staff
+    )
+    return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
   }
 
   const getDuplicates = usernames => {

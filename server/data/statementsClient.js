@@ -153,11 +153,11 @@ const createStatements = async (reportId, firstReminder, overdueDate, staff, que
   ])
   const results = await query({
     text: format(
-      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id',
+      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
       rows
     ),
   })
-  return results.rows.map(row => row.id)
+  return results.rows.reduce((result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }), {})
 }
 
 module.exports = {

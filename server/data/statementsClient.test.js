@@ -69,19 +69,19 @@ test('saveAdditionalComment', () => {
 })
 
 test('createStatements', async () => {
-  db.query.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
+  db.query.mockReturnValue({ rows: [{ id: 1, userId: 'a' }, { id: 2, userId: 'b' }] })
 
   const ids = await statementsClient.createStatements('incident-1', 'date1', 'date2', [
     { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
     { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
   ])
 
-  expect(ids).toEqual([1, 2])
+  expect(ids).toEqual({ a: 1, b: 2 })
   expect(db.query).toBeCalledWith({
     text:
       `insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
       `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
-      `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id`,
+      `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
   })
 })
 
