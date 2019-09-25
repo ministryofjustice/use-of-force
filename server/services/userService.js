@@ -1,5 +1,7 @@
+const R = require('ramda')
 const logger = require('../../log.js')
 const { properCaseName } = require('../utils/utils.js')
+const { usernamePattern } = require('../utils/fieldValidation')
 
 module.exports = function createUserService(elite2ClientBuilder, authClientBuilder) {
   async function getUser(token) {
@@ -21,10 +23,15 @@ module.exports = function createUserService(elite2ClientBuilder, authClientBuild
     }
   }
 
+  const emailNotExistPromise = username => Promise.resolve({ username, exists: false, verified: false })
+
   async function getUsers(token, usernames) {
     try {
       const client = authClientBuilder(token)
-      const requests = usernames.map((username, i) => client.getEmail(username).then(email => ({ ...email, i })))
+
+      const getEmailSafely = R.ifElse(R.test(usernamePattern), client.getEmail, emailNotExistPromise)
+
+      const requests = usernames.map((username, i) => getEmailSafely(username).then(email => ({ ...email, i })))
       const responses = await Promise.all(requests)
 
       const missing = responses.filter(email => !email.exists)

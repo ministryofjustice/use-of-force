@@ -89,7 +89,7 @@ const token = ({ isReviewer = false }) =>
         access_token: createToken(isReviewer),
         token_type: 'bearer',
         refresh_token: 'refresh',
-        user_name: 'Test User',
+        user_name: 'TEST_USER',
         expires_in: 600,
         scope: 'read write',
         internalUser: true,

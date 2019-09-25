@@ -282,6 +282,8 @@ const getHref = (fieldConfig, error) => {
 }
 
 module.exports = {
+  usernamePattern,
+
   validate(fields, formResponse, stripUnknown = false) {
     const formSchema = createSchemaFromConfig(fields)
     const joiErrors = formSchema.validate(formResponse, { stripUnknown, abortEarly: false })

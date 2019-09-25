@@ -12,9 +12,9 @@ context('view review page', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A reviewer can view reports they did and did not raise', () => {
@@ -24,15 +24,15 @@ context('view review page', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
-      userId: 'Test User',
+      userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -48,7 +48,7 @@ context('view review page', () => {
         {
           userId: 'ANOTHER_USER',
           name: 'Another user name',
-          email: 'Test User@gov.uk',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -67,7 +67,7 @@ context('view review page', () => {
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
-      viewReportPage.verifyInputs({ involvedStaff: ['Test User Name - Test User'] })
+      viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name - TEST_USER'] })
       viewReportPage.continue().click()
     }
 

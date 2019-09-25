@@ -12,9 +12,9 @@ context('All incidents page', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A reviewer can view all incidents', () => {
@@ -29,9 +29,9 @@ context('All incidents page', () => {
       bookingId: 1001,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -44,9 +44,9 @@ context('All incidents page', () => {
       bookingId: 1002,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -81,9 +81,9 @@ context('All incidents page', () => {
         .toDate(),
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
