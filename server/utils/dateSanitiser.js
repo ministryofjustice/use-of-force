@@ -17,7 +17,7 @@ const toDate = ({ date, months, years }) =>
     : null
 
 const toDateTime = ({ minutes, hours, date, months, years }) => {
-  return minutes && hours && date && months && years
+  return minutes !== null && hours != null && date && months && years
     ? moment({
         years,
         months: months - 1,
