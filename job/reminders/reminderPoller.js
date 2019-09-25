@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 const logger = require('../../log')
 
-module.exports = (db, incidentClient, sendReminder) => {
+module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
   const processReminder = async () => {
     const reminder = await incidentClient.getNextNotificationReminder()
     if (reminder) {
@@ -12,6 +12,7 @@ module.exports = (db, incidentClient, sendReminder) => {
 
   return async () => {
     logger.info(`Starting to send reminders`)
+    eventPublisher.publish({ name: 'StartingToSendReminders' })
 
     let result = true
     let count = 0
@@ -22,6 +23,7 @@ module.exports = (db, incidentClient, sendReminder) => {
     }
 
     logger.info(`Sent ${count} reminders`)
+    eventPublisher.publish({ name: 'FinishedSendingReminders', properties: { totalSent: count } })
 
     return count
   }

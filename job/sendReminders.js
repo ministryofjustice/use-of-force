@@ -13,7 +13,7 @@ const eventPublisher = require('../server/services/eventPublisher')(appInsightsc
 const notificationService = notificationServiceFactory(eventPublisher)
 
 const sendReminder = reminderSender(notificationService, incidentClient).send
-const poll = reminderPoller(db, incidentClient, sendReminder)
+const poll = reminderPoller(db, incidentClient, sendReminder, eventPublisher)
 
 const session = createNamespace('request.scope')
 
