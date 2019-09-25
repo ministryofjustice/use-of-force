@@ -295,7 +295,7 @@ describe('incidentDate', () => {
     expect(errors).toEqual([
       {
         href: '#incidentDate[time]',
-        text: 'Enter the time in the correct format',
+        text: 'Enter a time in the correct format - for example, 23:59',
       },
     ])
 
@@ -340,7 +340,7 @@ describe('incidentDate', () => {
     expect(errors).toEqual([
       {
         href: '#incidentDate[isInvalidDate]',
-        text: 'Enter a valid date using the correct numbers for the given month',
+        text: 'Enter a date in the correct format - for example, 27 3 2007',
       },
     ])
 
@@ -448,6 +448,51 @@ describe('incidentDate', () => {
         },
         value: null,
         time: undefined,
+        isFutureDate: false,
+        isFutureDateTime: false,
+        isInvalidDate: false,
+      },
+    })
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      involvedStaff: [{ username: 'ITAG_USER' }],
+      witnesses: [{ name: 'User bob' }],
+    })
+  })
+
+  it('Empty time', () => {
+    const input = {
+      ...validInput,
+      incidentDate: {
+        date: { day: '28', month: '2', year: '2019' },
+        time: '',
+      },
+    }
+    const { errors, formResponse, extractedFields } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#incidentDate[time]',
+        text: 'Enter the time of the incident',
+      },
+    ])
+
+    expect(extractedFields).toEqual({
+      incidentDate: {
+        date: {
+          day: 28,
+          month: 2,
+          year: 2019,
+        },
+        raw: {
+          day: '28',
+          month: '2',
+          time: '',
+          year: '2019',
+        },
+        value: null,
+        time: '',
         isFutureDate: false,
         isFutureDateTime: false,
         isInvalidDate: false,
