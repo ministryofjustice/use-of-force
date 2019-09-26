@@ -13,9 +13,9 @@ context('view statements page', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A reviewer can view statements for a specific report', () => {
@@ -28,20 +28,20 @@ context('view statements page', () => {
       overdueDate: moment()
         .add(1, 'day')
         .toDate(),
-      userId: 'Test User',
+      userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
         {
           userId: 'ANOTHER_USER',
           name: 'Another user name',
-          email: 'Anneother Test User@gov.uk',
+          email: 'Anneother TEST_USER@gov.uk',
         },
       ],
     })
@@ -65,7 +65,7 @@ context('view statements page', () => {
         .then(result =>
           expect(result).to.deep.equal([
             { username: 'Another user name', link: '', isOverdue: false },
-            { username: 'Test User name', link: '', isOverdue: false },
+            { username: 'TEST_USER name', link: '', isOverdue: false },
           ])
         )
 
@@ -85,20 +85,20 @@ context('view statements page', () => {
       overdueDate: moment()
         .add(-1, 'day')
         .toDate(),
-      userId: 'Test User',
+      userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
         {
           userId: 'ANOTHER_USER',
           name: 'Another user name',
-          email: 'Anneother Test User@gov.uk',
+          email: 'Anneother TEST_USER@gov.uk',
         },
       ],
     })
@@ -119,7 +119,7 @@ context('view statements page', () => {
       .then(result =>
         expect(result).to.deep.equal([
           { username: 'Another user name', link: 'OVERDUE', isOverdue: true },
-          { username: 'Test User name', link: 'OVERDUE', isOverdue: true },
+          { username: 'TEST_USER name', link: 'OVERDUE', isOverdue: true },
         ])
       )
 
@@ -138,15 +138,15 @@ context('view statements page', () => {
       overdueDate: moment()
         .add(1, 'day')
         .toDate(),
-      userId: 'Test User',
+      userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })

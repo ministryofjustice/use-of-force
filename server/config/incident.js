@@ -271,6 +271,7 @@ module.exports = {
             'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'array.min': "Enter the staff member's name and whether they went to hospital",
             'any.required': 'Enter the name of who needed medical attention',
+            'string.empty': 'Enter the name of who needed medical attention',
           },
 
           sanitiser: values => {

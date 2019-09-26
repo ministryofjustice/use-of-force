@@ -19,7 +19,7 @@ context('Check your answers page', () => {
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
     cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,

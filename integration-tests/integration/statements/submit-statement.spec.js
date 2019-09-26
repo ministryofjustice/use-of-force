@@ -14,7 +14,7 @@ context('Submit statement', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A user can submit their statement from incidents page', () => {
@@ -24,9 +24,9 @@ context('Submit statement', () => {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -132,9 +132,9 @@ context('Submit statement', () => {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
