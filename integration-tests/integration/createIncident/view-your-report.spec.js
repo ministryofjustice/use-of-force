@@ -14,7 +14,7 @@ context('Submit statement', () => {
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
     cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A user can submit their statement from incidents page', () => {
@@ -35,9 +35,9 @@ context('Submit statement', () => {
           email: 'MR_ZAGATO@gov.uk',
         },
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })

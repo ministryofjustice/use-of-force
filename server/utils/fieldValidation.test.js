@@ -6,16 +6,33 @@ jest.mock('moment', () => () => ({
 }))
 
 describe('isValid', () => {
-  test('Check valid ', () => {
+  test('Check valid', () => {
     expect(isValid('optionalInvolvedStaff', [{ username: 'Bob' }])).toEqual(true)
+    expect(isValid('optionalInvolvedStaff', [{ username: 'VQO24O' }])).toEqual(true)
     expect(isValid('optionalInvolvedStaff', [])).toEqual(true)
   })
 
-  test('invalid', () => {
+  test('invalid (optionalInvolvedStaff)', () => {
     expect(isValid('optionalInvolvedStaff', [{ username: 'Bob', age: 29 }])).toEqual(false)
     expect(isValid('optionalInvolvedStaff', true)).toEqual(false)
     expect(isValid('optionalInvolvedStaff', [{ username: '' }])).toEqual(false)
     expect(isValid('optionalInvolvedStaff', [{ bob: 'Bob' }])).toEqual(false)
+  })
+
+  test('Check valid (optionalInvolvedStaffWhenPersisted)', () => {
+    expect(
+      isValid('optionalInvolvedStaffWhenPersisted', [
+        { username: 'VQO24O', name: 'Bob', email: 'a@bcom', staffId: 123 },
+      ])
+    ).toEqual(true)
+    expect(isValid('optionalInvolvedStaffWhenPersisted', [])).toEqual(true)
+  })
+
+  test('invalid (optionalInvolvedStaffWhenPersisted)', () => {
+    expect(isValid('optionalInvolvedStaffWhenPersisted', [{ username: 'Bob', age: 29 }])).toEqual(false)
+    expect(isValid('optionalInvolvedStaffWhenPersisted', true)).toEqual(false)
+    expect(isValid('optionalInvolvedStaffWhenPersisted', [{ username: '' }])).toEqual(false)
+    expect(isValid('optionalInvolvedStaffWhenPersisted', [{ bob: 'Bob' }])).toEqual(false)
   })
 })
 
@@ -77,6 +94,52 @@ describe('validate', () => {
 
     test('no month or year', () => {
       expect(validate(fields, {})).toEqual(expect.arrayContaining([yearIsRequired]))
+    })
+  })
+
+  describe('name pattern (f213CompletedBy)', () => {
+    const fields = [
+      {
+        f213CompletedBy: {
+          responseType: 'f213CompletedBy',
+          validationMessage: {
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+            'string.base': 'Enter the name of who completed the F213 form',
+          },
+        },
+      },
+    ]
+
+    it('matching value succeeds', () => {
+      expect(isValid('f213CompletedBy', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe(true)
+      expect(isValid('f213CompletedBy', 'abcdefghijklmnopqrstuvwxyz')).toBe(true)
+      expect(isValid('f213CompletedBy', 'aa')).toBe(true)
+      expect(isValid('f213CompletedBy', "a- .'a")).toBe(true)
+    })
+
+    it('failures', () => {
+      expect(isValid('f213CompletedBy', '')).toBe(false)
+      expect(isValid('f213CompletedBy', ' ')).toBe(false)
+      expect(isValid('f213CompletedBy', 'a')).toBe(false)
+      expect(isValid('f213CompletedBy', '-a')).toBe(false)
+      expect(isValid('f213CompletedBy', ' a')).toBe(false)
+      expect(isValid('f213CompletedBy', '.a')).toBe(false)
+    })
+
+    it('should accept a valid f213CompletedBy value', () => {
+      expect(validate(fields, { f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ' })).toEqual([])
+    })
+
+    it('should reject an invalid f213CompletedBy value', () => {
+      expect(validate(fields, { f213CompletedBy: '' })).toEqual([
+        {
+          href: '#f213CompletedBy',
+          text: {
+            'string.base': 'Enter the name of who completed the F213 form',
+            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
+          },
+        },
+      ])
     })
   })
 })

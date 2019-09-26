@@ -13,9 +13,9 @@ context('view statement page', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS JONES')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   it('A reviewer can view statements for a specific report', () => {
@@ -28,15 +28,15 @@ context('view statement page', () => {
       overdueDate: moment()
         .add(1, 'day')
         .toDate(),
-      userId: 'Test User',
+      userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'Test User',
-          name: 'Test User name',
-          email: 'Test User@gov.uk',
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
         },
       ],
     })
@@ -55,17 +55,17 @@ context('view statement page', () => {
       viewStatementsPage.prisonerName().contains('Norman Smith')
       viewStatementsPage.prisonNumber().contains('A1234AC')
 
-      viewStatementsPage.getReportId().then(reportId => cy.task('submitStatement', { userId: 'Test User', reportId }))
+      viewStatementsPage.getReportId().then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
 
       cy.reload()
 
       viewStatementsPage.statements().then(result => {
-        expect(result).to.deep.equal([{ username: 'Test User name', link: 'View statement', isOverdue: false }])
+        expect(result).to.deep.equal([{ username: 'TEST_USER name', link: 'View statement', isOverdue: false }])
       })
 
       viewStatementsPage.statementLink(0).click()
 
-      const reviewStatementPage = ReviewStatementPage.verifyOnPageForUser('Test User name')
+      const reviewStatementPage = ReviewStatementPage.verifyOnPageForUser('TEST_USER name')
 
       reviewStatementPage.offenderName().contains('Norman Smith')
       reviewStatementPage.dateAndTime().contains(/10 September 2019 - \d{2}:\d{2}/)

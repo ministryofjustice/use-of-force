@@ -12,7 +12,7 @@ context('Submitting details page form', () => {
     cy.task('stubLocations', 'MDI')
     cy.task('stubUserDetailsRetrieval', 'AAAA')
     cy.task('stubUserDetailsRetrieval', 'BBBB')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
   const fillFormAndSave = () => {

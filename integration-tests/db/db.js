@@ -10,10 +10,10 @@ const { ReportStatus } = require('../../server/config/types')
 const { equals } = require('../../server/utils/utils')
 
 const getCurrentDraft = bookingId =>
-  incidentClient.getCurrentDraftReport('Test User', bookingId, db.queryWithoutTransaction)
+  incidentClient.getCurrentDraftReport('TEST_USER', bookingId, db.queryWithoutTransaction)
 
 const getStatementForUser = ({ reportId, status }) =>
-  statementsClient.getStatementForUser('Test User', reportId, status, db.queryWithoutTransaction)
+  statementsClient.getStatementForUser('TEST_USER', reportId, status, db.queryWithoutTransaction)
 
 const getAllStatementsForReport = reportId => {
   return db
@@ -35,7 +35,7 @@ const getPayload = reportId => {
 
 const seedReport = ({
   status,
-  userId = 'Test User',
+  userId = 'TEST_USER',
   reporterName = 'James Stuart',
   bookingId = 1001,
   payload = expectedPayload,

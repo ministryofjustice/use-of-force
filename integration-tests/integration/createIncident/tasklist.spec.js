@@ -8,7 +8,7 @@ context('tasklist', () => {
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'Test User')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
     cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
   })
