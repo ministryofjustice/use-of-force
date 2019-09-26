@@ -11,9 +11,7 @@ image:
 
 ingress:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/whitelist-source-range: "217.33.148.210/32,81.134.202.29/32,35.177.252.195/32"
+  enable_whitelist: true
   host: preprod.use-of-force.service.justice.gov.uk
   cert_secret: use-of-force-cert
   path: /
@@ -24,3 +22,14 @@ env:
   ELITE2_API_URL: "https://gateway.preprod.nomis-api.service.hmpps.dsd.io/elite2api"
   EXIT_LOCATION_URL: https://notm.preprod.hmpps.dsd.io/
   EMAIL_LOCATION_URL: https://preprod.use-of-force.service.justice.gov.uk
+
+whitelist:
+  office: "217.33.148.210/32"
+  quantum: "62.25.109.197/32"
+  quantum_alt: "212.137.36.230/32"
+  health-kick: "35.177.252.195/32"
+  digitalprisons1: "52.56.112.98/32"
+  digitalprisons2: "52.56.118.154/32"
+  mojvpn: "81.134.202.29/32"
+  j5-phones-1: "35.177.125.252/32"
+  j5-phones-2: "35.177.137.160/32"

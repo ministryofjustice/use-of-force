@@ -10,10 +10,9 @@ metadata:
     chart: {{ template "app.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- with .Values.ingress.annotations }}
   annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    kubernetes.io/ingress.class: "nginx"
+    {{ if .Values.ingress.enable_whitelist }}nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.whitelist | quote }}{{ end }}
 spec:
   tls:
   - hosts:
