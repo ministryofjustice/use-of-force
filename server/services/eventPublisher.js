@@ -2,13 +2,14 @@ const logger = require('../../log')
 
 module.exports = function ReminderRecorder(appInsightsClient) {
   const client = appInsightsClient || {
-    trackEvent({ name, properties = {} }) {
-      logger.info(`Event raised: ${name}, payload: ${properties}`)
+    trackEvent() {
+      // do nothing
     },
   }
 
   return {
-    publish: ({ name, properties = {} }) => {
+    publish: ({ name, properties = {}, detail }) => {
+      logger.info(`Event raised: ${name}, payload: ${properties}, detail: ${detail}`)
       client.trackEvent({ name, properties })
     },
   }
