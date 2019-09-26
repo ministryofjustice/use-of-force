@@ -236,6 +236,8 @@ describe('save', () => {
   })
 
   test('when user has already added themselves', async () => {
+    statementsClient.createStatements.mockReturnValue({ June: 11, Jenny: 22, Bob: 33 })
+
     incidentClient.getDraftInvolvedStaff.mockReturnValue([
       {
         staffId: 1,
@@ -257,7 +259,17 @@ describe('save', () => {
       },
     ])
 
-    await service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    const result = await service.save('form1', reportSubmittedDate, overdueDate, {
+      name: 'Bob Smith',
+      staffId: 3,
+      username: 'Bob',
+    })
+
+    expect(result).toEqual([
+      { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
+      { email: 'cn@email', name: 'Jenny Walker', staffId: 2, statementId: 22, userId: 'Jenny' },
+      { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
+    ])
 
     expect(statementsClient.createStatements).toBeCalledWith(
       'form1',
@@ -282,6 +294,8 @@ describe('save', () => {
   })
 
   test('when user is not already added', async () => {
+    statementsClient.createStatements.mockReturnValue({ June: 11, Jenny: 22, Bob: 33 })
+
     incidentClient.getDraftInvolvedStaff.mockReturnValue([
       {
         staffId: 1,
@@ -309,7 +323,18 @@ describe('save', () => {
       ],
     })
 
-    await service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
+    const result = await service.save('form1', reportSubmittedDate, overdueDate, {
+      name: 'Bob Smith',
+      staffId: 3,
+      username: 'Bob',
+    })
+
+    expect(result).toEqual([
+      { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
+      { email: 'cn@email', name: 'Jenny Walker', staffId: 2, statementId: 22, userId: 'Jenny' },
+      { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
+    ])
+
     expect(statementsClient.createStatements).toBeCalledWith(
       'form1',
       expectedFirstReminderDate.toDate(),

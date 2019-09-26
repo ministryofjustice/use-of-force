@@ -7,34 +7,52 @@ module.exports = (notificationService, incidentClient) => {
     return startdate.add(1, 'day').toDate()
   }
 
+  const context = ({ statementId, reportId }) => ({ statementId, reportId })
+
   const handleOverdue = async reminder => {
     if (reminder.isReporter) {
-      await notificationService.sendReporterStatementOverdue(reminder.recipientEmail, {
-        reporterName: reminder.reporterName,
-        incidentDate: reminder.incidentDate,
-      })
+      await notificationService.sendReporterStatementOverdue(
+        reminder.recipientEmail,
+        {
+          reporterName: reminder.reporterName,
+          incidentDate: reminder.incidentDate,
+        },
+        context(reminder)
+      )
     } else {
-      await notificationService.sendInvolvedStaffStatementOverdue(reminder.recipientEmail, {
-        involvedName: reminder.recipientName,
-        incidentDate: reminder.incidentDate,
-      })
+      await notificationService.sendInvolvedStaffStatementOverdue(
+        reminder.recipientEmail,
+        {
+          involvedName: reminder.recipientName,
+          incidentDate: reminder.incidentDate,
+        },
+        context(reminder)
+      )
     }
     await incidentClient.setNextReminderDate(reminder.statementId, null)
   }
 
   const handleReminder = async reminder => {
     if (reminder.isReporter) {
-      await notificationService.sendReporterStatementReminder(reminder.recipientEmail, {
-        reporterName: reminder.reporterName,
-        incidentDate: reminder.incidentDate,
-        overdueDate: reminder.overdueDate,
-      })
+      await notificationService.sendReporterStatementReminder(
+        reminder.recipientEmail,
+        {
+          reporterName: reminder.reporterName,
+          incidentDate: reminder.incidentDate,
+          overdueDate: reminder.overdueDate,
+        },
+        context(reminder)
+      )
     } else {
-      await notificationService.sendInvolvedStaffStatementReminder(reminder.recipientEmail, {
-        involvedName: reminder.recipientName,
-        incidentDate: reminder.incidentDate,
-        overdueDate: reminder.overdueDate,
-      })
+      await notificationService.sendInvolvedStaffStatementReminder(
+        reminder.recipientEmail,
+        {
+          involvedName: reminder.recipientName,
+          incidentDate: reminder.incidentDate,
+          overdueDate: reminder.overdueDate,
+        },
+        context(reminder)
+      )
     }
     const nextReminderDate = getNextReminderDate(reminder)
     await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate)

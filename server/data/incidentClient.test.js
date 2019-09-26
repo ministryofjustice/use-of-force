@@ -240,6 +240,7 @@ test('getNextNotificationReminder', () => {
 
   expect(db.query).toBeCalledWith({
     text: `select s.id                     "statementId"
+          ,       r.id                     "reportId"
           ,       s.email                  "recipientEmail" 
           ,       s.name                   "recipientName"
           ,       s.next_reminder_date     "nextReminderDate"  

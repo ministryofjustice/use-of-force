@@ -64,9 +64,9 @@ describe('submit', () => {
 
   test('it should send statements requests out', async () => {
     involvedStaffService.save.mockReturnValue([
-      { userId: 'USER_1', name: 'June', email: 'user1@example.com' },
-      { userId: currentUser.username, name: 'Tracy', email: 'user2@example.com' },
-      { userId: 'USER_3', name: 'Alice', email: 'user3@example.com' },
+      { userId: 'USER_1', name: 'June', email: 'user1@example.com', statementId: 1 },
+      { userId: currentUser.username, name: 'Tracy', email: 'user2@example.com', statementId: 2 },
+      { userId: 'USER_3', name: 'Alice', email: 'user3@example.com', statementId: 3 },
     ])
 
     const now = moment('2019-09-06 21:26:18')
@@ -78,10 +78,18 @@ describe('submit', () => {
       [
         'user1@example.com',
         { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith', overdueDate: deadline },
+        {
+          reportId: 'form-1',
+          statementId: 1,
+        },
       ],
       [
         'user3@example.com',
         { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith', overdueDate: deadline },
+        {
+          reportId: 'form-1',
+          statementId: 3,
+        },
       ],
     ])
   })
