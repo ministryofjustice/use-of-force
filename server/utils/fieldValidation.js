@@ -143,6 +143,8 @@ const fieldOptions = {
             .error(setErrorMessage('Enter the body-worn camera number')),
         })
       )
+      .ruleset.unique('cameraNum')
+      .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
       .required(),
   }),
 
@@ -165,6 +167,8 @@ const fieldOptions = {
             .error(setErrorMessage('Enter a description of the evidence')),
         })
       )
+      .ruleset.unique('evidenceTagReference')
+      .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
       .required(),
   }),
 
@@ -206,42 +210,54 @@ const fieldOptions = {
       .required(),
   }),
 
-  optionalInvolvedStaff: joi.array().items(
-    joi.object({
-      username: joi
-        .string()
-        .trim()
-        .regex(usernamePattern, 'Username'),
-    })
-  ),
+  optionalInvolvedStaff: joi
+    .array()
+    .items(
+      joi.object({
+        username: joi
+          .string()
+          .trim()
+          .regex(usernamePattern, 'Username'),
+      })
+    )
+    .ruleset.unique('username')
+    .message("Username '{#value.username}' has already been added - remove this user"),
 
-  optionalInvolvedStaffWhenPersisted: joi.array().items(
-    joi.object({
-      username: joi
-        .string()
-        .trim()
-        .regex(usernamePattern, 'Username')
-        .required(),
-      name: joi
-        .string()
-        .trim()
-        .required(),
-      email: joi
-        .string()
-        .trim()
-        .required(),
-      staffId: joi.number().required(),
-    })
-  ),
+  optionalInvolvedStaffWhenPersisted: joi
+    .array()
+    .items(
+      joi.object({
+        username: joi
+          .string()
+          .trim()
+          .regex(usernamePattern, 'Username')
+          .required(),
+        name: joi
+          .string()
+          .trim()
+          .required(),
+        email: joi
+          .string()
+          .trim()
+          .required(),
+        staffId: joi.number().required(),
+      })
+    )
+    .ruleset.unique('username')
+    .message("Username '{#value.username}' has already been added - remove this user"),
 
-  optionalWitnesses: joi.array().items(
-    joi.object({
-      name: joi
-        .string()
-        .trim()
-        .regex(namePattern, 'Witnesses'),
-    })
-  ),
+  optionalWitnesses: joi
+    .array()
+    .items(
+      joi.object({
+        name: joi
+          .string()
+          .trim()
+          .regex(namePattern, 'Witnesses'),
+      })
+    )
+    .ruleset.unique('name')
+    .message("Witness '{#value.name}' has already been added - remove this witness"),
 
   requiredStaffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
     is: true,
@@ -263,6 +279,8 @@ const fieldOptions = {
             .error(setErrorMessage('Select yes if the staff member had to go to hospital')),
         })
       )
+      .ruleset.unique('name')
+      .message("Name '{#value.name}' has already been added - remove this name")
       .required(),
   }),
 }

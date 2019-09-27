@@ -225,6 +225,17 @@ describe('Involved staff', () => {
       },
     ])
   })
+
+  it('Username throws errors when duplicates are found', () => {
+    const input = { ...validInput, involvedStaff: [{ username: 'Bob' }, { username: 'Bob' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#involvedStaff[1]',
+        text: "Username 'BOB' has already been added - remove this user",
+      },
+    ])
+  })
 })
 
 describe('Witnesses', () => {
