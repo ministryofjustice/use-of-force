@@ -10,6 +10,15 @@ const setErrorMessage = message =>
     return e
   })
 
+const caseInsensitiveComparator = key =>
+  R.eqBy(
+    R.pipe(
+      R.prop(key),
+      R.trim,
+      R.toUpper
+    )
+  )
+
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
@@ -256,7 +265,7 @@ const fieldOptions = {
           .regex(namePattern, 'Witnesses'),
       })
     )
-    .ruleset.unique('name')
+    .ruleset.unique(caseInsensitiveComparator('name'))
     .message("Witness '{#value.name}' has already been added - remove this witness"),
 
   requiredStaffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
@@ -279,7 +288,7 @@ const fieldOptions = {
             .error(setErrorMessage('Select yes if the staff member had to go to hospital')),
         })
       )
-      .ruleset.unique('name')
+      .ruleset.unique(caseInsensitiveComparator('name'))
       .message("Name '{#value.name}' has already been added - remove this name")
       .required(),
   }),

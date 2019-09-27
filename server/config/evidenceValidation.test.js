@@ -313,6 +313,36 @@ describe('Body Worn Cameras', () => {
     })
   })
 
+  it('Duplicate evidence tags are rejected', () => {
+    const input = {
+      ...validInput,
+      bodyWornCamera: 'NO',
+      evidenceTagAndDescription: [
+        { description: 'D2', evidenceTagReference: '12345' },
+        { description: 'D1', evidenceTagReference: '12345' },
+      ],
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#evidenceTagAndDescription[1]',
+        text: "Evidence tag '12345' has already been added - remove this evidence tag",
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      bodyWornCamera: 'NO',
+      cctvRecording: 'YES',
+      evidenceTagAndDescription: [
+        { description: 'D2', evidenceTagReference: '12345' },
+        { description: 'D1', evidenceTagReference: '12345' },
+      ],
+      photographsTaken: true,
+    })
+  })
+
   it('Conditional field selected: Yes, unknown fields are ignored, known fields are trimmed', () => {
     const input = {
       ...validInput,

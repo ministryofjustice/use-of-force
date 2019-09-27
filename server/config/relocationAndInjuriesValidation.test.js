@@ -307,6 +307,23 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
+  it('Staff needing medical attention - duplicate staff names throws error', () => {
+    const input = {
+      ...validInput,
+      staffNeedingMedicalAttention: [
+        { name: 'Eric Idle', hospitalisation: 'true' },
+        { name: ' eric Idle ', hospitalisation: 'true' },
+      ],
+    }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#staffNeedingMedicalAttention[1]',
+        text: "Name 'eric Idle' has already been added - remove this name",
+      },
+    ])
+  })
+
   it('Selecting Yes for Was a member of healthcare present but using wrong format for  healthcarePractionerName  throws an error', () => {
     const input = {
       ...validInput,
