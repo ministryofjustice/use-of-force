@@ -1,16 +1,7 @@
 {% extends "../partials/layout.html" %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink or '/report/' + bookingId + '/check-your-answers'
-  }) }}
-{% endblock %}
-
 
 {% block content %}
 

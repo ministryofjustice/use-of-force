@@ -129,8 +129,8 @@ context('Submitting details page form', () => {
   it('Can revisit saved data', () => {
     cy.login(bookingId)
 
-    const detailsPage = fillFormAndSave()
-    detailsPage.back().click()
+    fillFormAndSave()
+    cy.go('back')
 
     const updatedIncidentPage = NewIncidentPage.verifyOnPage()
     updatedIncidentPage.offenderName().contains('Norman Smith')

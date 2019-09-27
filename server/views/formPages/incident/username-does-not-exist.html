@@ -1,17 +1,7 @@
 {% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
 
 {% set pageTitle = 'A username you have entered does not exist' %}
-
-{% block beforeContent %}
-
-{{ govukBackLink({
-text: "Back",
-href: backLink or "/"
-}) }}
-
-{% endblock %} 
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
