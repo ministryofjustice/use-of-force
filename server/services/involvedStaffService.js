@@ -23,15 +23,6 @@ module.exports = function createReportService({ incidentClient, statementsClient
     if (!usernames.length) {
       return {
         additionalFields: { involvedStaff: [] },
-        additionalErrors: [],
-      }
-    }
-
-    const duplicates = getDuplicates(usernames)
-    if (duplicates.length) {
-      return {
-        additionalFields: {},
-        additionalErrors: buildErrors(duplicates, username => `User with name '${username}' has already been added`),
       }
     }
 
@@ -59,7 +50,6 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
     return {
       additionalFields: { involvedStaff },
-      additionalErrors: [],
     }
   }
 
@@ -105,26 +95,6 @@ module.exports = function createReportService({ incidentClient, statementsClient
     )
     return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
   }
-
-  const getDuplicates = usernames => {
-    const seen = []
-    const duplicates = []
-    usernames.forEach((username, i) => {
-      if (seen.includes(username)) {
-        duplicates.push({ username, i })
-      }
-      seen.push(username)
-    })
-
-    return duplicates
-  }
-
-  const buildErrors = (staffMembers, errorBuilder) =>
-    staffMembers.map(staff => ({
-      text: errorBuilder(staff.username),
-      href: `#involvedStaff[${staff.i}][username]`,
-      i: staff.i,
-    }))
 
   return {
     getInvolvedStaff,

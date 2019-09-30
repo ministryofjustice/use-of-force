@@ -161,7 +161,7 @@
           {% macro addStaffNeedingMedicalAttention(index, staffMember, showRemove) %}
             {% call govukFieldset({ classes: 'add-another__item list-item' }) %}
             <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
+              <div class="govuk-grid-column-one-half" id="staffNeedingMedicalAttention[{{index}}]">
                 {{ govukInput({
                   label: {
                     html: 'Name of who needed medical attention'
@@ -169,7 +169,7 @@
                   id: 'staffNeedingMedicalAttention[' + index + '][name]',
                   name: 'staffNeedingMedicalAttention[' + index + '][name]',
                   value: staffMember.name,
-                  errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][name]'),
+                  errorMessage:  errors | findErrors(['staffNeedingMedicalAttention[' + index + ']', 'staffNeedingMedicalAttention[' + index + '][name]']),
                   attributes: {
                     'data-name': 'staffNeedingMedicalAttention[%index%][name]',
                     'data-id': 'staffNeedingMedicalAttention[%index%][name]'

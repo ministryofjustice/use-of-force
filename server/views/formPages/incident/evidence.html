@@ -55,7 +55,7 @@
                 {% macro addEvidence(index, evidenceTagAndDescription, showRemove) %}
                   {% call govukFieldset({ classes: 'add-another__item list-item' }) %}
                   <div class="govuk-grid-row">
-                      <div class="govuk-grid-column-one-quarter ">
+                      <div class="govuk-grid-column-one-quarter" id="evidenceTagAndDescription[{{index}}]">
                 
                     {{
                       govukInput({
@@ -65,7 +65,7 @@
                         id: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
                         name: 'evidenceTagAndDescription[' + index + '][evidenceTagReference]',
                         value: evidenceTagAndDescription.evidenceTagReference,
-                        errorMessage: errors | findError('evidenceTagAndDescription[' + index + '][evidenceTagReference]'),
+                        errorMessage: errors | findErrors(['evidenceTagAndDescription[' + index + ']','evidenceTagAndDescription[' + index + '][evidenceTagReference]']),
                         attributes: {
                           'data-name': 'evidenceTagAndDescription[%index%][evidenceTagReference]',
                           'data-id': 'evidenceTagAndDescription[%index%][evidenceTagReference]'
@@ -227,7 +227,7 @@
                   {% macro addCameraNumber(index, value, showRemove) %}
                     {% call govukFieldset({ classes: 'add-another__item' }) %}
                     <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-one-third">
+                        <div class="govuk-grid-column-one-third" id="bodyWornCameraNumbers[{{index}}]">
                         {{
                         govukInput({
                           label: {
@@ -236,7 +236,7 @@
                           id: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
                           name: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
                           value: value,
-                          errorMessage: errors | findError('bodyWornCameraNumbers[' + index + '][cameraNum]'),
+                          errorMessage: errors | findErrors(['bodyWornCameraNumbers[' + index + ']', 'bodyWornCameraNumbers[' + index + '][cameraNum]']),
                           attributes: {
                             'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
                             'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'

@@ -1,6 +1,6 @@
 const moment = require('moment')
-const config = require('./incident.js')
-const formProcessing = require('../services/formProcessing')
+const config = require('../incident.js')
+const formProcessing = require('../../services/formProcessing')
 
 const validatorChecker = formConfig => input => {
   const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput(formConfig, input)
@@ -225,6 +225,17 @@ describe('Involved staff', () => {
       },
     ])
   })
+
+  it('Username throws errors when duplicates are found', () => {
+    const input = { ...validInput, involvedStaff: [{ username: 'Bob' }, { username: 'Bob' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#involvedStaff[1]',
+        text: "Username 'BOB' has already been added - remove this user",
+      },
+    ])
+  })
 })
 
 describe('Witnesses', () => {
@@ -276,6 +287,25 @@ describe('Witnesses', () => {
       locationId: -1,
       plannedUseOfForce: true,
       witnesses: [{ name: 'bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
+    })
+  })
+
+  it('Duplicate names are rejected', () => {
+    const input = { ...validInput, witnesses: [{ name: ' bob' }, { name: 'Bob ' }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#witnesses[1]',
+        text: "Witness 'Bob' has already been added - remove this witness",
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      witnesses: [{ name: 'bob' }, { name: 'Bob' }],
       involvedStaff: [{ username: 'ITAG_USER' }],
     })
   })
@@ -622,9 +652,9 @@ describe('incidentDate', () => {
       .add(1, 'day')
 
     const day = dateInTheFuture.format('D')
-    const month = now.format('M')
-    const year = now.format('YYYY')
-    const time = now.format('HH:mm')
+    const month = dateInTheFuture.format('M')
+    const year = dateInTheFuture.format('YYYY')
+    const time = dateInTheFuture.format('HH:mm')
 
     const input = {
       ...validInput,

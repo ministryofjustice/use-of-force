@@ -1,5 +1,5 @@
-const config = require('./incident.js')
-const formProcessing = require('../services/formProcessing')
+const config = require('../incident.js')
+const formProcessing = require('../../services/formProcessing')
 
 const validatorChecker = formConfig => input => {
   const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
@@ -303,6 +303,23 @@ describe('Relocation and Injuries page inputs', () => {
       {
         href: '#staffNeedingMedicalAttention[0][name]',
         text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+      },
+    ])
+  })
+
+  it('Staff needing medical attention - duplicate staff names throws error', () => {
+    const input = {
+      ...validInput,
+      staffNeedingMedicalAttention: [
+        { name: 'Eric Idle', hospitalisation: 'true' },
+        { name: ' eric Idle ', hospitalisation: 'true' },
+      ],
+    }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#staffNeedingMedicalAttention[1]',
+        text: "Name 'eric Idle' has already been added - remove this name",
       },
     ])
   })

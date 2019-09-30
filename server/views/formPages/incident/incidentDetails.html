@@ -158,7 +158,7 @@
         {% macro addStaffMember(index, value, showRemove) %}
         {% call govukFieldset({ classes: 'add-another__item' }) %}
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-third">
+          <div class="govuk-grid-column-one-third" id="involvedStaff[{{index}}]">
             {{
           govukInput({
             label: {
@@ -167,7 +167,7 @@
             id: 'involvedStaff[' + index + '][username]',
             name: 'involvedStaff[' + index + '][username]',
             value: value,
-            errorMessage: errors | findError('involvedStaff[' + index + '][username]'),
+            errorMessage: errors | findErrors(['involvedStaff[' + index + ']','involvedStaff[' + index + '][username]']),
             attributes: {
               'data-name': 'involvedStaff[%index%][username]',
               'data-id': 'involvedStaff[%index%][username]'
@@ -211,7 +211,7 @@
         {% macro addWitness(index, value, showRemove) %}
           {% call govukFieldset({ classes: 'add-another__item' }) %}
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-third">
+          <div class="govuk-grid-column-one-third" id="witnesses[{{index}}]">
             {{
                   govukInput({
                     label: {
@@ -220,7 +220,7 @@
                     id: 'witnesses[' + index + '][name]',
                     name: 'witnesses[' + index + '][name]',
                     value: value,
-                    errorMessage: errors | findError('witnesses[' + index + '][name]'),
+                    errorMessage: errors | findErrors(['witnesses[' + index + ']' ,'witnesses[' + index + '][name]']),
                     attributes: {
                       'data-name': 'witnesses[%index%][name]',
                       'data-id': 'witnesses[%index%][name]'
