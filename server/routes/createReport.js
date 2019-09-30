@@ -10,14 +10,12 @@ const formConfig = {
 }
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
-  const backLink = req.get('Referrer')
   const { bookingId } = req.params
   const pageData = firstItem(req.flash('userInput')) || form[formName]
   const errors = req.flash('errors')
   res.render(`formPages/incident/${formName}`, {
     data: { bookingId, ...pageData, ...data, types },
     formName,
-    backLink,
     errors,
     editMode,
   })
