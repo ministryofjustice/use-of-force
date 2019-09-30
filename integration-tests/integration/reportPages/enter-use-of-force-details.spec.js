@@ -79,8 +79,8 @@ context('Submitting details page form', () => {
   it('Can revisit saved data', () => {
     cy.login(bookingId)
 
-    const relocationAndInjuriesPage = fillFormAndSave({ restraintPositions: ['STANDING', 'KNEELING'] })
-    relocationAndInjuriesPage.back().click()
+    fillFormAndSave({ restraintPositions: ['STANDING', 'KNEELING'] })
+    cy.go('back')
 
     const detailsPage = UseOfForceDetailsPage.verifyOnPage()
     detailsPage.postiveCommunication().should('have.value', 'true')

@@ -1,16 +1,9 @@
 {% extends "../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
 
 {% set pageTitle = 'This report has been sent to the use of force coordinator' %}
 
-{% block beforeContent %}
-{{ govukBackLink({
-  text: "Back",
-  href: backLink or "/check-answers/" + bookingId
-}) }}
-
-{% endblock %} {% block content %}
+{% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-panel info-panel">

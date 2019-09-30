@@ -1,19 +1,12 @@
 {% extends "../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %} 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% import "./reportDetailMacro.njk" as reportDetail %} 
 
 {% set pageTitle = 'Use of force report' %}
-{% block beforeContent %}
 
-{{ govukBackLink({
-text: "Back",
-href: backLink or "/"
-}) }}
-
-{% endblock %} {% block content %}
+{% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
     <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
