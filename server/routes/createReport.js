@@ -39,7 +39,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     if (form === 'incidentDetails') {
       return involvedStaffService.lookup(res.locals.user.token, involvedStaff.map(u => u.username))
     }
-    return { additionalFields: [], additionalErrors: [] }
+    return { additionalFields: [] }
   }
 
   const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, editMode, saveAndContinue) => {
@@ -127,13 +127,12 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
     const { payloadFields, extractedFields, errors } = formProcessing.processInput({ validate, fields }, req.body)
 
-    const { additionalFields = {}, additionalErrors = [] } = await getAdditonalData(res, formName, payloadFields)
+    const { additionalFields = {} } = await getAdditonalData(res, formName, payloadFields)
 
-    const allErrors = [...errors, ...additionalErrors]
     const formPayload = { ...payloadFields, ...additionalFields }
 
-    if (saveAndContinue && !isNilOrEmpty(allErrors)) {
-      req.flash('errors', allErrors)
+    if (saveAndContinue && !isNilOrEmpty(errors)) {
+      req.flash('errors', errors)
       req.flash('userInput', { ...formPayload, ...extractedFields })
       return res.redirect(req.originalUrl)
     }

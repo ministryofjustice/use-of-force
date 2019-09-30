@@ -86,7 +86,6 @@ describe('lookup', () => {
     const result = await service.lookup('token-1', [])
 
     expect(result).toEqual({
-      additionalErrors: [],
       additionalFields: {
         involvedStaff: [],
       },
@@ -136,32 +135,12 @@ describe('lookup', () => {
     const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
     expect(result).toEqual({
-      additionalErrors: [],
       additionalFields: {
         involvedStaff: [
           { email: 'an@email.com', name: 'Bob Smith', staffId: undefined, username: 'Bob' },
           { missing: true, username: 'June' },
         ],
       },
-    })
-  })
-  test('fails with duplicate users', async () => {
-    const result = await service.lookup('token-1', ['Bob', 'June', 'Bob', 'Jenny', 'Jenny'])
-
-    expect(result).toEqual({
-      additionalFields: {},
-      additionalErrors: [
-        {
-          i: 2,
-          href: '#involvedStaff[2][username]',
-          text: "User with name 'Bob' has already been added",
-        },
-        {
-          i: 4,
-          href: '#involvedStaff[4][username]',
-          text: "User with name 'Jenny' has already been added",
-        },
-      ],
     })
   })
 
@@ -218,7 +197,6 @@ describe('lookup', () => {
           },
         ],
       },
-      additionalErrors: [],
     })
   })
 })

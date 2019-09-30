@@ -116,6 +116,10 @@ describe('Evidence', () => {
         href: '#evidenceTagAndDescription[2][description]',
         text: 'Enter a description of the evidence',
       },
+      {
+        href: '#evidenceTagAndDescription[2]',
+        text: "Evidence tag '12345' has already been added - remove this evidence tag",
+      },
     ])
 
     expect(formResponse).toEqual({
@@ -268,7 +272,7 @@ describe('Body Worn Cameras', () => {
     const input = {
       ...validInput,
       bodyWornCamera: 'YES',
-      bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'AAA' }],
+      bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'BBB' }],
     }
     const { errors, formResponse } = check(input)
 
@@ -277,9 +281,64 @@ describe('Body Worn Cameras', () => {
     expect(formResponse).toEqual({
       baggedEvidence: true,
       bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: 'BBB' }],
+      cctvRecording: 'YES',
+      evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+      photographsTaken: true,
+    })
+  })
+
+  it('Duplicate camera numbers are rejected', () => {
+    const input = {
+      ...validInput,
+      bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'AAA' }],
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#bodyWornCameraNumbers[1]',
+        text: "Camera 'AAA' has already been added - remove this camera",
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: 'AAA' }, { cameraNum: 'AAA' }],
       cctvRecording: 'YES',
       evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+      photographsTaken: true,
+    })
+  })
+
+  it('Duplicate evidence tags are rejected', () => {
+    const input = {
+      ...validInput,
+      bodyWornCamera: 'NO',
+      evidenceTagAndDescription: [
+        { description: 'D2', evidenceTagReference: '12345' },
+        { description: 'D1', evidenceTagReference: '12345' },
+      ],
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#evidenceTagAndDescription[1]',
+        text: "Evidence tag '12345' has already been added - remove this evidence tag",
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      baggedEvidence: true,
+      bodyWornCamera: 'NO',
+      cctvRecording: 'YES',
+      evidenceTagAndDescription: [
+        { description: 'D2', evidenceTagReference: '12345' },
+        { description: 'D1', evidenceTagReference: '12345' },
+      ],
       photographsTaken: true,
     })
   })

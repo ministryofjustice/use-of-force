@@ -225,6 +225,17 @@ describe('Involved staff', () => {
       },
     ])
   })
+
+  it('Username throws errors when duplicates are found', () => {
+    const input = { ...validInput, involvedStaff: [{ username: 'Bob' }, { username: 'Bob' }] }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#involvedStaff[1]',
+        text: "Username 'BOB' has already been added - remove this user",
+      },
+    ])
+  })
 })
 
 describe('Witnesses', () => {
@@ -276,6 +287,25 @@ describe('Witnesses', () => {
       locationId: -1,
       plannedUseOfForce: true,
       witnesses: [{ name: 'bob' }],
+      involvedStaff: [{ username: 'ITAG_USER' }],
+    })
+  })
+
+  it('Duplicate names are rejected', () => {
+    const input = { ...validInput, witnesses: [{ name: ' bob' }, { name: 'Bob ' }] }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#witnesses[1]',
+        text: "Witness 'Bob' has already been added - remove this witness",
+      },
+    ])
+
+    expect(formResponse).toEqual({
+      locationId: -1,
+      plannedUseOfForce: true,
+      witnesses: [{ name: 'bob' }, { name: 'Bob' }],
       involvedStaff: [{ username: 'ITAG_USER' }],
     })
   })
