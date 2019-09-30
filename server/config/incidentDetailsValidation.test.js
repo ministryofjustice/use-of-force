@@ -652,9 +652,9 @@ describe('incidentDate', () => {
       .add(1, 'day')
 
     const day = dateInTheFuture.format('D')
-    const month = now.format('M')
-    const year = now.format('YYYY')
-    const time = now.format('HH:mm')
+    const month = dateInTheFuture.format('M')
+    const year = dateInTheFuture.format('YYYY')
+    const time = dateInTheFuture.format('HH:mm')
 
     const input = {
       ...validInput,
