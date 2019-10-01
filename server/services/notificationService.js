@@ -28,20 +28,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
         },
         reference: null,
       })
-      .then(({ body }) => {
-        logger.info(`Send statement reminder, successful for reporter: '${reporterName}'`, body)
+      .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementReminderSuccess',
           properties: { reporterName, incidentDate, ...context },
+          detail: body,
         })
-      })
-      .catch(({ message }) => {
-        logger.error(`Send statement reminder, failed for reporter: '${reporterName}'`, message)
+      )
+      .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementReminderFailure',
           properties: { reporterName, incidentDate, ...context },
+          detail: message,
         })
-      })
+      )
 
   const sendInvolvedStaffStatementReminder = async (
     emailAddress,
@@ -60,20 +60,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
         },
         reference: null,
       })
-      .then(({ body }) => {
-        logger.info(`Send statement reminder, successful for involved staff: '${involvedName}'`, body)
+      .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementReminderSuccess',
           properties: { involvedName, incidentDate, ...context },
+          detail: body,
         })
-      })
-      .catch(({ message }) => {
-        logger.error(`Send statement reminder, failed for involved staff: '${involvedName}'`, message)
+      )
+      .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementReminderFailure',
           properties: { involvedName, incidentDate, ...context },
+          detail: message,
         })
-      })
+      )
 
   const sendReporterStatementOverdue = async (emailAddress, { reporterName, incidentDate }, context) =>
     emailClient
@@ -86,20 +86,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
         },
         reference: null,
       })
-      .then(({ body }) => {
-        logger.info(`Send statement overdue, successful for reporter: '${reporterName}'`, body)
+      .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementOverdueSuccess',
           properties: { reporterName, incidentDate, ...context },
+          detail: body,
         })
-      })
-      .catch(({ message }) => {
-        logger.error(`Send statement overdue, failed for reporter: '${reporterName}'`, message)
+      )
+      .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementOverdueFailure',
           properties: { reporterName, incidentDate, ...context },
+          detail: message,
         })
-      })
+      )
 
   const sendInvolvedStaffStatementOverdue = async (emailAddress, { involvedName, incidentDate }, context) =>
     emailClient
@@ -112,20 +112,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
         },
         reference: null,
       })
-      .then(({ body }) => {
-        logger.info(`Send statement overdue, successful for involved staff: '${involvedName}'`, body)
+      .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementOverdueSuccess',
           properties: { involvedName, incidentDate, ...context },
+          detail: body,
         })
-      })
-      .catch(({ message }) => {
-        logger.error(`Send statement overdue, failed for involved staff: '${involvedName}'`, message)
+      )
+      .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementOverdueFailure',
           properties: { involvedName, incidentDate, ...context },
+          detail: message,
         })
-      })
+      )
 
   const sendStatementRequest = async (
     emailAddress,
@@ -145,20 +145,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
         },
         reference: null,
       })
-      .then(({ body }) => {
-        logger.info(`Send statement request, successful for involved staff: '${involvedName}'`, body)
+      .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendStatementRequestSuccess',
           properties: { reporterName, involvedName, incidentDate, ...context },
+          detail: body,
         })
-      })
-      .catch(({ message }) => {
-        logger.error(`Send statement request, failed for involved staff: '${involvedName}'`, message)
+      )
+      .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendStatementRequestFailure',
           properties: { reporterName, involvedName, incidentDate, ...context },
+          detail: message,
         })
-      })
+      )
 
   return {
     sendStatementRequest,
