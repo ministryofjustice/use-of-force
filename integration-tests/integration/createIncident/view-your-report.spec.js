@@ -59,6 +59,9 @@ context('Submit statement', () => {
     yourReportPage.prisonerName().contains('Norman Smith')
     yourReportPage.prisonNumber().contains('A1234AC')
     yourReportPage.submittedDate().contains(/4 September 2019, \d{2}:\d{2}/)
+    yourReportPage.getReportId().then(reportId => {
+      yourReportPage.incidentNumber().contains(reportId)
+    })
     yourReportPage.verifyInputs()
 
     yourReportPage.continue().click()
