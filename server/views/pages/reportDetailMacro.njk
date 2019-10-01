@@ -1,6 +1,25 @@
 
 {% import "./pagesMacros.njk" as pagesMacros %} 
 
+{% macro reportHeading(data) %}
+   <div class="govuk-!-margin-bottom-1">
+    <span class="govuk-label--s">Created by:&nbsp;</span>
+    <span data-qa="reporter-name"> {{ data.reporterName }}</span>
+    <br/>
+    <span class="govuk-label--s">Date and time:&nbsp;</span>
+    <span data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm')}}</span>
+    <br/>
+    <span class="govuk-label--s">Prisoner name:&nbsp;</span>
+    <span data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</span>
+    <br/>
+    <span class="govuk-label--s">Prisoner number:&nbsp;</span>
+    <span data-qa="prison-number"> {{ data.offenderDetail.offenderNo }}</span>
+    <br/>
+    <span class="govuk-label--s">Incident number:&nbsp;</span>
+    <span data-qa="incident-number"> {{ data.incidentId }}</span>
+  </div>    
+{% endmacro %}}
+
 {% macro detail(data, bookingId) %}
     {{
       pagesMacros.sectionHeading({
