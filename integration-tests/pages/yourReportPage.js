@@ -10,6 +10,8 @@ const viewYourReportPage = () =>
 
     prisonNumber: () => cy.get('[data-qa="prison-number"]'),
 
+    incidentNumber: () => cy.get('[data-qa="incident-number"]'),
+
     verifyInputs: () => {
       cy.get('[data-qa="incidentDate"]')
         .invoke('text')
@@ -58,6 +60,13 @@ const viewYourReportPage = () =>
       cy.get('[data-qa="photographs"]').contains('Yes')
       cy.get('[data-qa="cctv"]').contains('Not known')
       cy.get('[data-qa="bodyCameras"]').contains('Yes - 123, 789, 456')
+    },
+
+    getReportId: () => {
+      return cy.url().then(url => {
+        const match = url.match(/.*\/(.*)\/your-report/)
+        return match[1]
+      })
     },
 
     continue: () => cy.get('[data-qa="continue"]'),

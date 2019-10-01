@@ -68,6 +68,10 @@ context('view review page', () => {
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
       viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name - TEST_USER'] })
+      viewReportPage.getReportId().then(reportId => {
+        viewReportPage.incidentNumber().contains(reportId)
+      })
+
       viewReportPage.continue().click()
     }
 

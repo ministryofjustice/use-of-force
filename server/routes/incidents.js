@@ -30,6 +30,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     const involvedStaffNames = involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.userId}`])
 
     return {
+      incidentId: id,
       reporterName,
       submittedDate,
       bookingId,
