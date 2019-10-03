@@ -77,4 +77,5 @@ module.exports = {
     emailUrl: get('EMAIL_LOCATION_URL', '/', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
+  https: production,
 }

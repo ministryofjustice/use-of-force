@@ -41,7 +41,7 @@ services:
       - POSTGRES_DB=use-of-force
 
   use-of-force:
-    build: .
+    image: mojdigitalstudio/use-of-force:latest
     networks:
       - hmpps
     depends_on:
@@ -62,6 +62,7 @@ services:
       - NOMIS_AUTH_URL=http://oauth-server:8080/auth
       - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
       - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
+      - NODE_ENV=development
 
 networks:
   hmpps:
