@@ -33,7 +33,7 @@ RUN npm ci && \
     npm run record-build-info
 
 EXPOSE 3000
-
+ENV NODE_ENV='production'
 USER 2000
 
 CMD [ "npm", "start" ]
