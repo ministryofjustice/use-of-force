@@ -42,11 +42,7 @@ module.exports = {
   apis: {
     oauth2: {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
-      externalUrl: get(
-        'NOMIS_AUTH_EXTERNAL_URL',
-        get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'),
-        requiredInProduction
-      ),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
         response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000, requiredInProduction),
         deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000, requiredInProduction),
