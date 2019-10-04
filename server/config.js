@@ -42,14 +42,10 @@ module.exports = {
   apis: {
     oauth2: {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
-      externalUrl: get(
-        'NOMIS_AUTH_EXTERNAL_URL',
-        get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'),
-        requiredInProduction
-      ),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
-        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000, requiredInProduction),
-        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000, requiredInProduction),
+        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000),
+        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000),
       },
       agent: {
         maxSockets: 100,
@@ -57,13 +53,13 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', requiredInProduction),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     elite2: {
       url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000, requiredInProduction),
-        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000, requiredInProduction),
+        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000),
+        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000),
       },
       agent: {
         maxSockets: 100,
@@ -77,4 +73,5 @@ module.exports = {
     emailUrl: get('EMAIL_LOCATION_URL', '/', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
+  https: production,
 }
