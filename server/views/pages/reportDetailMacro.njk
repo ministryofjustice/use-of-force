@@ -120,6 +120,14 @@
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
+      {{
+      pagesMacros.tableRow({
+        label: 'Were handcuffs applied?',
+        'data-qa': 'handcuffsApplied',
+        dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo
+      })
+    }}
+
 
     {{
       pagesMacros.sectionHeading({
