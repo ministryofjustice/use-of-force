@@ -1,5 +1,6 @@
 const { mergeIntoPayload, processInput } = require('./formProcessing')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
+const { validations, joi } = require('../config/validation/validations')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {
@@ -162,7 +163,6 @@ describe('processInput', () => {
     const fields = [
       {
         q1: {
-          responseType: 'requiredString',
           validationMessage: 'Please give a full name',
           sanitiser: val => val.toUpperCase(),
         },
@@ -184,13 +184,14 @@ describe('processInput', () => {
     const fields = [
       {
         q1: {
-          responseType: 'requiredString',
           validationMessage: 'Please give a full name',
         },
       },
     ]
 
-    const output = processInput({ fields, validate: true }, {})
+    const schema = joi.object({ q1: validations.requiredString })
+
+    const output = processInput({ fields, formSchema: schema, validate: true }, {})
 
     expect(output).toEqual({
       errors: [

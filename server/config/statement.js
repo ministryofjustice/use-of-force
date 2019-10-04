@@ -1,4 +1,5 @@
 const { EXTRACTED } = require('./fieldType')
+const formSchema = require('./validation/statementSchema')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
@@ -9,7 +10,6 @@ module.exports = {
   fields: [
     {
       lastTrainingMonth: {
-        responseType: 'requiredMonthIndexNotInFuture_lastTrainingYear',
         sanitiser: toSmallInt,
         validationMessage: 'Select the month you last attended refresher training',
         fieldType: EXTRACTED,
@@ -17,7 +17,6 @@ module.exports = {
     },
     {
       lastTrainingYear: {
-        responseType: 'requiredYearNotInFuture',
         sanitiser: toSmallInt,
         fieldType: EXTRACTED,
         validationMessage: {
@@ -29,7 +28,6 @@ module.exports = {
     },
     {
       jobStartYear: {
-        responseType: 'requiredYearNotInFuture',
         sanitiser: toSmallInt,
         fieldType: EXTRACTED,
         validationMessage: {
@@ -41,12 +39,12 @@ module.exports = {
     },
     {
       statement: {
-        responseType: 'requiredString',
         validationMessage: 'Enter your statement',
         fieldType: EXTRACTED,
         sanitiser: val => (val ? val.trim() : null),
       },
     },
   ],
+  formSchema,
   validate: true,
 }

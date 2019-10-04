@@ -1,6 +1,15 @@
 const { isBlank } = require('../utils/utils')
 const { EXTRACTED } = require('./fieldType')
 const { validate, isValid } = require('../utils/fieldValidation')
+const {
+  validations: { optionalInvolvedStaffWhenPersisted },
+} = require('./validation/validations')
+
+const incidentDetailsSchema = require('./validation/incidentDetailsSchema')
+const useOfForceDetailsSchema = require('./validation/useOfForceDetailsSchema')
+const relocationAndInjuriesSchema = require('./validation/relocationAndInjuriesSchema')
+const evidenceSchema = require('./validation/evidenceSchema')
+
 const toDate = require('../utils/dateSanitiser')
 
 const removeEmptyValues = attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs))
@@ -39,7 +48,6 @@ module.exports = {
     fields: [
       {
         incidentDate: {
-          responseType: 'requiredIncidentDate',
           sanitiser: toDate,
           fieldType: EXTRACTED,
           validationMessage: {
@@ -57,21 +65,18 @@ module.exports = {
       },
       {
         locationId: {
-          responseType: 'requiredNumber',
           validationMessage: 'Select the location of the incident',
           sanitiser: toInteger,
         },
       },
       {
         plannedUseOfForce: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if the use of force was planned',
           sanitiser: toBoolean,
         },
       },
       {
         involvedStaff: {
-          responseType: 'optionalInvolvedStaff',
           validationMessage: { 'string.pattern.name': 'Usernames can only contain letters and an underscore' },
           sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0][username]',
@@ -79,7 +84,6 @@ module.exports = {
       },
       {
         witnesses: {
-          responseType: 'optionalWitnesses',
           validationMessage: {
             'string.pattern.name': 'Witness names can only contain letters, spaces, hyphens, apostrophe',
           },
@@ -88,12 +92,13 @@ module.exports = {
       },
     ],
     validate: true,
+    formSchema: incidentDetailsSchema,
     isComplete(values) {
       return (
         // It's possible to store invalid usernames which haven't been validated against the auth server.
         // The separate check ensures that all involvedStaff have the correct extra fields that are stored against them once validated.
-        validate(this.fields, values, true).length === 0 &&
-        isValid('optionalInvolvedStaffWhenPersisted', values.involvedStaff)
+        validate(this.fields, this.formSchema, values, true).length === 0 &&
+        isValid(optionalInvolvedStaffWhenPersisted, values.involvedStaff)
       )
     },
     nextPath: {
@@ -105,28 +110,24 @@ module.exports = {
     fields: [
       {
         positiveCommunication: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if positive communication was used',
           sanitiser: toBoolean,
         },
       },
       {
         personalProtectionTechniques: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if any personal protection techniques were used',
           sanitiser: toBoolean,
         },
       },
       {
         batonDrawn: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if a baton was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         batonUsed: {
-          responseType: 'requiredBatonUsed',
           validationMessage: 'Select yes if a baton was used',
           sanitiser: toBoolean,
           dependentOn: 'batonDrawn',
@@ -135,14 +136,12 @@ module.exports = {
       },
       {
         pavaDrawn: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if PAVA was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         pavaUsed: {
-          responseType: 'requiredPavaUsed',
           validationMessage: 'Select yes if PAVA was used',
           sanitiser: toBoolean,
           dependentOn: 'pavaDrawn',
@@ -151,14 +150,12 @@ module.exports = {
       },
       {
         guidingHold: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if a guiding hold was used',
           sanitiser: toBoolean,
         },
       },
       {
         guidingHoldOfficersInvolved: {
-          responseType: 'requiredOfficersInvolved',
           validationMessage: 'Select how many officers were involved in the guiding hold',
           sanitiser: toInteger,
           dependentOn: 'guidingHold',
@@ -167,14 +164,12 @@ module.exports = {
       },
       {
         restraint: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if control and restraint was used',
           sanitiser: toBoolean,
         },
       },
       {
         restraintPositions: {
-          responseType: 'requiredRestraintPositions',
           validationMessage: 'Select the control and restraint positions used',
           dependentOn: 'restraint',
           predicate: 'true',
@@ -182,15 +177,15 @@ module.exports = {
       },
       {
         handcuffsApplied: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if handcuffs were applied',
           sanitiser: toBoolean,
         },
       },
     ],
     validate: true,
+    formSchema: useOfForceDetailsSchema,
     isComplete(values) {
-      return validate(this.fields, values).length === 0
+      return validate(this.fields, this.formSchema, values).length === 0
     },
     nextPath: {
       path: bookingId => `/report/${bookingId}/relocation-and-injuries`,
@@ -201,21 +196,18 @@ module.exports = {
     fields: [
       {
         prisonerRelocation: {
-          responseType: 'requiredString',
           sanitiser: trimmedString,
           validationMessage: 'Select where the prisoner was relocated to',
         },
       },
       {
         relocationCompliancy: {
-          responseType: 'requiredBoolean',
           sanitiser: toBoolean,
           validationMessage: 'Select yes if the prisoner was compliant',
         },
       },
       {
         f213CompletedBy: {
-          responseType: 'f213CompletedBy',
           sanitiser: trimmedString,
           validationMessage: {
             'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
@@ -225,21 +217,18 @@ module.exports = {
       },
       {
         prisonerInjuries: {
-          responseType: 'requiredBoolean',
           sanitiser: toBoolean,
           validationMessage: 'Select yes if the prisoner sustained any injuries',
         },
       },
       {
         healthcareInvolved: {
-          responseType: 'requiredBoolean',
           sanitiser: toBoolean,
           validationMessage: 'Select yes if a member of healthcare was present during the incident',
         },
       },
       {
         healthcarePractionerName: {
-          responseType: 'requiredMemberOfHealthcare',
           validationMessage: {
             'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'string.base': 'Enter the name of the member of healthcare',
@@ -252,21 +241,18 @@ module.exports = {
       },
       {
         prisonerHospitalisation: {
-          responseType: 'requiredBoolean',
           sanitiser: toBoolean,
           validationMessage: 'Select yes if the prisoner needed outside hospitalisation',
         },
       },
       {
         staffMedicalAttention: {
-          responseType: 'requiredBoolean',
           sanitiser: toBoolean,
           validationMessage: 'Select yes if a staff member needed medical attention',
         },
       },
       {
         staffNeedingMedicalAttention: {
-          responseType: 'requiredStaffNeedingMedicalAttention',
           validationMessage: {
             'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
             'array.min': "Enter the staff member's name and whether they went to hospital",
@@ -287,8 +273,9 @@ module.exports = {
       },
     ],
     validate: true,
+    formSchema: relocationAndInjuriesSchema,
     isComplete(values) {
-      return validate(this.fields, values).length === 0
+      return validate(this.fields, this.formSchema, values).length === 0
     },
     nextPath: {
       path: bookingId => `/report/${bookingId}/evidence`,
@@ -299,14 +286,12 @@ module.exports = {
     fields: [
       {
         baggedEvidence: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if any evidence was bagged and tagged',
           sanitiser: toBoolean,
         },
       },
       {
         evidenceTagAndDescription: {
-          responseType: 'requiredTagAndDescription',
           sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
           validationMessage: 'Please input both the evidence tag number and the description',
           dependentOn: 'baggedEvidence',
@@ -316,26 +301,22 @@ module.exports = {
       },
       {
         photographsTaken: {
-          responseType: 'requiredBoolean',
           validationMessage: 'Select yes if any photographs were taken',
           sanitiser: toBoolean,
         },
       },
       {
         cctvRecording: {
-          responseType: 'requiredYesNoNotKnown',
           validationMessage: 'Select yes if any part of the incident captured on CCTV',
         },
       },
       {
         bodyWornCamera: {
-          responseType: 'requiredYesNoNotKnown',
           validationMessage: 'Select yes if any part of the incident was captured on a body-worn camera',
         },
       },
       {
         bodyWornCameraNumbers: {
-          responseType: 'requiredCameraNumber',
           sanitiser: removeEmptyValues(['cameraNum']),
           dependentOn: 'bodyWornCamera',
           predicate: 'YES',
@@ -345,8 +326,9 @@ module.exports = {
       },
     ],
     validate: true,
+    formSchema: evidenceSchema,
     isComplete(values) {
-      return validate(this.fields, values).length === 0
+      return validate(this.fields, this.formSchema, values).length === 0
     },
     nextPath: {
       path: bookingId => `/report/${bookingId}/check-your-answers`,

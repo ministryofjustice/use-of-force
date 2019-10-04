@@ -1,6 +1,8 @@
 const moment = require('moment')
 const config = require('../incident.js')
 const formProcessing = require('../../services/formProcessing')
+const { validations } = require('./validations')
+const { isValid } = require('../../utils/fieldValidation')
 
 const validatorChecker = formConfig => input => {
   const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput(formConfig, input)
@@ -698,5 +700,35 @@ describe('incidentDate', () => {
       involvedStaff: [{ username: 'ITAG_USER' }],
       witnesses: [{ name: 'User bob' }],
     })
+  })
+})
+
+describe('check optional staff role', () => {
+  const { optionalInvolvedStaff, optionalInvolvedStaffWhenPersisted } = validations
+  test('Check optional staff', () => {
+    expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
+    expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
+    expect(isValid(optionalInvolvedStaff, [])).toEqual(true)
+  })
+
+  test('invalid (optionalInvolvedStaff)', () => {
+    expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', age: 29 }])).toEqual(false)
+    expect(isValid(optionalInvolvedStaff, true)).toEqual(false)
+    expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
+    expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
+  })
+
+  test('Check valid (optionalInvolvedStaffWhenPersisted)', () => {
+    expect(
+      isValid(optionalInvolvedStaffWhenPersisted, [{ username: 'VQO24O', name: 'Bob', email: 'a@bcom', staffId: 123 }])
+    ).toEqual(true)
+    expect(isValid(optionalInvolvedStaffWhenPersisted, [])).toEqual(true)
+  })
+
+  test('invalid (optionalInvolvedStaffWhenPersisted)', () => {
+    expect(isValid(optionalInvolvedStaffWhenPersisted, [{ username: 'Bob', age: 29 }])).toEqual(false)
+    expect(isValid(optionalInvolvedStaffWhenPersisted, true)).toEqual(false)
+    expect(isValid(optionalInvolvedStaffWhenPersisted, [{ username: '' }])).toEqual(false)
+    expect(isValid(optionalInvolvedStaffWhenPersisted, [{ bob: 'Bob' }])).toEqual(false)
   })
 })
