@@ -14,7 +14,7 @@ services:
       test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
     environment:
       - PORT=3001
-      - NODE_ENV=dev
+      - NODE_ENV=development
       - OAUTH_ENDPOINT_URL=http://oauth-server:8080/auth/
       - OAUTH_ENDPOINT_UI_URL=http://localhost:9090/auth/
       - API_ENDPOINT_URL=http://elite2-api:8080/
