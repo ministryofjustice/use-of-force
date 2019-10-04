@@ -17,9 +17,10 @@ const getStatus = (fieldConfig, sectionValues) => {
 module.exports = {
   SectionStatus,
   check: report => {
-    const result = Object.keys(config).reduce((previous, key) => {
-      return { ...previous, [key]: getStatus(config[key], report[key]) }
-    }, {})
+    const result = Object.keys(config).reduce(
+      (previous, key) => ({ ...previous, [key]: getStatus(config[key], report[key]) }),
+      {}
+    )
 
     const complete = !Object.values(result).some(value => value !== SectionStatus.COMPLETE)
     return { ...result, complete }

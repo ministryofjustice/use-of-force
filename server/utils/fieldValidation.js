@@ -1,6 +1,4 @@
-const { joi, validations } = require('../config/validation/validations')
-
-const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/utils')
+const { getFieldName, getIn, isNilOrEmpty } = require('../utils/utils')
 
 const getHref = (fieldConfig, error) => {
   const [head, ...sections] = error.path
@@ -16,24 +14,8 @@ const getHref = (fieldConfig, error) => {
   return sections.reduce((path, section) => `${path}[${section}]`, head)
 }
 
-const createSchemaFromConfig = fields => {
-  const formSchema = fields.reduce((schema, field) => {
-    const fieldName = getFieldName(field)
-    const fieldConfigResponseType = getFieldDetail(['responseType'], field)
-    const [responseType, ...fieldArgs] = fieldConfigResponseType.split('_')
-
-    const joiFieldItem = validations[responseType]
-    const joiFieldSchema = typeof joiFieldItem === 'function' ? joiFieldItem(...fieldArgs) : joiFieldItem
-
-    return mergeWithRight(schema, { [fieldName]: joiFieldSchema })
-  }, {})
-
-  return joi.object().keys(formSchema)
-}
-
 module.exports = {
-  validate(fields, formResponse, stripUnknown = false) {
-    const formSchema = createSchemaFromConfig(fields)
+  validate(fields, formSchema, formResponse, stripUnknown = false) {
     const joiErrors = formSchema.validate(formResponse, { stripUnknown, abortEarly: false })
     const fieldsConfig = fields
     if (isNilOrEmpty(joiErrors.error)) {
@@ -58,9 +40,8 @@ module.exports = {
     return errors
   },
 
-  isValid(schemaName, fieldValue) {
-    const joiFieldItem = validations[schemaName]
-    const joiErrors = joiFieldItem.validate(fieldValue, { stripUnknown: false, abortEarly: false })
+  isValid(schema, value) {
+    const joiErrors = schema.validate(value, { stripUnknown: false, abortEarly: false })
     return isNilOrEmpty(joiErrors.error)
   },
 }

@@ -65,12 +65,11 @@ module.exports = {
         })
         .required(),
 
-    requiredYearNotInFuture: () =>
-      joi
-        .number()
-        .min(1900)
-        .max(moment().year())
-        .required(),
+    requiredYearNotInFuture: joi
+      .number()
+      .min(1900)
+      .max(moment().year())
+      .required(),
 
     requiredString: joi
       .string()

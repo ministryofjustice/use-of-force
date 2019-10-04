@@ -91,9 +91,9 @@ const extractSingleErrorMessage = R.unless(
  */
 const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessage))
 
-const processInput = ({ validate: shouldValidate, fields }, userInput) => {
+const processInput = ({ validate: shouldValidate, formSchema, fields }, userInput) => {
   const response = fields.reduce(sanitiseInput(userInput), {})
-  const errors = shouldValidate ? simplifyErrors(validate(fields, response)) : []
+  const errors = shouldValidate ? simplifyErrors(validate(fields, formSchema, response)) : []
   const { payloadFields, extractedFields } = splitByType(fields, response)
   return { payloadFields, extractedFields, errors }
 }
