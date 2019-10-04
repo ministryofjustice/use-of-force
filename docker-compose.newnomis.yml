@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  new-nomis-ui:
+    image: mojdigitalstudio/new-nomis-ui:latest
+    networks:
+      - hmpps
+    depends_on:
+      - oauth-server
+      - elite2-api
+    container_name: new-nomis-ui
+    ports:
+      - '3001:3001'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+    environment:
+      - PORT=3001
+      - NODE_ENV=dev
+      - OAUTH_ENDPOINT_URL=http://oauth-server:8080/auth/
+      - OAUTH_ENDPOINT_UI_URL=http://localhost:9090/auth/
+      - API_ENDPOINT_URL=http://elite2-api:8080/
+      - USE_OF_FORCE_URL=http://localhost:3000
+      - USE_OF_FORCE_PRISONS=LEI
