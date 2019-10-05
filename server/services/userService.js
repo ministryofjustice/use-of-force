@@ -1,7 +1,7 @@
 const R = require('ramda')
 const logger = require('../../log.js')
 const { properCaseName } = require('../utils/utils.js')
-const { usernamePattern } = require('../config/validation/validations')
+const { usernamePattern } = require('../config/forms/validations')
 
 module.exports = function createUserService(elite2ClientBuilder, authClientBuilder) {
   async function getUser(token) {

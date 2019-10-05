@@ -3,12 +3,12 @@ const { EXTRACTED } = require('./fieldType')
 const { validate, isValid } = require('../utils/fieldValidation')
 const {
   validations: { optionalInvolvedStaffWhenPersisted },
-} = require('./validation/validations')
+} = require('./forms/validations')
 
-const incidentDetailsSchema = require('./validation/incidentDetailsSchema')
-const useOfForceDetailsSchema = require('./validation/useOfForceDetailsSchema')
-const relocationAndInjuriesSchema = require('./validation/relocationAndInjuriesSchema')
-const evidenceSchema = require('./validation/evidenceSchema')
+const incidentDetailsSchema = require('./forms/incidentDetailsForm')
+const useOfForceDetailsSchema = require('./forms/useOfForceDetailsForm')
+const relocationAndInjuriesSchema = require('./forms/relocationAndInjuriesForm')
+const evidenceSchema = require('./forms/evidenceForm')
 
 const toDate = require('../utils/dateSanitiser')
 

@@ -1,6 +1,6 @@
 const { mergeIntoPayload, processInput } = require('./formProcessing')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
-const { validations, joi } = require('../config/validation/validations')
+const { validations, joi } = require('../config/forms/validations')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {

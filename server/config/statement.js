@@ -1,5 +1,5 @@
 const { EXTRACTED } = require('./fieldType')
-const formSchema = require('./validation/statementSchema')
+const formSchema = require('./forms/statementForm')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
