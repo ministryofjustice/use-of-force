@@ -2,7 +2,7 @@ const config = require('../incident.js')
 const formProcessing = require('../../services/formProcessing')
 
 const validatorChecker = formConfig => input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
 

@@ -70,13 +70,13 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
 
-      const { fields, validate: validationEnabled, formSchema } = formConfig
-      const validate = validationEnabled && saveAndContinue
+      const validate = saveAndContinue
 
-      const { extractedFields: statement, errors } = formProcessing.processInput(
-        { validate, formSchema, fields },
-        req.body
-      )
+      const { extractedFields: statement, errors } = formProcessing.processInput({
+        validate,
+        formConfig,
+        input: req.body,
+      })
 
       const isValid = isNilOrEmpty(errors)
 

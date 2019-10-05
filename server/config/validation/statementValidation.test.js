@@ -3,7 +3,7 @@ const config = require('../statement.js')
 const formProcessing = require('../../services/formProcessing')
 
 const validatorChecker = formConfig => input => {
-  const { extractedFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+  const { extractedFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
 

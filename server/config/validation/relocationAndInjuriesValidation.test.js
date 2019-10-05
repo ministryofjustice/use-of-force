@@ -4,7 +4,7 @@ const { joi, validations } = require('./validations')
 const { isValid, validate } = require('../../utils/fieldValidation')
 
 const validatorChecker = formConfig => input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
 

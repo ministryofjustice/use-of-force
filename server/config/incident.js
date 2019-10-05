@@ -91,7 +91,6 @@ module.exports = {
         },
       },
     ],
-    validate: true,
     formSchema: incidentDetailsSchema,
     isComplete(values) {
       return (
@@ -182,7 +181,6 @@ module.exports = {
         },
       },
     ],
-    validate: true,
     formSchema: useOfForceDetailsSchema,
     isComplete(values) {
       return validate(this.fields, this.formSchema, values).length === 0
@@ -272,7 +270,6 @@ module.exports = {
         },
       },
     ],
-    validate: true,
     formSchema: relocationAndInjuriesSchema,
     isComplete(values) {
       return validate(this.fields, this.formSchema, values).length === 0
@@ -325,7 +322,6 @@ module.exports = {
         },
       },
     ],
-    validate: true,
     formSchema: evidenceSchema,
     isComplete(values) {
       return validate(this.fields, this.formSchema, values).length === 0
