@@ -1,16 +1,16 @@
 const moment = require('moment')
-const config = require('../incident.js')
+const formConfig = require('./incidentDetailsForm')
 const formProcessing = require('../../services/formProcessing')
 const { validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 
-const validatorChecker = formConfig => input => {
+const check = input => {
   const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors, extractedFields }
 }
 
 let validInput = {}
-const check = validatorChecker(config.incidentDetails)
+
 beforeEach(() => {
   validInput = {
     incidentDate: {

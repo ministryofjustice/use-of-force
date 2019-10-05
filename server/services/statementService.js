@@ -1,6 +1,6 @@
 const logger = require('../../log.js')
 const { StatementStatus } = require('../config/types')
-const statementConfig = require('../config/statement')
+const statementConfig = require('../config/forms/statementForm')
 const { validate } = require('../utils/fieldValidation')
 
 module.exports = function createStatementService({ statementsClient, incidentClient }) {
@@ -20,7 +20,7 @@ module.exports = function createStatementService({ statementsClient, incidentCli
 
   const validateSavedStatement = async (username, reportId) => {
     const statement = await getStatementForUser(username, reportId, StatementStatus.PENDING)
-    const errors = validate(statementConfig.fields, statementConfig.formSchema, statement, true)
+    const errors = validate(statementConfig.fields, statementConfig.schemas.complete, statement, true)
     return errors
   }
 

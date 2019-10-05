@@ -1,12 +1,8 @@
 const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
-const statementConfig = require('../config/statement')
+const statementForm = require('../config/forms/statementForm')
 const formProcessing = require('../services/formProcessing')
 const { StatementStatus } = require('../config/types')
-
-const formConfig = {
-  ...statementConfig,
-}
 
 module.exports = function CreateReportRoutes({ statementService, offenderService }) {
   const getOffenderNames = (token, incidents) => {
@@ -74,7 +70,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const { extractedFields: statement, errors } = formProcessing.processInput({
         validate,
-        formConfig,
+        formConfig: statementForm,
         input: req.body,
       })
 

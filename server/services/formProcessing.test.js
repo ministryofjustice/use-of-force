@@ -195,7 +195,7 @@ describe('processInput', () => {
 
     const schema = joi.object({ q1: validations.requiredString })
 
-    const output = processInput({ formConfig: { fields, formSchema: schema }, validate: true, input: {} })
+    const output = processInput({ formConfig: { fields, schemas: { complete: schema } }, validate: true, input: {} })
 
     expect(output).toEqual({
       errors: [

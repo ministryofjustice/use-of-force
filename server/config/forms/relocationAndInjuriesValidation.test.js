@@ -1,15 +1,15 @@
-const config = require('../incident.js')
+const formConfig = require('./relocationAndInjuriesForm')
 const formProcessing = require('../../services/formProcessing')
 const { joi, validations } = require('./validations')
 const { isValid, validate } = require('../../utils/fieldValidation')
 
-const validatorChecker = formConfig => input => {
+const check = input => {
   const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
 
 let validInput = {}
-const check = validatorChecker(config.relocationAndInjuries)
+
 beforeEach(() => {
   validInput = {
     prisonerRelocation: 'SEGREGATION_UNIT',
