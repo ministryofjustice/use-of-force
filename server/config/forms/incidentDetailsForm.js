@@ -69,7 +69,7 @@ module.exports = {
     return (
       // It's possible to store invalid usernames which haven't been validated against the auth server.
       // The separate check ensures that all involvedStaff have the correct extra fields that are stored against them once validated.
-      validate(this.fields, this.schemas.complete, values, true).length === 0 &&
+      isValid(this.schemas.complete, values, true) &&
       isValid(validations.optionalInvolvedStaffWhenPersisted, values.involvedStaff)
     )
   },

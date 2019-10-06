@@ -1,5 +1,5 @@
 const { joi, validations } = require('./validations')
-const { validate } = require('../../utils/fieldValidation')
+const { isValid } = require('../../utils/fieldValidation')
 const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
 
 module.exports = {
@@ -96,7 +96,7 @@ module.exports = {
     }),
   },
   isComplete(values) {
-    return validate(this.fields, this.schemas.complete, values).length === 0
+    return isValid(this.schemas.complete, values)
   },
   nextPath: {
     path: bookingId => `/report/${bookingId}/evidence`,
