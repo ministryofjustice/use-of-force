@@ -1,10 +1,10 @@
-const formConfig = require('./relocationAndInjuriesForm')
+const joi = require('@hapi/joi')
+const form = require('./relocationAndInjuriesForm')
 const formProcessing = require('../../services/formProcessing')
-const { joi, validations } = require('./validations')
 const { isValid, validate } = require('../../utils/fieldValidation')
 
 const check = input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig: form.formConfig, input })
   return { formResponse, errors }
 }
 
@@ -355,7 +355,7 @@ describe('name pattern (f213CompletedBy)', () => {
     },
   ]
 
-  const { f213CompletedBy } = validations
+  const { f213CompletedBy } = form
 
   it('matching value succeeds', () => {
     expect(isValid(f213CompletedBy, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe(true)

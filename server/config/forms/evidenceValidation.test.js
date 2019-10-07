@@ -1,4 +1,4 @@
-const formConfig = require('./evidenceForm')
+const { formConfig } = require('./evidenceForm')
 const formProcessing = require('../../services/formProcessing')
 
 const check = input => {

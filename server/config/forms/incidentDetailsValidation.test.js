@@ -1,11 +1,13 @@
 const moment = require('moment')
-const formConfig = require('./incidentDetailsForm')
+const form = require('./incidentDetailsForm')
 const formProcessing = require('../../services/formProcessing')
-const { validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 
 const check = input => {
-  const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput({ formConfig, input })
+  const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput({
+    formConfig: form.formConfig,
+    input,
+  })
   return { formResponse, errors, extractedFields }
 }
 
@@ -704,7 +706,7 @@ describe('incidentDate', () => {
 })
 
 describe('check optional staff role', () => {
-  const { optionalInvolvedStaff, optionalInvolvedStaffWhenPersisted } = validations
+  const { optionalInvolvedStaff, optionalInvolvedStaffWhenPersisted } = form
   test('Check optional staff', () => {
     expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
     expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
