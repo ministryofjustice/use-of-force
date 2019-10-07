@@ -12,6 +12,7 @@ div.govuk-width-container
 div.govuk-header__container
   border-bottom: 0
   padding-top: 0
+  padding-right: 0
 
 div.govuk-header__logo
   padding-top: 10px
@@ -27,17 +28,25 @@ header.govuk-header
   flex-grow: 1
   text-decoration: none
   padding-left: 0px
+  @include govuk-media-query($from: 0px)
+    margin-left: 58px
+  @include govuk-media-query($from: 360px)
+    margin-left: inherit
 
 .logo-text
   padding: 3px 15px 0 10px
-  border-right: solid white 1px
   margin-right: 15px
+  @include govuk-media-query($from: 0px)
+    border-right: none
+  @include govuk-media-query($from: 360px)
+    border-right: solid white 1px
 
 .user-block
   color: white
   float: right
   font-size: 19px
-  background-color: govuk-colour("blue")
+  background-color: #015ea5
+  height: 59px
   ul
     padding: 0
     li
@@ -47,6 +56,24 @@ header.govuk-header
         border-right: solid white 1px
   a
     color: white
+  @include govuk-media-query($from: 0px)
+    position: relative
+    bottom: 10px
+    padding-bottom: 10px
+    margin-right: -15px
+    margin-left: -20px
+    ul
+      li
+        padding: 0 20px
+  @include govuk-media-query($from: 360px)
+    position: inherit
+    bottom: 0px
+    padding-bottom: 0px
+    margin-right: 0px
+    margin-left: 0px
+    ul
+      li
+        padding: 0 30px
 
 // Task list pattern
 
@@ -116,7 +143,7 @@ header.govuk-header
   white-space: pre-wrap 
 
 .info-panel
-  background-color: govuk-colour("blue")
+  background-color: #015ea5
   color: govuk-colour("white")
 
 .float-right 
