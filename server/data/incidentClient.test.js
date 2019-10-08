@@ -244,6 +244,7 @@ test('getNextNotificationReminder', () => {
           ,       s.email                  "recipientEmail" 
           ,       s.name                   "recipientName"
           ,       s.next_reminder_date     "nextReminderDate"  
+          ,       s.submitted_date         "submittedDate"
           ,       r.reporter_name          "reporterName"
           ,       r.incident_date          "incidentDate"
           ,       r.user_id = s.user_id    "isReporter"

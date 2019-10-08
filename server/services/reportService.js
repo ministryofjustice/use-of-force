@@ -50,7 +50,7 @@ module.exports = function createReportService({
     return id
   }
 
-  const requestStatements = (reportId, currentUser, incidentDate, overdueDate, staffMembers) => {
+  const requestStatements = ({ reportId, currentUser, incidentDate, overdueDate, submittedDate, staffMembers }) => {
     const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
     return staffExcludingReporter.map(staff =>
       notificationService.sendStatementRequest(
@@ -60,6 +60,7 @@ module.exports = function createReportService({
           reporterName: currentUser.displayName,
           incidentDate,
           overdueDate,
+          submittedDate,
         },
         { reportId, statementId: staff.statementId }
       )
@@ -79,7 +80,14 @@ module.exports = function createReportService({
       // Always ensure report is persisted before sending out notifications
       await incidentClient.commitAndStartNewTransaction()
 
-      await requestStatements(id, currentUser, incidentDate, overdueDate, staff)
+      await requestStatements({
+        reportId: id,
+        currentUser,
+        incidentDate,
+        overdueDate,
+        submittedDate: reportSubmittedDate,
+        staffMembers: staff,
+      })
 
       return id
     }
