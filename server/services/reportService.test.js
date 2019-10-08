@@ -77,7 +77,13 @@ describe('submit', () => {
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
       [
         'user1@example.com',
-        { incidentDate: 'today', involvedName: 'June', reporterName: 'Bob Smith', overdueDate: deadline },
+        {
+          incidentDate: 'today',
+          involvedName: 'June',
+          reporterName: 'Bob Smith',
+          overdueDate: deadline,
+          submittedDate: now,
+        },
         {
           reportId: 'form-1',
           statementId: 1,
@@ -85,7 +91,13 @@ describe('submit', () => {
       ],
       [
         'user3@example.com',
-        { incidentDate: 'today', involvedName: 'Alice', reporterName: 'Bob Smith', overdueDate: deadline },
+        {
+          incidentDate: 'today',
+          involvedName: 'Alice',
+          reporterName: 'Bob Smith',
+          overdueDate: deadline,
+          submittedDate: now,
+        },
         {
           reportId: 'form-1',
           statementId: 3,
