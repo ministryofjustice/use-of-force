@@ -39,6 +39,7 @@ describe('getNextReminderDate', () => {
 describe('send', () => {
   const recipientEmail = 'smith@prison.org'
   const involvedName = 'June'
+  const submittedDate = moment('2019-09-04 21:26:17')
   const incidentDate = moment('2019-09-05 21:26:17')
   const reporterName = 'Officer Smith'
   const now = moment('2019-09-06 21:26:17')
@@ -54,6 +55,7 @@ describe('send', () => {
     recipientName: involvedName,
     reportId,
     statementId,
+    submittedDate,
   }
 
   const expectedContext = { reportId, statementId }
@@ -66,6 +68,7 @@ describe('send', () => {
           isReporter: true,
           nextReminderDate: now,
           overdueDate: notOverdue,
+          submittedDate,
           isOverdue: false,
         },
         now
@@ -78,6 +81,7 @@ describe('send', () => {
           incidentDate,
           overdueDate: notOverdue,
           reporterName,
+          submittedDate,
         },
         expectedContext
       )
@@ -104,6 +108,7 @@ describe('send', () => {
         {
           incidentDate,
           reporterName,
+          submittedDate,
         },
         expectedContext
       )
@@ -131,6 +136,7 @@ describe('send', () => {
         {
           incidentDate,
           overdueDate: notOverdue,
+          submittedDate,
           involvedName,
         },
         expectedContext
@@ -156,6 +162,7 @@ describe('send', () => {
         recipientEmail,
         {
           incidentDate,
+          submittedDate,
           involvedName,
         },
         expectedContext

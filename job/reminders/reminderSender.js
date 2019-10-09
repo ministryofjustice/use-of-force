@@ -16,6 +16,7 @@ module.exports = (notificationService, incidentClient) => {
         {
           reporterName: reminder.reporterName,
           incidentDate: reminder.incidentDate,
+          submittedDate: reminder.submittedDate,
         },
         context(reminder)
       )
@@ -25,6 +26,7 @@ module.exports = (notificationService, incidentClient) => {
         {
           involvedName: reminder.recipientName,
           incidentDate: reminder.incidentDate,
+          submittedDate: reminder.submittedDate,
         },
         context(reminder)
       )
@@ -40,6 +42,7 @@ module.exports = (notificationService, incidentClient) => {
           reporterName: reminder.reporterName,
           incidentDate: reminder.incidentDate,
           overdueDate: reminder.overdueDate,
+          submittedDate: reminder.submittedDate,
         },
         context(reminder)
       )
@@ -50,6 +53,7 @@ module.exports = (notificationService, incidentClient) => {
           involvedName: reminder.recipientName,
           incidentDate: reminder.incidentDate,
           overdueDate: reminder.overdueDate,
+          submittedDate: reminder.submittedDate,
         },
         context(reminder)
       )

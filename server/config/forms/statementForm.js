@@ -1,5 +1,5 @@
-const { EXTRACTED } = require('./fieldType')
-const formSchema = require('./validation/statementSchema')
+const { joi, validations } = require('./validations')
+const { EXTRACTED } = require('../fieldType')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
@@ -45,6 +45,12 @@ module.exports = {
       },
     },
   ],
-  formSchema,
-  validate: true,
+  schemas: {
+    complete: joi.object({
+      lastTrainingMonth: validations.requiredMonthIndexNotInFuture('lastTrainingYear'),
+      lastTrainingYear: validations.requiredYearNotInFuture,
+      jobStartYear: validations.requiredYearNotInFuture,
+      statement: validations.requiredString,
+    }),
+  },
 }
