@@ -1,6 +1,6 @@
-const TasklistPage = require('../../pages/tasklistPage')
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const SubmittedPage = require('../../pages/submittedPage')
+const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const ReportSentPage = require('../../pages/createReport/reportSentPage')
 const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
 
@@ -21,10 +21,10 @@ context('Submit the incident report', () => {
   it('Submitting a form', () => {
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    const detailsPage = newIncidentPage.save()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.fillForm()
+    const detailsPage = incidentDetailsPage.save()
     detailsPage.fillForm()
     const relocationAndInjuriesPage = detailsPage.save()
     relocationAndInjuriesPage.fillForm()
@@ -33,9 +33,9 @@ context('Submit the incident report', () => {
     const checkAnswersPage = evidencePage.save()
 
     checkAnswersPage.clickSubmit()
-    const submittedPage = SubmittedPage.verifyOnPage()
+    const reportSentPage = ReportSentPage.verifyOnPage()
 
-    submittedPage
+    reportSentPage
       .getReportId()
       .then(reportId =>
         cy
@@ -49,7 +49,7 @@ context('Submit the incident report', () => {
           )
       )
 
-    submittedPage
+    reportSentPage
       .getReportId()
       .then(reportId => cy.task('getPayload', reportId).then(payload => expect(payload).to.deep.equal(expectedPayload)))
   })
@@ -62,17 +62,17 @@ context('Submit the incident report', () => {
       involvedStaff: [],
     })
 
-    let tasklistPage = TasklistPage.visit(bookingId)
-    let checkAnswersPage = tasklistPage.goToAnswerPage()
+    let reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    let checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.backToTasklist().click()
 
-    tasklistPage = TasklistPage.verifyOnPage()
+    reportUseOfForcePage = ReportUseOfForcePage.verifyOnPage()
 
-    checkAnswersPage = tasklistPage.goToAnswerPage()
+    checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
     checkAnswersPage.clickSubmit()
 
-    SubmittedPage.verifyOnPage()
+    ReportSentPage.verifyOnPage()
 
     cy.go('back')
 
@@ -87,12 +87,12 @@ context('Submit the incident report', () => {
       involvedStaff: [],
     })
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const checkAnswersPage = tasklistPage.goToAnswerPage()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.clickSubmit()
 
-    SubmittedPage.verifyOnPage()
+    ReportSentPage.verifyOnPage()
       .exit()
       .click()
 

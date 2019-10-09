@@ -1,7 +1,7 @@
-const page = require('./page')
-const SubmitStatementPage = require('./submitStatementPage')
+const page = require('../page')
+const SubmitStatementPage = require('../yourStatements/writeYourStatementPage')
 
-const submittedPage = () =>
+const reportSent = () =>
   page('This report has been sent to the use of force coordinator', {
     continueToStatement: () => {
       cy.get('[data-qa=continue-to-statement]').click()
@@ -17,5 +17,5 @@ const submittedPage = () =>
   })
 
 export default {
-  verifyOnPage: submittedPage,
+  verifyOnPage: reportSent,
 }

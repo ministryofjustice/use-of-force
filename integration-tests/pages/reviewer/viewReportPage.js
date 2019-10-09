@@ -1,7 +1,7 @@
-const page = require('./page')
-const reportDetails = require('./sections/reportDetails')
+const page = require('../page')
+const reportDetails = require('../sections/reportDetails')
 
-const viewYourReportPage = () =>
+const viewReportPage = () =>
   page('Use of force report', {
     reporterName: () => cy.get('[data-qa="reporter-name"]'),
 
@@ -17,7 +17,7 @@ const viewYourReportPage = () =>
 
     getReportId: () => {
       return cy.url().then(url => {
-        const match = url.match(/.*\/(.*)\/your-report/)
+        const match = url.match(/.*\/(.*)\/view-report/)
         return match[1]
       })
     },
@@ -26,5 +26,5 @@ const viewYourReportPage = () =>
   })
 
 export default {
-  verifyOnPage: viewYourReportPage,
+  verifyOnPage: viewReportPage,
 }

@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 

@@ -1,6 +1,6 @@
-const page = require('./page')
+const page = require('../page')
 
-const reviewStatementPage = username =>
+const viewStatementPage = username =>
   page(`${username}'s statement`, {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     statement: () => cy.get('[data-qa=statement]'),
@@ -14,5 +14,5 @@ const reviewStatementPage = username =>
   })
 
 export default {
-  verifyOnPageForUser: username => reviewStatementPage(username),
+  verifyOnPageForUser: username => viewStatementPage(username),
 }

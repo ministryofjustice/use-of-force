@@ -1,6 +1,6 @@
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const YourReportPage = require('../../pages/yourReportPage')
-const YourReportsPage = require('../../pages/yourReportsPage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const YourReportPage = require('../../pages/yourReports/yourReportPage')
+const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {

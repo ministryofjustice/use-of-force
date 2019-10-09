@@ -1,8 +1,8 @@
-const TasklistPage = require('../../pages/tasklistPage')
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const SubmittedPage = require('../../pages/submittedPage')
-const SubmitStatementPage = require('../../pages/submitStatementPage')
-const ViewStatementPage = require('../../pages/viewStatementPage')
+const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const SubmittedPage = require('../../pages/createReport/reportSentPage')
+const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
+const YourStatementPage = require('../../pages/yourStatements/yourStatementPage')
 const { StatementStatus, ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
@@ -41,13 +41,13 @@ context('Submit statement', () => {
       startButton().click()
     }
 
-    let submitStatementPage = SubmitStatementPage.verifyOnPage()
-    submitStatementPage.offenderName().contains('Norman Smith')
-    submitStatementPage.lastTrainingMonth().select('March')
-    submitStatementPage.lastTrainingYear().type('2010')
-    submitStatementPage.jobStartYear().type('1999')
-    submitStatementPage.statement().type('This is my statement')
-    submitStatementPage.saveAndExit().click()
+    let writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.offenderName().contains('Norman Smith')
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
+    writeYourStatementPage.saveAndExit().click()
 
     {
       const yourStatementsPage = YourStatementsPage.goTo()
@@ -59,15 +59,15 @@ context('Submit statement', () => {
       startButton().click()
     }
 
-    submitStatementPage = SubmitStatementPage.verifyOnPage()
-    submitStatementPage.offenderName().contains('Norman Smith')
-    submitStatementPage.lastTrainingMonth().contains('March')
-    submitStatementPage.lastTrainingYear().should('have.value', '2010')
-    submitStatementPage.jobStartYear().should('have.value', '1999')
-    submitStatementPage.statement().should('have.value', 'This is my statement')
+    writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.offenderName().contains('Norman Smith')
+    writeYourStatementPage.lastTrainingMonth().contains('March')
+    writeYourStatementPage.lastTrainingYear().should('have.value', '2010')
+    writeYourStatementPage.jobStartYear().should('have.value', '1999')
+    writeYourStatementPage.statement().should('have.value', 'This is my statement')
 
-    const confirmStatementPage = submitStatementPage.submit()
-    const statementSubmittedPage = confirmStatementPage.submit()
+    const checkYourStatementPage = writeYourStatementPage.submit()
+    const statementSubmittedPage = checkYourStatementPage.submit()
 
     {
       const incidentsPage = statementSubmittedPage.finish()
@@ -86,22 +86,22 @@ context('Submit statement', () => {
       involvedStaff: [],
     })
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const checkAnswersPage = tasklistPage.goToAnswerPage()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.clickSubmit()
 
     const submittedPage = SubmittedPage.verifyOnPage()
 
-    const submitStatementPage = submittedPage.continueToStatement()
-    submitStatementPage.lastTrainingMonth().select('March')
-    submitStatementPage.lastTrainingYear().type('2010')
-    submitStatementPage.jobStartYear().type('1999')
-    submitStatementPage.statement().type('This is my statement')
+    const writeYourStatementPage = submittedPage.continueToStatement()
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
 
-    const confirmStatementPage = submitStatementPage.submit()
+    const checkYourStatementPage = writeYourStatementPage.submit()
 
-    const statementSubmittedPage = confirmStatementPage.submit()
+    const statementSubmittedPage = checkYourStatementPage.submit()
 
     const incidentsPage = statementSubmittedPage.finish()
 
@@ -145,19 +145,19 @@ context('Submit statement', () => {
       .startButton()
       .click()
 
-    const submitStatementPage = SubmitStatementPage.verifyOnPage()
-    submitStatementPage.lastTrainingMonth().select('March')
-    submitStatementPage.lastTrainingYear().type('2010')
-    submitStatementPage.jobStartYear().type('1999')
-    submitStatementPage.statement().type('This is my statement')
+    const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
 
-    const confirmStatementPage = submitStatementPage.submit()
-    confirmStatementPage.offenderName().should('contain', 'Norman Smith')
-    confirmStatementPage.statement().should('contain', 'This is my statement')
-    confirmStatementPage.lastTraining().should('contain', 'March 2010')
-    confirmStatementPage.jobStartYear().should('contain', '1999')
+    const checkYourStatementPage = writeYourStatementPage.submit()
+    checkYourStatementPage.offenderName().should('contain', 'Norman Smith')
+    checkYourStatementPage.statement().should('contain', 'This is my statement')
+    checkYourStatementPage.lastTraining().should('contain', 'March 2010')
+    checkYourStatementPage.jobStartYear().should('contain', '1999')
 
-    const statementSubmittedPage = confirmStatementPage.submit()
+    const statementSubmittedPage = checkYourStatementPage.submit()
 
     yourStatementsPage = statementSubmittedPage.finish()
 
@@ -166,10 +166,10 @@ context('Submit statement', () => {
       .viewButton()
       .click()
 
-    const viewStatementPage = ViewStatementPage.verifyOnPage()
-    viewStatementPage.offenderName().should('contain', 'Norman Smith')
-    viewStatementPage.statement().should('contain', 'This is my statement')
-    viewStatementPage.lastTraining().should('contain', 'March 2010')
-    viewStatementPage.jobStartYear().should('contain', '1999')
+    const yourStatementPage = YourStatementPage.verifyOnPage()
+    yourStatementPage.offenderName().should('contain', 'Norman Smith')
+    yourStatementPage.statement().should('contain', 'This is my statement')
+    yourStatementPage.lastTraining().should('contain', 'March 2010')
+    yourStatementPage.jobStartYear().should('contain', '1999')
   })
 })

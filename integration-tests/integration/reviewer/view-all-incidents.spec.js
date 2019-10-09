@@ -1,6 +1,6 @@
 const moment = require('moment')
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const AllIncidentsPage = require('../../pages/allIncidentsPage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 

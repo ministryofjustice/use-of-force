@@ -1,5 +1,5 @@
-const page = require('./page')
-const reportDetails = require('./sections/reportDetails')
+const page = require('../page')
+const reportDetails = require('../sections/reportDetails')
 
 const clickSubmit = () => cy.get('[data-submit]').click()
 

@@ -1,8 +1,7 @@
-const SubmittedStatementPage = require('../../pages/submitStatementPage')
-
-const ViewStatementPage = require('../../pages/viewStatementPage')
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const ViewAddCommentPage = require('../../pages/addAdditionalCommentPage')
+const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
+const YourStatementPage = require('../../pages/yourStatements/yourStatementPage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const AddCommentToStatementPage = require('../../pages/yourStatements/addCommentToStatementPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Add comments to statement', () => {
@@ -36,42 +35,27 @@ context('Add comments to statement', () => {
       .startButton()
       .click()
 
-    const submitStatementPage = SubmittedStatementPage.verifyOnPage()
-    submitStatementPage.lastTrainingMonth().select('March')
-    submitStatementPage.lastTrainingYear().type('2010')
-    submitStatementPage.jobStartYear().type('1999')
-    submitStatementPage.statement().type('This is my statement')
+    const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
 
-    const confirmStatementPage = submitStatementPage.submit()
-    const statementSubmittedPage = confirmStatementPage.submit()
+    const checkYourStatementPage = writeYourStatementPage.submit()
+    const statementSubmittedPage = checkYourStatementPage.submit()
     yourStatementsPage = statementSubmittedPage.finish()
     yourStatementsPage
       .getCompleteRow(0)
       .viewButton()
       .click()
 
-    let viewStatementPage = ViewStatementPage.verifyOnPage()
-    viewStatementPage.addComment().click()
+    let yourStatementPage = YourStatementPage.verifyOnPage()
+    yourStatementPage.addComment().click()
 
-    let viewAddCommentPage = ViewAddCommentPage.verifyOnPage()
-    viewAddCommentPage.additionalComment().should('be.empty')
-    viewAddCommentPage.additionalComment().type('Some new comment 1')
-    viewAddCommentPage.save().click()
-
-    yourStatementsPage = YourStatementsPage.verifyOnPage()
-    yourStatementsPage
-      .getCompleteRow(0)
-      .viewButton()
-      .click()
-
-    viewStatementPage = ViewStatementPage.verifyOnPage()
-    viewStatementPage.addComment().click()
-
-    viewAddCommentPage = ViewAddCommentPage.verifyOnPage()
-    viewAddCommentPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
-    viewAddCommentPage.additionalComment().should('be.empty')
-    viewAddCommentPage.additionalComment(2).type('Some new comment 2')
-    viewAddCommentPage.save().click()
+    let addCommentToStatementPage = AddCommentToStatementPage.verifyOnPage()
+    addCommentToStatementPage.additionalComment().should('be.empty')
+    addCommentToStatementPage.additionalComment().type('Some new comment 1')
+    addCommentToStatementPage.save().click()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()
     yourStatementsPage
@@ -79,10 +63,25 @@ context('Add comments to statement', () => {
       .viewButton()
       .click()
 
-    viewStatementPage = ViewStatementPage.verifyOnPage()
-    viewStatementPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
-    viewStatementPage.viewAdditionalComment(2).should('contain', 'Some new comment 2')
-    viewStatementPage.continue().click()
+    yourStatementPage = YourStatementPage.verifyOnPage()
+    yourStatementPage.addComment().click()
+
+    addCommentToStatementPage = AddCommentToStatementPage.verifyOnPage()
+    addCommentToStatementPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
+    addCommentToStatementPage.additionalComment().should('be.empty')
+    addCommentToStatementPage.additionalComment(2).type('Some new comment 2')
+    addCommentToStatementPage.save().click()
+
+    yourStatementsPage = YourStatementsPage.verifyOnPage()
+    yourStatementsPage
+      .getCompleteRow(0)
+      .viewButton()
+      .click()
+
+    yourStatementPage = YourStatementPage.verifyOnPage()
+    yourStatementPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
+    yourStatementPage.viewAdditionalComment(2).should('contain', 'Some new comment 2')
+    yourStatementPage.continue().click()
 
     YourStatementsPage.verifyOnPage()
   })

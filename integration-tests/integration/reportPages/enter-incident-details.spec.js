@@ -1,7 +1,7 @@
 const moment = require('moment')
-const TasklistPage = require('../../pages/tasklistPage')
-const NewIncidentPage = require('../../pages/newIncidentPage')
-const UserDoesNotExistPage = require('../../pages/userDoesNotExistPage')
+const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
+const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistPage')
 
 context('Submitting details page form', () => {
   const bookingId = 1001
@@ -16,30 +16,30 @@ context('Submitting details page form', () => {
   })
 
   const fillFormAndSave = () => {
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.offenderName().contains('Norman Smith')
-    newIncidentPage.location().select('Asso A Wing')
-    newIncidentPage.forceType.check('true')
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.offenderName().contains('Norman Smith')
+    incidentDetailsPage.location().select('Asso A Wing')
+    incidentDetailsPage.forceType.check('true')
 
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(0)
       .name()
       .type('AAAA')
-    newIncidentPage.addAnotherStaff().click()
-    newIncidentPage
+    incidentDetailsPage.addAnotherStaff().click()
+    incidentDetailsPage
       .staffInvolved(1)
       .name()
       .type('BBBB')
 
-    newIncidentPage
+    incidentDetailsPage
       .witnesses(0)
       .name()
       .type('jimmy-ray')
-    newIncidentPage.addAnotherWitness().click()
-    newIncidentPage.addAnotherWitness().click()
-    newIncidentPage.addAnotherWitness().click()
-    const detailsPage = newIncidentPage.save()
+    incidentDetailsPage.addAnotherWitness().click()
+    incidentDetailsPage.addAnotherWitness().click()
+    incidentDetailsPage.addAnotherWitness().click()
+    const detailsPage = incidentDetailsPage.save()
     return detailsPage
   }
 
@@ -50,7 +50,7 @@ context('Submitting details page form', () => {
 
     cy.go('back')
 
-    let incidentDetailsPage = NewIncidentPage.verifyOnPage()
+    let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
     incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
@@ -83,7 +83,7 @@ context('Submitting details page form', () => {
     incidentDetailsPage.save()
     cy.go('back')
 
-    incidentDetailsPage = NewIncidentPage.verifyOnPage()
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
     incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
     incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
     incidentDetailsPage.incidentDateTime.year().should('not.be.visible')
@@ -132,35 +132,35 @@ context('Submitting details page form', () => {
     fillFormAndSave()
     cy.go('back')
 
-    const updatedIncidentPage = NewIncidentPage.verifyOnPage()
-    updatedIncidentPage.offenderName().contains('Norman Smith')
-    updatedIncidentPage.location().contains('Asso A Wing')
-    updatedIncidentPage.forceType.planned().should('be.checked')
+    const updatedIncidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    updatedIncidentDetailsPage.offenderName().contains('Norman Smith')
+    updatedIncidentDetailsPage.location().contains('Asso A Wing')
+    updatedIncidentDetailsPage.forceType.planned().should('be.checked')
 
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .staffInvolved(0)
       .name()
       .should('have.value', 'AAAA')
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .staffInvolved(0)
       .remove()
       .should('exist')
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .staffInvolved(1)
       .name()
       .should('have.value', 'BBBB')
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .staffInvolved(1)
       .remove()
       .should('exist')
 
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .witnesses(0)
       .name()
       .should('have.value', 'jimmy-ray')
 
     // Should't be able to remove sole item
-    updatedIncidentPage
+    updatedIncidentDetailsPage
       .witnesses(0)
       .remove()
       .should('not.exist')
@@ -169,72 +169,72 @@ context('Submitting details page form', () => {
   it('Adding missing involved staff', () => {
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    let newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.offenderName().contains('Norman Smith')
-    newIncidentPage.location().select('Asso A Wing')
-    newIncidentPage.forceType.check('true')
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    let incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.offenderName().contains('Norman Smith')
+    incidentDetailsPage.location().select('Asso A Wing')
+    incidentDetailsPage.forceType.check('true')
 
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(0)
       .name()
       .type('AAAA')
-    newIncidentPage.addAnotherStaff().click()
-    newIncidentPage
+    incidentDetailsPage.addAnotherStaff().click()
+    incidentDetailsPage
       .staffInvolved(1)
       .name()
       .type('CCCC')
-    newIncidentPage.addAnotherStaff().click()
-    newIncidentPage
+    incidentDetailsPage.addAnotherStaff().click()
+    incidentDetailsPage
       .staffInvolved(2)
       .name()
       .type('BBBB')
-    newIncidentPage.addAnotherStaff().click()
-    newIncidentPage
+    incidentDetailsPage.addAnotherStaff().click()
+    incidentDetailsPage
       .staffInvolved(3)
       .name()
       .type('DDDD')
 
-    newIncidentPage.clickSave()
+    incidentDetailsPage.clickSave()
     let userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
     userDoesNotExistPage.missingUsers().then(users => expect(users).to.deep.equal(['CCCC', 'DDDD']))
     userDoesNotExistPage.return().click()
 
-    newIncidentPage = NewIncidentPage.verifyOnPage()
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(0)
       .name()
       .should('have.value', 'AAAA')
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(1)
       .name()
       .should('have.value', 'CCCC')
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(2)
       .name()
       .should('have.value', 'BBBB')
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(3)
       .name()
       .should('have.value', 'DDDD')
 
-    newIncidentPage.clickSave()
+    incidentDetailsPage.clickSave()
     userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
     userDoesNotExistPage.continue().click()
 
     cy.go('back')
 
-    newIncidentPage = NewIncidentPage.verifyOnPage()
-    newIncidentPage
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    incidentDetailsPage
       .staffInvolved(0)
       .name()
       .should('have.value', 'AAAA')
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(1)
       .name()
       .should('have.value', 'BBBB')
-    newIncidentPage
+    incidentDetailsPage
       .staffInvolved(3)
       .name()
       .should('not.exist')

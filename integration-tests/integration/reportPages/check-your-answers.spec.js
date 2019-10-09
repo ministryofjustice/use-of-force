@@ -1,11 +1,11 @@
-const TasklistPage = require('../../pages/tasklistPage')
-const UserDoesNotExistPage = require('../../pages/userDoesNotExistPage')
-const CheckAnswersPage = require('../../pages/checkAnswersPage')
+const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistPage')
+const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
 
-const IncidentDetailsPage = require('../../pages/newIncidentPage')
-const UseOfForceDetailsPage = require('../../pages/detailsPage')
-const RelocationAndInjuriesPage = require('../../pages/relocationAndInjuriesPage')
-const EvidencePage = require('../../pages/evidencePage')
+const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
+const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
+const RelocationAndInjuriesPage = require('../../pages/createReport/relocationAndInjuriesPage')
+const EvidencePage = require('../../pages/createReport/evidencePage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -31,8 +31,8 @@ context('Check your answers page', () => {
     cy.task('stubLogin')
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const checkAnswersPage = tasklistPage.goToAnswerPage()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     canEditIncidentDetailsPage({
       checkAnswersPage,
@@ -67,8 +67,8 @@ context('Check your answers page', () => {
     cy.task('stubLogin')
     cy.login(bookingId)
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const checkAnswersPage = tasklistPage.goToAnswerPage()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     canEditIncidentDetailsPage({
       checkAnswersPage,
@@ -144,8 +144,8 @@ context('Check your answers page', () => {
       cy.task('stubLogin')
       cy.login(bookingId)
 
-      const tasklistPage = TasklistPage.visit(bookingId)
-      const checkAnswersPage = tasklistPage.goToAnswerPage()
+      const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+      const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
       checkAnswersPage.editIncidentDetailsLink().click()
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
@@ -177,8 +177,8 @@ context('Check your answers page', () => {
       cy.task('stubLogin')
       cy.login(bookingId)
 
-      const tasklistPage = TasklistPage.visit(bookingId)
-      const checkAnswersPage = tasklistPage.goToAnswerPage()
+      const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+      const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
       checkAnswersPage.editIncidentDetailsLink().click()
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 

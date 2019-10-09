@@ -1,5 +1,5 @@
-const page = require('./page')
-const UseOfForceDetailsPage = require('./detailsPage')
+const page = require('../page')
+const UseOfForceDetailsPage = require('./useOfForceDetailsPage')
 
 const incidentDetailsPage = () =>
   page('Incident details', {

@@ -1,6 +1,6 @@
-const TasklistPage = require('../../pages/tasklistPage')
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const YourReportsPage = require('../../pages/yourReportsPage')
+const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
@@ -31,10 +31,10 @@ context('Submit statement', () => {
       ],
     })
 
-    const tasklistPage = TasklistPage.visit(bookingId)
-    const newIncidentPage = tasklistPage.startNewForm()
-    newIncidentPage.fillForm()
-    newIncidentPage.save()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.fillForm()
+    incidentDetailsPage.save()
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
@@ -56,7 +56,7 @@ context('Submit statement', () => {
 
       startButton().click()
 
-      const inProgressReport = TasklistPage.verifyOnPage()
+      const inProgressReport = ReportUseOfForcePage.verifyOnPage()
 
       inProgressReport.checkParts({
         newIncident: 'COMPLETE',
