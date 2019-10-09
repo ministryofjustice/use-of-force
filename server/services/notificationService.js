@@ -15,13 +15,19 @@ const createNotificationService = (emailClient, eventPublisher) => {
 
   const asTime = date => moment(date).format('HH:mm')
 
-  const sendReporterStatementReminder = async (emailAddress, { reporterName, incidentDate, overdueDate }, context) =>
+  const sendReporterStatementReminder = async (
+    emailAddress,
+    { reporterName, incidentDate, overdueDate, submittedDate },
+    context
+  ) =>
     emailClient
       .sendEmail(reporter.REMINDER, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          SUBMITTED_DATE: asDate(submittedDate),
+          SUBMITTED_TIME: asTime(submittedDate),
           DEADLINE_DATE: asDate(overdueDate),
           DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
@@ -31,21 +37,21 @@ const createNotificationService = (emailClient, eventPublisher) => {
       .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementReminderSuccess',
-          properties: { reporterName, incidentDate, ...context },
+          properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: body,
         })
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementReminderFailure',
-          properties: { reporterName, incidentDate, ...context },
+          properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: message,
         })
       )
 
   const sendInvolvedStaffStatementReminder = async (
     emailAddress,
-    { involvedName, incidentDate, overdueDate },
+    { involvedName, incidentDate, submittedDate, overdueDate },
     context
   ) =>
     emailClient
@@ -54,6 +60,8 @@ const createNotificationService = (emailClient, eventPublisher) => {
           INVOLVED_NAME: involvedName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          SUBMITTED_DATE: asDate(submittedDate),
+          SUBMITTED_TIME: asTime(submittedDate),
           DEADLINE_DATE: asDate(overdueDate),
           DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
@@ -63,25 +71,27 @@ const createNotificationService = (emailClient, eventPublisher) => {
       .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementReminderSuccess',
-          properties: { involvedName, incidentDate, ...context },
+          properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: body,
         })
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementReminderFailure',
-          properties: { involvedName, incidentDate, ...context },
+          properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: message,
         })
       )
 
-  const sendReporterStatementOverdue = async (emailAddress, { reporterName, incidentDate }, context) =>
+  const sendReporterStatementOverdue = async (emailAddress, { reporterName, incidentDate, submittedDate }, context) =>
     emailClient
       .sendEmail(reporter.OVERDUE, emailAddress, {
         personalisation: {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          SUBMITTED_DATE: asDate(submittedDate),
+          SUBMITTED_TIME: asTime(submittedDate),
           LINK: emailUrl,
         },
         reference: null,
@@ -89,25 +99,31 @@ const createNotificationService = (emailClient, eventPublisher) => {
       .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementOverdueSuccess',
-          properties: { reporterName, incidentDate, ...context },
+          properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: body,
         })
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementOverdueFailure',
-          properties: { reporterName, incidentDate, ...context },
+          properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: message,
         })
       )
 
-  const sendInvolvedStaffStatementOverdue = async (emailAddress, { involvedName, incidentDate }, context) =>
+  const sendInvolvedStaffStatementOverdue = async (
+    emailAddress,
+    { involvedName, incidentDate, submittedDate },
+    context
+  ) =>
     emailClient
       .sendEmail(involvedStaff.OVERDUE, emailAddress, {
         personalisation: {
           INVOLVED_NAME: involvedName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          SUBMITTED_DATE: asDate(submittedDate),
+          SUBMITTED_TIME: asTime(submittedDate),
           LINK: emailUrl,
         },
         reference: null,
@@ -115,21 +131,21 @@ const createNotificationService = (emailClient, eventPublisher) => {
       .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementOverdueSuccess',
-          properties: { involvedName, incidentDate, ...context },
+          properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: body,
         })
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementOverdueFailure',
-          properties: { involvedName, incidentDate, ...context },
+          properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: message,
         })
       )
 
   const sendStatementRequest = async (
     emailAddress,
-    { reporterName, involvedName, incidentDate, overdueDate },
+    { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
     context
   ) =>
     emailClient
@@ -139,6 +155,8 @@ const createNotificationService = (emailClient, eventPublisher) => {
           REPORTER_NAME: reporterName,
           INCIDENT_DATE: asDate(incidentDate),
           INCIDENT_TIME: asTime(incidentDate),
+          SUBMITTED_DATE: asDate(submittedDate),
+          SUBMITTED_TIME: asTime(submittedDate),
           DEADLINE_DATE: asDate(overdueDate),
           DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
@@ -148,14 +166,14 @@ const createNotificationService = (emailClient, eventPublisher) => {
       .then(({ body }) =>
         eventPublisher.publish({
           name: 'SendStatementRequestSuccess',
-          properties: { reporterName, involvedName, incidentDate, ...context },
+          properties: { reporterName, involvedName, incidentDate, submittedDate, ...context },
           detail: body,
         })
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendStatementRequestFailure',
-          properties: { reporterName, involvedName, incidentDate, ...context },
+          properties: { reporterName, involvedName, incidentDate, submittedDate, ...context },
           detail: message,
         })
       )
