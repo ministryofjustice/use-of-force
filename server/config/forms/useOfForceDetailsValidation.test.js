@@ -1,13 +1,13 @@
-const config = require('../incident.js')
+const { formConfig } = require('./useOfForceDetailsForm')
 const formProcessing = require('../../services/formProcessing')
 
-const validatorChecker = formConfig => input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+const check = input => {
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
 
 let validInput = {}
-const check = validatorChecker(config.useOfForceDetails)
+
 beforeEach(() => {
   validInput = {
     positiveCommunication: 'true',

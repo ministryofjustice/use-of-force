@@ -40,8 +40,8 @@ module.exports = {
     return errors
   },
 
-  isValid(schema, value) {
-    const joiErrors = schema.validate(value, { stripUnknown: false, abortEarly: false })
+  isValid(schema, value, stripUnknown = false) {
+    const joiErrors = schema.validate(value, { stripUnknown, abortEarly: false })
     return isNilOrEmpty(joiErrors.error)
   },
 }
