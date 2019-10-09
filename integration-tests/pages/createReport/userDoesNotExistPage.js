@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 
 const userDoesNotExistPage = () =>
   page('A username you have entered does not exist', {

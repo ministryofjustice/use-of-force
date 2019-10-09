@@ -1,7 +1,7 @@
-const NewIncidentPage = require('./newIncidentPage')
+const NewIncidentPage = require('./incidentDetailsPage')
 const CheckAnswersPage = require('./checkAnswersPage')
-const UseOfForceDetailsPage = require('./detailsPage')
-const page = require('./page')
+const UseOfForceDetailsPage = require('./useOfForceDetailsPage')
+const page = require('../page')
 
 const tasklistPage = () =>
   page('Report use of force', {

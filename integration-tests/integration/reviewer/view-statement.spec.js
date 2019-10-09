@@ -1,7 +1,7 @@
 const moment = require('moment')
-const AllIncidentsPage = require('../../pages/allIncidentsPage')
-const ViewStatementsPage = require('../../pages/viewStatementsPage')
-const ReviewStatementPage = require('../../pages/reviewStatementPage')
+const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
+const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
+const ViewStatementPage = require('../../pages/reviewer/viewStatementPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -65,15 +65,15 @@ context('view statement page', () => {
 
       viewStatementsPage.statementLink(0).click()
 
-      const reviewStatementPage = ReviewStatementPage.verifyOnPageForUser('TEST_USER name')
+      const viewStatementPage = ViewStatementPage.verifyOnPageForUser('TEST_USER name')
 
-      reviewStatementPage.offenderName().contains('Norman Smith')
-      reviewStatementPage.dateAndTime().contains(/10 September 2019 - \d{2}:\d{2}/)
+      viewStatementPage.offenderName().contains('Norman Smith')
+      viewStatementPage.dateAndTime().contains(/10 September 2019 - \d{2}:\d{2}/)
 
-      reviewStatementPage.lastTraining().contains('March 2018')
-      reviewStatementPage.jobStartYear().contains('2017')
-      reviewStatementPage.statement().contains('Things happened')
-      reviewStatementPage.continue().click()
+      viewStatementPage.lastTraining().contains('March 2018')
+      viewStatementPage.jobStartYear().contains('2017')
+      viewStatementPage.statement().contains('Things happened')
+      viewStatementPage.continue().click()
 
       ViewStatementsPage.verifyOnPage()
     }

@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 
 const viewStatementsPage = () =>
   page('Use of force incident', {

@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 const RelocationAndInjuriesPage = require('./relocationAndInjuriesPage')
 
 const useOfForceDetailsPage = () =>

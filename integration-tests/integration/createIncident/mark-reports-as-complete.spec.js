@@ -1,6 +1,6 @@
-const YourStatementsPage = require('../../pages/yourStatementsPage')
-const AllIncidentsPage = require('../../pages/allIncidentsPage')
-const SubmittedStatementPage = require('../../pages/submitStatementPage')
+const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
+const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
+const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -53,14 +53,14 @@ context('All incidents page', () => {
       .startButton()
       .click()
 
-    const submitStatementPage = SubmittedStatementPage.verifyOnPage()
-    submitStatementPage.lastTrainingMonth().select('March')
-    submitStatementPage.lastTrainingYear().type('2010')
-    submitStatementPage.jobStartYear().type('1999')
-    submitStatementPage.statement().type('This is my statement')
+    const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
 
-    const confirmStatementPage = submitStatementPage.submit()
-    const statementSubmittedPage = confirmStatementPage.submit()
+    const checkYourStatementPage = writeYourStatementPage.submit()
+    const statementSubmittedPage = checkYourStatementPage.submit()
     statementSubmittedPage.finish()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()

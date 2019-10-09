@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 const StatementSubmittedPage = require('./statementSubmittedPage')
 
 const confirmStatementPage = () =>

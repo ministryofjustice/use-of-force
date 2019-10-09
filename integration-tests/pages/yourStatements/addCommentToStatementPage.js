@@ -1,4 +1,4 @@
-const page = require('./page')
+const page = require('../page')
 
 const addCommentPage = () =>
   page('Add a comment to your statement', {

@@ -1,5 +1,5 @@
-const page = require('./page')
-const ConfirmStatementPage = require('./confirmStatementPage')
+const page = require('../page')
+const ConfirmStatementPage = require('./checkYourStatementPage')
 
 const submitStatementPage = () =>
   page('Your use of force statement', {
