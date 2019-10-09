@@ -122,13 +122,13 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const { bookingId } = req.params
     const saveAndContinue = req.body.submit === 'save-and-continue'
 
-    const { fields, validate: validationEnabled, formSchema } = formConfig[formName]
-    const validate = validationEnabled && (editMode || saveAndContinue)
+    const validate = editMode || saveAndContinue
 
-    const { payloadFields, extractedFields, errors } = formProcessing.processInput(
-      { validate, formSchema, fields },
-      req.body
-    )
+    const { payloadFields, extractedFields, errors } = formProcessing.processInput({
+      validate,
+      formConfig: formConfig[formName],
+      input: req.body,
+    })
 
     const { additionalFields = {} } = await getAdditonalData(res, formName, payloadFields)
 

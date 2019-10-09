@@ -1,15 +1,15 @@
-const config = require('../incident.js')
+const joi = require('@hapi/joi')
+const form = require('./relocationAndInjuriesForm')
 const formProcessing = require('../../services/formProcessing')
-const { joi, validations } = require('./validations')
 const { isValid, validate } = require('../../utils/fieldValidation')
 
-const validatorChecker = formConfig => input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+const check = input => {
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig: form.formConfig, input })
   return { formResponse, errors }
 }
 
 let validInput = {}
-const check = validatorChecker(config.relocationAndInjuries)
+
 beforeEach(() => {
   validInput = {
     prisonerRelocation: 'SEGREGATION_UNIT',
@@ -355,7 +355,7 @@ describe('name pattern (f213CompletedBy)', () => {
     },
   ]
 
-  const { f213CompletedBy } = validations
+  const { f213CompletedBy } = form
 
   it('matching value succeeds', () => {
     expect(isValid(f213CompletedBy, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe(true)

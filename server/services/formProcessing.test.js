@@ -1,6 +1,6 @@
 const { mergeIntoPayload, processInput } = require('./formProcessing')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
-const { validations, joi } = require('../config/validation/validations')
+const { validations, joi } = require('../config/forms/validations')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {
@@ -107,7 +107,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ fields, validate: false }, userInput)
+      const output = await processInput({ formConfig: { fields }, validate: false, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -127,7 +127,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ fields, validate: false }, userInput)
+      const output = await processInput({ formConfig: { fields }, validate: false, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -147,7 +147,11 @@ describe('processInput', () => {
       { q4: { fieldType: EXTRACTED } },
     ]
 
-    const output = processInput({ fields, validate: false }, { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' })
+    const output = processInput({
+      formConfig: { fields },
+      validate: false,
+      input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
+    })
 
     expect(output).toEqual({
       errors: [],
@@ -169,7 +173,7 @@ describe('processInput', () => {
       },
     ]
 
-    const output = processInput({ fields, validate: false }, { q1: 'aaaAAAaa' })
+    const output = processInput({ formConfig: { fields }, validate: false, input: { q1: 'aaaAAAaa' } })
 
     expect(output).toEqual({
       errors: [],
@@ -191,7 +195,7 @@ describe('processInput', () => {
 
     const schema = joi.object({ q1: validations.requiredString })
 
-    const output = processInput({ fields, formSchema: schema, validate: true }, {})
+    const output = processInput({ formConfig: { fields, schemas: { complete: schema } }, validate: true, input: {} })
 
     expect(output).toEqual({
       errors: [

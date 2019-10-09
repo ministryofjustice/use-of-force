@@ -1,13 +1,11 @@
 const moment = require('moment')
-const config = require('../statement.js')
+const formConfig = require('./statementForm')
 const formProcessing = require('../../services/formProcessing')
 
-const validatorChecker = formConfig => input => {
-  const { extractedFields: formResponse, errors } = formProcessing.processInput(formConfig, input)
+const check = input => {
+  const { extractedFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
   return { formResponse, errors }
 }
-
-const check = validatorChecker(config)
 
 const validInput = {
   lastTrainingMonth: '11',
