@@ -4,7 +4,7 @@ const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
-context('All incidents page', () => {
+context('A use of force reviewer can view all incidents at the current agency', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
@@ -95,6 +95,7 @@ context('All incidents page', () => {
       .then(allTabs => expect(allTabs).to.deep.equal(['All incidents', 'Your statements', 'Your reports']))
 
     allIncidentsPage.selectedTab().contains('All incidents')
+    allIncidentsPage.exitLink().then(location => expect(location).to.equal('/'))
 
     {
       const { date, prisoner, reporter, overdue } = allIncidentsPage.getTodoRow(0)

@@ -6,30 +6,35 @@
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
     <div class="govuk-tabs">
-    <h2 class="govuk-tabs__title">
-        Contents
-    </h2>
-    <ul class="govuk-tabs__list">
-        {% if user.isReviewer %}
-        <li class="govuk-tabs__list-item {% if selectedTab === 'all-incidents' %} govuk-tabs__list-item--selected {% endif %}">
-            <a class="govuk-tabs__tab" data-qa="all-incidents-link" href="/all-incidents">
-                All incidents
+        <h2 class="govuk-tabs__title">
+            Contents
+        </h2>
+        <ul class="govuk-tabs__list">
+            {% if user.isReviewer %}
+            <li class="govuk-tabs__list-item {% if selectedTab === 'all-incidents' %} govuk-tabs__list-item--selected {% endif %}">
+                <a class="govuk-tabs__tab" data-qa="all-incidents-link" href="/all-incidents">
+                    All incidents
+                </a>
+            </li>
+            {% endif %}
+            <li class="govuk-tabs__list-item {% if selectedTab === 'your-statements' %} govuk-tabs__list-item--selected {% endif %}">
+                <a class="govuk-tabs__tab" data-qa="your-statements-link" href="/your-statements">
+                    Your statements
+                </a>
+            </li>
+            <li class="govuk-tabs__list-item {% if selectedTab === 'your-reports' %} govuk-tabs__list-item--selected {% endif %}">
+            <a class="govuk-tabs__tab" data-qa="your-reports-link" href="/your-reports">
+                Your reports
             </a>
-        </li>
-        {% endif %}
-        <li class="govuk-tabs__list-item {% if selectedTab === 'your-statements' %} govuk-tabs__list-item--selected {% endif %}">
-            <a class="govuk-tabs__tab" data-qa="your-statements-link" href="/your-statements">
-                Your statements
-            </a>
-        </li>
-        <li class="govuk-tabs__list-item {% if selectedTab === 'your-reports' %} govuk-tabs__list-item--selected {% endif %}">
-        <a class="govuk-tabs__tab" data-qa="your-reports-link" href="/your-reports">
-            Your reports
-        </a>
-        </li>
-    </ul>
+            </li>
+        </ul>
 
-    {% block tabContent %} 
-    {% endblock %}
+        {% block tabContent %}
+        {% endblock %}
+        <div class="govuk-grid-row govuk-!-margin-top-4">
+            <div class="govuk-grid-column-full">
+                <a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

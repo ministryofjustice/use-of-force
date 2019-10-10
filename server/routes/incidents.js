@@ -63,6 +63,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         awaitingReports,
         completedReports,
         selectedTab: 'all-incidents',
+        links,
       })
     },
 
@@ -81,6 +82,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         awaitingReports,
         completedReports,
         selectedTab: 'your-reports',
+        links,
       })
     },
 

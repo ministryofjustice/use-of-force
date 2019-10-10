@@ -1,6 +1,6 @@
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 
-context('tasklist', () => {
+context('Report use of force page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')

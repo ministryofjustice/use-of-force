@@ -1,7 +1,7 @@
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 
-context('Submitting details page form', () => {
+context('Submitting use of force details page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')

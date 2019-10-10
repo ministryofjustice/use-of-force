@@ -4,7 +4,7 @@ const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStat
 
 const { ReportStatus } = require('../../../server/config/types')
 
-context('All incidents page', () => {
+context('Marking a report as complete', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')

@@ -2,6 +2,7 @@ const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
 const statementForm = require('../config/forms/statementForm')
 const formProcessing = require('../services/formProcessing')
+const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
 
 module.exports = function CreateReportRoutes({ statementService, offenderService }) {
@@ -31,6 +32,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         awaitingStatements,
         completedStatements,
         selectedTab: 'your-statements',
+        links,
       })
     },
 
