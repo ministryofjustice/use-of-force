@@ -3,7 +3,7 @@ const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPag
 const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
-context('Submit statement', () => {
+context('A reporter views their report list', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
@@ -38,10 +38,14 @@ context('Submit statement', () => {
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.exitLink().then(location => expect(location).to.equal('/'))
+
     yourStatementsPage.yourReportsTab().click()
-    yourStatementsPage.selectedTab().contains('Your reports')
 
     const yourReportsPage = YourReportsPage.verifyOnPage()
+
+    yourReportsPage.selectedTab().contains('Your reports')
+    yourReportsPage.exitLink().then(location => expect(location).to.equal('/'))
 
     {
       const { date, prisoner } = yourReportsPage.getCompleteRow(0)

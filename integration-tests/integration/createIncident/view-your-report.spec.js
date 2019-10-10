@@ -3,7 +3,7 @@ const YourReportPage = require('../../pages/yourReports/yourReportPage')
 const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
-context('Submit statement', () => {
+context('A reporter views their own report', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')

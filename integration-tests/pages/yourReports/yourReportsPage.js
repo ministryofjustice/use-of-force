@@ -1,4 +1,5 @@
 const page = require('../page')
+const tabs = require('../sections/incidentTabs')
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 
@@ -14,6 +15,7 @@ const completeCol = (i, j) =>
 
 const yourReportsPage = () =>
   page('Use of force incidents', {
+    ...tabs,
     getTodoRow: i => ({
       date: () => todoCol(i, 0),
       prisoner: () => todoCol(i, 1),
@@ -29,9 +31,6 @@ const yourReportsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
-
-    selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
-    yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
   })
 
 export default {

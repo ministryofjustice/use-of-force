@@ -1,4 +1,5 @@
 const page = require('../page')
+const tabs = require('../sections/incidentTabs')
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 
@@ -14,6 +15,7 @@ const completeCol = (i, j) =>
 
 const incidentsPage = () =>
   page('Use of force incidents', {
+    ...tabs,
     getTodoRows: () =>
       cy
         .get('[data-qa=incidents-todo]')
@@ -46,17 +48,6 @@ const incidentsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
-    allTabs: () =>
-      cy.get(`.govuk-tabs__list-item`).spread((...rest) =>
-        rest.map(element =>
-          Cypress.$(element)
-            .text()
-            .trim()
-        )
-      ),
-    selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
-    yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),
-    yourStatementsTab: () => cy.get('[data-qa="your-statements-link"]'),
   })
 
 export default {
