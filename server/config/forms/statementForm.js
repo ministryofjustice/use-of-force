@@ -39,7 +39,6 @@ module.exports = {
     },
     {
       statement: {
-        validationMessage: 'Enter your statement',
         fieldType: EXTRACTED,
         sanitiser: val => (val ? val.trim() : null),
       },
@@ -50,7 +49,7 @@ module.exports = {
       lastTrainingMonth: validations.requiredMonthIndexNotInFuture('lastTrainingYear'),
       lastTrainingYear: validations.requiredYearNotInFuture,
       jobStartYear: validations.requiredYearNotInFuture,
-      statement: validations.requiredString,
+      statement: validations.requiredStringMsg('Enter your statement'),
     }),
   },
 }

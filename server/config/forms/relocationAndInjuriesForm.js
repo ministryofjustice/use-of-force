@@ -2,9 +2,11 @@ const { joi, validations, namePattern, setErrorMessage, caseInsensitiveComparato
 const { isValid } = require('../../utils/fieldValidation')
 const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
 
-const { requiredString, requiredBoolean, arrayOfObjects } = validations
+const { requiredString, requiredStringMsg, requiredBoolean, requiredBooleanMsg, arrayOfObjects } = validations
 
-const f213CompletedBy = requiredString.regex(namePattern, 'F213')
+const f213CompletedBy = requiredStringMsg('Enter the name of who completed the F213 form')
+  .regex(namePattern, 'F213')
+  .message('Names may only contain letters, spaces, hyphens or apostrophes')
 
 module.exports = {
   f213CompletedBy,
@@ -13,34 +15,24 @@ module.exports = {
       {
         prisonerRelocation: {
           sanitiser: trimmedString,
-          validationMessage: 'Select where the prisoner was relocated to',
         },
       },
       {
         relocationCompliancy: {
           sanitiser: toBoolean,
-          validationMessage: 'Select yes if the prisoner was compliant',
         },
       },
       {
-        f213CompletedBy: {
-          sanitiser: trimmedString,
-          validationMessage: {
-            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-            'string.base': 'Enter the name of who completed the F213 form',
-          },
-        },
+        f213CompletedBy: {},
       },
       {
         prisonerInjuries: {
           sanitiser: toBoolean,
-          validationMessage: 'Select yes if the prisoner sustained any injuries',
         },
       },
       {
         healthcareInvolved: {
           sanitiser: toBoolean,
-          validationMessage: 'Select yes if a member of healthcare was present during the incident',
         },
       },
       {
@@ -58,13 +50,11 @@ module.exports = {
       {
         prisonerHospitalisation: {
           sanitiser: toBoolean,
-          validationMessage: 'Select yes if the prisoner needed outside hospitalisation',
         },
       },
       {
         staffMedicalAttention: {
           sanitiser: toBoolean,
-          validationMessage: 'Select yes if a staff member needed medical attention',
         },
       },
       {
@@ -90,20 +80,25 @@ module.exports = {
     ],
     schemas: {
       complete: joi.object({
-        prisonerRelocation: requiredString,
-        relocationCompliancy: requiredBoolean,
-        f213CompletedBy,
-        prisonerInjuries: requiredBoolean,
+        prisonerRelocation: requiredStringMsg('Select where the prisoner was relocated to'),
 
-        healthcareInvolved: requiredBoolean,
+        relocationCompliancy: requiredBooleanMsg('Select yes if the prisoner was compliant'),
+
+        f213CompletedBy,
+
+        prisonerInjuries: requiredBooleanMsg('Select yes if the prisoner sustained any injuries'),
+
+        healthcareInvolved: requiredBooleanMsg('Select yes if a member of healthcare was present during the incident'),
+
         healthcarePractionerName: joi.when('healthcareInvolved', {
           is: true,
           then: requiredString.regex(namePattern, 'HealthcarePractitioner'),
         }),
 
-        prisonerHospitalisation: requiredBoolean,
+        prisonerHospitalisation: requiredBooleanMsg('Select yes if the prisoner needed outside hospitalisation'),
 
-        staffMedicalAttention: requiredBoolean,
+        staffMedicalAttention: requiredBooleanMsg('Select yes if a staff member needed medical attention'),
+
         staffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
           is: true,
           then: arrayOfObjects({
@@ -113,7 +108,6 @@ module.exports = {
             ),
           })
             .min(1)
-
             .ruleset.unique(caseInsensitiveComparator('name'))
             .message("Name '{#value.name}' has already been added - remove this name")
             .required(),

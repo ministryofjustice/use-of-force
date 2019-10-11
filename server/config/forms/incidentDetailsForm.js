@@ -3,13 +3,28 @@ const { EXTRACTED } = require('../fieldType')
 const { isValid } = require('../../utils/fieldValidation')
 const { toDate, toInteger, toBoolean, removeEmptyValues, hasAtLeastOneOf, withoutKeysNotIn } = require('./sanitisers')
 
+/**
+ * Ensure that each object in 'inputs' has exactly the field name 'username' and no others.
+ * Any object that does not have a 'username' is removed, other fields of an object are removed.
+ * @param inputs
+ * @returns {{username: *}[]}
+ */
 const sanitiseUsernames = (inputs = []) =>
   inputs
     .filter(hasAtLeastOneOf(['username']))
     .map(withoutKeysNotIn(['username']))
     .map(({ username }) => ({ username: username.toUpperCase() }))
 
-const { requiredNumber, requiredString, requiredBoolean, any, arrayOfObjects } = validations
+const {
+  requiredNumber,
+  requiredIntegerMsg,
+  requiredString,
+  requiredPatternMsg,
+  requiredBoolean,
+  requiredBooleanMsg,
+  any,
+  arrayOfObjects,
+} = validations
 
 const requiredIncidentDate = joi.object({
   date: joi.object({
@@ -25,7 +40,11 @@ const requiredIncidentDate = joi.object({
   isFutureDateTime: requiredBoolean.invalid(true),
 })
 
-const optionalInvolvedStaff = arrayOfObjects({ username: requiredString.regex(usernamePattern, 'Username') })
+const optionalInvolvedStaff = joi
+  .array()
+  .items({
+    username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore').uppercase(),
+  })
   .ruleset.unique('username')
   .message("Username '{#value.username}' has already been added - remove this user")
 
@@ -41,6 +60,7 @@ const optionalInvolvedStaffWhenPersisted = arrayOfObjects({
 module.exports = {
   optionalInvolvedStaff,
   optionalInvolvedStaffWhenPersisted,
+
   formConfig: {
     fields: [
       {
@@ -62,19 +82,16 @@ module.exports = {
       },
       {
         locationId: {
-          validationMessage: 'Select the location of the incident',
           sanitiser: toInteger,
         },
       },
       {
         plannedUseOfForce: {
-          validationMessage: 'Select yes if the use of force was planned',
           sanitiser: toBoolean,
         },
       },
       {
         involvedStaff: {
-          validationMessage: { 'string.pattern.name': 'Usernames can only contain letters and an underscore' },
           sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0][username]',
         },
@@ -88,17 +105,25 @@ module.exports = {
         },
       },
     ],
+
     schemas: {
       complete: joi.object({
         incidentDate: requiredIncidentDate,
-        locationId: requiredNumber,
-        plannedUseOfForce: validations.requiredBoolean,
+
+        locationId: requiredIntegerMsg('Select the location of the incident'),
+
+        plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned'),
+
         involvedStaff: optionalInvolvedStaff,
-        witnesses: arrayOfObjects({ name: requiredString.regex(namePattern, 'Witnesses') })
+
+        witnesses: arrayOfObjects({
+          name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
+        })
           .ruleset.unique(caseInsensitiveComparator('name'))
           .message("Witness '{#value.name}' has already been added - remove this witness"),
       }),
     },
+
     isComplete(values) {
       return (
         // It's possible to store invalid usernames which haven't been validated against the auth server.

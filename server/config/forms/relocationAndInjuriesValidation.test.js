@@ -142,6 +142,20 @@ describe('Relocation and Injuries page inputs', () => {
     ])
   })
 
+  it('Entering invalid characters Who completed the F213 form field returns a validation error object containing two error messages', () => {
+    const input = {
+      ...validInput,
+      f213CompletedBy: '!@£$%^&',
+    }
+    const { errors } = check(input)
+    expect(errors).toEqual([
+      {
+        href: '#f213CompletedBy',
+        text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+      },
+    ])
+  })
+
   it('Not selecting an option for Did the prisoner sustain any injuries returns a validation error message', () => {
     const input = {
       ...validInput,
@@ -373,14 +387,16 @@ describe('name pattern (f213CompletedBy)', () => {
     expect(isValid(f213CompletedBy, '.a')).toBe(false)
   })
 
+  const extract = validationResult => (validationResult.error ? validationResult.error.details : [])
+
   it('should accept a valid f213CompletedBy value', () => {
     expect(
-      validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ' })
+      extract(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ' }))
     ).toEqual([])
   })
 
   it('should reject an invalid f213CompletedBy value', () => {
-    expect(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: '' })).toEqual([
+    expect(extract(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: '' }))).toEqual([
       {
         href: '#f213CompletedBy',
         text: {

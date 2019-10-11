@@ -70,6 +70,13 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const validate = saveAndContinue
 
+      /**
+       * Here, processInput returns the form (which is always statementForm) as extractedFields.
+       * Seems unnecessary.
+       * I'm fairly sure that grouping the fields into EXTRACTED (extractedFields)
+       * and PAYLOAD (payloadFields) is mixing concerns.  The
+       * EXTRACTED/PAYLOAD partition is a persistence concern and better handled there (in the Repository interface).
+       */
       const { extractedFields: statement, errors } = formProcessing.processInput({
         validate,
         formConfig: statementForm,

@@ -1,3 +1,4 @@
+const Joi = require('@hapi/joi')
 const { mergeIntoPayload, processInput } = require('./formProcessing')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 const { validations, joi } = require('../config/forms/validations')
@@ -107,7 +108,11 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ formConfig: { fields }, validate: false, input: userInput })
+      const output = await processInput({
+        formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+        validate: false,
+        input: userInput,
+      })
 
       expect(output).toEqual({
         errors: [],
@@ -127,7 +132,11 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ formConfig: { fields }, validate: false, input: userInput })
+      const output = await processInput({
+        formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+        validate: false,
+        input: userInput,
+      })
 
       expect(output).toEqual({
         errors: [],
@@ -148,7 +157,7 @@ describe('processInput', () => {
     ]
 
     const output = processInput({
-      formConfig: { fields },
+      formConfig: { fields, schemas: { complete: Joi.any().optional() } },
       validate: false,
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })
@@ -173,7 +182,11 @@ describe('processInput', () => {
       },
     ]
 
-    const output = processInput({ formConfig: { fields }, validate: false, input: { q1: 'aaaAAAaa' } })
+    const output = processInput({
+      formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+      validate: false,
+      input: { q1: 'aaaAAAaa' },
+    })
 
     expect(output).toEqual({
       errors: [],

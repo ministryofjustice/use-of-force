@@ -35,11 +35,16 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     return { formId, incidentDate, form }
   }
 
-  const getAdditonalData = async (res, form, { involvedStaff = [] }) => {
-    if (form === 'incidentDetails') {
-      return involvedStaffService.lookup(res.locals.user.token, involvedStaff.map(u => u.username))
+  const verifyInvolvedStaff = async (res, form, { involvedStaff = [] }) => {
+    if (form !== 'incidentDetails') {
+      return {}
     }
-    return { additionalFields: [] }
+
+    const verifiedInvolvedStaff = await involvedStaffService.lookup(
+      res.locals.user.token,
+      involvedStaff.map(u => u.username)
+    )
+    return { additionalFields: { involvedStaff: verifiedInvolvedStaff } }
   }
 
   const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, editMode, saveAndContinue) => {
@@ -130,25 +135,46 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       input: req.body,
     })
 
-    const { additionalFields = {} } = await getAdditonalData(res, formName, payloadFields)
+    const { additionalFields = {} } = await verifyInvolvedStaff(res, formName, payloadFields)
 
     const formPayload = { ...payloadFields, ...additionalFields }
+    /**
+     * Now formPayload is payloadFields with the involvedStaff field (if it exists) containing verified usernammes. That is,
+     * instead of { involvedStaff: [{ username }, ...]} we have
+     * { involvedStaff: [{ username, name, email, staffId,  missing }, ...] }
+     *
+     * Where username will always be present, but email, staffId, missing are optional, depending on whether or not
+     * username was verified.
+     */
 
     if (saveAndContinue && !isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...formPayload, ...extractedFields })
+      req.flash('userInput', { ...formPayload, ...extractedFields }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
+    /**
+     * fetch latest persisted version of form from db for req.params.bookingId, req.user.username
+     */
     const { formId, form } = await loadForm(req)
 
-    const updatedPayload = await formProcessing.mergeIntoPayload({
+    /** mergeIntoPayload returns false if no change, or merges formPayload onto the persisted form.
+     * like so: { ...form, [formName]: formPayload }
+     */
+    const updatedPayload = formProcessing.mergeIntoPayload({
       formObject: form,
       formPayload,
       formName,
     })
 
     if (updatedPayload || !isNilOrEmpty(extractedFields)) {
+      /**
+       * update takes: { currentUser, formId, bookingId, formObject, incidentDate }
+       * So only extractedFields value that is used is incidentDate!!!  That isn't obvious from this code.
+       *
+       * reportService.update could just take formObject (with incidentDate) and split off incidentDate itself.
+       * That would eliminate quite a bit of unnecessary code. (But see how statementForm is handled...)
+       */
       await reportService.update({
         currentUser: res.locals.user,
         formId,

@@ -93,12 +93,22 @@ const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessag
 
 const processInput = ({ validate: shouldValidate = true, formConfig, input }) => {
   const { schemas, fields } = formConfig
-  const response = fields.reduce(sanitiseInput(input), {})
-  const errors = shouldValidate ? simplifyErrors(validate(fields, schemas.complete, response)) : []
-  const { payloadFields, extractedFields } = splitByType(fields, response)
+  const sanitisedInput = fields.reduce(sanitiseInput(input), {})
+
+  const validationResult = validate(fields, schemas.complete, sanitisedInput)
+  const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []
+
+  const { payloadFields, extractedFields } = splitByType(fields, validationResult.value)
   return { payloadFields, extractedFields, errors }
 }
 
+/**
+ * Create new object from formObject with field 'formName' replaced by formPayload.
+ * @param formObject from database
+ * @param formPayload from request
+ * @param formName
+ * @returns {object}
+ */
 const mergeIntoPayload = ({ formObject, formPayload, formName }) => {
   const updatedFormObject = {
     ...formObject,

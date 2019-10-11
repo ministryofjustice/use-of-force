@@ -20,8 +20,8 @@ module.exports = function createStatementService({ statementsClient, incidentCli
 
   const validateSavedStatement = async (username, reportId) => {
     const statement = await getStatementForUser(username, reportId, StatementStatus.PENDING)
-    const errors = validate(statementConfig.fields, statementConfig.schemas.complete, statement, true)
-    return errors
+    const validationResult = validate(statementConfig.fields, statementConfig.schemas.complete, statement, true)
+    return validationResult.error ? validationResult.error.details : []
   }
 
   const save = (userId, reportId, statement) => {

@@ -2,32 +2,28 @@ const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 const { toInteger, toBoolean } = require('./sanitisers')
 
-const { requiredBoolean, requiredOneOf } = validations
+const { requiredBooleanMsg, requiredOneOfMsg } = validations
 
 module.exports = {
   formConfig: {
     fields: [
       {
         positiveCommunication: {
-          validationMessage: 'Select yes if positive communication was used',
           sanitiser: toBoolean,
         },
       },
       {
         personalProtectionTechniques: {
-          validationMessage: 'Select yes if any personal protection techniques were used',
           sanitiser: toBoolean,
         },
       },
       {
         batonDrawn: {
-          validationMessage: 'Select yes if a baton was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         batonUsed: {
-          validationMessage: 'Select yes if a baton was used',
           sanitiser: toBoolean,
           dependentOn: 'batonDrawn',
           predicate: 'true',
@@ -35,13 +31,11 @@ module.exports = {
       },
       {
         pavaDrawn: {
-          validationMessage: 'Select yes if PAVA was drawn',
           sanitiser: toBoolean,
         },
       },
       {
         pavaUsed: {
-          validationMessage: 'Select yes if PAVA was used',
           sanitiser: toBoolean,
           dependentOn: 'pavaDrawn',
           predicate: 'true',
@@ -49,13 +43,11 @@ module.exports = {
       },
       {
         guidingHold: {
-          validationMessage: 'Select yes if a guiding hold was used',
           sanitiser: toBoolean,
         },
       },
       {
         guidingHoldOfficersInvolved: {
-          validationMessage: 'Select how many officers were involved in the guiding hold',
           sanitiser: toInteger,
           dependentOn: 'guidingHold',
           predicate: 'true',
@@ -63,48 +55,57 @@ module.exports = {
       },
       {
         restraint: {
-          validationMessage: 'Select yes if control and restraint was used',
           sanitiser: toBoolean,
         },
       },
       {
         restraintPositions: {
-          validationMessage: 'Select the control and restraint positions used',
           dependentOn: 'restraint',
           predicate: 'true',
         },
       },
       {
         handcuffsApplied: {
-          validationMessage: 'Select yes if handcuffs were applied',
           sanitiser: toBoolean,
         },
       },
     ],
     schemas: {
       complete: joi.object({
-        positiveCommunication: requiredBoolean,
-        personalProtectionTechniques: requiredBoolean,
+        positiveCommunication: requiredBooleanMsg('Select yes if positive communication was used'),
+        personalProtectionTechniques: requiredBooleanMsg('Select yes if any personal protection techniques were used'),
 
-        batonDrawn: requiredBoolean,
-        batonUsed: joi.when('batonDrawn', { is: true, then: requiredBoolean }),
+        batonDrawn: requiredBooleanMsg('Select yes if a baton was drawn'),
+        batonUsed: joi.when('batonDrawn', { is: true, then: requiredBooleanMsg('Select yes if a baton was used') }),
 
-        pavaDrawn: requiredBoolean,
-        pavaUsed: joi.when('pavaDrawn', { is: true, then: requiredBoolean }),
+        pavaDrawn: requiredBooleanMsg('Select yes if PAVA was drawn'),
+        pavaUsed: joi.when('pavaDrawn', { is: true, then: requiredBooleanMsg('Select yes if PAVA was used') }),
 
-        guidingHold: validations.requiredBoolean,
-        guidingHoldOfficersInvolved: joi.when('guidingHold', { is: true, then: requiredOneOf(1, 2) }),
+        guidingHold: requiredBooleanMsg('Select yes if a guiding hold was used'),
+        guidingHoldOfficersInvolved: joi.when('guidingHold', {
+          is: true,
+          then: requiredOneOfMsg(1, 2)('Select how many officers were involved in the guiding hold'),
+        }),
 
-        restraint: validations.requiredBoolean,
+        restraint: requiredBooleanMsg('Select yes if control and restraint was used'),
         restraintPositions: joi.when('restraint', {
           is: true,
           then: joi
             .alternatives()
-            .try(joi.array().items(requiredOneOf('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')))
-            .required(),
+            .try(
+              joi
+                .array()
+                .items(
+                  requiredOneOfMsg('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')(
+                    'Select the control and restraint positions used'
+                  )
+                )
+            )
+            .required()
+            .messages({ 'any.required': 'Select the control and restraint positions used' }),
         }),
 
-        handcuffsApplied: validations.requiredBoolean,
+        handcuffsApplied: requiredBooleanMsg('Select yes if handcuffs were applied'),
       }),
     },
     isComplete(values) {

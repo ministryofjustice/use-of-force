@@ -20,6 +20,26 @@ const caseInsensitiveComparator = key =>
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
+const requiredString = joi
+  .string()
+  .trim()
+  .required()
+
+const requiredStringMsg = message =>
+  requiredString.messages({
+    'any.required': message,
+    'string.base': message,
+    'string.empty': message,
+  })
+
+const requiredBoolean = joi.boolean().required()
+
+const requiredOneOf = (...values) => joi.valid(...values).required()
+
+const requiredNumber = joi.number().required()
+
+const requiredInteger = requiredNumber.integer()
+
 module.exports = {
   joi,
   usernamePattern,
@@ -42,10 +62,7 @@ module.exports = {
         .when(joi.ref(yearRef), {
           switch: [
             {
-              is: joi
-                .number()
-                .less(moment().year())
-                .required(),
+              is: joi.number().less(moment().year()),
               then: joi
                 .number()
                 .integer()
@@ -53,10 +70,7 @@ module.exports = {
                 .required(),
             },
             {
-              is: joi
-                .number()
-                .valid(moment().year())
-                .required(),
+              is: joi.number().valid(moment().year()),
               then: joi
                 .number()
                 .integer()
@@ -76,18 +90,42 @@ module.exports = {
       .max(moment().year())
       .required(),
 
-    requiredString: joi
-      .string()
-      .trim()
-      .required(),
+    requiredString,
 
-    requiredNumber: joi.number().required(),
+    requiredStringMsg,
 
-    requiredBoolean: joi
-      .boolean()
-      .required()
-      .strict(),
+    requiredPatternMsg: pattern => message =>
+      requiredStringMsg(message)
+        .pattern(pattern)
+        .message(message),
 
-    requiredOneOf: (...values) => joi.valid(...values).required(),
+    requiredNumber,
+
+    requiredNumberMsg: message =>
+      requiredNumber.messages({
+        'any.required': message,
+        'number.base': message,
+      }),
+
+    requiredInteger,
+
+    requiredIntegerMsg: message =>
+      requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message }),
+
+    requiredBoolean,
+
+    requiredBooleanMsg: message =>
+      requiredBoolean.messages({
+        'boolean.base': message,
+        'any.required': message,
+      }),
+
+    requiredOneOf,
+
+    requiredOneOfMsg: (...values) => message =>
+      requiredOneOf(...values).messages({
+        'any.required': message,
+        'any.only': message,
+      }),
   },
 }

@@ -1,15 +1,14 @@
-const { joi, validations, setErrorMessage } = require('./validations')
+const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 const { toBoolean, removeEmptyValues } = require('./sanitisers')
 
-const { arrayOfObjects, requiredString, requiredBoolean, requiredOneOf } = validations
+const { arrayOfObjects, requiredStringMsg, requiredBooleanMsg, requiredOneOfMsg } = validations
 
 module.exports = {
   formConfig: {
     fields: [
       {
         baggedEvidence: {
-          validationMessage: 'Select yes if any evidence was bagged and tagged',
           sanitiser: toBoolean,
         },
       },
@@ -24,19 +23,14 @@ module.exports = {
       },
       {
         photographsTaken: {
-          validationMessage: 'Select yes if any photographs were taken',
           sanitiser: toBoolean,
         },
       },
       {
-        cctvRecording: {
-          validationMessage: 'Select yes if any part of the incident captured on CCTV',
-        },
+        cctvRecording: {},
       },
       {
-        bodyWornCamera: {
-          validationMessage: 'Select yes if any part of the incident was captured on a body-worn camera',
-        },
+        bodyWornCamera: {},
       },
       {
         bodyWornCameraNumbers: {
@@ -50,12 +44,13 @@ module.exports = {
     ],
     schemas: {
       complete: joi.object({
-        baggedEvidence: requiredBoolean,
+        baggedEvidence: requiredBooleanMsg('Select yes if any evidence was bagged and tagged'),
+
         evidenceTagAndDescription: joi.when(joi.ref('baggedEvidence'), {
           is: true,
           then: arrayOfObjects({
-            evidenceTagReference: requiredString.error(setErrorMessage('Enter the evidence tag number')),
-            description: requiredString.error(setErrorMessage('Enter a description of the evidence')),
+            evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
+            description: requiredStringMsg('Enter a description of the evidence'),
           })
             .min(1)
             .ruleset.unique('evidenceTagReference')
@@ -63,15 +58,19 @@ module.exports = {
             .required(),
         }),
 
-        photographsTaken: requiredBoolean,
+        photographsTaken: requiredBooleanMsg('Select yes if any photographs were taken'),
 
-        cctvRecording: requiredOneOf('YES', 'NO', 'NOT_KNOWN'),
+        cctvRecording: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
+          'Select yes if any part of the incident captured on CCTV'
+        ),
 
-        bodyWornCamera: requiredOneOf('YES', 'NO', 'NOT_KNOWN'),
+        bodyWornCamera: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
+          'Select yes if any part of the incident was captured on a body-worn camera'
+        ),
         bodyWornCameraNumbers: joi.when('bodyWornCamera', {
           is: 'YES',
           then: arrayOfObjects({
-            cameraNum: requiredString.error(setErrorMessage('Enter the body-worn camera number')),
+            cameraNum: requiredStringMsg('Enter the body-worn camera number'),
           })
             .min(1)
             .ruleset.unique('cameraNum')

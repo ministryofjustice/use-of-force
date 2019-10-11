@@ -18,7 +18,7 @@ const offenderService = {
 }
 
 const involvedStaffService = {
-  lookup: () => [],
+  lookup: async () => [],
   removeMissingDraftInvolvedStaff: jest.fn(),
   getDraftInvolvedStaff: jest.fn(),
 }
@@ -31,6 +31,7 @@ beforeEach(() => {
   app = appSetup(formRoute)
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
+  involvedStaffService.lookup = async () => []
 })
 
 afterEach(() => {
@@ -52,7 +53,9 @@ describe('GET /section/form', () => {
 })
 
 describe('POST save and continue /section/form', () => {
-  test('should redirect to next page', () =>
+  test('should redirect to next page', () => {
+    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+
     request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -84,7 +87,8 @@ describe('POST save and continue /section/form', () => {
             },
           },
         })
-      }))
+      })
+  })
 
   test('Submitting invalid update is not allowed and user redirected to same page', () =>
     request(app)
@@ -106,7 +110,9 @@ describe('POST save and continue /section/form', () => {
 })
 
 describe('POST save and return to tasklist', () => {
-  test('successfully submit valid update', () =>
+  test('successfully submit valid update', () => {
+    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+
     request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -138,9 +144,12 @@ describe('POST save and return to tasklist', () => {
             },
           },
         })
-      }))
+      })
+  })
 
-  test('Submitting invalid update is allowed', () =>
+  test('Submitting invalid update is allowed', () => {
+    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+
     request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -168,11 +177,14 @@ describe('POST save and return to tasklist', () => {
             },
           },
         })
-      }))
+      })
+  })
 })
 
 describe('POST save and return to check-your-answers', () => {
-  test('successfully submit valid update', () =>
+  test('successfully submit valid update', () => {
+    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+
     request(app)
       .post(`/report/1/edit-incident-details`)
       .send({
@@ -204,7 +216,8 @@ describe('POST save and return to check-your-answers', () => {
             },
           },
         })
-      }))
+      })
+  })
 
   test('Submitting invalid update is not allowed', () =>
     request(app)
