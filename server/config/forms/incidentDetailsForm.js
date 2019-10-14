@@ -93,7 +93,7 @@ module.exports = {
       {
         involvedStaff: {
           sanitiser: sanitiseUsernames,
-          firstFieldName: 'involvedStaff[0][username]',
+          firstFieldName: 'involvedStaff[0]',
         },
       },
       {

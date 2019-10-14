@@ -1,6 +1,8 @@
+const R = require('ramda')
 const { validate } = require('../../utils/fieldValidation')
 const {
   joi,
+  caseInsensitiveComparator,
   validations: {
     requiredMonthIndexNotInFuture,
     requiredYearNotInFuture,
@@ -83,10 +85,7 @@ const buildValidator = schema => value =>
     abortEarly: false,
     convert: true,
     allowUnknown: false,
-    stripUnknown: {
-      arrays: true,
-      objects: true,
-    },
+    stripUnknown: true,
   })
 
 describe('requiredBoolean', () => {
@@ -290,46 +289,12 @@ describe('requiredPatternMsg', () => {
   })
 })
 
-describe('An array of objects, where each object must have exactly one named field', () => {
-  const v = buildValidator(
-    joi
-      .array()
-      .items(joi.object({ a: joi.string().required() }).required())
-      .required()
-  )
+describe('caseInsensitiveComparator', () => {
+  const compare = caseInsensitiveComparator('a')
 
-  it('must filter out unknown fields from objects and remove empty objects from the array', () => {
-    const { value, error } = v([{ a: '1' }, {}, null, 1, [], false, { b: '2' }, { a: '3', b: '4' }])
-
-    expect(value).toEqual([{ a: '1' }, { a: '3' }])
-    expect(error).toBeUndefined()
-  })
-
-  it('rejects empty array', () => {
-    expect(v([]).error.details).toEqual([
-      {
-        context: {
-          label: 'value',
-          unknownMisses: 1,
-          value: [],
-        },
-        message: '"value" does not contain 1 required value(s)',
-        path: [],
-        type: 'array.includesRequiredUnknowns',
-      },
-    ])
-  })
-
-  it('rejects missing array', () => {
-    expect(v(undefined).error.details).toEqual([
-      {
-        context: {
-          label: 'value',
-        },
-        message: '"value" is required',
-        path: [],
-        type: 'any.required',
-      },
-    ])
+  it('should provide case-insensitive comparison', () => {
+    expect(compare({ a: 'A' }, { a: 'a' })).toEqual(true)
+    expect(compare({ a: 'A' }, { a: 'B' })).toEqual(false)
+    expect(compare({ a: 'A' }, {})).toEqual(false)
   })
 })

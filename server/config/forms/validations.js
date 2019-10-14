@@ -11,7 +11,7 @@ const setErrorMessage = message =>
 const caseInsensitiveComparator = key =>
   R.eqBy(
     R.pipe(
-      R.prop(key),
+      R.propOr('', key),
       R.trim,
       R.toUpper
     )
@@ -22,7 +22,7 @@ const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
 const requiredString = joi
   .string()
-  .trim()
+  .trim(true)
   .required()
 
 const requiredStringMsg = message =>
@@ -30,6 +30,7 @@ const requiredStringMsg = message =>
     'any.required': message,
     'string.base': message,
     'string.empty': message,
+    'string.min': message,
   })
 
 const requiredBoolean = joi.boolean().required()
@@ -39,6 +40,15 @@ const requiredOneOf = (...values) => joi.valid(...values).required()
 const requiredNumber = joi.number().required()
 
 const requiredInteger = requiredNumber.integer()
+
+const requiredIntegerMsg = message =>
+  requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message })
+
+const requiredIntegerRangeMsg = (min, max) => message =>
+  requiredIntegerMsg(message)
+    .$.min(min)
+    .max(max)
+    .message(message)
 
 module.exports = {
   joi,
@@ -108,9 +118,8 @@ module.exports = {
       }),
 
     requiredInteger,
-
-    requiredIntegerMsg: message =>
-      requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message }),
+    requiredIntegerMsg,
+    requiredIntegerRangeMsg,
 
     requiredBoolean,
 

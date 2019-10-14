@@ -103,9 +103,7 @@ module.exports = {
           is: true,
           then: arrayOfObjects({
             name: requiredString.regex(namePattern, 'StaffMedicalAttention'),
-            hospitalisation: requiredBoolean.error(
-              setErrorMessage('Select yes if the staff member had to go to hospital')
-            ),
+            hospitalisation: requiredBooleanMsg('Select yes if the staff member had to go to hospital'),
           })
             .min(1)
             .ruleset.unique(caseInsensitiveComparator('name'))

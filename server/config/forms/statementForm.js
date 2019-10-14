@@ -1,5 +1,8 @@
 const { joi, validations } = require('./validations')
+
+const { requiredStringMsg } = validations
 const { EXTRACTED } = require('../fieldType')
+const { trimmedString } = require('./sanitisers')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
@@ -39,8 +42,8 @@ module.exports = {
     },
     {
       statement: {
+        sanitiser: trimmedString,
         fieldType: EXTRACTED,
-        sanitiser: val => (val ? val.trim() : null),
       },
     },
   ],
@@ -49,7 +52,7 @@ module.exports = {
       lastTrainingMonth: validations.requiredMonthIndexNotInFuture('lastTrainingYear'),
       lastTrainingYear: validations.requiredYearNotInFuture,
       jobStartYear: validations.requiredYearNotInFuture,
-      statement: validations.requiredStringMsg('Enter your statement'),
+      statement: requiredStringMsg('Enter your statement'),
     }),
   },
 }

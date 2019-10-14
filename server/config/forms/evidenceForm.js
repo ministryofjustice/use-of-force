@@ -1,6 +1,7 @@
+const R = require('ramda')
 const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
-const { toBoolean, removeEmptyValues } = require('./sanitisers')
+const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
 
 const { arrayOfObjects, requiredStringMsg, requiredBooleanMsg, requiredOneOfMsg } = validations
 
@@ -15,10 +16,7 @@ module.exports = {
       {
         evidenceTagAndDescription: {
           sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
-          validationMessage: 'Please input both the evidence tag number and the description',
-          dependentOn: 'baggedEvidence',
           firstFieldName: 'baggedEvidence',
-          predicate: 'true',
         },
       },
       {
@@ -27,18 +25,19 @@ module.exports = {
         },
       },
       {
-        cctvRecording: {},
+        cctvRecording: {
+          sanitiser: trimmedString,
+        },
       },
       {
-        bodyWornCamera: {},
+        bodyWornCamera: {
+          sanitiser: trimmedString,
+        },
       },
       {
         bodyWornCameraNumbers: {
           sanitiser: removeEmptyValues(['cameraNum']),
-          dependentOn: 'bodyWornCamera',
-          predicate: 'YES',
-          validationMessage: 'Enter the body-worn camera number',
-          firstFieldName: 'bodyWornCameraNumbers[0][cameraNum]',
+          firstFieldName: 'bodyWornCameraNumbers[0]',
         },
       },
     ],
@@ -48,14 +47,18 @@ module.exports = {
 
         evidenceTagAndDescription: joi.when(joi.ref('baggedEvidence'), {
           is: true,
-          then: arrayOfObjects({
-            evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
-            description: requiredStringMsg('Enter a description of the evidence'),
-          })
+          then: joi
+            .array()
+            .items({
+              evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
+              description: requiredStringMsg('Enter a description of the evidence'),
+            })
             .min(1)
-            .ruleset.unique('evidenceTagReference')
+            .message('Please input both the evidence tag number and the description')
+            .unique('evidenceTagReference')
             .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
             .required(),
+          otherwise: joi.any().strip(),
         }),
 
         photographsTaken: requiredBooleanMsg('Select yes if any photographs were taken'),
@@ -73,9 +76,11 @@ module.exports = {
             cameraNum: requiredStringMsg('Enter the body-worn camera number'),
           })
             .min(1)
+            .message('Enter the body-worn camera number')
             .ruleset.unique('cameraNum')
             .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
             .required(),
+          otherwise: joi.any().strip(),
         }),
       }),
     },

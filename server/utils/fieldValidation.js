@@ -36,13 +36,9 @@ module.exports = {
   validate(fields, formSchema, formResponse, stripUnknown = false) {
     const validationResult = formSchema.validate(formResponse, {
       abortEarly: false,
-      // convert: true,
-      // allowUnknown: false,
+      convert: true,
+      allowUnknown: false,
       stripUnknown,
-      // stripUnknown: {
-      //   arrays: true,
-      //   objects: true,
-      // },
     })
 
     const fieldsConfig = fields

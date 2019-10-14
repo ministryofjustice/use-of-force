@@ -2,7 +2,7 @@ const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 const { toInteger, toBoolean } = require('./sanitisers')
 
-const { requiredBooleanMsg, requiredOneOfMsg } = validations
+const { requiredBooleanMsg, requiredOneOfMsg, requiredIntegerRangeMsg } = validations
 
 module.exports = {
   formConfig: {
@@ -76,15 +76,24 @@ module.exports = {
         personalProtectionTechniques: requiredBooleanMsg('Select yes if any personal protection techniques were used'),
 
         batonDrawn: requiredBooleanMsg('Select yes if a baton was drawn'),
-        batonUsed: joi.when('batonDrawn', { is: true, then: requiredBooleanMsg('Select yes if a baton was used') }),
+        batonUsed: joi.when('batonDrawn', {
+          is: true,
+          then: requiredBooleanMsg('Select yes if a baton was used'),
+          otherwise: joi.any().strip(),
+        }),
 
         pavaDrawn: requiredBooleanMsg('Select yes if PAVA was drawn'),
-        pavaUsed: joi.when('pavaDrawn', { is: true, then: requiredBooleanMsg('Select yes if PAVA was used') }),
+        pavaUsed: joi.when('pavaDrawn', {
+          is: true,
+          then: requiredBooleanMsg('Select yes if PAVA was used'),
+          otherwise: joi.any().strip(),
+        }),
 
         guidingHold: requiredBooleanMsg('Select yes if a guiding hold was used'),
         guidingHoldOfficersInvolved: joi.when('guidingHold', {
           is: true,
-          then: requiredOneOfMsg(1, 2)('Select how many officers were involved in the guiding hold'),
+          then: requiredIntegerRangeMsg(1, 2)('Select how many officers were involved in the guiding hold'),
+          otherwise: joi.any().strip(),
         }),
 
         restraint: requiredBooleanMsg('Select yes if control and restraint was used'),
@@ -103,6 +112,7 @@ module.exports = {
             )
             .required()
             .messages({ 'any.required': 'Select the control and restraint positions used' }),
+          otherwise: joi.any().strip(),
         }),
 
         handcuffsApplied: requiredBooleanMsg('Select yes if handcuffs were applied'),
