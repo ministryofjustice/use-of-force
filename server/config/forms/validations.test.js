@@ -20,7 +20,13 @@ jest.mock('moment', () => () => ({
 }))
 
 describe('requiredMonthIndexNotInFuture', () => {
-  const formSchema = joi.object({ year: requiredYearNotInFuture, month: requiredMonthIndexNotInFuture('year') })
+  const formSchema = joi.object({
+    year: requiredYearNotInFuture.messages({
+      'number.max': '"{#label}" must be less than or equal to {$year}',
+      'number.ref': 'ref',
+    }),
+    month: requiredMonthIndexNotInFuture('year'),
+  })
 
   const fields = [
     {

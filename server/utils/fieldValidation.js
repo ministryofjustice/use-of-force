@@ -1,4 +1,6 @@
 const R = require('ramda')
+const moment = require('moment')
+
 const { getFieldName, getIn, isNilOrEmpty } = require('../utils/utils')
 
 const getHref = (fieldConfig, error) => {
@@ -15,30 +17,19 @@ const getHref = (fieldConfig, error) => {
   return sections.reduce((path, section) => `${path}[${section}]`, head)
 }
 
-module.exports = {
-  /**
-   * What is going on here???
-   *
-   * Firstly validation using a Joi schema. This probably doesn't need delegation/abstraction behind a validate function.
-   *
-   * Then... merging error messages from fieldsConfig with errors in the errors.details part of the validator response.
-   *
-   * If error messages from fieldsConfig are replaced with error messages within the Joi schemas, then this doesn't have to happen.
-   * What about the href field??? If this is really needed then pull this out as a stand-alone function.
-   *
-   * @param fields
-   * @param formSchema
-   * @param formResponse
-   * @param stripUnknown
-   * @returns {{text: *, href: string}[]|Array}
-   */
+const contextFactory = () => ({
+  year: moment().year(),
+  month: moment().month(),
+})
 
+module.exports = {
   validate(fields, formSchema, formResponse, stripUnknown = false) {
     const validationResult = formSchema.validate(formResponse, {
       abortEarly: false,
       convert: true,
       allowUnknown: false,
       stripUnknown,
+      context: contextFactory(),
     })
 
     const fieldsConfig = fields

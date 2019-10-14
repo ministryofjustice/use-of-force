@@ -1,5 +1,4 @@
 const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
-const moment = require('moment')
 const R = require('ramda')
 
 const setErrorMessage = message =>
@@ -72,7 +71,7 @@ module.exports = {
         .when(joi.ref(yearRef), {
           switch: [
             {
-              is: joi.number().less(moment().year()),
+              is: joi.number().less(joi.ref('$year')),
               then: joi
                 .number()
                 .integer()
@@ -80,11 +79,11 @@ module.exports = {
                 .required(),
             },
             {
-              is: joi.number().valid(moment().year()),
+              is: joi.number().valid(joi.ref('$year')),
               then: joi
                 .number()
                 .integer()
-                .max(moment().month())
+                .max(joi.ref('$month'))
                 .required(),
               otherwise: joi.any().optional(),
             },
@@ -97,7 +96,7 @@ module.exports = {
     requiredYearNotInFuture: joi
       .number()
       .min(1900)
-      .max(moment().year())
+      .max(joi.ref('$year'))
       .required(),
 
     requiredString,
