@@ -28,7 +28,7 @@ module.exports = function healthcheckFactory(authUrl, elite2Url) {
 }
 
 function gatherCheckInfo(total, currentValue) {
-  return Object.assign({}, total, { [currentValue.name]: currentValue.message })
+  return { ...total, [currentValue.name]: currentValue.message }
 }
 
 function addAppInfo(result) {
@@ -39,7 +39,7 @@ function addAppInfo(result) {
     version: buildInformation && buildInformation.buildNumber,
   }
 
-  return Object.assign({}, result, buildInfo)
+  return { ...result, ...buildInfo }
 }
 
 function getBuild() {
