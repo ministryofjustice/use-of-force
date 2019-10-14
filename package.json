@@ -74,24 +74,18 @@
     }
   },
   "lint-staged": {
-    "linters": {
-      "*.{js,json,css}": [
-        "prettier --write",
-        "eslint --fix",
-        "git add"
-      ]
-    },
-    "ignore": [
-      "package.json",
-      "package-lock.json"
+    "*.{js,json,css},!package.json,!package-lock.json": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
     ]
   },
   "dependencies": {
-    "@hapi/joi": "^16.0.1",
-    "@hapi/joi-date": "^2.0.0",
+    "@hapi/joi": "^16.1.7",
+    "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "0.0.13-alpha",
-    "agentkeepalive": "^4.0.2",
-    "applicationinsights": "^1.4.0",
+    "agentkeepalive": "^4.1.0",
+    "applicationinsights": "^1.5.0",
     "applicationinsights-native-metrics": "0.0.5",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
@@ -105,15 +99,15 @@
     "cookie-session": "^2.0.0-beta.3",
     "csurf": "^1.10.0",
     "debug": "^4.1.1",
-    "dotenv": "^6.2.0",
+    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-request-id": "^1.4.1",
     "govuk-elements-sass": "^3.1.3",
-    "govuk-frontend": "^3.0.0",
+    "govuk-frontend": "^3.3.0",
     "helmet": "^3.21.1",
-    "http-errors": "~1.6.3",
+    "http-errors": "^1.7.3",
     "jwt-decode": "^2.2.0",
-    "knex": "^0.16.5",
+    "knex": "^0.19.5",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "node-sass-middleware": "0.11.0",
@@ -122,32 +116,32 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.5.0",
-    "pg": "^7.11.0",
+    "pg": "^7.12.1",
     "pg-format": "^1.0.4",
     "querystring": "^0.2.0",
     "ramda": "^0.26.1",
     "sass-middleware": "^0.0.3",
     "superagent": "^5.1.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "cypress": "^3.4.1",
-    "cypress-multi-reporters": "^1.1.22",
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-cypress": "^2.2.1",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^2.4.0",
-    "jest": "^24.8.0",
-    "jest-html-reporter": "^2.5.0",
-    "jest-junit": "^6.4.0",
+    "cypress-multi-reporters": "^1.2.1",
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-cypress": "^2.7.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.0.9",
+    "jest": "^24.9.0",
+    "jest-html-reporter": "^2.6.2",
+    "jest-junit": "^8.0.0",
     "jsonwebtoken": "^8.5.1",
-    "lint-staged": "^7.3.0",
-    "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.23.0",
-    "nock": "^10.0.6",
+    "lint-staged": "^9.4.2",
+    "mocha": "^6.2.1",
+    "mocha-junit-reporter": "^1.23.1",
+    "nock": "^11.4.0",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2"
   }
