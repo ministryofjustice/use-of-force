@@ -1,9 +1,6 @@
 const nock = require('nock')
-const { getNamespace } = require('cls-hooked')
 const config = require('../config')
 const oauthClientBuilder = require('./authClientBuilder')
-
-jest.mock('cls-hooked')
 
 describe('authClient', () => {
   let fakeApi
@@ -14,7 +11,6 @@ describe('authClient', () => {
   beforeEach(() => {
     fakeApi = nock(config.apis.oauth2.url)
     client = oauthClientBuilder(token)
-    getNamespace.mockReturnValue({ get: () => 'myuser' })
   })
 
   afterEach(() => {

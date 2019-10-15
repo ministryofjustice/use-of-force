@@ -1,5 +1,3 @@
-const { createNamespace } = require('cls-hooked')
-
 const appInsightsclient = require('../server/utils/azure-appinsights')('use-of-force-reminder-job')
 const logger = require('../log')
 const { notificationServiceFactory } = require('../server/services/notificationService')
@@ -15,8 +13,4 @@ const notificationService = notificationServiceFactory(eventPublisher)
 const sendReminder = reminderSender(notificationService, incidentClient).send
 const poll = reminderPoller(db, incidentClient, sendReminder, eventPublisher)
 
-const session = createNamespace('request.scope')
-
-session.run(() => {
-  poll().catch(error => logger.error(error, 'Problem polling for reminders'))
-})
+poll().catch(error => logger.error(error, 'Problem polling for reminders'))

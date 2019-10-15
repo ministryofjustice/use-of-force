@@ -15,11 +15,16 @@ const statementsClient = {
   getNumberOfPendingStatements: jest.fn(),
 }
 
+const client = 'client-1'
+const db = {
+  inTransaction: fn => fn(client),
+}
+
 let service
 
 describe('statmentService', () => {
   beforeEach(() => {
-    service = serviceCreator({ statementsClient, incidentClient })
+    service = serviceCreator({ statementsClient, incidentClient, db })
     statementsClient.getStatements.mockReturnValue({ rows: [{ id: 1 }, { id: 2 }] })
     statementsClient.saveAdditionalComment(50, 'Some new comment')
   })
@@ -103,7 +108,7 @@ describe('statmentService', () => {
       await service.submitStatement('user1', 'incident-1')
 
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
-      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
+      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1', client)
       expect(incidentClient.markCompleted).not.toHaveBeenCalled()
     })
 
@@ -113,9 +118,9 @@ describe('statmentService', () => {
       await service.submitStatement('user1', 'incident-1')
 
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
-      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1')
+      expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1', client)
 
-      expect(incidentClient.markCompleted).toHaveBeenCalledWith('incident-1')
+      expect(incidentClient.markCompleted).toHaveBeenCalledWith('incident-1', client)
     })
   })
 

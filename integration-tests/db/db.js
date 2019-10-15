@@ -9,15 +9,14 @@ const statementsClient = require('../../server/data/statementsClient')
 const { ReportStatus } = require('../../server/config/types')
 const { equals } = require('../../server/utils/utils')
 
-const getCurrentDraft = bookingId =>
-  incidentClient.getCurrentDraftReport('TEST_USER', bookingId, db.queryWithoutTransaction)
+const getCurrentDraft = bookingId => incidentClient.getCurrentDraftReport('TEST_USER', bookingId)
 
 const getStatementForUser = ({ reportId, status }) =>
-  statementsClient.getStatementForUser('TEST_USER', reportId, status, db.queryWithoutTransaction)
+  statementsClient.getStatementForUser('TEST_USER', reportId, status)
 
 const getAllStatementsForReport = reportId => {
   return db
-    .queryWithoutTransaction({
+    .query({
       text: `select s."name", s.email, s.user_id userId, statement_status status from statement s where s.report_id = $1 order by id`,
       values: [reportId],
     })
@@ -26,7 +25,7 @@ const getAllStatementsForReport = reportId => {
 
 const getPayload = reportId => {
   return db
-    .queryWithoutTransaction({
+    .query({
       text: `select form_response "form" from report r where r.id = $1`,
       values: [reportId],
     })
@@ -48,7 +47,7 @@ const seedReport = ({
 }) => {
   const submitDate = equals(status, ReportStatus.SUBMITTED) ? submittedDate : null
   return db
-    .queryWithoutTransaction({
+    .query({
       text: `INSERT INTO report
       (form_response, user_id, booking_id, created_date, status, submitted_date, offender_no, reporter_name, incident_date, agency_id)
       VALUES($1, $2, $3, $4, $5, $6, 'A1234AC', $7, '2019-09-10 09:57:40.000', $8)
@@ -59,35 +58,21 @@ const seedReport = ({
     .then(
       result =>
         involvedStaff.length &&
-        statementsClient.createStatements(
-          result.rows[0].id,
-          new Date(),
-          overdueDate,
-          involvedStaff,
-          db.queryWithoutTransaction
-        )
+        statementsClient.createStatements(result.rows[0].id, new Date(), overdueDate, involvedStaff)
     )
 }
 
 const submitStatement = ({ userId, reportId }) =>
   statementsClient
-    .saveStatement(
-      userId,
-      reportId,
-      {
-        lastTrainingMonth: 2,
-        lastTrainingYear: 2018,
-        jobStartYear: 2017,
-        statement: 'Things happened',
-      },
-      db.queryWithoutTransaction
-    )
-    .then(() => statementsClient.submitStatement(userId, reportId, db.queryWithoutTransaction))
+    .saveStatement(userId, reportId, {
+      lastTrainingMonth: 2,
+      lastTrainingYear: 2018,
+      jobStartYear: 2017,
+      statement: 'Things happened',
+    })
+    .then(() => statementsClient.submitStatement(userId, reportId))
 
-const deleteRows = table =>
-  db.queryWithoutTransaction({
-    text: format('delete from %I', table),
-  })
+const deleteRows = table => db.query({ text: format('delete from %I', table) })
 
 const clearAllTables = async () => {
   await deleteRows('statement_amendments')

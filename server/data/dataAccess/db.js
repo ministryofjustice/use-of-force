@@ -1,6 +1,5 @@
 const { Pool } = require('pg')
 const fs = require('fs')
-const { getNamespace } = require('cls-hooked')
 
 const logger = require('../../../log')
 const config = require('../../config')
@@ -26,26 +25,12 @@ pool.on('error', error => {
 
 module.exports = {
   pool, // for testing only
-  queryWithoutTransaction: (text, params) => pool.query(text, params),
-  query: (text, params) => {
-    const ns = getNamespace('request.scope')
-    return ns.get('transactionalClient').query(text, params)
-  },
-
-  commitAndStartNewTransaction: async () => {
-    const ns = getNamespace('request.scope')
-    const client = ns.get('transactionalClient')
-    await client.query('COMMIT')
-    await client.query('BEGIN')
-  },
-
+  query: (text, params) => pool.query(text, params),
   inTransaction: async callback => {
     const client = await pool.connect()
-    const ns = getNamespace('request.scope')
-    ns.set('transactionalClient', client)
     try {
       await client.query('BEGIN')
-      const result = await callback()
+      const result = await callback(client)
       await client.query('COMMIT')
       return result
     } catch (error) {

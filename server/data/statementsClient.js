@@ -1,9 +1,9 @@
 const format = require('pg-format')
-const db = require('./dataAccess/db')
+const nonTransactionalClient = require('./dataAccess/db')
 const { StatementStatus } = require('../config/types')
 
-const getStatements = (userId, status, query = db.query) => {
-  return query({
+const getStatements = (userId, status) => {
+  return nonTransactionalClient.query({
     text: `select r.id
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
@@ -19,8 +19,8 @@ const getStatements = (userId, status, query = db.query) => {
   })
 }
 
-const getStatementForUser = async (userId, reportId, status, query = db.query) => {
-  const results = await query({
+const getStatementForUser = async (userId, reportId, status) => {
+  const results = await nonTransactionalClient.query({
     text: `select s.id
     ,      r.booking_id             "bookingId"
     ,      r.incident_date          "incidentDate"
@@ -37,8 +37,8 @@ const getStatementForUser = async (userId, reportId, status, query = db.query) =
   return results.rows[0]
 }
 
-const getStatementForReviewer = async (statementId, query = db.query) => {
-  const results = await query({
+const getStatementForReviewer = async statementId => {
+  const results = await nonTransactionalClient.query({
     text: `select s.id
     ,      r.id                     "reportId"
     ,      s.name
@@ -58,7 +58,7 @@ const getStatementForReviewer = async (statementId, query = db.query) => {
 }
 
 const getStatementsForReviewer = async reportId => {
-  const results = await db.query({
+  const results = await nonTransactionalClient.query({
     text: `select id
             ,      name
             ,      overdue_date <= now()    "isOverdue"
@@ -71,7 +71,7 @@ const getStatementsForReviewer = async reportId => {
 }
 
 const getAdditionalComments = async statementId => {
-  const results = await db.query({
+  const results = await nonTransactionalClient.query({
     text: `select  
     s.additional_comment "additionalComment",
     s.date_submitted     "dateSubmitted" 
@@ -82,8 +82,8 @@ const getAdditionalComments = async statementId => {
   return results.rows
 }
 
-const saveAdditionalComment = (statementId, additionalComment) => {
-  return db.query({
+const saveAdditionalComment = (statementId, additionalComment, client = nonTransactionalClient) => {
+  return client.query({
     text: `insert into statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
     values: [statementId, additionalComment],
@@ -94,9 +94,9 @@ const saveStatement = (
   userId,
   reportId,
   { lastTrainingMonth, lastTrainingYear, jobStartYear, statement },
-  query = db.query
+  client = nonTransactionalClient
 ) => {
-  return query({
+  return client.query({
     text: `update statement 
     set last_training_month = $1
     ,   last_training_year = $2
@@ -119,8 +119,8 @@ const saveStatement = (
   })
 }
 
-const submitStatement = (userId, reportId, query = db.query) => {
-  return query({
+const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
+  return client.query({
     text: `update statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
@@ -132,15 +132,15 @@ const submitStatement = (userId, reportId, query = db.query) => {
   })
 }
 
-const getNumberOfPendingStatements = async reportId => {
-  const { rows } = await db.query({
+const getNumberOfPendingStatements = async (reportId, client = nonTransactionalClient) => {
+  const { rows } = await client.query({
     text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
     values: [reportId, StatementStatus.PENDING.value],
   })
   return parseInt(rows[0].count, 10)
 }
 
-const createStatements = async (reportId, firstReminder, overdueDate, staff, query = db.query) => {
+const createStatements = async (reportId, firstReminder, overdueDate, staff, client = nonTransactionalClient) => {
   const rows = staff.map(s => [
     reportId,
     s.staffId,
@@ -151,7 +151,7 @@ const createStatements = async (reportId, firstReminder, overdueDate, staff, que
     overdueDate,
     StatementStatus.PENDING.value,
   ])
-  const results = await query({
+  const results = await client.query({
     text: format(
       'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
       rows

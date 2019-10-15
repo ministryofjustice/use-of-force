@@ -74,7 +74,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
     return [...addedStaff, ...exist]
   }
 
-  const save = async (reportId, reportSubmittedDate, overdueDate, currentUser) => {
+  const save = async (reportId, reportSubmittedDate, overdueDate, currentUser, client) => {
     const involvedStaff = await getDraftInvolvedStaff(reportId)
 
     const staffToCreateStatmentsFor = await getStaffRequiringStatements(currentUser, involvedStaff)
@@ -91,7 +91,8 @@ module.exports = function createReportService({ incidentClient, statementsClient
       reportId,
       firstReminderDate.toDate(),
       overdueDate.toDate(),
-      staff
+      staff,
+      client
     )
     return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
   }

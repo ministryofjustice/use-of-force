@@ -16,6 +16,12 @@ const incidentClient = {
   getCompletedReportsForReviewer: jest.fn(),
 }
 
+const client = 'client-1'
+
+const db = {
+  inTransaction: fn => fn(client),
+}
+
 const notificationService = {
   sendStatementRequest: jest.fn(),
 }
@@ -36,7 +42,7 @@ beforeEach(() => {
   const elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
 
-  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService })
+  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService, db })
   incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
@@ -55,11 +61,10 @@ describe('submit', () => {
 
     expect(result).toEqual('form-1')
     expect(involvedStaffService.save).toBeCalledTimes(1)
-    expect(involvedStaffService.save).toBeCalledWith('form-1', now, deadline, currentUser)
+    expect(involvedStaffService.save).toBeCalledWith('form-1', now, deadline, currentUser, client)
 
     expect(incidentClient.submitReport).toBeCalledTimes(1)
-    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1', now.toDate())
-    expect(incidentClient.commitAndStartNewTransaction).toBeCalledTimes(1)
+    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1', now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {

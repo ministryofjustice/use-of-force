@@ -92,7 +92,6 @@
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
     "bunyan-request-logger": "^2.1.0",
-    "cls-hooked": "^4.2.2",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.4",

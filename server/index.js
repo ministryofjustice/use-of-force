@@ -4,6 +4,7 @@ const appInsightsClient = require('./utils/azure-appinsights')()
 
 const createApp = require('./app')
 
+const db = require('./data/dataAccess/db')
 const incidentClient = require('./data/incidentClient')
 const statementsClient = require('./data/statementsClient')
 const elite2ClientBuilder = require('./data/elite2ClientBuilder')
@@ -32,8 +33,9 @@ const reportService = createReportService({
   incidentClient,
   involvedStaffService,
   notificationService,
+  db,
 })
-const statementService = createStatementService({ statementsClient, incidentClient })
+const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient })
 
 const app = createApp({
