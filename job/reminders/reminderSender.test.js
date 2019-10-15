@@ -8,6 +8,8 @@ const notificationService = {
   sendInvolvedStaffStatementOverdue: jest.fn(),
 }
 
+const client = jest.fn()
+
 const incidentClient = {
   setNextReminderDate: jest.fn(),
 }
@@ -63,6 +65,7 @@ describe('send', () => {
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
       await send(
+        client,
         {
           ...reminder,
           isReporter: true,
@@ -86,11 +89,12 @@ describe('send', () => {
         expectedContext
       )
 
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate())
+      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate(), client)
     })
 
     test('sendReporterStatementOverdue', async () => {
       await send(
+        client,
         {
           ...reminder,
           isReporter: true,
@@ -113,13 +117,14 @@ describe('send', () => {
         expectedContext
       )
 
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null)
+      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null, client)
     })
   })
 
   describe('involved staff', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
       await send(
+        client,
         {
           ...reminder,
           isReporter: false,
@@ -142,11 +147,12 @@ describe('send', () => {
         expectedContext
       )
 
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate())
+      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate(), client)
     })
 
     test('sendInvolvedStaffStatementOverdue', async () => {
       await send(
+        client,
         {
           ...reminder,
           isReporter: false,
@@ -168,7 +174,7 @@ describe('send', () => {
         expectedContext
       )
 
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null)
+      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null, client)
     })
   })
 })

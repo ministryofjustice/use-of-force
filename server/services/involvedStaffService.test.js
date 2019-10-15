@@ -17,6 +17,8 @@ const statementsClient = {
   createStatements: jest.fn(),
 }
 
+const client = jest.fn()
+
 let service
 
 beforeEach(() => {
@@ -237,11 +239,17 @@ describe('save', () => {
       },
     ])
 
-    const result = await service.save('form1', reportSubmittedDate, overdueDate, {
-      name: 'Bob Smith',
-      staffId: 3,
-      username: 'Bob',
-    })
+    const result = await service.save(
+      'form1',
+      reportSubmittedDate,
+      overdueDate,
+      {
+        name: 'Bob Smith',
+        staffId: 3,
+        username: 'Bob',
+      },
+      client
+    )
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -267,7 +275,8 @@ describe('save', () => {
           staffId: 3,
           userId: 'Bob',
         },
-      ]
+      ],
+      client
     )
   })
 
@@ -301,11 +310,17 @@ describe('save', () => {
       ],
     })
 
-    const result = await service.save('form1', reportSubmittedDate, overdueDate, {
-      name: 'Bob Smith',
-      staffId: 3,
-      username: 'Bob',
-    })
+    const result = await service.save(
+      'form1',
+      reportSubmittedDate,
+      overdueDate,
+      {
+        name: 'Bob Smith',
+        staffId: 3,
+        username: 'Bob',
+      },
+      client
+    )
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -331,7 +346,8 @@ describe('save', () => {
           staffId: 3,
           userId: 'Bob',
         },
-      ]
+      ],
+      client
     )
   })
 

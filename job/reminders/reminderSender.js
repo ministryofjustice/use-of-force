@@ -9,7 +9,7 @@ module.exports = (notificationService, incidentClient) => {
 
   const context = ({ statementId, reportId }) => ({ statementId, reportId })
 
-  const handleOverdue = async reminder => {
+  const handleOverdue = async (client, reminder) => {
     if (reminder.isReporter) {
       await notificationService.sendReporterStatementOverdue(
         reminder.recipientEmail,
@@ -31,10 +31,10 @@ module.exports = (notificationService, incidentClient) => {
         context(reminder)
       )
     }
-    await incidentClient.setNextReminderDate(reminder.statementId, null)
+    await incidentClient.setNextReminderDate(reminder.statementId, null, client)
   }
 
-  const handleReminder = async reminder => {
+  const handleReminder = async (client, reminder) => {
     if (reminder.isReporter) {
       await notificationService.sendReporterStatementReminder(
         reminder.recipientEmail,
@@ -59,14 +59,14 @@ module.exports = (notificationService, incidentClient) => {
       )
     }
     const nextReminderDate = getNextReminderDate(reminder)
-    await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate)
+    await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate, client)
   }
 
   return {
     getNextReminderDate,
-    send: reminder => {
+    send: (client, reminder) => {
       logger.info('processing reminder', reminder)
-      return reminder.isOverdue ? handleOverdue(reminder) : handleReminder(reminder)
+      return reminder.isOverdue ? handleOverdue(client, reminder) : handleReminder(client, reminder)
     },
   }
 }

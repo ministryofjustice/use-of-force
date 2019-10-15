@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
-  const processReminder = async () => {
-    const reminder = await incidentClient.getNextNotificationReminder()
+  const processReminder = async client => {
+    const reminder = await incidentClient.getNextNotificationReminder(client)
     if (reminder) {
-      await sendReminder(reminder)
+      await sendReminder(client, reminder)
     }
     return reminder
   }
@@ -15,7 +15,7 @@ module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
     let count = 0
 
     while (result && count < 50) {
-      result = await db.inTransaction(processReminder)
+      result = await db.inTransaction(client => processReminder(client))
       count += result ? 1 : 0
     }
 

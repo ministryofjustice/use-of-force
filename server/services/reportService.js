@@ -8,6 +8,7 @@ module.exports = function createReportService({
   elite2ClientBuilder,
   involvedStaffService,
   notificationService,
+  db,
 }) {
   const getCurrentDraft = (userId, bookingId) => incidentClient.getCurrentDraftReport(userId, bookingId)
 
@@ -73,12 +74,12 @@ module.exports = function createReportService({
       const reportSubmittedDate = now
       const overdueDate = moment(reportSubmittedDate).add(3, 'days')
 
-      const staff = await involvedStaffService.save(id, reportSubmittedDate, overdueDate, currentUser)
-      logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
-      await incidentClient.submitReport(currentUser.username, bookingId, reportSubmittedDate.toDate())
-
-      // Always ensure report is persisted before sending out notifications
-      await incidentClient.commitAndStartNewTransaction()
+      const staff = await db.inTransaction(async client => {
+        const savedStaff = await involvedStaffService.save(id, reportSubmittedDate, overdueDate, currentUser, client)
+        logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
+        await incidentClient.submitReport(currentUser.username, bookingId, reportSubmittedDate.toDate(), client)
+        return savedStaff
+      })
 
       await requestStatements({
         reportId: id,

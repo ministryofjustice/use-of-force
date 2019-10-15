@@ -236,9 +236,9 @@ test('getInvolvedStaff', async () => {
 })
 
 test('getNextNotificationReminder', () => {
-  incidentClient.getNextNotificationReminder()
-
-  expect(db.query).toBeCalledWith({
+  const client = { query: jest.fn() }
+  incidentClient.getNextNotificationReminder(client)
+  expect(client.query).toBeCalledWith({
     text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
           ,       s.email                  "recipientEmail" 
