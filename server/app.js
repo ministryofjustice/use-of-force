@@ -12,8 +12,6 @@ const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const sassMiddleware = require('node-sass-middleware')
 
-const { createNamespace } = require('cls-hooked')
-
 const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
 const createRouter = require('./routes/')
@@ -62,14 +60,7 @@ module.exports = function createApp({
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
   app.use(helmet())
-  // Setup thread-locals for services under main routers (must occur before requestLogger)
-  const ns = createNamespace('request.scope')
 
-  app.use(async (req, res, next) => {
-    ns.bindEmitter(req)
-    ns.bindEmitter(res)
-    return ns.run(() => next())
-  })
   app.use(addRequestId)
 
   app.use(
@@ -229,14 +220,6 @@ module.exports = function createApp({
       req.logout()
     }
     res.redirect(authLogoutUrl)
-  })
-
-  // Setup user thread-local
-  app.use(async (req, res, next) => {
-    if (req.user && req.user.username) {
-      ns.set('user', req.user.username)
-    }
-    return next()
   })
 
   const currentUserInContext = populateCurrentUser(userService)

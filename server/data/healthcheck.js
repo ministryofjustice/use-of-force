@@ -7,7 +7,7 @@ const logger = require('../../log.js')
 const config = require('../config')
 
 function dbCheck() {
-  return db.queryWithoutTransaction('SELECT 1 AS ok')
+  return db.query('SELECT 1 AS ok')
 }
 
 const agentOptions = {
