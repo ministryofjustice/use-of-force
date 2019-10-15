@@ -15,7 +15,7 @@ module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
     let count = 0
 
     while (result && count < 50) {
-      result = await db.inTransaction(client => processReminder(client))
+      result = await db.inTransaction(processReminder)
       count += result ? 1 : 0
     }
 

@@ -132,8 +132,8 @@ const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
   })
 }
 
-const getNumberOfPendingStatements = async reportId => {
-  const { rows } = await nonTransactionalClient.query({
+const getNumberOfPendingStatements = async (reportId, client = nonTransactionalClient) => {
+  const { rows } = await client.query({
     text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
     values: [reportId, StatementStatus.PENDING.value],
   })

@@ -32,10 +32,10 @@ module.exports = function createStatementService({ statementsClient, incidentCli
   const submitStatement = async (userId, reportId) => {
     logger.info(`Submitting statement for user: ${userId} and report: ${reportId}`)
 
-    db.inTransaction(async client => {
+    await db.inTransaction(async client => {
       await statementsClient.submitStatement(userId, reportId, client)
 
-      const pendingStatementCount = await statementsClient.getNumberOfPendingStatements(reportId)
+      const pendingStatementCount = await statementsClient.getNumberOfPendingStatements(reportId, client)
 
       if (pendingStatementCount === 0) {
         logger.info(`All statements complete on : ${reportId}, marking as complete`)
