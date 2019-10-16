@@ -2,7 +2,6 @@ const { joi, validations } = require('./validations')
 
 const { requiredStringMsg } = validations
 const { EXTRACTED } = require('../fieldType')
-const { trimmedString } = require('./sanitisers')
 
 const toSmallInt = val => {
   const number = parseInt(val, 10)
@@ -13,25 +12,21 @@ module.exports = {
   fields: [
     {
       lastTrainingMonth: {
-        sanitiser: toSmallInt,
         fieldType: EXTRACTED,
       },
     },
     {
       lastTrainingYear: {
-        sanitiser: toSmallInt,
         fieldType: EXTRACTED,
       },
     },
     {
       jobStartYear: {
-        sanitiser: toSmallInt,
         fieldType: EXTRACTED,
       },
     },
     {
       statement: {
-        sanitiser: trimmedString,
         fieldType: EXTRACTED,
       },
     },

@@ -1,8 +1,8 @@
 const { joi, validations, namePattern, caseInsensitiveComparator } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
-const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
+const { removeEmptyObjects } = require('./sanitisers')
 
-const { requiredString, requiredStringMsg, requiredBooleanMsg, arrayOfObjects } = validations
+const { requiredStringMsg, requiredBooleanMsg, arrayOfObjects } = validations
 
 const f213CompletedBy = requiredStringMsg('Enter the name of who completed the F213 form')
   .pattern(namePattern)
@@ -13,56 +13,32 @@ module.exports = {
   formConfig: {
     fields: [
       {
-        prisonerRelocation: {
-          sanitiser: trimmedString,
-        },
+        prisonerRelocation: {},
       },
       {
-        relocationCompliancy: {
-          sanitiser: toBoolean,
-        },
+        relocationCompliancy: {},
       },
       {
         f213CompletedBy: {},
       },
       {
-        prisonerInjuries: {
-          sanitiser: toBoolean,
-        },
+        prisonerInjuries: {},
       },
       {
-        healthcareInvolved: {
-          sanitiser: toBoolean,
-        },
+        healthcareInvolved: {},
       },
       {
-        healthcarePractionerName: {
-          sanitiser: trimmedString,
-          dependentOn: 'healthcareInvolved',
-          predicate: 'true',
-        },
+        healthcarePractionerName: {},
       },
       {
-        prisonerHospitalisation: {
-          sanitiser: toBoolean,
-        },
+        prisonerHospitalisation: {},
       },
       {
-        staffMedicalAttention: {
-          sanitiser: toBoolean,
-        },
+        staffMedicalAttention: {},
       },
       {
         staffNeedingMedicalAttention: {
-          sanitiser: values => {
-            return removeEmptyValues(['name', 'hospitalisation'])(values).map(({ name, hospitalisation }) => ({
-              name,
-              hospitalisation: toBoolean(hospitalisation),
-            }))
-          },
-          dependentOn: 'staffMedicalAttention',
           firstFieldName: 'staffMedicalAttention',
-          predicate: 'true',
         },
       },
     ],
@@ -83,6 +59,7 @@ module.exports = {
           then: requiredStringMsg('Enter the name of the member of healthcare')
             .pattern(namePattern)
             .message('Names may only contain letters, spaces, hyphens or apostrophes'),
+          otherwise: joi.any().strip(),
         }),
 
         prisonerHospitalisation: requiredBooleanMsg('Select yes if the prisoner needed outside hospitalisation'),
@@ -102,7 +79,7 @@ module.exports = {
             .unique(caseInsensitiveComparator('name'))
             .message("Name '{#value.name}' has already been added - remove this name")
             .required()
-            .meta({ sanitiser: removeEmptyValues }),
+            .meta({ sanitiser: removeEmptyObjects }),
         }),
       }),
     },

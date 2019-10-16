@@ -68,8 +68,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     }
 
     const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
-    const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
-    return location
+    return saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
   const getIncidentDate = (savedValue, formValue) => {
@@ -77,6 +76,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const {
         raw: { day, month, year, time },
       } = formValue
+
       const value = moment({
         years: year,
         months: month - 1,

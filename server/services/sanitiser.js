@@ -25,8 +25,19 @@ const simplifyDescription = description =>
   R.cond([
     [R.propEq('type', 'object'), simplifyObjectDescription],
     [R.propEq('type', 'array'), simplifyArrayDescription],
-    [R.T, d => ({ type: 'primitive', sanitiser: getSanitiser(d) })],
+    [R.T, simplifyOtherDescription],
   ])(description)
+
+const simplifyPrimitiveDescription = description => ({ type: 'primitive', sanitiser: getSanitiser(description) })
+
+const simplifyOtherDescription = R.ifElse(
+  R.hasPath(['whens', 0, 'then']),
+  R.pipe(
+    R.path(['whens', 0, 'then']),
+    simplifyDescription
+  ),
+  simplifyPrimitiveDescription
+)
 
 const simplifyObjectDescription = description => ({
   type: 'object',

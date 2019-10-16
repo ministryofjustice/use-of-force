@@ -40,6 +40,15 @@ describe('using meta to specify sanitisers', () => {
           .meta({ sanitiser: R.identity })
           .items(joi.string().meta({ sanitiser: trimmedString })),
         e: joi.valid(1, 'a').meta({ sanitiser: R.identity }),
+        f: joi
+          .when('c', {
+            is: true,
+            then: joi.array().items({
+              fa: joi.string().meta({ sanitiser: trimmedString }),
+            }),
+            otherwise: joi.any().strip(),
+          })
+          .meta({ sanitiser: R.identity }),
       })
       .meta({ sanitiser: R.identity })
 
@@ -70,6 +79,58 @@ describe('using meta to specify sanitisers', () => {
           metas: [{ sanitiser: R.identity }],
           type: 'any',
         },
+        f: {
+          metas: [
+            {
+              sanitiser: R.identity,
+            },
+          ],
+          type: 'any',
+          whens: [
+            {
+              is: {
+                allow: [
+                  {
+                    override: true,
+                  },
+                  true,
+                ],
+                flags: {
+                  only: true,
+                  presence: 'required',
+                },
+                type: 'any',
+              },
+              otherwise: {
+                flags: {
+                  result: 'strip',
+                },
+                type: 'any',
+              },
+              ref: {
+                path: ['c'],
+              },
+              then: {
+                items: [
+                  {
+                    keys: {
+                      fa: {
+                        metas: [
+                          {
+                            sanitiser: trimmedString,
+                          },
+                        ],
+                        type: 'string',
+                      },
+                    },
+                    type: 'object',
+                  },
+                ],
+                type: 'array',
+              },
+            },
+          ],
+        },
       },
       metas: [{ sanitiser: R.identity }],
       type: 'object',
@@ -92,7 +153,9 @@ describe('using meta to specify sanitisers', () => {
       type: 'string',
     })
   })
+})
 
+describe('simplifying descriptions', () => {
   it('simplifies a description of a primitive', () => {
     const schema = joi.string().meta({ sanitiser: trimmedString })
 
@@ -146,6 +209,111 @@ describe('using meta to specify sanitisers', () => {
     })
   })
 
+  it('simplifes a description with no sanitisers. (All sanitisers are R.identity)', () => {
+    const schema = joi
+      .object({
+        a: joi.string().required(),
+        b: joi
+          .array()
+          .items(
+            joi
+              .object({
+                p: joi.number().required(),
+                q: joi.boolean().required(),
+              })
+              .min(1)
+              .max(2)
+              .required()
+          )
+          .required(),
+      })
+      .required()
+
+    expect(simplifyDescription(schema.describe())).toEqual({
+      keys: {
+        a: {
+          sanitiser: R.identity,
+          type: 'primitive',
+        },
+        b: {
+          items: [
+            {
+              keys: {
+                p: {
+                  sanitiser: R.identity,
+                  type: 'primitive',
+                },
+                q: {
+                  sanitiser: R.identity,
+                  type: 'primitive',
+                },
+              },
+              sanitiser: R.identity,
+              type: 'object',
+            },
+          ],
+          sanitiser: R.identity,
+          type: 'array',
+        },
+      },
+      sanitiser: R.identity,
+      type: 'object',
+    })
+  })
+
+  it('simplifies a description of a "when"', () => {
+    const f = x => x
+    const g = x => x
+    const h = x => x
+    const i = x => x
+
+    const schema = joi
+      .object({
+        a: joi.boolean(),
+        b: joi
+          .when('a', {
+            is: true,
+            then: joi
+              .array()
+              .items(joi.object({ p: joi.string().meta({ sanitiser: h }) }))
+              .meta({ sanitiser: g }),
+            otherwise: joi.any().strip(),
+          })
+          .meta({ sanitiser: i }),
+      })
+      .meta({ sanitiser: f })
+
+    expect(simplifyDescription(schema.describe())).toEqual({
+      keys: {
+        a: {
+          type: 'primitive',
+          sanitiser: R.identity,
+        },
+        // Substitute the 'when' branch for content...
+        b: {
+          items: [
+            {
+              keys: {
+                p: {
+                  sanitiser: h,
+                  type: 'primitive',
+                },
+              },
+              sanitiser: R.identity,
+              type: 'object',
+            },
+          ],
+          sanitiser: g,
+          type: 'array',
+        },
+      },
+      sanitiser: f,
+      type: 'object',
+    })
+  })
+})
+
+describe('building sanitisers', () => {
   const doublerSanitiser = { sanitiser: x => (R.isNil(x) ? x : x + x) }
 
   describe('a sanitiser for a string (primitive)', () => {

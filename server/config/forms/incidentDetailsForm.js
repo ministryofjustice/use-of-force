@@ -1,27 +1,7 @@
 const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
 const { isValid } = require('../../utils/fieldValidation')
-const {
-  toDate,
-  toInteger,
-  toBoolean,
-  removeEmptyValues,
-  hasAtLeastOneOf,
-  withoutKeysNotIn,
-  removeEmptyObjects,
-} = require('./sanitisers')
-
-/**
- * Ensure that each object in 'inputs' has exactly the field name 'username' and no others.
- * Any object that does not have a 'username' is removed, other fields of an object are removed.
- * @param inputs
- * @returns {{username: *}[]}
- */
-const sanitiseUsernames = (inputs = []) =>
-  inputs
-    .filter(hasAtLeastOneOf(['username']))
-    .map(withoutKeysNotIn(['username']))
-    .map(({ username }) => ({ username: username.toUpperCase() }))
+const { toDate, removeEmptyObjects } = require('./sanitisers')
 
 const {
   requiredNumber,
@@ -37,27 +17,33 @@ const {
 
 const timePattern = /^(0[0-9]|1[0-9]|2[0-3]|[0-9])[:.][0-5][0-9]$/
 
-const requiredIncidentDate = joi.object({
-  date: joi
-    .object({
-      day: requiredIntegerMsg('Enter the date'),
-      month: requiredIntegerMsg('Enter the month'),
-      year: requiredIntegerMsg('Enter the year'),
-    })
-    .meta({ sanitiser: toDate }),
-  time: requiredStringMsg('Enter the time of the incident')
-    .pattern(timePattern)
-    .message('Enter a time in the correct format - for example, 23:59'),
-  raw: any,
-  value: joi.date().allow(null),
-  isInvalidDate: requiredBoolean
-    .invalid(true)
-    .messages({ 'any.invalid': 'Enter a date in the correct format - for example, 27 3 2007' }),
-  isFutureDate: requiredBoolean.invalid(true).messages({ 'any.invalid': 'Enter a date that is not in the future' }),
-  isFutureDateTime: requiredBoolean
-    .invalid(true)
-    .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
-})
+const requiredIncidentDate = joi
+  .object({
+    date: joi
+      .object({
+        day: requiredIntegerMsg('Enter the date'),
+        month: requiredIntegerMsg('Enter the month'),
+        year: requiredIntegerMsg('Enter the year'),
+      })
+      .required(),
+    time: requiredStringMsg('Enter the time of the incident')
+      .pattern(timePattern)
+      .message('Enter a time in the correct format - for example, 23:59'),
+    raw: any,
+    value: joi.date().allow(null),
+    isInvalidDate: requiredBoolean
+      .invalid(true)
+      .messages({ 'any.invalid': 'Enter a date in the correct format - for example, 27 3 2007' }),
+    isFutureDate: requiredBoolean.invalid(true).messages({ 'any.invalid': 'Enter a date that is not in the future' }),
+    isFutureDateTime: requiredBoolean
+      .invalid(true)
+      .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
+  })
+  // .required()
+  /* 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
+     These pre-defined Joi schemas include the sanitisers toInteger and trimmedString respectively.
+   */
+  .meta({ sanitiser: toDate })
 
 const optionalInvolvedStaff = arrayOfObjects({
   username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore').uppercase(),
@@ -83,30 +69,22 @@ module.exports = {
     fields: [
       {
         incidentDate: {
-          sanitiser: toDate,
           fieldType: EXTRACTED,
         },
       },
       {
-        locationId: {
-          sanitiser: toInteger,
-        },
+        locationId: {},
       },
       {
-        plannedUseOfForce: {
-          sanitiser: toBoolean,
-        },
+        plannedUseOfForce: {},
       },
       {
         involvedStaff: {
-          sanitiser: sanitiseUsernames,
           firstFieldName: 'involvedStaff[0]',
         },
       },
       {
-        witnesses: {
-          sanitiser: removeEmptyValues(['name']),
-        },
+        witnesses: {},
       },
     ],
 

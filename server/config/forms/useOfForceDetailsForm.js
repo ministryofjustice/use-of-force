@@ -1,6 +1,5 @@
 const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
-const { toInteger, toBoolean } = require('./sanitisers')
 
 const { requiredBooleanMsg, requiredOneOfMsg, requiredIntegerRangeMsg } = validations
 
@@ -8,66 +7,37 @@ module.exports = {
   formConfig: {
     fields: [
       {
-        positiveCommunication: {
-          sanitiser: toBoolean,
-        },
+        positiveCommunication: {},
       },
       {
-        personalProtectionTechniques: {
-          sanitiser: toBoolean,
-        },
+        personalProtectionTechniques: {},
       },
       {
-        batonDrawn: {
-          sanitiser: toBoolean,
-        },
+        batonDrawn: {},
       },
       {
-        batonUsed: {
-          sanitiser: toBoolean,
-          dependentOn: 'batonDrawn',
-          predicate: 'true',
-        },
+        batonUsed: {},
       },
       {
-        pavaDrawn: {
-          sanitiser: toBoolean,
-        },
+        pavaDrawn: {},
       },
       {
-        pavaUsed: {
-          sanitiser: toBoolean,
-          dependentOn: 'pavaDrawn',
-          predicate: 'true',
-        },
+        pavaUsed: {},
       },
       {
-        guidingHold: {
-          sanitiser: toBoolean,
-        },
+        guidingHold: {},
       },
       {
-        guidingHoldOfficersInvolved: {
-          sanitiser: toInteger,
-          dependentOn: 'guidingHold',
-          predicate: 'true',
-        },
+        guidingHoldOfficersInvolved: {},
       },
       {
-        restraint: {
-          sanitiser: toBoolean,
-        },
+        restraint: {},
       },
       {
-        restraintPositions: {
-          dependentOn: 'restraint',
-          predicate: 'true',
-        },
+        restraintPositions: {},
       },
       {
-        handcuffsApplied: {
-          sanitiser: toBoolean,
-        },
+        handcuffsApplied: {},
       },
     ],
     schemas: {

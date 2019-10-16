@@ -26,8 +26,7 @@ const validInput = {
 
 describe('check evidence validation', () => {
   it('successful input', () => {
-    const input = validInput
-    const { errors, formResponse } = check(input)
+    const { errors, formResponse } = check(validInput)
 
     expect(errors).toEqual([])
 
@@ -98,8 +97,8 @@ describe('Evidence', () => {
       baggedEvidence: 'true',
       evidenceTagAndDescription: [
         { description: 'A Description', evidenceTagReference: '12345' },
-        { description: 'A Description', evidenceTagReference: '' },
-        { description: '', evidenceTagReference: '12345' },
+        { description: 'A Description', evidenceTagReference: '   ' },
+        { description: '   ', evidenceTagReference: '12345' },
       ],
     }
 
@@ -127,8 +126,8 @@ describe('Evidence', () => {
       cctvRecording: 'YES',
       evidenceTagAndDescription: [
         { description: 'A Description', evidenceTagReference: '12345' },
-        { description: 'A Description' },
-        { evidenceTagReference: '12345' },
+        { description: 'A Description', evidenceTagReference: '' },
+        { description: '', evidenceTagReference: '12345' },
       ],
       photographsTaken: true,
     })

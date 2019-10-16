@@ -1,7 +1,6 @@
-const R = require('ramda')
 const moment = require('moment')
 
-const { getFieldName, getIn, isNilOrEmpty } = require('../utils/utils')
+const { getFieldName, isNilOrEmpty } = require('../utils/utils')
 
 const getHref = (fieldConfig, error) => {
   const [head, ...sections] = error.path
@@ -23,7 +22,7 @@ const contextFactory = () => ({
 })
 
 module.exports = {
-  validate(fields, formSchema, formResponse, stripUnknown = false) {
+  validate(fieldsConfig, formSchema, formResponse, stripUnknown = false) {
     const validationResult = formSchema.validate(formResponse, {
       abortEarly: false,
       convert: true,
@@ -32,7 +31,6 @@ module.exports = {
       context: contextFactory(),
     })
 
-    const fieldsConfig = fields
     if (isNilOrEmpty(validationResult.error)) {
       return validationResult
     }

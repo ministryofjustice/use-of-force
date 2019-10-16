@@ -2,40 +2,7 @@ const R = require('ramda')
 const { equals, isNilOrEmpty } = require('../utils/utils')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 const { validate } = require('../utils/fieldValidation')
-
-const requiresAnotherFieldToBeADifferentValue = ({ dependentOn, predicate: requiredValue }, userInput) => {
-  if (!dependentOn) {
-    return false
-  }
-  const dependentFieldValue = userInput[dependentOn]
-  const matchesRequiredValue = dependentFieldValue && dependentFieldValue === requiredValue
-  return !matchesRequiredValue
-}
-
-const getFieldInfo = ({ field, userInput }) => {
-  const fieldName = Object.keys(field)[0]
-  const fieldConfig = field[fieldName]
-
-  const { sanitiser = value => value } = fieldConfig
-
-  return {
-    fieldName,
-    sanitiser,
-    exclude: requiresAnotherFieldToBeADifferentValue(fieldConfig, userInput),
-  }
-}
-
-const sanitiseInput = userInput => {
-  return (answersAccumulator, field) => {
-    const { fieldName, exclude, sanitiser } = getFieldInfo({ field, userInput })
-
-    if (exclude) {
-      return answersAccumulator
-    }
-
-    return { ...answersAccumulator, [fieldName]: sanitiser(userInput[fieldName]) }
-  }
-}
+const { buildSanitiser } = require('./sanitiser')
 
 const extractFields = (userInput, requiredFieldType) => {
   return (answersAccumulator, field) => {
@@ -93,7 +60,9 @@ const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessag
 
 const processInput = ({ validate: shouldValidate = true, formConfig, input }) => {
   const { schemas, fields } = formConfig
-  const sanitisedInput = fields.reduce(sanitiseInput(input), {})
+
+  // TODO: The sanitiser should be built in advance and attached to the formConfig
+  const sanitisedInput = buildSanitiser(schemas.complete)(input)
 
   const validationResult = validate(fields, schemas.complete, sanitisedInput)
   const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []

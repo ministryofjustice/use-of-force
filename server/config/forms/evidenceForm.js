@@ -1,7 +1,6 @@
-const R = require('ramda')
 const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
-const { toBoolean, removeEmptyValues, trimmedString, removeEmptyObjects } = require('./sanitisers')
+const { removeEmptyObjects } = require('./sanitisers')
 
 const { arrayOfObjects, requiredStringMsg, requiredBooleanMsg, requiredOneOfMsg } = validations
 
@@ -9,34 +8,24 @@ module.exports = {
   formConfig: {
     fields: [
       {
-        baggedEvidence: {
-          sanitiser: toBoolean,
-        },
+        baggedEvidence: {},
       },
       {
         evidenceTagAndDescription: {
-          sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
           firstFieldName: 'baggedEvidence',
         },
       },
       {
-        photographsTaken: {
-          sanitiser: toBoolean,
-        },
+        photographsTaken: {},
       },
       {
-        cctvRecording: {
-          sanitiser: trimmedString,
-        },
+        cctvRecording: {},
       },
       {
-        bodyWornCamera: {
-          sanitiser: trimmedString,
-        },
+        bodyWornCamera: {},
       },
       {
         bodyWornCameraNumbers: {
-          sanitiser: removeEmptyValues(['cameraNum']),
           firstFieldName: 'bodyWornCameraNumbers[0]',
         },
       },

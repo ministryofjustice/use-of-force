@@ -28,8 +28,7 @@ beforeEach(() => {
 
 describe('Incident details page - overall', () => {
   it('Should return no validation error messages if every primary input field completed correctly', () => {
-    const input = validInput
-    const { errors, formResponse, extractedFields } = check(input)
+    const { errors, formResponse, extractedFields } = check(validInput)
 
     expect(errors).toEqual([])
 
@@ -41,10 +40,10 @@ describe('Incident details page - overall', () => {
           year: 2019,
         },
         raw: {
-          day: '15',
-          month: '1',
+          day: 15,
+          month: 1,
           time: '12:45',
-          year: '2019',
+          year: 2019,
         },
         value: moment('2019-01-15T12:45:00.000Z').toDate(),
         time: '12:45',
@@ -62,7 +61,7 @@ describe('Incident details page - overall', () => {
   })
 
   it('Should return error massages if no input field is completed', () => {
-    const input = {}
+    const input = { incidentDate: {} } // TODO: hmm....
     const { errors, formResponse, extractedFields } = check(input)
 
     expect(errors).toEqual([
@@ -341,10 +340,10 @@ describe('incidentDate', () => {
           year: 2019,
         },
         raw: {
-          day: '15',
-          month: '1',
+          day: 15,
+          month: 1,
           time: '12345',
-          year: '2019',
+          year: 2019,
         },
         value: null,
         time: '12345',
@@ -386,10 +385,10 @@ describe('incidentDate', () => {
           year: 2019,
         },
         raw: {
-          day: '29',
-          month: '2',
+          day: 29,
+          month: 2,
           time: '12:45',
-          year: '2019',
+          year: 2019,
         },
         value: null,
         time: '12:45',
@@ -432,9 +431,9 @@ describe('incidentDate', () => {
         },
         raw: {
           day: undefined,
-          month: '2',
+          month: 2,
           time: '12:45',
-          year: '2019',
+          year: 2019,
         },
         value: null,
         time: '12:45',
@@ -475,10 +474,10 @@ describe('incidentDate', () => {
           year: 2019,
         },
         raw: {
-          day: '28',
-          month: '2',
+          day: 28,
+          month: 2,
           time: undefined,
-          year: '2019',
+          year: 2019,
         },
         value: null,
         time: undefined,
@@ -520,13 +519,13 @@ describe('incidentDate', () => {
           year: 2019,
         },
         raw: {
-          day: '28',
-          month: '2',
-          time: '',
-          year: '2019',
+          day: 28,
+          month: 2,
+          time: null,
+          year: 2019,
         },
         value: null,
-        time: '',
+        time: null,
         isFutureDate: false,
         isFutureDateTime: false,
         isInvalidDate: false,
@@ -573,10 +572,10 @@ describe('incidentDate', () => {
           year: null,
         },
         raw: {
-          day: 'aaa',
-          month: 'bbb',
+          day: null,
+          month: null,
           time: '12:34',
-          year: 'ccc',
+          year: null,
         },
         value: null,
         time: '12:34',
@@ -628,10 +627,10 @@ describe('incidentDate', () => {
           year: now.year(),
         },
         raw: {
-          day,
-          month,
+          day: now.date(),
+          month: now.month() + 1,
           time,
-          year,
+          year: now.year(),
         },
         value: timeInTheFuture.toDate(),
         time,
@@ -684,10 +683,10 @@ describe('incidentDate', () => {
           year: dateInTheFuture.year(),
         },
         raw: {
-          day,
-          month,
+          day: dateInTheFuture.date(),
+          month: dateInTheFuture.month() + 1,
           time,
-          year,
+          year: dateInTheFuture.year(),
         },
         value: dateInTheFuture.toDate(),
         time,

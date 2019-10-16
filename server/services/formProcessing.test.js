@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi')
+const R = require('ramda')
 const { mergeIntoPayload, processInput } = require('./formProcessing')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 const { validations, joi } = require('../config/forms/validations')
@@ -85,21 +86,15 @@ describe('mergeIntoPayload', () => {
 
 describe('processInput', () => {
   describe('checking dependentFields functionality', () => {
-    const fields = [
-      { decision: {} },
-      {
-        followUp1: {
-          dependentOn: 'decision',
-          predicate: 'Yes',
-        },
-      },
-      {
-        followUp2: {
-          dependentOn: 'decision',
-          predicate: 'Yes',
-        },
-      },
-    ]
+    const fields = [{ decision: {} }, { followUp1: {} }, { followUp2: {} }]
+
+    const schemas = {
+      complete: joi.object({
+        decision: validations.requiredOneOfMsg('Yes', 'No')('Meh'),
+        followUp1: joi.when('decision', { is: 'Yes', then: joi.string().required(), otherwise: joi.any().strip() }),
+        followUp2: joi.when('decision', { is: 'Yes', then: joi.string().required(), otherwise: joi.any().strip() }),
+      }),
+    }
 
     test('should store dependents if predicate matches', async () => {
       const userInput = {
@@ -109,7 +104,7 @@ describe('processInput', () => {
       }
 
       const output = await processInput({
-        formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+        formConfig: { fields, schemas },
         validate: false,
         input: userInput,
       })
@@ -133,7 +128,7 @@ describe('processInput', () => {
       }
 
       const output = await processInput({
-        formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+        formConfig: { fields, schemas },
         validate: false,
         input: userInput,
       })
@@ -173,17 +168,10 @@ describe('processInput', () => {
   })
 
   test('sanitisation', async () => {
-    const fields = [
-      {
-        q1: {
-          validationMessage: 'Please give a full name',
-          sanitiser: val => val.toUpperCase(),
-        },
-      },
-    ]
+    const fields = [{ q1: {} }]
 
     const output = processInput({
-      formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+      formConfig: { fields, schemas: { complete: joi.object({ q1: joi.string().meta({ sanitiser: R.toUpper }) }) } },
       validate: false,
       input: { q1: 'aaaAAAaa' },
     })
@@ -198,11 +186,7 @@ describe('processInput', () => {
   })
 
   test('validation', async () => {
-    const fields = [
-      {
-        q1: {},
-      },
-    ]
+    const fields = [{ q1: {} }]
 
     const schema = joi.object({ q1: validations.requiredStringMsg('Please give a full name') })
 
