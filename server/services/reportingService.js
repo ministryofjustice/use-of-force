@@ -25,7 +25,7 @@ module.exports = function createReportingService({ reportingClient }) {
       )
       const results = await reportingClient.getMostOftenInvolvedStaff(agencyId, startDate, endDate)
 
-      return toCsv([{ key: 'userId' }, { key: 'name' }, { key: 'count' }], results)
+      return toCsv([{ key: 'name' }, { key: 'count' }], results)
     },
   }
 }

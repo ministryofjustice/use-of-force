@@ -22,7 +22,7 @@ describe('getMostOftenInvolvedStaff', () => {
     reportingClient.getMostOftenInvolvedStaff(agencyId, startDate, endDate)
 
     expect(db.query).toBeCalledWith({
-      text: `select s.user_id "userId", s.name, count(*) 
+      text: `select s.name, count(*) 
           from statement s
           join report r on r.id = s.report_id
           where r.agency_id = $1

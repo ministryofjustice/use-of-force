@@ -2,7 +2,7 @@ const nonTransactionalClient = require('./dataAccess/db')
 
 const getMostOftenInvolvedStaff = async (agencyId, startDate, endDate) => {
   const results = await nonTransactionalClient.query({
-    text: `select s.user_id "userId", s.name, count(*) 
+    text: `select s.name, count(*) 
           from statement s
           join report r on r.id = s.report_id
           where r.agency_id = $1

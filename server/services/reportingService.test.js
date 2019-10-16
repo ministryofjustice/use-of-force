@@ -29,10 +29,10 @@ describe('reportingService', () => {
 
     const result = await service.getMostOftenInvolvedStaff('LEI', 2, 2019)
 
-    expect(result).toEqual(`userId,name,count
-AAAA,Arthur,20
-BBBB,Bella,10
-CCCC,Charlotte,5
+    expect(result).toEqual(`name,count
+Arthur,20
+Bella,10
+Charlotte,5
 `)
 
     expect(reportingClient.getMostOftenInvolvedStaff).toBeCalledWith('LEI', startDate, endDate)
