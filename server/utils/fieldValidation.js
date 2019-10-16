@@ -40,14 +40,8 @@ module.exports = {
     const errorDetails = validationResult.error.details.map(error => {
       const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
 
-      const errorMessage =
-        getIn([error.path[0], 'validationMessage', `${error.context.label}.${error.type}`], fieldConfig) ||
-        getIn([error.path[0], 'validationMessage', error.type], fieldConfig) ||
-        getIn([...error.path, 'validationMessage'], fieldConfig) ||
-        error.message
-
       return {
-        text: errorMessage,
+        text: error.message,
         href: `#${getHref(fieldConfig, error)}`,
       }
     })

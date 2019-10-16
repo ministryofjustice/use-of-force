@@ -14,7 +14,6 @@ module.exports = {
     {
       lastTrainingMonth: {
         sanitiser: toSmallInt,
-        validationMessage: 'Select the month you last attended refresher training',
         fieldType: EXTRACTED,
       },
     },
@@ -22,22 +21,12 @@ module.exports = {
       lastTrainingYear: {
         sanitiser: toSmallInt,
         fieldType: EXTRACTED,
-        validationMessage: {
-          'number.base': 'Enter the year you last attended refresher training',
-          'number.min': 'Enter the year you last attended refresher training which is not in the future',
-          'number.max': 'Enter the year you last attended refresher training which is not in the future',
-        },
       },
     },
     {
       jobStartYear: {
         sanitiser: toSmallInt,
         fieldType: EXTRACTED,
-        validationMessage: {
-          'number.base': 'Enter the year you joined the prison service',
-          'number.min': 'Enter the year you joined the prison service which is not in the future',
-          'number.max': 'Enter the year you joined the prison service which is not in the future',
-        },
       },
     },
     {
@@ -49,9 +38,21 @@ module.exports = {
   ],
   schemas: {
     complete: joi.object({
-      lastTrainingMonth: validations.requiredMonthIndexNotInFuture('lastTrainingYear'),
-      lastTrainingYear: validations.requiredYearNotInFuture,
-      jobStartYear: validations.requiredYearNotInFuture,
+      lastTrainingMonth: validations
+        .requiredMonthIndexNotInFuture('lastTrainingYear', 'Select the month you last attended refresher training')
+        .meta({ sanitiser: toSmallInt }),
+      lastTrainingYear: validations
+        .requiredYearNotInFutureMsg(
+          'Enter the year you last attended refresher training',
+          'Enter the year you last attended refresher training which is not in the future'
+        )
+        .meta({ sanitiser: toSmallInt }),
+      jobStartYear: validations
+        .requiredYearNotInFutureMsg(
+          'Enter the year you joined the prison service',
+          'Enter the year you joined the prison service which is not in the future'
+        )
+        .meta({ sanitiser: toSmallInt }),
       statement: requiredStringMsg('Enter your statement'),
     }),
   },

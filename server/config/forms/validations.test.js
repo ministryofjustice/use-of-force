@@ -5,7 +5,7 @@ const {
   caseInsensitiveComparator,
   validations: {
     requiredMonthIndexNotInFuture,
-    requiredYearNotInFuture,
+    requiredYearNotInFutureMsg,
     requiredBooleanMsg,
     requiredOneOfMsg,
     requiredIntegerMsg,
@@ -21,18 +21,13 @@ jest.mock('moment', () => () => ({
 
 describe('requiredMonthIndexNotInFuture', () => {
   const formSchema = joi.object({
-    year: requiredYearNotInFuture.messages({
-      'number.max': '"{#label}" must be less than or equal to {$year}',
-      'number.ref': 'ref',
-    }),
-    month: requiredMonthIndexNotInFuture('year'),
+    year: requiredYearNotInFutureMsg('Year is required', 'Year out of range'),
+    month: requiredMonthIndexNotInFuture('year', 'Select the month'),
   })
 
   const fields = [
     {
-      month: {
-        validationMessage: 'Select the month',
-      },
+      month: {},
     },
     {
       year: {},
@@ -46,17 +41,17 @@ describe('requiredMonthIndexNotInFuture', () => {
 
   const yearLessEq2019 = {
     href: '#year',
-    text: '"year" must be less than or equal to 2019',
+    text: 'Year out of range',
   }
 
   const yearMustBeANumber = {
     href: '#year',
-    text: '"year" must be a number',
+    text: 'Year is required',
   }
 
   const yearIsRequired = {
     href: '#year',
-    text: '"year" is required',
+    text: 'Year is required',
   }
 
   const extract = validationResult => (validationResult.error ? validationResult.error.details : [])

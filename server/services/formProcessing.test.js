@@ -200,13 +200,11 @@ describe('processInput', () => {
   test('validation', async () => {
     const fields = [
       {
-        q1: {
-          validationMessage: 'Please give a full name',
-        },
+        q1: {},
       },
     ]
 
-    const schema = joi.object({ q1: validations.requiredString })
+    const schema = joi.object({ q1: validations.requiredStringMsg('Please give a full name') })
 
     const output = processInput({ formConfig: { fields, schemas: { complete: schema } }, validate: true, input: {} })
 

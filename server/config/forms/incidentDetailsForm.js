@@ -1,7 +1,15 @@
 const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
 const { isValid } = require('../../utils/fieldValidation')
-const { toDate, toInteger, toBoolean, removeEmptyValues, hasAtLeastOneOf, withoutKeysNotIn } = require('./sanitisers')
+const {
+  toDate,
+  toInteger,
+  toBoolean,
+  removeEmptyValues,
+  hasAtLeastOneOf,
+  withoutKeysNotIn,
+  removeEmptyObjects,
+} = require('./sanitisers')
 
 /**
  * Ensure that each object in 'inputs' has exactly the field name 'username' and no others.
@@ -19,6 +27,7 @@ const {
   requiredNumber,
   requiredIntegerMsg,
   requiredString,
+  requiredStringMsg,
   requiredPatternMsg,
   requiredBoolean,
   requiredBooleanMsg,
@@ -26,30 +35,39 @@ const {
   arrayOfObjects,
 } = validations
 
+const timePattern = /^(0[0-9]|1[0-9]|2[0-3]|[0-9])[:.][0-5][0-9]$/
+
 const requiredIncidentDate = joi.object({
-  date: joi.object({
-    day: requiredNumber,
-    month: requiredNumber,
-    year: requiredNumber,
-  }),
-  time: requiredString.regex(/^(0[0-9]|1[0-9]|2[0-3]|[0-9])[:.][0-5][0-9]$/),
+  date: joi
+    .object({
+      day: requiredIntegerMsg('Enter the date'),
+      month: requiredIntegerMsg('Enter the month'),
+      year: requiredIntegerMsg('Enter the year'),
+    })
+    .meta({ sanitiser: toDate }),
+  time: requiredStringMsg('Enter the time of the incident')
+    .pattern(timePattern)
+    .message('Enter a time in the correct format - for example, 23:59'),
   raw: any,
   value: joi.date().allow(null),
-  isInvalidDate: requiredBoolean.invalid(true),
-  isFutureDate: requiredBoolean.invalid(true),
-  isFutureDateTime: requiredBoolean.invalid(true),
+  isInvalidDate: requiredBoolean
+    .invalid(true)
+    .messages({ 'any.invalid': 'Enter a date in the correct format - for example, 27 3 2007' }),
+  isFutureDate: requiredBoolean.invalid(true).messages({ 'any.invalid': 'Enter a date that is not in the future' }),
+  isFutureDateTime: requiredBoolean
+    .invalid(true)
+    .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
 })
 
-const optionalInvolvedStaff = joi
-  .array()
-  .items({
-    username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore').uppercase(),
-  })
-  .ruleset.unique('username')
+const optionalInvolvedStaff = arrayOfObjects({
+  username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore').uppercase(),
+})
+  .ruleset.unique(caseInsensitiveComparator('username'))
   .message("Username '{#value.username}' has already been added - remove this user")
+  .meta({ sanitiser: removeEmptyObjects })
 
 const optionalInvolvedStaffWhenPersisted = arrayOfObjects({
-  username: requiredString.regex(usernamePattern, 'Username'),
+  username: requiredString.pattern(usernamePattern, 'Username'),
   name: requiredString,
   email: requiredString,
   staffId: requiredNumber,
@@ -67,17 +85,6 @@ module.exports = {
         incidentDate: {
           sanitiser: toDate,
           fieldType: EXTRACTED,
-          validationMessage: {
-            'incidentDate.date.day.number.base': 'Enter the date',
-            'incidentDate.date.month.number.base': 'Enter the month',
-            'incidentDate.date.year.number.base': 'Enter the year',
-            'incidentDate.time.any.required': 'Enter the time of the incident',
-            'incidentDate.time.string.empty': 'Enter the time of the incident',
-            'incidentDate.time.string.pattern.base': 'Enter a time in the correct format - for example, 23:59',
-            'incidentDate.isInvalidDate.any.invalid': 'Enter a date in the correct format - for example, 27 3 2007',
-            'incidentDate.isFutureDateTime.any.invalid': 'Enter a time which is not in the future',
-            'incidentDate.isFutureDate.any.invalid': 'Enter a date that is not in the future',
-          },
         },
       },
       {
@@ -98,9 +105,6 @@ module.exports = {
       },
       {
         witnesses: {
-          validationMessage: {
-            'string.pattern.name': 'Witness names can only contain letters, spaces, hyphens, apostrophe',
-          },
           sanitiser: removeEmptyValues(['name']),
         },
       },
@@ -120,7 +124,8 @@ module.exports = {
           name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
         })
           .ruleset.unique(caseInsensitiveComparator('name'))
-          .message("Witness '{#value.name}' has already been added - remove this witness"),
+          .message("Witness '{#value.name}' has already been added - remove this witness")
+          .meta({ sanitiser: removeEmptyObjects }),
       }),
     },
 

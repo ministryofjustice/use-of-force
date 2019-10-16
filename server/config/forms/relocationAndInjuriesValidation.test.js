@@ -399,10 +399,7 @@ describe('name pattern (f213CompletedBy)', () => {
     expect(extract(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: '' }))).toEqual([
       {
         href: '#f213CompletedBy',
-        text: {
-          'string.base': 'Enter the name of who completed the F213 form',
-          'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-        },
+        text: 'Enter the name of who completed the F213 form',
       },
     ])
   })

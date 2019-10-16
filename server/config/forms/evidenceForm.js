@@ -1,7 +1,7 @@
 const R = require('ramda')
 const { joi, validations } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
-const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
+const { toBoolean, removeEmptyValues, trimmedString, removeEmptyObjects } = require('./sanitisers')
 
 const { arrayOfObjects, requiredStringMsg, requiredBooleanMsg, requiredOneOfMsg } = validations
 
@@ -47,17 +47,16 @@ module.exports = {
 
         evidenceTagAndDescription: joi.when(joi.ref('baggedEvidence'), {
           is: true,
-          then: joi
-            .array()
-            .items({
-              evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
-              description: requiredStringMsg('Enter a description of the evidence'),
-            })
+          then: arrayOfObjects({
+            evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
+            description: requiredStringMsg('Enter a description of the evidence'),
+          })
             .min(1)
             .message('Please input both the evidence tag number and the description')
             .unique('evidenceTagReference')
             .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
-            .required(),
+            .required()
+            .meta({ sanitiser: removeEmptyObjects }),
           otherwise: joi.any().strip(),
         }),
 
@@ -79,7 +78,8 @@ module.exports = {
             .message('Enter the body-worn camera number')
             .ruleset.unique('cameraNum')
             .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
-            .required(),
+            .required()
+            .meta({ sanitiser: removeEmptyObjects }),
           otherwise: joi.any().strip(),
         }),
       }),

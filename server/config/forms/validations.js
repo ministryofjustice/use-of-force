@@ -1,11 +1,6 @@
 const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
 const R = require('ramda')
-
-const setErrorMessage = message =>
-  R.map(e => {
-    e.message = message
-    return e
-  })
+const { toBoolean, trimmedString, toInteger } = require('./sanitisers')
 
 const caseInsensitiveComparator = key =>
   R.eqBy(
@@ -19,10 +14,15 @@ const caseInsensitiveComparator = key =>
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
+const asMeta = sanitiser => ({
+  sanitiser,
+})
+
 const requiredString = joi
   .string()
   .trim(true)
   .required()
+  .meta(asMeta(trimmedString))
 
 const requiredStringMsg = message =>
   requiredString.messages({
@@ -32,13 +32,38 @@ const requiredStringMsg = message =>
     'string.min': message,
   })
 
-const requiredBoolean = joi.boolean().required()
+const requiredBoolean = joi
+  .boolean()
+  .required()
+  .meta(asMeta(toBoolean))
+
+const requiredBooleanMsg = message =>
+  requiredBoolean.messages({
+    'boolean.base': message,
+    'any.required': message,
+  })
 
 const requiredOneOf = (...values) => joi.valid(...values).required()
+const requiredOneOfMsg = (...values) => message =>
+  requiredOneOf(...values).messages({
+    'any.required': message,
+    'any.only': message,
+  })
 
 const requiredNumber = joi.number().required()
+const requiredNumberMsg = message =>
+  requiredNumber.messages({
+    'any.required': message,
+    'number.base': message,
+  })
 
-const requiredInteger = requiredNumber.integer()
+const requiredInteger = requiredNumber.integer().meta(asMeta(toInteger))
+
+const requiredAnyMsg = message =>
+  joi
+    .any()
+    .required()
+    .messages({ 'any.required': message })
 
 const requiredIntegerMsg = message =>
   requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message })
@@ -49,91 +74,82 @@ const requiredIntegerRangeMsg = (min, max) => message =>
     .max(max)
     .message(message)
 
+const requiredPatternMsg = pattern => message =>
+  requiredStringMsg(message)
+    .pattern(pattern)
+    .message(message)
+
+const requiredYearNotInFuture = joi
+  .number()
+  .min(1900)
+  .max(joi.ref('$year'))
+  .required()
+
+const requiredYearNotInFutureMsg = (notAnIntegerMsg, yearOutOfRangeMsg) =>
+  requiredIntegerMsg(notAnIntegerMsg)
+    .ruleset.min(1900)
+    .max(joi.ref('$year'))
+    .message(yearOutOfRangeMsg)
+
+const requiredMonthIndex = joi
+  .number()
+  .min(0)
+  .max(11)
+  .required()
+
+const requiredMonthIndexNotInFuture = (yearRef, outOfRangeMessage) =>
+  requiredIntegerMsg(outOfRangeMessage).when(joi.ref(yearRef), {
+    switch: [
+      {
+        is: joi.number().less(joi.ref('$year')),
+        then: requiredIntegerMsg(outOfRangeMessage)
+          .$.min(0)
+          .max(11)
+          .message(outOfRangeMessage),
+      },
+      {
+        is: joi.number().valid(joi.ref('$year')),
+        then: requiredIntegerMsg(outOfRangeMessage)
+          .$.min(0)
+          .max(joi.ref('$month'))
+          .message(outOfRangeMessage),
+        otherwise: joi.any().optional(),
+      },
+    ],
+  })
+
 module.exports = {
   joi,
   usernamePattern,
   namePattern,
   caseInsensitiveComparator,
-  setErrorMessage,
   validations: {
     any: joi.any(),
 
-    requiredMonthIndex: joi
-      .number()
-      .min(0)
-      .max(11)
-      .required(),
-
-    requiredMonthIndexNotInFuture: yearRef =>
-      joi
-        .number()
-        .min(0)
-        .when(joi.ref(yearRef), {
-          switch: [
-            {
-              is: joi.number().less(joi.ref('$year')),
-              then: joi
-                .number()
-                .integer()
-                .max(11)
-                .required(),
-            },
-            {
-              is: joi.number().valid(joi.ref('$year')),
-              then: joi
-                .number()
-                .integer()
-                .max(joi.ref('$month'))
-                .required(),
-              otherwise: joi.any().optional(),
-            },
-          ],
-        })
-        .required(),
+    requiredMonthIndex,
+    requiredMonthIndexNotInFuture,
 
     arrayOfObjects: objectKeys => joi.array().items(joi.object(objectKeys)),
 
-    requiredYearNotInFuture: joi
-      .number()
-      .min(1900)
-      .max(joi.ref('$year'))
-      .required(),
+    requiredYearNotInFuture,
+    requiredYearNotInFutureMsg,
 
     requiredString,
-
     requiredStringMsg,
 
-    requiredPatternMsg: pattern => message =>
-      requiredStringMsg(message)
-        .pattern(pattern)
-        .message(message),
+    requiredPatternMsg,
 
     requiredNumber,
-
-    requiredNumberMsg: message =>
-      requiredNumber.messages({
-        'any.required': message,
-        'number.base': message,
-      }),
+    requiredNumberMsg,
 
     requiredInteger,
     requiredIntegerMsg,
     requiredIntegerRangeMsg,
 
     requiredBoolean,
-
-    requiredBooleanMsg: message =>
-      requiredBoolean.messages({
-        'boolean.base': message,
-        'any.required': message,
-      }),
+    requiredBooleanMsg,
 
     requiredOneOf,
-
-    requiredOneOfMsg: (...values) => message =>
-      requiredOneOf(...values).messages({
-        'any.required': message,
-        'any.only': message,
-      }),
+    requiredOneOfMsg,
   },
 }

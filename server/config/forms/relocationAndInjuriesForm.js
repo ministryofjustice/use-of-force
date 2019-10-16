@@ -1,11 +1,11 @@
-const { joi, validations, namePattern, setErrorMessage, caseInsensitiveComparator } = require('./validations')
+const { joi, validations, namePattern, caseInsensitiveComparator } = require('./validations')
 const { isValid } = require('../../utils/fieldValidation')
 const { toBoolean, removeEmptyValues, trimmedString } = require('./sanitisers')
 
-const { requiredString, requiredStringMsg, requiredBoolean, requiredBooleanMsg, arrayOfObjects } = validations
+const { requiredString, requiredStringMsg, requiredBooleanMsg, arrayOfObjects } = validations
 
 const f213CompletedBy = requiredStringMsg('Enter the name of who completed the F213 form')
-  .regex(namePattern, 'F213')
+  .pattern(namePattern)
   .message('Names may only contain letters, spaces, hyphens or apostrophes')
 
 module.exports = {
@@ -37,11 +37,6 @@ module.exports = {
       },
       {
         healthcarePractionerName: {
-          validationMessage: {
-            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-            'string.base': 'Enter the name of the member of healthcare',
-          },
-
           sanitiser: trimmedString,
           dependentOn: 'healthcareInvolved',
           predicate: 'true',
@@ -59,13 +54,6 @@ module.exports = {
       },
       {
         staffNeedingMedicalAttention: {
-          validationMessage: {
-            'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-            'array.min': "Enter the staff member's name and whether they went to hospital",
-            'any.required': 'Enter the name of who needed medical attention',
-            'string.empty': 'Enter the name of who needed medical attention',
-          },
-
           sanitiser: values => {
             return removeEmptyValues(['name', 'hospitalisation'])(values).map(({ name, hospitalisation }) => ({
               name,
@@ -92,7 +80,9 @@ module.exports = {
 
         healthcarePractionerName: joi.when('healthcareInvolved', {
           is: true,
-          then: requiredString.regex(namePattern, 'HealthcarePractitioner'),
+          then: requiredStringMsg('Enter the name of the member of healthcare')
+            .pattern(namePattern)
+            .message('Names may only contain letters, spaces, hyphens or apostrophes'),
         }),
 
         prisonerHospitalisation: requiredBooleanMsg('Select yes if the prisoner needed outside hospitalisation'),
@@ -102,13 +92,17 @@ module.exports = {
         staffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
           is: true,
           then: arrayOfObjects({
-            name: requiredString.regex(namePattern, 'StaffMedicalAttention'),
+            name: requiredStringMsg('Enter the name of who needed medical attention')
+              .pattern(namePattern)
+              .message('Names may only contain letters, spaces, hyphens or apostrophes'),
             hospitalisation: requiredBooleanMsg('Select yes if the staff member had to go to hospital'),
           })
             .min(1)
-            .ruleset.unique(caseInsensitiveComparator('name'))
+            .message("Enter the staff member's name and whether they went to hospital")
+            .unique(caseInsensitiveComparator('name'))
             .message("Name '{#value.name}' has already been added - remove this name")
-            .required(),
+            .required()
+            .meta({ sanitiser: removeEmptyValues }),
         }),
       }),
     },
