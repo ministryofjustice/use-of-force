@@ -37,7 +37,27 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
         parseInt(year, 10)
       )
       res.setHeader('Content-Type', 'text/csv')
-      res.setHeader('Content-Disposition', `attachment; filename="${agencyId}-${month}-${year}.csv"`)
+      res.setHeader('Content-Disposition', `attachment; filename="involved-staff-${agencyId}-${month}-${year}.csv"`)
+      res.send(results)
+    })
+  )
+
+  router.get(
+    '/reports/mostOftenInvolvedPrisoners/:agencyId/:year/:month',
+    asyncMiddleware(async (req, res) => {
+      if (!res.locals.user.isReviewer) {
+        throw httpError(401, 'Not authorised to access this resource')
+      }
+
+      const { agencyId, year, month } = req.params
+      const results = await reportingService.getMostOftenInvolvedPrisoners(
+        res.locals.user.token,
+        agencyId,
+        parseInt(month, 10),
+        parseInt(year, 10)
+      )
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', `attachment; filename="prisoners-${agencyId}-${month}-${year}.csv"`)
       res.send(results)
     })
   )

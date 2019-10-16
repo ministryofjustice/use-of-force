@@ -3,12 +3,17 @@ const serviceCreator = require('./reportingService')
 
 const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),
+  getMostOftenInvolvedPrisoners: jest.fn(),
+}
+
+const offenderService = {
+  getOffenderNames: jest.fn(),
 }
 
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ reportingClient })
+  service = serviceCreator({ reportingClient, offenderService })
 })
 
 afterEach(() => {
@@ -29,12 +34,41 @@ describe('reportingService', () => {
 
     const result = await service.getMostOftenInvolvedStaff('LEI', 2, 2019)
 
-    expect(result).toEqual(`name,count
+    expect(result).toEqual(`Staff member name,Count
 Arthur,20
 Bella,10
 Charlotte,5
 `)
 
     expect(reportingClient.getMostOftenInvolvedStaff).toBeCalledWith('LEI', startDate, endDate)
+  })
+
+  it('getMostOftenInvolvedPrisoners', async () => {
+    offenderService.getOffenderNames.mockReturnValue({
+      AAAA: 'Arthur',
+      BBBB: 'Bella',
+      CCCC: 'Charlotte',
+    })
+
+    reportingClient.getMostOftenInvolvedPrisoners.mockReturnValue([
+      { offenderNo: 'AAAA', count: 20 },
+      { offenderNo: 'BBBB', count: 10 },
+      { offenderNo: 'CCCC', count: 5 },
+    ])
+
+    const date = moment({ years: 2019, months: 1 })
+    const startDate = moment(date).startOf('month')
+    const endDate = moment(date).endOf('month')
+
+    const result = await service.getMostOftenInvolvedPrisoners('token-1', 'LEI', 2, 2019)
+
+    expect(result).toEqual(`Prisoner name,Count
+Arthur,20
+Bella,10
+Charlotte,5
+`)
+
+    expect(reportingClient.getMostOftenInvolvedPrisoners).toBeCalledWith('LEI', startDate, endDate)
+    expect(offenderService.getOffenderNames).toBeCalledWith('token-1', ['AAAA', 'BBBB', 'CCCC'])
   })
 })

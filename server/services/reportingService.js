@@ -12,7 +12,7 @@ const toCsv = (columns, results) =>
     })
   })
 
-module.exports = function createReportingService({ reportingClient }) {
+module.exports = function createReportingService({ reportingClient, offenderService }) {
   return {
     getMostOftenInvolvedStaff: async (agencyId, month, year) => {
       const date = moment({ years: year, months: month - 1 })
@@ -25,7 +25,26 @@ module.exports = function createReportingService({ reportingClient }) {
       )
       const results = await reportingClient.getMostOftenInvolvedStaff(agencyId, startDate, endDate)
 
-      return toCsv([{ key: 'name' }, { key: 'count' }], results)
+      return toCsv([{ key: 'name', header: 'Staff member name' }, { key: 'count', header: 'Count' }], results)
+    },
+
+    getMostOftenInvolvedPrisoners: async (token, agencyId, month, year) => {
+      const date = moment({ years: year, months: month - 1 })
+
+      const startDate = moment(date).startOf('month')
+      const endDate = moment(date).endOf('month')
+
+      logger.info(
+        `Retrieve most involved prisoner for agency: ${agencyId}, between '${startDate.format()}' and '${endDate.format()}'`
+      )
+      const results = await reportingClient.getMostOftenInvolvedPrisoners(agencyId, startDate, endDate)
+
+      const offenderNos = results.map(result => result.offenderNo)
+      const nosToNames = await offenderService.getOffenderNames(token, offenderNos)
+
+      const rows = results.map(({ offenderNo, count }) => ({ name: nosToNames[offenderNo], count }))
+
+      return toCsv([{ key: 'name', header: 'Prisoner name' }, { key: 'count', header: 'Count' }], rows)
     },
   }
 }

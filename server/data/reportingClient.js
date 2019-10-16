@@ -6,10 +6,25 @@ const getMostOftenInvolvedStaff = async (agencyId, startDate, endDate) => {
           from statement s
           join report r on r.id = s.report_id
           where r.agency_id = $1
-          and r.incident_date >= $2
-          and r.incident_date <= $3
+          and   r.incident_date >= $2
+          and   r.incident_date <= $3
           group by s.user_id, s.name
-          order by 3 desc
+          order by 2 desc
+          limit 10`,
+    values: [agencyId, startDate.toDate(), endDate.toDate()],
+  })
+  return results.rows
+}
+
+const getMostOftenInvolvedPrisoners = async (agencyId, startDate, endDate) => {
+  const results = await nonTransactionalClient.query({
+    text: `select r.offender_no "offenderNo", count(*)
+          from report r
+          where r.agency_id = $1
+          and   r.incident_date >= $2
+          and   r.incident_date <= $3
+          group by offender_no
+          order by 2 desc
           limit 10`,
     values: [agencyId, startDate.toDate(), endDate.toDate()],
   })
@@ -18,4 +33,5 @@ const getMostOftenInvolvedStaff = async (agencyId, startDate, endDate) => {
 
 module.exports = {
   getMostOftenInvolvedStaff,
+  getMostOftenInvolvedPrisoners,
 }
