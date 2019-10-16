@@ -6,6 +6,7 @@ const cookieSession = require('cookie-session')
 const path = require('path')
 const db = require('../../../server/data/dataAccess/db')
 const nunjucksSetup = require('../../utils/nunjucksSetup')
+const errorHandler = require('../../errorHandler')
 
 const user = {
   firstName: 'first',
@@ -48,11 +49,7 @@ const appSetup = (route, userSupplier = () => user) => {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use('/', route)
-  app.use((error, req, res, next) => {
-    console.log(error)
-    res.status(error.status || 500)
-    res.end()
-  })
+  app.use(errorHandler)
 
   return app
 }

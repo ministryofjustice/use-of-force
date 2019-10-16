@@ -14,15 +14,16 @@ const sassMiddleware = require('node-sass-middleware')
 
 const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
-const createRouter = require('./routes/')
+const createRouter = require('./routes')
 
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
 const populateCurrentUser = require('./middleware/populateCurrentUser')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
+const errorHandler = require('./errorHandler')
 
-const config = require('../server/config')
+const config = require('./config')
 
 const { authenticationMiddleware } = auth
 const version = moment.now().toString()
@@ -37,6 +38,7 @@ module.exports = function createApp({
   statementService,
   userService,
   reviewService,
+  reportingService,
 }) {
   const app = express()
 
@@ -239,28 +241,13 @@ module.exports = function createApp({
     })
   )
 
-  app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService }))
+  app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService, reportingService }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))
   })
 
-  app.use(renderErrors)
+  app.use(errorHandler)
 
   return app
-}
-
-// eslint-disable-next-line no-unused-vars
-function renderErrors(error, req, res, next) {
-  logger.error(error)
-
-  // code to handle unknown errors
-
-  res.locals.error = error
-  res.locals.stack = production ? null : error.stack
-  res.locals.message = production ? 'Something went wrong. The error has been logged. Please try again' : error.message
-
-  res.status(error.status || 500)
-
-  res.render('pages/error')
 }

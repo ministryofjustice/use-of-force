@@ -7,6 +7,8 @@ const createApp = require('./app')
 const db = require('./data/dataAccess/db')
 const incidentClient = require('./data/incidentClient')
 const statementsClient = require('./data/statementsClient')
+const reportingClient = require('./data/reportingClient')
+
 const elite2ClientBuilder = require('./data/elite2ClientBuilder')
 const authClientBuilder = require('./data/authClientBuilder')
 
@@ -18,6 +20,7 @@ const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
 const createReviewService = require('./services/reviewService')
+const createReportingService = require('./services/reportingService')
 
 const { notificationServiceFactory } = require('./services/notificationService')
 const eventPublisher = require('./services/eventPublisher')(appInsightsClient)
@@ -37,6 +40,7 @@ const reportService = createReportService({
 })
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient })
+const reportingService = createReportingService({ reportingClient })
 
 const app = createApp({
   involvedStaffService,
@@ -47,6 +51,7 @@ const app = createApp({
   statementService,
   userService,
   reviewService,
+  reportingService,
 })
 
 module.exports = app
