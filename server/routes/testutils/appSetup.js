@@ -16,6 +16,7 @@ const user = {
   username: 'user1',
   displayName: 'First Last',
   isReviewer: false,
+  activeCaseLoadId: 'MDI',
 }
 
 const reviewerUser = {
@@ -26,6 +27,8 @@ const reviewerUser = {
   username: 'user1',
   displayName: 'First Last',
   isReviewer: true,
+  activeCaseLoadId: 1,
+  activeCaseLoadId: 'LEI',
 }
 
 const appSetup = (route, userSupplier = () => user) => {

@@ -25,12 +25,12 @@ describe('api', () => {
     jest.resetAllMocks()
   })
 
-  describe('GET /reports/mostOftenInvolvedStaff/:agencyId/:year/:month', () => {
+  describe('GET /reports/mostOftenInvolvedStaff/:year/:month', () => {
     it('should render for reviewer', async () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/reports/mostOftenInvolvedStaff/LEI/2019/10')
+        .get('/reports/mostOftenInvolvedStaff/2019/10')
         .expect('Content-Type', 'text/csv; charset=utf-8')
         .expect('Content-Disposition', `attachment; filename="involved-staff-LEI-10-2019.csv"`)
         .expect(res => {
@@ -44,7 +44,7 @@ describe('api', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/reports/mostOftenInvolvedStaff/LEI/2019/10')
+        .get('/reports/mostOftenInvolvedStaff/2019/10')
         .expect('Content-Type', /text\/html/)
         .expect(401)
         .expect(res => {
@@ -55,12 +55,12 @@ describe('api', () => {
     })
   })
 
-  describe('GET /reports/mostOftenInvolvedPrisoners/:agencyId/:year/:month', () => {
+  describe('GET /reports/mostOftenInvolvedPrisoners/:year/:month', () => {
     it('should render for reviewer', async () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/reports/mostOftenInvolvedPrisoners/LEI/2019/10')
+        .get('/reports/mostOftenInvolvedPrisoners/2019/10')
         .expect('Content-Type', 'text/csv; charset=utf-8')
         .expect('Content-Disposition', `attachment; filename="prisoners-LEI-10-2019.csv"`)
         .expect(res => {
@@ -74,7 +74,7 @@ describe('api', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/reports/mostOftenInvolvedPrisoners/LEI/2019/10')
+        .get('/reports/mostOftenInvolvedPrisoners/2019/10')
         .expect('Content-Type', /text\/html/)
         .expect(401)
         .expect(res => {
