@@ -24,13 +24,15 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
   })
 
   router.get(
-    '/reports/mostOftenInvolvedStaff/:agencyId/:year/:month',
+    '/reports/mostOftenInvolvedStaff/:year/:month',
     asyncMiddleware(async (req, res) => {
       if (!res.locals.user.isReviewer) {
         throw httpError(401, 'Not authorised to access this resource')
       }
 
-      const { agencyId, year, month } = req.params
+      const { year, month } = req.params
+      const agencyId = res.locals.user.activeCaseLoadId
+
       const results = await reportingService.getMostOftenInvolvedStaff(
         agencyId,
         parseInt(month, 10),
@@ -43,13 +45,15 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
   )
 
   router.get(
-    '/reports/mostOftenInvolvedPrisoners/:agencyId/:year/:month',
+    '/reports/mostOftenInvolvedPrisoners/:year/:month',
     asyncMiddleware(async (req, res) => {
       if (!res.locals.user.isReviewer) {
         throw httpError(401, 'Not authorised to access this resource')
       }
 
-      const { agencyId, year, month } = req.params
+      const { year, month } = req.params
+      const agencyId = res.locals.user.activeCaseLoadId
+
       const results = await reportingService.getMostOftenInvolvedPrisoners(
         res.locals.user.token,
         agencyId,
