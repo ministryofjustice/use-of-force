@@ -1,4 +1,4 @@
-const { validate2: validate } = require('../../utils/fieldValidation')
+const { validate } = require('../../services/validation/fieldValidation')
 const { buildErrorDetailAdapter } = require('../../services/errorDetailAdapter')
 const {
   joi,

@@ -17,8 +17,6 @@ module.exports = {
   hasAtLeastOneOf,
   toDate,
 
-  removeEmptyValues: attrs => (inputs = []) => inputs.filter(hasAtLeastOneOf(attrs)).map(withoutKeysNotIn(attrs)),
-
   // array -> array
   removeEmptyObjects: R.filter(isNotBlankObject),
 

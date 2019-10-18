@@ -1,7 +1,5 @@
 const { joi, validations } = require('./validations')
-const { isValid } = require('../../utils/fieldValidation')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
-const { removeEmptyObjects } = require('./sanitisers')
+const { buildValidationSpec } = require('../../services/validation')
 
 const { arrayOfObjects, requiredStringMsg, requiredBooleanMsg, requiredOneOfMsg } = validations
 
@@ -9,7 +7,7 @@ const completeSchema = joi.object({
   baggedEvidence: requiredBooleanMsg('Select yes if any evidence was bagged and tagged'),
 
   evidenceTagAndDescription: joi
-    .when(joi.ref('baggedEvidence'), {
+    .when('baggedEvidence', {
       is: true,
       then: arrayOfObjects({
         evidenceTagReference: requiredStringMsg('Enter the evidence tag number'),
@@ -19,8 +17,7 @@ const completeSchema = joi.object({
         .message('Please input both the evidence tag number and the description')
         .unique('evidenceTagReference')
         .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
-        .required()
-        .meta({ sanitiser: removeEmptyObjects }),
+        .required(),
       otherwise: joi.any().strip(),
     })
     .meta({ firstFieldName: 'baggedEvidence' }),
@@ -42,8 +39,7 @@ const completeSchema = joi.object({
         .message('Enter the body-worn camera number')
         .ruleset.unique('cameraNum')
         .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
-        .required()
-        .meta({ sanitiser: removeEmptyObjects }),
+        .required(),
       otherwise: joi.any().strip(),
     })
     .meta({ firstFieldName: 'bodyWornCameraNumbers[0]' }),
@@ -51,16 +47,6 @@ const completeSchema = joi.object({
 
 module.exports = {
   complete: buildValidationSpec(completeSchema),
+
   partial: {},
-  formConfig: {
-    schemas: {
-      complete: completeSchema,
-    },
-    isComplete(values) {
-      return isValid(this.schemas.complete, values)
-    },
-    nextPath: {
-      path: bookingId => `/report/${bookingId}/check-your-answers`,
-    },
-  },
 }

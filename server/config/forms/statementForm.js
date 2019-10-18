@@ -2,12 +2,8 @@ const { joi, validations } = require('./validations')
 
 const { requiredStringMsg } = validations
 const { EXTRACTED } = require('../fieldType')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
-
-const toSmallInt = val => {
-  const number = parseInt(val, 10)
-  return number > 32767 || number < -32768 || Number.isNaN(number) ? null : number
-}
+const { buildValidationSpec } = require('../../services/validation')
+const { toSmallInt } = require('./sanitisers')
 
 const completeSchema = joi.object({
   lastTrainingMonth: validations
@@ -31,7 +27,4 @@ const completeSchema = joi.object({
 module.exports = {
   complete: buildValidationSpec(completeSchema),
   partial: {},
-  schemas: {
-    complete: completeSchema,
-  },
 }

@@ -1,7 +1,7 @@
 const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
 const { complete } = require('../config/forms/statementForm')
-const formProcessing = require('../services/formProcessing')
+const { processInput } = require('../services/validation')
 const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
 
@@ -68,8 +68,6 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
 
-      const validate = saveAndContinue
-
       /**
        * Here, processInput returns the form (which is always statementForm) as extractedFields.
        * Seems unnecessary.
@@ -77,9 +75,9 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
        * and PAYLOAD (payloadFields) is mixing concerns.  The
        * EXTRACTED/PAYLOAD partition is a persistence concern and better handled there (in the Repository interface).
        */
-      const { extractedFields: statement, errors } = formProcessing.processInput({
+      const { extractedFields: statement, errors } = processInput({
         validationSpec: complete,
-        shouldValidate: validate,
+        shouldValidate: saveAndContinue,
         input: req.body,
       })
 

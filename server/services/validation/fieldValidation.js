@@ -1,11 +1,11 @@
 const R = require('ramda')
 const moment = require('moment')
-const { isNilOrEmpty } = require('../utils/utils')
+const { isNilOrEmpty } = require('../../utils/utils')
 
-const { buildSanitiser } = require('../services/sanitiser')
-const { buildFieldTypeSplitter } = require('../services/fieldTypeSplitter')
-const { buildErrorDetailAdapter } = require('../services/errorDetailAdapter')
-const { EXTRACTED } = require('../config/fieldType')
+const { buildSanitiser } = require('./sanitiser')
+const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
+const { buildErrorDetailAdapter } = require('../errorDetailAdapter')
+const { EXTRACTED } = require('../../config/fieldType')
 
 const contextFactory = () => ({
   year: moment().year(),
@@ -21,7 +21,7 @@ const validatorConfig = stripUnknown => ({
 })
 
 module.exports = {
-  validate2({ errorDetailAdapter, schema }, input) {
+  validate({ errorDetailAdapter, schema }, input) {
     const validationResult = schema.validate(input, validatorConfig(true))
     return R.evolve({
       error: {

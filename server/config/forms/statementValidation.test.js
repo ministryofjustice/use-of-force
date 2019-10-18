@@ -1,9 +1,9 @@
 const moment = require('moment')
 const { complete } = require('./statementForm')
-const formProcessing = require('../../services/formProcessing')
+const { processInput } = require('../../services/validation')
 
 const check = input => {
-  const { extractedFields: formResponse, errors } = formProcessing.processInput({ validationSpec: complete, input })
+  const { extractedFields: formResponse, errors } = processInput({ validationSpec: complete, input })
   return { formResponse, errors }
 }
 

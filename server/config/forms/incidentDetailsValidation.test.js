@@ -1,10 +1,10 @@
 const moment = require('moment')
 const { complete, optionalInvolvedStaff, optionalInvolvedStaffWhenPersisted } = require('./incidentDetailsForm')
-const formProcessing = require('../../services/formProcessing')
-const { isValid } = require('../../utils/fieldValidation')
+const { processInput } = require('../../services/validation')
+const { isValid } = require('../../services/validation/fieldValidation')
 
 const check = input => {
-  const { payloadFields: formResponse, errors, extractedFields } = formProcessing.processInput({
+  const { payloadFields: formResponse, errors, extractedFields } = processInput({
     validationSpec: complete,
     input,
   })

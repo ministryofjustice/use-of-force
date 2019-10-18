@@ -2,7 +2,7 @@ const R = require('ramda')
 const logger = require('../../log.js')
 const { StatementStatus } = require('../config/types')
 const statementConfig = require('../config/forms/statementForm')
-const { processInput } = require('./formProcessing')
+const { processInput } = require('./validation')
 
 module.exports = function createStatementService({ statementsClient, incidentClient, db }) {
   const getStatements = async (userId, status) => {

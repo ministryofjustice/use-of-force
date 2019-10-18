@@ -1,9 +1,9 @@
 const Joi = require('@hapi/joi')
 const R = require('ramda')
 const { mergeIntoPayload, processInput } = require('./formProcessing')
-const { EXTRACTED } = require('../config/fieldType')
-const { validations, joi } = require('../config/forms/validations')
-const { buildValidationSpec } = require('../utils/fieldValidation')
+const { EXTRACTED } = require('../../config/fieldType')
+const { validations, joi } = require('../../config/forms/validations')
+const { buildValidationSpec } = require('./fieldValidation')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {

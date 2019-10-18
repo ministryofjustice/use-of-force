@@ -1,7 +1,5 @@
 const { joi, validations, namePattern, caseInsensitiveComparator } = require('./validations')
-const { isValid } = require('../../utils/fieldValidation')
-const { removeEmptyObjects } = require('./sanitisers')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
+const { buildValidationSpec } = require('../../services/validation')
 
 const { requiredStringMsg, requiredBooleanMsg, arrayOfObjects } = validations
 
@@ -45,8 +43,7 @@ const completeSchema = joi.object({
         .message("Enter the staff member's name and whether they went to hospital")
         .unique(caseInsensitiveComparator('name'))
         .message("Name '{#value.name}' has already been added - remove this name")
-        .required()
-        .meta({ sanitiser: removeEmptyObjects }),
+        .required(),
     })
     .meta({ firstFieldName: 'staffMedicalAttention' }),
 })
@@ -55,15 +52,4 @@ module.exports = {
   f213CompletedBy,
   complete: buildValidationSpec(completeSchema),
   partial: {},
-  formConfig: {
-    schemas: {
-      complete: completeSchema,
-    },
-    isComplete(values) {
-      return isValid(this.schemas.complete, values)
-    },
-    nextPath: {
-      path: bookingId => `/report/${bookingId}/evidence`,
-    },
-  },
 }

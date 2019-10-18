@@ -1,6 +1,6 @@
-const { joi, validations } = require('./validations')
-const { isValid } = require('../../utils/fieldValidation')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
+const joi = require('@hapi/joi')
+const { validations } = require('./validations')
+const { buildValidationSpec } = require('../../services/validation')
 
 const { requiredBooleanMsg, requiredOneOfMsg, requiredIntegerRangeMsg } = validations
 
@@ -54,15 +54,4 @@ const completeSchema = joi.object({
 module.exports = {
   complete: buildValidationSpec(completeSchema),
   partial: {},
-  formConfig: {
-    schemas: {
-      complete: completeSchema,
-    },
-    isComplete(values) {
-      return isValid(this.schemas.complete, values)
-    },
-    nextPath: {
-      path: bookingId => `/report/${bookingId}/relocation-and-injuries`,
-    },
-  },
 }

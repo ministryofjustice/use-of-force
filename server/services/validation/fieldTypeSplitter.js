@@ -1,7 +1,5 @@
 const R = require('ramda')
-const { isNilOrEmpty } = require('../utils/utils')
-
-const ignore = value => R.isNil(value) || (R.is(Array, value) && R.isEmpty(value))
+const { isNilOrEmpty } = require('../../utils/utils')
 
 const extractKeys = fieldTypeValue =>
   R.pipe(
@@ -31,7 +29,7 @@ const buildWithIteratorFn = iteratorFn =>
   )
 /**
  *
- * @param A Joi schema description.  Must be for an object (because there's no need to support anything else)
+ * @param description A Joi schema description.  Must be for an object (because there's no need to support anything else)
  * @param fieldType The fieldType to split on. Probably 'EXTERNAL'
  * returns a function that takes 'input' and returns the fields of that object split into two sets
  * 'payloadFields' and 'extractedFields' according to whether the schema metadata for that field has

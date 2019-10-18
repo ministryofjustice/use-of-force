@@ -2,7 +2,7 @@ const moment = require('moment')
 const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
-const formProcessing = require('../services/formProcessing')
+const { processInput, mergeIntoPayload } = require('../services/validation')
 const { paths, transient } = require('../config/incident')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
@@ -125,7 +125,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
     const validate = editMode || saveAndContinue
 
-    const { payloadFields, extractedFields, errors } = formProcessing.processInput({
+    const { payloadFields, extractedFields, errors } = processInput({
       shouldValidate: validate,
       validationSpec: transient[formName],
       input: req.body,
@@ -157,7 +157,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     /** mergeIntoPayload returns false if no change, or merges formPayload onto the persisted form.
      * like so: { ...form, [formName]: formPayload }
      */
-    const updatedPayload = formProcessing.mergeIntoPayload({
+    const updatedPayload = mergeIntoPayload({
       formObject: form,
       formPayload,
       formName,

@@ -1,8 +1,7 @@
 const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
-const { isValid } = require('../../utils/fieldValidation')
 const { toDate, removeEmptyObjects } = require('./sanitisers')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
+const { buildValidationSpec } = require('../../services/validation')
 
 const {
   requiredNumber,
@@ -40,7 +39,6 @@ const requiredIncidentDate = joi
       .invalid(true)
       .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
   })
-  // .required()
   /*
    * 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
    * These pre-defined Joi schemas include the sanitisers 'toInteger' and 'trimmedString' respectively.
@@ -62,15 +60,6 @@ const optionalInvolvedStaff = joi
   .message("Username '{#value.username}' has already been added - remove this user")
   .meta({ sanitiser: removeEmptyObjects, firstFieldName: 'involvedStaff[0]' })
 
-const optionalInvolvedStaffWhenPersisted = arrayOfObjects({
-  username: requiredString.pattern(usernamePattern, 'Username'),
-  name: requiredString,
-  email: requiredString,
-  staffId: requiredNumber,
-})
-  .ruleset.unique('username')
-  .message("Username '{#value.username}' has already been added - remove this user")
-
 const transientSchema = joi.object({
   incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }),
 
@@ -84,11 +73,8 @@ const transientSchema = joi.object({
     name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
   })
     .ruleset.unique(caseInsensitiveComparator('name'))
-    .message("Witness '{#value.name}' has already been added - remove this witness")
-    .meta({ sanitiser: removeEmptyObjects }),
+    .message("Witness '{#value.name}' has already been added - remove this witness"),
 })
-
-// Fork the schema to add fields to the involvedStaff object
 
 const persistentSchema = transientSchema.fork('involvedStaff.username', schema =>
   schema.append({ name: requiredString, email: requiredString, staffId: requiredNumber })
@@ -101,22 +87,4 @@ module.exports = {
   persistent: buildValidationSpec(persistentSchema),
 
   partial: {},
-
-  formConfig: {
-    schemas: {
-      complete: transientSchema,
-    },
-
-    isComplete(values) {
-      return (
-        // It's possible to store invalid usernames which haven't been validated against the auth server.
-        // The separate check ensures that all involvedStaff have the correct extra fields that are stored against them once validated.
-        isValid(this.schemas.complete, values, true) &&
-        isValid(optionalInvolvedStaffWhenPersisted, values.involvedStaff)
-      )
-    },
-    nextPath: {
-      path: bookingId => `/report/${bookingId}/use-of-force-details`,
-    },
-  },
 }

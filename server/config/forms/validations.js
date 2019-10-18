@@ -1,6 +1,6 @@
 const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
 const R = require('ramda')
-const { toBoolean, trimmedString, toInteger } = require('./sanitisers')
+const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = require('./sanitisers')
 
 const caseInsensitiveComparator = key =>
   R.eqBy(
@@ -59,12 +59,6 @@ const requiredNumberMsg = message =>
 
 const requiredInteger = requiredNumber.integer().meta(asMeta(toInteger))
 
-const requiredAnyMsg = message =>
-  joi
-    .any()
-    .required()
-    .messages({ 'any.required': message })
-
 const requiredIntegerMsg = message =>
   requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message })
 
@@ -78,6 +72,12 @@ const requiredPatternMsg = pattern => message =>
   requiredStringMsg(message)
     .pattern(pattern)
     .message(message)
+
+const arrayOfObjects = objectKeys =>
+  joi
+    .array()
+    .items(joi.object(objectKeys))
+    .meta({ sanitiser: removeEmptyObjects })
 
 const requiredYearNotInFuture = joi
   .number()
@@ -123,13 +123,14 @@ module.exports = {
   usernamePattern,
   namePattern,
   caseInsensitiveComparator,
+
   validations: {
     any: joi.any(),
 
     requiredMonthIndex,
     requiredMonthIndexNotInFuture,
 
-    arrayOfObjects: objectKeys => joi.array().items(joi.object(objectKeys)),
+    arrayOfObjects,
 
     requiredYearNotInFuture,
     requiredYearNotInFutureMsg,

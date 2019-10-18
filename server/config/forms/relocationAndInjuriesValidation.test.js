@@ -1,11 +1,11 @@
 const joi = require('@hapi/joi')
 const { complete, f213CompletedBy } = require('./relocationAndInjuriesForm')
-const formProcessing = require('../../services/formProcessing')
-const { isValid, validate2: validate } = require('../../utils/fieldValidation')
-const { buildValidationSpec } = require('../../utils/fieldValidation')
+const { processInput } = require('../../services/validation')
+const { isValid, validate } = require('../../services/validation')
+const { buildValidationSpec } = require('../../services/validation')
 
 const check = input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput({ validationSpec: complete, input })
+  const { payloadFields: formResponse, errors } = processInput({ validationSpec: complete, input })
   return { formResponse, errors }
 }
 

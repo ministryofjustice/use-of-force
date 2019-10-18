@@ -1,6 +1,6 @@
 const R = require('ramda')
-const { equals } = require('../utils/utils')
-const { validate2 } = require('../utils/fieldValidation')
+const { equals } = require('../../utils/utils')
+const { validate } = require('./fieldValidation')
 
 /**
  *  string | object  -> string
@@ -40,7 +40,7 @@ const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessag
 
 const processInput = ({ validationSpec, shouldValidate = true, input }) => {
   const sanitisedInput = validationSpec.sanitiser(input)
-  const validationResult = validate2(validationSpec, sanitisedInput)
+  const validationResult = validate(validationSpec, sanitisedInput)
   const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []
   const { payloadFields, extractedFields } = validationSpec.fieldTypeSplitter(validationResult.value)
   return { payloadFields, extractedFields, errors }

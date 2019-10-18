@@ -1,12 +1,22 @@
 const R = require('ramda')
 const joi = require('@hapi/joi')
-const { trimmedString, toBoolean, toInteger, toSmallInt } = require('../config/forms/sanitisers')
+const { trimmedString, toBoolean, toInteger, toSmallInt } = require('../../config/forms/sanitisers')
 const { simplifyDescription, buildSanitiser } = require('./sanitiser')
-const { formConfig: evidenceFormConfig } = require('../config/forms/evidenceForm')
-const { formConfig: incidentDetailsFormConfig } = require('../config/forms/incidentDetailsForm')
-const { formConfig: relocationAndInjuriesFormConfig } = require('../config/forms/relocationAndInjuriesForm')
-const statementFormConfig = require('../config/forms/statementForm')
-const { formConfig: useOfForceDetailsFormConfig } = require('../config/forms/useOfForceDetailsForm')
+const {
+  complete: { schema: evidenceSchema },
+} = require('../../config/forms/evidenceForm')
+const {
+  complete: { schema: incidentDetailsSchema },
+} = require('../../config/forms/incidentDetailsForm')
+const {
+  complete: { schema: relocationAndInjuriesSchema },
+} = require('../../config/forms/relocationAndInjuriesForm')
+const {
+  complete: { schema: statementSchema },
+} = require('../../config/forms/statementForm')
+const {
+  complete: { schema: useOfForceDetailsSchema },
+} = require('../../config/forms/useOfForceDetailsForm')
 
 describe('using meta to specify sanitisers', () => {
   it('allows a sanitiser to be attached as metadata', () => {
@@ -477,23 +487,23 @@ describe('building sanitisers', () => {
 
   describe('builds sanitisers for all the schemas in server/config/forms', () => {
     it('builds sanitiser for evidence form', () => {
-      getSanitiser(evidenceFormConfig.schemas.complete)
+      getSanitiser(evidenceSchema)
     })
 
     it('builds sanitiser for incident details form', () => {
-      getSanitiser(incidentDetailsFormConfig.schemas.complete)
+      getSanitiser(incidentDetailsSchema)
     })
 
     it('builds sanitiser for relocation and injuries form', () => {
-      getSanitiser(relocationAndInjuriesFormConfig.schemas.complete)
+      getSanitiser(relocationAndInjuriesSchema)
     })
 
     it('builds sanitiser for statement form', () => {
-      getSanitiser(statementFormConfig.schemas.complete)
+      getSanitiser(statementSchema)
     })
 
     it('builds sanitiser for use of force details form', () => {
-      getSanitiser(useOfForceDetailsFormConfig.schemas.complete)
+      getSanitiser(useOfForceDetailsSchema)
     })
   })
 })
