@@ -144,15 +144,23 @@ describe('processInput', () => {
   })
 
   test('check extracted fields are present outside of the payload', async () => {
-    const fields = [
-      { q1: {} },
-      { q2: { fieldType: EXTRACTED } },
-      { q3: { fieldType: PAYLOAD } },
-      { q4: { fieldType: EXTRACTED } },
-    ]
+    const fields = [{ q1: {} }, { q2: {} }, { q3: {} }, { q4: {} }]
+
+    const inSchema = joi.any()
+    const outSchema = joi.any().meta({ fieldType: EXTRACTED })
 
     const output = processInput({
-      formConfig: { fields, schemas: { complete: Joi.any().optional() } },
+      formConfig: {
+        fields,
+        schemas: {
+          complete: Joi.object({
+            q1: inSchema,
+            q2: outSchema,
+            q3: inSchema,
+            q4: outSchema,
+          }),
+        },
+      },
       validate: false,
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })

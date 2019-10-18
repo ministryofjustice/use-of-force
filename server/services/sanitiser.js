@@ -99,11 +99,11 @@ const sanitiserFor = R.cond([
  * @param schema
  * @returns a function value -> sanitisedValue where the structure of value is described by the supplied schema.
  */
-const buildSanitiser = schema =>
+const buildSanitiser = description =>
   R.pipe(
     simplifyDescription,
     sanitiserFor
-  )(schema.describe())
+  )(description)
 
 module.exports = {
   simplifyDescription,

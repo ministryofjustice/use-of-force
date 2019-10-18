@@ -64,7 +64,9 @@ module.exports = {
 
         prisonerHospitalisation: requiredBooleanMsg('Select yes if the prisoner needed outside hospitalisation'),
 
-        staffMedicalAttention: requiredBooleanMsg('Select yes if a staff member needed medical attention'),
+        staffMedicalAttention: requiredBooleanMsg('Select yes if a staff member needed medical attention').meta({
+          firstFieldName: 'involvedStaff[0]',
+        }),
 
         staffNeedingMedicalAttention: joi.when('staffMedicalAttention', {
           is: true,

@@ -314,10 +314,12 @@ describe('simplifying descriptions', () => {
 })
 
 describe('building sanitisers', () => {
+  const getSanitiser = schema => buildSanitiser(schema.describe())
+
   const doublerSanitiser = { sanitiser: x => (R.isNil(x) ? x : x + x) }
 
   describe('a sanitiser for a string (primitive)', () => {
-    const sanitiser = buildSanitiser(joi.string().meta(doublerSanitiser))
+    const sanitiser = getSanitiser(joi.string().meta(doublerSanitiser))
 
     it('sanitises a string', () => expect(sanitiser('a')).toEqual('aa'))
     it('sanitises empty string', () => expect(sanitiser('')).toEqual(''))
@@ -328,12 +330,12 @@ describe('building sanitisers', () => {
   const addTestFieldSanitiser = { sanitiser: R.assoc('test', 'test') }
 
   it('sanitises an object that has no properties', () => {
-    const sanitiser = buildSanitiser(joi.object().meta(addTestFieldSanitiser))
+    const sanitiser = getSanitiser(joi.object().meta(addTestFieldSanitiser))
     expect(sanitiser({})).toEqual({ test: 'test' })
   })
 
   describe('an object sanitiser', () => {
-    const sanitiser = buildSanitiser(joi.object({ a: joi.string().meta(doublerSanitiser) }).meta(addTestFieldSanitiser))
+    const sanitiser = getSanitiser(joi.object({ a: joi.string().meta(doublerSanitiser) }).meta(addTestFieldSanitiser))
 
     it('sanitises an  object that has a string property', () =>
       expect(sanitiser({ a: 'a' })).toEqual({ test: 'test', a: 'aa' }))
@@ -348,7 +350,7 @@ describe('building sanitisers', () => {
   const addTestItemSanitiser = { sanitiser: R.append('test') }
 
   describe('an array sanitiser', () => {
-    const sanitiser = buildSanitiser(
+    const sanitiser = getSanitiser(
       joi
         .array()
         .items(joi.string().meta(doublerSanitiser))
@@ -364,7 +366,7 @@ describe('building sanitisers', () => {
   const booleanToggleSanitiser = { sanitiser: x => (R.isNil(x) ? x : !x) }
 
   describe('sanitiser for composites', () => {
-    const sanitiser = buildSanitiser(
+    const sanitiser = getSanitiser(
       joi
         .object({
           a: joi
@@ -430,7 +432,7 @@ describe('building sanitisers', () => {
   })
 
   describe('sanitising a composite with no sanitisers specified, should just clone value', () => {
-    const sanitiser = buildSanitiser(
+    const sanitiser = getSanitiser(
       joi
         .object({
           a: joi.string().required(),
@@ -475,23 +477,23 @@ describe('building sanitisers', () => {
 
   describe('builds sanitisers for all the schemas in server/config/forms', () => {
     it('builds sanitiser for evidence form', () => {
-      buildSanitiser(evidenceFormConfig.schemas.complete)
+      getSanitiser(evidenceFormConfig.schemas.complete)
     })
 
     it('builds sanitiser for incident details form', () => {
-      buildSanitiser(incidentDetailsFormConfig.schemas.complete)
+      getSanitiser(incidentDetailsFormConfig.schemas.complete)
     })
 
     it('builds sanitiser for relocation and injuries form', () => {
-      buildSanitiser(relocationAndInjuriesFormConfig.schemas.complete)
+      getSanitiser(relocationAndInjuriesFormConfig.schemas.complete)
     })
 
     it('builds sanitiser for statement form', () => {
-      buildSanitiser(statementFormConfig.schemas.complete)
+      getSanitiser(statementFormConfig.schemas.complete)
     })
 
     it('builds sanitiser for use of force details form', () => {
-      buildSanitiser(useOfForceDetailsFormConfig.schemas.complete)
+      getSanitiser(useOfForceDetailsFormConfig.schemas.complete)
     })
   })
 })

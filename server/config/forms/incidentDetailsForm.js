@@ -68,9 +68,7 @@ module.exports = {
   formConfig: {
     fields: [
       {
-        incidentDate: {
-          fieldType: EXTRACTED,
-        },
+        incidentDate: {},
       },
       {
         locationId: {},
@@ -90,13 +88,13 @@ module.exports = {
 
     schemas: {
       complete: joi.object({
-        incidentDate: requiredIncidentDate,
+        incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }),
 
         locationId: requiredIntegerMsg('Select the location of the incident'),
 
         plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned'),
 
-        involvedStaff: optionalInvolvedStaff,
+        involvedStaff: optionalInvolvedStaff.meta({ firstFieldName: 'involvedStaff[0]' }),
 
         witnesses: arrayOfObjects({
           name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),

@@ -11,44 +11,36 @@ const toSmallInt = val => {
 module.exports = {
   fields: [
     {
-      lastTrainingMonth: {
-        fieldType: EXTRACTED,
-      },
+      lastTrainingMonth: {},
     },
     {
-      lastTrainingYear: {
-        fieldType: EXTRACTED,
-      },
+      lastTrainingYear: {},
     },
     {
-      jobStartYear: {
-        fieldType: EXTRACTED,
-      },
+      jobStartYear: {},
     },
     {
-      statement: {
-        fieldType: EXTRACTED,
-      },
+      statement: {},
     },
   ],
   schemas: {
     complete: joi.object({
       lastTrainingMonth: validations
         .requiredMonthIndexNotInFuture('lastTrainingYear', 'Select the month you last attended refresher training')
-        .meta({ sanitiser: toSmallInt }),
+        .meta({ sanitiser: toSmallInt, fieldType: EXTRACTED }),
       lastTrainingYear: validations
         .requiredYearNotInFutureMsg(
           'Enter the year you last attended refresher training',
           'Enter the year you last attended refresher training which is not in the future'
         )
-        .meta({ sanitiser: toSmallInt }),
+        .meta({ sanitiser: toSmallInt, fieldType: EXTRACTED }),
       jobStartYear: validations
         .requiredYearNotInFutureMsg(
           'Enter the year you joined the prison service',
           'Enter the year you joined the prison service which is not in the future'
         )
-        .meta({ sanitiser: toSmallInt }),
-      statement: requiredStringMsg('Enter your statement'),
+        .meta({ sanitiser: toSmallInt, fieldType: EXTRACTED }),
+      statement: requiredStringMsg('Enter your statement').meta({ fieldType: EXTRACTED }),
     }),
   },
 }

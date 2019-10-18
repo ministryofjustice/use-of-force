@@ -3,6 +3,7 @@ const { equals, isNilOrEmpty } = require('../utils/utils')
 const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
 const { validate } = require('../utils/fieldValidation')
 const { buildSanitiser } = require('./sanitiser')
+const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
 
 const extractFields = (userInput, requiredFieldType) => {
   return (answersAccumulator, field) => {
@@ -15,12 +16,6 @@ const extractFields = (userInput, requiredFieldType) => {
       : { ...answersAccumulator, [fieldName]: value }
   }
 }
-const extractFieldsOfType = (fields, input, fieldType) => fields.reduce(extractFields(input, fieldType), {})
-
-const splitByType = (fields, userInput) => ({
-  payloadFields: extractFieldsOfType(fields, userInput, PAYLOAD),
-  extractedFields: extractFieldsOfType(fields, userInput, EXTRACTED),
-})
 
 /**
  *  string | object  -> string
@@ -61,13 +56,16 @@ const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessag
 const processInput = ({ validate: shouldValidate = true, formConfig, input }) => {
   const { schemas, fields } = formConfig
 
+  const schemaDescription = schemas.complete.describe()
+
   // TODO: The sanitiser should be built in advance and attached to the formConfig
-  const sanitisedInput = buildSanitiser(schemas.complete)(input)
+  const sanitisedInput = buildSanitiser(schemaDescription)(input)
 
   const validationResult = validate(fields, schemas.complete, sanitisedInput)
   const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []
 
-  const { payloadFields, extractedFields } = splitByType(fields, validationResult.value)
+  const splitter = buildFieldTypeSplitter(schemaDescription, EXTRACTED)
+  const { payloadFields, extractedFields } = splitter(validationResult.value)
   return { payloadFields, extractedFields, errors }
 }
 
