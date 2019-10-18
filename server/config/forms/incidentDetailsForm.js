@@ -2,6 +2,7 @@ const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparato
 const { EXTRACTED } = require('../fieldType')
 const { isValid } = require('../../utils/fieldValidation')
 const { toDate, removeEmptyObjects } = require('./sanitisers')
+const { buildValidationSpec } = require('../../utils/fieldValidation')
 
 const {
   requiredNumber,
@@ -40,17 +41,26 @@ const requiredIncidentDate = joi
       .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
   })
   // .required()
-  /* 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
-     These pre-defined Joi schemas include the sanitisers toInteger and trimmedString respectively.
+  /*
+   * 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
+   * These pre-defined Joi schemas include the sanitisers 'toInteger' and 'trimmedString' respectively.
    */
   .meta({ sanitiser: toDate })
 
-const optionalInvolvedStaff = arrayOfObjects({
-  username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore').uppercase(),
-})
+const optionalInvolvedStaff = joi
+  .array()
+  .items(
+    joi
+      .object({
+        username: requiredPatternMsg(usernamePattern)(
+          'Usernames can only contain letters and an underscore'
+        ).uppercase(),
+      })
+      .id('username')
+  )
   .ruleset.unique(caseInsensitiveComparator('username'))
   .message("Username '{#value.username}' has already been added - remove this user")
-  .meta({ sanitiser: removeEmptyObjects })
+  .meta({ sanitiser: removeEmptyObjects, firstFieldName: 'involvedStaff[0]' })
 
 const optionalInvolvedStaffWhenPersisted = arrayOfObjects({
   username: requiredString.pattern(usernamePattern, 'Username'),
@@ -61,48 +71,40 @@ const optionalInvolvedStaffWhenPersisted = arrayOfObjects({
   .ruleset.unique('username')
   .message("Username '{#value.username}' has already been added - remove this user")
 
+const transientSchema = joi.object({
+  incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }),
+
+  locationId: requiredIntegerMsg('Select the location of the incident'),
+
+  plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned'),
+
+  involvedStaff: optionalInvolvedStaff,
+
+  witnesses: arrayOfObjects({
+    name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
+  })
+    .ruleset.unique(caseInsensitiveComparator('name'))
+    .message("Witness '{#value.name}' has already been added - remove this witness")
+    .meta({ sanitiser: removeEmptyObjects }),
+})
+
+// Fork the schema to add fields to the involvedStaff object
+
+const persistentSchema = transientSchema.fork('involvedStaff.username', schema =>
+  schema.append({ name: requiredString, email: requiredString, staffId: requiredNumber })
+)
 module.exports = {
-  optionalInvolvedStaff,
-  optionalInvolvedStaffWhenPersisted,
+  optionalInvolvedStaff: transientSchema.extract('involvedStaff'),
+  optionalInvolvedStaffWhenPersisted: persistentSchema.extract('involvedStaff'),
+
+  complete: buildValidationSpec(transientSchema),
+  persistent: buildValidationSpec(persistentSchema),
+
+  partial: {},
 
   formConfig: {
-    fields: [
-      {
-        incidentDate: {},
-      },
-      {
-        locationId: {},
-      },
-      {
-        plannedUseOfForce: {},
-      },
-      {
-        involvedStaff: {
-          firstFieldName: 'involvedStaff[0]',
-        },
-      },
-      {
-        witnesses: {},
-      },
-    ],
-
     schemas: {
-      complete: joi.object({
-        incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }),
-
-        locationId: requiredIntegerMsg('Select the location of the incident'),
-
-        plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned'),
-
-        involvedStaff: optionalInvolvedStaff.meta({ firstFieldName: 'involvedStaff[0]' }),
-
-        witnesses: arrayOfObjects({
-          name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
-        })
-          .ruleset.unique(caseInsensitiveComparator('name'))
-          .message("Witness '{#value.name}' has already been added - remove this witness")
-          .meta({ sanitiser: removeEmptyObjects }),
-      }),
+      complete: transientSchema,
     },
 
     isComplete(values) {

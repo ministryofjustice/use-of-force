@@ -1,10 +1,11 @@
 const joi = require('@hapi/joi')
-const form = require('./relocationAndInjuriesForm')
+const { complete, f213CompletedBy } = require('./relocationAndInjuriesForm')
 const formProcessing = require('../../services/formProcessing')
-const { isValid, validate } = require('../../utils/fieldValidation')
+const { isValid, validate2: validate } = require('../../utils/fieldValidation')
+const { buildValidationSpec } = require('../../utils/fieldValidation')
 
 const check = input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig: form.formConfig, input })
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ validationSpec: complete, input })
   return { formResponse, errors }
 }
 
@@ -26,8 +27,7 @@ beforeEach(() => {
 
 describe('Relocation and Injuries page - overall', () => {
   it('Should return no validation error messages if every primary input field completed correctly', () => {
-    const input = validInput
-    const { errors, formResponse } = check(input)
+    const { errors, formResponse } = check(validInput)
 
     expect(errors).toEqual([])
 
@@ -358,19 +358,6 @@ describe('Relocation and Injuries page inputs', () => {
 })
 
 describe('name pattern (f213CompletedBy)', () => {
-  const fields = [
-    {
-      f213CompletedBy: {
-        validationMessage: {
-          'string.pattern.name': 'Names may only contain letters, spaces, hyphens or apostrophes',
-          'string.base': 'Enter the name of who completed the F213 form',
-        },
-      },
-    },
-  ]
-
-  const { f213CompletedBy } = form
-
   it('matching value succeeds', () => {
     expect(isValid(f213CompletedBy, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe(true)
     expect(isValid(f213CompletedBy, 'abcdefghijklmnopqrstuvwxyz')).toBe(true)
@@ -391,12 +378,16 @@ describe('name pattern (f213CompletedBy)', () => {
 
   it('should accept a valid f213CompletedBy value', () => {
     expect(
-      extract(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ' }))
+      extract(
+        validate(buildValidationSpec(joi.object({ f213CompletedBy })), {
+          f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ',
+        })
+      )
     ).toEqual([])
   })
 
   it('should reject an invalid f213CompletedBy value', () => {
-    expect(extract(validate(fields, joi.object({ f213CompletedBy }), { f213CompletedBy: '' }))).toEqual([
+    expect(extract(validate(buildValidationSpec(joi.object({ f213CompletedBy })), { f213CompletedBy: '' }))).toEqual([
       {
         href: '#f213CompletedBy',
         text: 'Enter the name of who completed the F213 form',

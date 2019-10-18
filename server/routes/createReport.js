@@ -3,11 +3,7 @@ const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
 const formProcessing = require('../services/formProcessing')
-const incidentConfig = require('../config/incident')
-
-const formConfig = {
-  ...incidentConfig,
-}
+const { paths, transient } = require('../config/incident')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   const { bookingId } = req.params
@@ -67,7 +63,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       return `/report/${bookingId}/report-use-of-force`
     }
 
-    const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
+    const nextPath = getPathFor({ data: payloadFields, config: paths[form] })(bookingId)
     return saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
@@ -130,8 +126,8 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const validate = editMode || saveAndContinue
 
     const { payloadFields, extractedFields, errors } = formProcessing.processInput({
-      validate,
-      formConfig: formConfig[formName],
+      shouldValidate: validate,
+      validationSpec: transient[formName],
       input: req.body,
     })
 

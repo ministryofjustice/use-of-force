@@ -1,8 +1,9 @@
 const Joi = require('@hapi/joi')
 const R = require('ramda')
 const { mergeIntoPayload, processInput } = require('./formProcessing')
-const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
+const { EXTRACTED } = require('../config/fieldType')
 const { validations, joi } = require('../config/forms/validations')
+const { buildValidationSpec } = require('../utils/fieldValidation')
 
 describe('mergeIntoPayload', () => {
   const baseForm = {
@@ -86,8 +87,6 @@ describe('mergeIntoPayload', () => {
 
 describe('processInput', () => {
   describe('checking dependentFields functionality', () => {
-    const fields = [{ decision: {} }, { followUp1: {} }, { followUp2: {} }]
-
     const schemas = {
       complete: joi.object({
         decision: validations.requiredOneOfMsg('Yes', 'No')('Meh'),
@@ -96,6 +95,8 @@ describe('processInput', () => {
       }),
     }
 
+    const validationSpec = buildValidationSpec(schemas.complete)
+
     test('should store dependents if predicate matches', async () => {
       const userInput = {
         decision: 'Yes',
@@ -103,11 +104,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({
-        formConfig: { fields, schemas },
-        validate: false,
-        input: userInput,
-      })
+      const output = await processInput({ validationSpec, shouldValidate: false, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -127,11 +124,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({
-        formConfig: { fields, schemas },
-        validate: false,
-        input: userInput,
-      })
+      const output = await processInput({ validationSpec, shouldValidate: false, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -144,24 +137,19 @@ describe('processInput', () => {
   })
 
   test('check extracted fields are present outside of the payload', async () => {
-    const fields = [{ q1: {} }, { q2: {} }, { q3: {} }, { q4: {} }]
-
     const inSchema = joi.any()
     const outSchema = joi.any().meta({ fieldType: EXTRACTED })
 
     const output = processInput({
-      formConfig: {
-        fields,
-        schemas: {
-          complete: Joi.object({
-            q1: inSchema,
-            q2: outSchema,
-            q3: inSchema,
-            q4: outSchema,
-          }),
-        },
-      },
-      validate: false,
+      validationSpec: buildValidationSpec(
+        Joi.object({
+          q1: inSchema,
+          q2: outSchema,
+          q3: inSchema,
+          q4: outSchema,
+        })
+      ),
+      shouldValidate: false,
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })
 
@@ -176,10 +164,8 @@ describe('processInput', () => {
   })
 
   test('sanitisation', async () => {
-    const fields = [{ q1: {} }]
-
     const output = processInput({
-      formConfig: { fields, schemas: { complete: joi.object({ q1: joi.string().meta({ sanitiser: R.toUpper }) }) } },
+      validationSpec: buildValidationSpec(joi.object({ q1: joi.string().meta({ sanitiser: R.toUpper }) })),
       validate: false,
       input: { q1: 'aaaAAAaa' },
     })
@@ -194,11 +180,9 @@ describe('processInput', () => {
   })
 
   test('validation', async () => {
-    const fields = [{ q1: {} }]
-
     const schema = joi.object({ q1: validations.requiredStringMsg('Please give a full name') })
 
-    const output = processInput({ formConfig: { fields, schemas: { complete: schema } }, validate: true, input: {} })
+    const output = processInput({ validationSpec: buildValidationSpec(schema), validate: true, input: {} })
 
     expect(output).toEqual({
       errors: [

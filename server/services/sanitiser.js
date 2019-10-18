@@ -93,11 +93,12 @@ const sanitiserFor = R.cond([
 ])
 
 /**
- * Build a sanitiser for a Joi schema object using sanitiser functions attached to the schema as meta-data.
- * To attach a sanitiser function 's' to a Joi schema chain the meta function like so:
+ * Build a sanitiser for values whose structure is described by a Joi schema description. The sanitisers are functions
+ * attached to the Joi schema(s) as metadata.
+ * To attach a sanitiser function 's' to a Joi schema chain the meta method like so:
  * .meta({ sanitiser: s})
- * @param schema
- * @returns a function value -> sanitisedValue where the structure of value is described by the supplied schema.
+ * @param description A Joi schema description. Derived from a Joi schema 's' using s.describe().
+ * @returns a function value -> sanitisedValue where the structure of value is described by the supplied schema description.
  */
 const buildSanitiser = description =>
   R.pipe(

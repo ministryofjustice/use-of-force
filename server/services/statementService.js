@@ -1,7 +1,8 @@
+const R = require('ramda')
 const logger = require('../../log.js')
 const { StatementStatus } = require('../config/types')
 const statementConfig = require('../config/forms/statementForm')
-const { validate } = require('../utils/fieldValidation')
+const { processInput } = require('./formProcessing')
 
 module.exports = function createStatementService({ statementsClient, incidentClient, db }) {
   const getStatements = async (userId, status) => {
@@ -20,8 +21,9 @@ module.exports = function createStatementService({ statementsClient, incidentCli
 
   const validateSavedStatement = async (username, reportId) => {
     const statement = await getStatementForUser(username, reportId, StatementStatus.PENDING)
-    const validationResult = validate(statementConfig.fields, statementConfig.schemas.complete, statement, true)
-    return validationResult.error ? validationResult.error.details : []
+
+    const result = processInput({ validationSpec: statementConfig.complete, input: statement })
+    return R.propOr([], 'errors', result)
   }
 
   const save = (userId, reportId, statement) => {

@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
-const statementForm = require('../config/forms/statementForm')
+const { complete } = require('../config/forms/statementForm')
 const formProcessing = require('../services/formProcessing')
 const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
@@ -78,8 +78,8 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
        * EXTRACTED/PAYLOAD partition is a persistence concern and better handled there (in the Repository interface).
        */
       const { extractedFields: statement, errors } = formProcessing.processInput({
-        validate,
-        formConfig: statementForm,
+        validationSpec: complete,
+        shouldValidate: validate,
         input: req.body,
       })
 

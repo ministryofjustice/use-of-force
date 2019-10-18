@@ -4,8 +4,22 @@ const relocationAndInjuriesForm = require('./forms/relocationAndInjuriesForm')
 const evidenceForm = require('./forms/evidenceForm')
 
 module.exports = {
-  incidentDetails: incidentDetails.formConfig,
-  useOfForceDetails: useOfForceDetailsForm.formConfig,
-  relocationAndInjuries: relocationAndInjuriesForm.formConfig,
-  evidence: evidenceForm.formConfig,
+  paths: {
+    incidentDetails: { path: bookingId => `/report/${bookingId}/use-of-force-details` },
+    useOfForceDetails: { path: bookingId => `/report/${bookingId}/relocation-and-injuries` },
+    relocationAndInjuries: { path: bookingId => `/report/${bookingId}/evidence` },
+    evidence: { path: bookingId => `/report/${bookingId}/check-your-answers` },
+  },
+  transient: {
+    incidentDetails: incidentDetails.complete,
+    useOfForceDetails: useOfForceDetailsForm.complete,
+    relocationAndInjuries: relocationAndInjuriesForm.complete,
+    evidence: evidenceForm.complete,
+  },
+  persistent: {
+    incidentDetails: incidentDetails.persistent,
+    useOfForceDetails: useOfForceDetailsForm.complete,
+    relocationAndInjuries: relocationAndInjuriesForm.complete,
+    evidence: evidenceForm.complete,
+  },
 }

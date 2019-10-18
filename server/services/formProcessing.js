@@ -1,21 +1,6 @@
 const R = require('ramda')
-const { equals, isNilOrEmpty } = require('../utils/utils')
-const { EXTRACTED, PAYLOAD } = require('../config/fieldType')
-const { validate } = require('../utils/fieldValidation')
-const { buildSanitiser } = require('./sanitiser')
-const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
-
-const extractFields = (userInput, requiredFieldType) => {
-  return (answersAccumulator, field) => {
-    const fieldName = Object.keys(field)[0]
-    const { fieldType = PAYLOAD } = field[fieldName]
-
-    const value = userInput[fieldName]
-    return fieldType !== requiredFieldType || isNilOrEmpty(value)
-      ? answersAccumulator
-      : { ...answersAccumulator, [fieldName]: value }
-  }
-}
+const { equals } = require('../utils/utils')
+const { validate2 } = require('../utils/fieldValidation')
 
 /**
  *  string | object  -> string
@@ -53,19 +38,11 @@ const extractSingleErrorMessage = R.unless(
  */
 const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessage))
 
-const processInput = ({ validate: shouldValidate = true, formConfig, input }) => {
-  const { schemas, fields } = formConfig
-
-  const schemaDescription = schemas.complete.describe()
-
-  // TODO: The sanitiser should be built in advance and attached to the formConfig
-  const sanitisedInput = buildSanitiser(schemaDescription)(input)
-
-  const validationResult = validate(fields, schemas.complete, sanitisedInput)
+const processInput = ({ validationSpec, shouldValidate = true, input }) => {
+  const sanitisedInput = validationSpec.sanitiser(input)
+  const validationResult = validate2(validationSpec, sanitisedInput)
   const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []
-
-  const splitter = buildFieldTypeSplitter(schemaDescription, EXTRACTED)
-  const { payloadFields, extractedFields } = splitter(validationResult.value)
+  const { payloadFields, extractedFields } = validationSpec.fieldTypeSplitter(validationResult.value)
   return { payloadFields, extractedFields, errors }
 }
 

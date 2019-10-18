@@ -1,8 +1,8 @@
-const { formConfig } = require('./useOfForceDetailsForm')
+const { complete } = require('./useOfForceDetailsForm')
 const formProcessing = require('../../services/formProcessing')
 
 const check = input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ validationSpec: complete, input })
   return { formResponse, errors }
 }
 
@@ -26,8 +26,7 @@ beforeEach(() => {
 
 describe('Details page - overall', () => {
   it('Should return no validation error messages if every input field completed correctly', () => {
-    const input = validInput
-    const { errors, formResponse } = check(input)
+    const { errors, formResponse } = check(validInput)
 
     expect(errors).toEqual([])
 

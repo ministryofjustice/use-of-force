@@ -1,5 +1,5 @@
-const R = require('ramda')
-const { validate } = require('../../utils/fieldValidation')
+const { validate2: validate } = require('../../utils/fieldValidation')
+const { buildErrorDetailAdapter } = require('../../services/errorDetailAdapter')
 const {
   joi,
   caseInsensitiveComparator,
@@ -25,14 +25,10 @@ describe('requiredMonthIndexNotInFuture', () => {
     month: requiredMonthIndexNotInFuture('year', 'Select the month'),
   })
 
-  const fields = [
-    {
-      month: {},
-    },
-    {
-      year: {},
-    },
-  ]
+  const validationSpec = {
+    schema: formSchema,
+    errorDetailAdapter: buildErrorDetailAdapter(formSchema.describe()),
+  }
 
   const selectMonth = {
     href: '#month',
@@ -57,27 +53,27 @@ describe('requiredMonthIndexNotInFuture', () => {
   const extract = validationResult => (validationResult.error ? validationResult.error.details : [])
 
   test('This month of this year valid', () => {
-    expect(extract(validate(fields, formSchema, { month: '9', year: '2019' }))).toEqual([])
+    expect(extract(validate(validationSpec, { month: '9', year: '2019' }))).toEqual([])
   })
 
   test('Next month of this year invalid', () => {
-    expect(extract(validate(fields, formSchema, { month: '10', year: '2019' }))).toEqual([selectMonth])
+    expect(extract(validate(validationSpec, { month: '10', year: '2019' }))).toEqual([selectMonth])
   })
 
   test('Next year invalid', () => {
-    expect(extract(validate(fields, formSchema, { month: '01', year: '2020' }))).toEqual([yearLessEq2019])
+    expect(extract(validate(validationSpec, { month: '01', year: '2020' }))).toEqual([yearLessEq2019])
   })
 
   test('Last month of previous year valid', () => {
-    expect(extract(validate(fields, formSchema, { month: '11', year: '2018' }))).toEqual([])
+    expect(extract(validate(validationSpec, { month: '11', year: '2018' }))).toEqual([])
   })
 
   test('year is not a number', () => {
-    expect(extract(validate(fields, formSchema, { month: '1', year: 'xxxx' }))).toEqual([yearMustBeANumber])
+    expect(extract(validate(validationSpec, { month: '1', year: 'xxxx' }))).toEqual([yearMustBeANumber])
   })
 
   test('no month or year', () => {
-    expect(extract(validate(fields, formSchema, {}))).toEqual(expect.arrayContaining([yearIsRequired]))
+    expect(extract(validate(validationSpec, {}))).toEqual(expect.arrayContaining([yearIsRequired]))
   })
 })
 

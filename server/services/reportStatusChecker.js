@@ -1,4 +1,5 @@
-const config = require('../config/incident')
+const { persistent } = require('../config/incident')
+const { isValid } = require('../utils/fieldValidation')
 
 const SectionStatus = Object.freeze({
   NOT_STARTED: 'NOT_STARTED',
@@ -6,19 +7,19 @@ const SectionStatus = Object.freeze({
   COMPLETE: 'COMPLETE',
 })
 
-const getStatus = (fieldConfig, sectionValues) => {
+const getStatus = (validationSpec, sectionValues) => {
   if (!sectionValues) {
     return SectionStatus.NOT_STARTED
   }
 
-  return fieldConfig.isComplete(sectionValues) ? SectionStatus.COMPLETE : SectionStatus.INCOMPLETE
+  return isValid(validationSpec.schema, sectionValues) ? SectionStatus.COMPLETE : SectionStatus.INCOMPLETE
 }
 
 module.exports = {
   SectionStatus,
   check: report => {
-    const result = Object.keys(config).reduce(
-      (previous, key) => ({ ...previous, [key]: getStatus(config[key], report[key]) }),
+    const result = Object.keys(persistent).reduce(
+      (previous, key) => ({ ...previous, [key]: getStatus(persistent[key], report[key]) }),
       {}
     )
 

@@ -1,55 +1,48 @@
+const R = require('ramda')
 const moment = require('moment')
+const { isNilOrEmpty } = require('../utils/utils')
 
-const { getFieldName, isNilOrEmpty } = require('../utils/utils')
-
-const getHref = (fieldConfig, error) => {
-  const [head, ...sections] = error.path
-  const { firstFieldName } = fieldConfig[head]
-
-  if (sections.length === 0 && firstFieldName) {
-    /* If this field represents an array and the error is related to its structure 
-        we want to focus on the first field within the array item 
-    */
-    return firstFieldName
-  }
-
-  return sections.reduce((path, section) => `${path}[${section}]`, head)
-}
+const { buildSanitiser } = require('../services/sanitiser')
+const { buildFieldTypeSplitter } = require('../services/fieldTypeSplitter')
+const { buildErrorDetailAdapter } = require('../services/errorDetailAdapter')
+const { EXTRACTED } = require('../config/fieldType')
 
 const contextFactory = () => ({
   year: moment().year(),
   month: moment().month(),
 })
 
+const validatorConfig = stripUnknown => ({
+  abortEarly: false,
+  convert: true,
+  allowUnknown: false,
+  stripUnknown,
+  context: contextFactory(),
+})
+
 module.exports = {
-  validate(fieldsConfig, formSchema, formResponse, stripUnknown = false) {
-    const validationResult = formSchema.validate(formResponse, {
-      abortEarly: false,
-      convert: true,
-      allowUnknown: false,
-      stripUnknown,
-      context: contextFactory(),
-    })
-
-    if (isNilOrEmpty(validationResult.error)) {
-      return validationResult
-    }
-
-    const errorDetails = validationResult.error.details.map(error => {
-      const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
-
-      return {
-        text: error.message,
-        href: `#${getHref(fieldConfig, error)}`,
-      }
-    })
-
-    validationResult.error.details = errorDetails
-    return validationResult
+  validate2({ errorDetailAdapter, schema }, input) {
+    const validationResult = schema.validate(input, validatorConfig(true))
+    return R.evolve({
+      error: {
+        details: R.map(errorDetailAdapter),
+      },
+    })(validationResult)
   },
 
   isValid(schema, value, stripUnknown = false) {
     const joiErrors = schema.validate(value, { stripUnknown, abortEarly: false })
     return isNilOrEmpty(joiErrors.error)
+  },
+
+  buildValidationSpec(schema) {
+    const description = schema.describe()
+
+    return {
+      sanitiser: buildSanitiser(description),
+      errorDetailAdapter: buildErrorDetailAdapter(description),
+      fieldTypeSplitter: buildFieldTypeSplitter(description, EXTRACTED),
+      schema,
+    }
   },
 }

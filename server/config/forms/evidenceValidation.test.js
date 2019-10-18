@@ -1,8 +1,8 @@
-const { formConfig } = require('./evidenceForm')
+const { complete } = require('./evidenceForm')
 const formProcessing = require('../../services/formProcessing')
 
 const check = input => {
-  const { payloadFields: formResponse, errors } = formProcessing.processInput({ formConfig, input })
+  const { payloadFields: formResponse, errors } = formProcessing.processInput({ validationSpec: complete, input })
   return { formResponse, errors }
 }
 
