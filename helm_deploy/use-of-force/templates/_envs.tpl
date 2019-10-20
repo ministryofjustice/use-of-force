@@ -78,4 +78,20 @@ env:
 
   - name: EMAIL_LOCATION_URL
     value: {{ .Values.env.EMAIL_LOCATION_URL | quote }}
+    
+  - name: REDIS_HOST
+    valueFrom:
+      secretKeyRef:
+        name: uof-elasticache-redis
+        key: primary_endpoint_address
+
+  - name: REDIS_AUTH_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: uof-elasticache-redis
+        key: auth_token
+  
+  - name: REDIS_TLS_ENABLED
+    value: {{ .Values.env.REDIS_TLS_ENABLED }}
+    value: "true"
 {{- end -}}

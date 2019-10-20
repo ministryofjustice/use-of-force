@@ -9,8 +9,11 @@ const moment = require('moment')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
-const cookieSession = require('cookie-session')
 const sassMiddleware = require('node-sass-middleware')
+
+const redis = require('redis')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
 
 const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
@@ -63,18 +66,22 @@ module.exports = function createApp({
   // 2. https://www.npmjs.com/package/helmet
   app.use(helmet())
 
+  const client = redis.createClient({
+    port: config.redis.port,
+    password: config.redis.auth_token,
+    host: config.redis.host,
+    tls: config.redis.tls_enabled === 'true' ? {} : false,
+  })
+
   app.use(addRequestId)
 
   app.use(
-    cookieSession({
-      name: 'session',
-      keys: [config.sessionSecret],
-      maxAge: 60 * 60 * 1000,
-      secure: config.https,
-      httpOnly: true,
-      signed: true,
-      overwrite: true,
-      sameSite: 'lax',
+    session({
+      store: new RedisStore({ client }),
+      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
+      secret: config.session.secret,
+      resave: false, // redis implements touch so shouldn't need this
+      saveUninitialized: true,
     })
   )
 
@@ -220,6 +227,7 @@ module.exports = function createApp({
   app.use('/logout', (req, res) => {
     if (req.user) {
       req.logout()
+      req.session.destroy()
     }
     res.redirect(authLogoutUrl)
   })
