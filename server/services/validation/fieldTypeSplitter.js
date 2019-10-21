@@ -16,16 +16,16 @@ const extractKeys = fieldTypeValue =>
   )
 
 // [keys] -> (accumulator, [key, value]) -> accumulator
-const buildIteratorFn = keysToSplitOn => (acc, [key, value]) => {
+const buildReduceFn = keysToSplitOn => (acc, [key, value]) => {
   const fieldSetKey = R.includes(key, keysToSplitOn) ? 'extractedFields' : 'payloadFields'
   return isNilOrEmpty(value) ? acc : R.assocPath([fieldSetKey, key], value, acc)
 }
 
 // ((accumulator, [key, value]) -> accumulator) -> input -> splitInput
-const buildWithIteratorFn = iteratorFn =>
+const buildWithReduceFn = reduceFn =>
   R.pipe(
     R.toPairs,
-    R.reduce(iteratorFn, { payloadFields: {}, extractedFields: {} })
+    R.reduce(reduceFn, { payloadFields: {}, extractedFields: {} })
   )
 /**
  *
@@ -42,8 +42,8 @@ const buildFieldTypeSplitter = (description, fieldType) => {
 
   return R.pipe(
     extractKeys(fieldType),
-    buildIteratorFn,
-    buildWithIteratorFn
+    buildReduceFn,
+    buildWithReduceFn
   )(description)
 }
 

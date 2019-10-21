@@ -4,7 +4,7 @@ const { isNilOrEmpty } = require('../../utils/utils')
 
 const { buildSanitiser } = require('./sanitiser')
 const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
-const { buildErrorDetailAdapter } = require('../errorDetailAdapter')
+const { buildErrorDetailAdapter } = require('./errorDetailAdapter')
 const { EXTRACTED } = require('../../config/fieldType')
 
 const contextFactory = () => ({

@@ -1,5 +1,5 @@
 const { validate } = require('../../services/validation/fieldValidation')
-const { buildErrorDetailAdapter } = require('../../services/errorDetailAdapter')
+const { buildValidationSpec } = require('../../services/validation')
 const {
   joi,
   caseInsensitiveComparator,
@@ -25,10 +25,7 @@ describe('requiredMonthIndexNotInFuture', () => {
     month: requiredMonthIndexNotInFuture('year', 'Select the month'),
   })
 
-  const validationSpec = {
-    schema: formSchema,
-    errorDetailAdapter: buildErrorDetailAdapter(formSchema.describe()),
-  }
+  const validationSpec = buildValidationSpec(formSchema)
 
   const selectMonth = {
     href: '#month',
