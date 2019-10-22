@@ -1,4 +1,3 @@
-const R = require('ramda')
 const moment = require('moment')
 const { isNilOrEmpty } = require('../../utils/utils')
 
@@ -23,11 +22,10 @@ const validatorConfig = stripUnknown => ({
 module.exports = {
   validate({ errorDetailAdapter, schema }, input) {
     const validationResult = schema.validate(input, validatorConfig(true))
-    return R.evolve({
-      error: {
-        details: R.map(errorDetailAdapter),
-      },
-    })(validationResult)
+    if (validationResult.error) {
+      validationResult.error.details = validationResult.error.details.map(errorDetailAdapter)
+    }
+    return validationResult
   },
 
   isValid(schema, value, stripUnknown = false) {

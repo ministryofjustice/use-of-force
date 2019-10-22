@@ -7,7 +7,7 @@ const hrefFromPath = path => {
 }
 
 const hrefBuilderBuilder = firstFieldNameMap => path => {
-  const firstFieldName = R.prop(path[0])(firstFieldNameMap)
+  const firstFieldName = firstFieldNameMap[path[0]]
   if (path.length < 2 && firstFieldName) {
     return firstFieldName
   }

@@ -3,79 +3,54 @@ const R = require('ramda')
 /**
  * extract all the 'sanitiser' functions from the metas array and return their composition or R.identity when there are none.
  */
-const getSanitiser = R.pipe(
-  R.propOr([], 'metas'),
-  R.pluck('sanitiser'),
-  R.reject(R.isNil),
-  R.ifElse(
-    // if there is exactly 1 sanitiser function
-    R.pipe(
-      R.length,
-      R.equals(1)
-    ),
-    // return the function
-    R.head,
-    // otherwise compose the list of functions into one
-    R.reduce(R.pipe, R.identity)
-  )
-)
+const getSanitiser = description => {
+  const metas = R.propOr([], 'metas', description)
+  const sanitisers = metas.map(m => m.sanitiser).filter(s => !R.isNil(s))
+  return sanitisers.length === 1 ? sanitisers[0] : sanitisers.reduce((acc, fn) => x => fn(acc(x)), R.identity)
+}
 
-// Have to add 'description' as a parameter to one of the following functions to get the recursive calls to compile.
-const simplifyDescription = description =>
-  R.cond([
-    [R.propEq('type', 'object'), simplifyObjectDescription],
-    [R.propEq('type', 'array'), simplifyArrayDescription],
-    [R.T, simplifyOtherDescription],
-  ])(description)
+const simplifyDescription = description => {
+  switch (description.type) {
+    case 'object':
+      return simplifyObjectDescription(description)
+    case 'array':
+      return simplifyArrayDescription(description)
+    default:
+      return simplifyOtherDescription(description)
+  }
+}
 
 const simplifyPrimitiveDescription = description => ({ type: 'primitive', sanitiser: getSanitiser(description) })
 
-const simplifyOtherDescription = R.ifElse(
-  R.hasPath(['whens', 0, 'then']),
-  R.pipe(
-    R.path(['whens', 0, 'then']),
-    simplifyDescription
-  ),
-  simplifyPrimitiveDescription
-)
+const simplifyOtherDescription = description => {
+  const then = R.path(['whens', 0, 'then'], description)
+  if (then) {
+    return simplifyDescription(then)
+  }
+  return simplifyPrimitiveDescription(description)
+}
 
 const simplifyObjectDescription = description => ({
   type: 'object',
   sanitiser: getSanitiser(description),
-  keys: R.pipe(
-    R.propOr({}, 'keys'),
-    R.map(simplifyDescription)
-  )(description),
+  keys: R.map(simplifyDescription, R.propOr({}, 'keys', description)),
 })
 
 const simplifyArrayDescription = description => ({
   type: 'array',
   sanitiser: getSanitiser(description),
-  items: R.pipe(
-    R.propOr([], 'items'),
-    R.map(simplifyDescription)
-  )(description),
+  items: R.map(simplifyDescription, R.propOr([], 'items', description)),
 })
 
-const objectSanitiser = description => object =>
-  R.pipe(
-    R.prop('keys'),
-    R.pick(R.keys(object)),
-    R.map(sanitiserFor),
-    R.mapObjIndexed((sanitiser, key) => sanitiser(object[key])),
-    description.sanitiser
-  )(description)
+const objectSanitiser = ({ keys, sanitiser }) => object => {
+  const filteredKeys = R.pick(Object.keys(object), keys)
+  const sanitisers = R.map(sanitiserFor, filteredKeys)
+  return sanitiser(R.mapObjIndexed((s, key) => s(object[key]), sanitisers))
+}
 
 const nilSafeObjectSanitiser = description => R.unless(R.isNil, objectSanitiser(description))
 
-const arraySanitiser = description => array =>
-  R.pipe(
-    R.prop('items'),
-    R.head,
-    sanitiserFor,
-    sanitiser => R.map(sanitiser)(array),
-    description.sanitiser
-  )(description)
+const arraySanitiser = ({ sanitiser, items }) => array => sanitiser(array.map(sanitiserFor(items[0])))
 
 const nilSafeArraySanitiser = description => R.unless(R.isNil, arraySanitiser(description))
 /**
@@ -86,11 +61,16 @@ const nilSafeArraySanitiser = description => R.unless(R.isNil, arraySanitiser(de
  *
  * description -> (value -> sanitisedValue)
  */
-const sanitiserFor = R.cond([
-  [R.propEq('type', 'object'), nilSafeObjectSanitiser],
-  [R.propEq('type', 'array'), nilSafeArraySanitiser],
-  [R.T, R.prop('sanitiser')],
-])
+const sanitiserFor = description => {
+  switch (description.type) {
+    case 'object':
+      return nilSafeObjectSanitiser(description)
+    case 'array':
+      return nilSafeArraySanitiser(description)
+    default:
+      return description.sanitiser
+  }
+}
 
 /**
  * Build a sanitiser for values whose structure is described by a Joi schema description. The sanitisers are functions
@@ -100,11 +80,7 @@ const sanitiserFor = R.cond([
  * @param description A Joi schema description. Derived from a Joi schema 's' using s.describe().
  * @returns a function value -> sanitisedValue where the structure of value is described by the supplied schema description.
  */
-const buildSanitiser = description =>
-  R.pipe(
-    simplifyDescription,
-    sanitiserFor
-  )(description)
+const buildSanitiser = description => sanitiserFor(simplifyDescription(description))
 
 module.exports = {
   simplifyDescription,

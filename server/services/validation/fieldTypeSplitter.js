@@ -1,32 +1,24 @@
 const R = require('ramda')
 const { isNilOrEmpty } = require('../../utils/utils')
 
-const extractKeys = fieldTypeValue =>
-  R.pipe(
-    R.propOr({}, 'keys'), // keys property
-    R.map(
-      R.pipe(
-        R.prop('metas'),
-        R.mergeAll,
-        R.prop('fieldType')
-      )
-    ),
-    R.filter(R.equals(fieldTypeValue)),
-    R.keys
-  )
+const extractPropertyNamesForFieldType = (fieldTypeValue, description) => {
+  const keys = R.propOr({}, 'keys', description)
+  const descriptionsHavingFieldTypeMetas = R.map(d => R.mergeAll(d.metas).fieldType, keys)
+  const descriptionsHavingNamedFieldType = R.filter(R.equals(fieldTypeValue), descriptionsHavingFieldTypeMetas)
+  return Object.keys(descriptionsHavingNamedFieldType)
+}
 
 // [keys] -> (accumulator, [key, value]) -> accumulator
 const buildReduceFn = keysToSplitOn => (acc, [key, value]) => {
-  const fieldSetKey = R.includes(key, keysToSplitOn) ? 'extractedFields' : 'payloadFields'
+  const fieldSetKey = keysToSplitOn.includes(key) ? 'extractedFields' : 'payloadFields'
   return isNilOrEmpty(value) ? acc : R.assocPath([fieldSetKey, key], value, acc)
 }
 
 // ((accumulator, [key, value]) -> accumulator) -> input -> splitInput
-const buildWithReduceFn = reduceFn =>
-  R.pipe(
-    R.toPairs,
-    R.reduce(reduceFn, { payloadFields: {}, extractedFields: {} })
-  )
+const buildWithReduceFn = reduceFn => input => {
+  const pairs = R.toPairs(input)
+  return pairs.reduce(reduceFn, { payloadFields: {}, extractedFields: {} })
+}
 /**
  *
  * @param description A Joi schema description.  Must be for an object (because there's no need to support anything else)
@@ -40,11 +32,9 @@ const buildFieldTypeSplitter = (description, fieldType) => {
     throw Error('Expected an object schema')
   }
 
-  return R.pipe(
-    extractKeys(fieldType),
-    buildReduceFn,
-    buildWithReduceFn
-  )(description)
+  const k = extractPropertyNamesForFieldType(fieldType, description)
+  const rfn = buildReduceFn(k)
+  return buildWithReduceFn(rfn)
 }
 
 module.exports = {
