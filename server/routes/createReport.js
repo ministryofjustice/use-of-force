@@ -3,7 +3,7 @@ const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
 const { processInput, mergeIntoPayload } = require('../services/validation')
-const { paths, transient } = require('../config/incident')
+const { paths, full, partial } = require('../config/incident')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   const { bookingId } = req.params
@@ -123,11 +123,10 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const { bookingId } = req.params
     const saveAndContinue = req.body.submit === 'save-and-continue'
 
-    const validate = editMode || saveAndContinue
+    const fullValidation = editMode || saveAndContinue
 
     const { payloadFields, extractedFields, errors } = processInput({
-      shouldValidate: validate,
-      validationSpec: transient[formName],
+      validationSpec: fullValidation ? full[formName] : partial[formName],
       input: req.body,
     })
 
@@ -143,7 +142,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
      * username was verified.
      */
 
-    if (saveAndContinue && !isNilOrEmpty(errors)) {
+    if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
       req.flash('userInput', { ...formPayload, ...extractedFields }) // merge all fields back together!
       return res.redirect(req.originalUrl)

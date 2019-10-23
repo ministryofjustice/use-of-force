@@ -4,6 +4,7 @@ const { toDate, removeEmptyObjects } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
 
 const {
+  optionalForPartialValidation,
   requiredNumber,
   requiredIntegerMsg,
   requiredString,
@@ -50,9 +51,9 @@ const optionalInvolvedStaff = joi
   .items(
     joi
       .object({
-        username: requiredPatternMsg(usernamePattern)(
-          'Usernames can only contain letters and an underscore'
-        ).uppercase(),
+        username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore')
+          .uppercase()
+          .alter(optionalForPartialValidation),
       })
       .id('username')
   )
@@ -61,16 +62,20 @@ const optionalInvolvedStaff = joi
   .meta({ sanitiser: removeEmptyObjects, firstFieldName: 'involvedStaff[0]' })
 
 const transientSchema = joi.object({
-  incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }),
+  incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }).alter(optionalForPartialValidation),
 
-  locationId: requiredIntegerMsg('Select the location of the incident'),
+  locationId: requiredIntegerMsg('Select the location of the incident').alter(optionalForPartialValidation),
 
-  plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned'),
+  plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
+    optionalForPartialValidation
+  ),
 
   involvedStaff: optionalInvolvedStaff,
 
   witnesses: arrayOfObjects({
-    name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe'),
+    name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe').alter(
+      optionalForPartialValidation
+    ),
   })
     .ruleset.unique(caseInsensitiveComparator('name'))
     .message("Witness '{#value.name}' has already been added - remove this witness"),
@@ -85,6 +90,5 @@ module.exports = {
 
   complete: buildValidationSpec(transientSchema),
   persistent: buildValidationSpec(persistentSchema),
-
-  partial: {},
+  partial: buildValidationSpec(transientSchema.tailor('partial')),
 }

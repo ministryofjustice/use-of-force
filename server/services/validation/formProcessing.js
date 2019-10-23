@@ -38,10 +38,10 @@ const extractSingleErrorMessage = R.unless(
  */
 const simplifyErrors = R.map(R.over(R.lensProp('text'), extractSingleErrorMessage))
 
-const processInput = ({ validationSpec, shouldValidate = true, input }) => {
+const processInput = ({ validationSpec, input }) => {
   const sanitisedInput = validationSpec.sanitiser(input)
   const validationResult = validate(validationSpec, sanitisedInput)
-  const errors = shouldValidate && validationResult.error ? simplifyErrors(validationResult.error.details) : []
+  const errors = validationResult.error ? simplifyErrors(validationResult.error.details) : []
   const { payloadFields, extractedFields } = validationSpec.fieldTypeSplitter(validationResult.value)
   return { payloadFields, extractedFields, errors }
 }

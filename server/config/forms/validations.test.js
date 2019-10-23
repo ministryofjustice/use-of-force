@@ -292,3 +292,39 @@ describe('caseInsensitiveComparator', () => {
     expect(compare({ a: 'A' }, {})).toEqual(false)
   })
 })
+
+describe('overriding required with optional', () => {
+  const options = { abortEarly: false, allowUnknown: false, convert: true, stripUnknown: true }
+
+  const schema = joi.object({
+    a: joi
+      .number()
+      .integer()
+      .min(1)
+      .max(2)
+      .required()
+      .alter({ override: s => s.allow(null).optional() }),
+  })
+
+  it(' number().required(). should  require a value', () => {
+    expect(schema.validate({}, options).error.details).toEqual([
+      {
+        context: {
+          key: 'a',
+          label: 'a',
+        },
+        message: '"a" is required',
+        path: ['a'],
+        type: 'any.required',
+      },
+    ])
+  })
+
+  it(' number().required().optional(). should not require a value', () => {
+    expect(schema.tailor('override').validate({ a: undefined }, options)).toEqual({ value: {} })
+  })
+
+  it(' number().required().optional(). should not require a value', () => {
+    expect(schema.tailor('override').validate({ a: null }, options)).toEqual({ value: { a: null } })
+  })
+})

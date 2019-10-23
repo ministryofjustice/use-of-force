@@ -86,7 +86,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
       await statementService.save(req.user.username, reportId, statement)
 
-      if (!isValid) {
+      if (saveAndContinue && !isValid) {
         req.flash('errors', errors)
         return res.redirect(`/${reportId}/write-your-statement`)
       }

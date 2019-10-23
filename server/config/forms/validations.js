@@ -118,6 +118,18 @@ const requiredMonthIndexNotInFuture = (yearRef, outOfRangeMessage) =>
     ],
   })
 
+const optionalForPartialValidation = {
+  partial: s => s.allow(null).optional(),
+}
+
+const minZeroForPartialValidation = {
+  partial: s =>
+    s
+      .allow(null)
+      .optional()
+      .min(0),
+}
+
 module.exports = {
   joi,
   usernamePattern,
@@ -126,6 +138,9 @@ module.exports = {
 
   validations: {
     any: joi.any(),
+
+    optionalForPartialValidation,
+    minZeroForPartialValidation,
 
     requiredMonthIndex,
     requiredMonthIndexNotInFuture,

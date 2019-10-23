@@ -1,11 +1,6 @@
 const moment = require('moment')
 const { isNilOrEmpty } = require('../../utils/utils')
 
-const { buildSanitiser } = require('./sanitiser')
-const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
-const { buildErrorDetailAdapter } = require('./errorDetailAdapter')
-const { EXTRACTED } = require('../../config/fieldType')
-
 const contextFactory = () => ({
   year: moment().year(),
   month: moment().month(),
@@ -31,16 +26,5 @@ module.exports = {
   isValid(schema, value, stripUnknown = false) {
     const joiErrors = schema.validate(value, { stripUnknown, abortEarly: false })
     return isNilOrEmpty(joiErrors.error)
-  },
-
-  buildValidationSpec(schema) {
-    const description = schema.describe()
-
-    return {
-      sanitiser: buildSanitiser(description),
-      errorDetailAdapter: buildErrorDetailAdapter(description),
-      fieldTypeSplitter: buildFieldTypeSplitter(description, EXTRACTED),
-      schema,
-    }
   },
 }

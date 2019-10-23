@@ -26,5 +26,4 @@ const completeSchema = joi.object({
 
 module.exports = {
   complete: buildValidationSpec(completeSchema),
-  partial: {},
 }

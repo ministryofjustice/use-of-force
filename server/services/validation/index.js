@@ -1,5 +1,20 @@
-const { buildValidationSpec, isValid, validate } = require('./fieldValidation')
+const { isValid, validate } = require('./fieldValidation')
 const { processInput, mergeIntoPayload } = require('./formProcessing')
+const { buildSanitiser } = require('./sanitiser')
+const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
+const { buildErrorDetailAdapter } = require('./errorDetailAdapter')
+const { EXTRACTED } = require('../../config/fieldType')
+
+const buildValidationSpec = schema => {
+  const description = schema.describe()
+
+  return {
+    sanitiser: buildSanitiser(description),
+    errorDetailAdapter: buildErrorDetailAdapter(description),
+    fieldTypeSplitter: buildFieldTypeSplitter(description, EXTRACTED),
+    schema,
+  }
+}
 
 module.exports = {
   buildValidationSpec,

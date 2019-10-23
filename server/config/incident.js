@@ -10,7 +10,7 @@ module.exports = {
     relocationAndInjuries: { path: bookingId => `/report/${bookingId}/evidence` },
     evidence: { path: bookingId => `/report/${bookingId}/check-your-answers` },
   },
-  transient: {
+  full: {
     incidentDetails: incidentDetails.complete,
     useOfForceDetails: useOfForceDetailsForm.complete,
     relocationAndInjuries: relocationAndInjuriesForm.complete,
@@ -21,5 +21,11 @@ module.exports = {
     useOfForceDetails: useOfForceDetailsForm.complete,
     relocationAndInjuries: relocationAndInjuriesForm.complete,
     evidence: evidenceForm.complete,
+  },
+  partial: {
+    incidentDetails: incidentDetails.partial,
+    useOfForceDetails: useOfForceDetailsForm.partial,
+    relocationAndInjuries: relocationAndInjuriesForm.partial,
+    evidence: evidenceForm.partial,
   },
 }
