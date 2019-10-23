@@ -163,13 +163,6 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     })
 
     if (updatedPayload || !isNilOrEmpty(extractedFields)) {
-      /**
-       * update takes: { currentUser, formId, bookingId, formObject, incidentDate }
-       * So only extractedFields value that is used is incidentDate!!!  That isn't obvious from this code.
-       *
-       * reportService.update could just take formObject (with incidentDate) and split off incidentDate itself.
-       * That would eliminate quite a bit of unnecessary code. (But see how statementForm is handled...)
-       */
       await reportService.update({
         currentUser: res.locals.user,
         formId,

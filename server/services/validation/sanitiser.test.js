@@ -1,7 +1,7 @@
 const R = require('ramda')
 const joi = require('@hapi/joi')
 const { trimmedString, toBoolean, toInteger, toSmallInt } = require('../../config/forms/sanitisers')
-const { simplifyDescription, buildSanitiser } = require('./sanitiser')
+const { simplifyDescription, buildSanitiser, getSanitiser } = require('./sanitiser')
 const {
   complete: { schema: evidenceSchema },
 } = require('../../config/forms/evidenceForm')
@@ -324,12 +324,12 @@ describe('simplifying descriptions', () => {
 })
 
 describe('building sanitisers', () => {
-  const getSanitiser = schema => buildSanitiser(schema.describe())
+  const sanitiserFor = schema => buildSanitiser(schema.describe())
 
   const doublerSanitiser = { sanitiser: x => (R.isNil(x) ? x : x + x) }
 
   describe('a sanitiser for a string (primitive)', () => {
-    const sanitiser = getSanitiser(joi.string().meta(doublerSanitiser))
+    const sanitiser = sanitiserFor(joi.string().meta(doublerSanitiser))
 
     it('sanitises a string', () => expect(sanitiser('a')).toEqual('aa'))
     it('sanitises empty string', () => expect(sanitiser('')).toEqual(''))
@@ -340,12 +340,12 @@ describe('building sanitisers', () => {
   const addTestFieldSanitiser = { sanitiser: R.assoc('test', 'test') }
 
   it('sanitises an object that has no properties', () => {
-    const sanitiser = getSanitiser(joi.object().meta(addTestFieldSanitiser))
+    const sanitiser = sanitiserFor(joi.object().meta(addTestFieldSanitiser))
     expect(sanitiser({})).toEqual({ test: 'test' })
   })
 
   describe('an object sanitiser', () => {
-    const sanitiser = getSanitiser(joi.object({ a: joi.string().meta(doublerSanitiser) }).meta(addTestFieldSanitiser))
+    const sanitiser = sanitiserFor(joi.object({ a: joi.string().meta(doublerSanitiser) }).meta(addTestFieldSanitiser))
 
     it('sanitises an  object that has a string property', () =>
       expect(sanitiser({ a: 'a' })).toEqual({ test: 'test', a: 'aa' }))
@@ -360,7 +360,7 @@ describe('building sanitisers', () => {
   const addTestItemSanitiser = { sanitiser: R.append('test') }
 
   describe('an array sanitiser', () => {
-    const sanitiser = getSanitiser(
+    const sanitiser = sanitiserFor(
       joi
         .array()
         .items(joi.string().meta(doublerSanitiser))
@@ -376,7 +376,7 @@ describe('building sanitisers', () => {
   const booleanToggleSanitiser = { sanitiser: x => (R.isNil(x) ? x : !x) }
 
   describe('sanitiser for composites', () => {
-    const sanitiser = getSanitiser(
+    const sanitiser = sanitiserFor(
       joi
         .object({
           a: joi
@@ -442,7 +442,7 @@ describe('building sanitisers', () => {
   })
 
   describe('sanitising a composite with no sanitisers specified, should just clone value', () => {
-    const sanitiser = getSanitiser(
+    const sanitiser = sanitiserFor(
       joi
         .object({
           a: joi.string().required(),
@@ -487,34 +487,36 @@ describe('building sanitisers', () => {
 
   describe('builds sanitisers for all the schemas in server/config/forms', () => {
     it('builds sanitiser for evidence form', () => {
-      getSanitiser(evidenceSchema)
+      sanitiserFor(evidenceSchema)
     })
 
     it('builds sanitiser for incident details form', () => {
-      getSanitiser(incidentDetailsSchema)
+      sanitiserFor(incidentDetailsSchema)
     })
 
     it('builds sanitiser for relocation and injuries form', () => {
-      getSanitiser(relocationAndInjuriesSchema)
+      sanitiserFor(relocationAndInjuriesSchema)
     })
 
     it('builds sanitiser for statement form', () => {
-      getSanitiser(statementSchema)
+      sanitiserFor(statementSchema)
     })
 
     it('builds sanitiser for use of force details form', () => {
-      getSanitiser(useOfForceDetailsSchema)
+      sanitiserFor(useOfForceDetailsSchema)
     })
   })
 })
 
 describe('folding sanitisers', () => {
-  const sanitisers = [trimmedString, toInteger, toSmallInt]
-  const composedSanitisers = R.reduce(R.pipe)(R.identity)(sanitisers)
+  const description = {
+    metas: [{ sanitiser: trimmedString }, { sanitiser: toInteger }, { sanitiser: toSmallInt }],
+  }
+  const composedSanitisers = getSanitiser(description)
 
   it('sanitises "  "', () => expect(composedSanitisers('  ')).toEqual(null))
   it('sanitises " 1 "', () => expect(composedSanitisers(' 1 ')).toEqual(1))
-  it('sanitises "99999"', () => expect(composedSanitisers('99999')).toEqual(null))
+  it('sanitises "99999"', () => expect(composedSanitisers('32768')).toEqual(null))
   it('sanitises "  32767 "', () => expect(composedSanitisers('  \t32767\n')).toEqual(32767))
   it('sanitises "  -32768 "', () => expect(composedSanitisers('  \t-32768\n')).toEqual(-32768))
 })

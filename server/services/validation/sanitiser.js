@@ -83,6 +83,7 @@ const sanitiserFor = description => {
 const buildSanitiser = description => sanitiserFor(simplifyDescription(description))
 
 module.exports = {
+  getSanitiser,
   simplifyDescription,
   buildSanitiser,
 }
