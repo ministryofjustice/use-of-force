@@ -1,4 +1,4 @@
-const { equals } = require('../../utils/utils')
+const R = require('ramda')
 const { validate } = require('./fieldValidation')
 
 const processInput = ({ validationSpec, input }) => {
@@ -22,7 +22,7 @@ const mergeIntoPayload = ({ formObject, formPayload, formName }) => {
     [formName]: formPayload,
   }
 
-  const payloadChanged = !equals(formObject, updatedFormObject)
+  const payloadChanged = !R.equals(formObject, updatedFormObject)
   return payloadChanged && updatedFormObject
 }
 

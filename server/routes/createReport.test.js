@@ -56,7 +56,7 @@ describe('POST save and continue /section/form', () => {
   test('should redirect to next page', () => {
     involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
 
-    request(app)
+    return request(app)
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-continue',
@@ -77,7 +77,7 @@ describe('POST save and continue /section/form', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -113,7 +113,7 @@ describe('POST save and return to tasklist', () => {
   test('successfully submit valid update', () => {
     involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
 
-    request(app)
+    return request(app)
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-return',
@@ -134,7 +134,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -150,7 +150,7 @@ describe('POST save and return to tasklist', () => {
   test('Submitting invalid update is allowed', () => {
     involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
 
-    request(app)
+    return request(app)
       .post(`/report/1/incident-details`)
       .send({
         submit: 'save-and-return',
@@ -169,9 +169,10 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
           formObject: {
             incidentDetails: {
+              involvedStaff: [{ username: 'USER_BOB' }],
               locationId: -1,
               witnesses: [{ name: 'User bob' }],
             },
@@ -179,13 +180,28 @@ describe('POST save and return to tasklist', () => {
         })
       })
   })
+
+  test('Submitting bad data is rejected', () =>
+    request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submit: 'save-and-return',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
+        involvedStaff: [{ username: '!@£$' }], // not a valid username
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', `/report/1/incident-details`))
 })
 
 describe('POST save and return to check-your-answers', () => {
   test('successfully submit valid update', () => {
     involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
 
-    request(app)
+    return request(app)
       .post(`/report/1/edit-incident-details`)
       .send({
         submit: 'save-and-continue',
@@ -206,7 +222,7 @@ describe('POST save and return to check-your-answers', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: '21', month: '01', year: '2019' }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -281,14 +297,13 @@ describe('Submitting evidence page', () => {
 })
 
 describe('User name does not exists', () => {
-  test('view when no missing users', async () => {
-    return request(app)
+  test('view when no missing users', () =>
+    request(app)
       .get(`/report/1/username-does-not-exist`)
       .expect(302)
-      .expect('Location', '/report/1/incident-details')
-  })
+      .expect('Location', '/report/1/incident-details'))
 
-  test('view when missing users', async () => {
+  test('view when missing users', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
     involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ userId: 1, missing: true }])
     return request(app)
@@ -300,7 +315,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and back to task list', async () => {
+  test('submit and back to task list', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -316,7 +331,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and continue on', async () => {
+  test('submit and continue on', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -332,7 +347,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and return to check-your-answers', async () => {
+  test('submit and return to check-your-answers', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)

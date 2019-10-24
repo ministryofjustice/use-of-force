@@ -27,12 +27,11 @@ afterEach(() => {
 })
 
 describe('GET /task-list', () => {
-  it('should render page content', () => {
+  it('should render page content', () =>
     request(app)
       .get('/report/-35/report-use-of-force')
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-      })
-  })
+      }))
 })
