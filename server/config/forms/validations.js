@@ -77,7 +77,7 @@ const arrayOfObjects = objectKeys =>
   joi
     .array()
     .items(joi.object(objectKeys))
-    .meta({ sanitiser: removeEmptyObjects })
+    .meta(asMeta(removeEmptyObjects))
 
 const requiredYearNotInFuture = joi
   .number()
