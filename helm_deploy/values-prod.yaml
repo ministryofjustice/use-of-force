@@ -35,4 +35,5 @@ whitelist:
   j5-phones-2: "35.177.137.160/32"
   dxc_webproxy1: "195.92.38.20/32"
   dxc_webproxy2: "195.92.38.21/32"
-  dxc_webproxy3: "195.92.38.23/32"
+  dxc_webproxy3: "195.92.38.22/32"
+  dxc_webproxy4: "195.92.38.23/32"
