@@ -1,24 +1,14 @@
-const R = require('ramda')
 const toDate = require('../../utils/dateSanitiser')
-const { isBlank } = require('../../utils/utils')
+const { isNilOrEmpty } = require('../../utils/utils')
 
-const hasAtLeastOneOf = attrs => input => attrs.find(attr => !isBlank(input[attr]))
-
-const withoutKeysNotIn = attrs => value =>
-  attrs.reduce((previous, attr) => (value[attr] ? { ...previous, [attr]: value[attr].trim() } : previous), {})
-
-const isNotBlankObject = R.pipe(
-  R.values,
-  R.any(R.complement(R.either(R.isNil, R.isEmpty)))
-)
+const isBlankObject = o => (isNilOrEmpty(o) ? true : Object.values(o).every(isNilOrEmpty))
+const isNotBlankObject = o => !isBlankObject(o)
 
 module.exports = {
-  withoutKeysNotIn,
-  hasAtLeastOneOf,
   toDate,
 
   // array -> array
-  removeEmptyObjects: R.filter(isNotBlankObject),
+  removeEmptyObjects: array => array.filter(isNotBlankObject),
 
   toBoolean: val => {
     switch (val) {
