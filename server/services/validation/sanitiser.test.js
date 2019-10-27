@@ -508,15 +508,31 @@ describe('building sanitisers', () => {
   })
 })
 
-describe('folding sanitisers', () => {
-  const description = {
-    metas: [{ sanitiser: trimmedString }, { sanitiser: toInteger }, { sanitiser: toSmallInt }],
-  }
-  const composedSanitisers = getSanitiser(description)
+describe('Multiple sanitisers', () => {
+  describe('Accepts multiple sanitisers', () => {
+    const description = {
+      metas: [{ sanitiser: trimmedString }, { sanitiser: toInteger }, { sanitiser: toSmallInt }],
+    }
+    const composedSanitisers = getSanitiser(description)
 
-  it('sanitises "  "', () => expect(composedSanitisers('  ')).toEqual(null))
-  it('sanitises " 1 "', () => expect(composedSanitisers(' 1 ')).toEqual(1))
-  it('sanitises "99999"', () => expect(composedSanitisers('32768')).toEqual(null))
-  it('sanitises "  32767 "', () => expect(composedSanitisers('  \t32767\n')).toEqual(32767))
-  it('sanitises "  -32768 "', () => expect(composedSanitisers('  \t-32768\n')).toEqual(-32768))
+    it('sanitises "  "', () => expect(composedSanitisers('  ')).toEqual(null))
+    it('sanitises " 1 "', () => expect(composedSanitisers(' 1 ')).toEqual(1))
+    it('sanitises "99999"', () => expect(composedSanitisers('32768')).toEqual(null))
+    it('sanitises "  32767 "', () => expect(composedSanitisers('  \t32767\n')).toEqual(32767))
+    it('sanitises "  -32768 "', () => expect(composedSanitisers('  \t-32768\n')).toEqual(-32768))
+  })
+
+  describe('The order of function application is the order in which sanitisers are encountered', () => {
+    const description = {
+      metas: [
+        { sanitiser: trimmedString },
+        { sanitiser: toInteger },
+        { sanitiser: i => i + 2 },
+        { sanitiser: i => i * 3 },
+      ],
+    }
+    const composedSanitisers = getSanitiser(description)
+
+    it('sanitises " 1 " to 9', () => expect(composedSanitisers(' 1 ')).toEqual(9))
+  })
 })

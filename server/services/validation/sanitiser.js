@@ -1,12 +1,14 @@
 const R = require('ramda')
 
+const compose = (acc, fn) => x => fn(acc(x))
+
 /**
  * extract all the 'sanitiser' functions from the metas array and return their composition or R.identity when there are none.
  */
 const getSanitiser = description => {
   const metas = R.propOr([], 'metas', description)
   const sanitisers = metas.map(m => m.sanitiser).filter(s => !R.isNil(s))
-  return sanitisers.length === 1 ? sanitisers[0] : sanitisers.reduce((acc, fn) => x => fn(acc(x)), R.identity)
+  return sanitisers.length === 1 ? sanitisers[0] : sanitisers.reduce(compose, R.identity)
 }
 
 const simplifyDescription = description => {
