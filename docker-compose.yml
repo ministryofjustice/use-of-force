@@ -40,12 +40,22 @@ services:
       - POSTGRES_USER=use-of-force
       - POSTGRES_DB=use-of-force
 
+  use-of-force-redis:
+    image: 'bitnami/redis:5.0'
+    networks:
+      - hmpps
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+
   use-of-force:
     image: mojdigitalstudio/use-of-force:latest
     networks:
       - hmpps
     depends_on:
       - use-of-force-db
+      - use-of-force-redis
       - oauth-server
       - elite2-api
     ports:

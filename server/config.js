@@ -15,7 +15,6 @@ function get(name, fallback, options = {}) {
 const requiredInProduction = { requireInProduction: true }
 
 module.exports = {
-  sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),
@@ -23,6 +22,16 @@ module.exports = {
     database: get('DB_NAME', 'use-of-force'),
     port: get('DB_PORT', 5432),
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT || 6379,
+    password: process.env.REDIS_PASSWORD,
+    tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
+  },
+  session: {
+    secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
+    expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   },
   email: {
     notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),

@@ -14,6 +14,15 @@ services:
     - POSTGRES_USER=use-of-force
     - POSTGRES_DB=use-of-force-int
 
+  use-of-force-redis:
+    image: 'bitnami/redis:5.0'
+    networks:
+      - hmpps
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+
   wiremock:
     image: rodolpheche/wiremock
     networks:
