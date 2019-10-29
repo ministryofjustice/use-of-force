@@ -29,12 +29,15 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - {{ template "app.name" . }}
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ template "app.name" . }}
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: use-of-force
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
