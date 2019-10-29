@@ -26,16 +26,26 @@ module.exports = function createReportService({
   }
 
   async function update({ currentUser, formId, bookingId, formObject, incidentDate }) {
-    const { username: userId, token, displayName: reporterName } = currentUser
     const incidentDateValue = incidentDate ? incidentDate.value : null
     const formValue = !isNilOrEmpty(formObject) ? formObject : null
-    if (formId) {
-      if (incidentDateValue || formValue) {
-        logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-        await incidentClient.updateDraftReport(formId, incidentDateValue, formValue)
-      }
-      return formId
+
+    return formId
+      ? updateReport(formId, bookingId, currentUser, incidentDateValue, formValue)
+      : startNewReport(bookingId, currentUser, incidentDateValue, formObject)
+  }
+
+  const updateReport = async (formId, bookingId, currentUser, incidentDateValue, formValue) => {
+    const { username: userId } = currentUser
+    if (incidentDateValue || formValue) {
+      logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
+      await incidentClient.updateDraftReport(formId, incidentDateValue, formValue)
     }
+    return formId
+  }
+
+  const startNewReport = async (bookingId, currentUser, incidentDateValue, formObject) => {
+    const { username: userId, token, displayName: reporterName } = currentUser
+
     const elite2Client = elite2ClientBuilder(token)
     const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftReport({

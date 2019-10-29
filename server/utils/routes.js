@@ -3,7 +3,7 @@ module.exports = {
 }
 
 function getPathFor({ data, config }) {
-  const { nextPath } = config
+  const nextPath = config
 
   if (!nextPath.decisions) {
     return nextPath.path

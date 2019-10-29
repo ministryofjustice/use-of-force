@@ -4,7 +4,7 @@ describe('getPathFor', () => {
   describe('when the nextPath is a string', () => {
     it('returns the nextPath', () => {
       const data = { decision: 'yes' }
-      const config = { nextPath: { path: '/foo' } }
+      const config = { path: '/foo' }
       const path = getPathFor({ data, config })
 
       expect(path).toEqual('/foo')
@@ -15,14 +15,12 @@ describe('getPathFor', () => {
     it('returns the correct nextPath for Yes', () => {
       const data = { fooAnswer: 'Yes' }
       const config = {
-        nextPath: {
-          decisions: {
-            discriminator: 'fooAnswer',
-            Yes: '/baz',
-            No: '/bar',
-          },
-          path: '/foo',
+        decisions: {
+          discriminator: 'fooAnswer',
+          Yes: '/baz',
+          No: '/bar',
         },
+        path: '/foo',
       }
       const path = getPathFor({ data, config })
 
@@ -31,14 +29,12 @@ describe('getPathFor', () => {
     it('returns the correct nextPath for No', () => {
       const data = { fooAnswer: 'No' }
       const config = {
-        nextPath: {
-          decisions: {
-            discriminator: 'fooAnswer',
-            Yes: '/ram',
-            No: '/bar',
-          },
-          path: '/foo',
+        decisions: {
+          discriminator: 'fooAnswer',
+          Yes: '/ram',
+          No: '/bar',
         },
+        path: '/foo',
       }
       const path = getPathFor({ data, config })
 
@@ -55,23 +51,21 @@ describe('getPathFor', () => {
       }
 
       const config = {
-        nextPath: {
-          decisions: [
-            {
-              discriminator: 'fooAnswer',
-              No: '/bar',
-            },
-            {
-              discriminator: 'barAnswer',
-              No: '/baz',
-            },
-            {
-              discriminator: 'bazAnswer',
-              No: '/bat',
-            },
-          ],
-          path: '/foo',
-        },
+        decisions: [
+          {
+            discriminator: 'fooAnswer',
+            No: '/bar',
+          },
+          {
+            discriminator: 'barAnswer',
+            No: '/baz',
+          },
+          {
+            discriminator: 'bazAnswer',
+            No: '/bat',
+          },
+        ],
+        path: '/foo',
       }
       const path = getPathFor({ data, config })
 
@@ -86,23 +80,21 @@ describe('getPathFor', () => {
       }
 
       const config = {
-        nextPath: {
-          decisions: [
-            {
-              discriminator: 'fooAnswer',
-              No: '/bar',
-            },
-            {
-              discriminator: 'barAnswer',
-              No: '/baz',
-            },
-            {
-              discriminator: 'bazAnswer',
-              No: '/foo',
-            },
-          ],
-          path: '/bat',
-        },
+        decisions: [
+          {
+            discriminator: 'fooAnswer',
+            No: '/bar',
+          },
+          {
+            discriminator: 'barAnswer',
+            No: '/baz',
+          },
+          {
+            discriminator: 'bazAnswer',
+            No: '/foo',
+          },
+        ],
+        path: '/bat',
       }
 
       const path = getPathFor({ data, config })

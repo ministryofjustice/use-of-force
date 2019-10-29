@@ -2,12 +2,8 @@ const moment = require('moment')
 const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
-const formProcessing = require('../services/formProcessing')
-const incidentConfig = require('../config/incident')
-
-const formConfig = {
-  ...incidentConfig,
-}
+const { processInput, mergeIntoPayload } = require('../services/validation')
+const { paths, full, partial } = require('../config/incident')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   const { bookingId } = req.params
@@ -35,11 +31,16 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     return { formId, incidentDate, form }
   }
 
-  const getAdditonalData = async (res, form, { involvedStaff = [] }) => {
-    if (form === 'incidentDetails') {
-      return involvedStaffService.lookup(res.locals.user.token, involvedStaff.map(u => u.username))
+  const verifyInvolvedStaff = async (res, form, { involvedStaff = [] }) => {
+    if (form !== 'incidentDetails') {
+      return {}
     }
-    return { additionalFields: [] }
+
+    const verifiedInvolvedStaff = await involvedStaffService.lookup(
+      res.locals.user.token,
+      involvedStaff.map(u => u.username)
+    )
+    return { additionalFields: { involvedStaff: verifiedInvolvedStaff } }
   }
 
   const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, editMode, saveAndContinue) => {
@@ -62,9 +63,8 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       return `/report/${bookingId}/report-use-of-force`
     }
 
-    const nextPath = getPathFor({ data: payloadFields, config: formConfig[form] })(bookingId)
-    const location = saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
-    return location
+    const nextPath = getPathFor({ data: payloadFields, config: paths[form] })(bookingId)
+    return saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
   const getIncidentDate = (savedValue, formValue) => {
@@ -72,6 +72,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const {
         raw: { day, month, year, time },
       } = formValue
+
       const value = moment({
         years: year,
         months: month - 1,
@@ -122,27 +123,40 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const { bookingId } = req.params
     const saveAndContinue = req.body.submit === 'save-and-continue'
 
-    const validate = editMode || saveAndContinue
+    const fullValidation = editMode || saveAndContinue
 
-    const { payloadFields, extractedFields, errors } = formProcessing.processInput({
-      validate,
-      formConfig: formConfig[formName],
+    const { payloadFields, extractedFields, errors } = processInput({
+      validationSpec: fullValidation ? full[formName] : partial[formName],
       input: req.body,
     })
 
-    const { additionalFields = {} } = await getAdditonalData(res, formName, payloadFields)
+    const { additionalFields = {} } = await verifyInvolvedStaff(res, formName, payloadFields)
 
     const formPayload = { ...payloadFields, ...additionalFields }
+    /**
+     * Now formPayload is payloadFields with the involvedStaff field (if it exists) containing verified usernammes. That is,
+     * instead of { involvedStaff: [{ username }, ...]} we have
+     * { involvedStaff: [{ username, name, email, staffId,  missing }, ...] }
+     *
+     * Where username will always be present, but email, staffId, missing are optional, depending on whether or not
+     * username was verified.
+     */
 
-    if (saveAndContinue && !isNilOrEmpty(errors)) {
+    if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...formPayload, ...extractedFields })
+      req.flash('userInput', { ...formPayload, ...extractedFields }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
+    /**
+     * fetch latest persisted version of form from db for req.params.bookingId, req.user.username
+     */
     const { formId, form } = await loadForm(req)
 
-    const updatedPayload = await formProcessing.mergeIntoPayload({
+    /** mergeIntoPayload returns false if no change, or merges formPayload onto the persisted form.
+     * like so: { ...form, [formName]: formPayload }
+     */
+    const updatedPayload = mergeIntoPayload({
       formObject: form,
       formPayload,
       formName,

@@ -1,90 +1,64 @@
-const { joi, validations, setErrorMessage } = require('./validations')
-const { isValid } = require('../../utils/fieldValidation')
-const { toBoolean, removeEmptyValues } = require('./sanitisers')
+const { joi, validations } = require('./validations')
+const { buildValidationSpec } = require('../../services/validation')
 
-const { arrayOfObjects, requiredString, requiredBoolean, requiredOneOf } = validations
+const {
+  arrayOfObjects,
+  requiredStringMsg,
+  requiredBooleanMsg,
+  requiredOneOfMsg,
+  optionalForPartialValidation,
+  minZeroForPartialValidation,
+} = validations
+
+const completeSchema = joi.object({
+  baggedEvidence: requiredBooleanMsg('Select yes if any evidence was bagged and tagged').alter(
+    optionalForPartialValidation
+  ),
+
+  evidenceTagAndDescription: joi
+    .when('baggedEvidence', {
+      is: true,
+      then: arrayOfObjects({
+        evidenceTagReference: requiredStringMsg('Enter the evidence tag number').alter(optionalForPartialValidation),
+        description: requiredStringMsg('Enter a description of the evidence').alter(optionalForPartialValidation),
+      })
+        .min(1)
+        .message('Please input both the evidence tag number and the description')
+        .unique('evidenceTagReference')
+        .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
+        .required()
+        .alter(minZeroForPartialValidation),
+      otherwise: joi.any().strip(),
+    })
+    .meta({ firstFieldName: 'baggedEvidence' }),
+
+  photographsTaken: requiredBooleanMsg('Select yes if any photographs were taken').alter(optionalForPartialValidation),
+
+  cctvRecording: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
+    'Select yes if any part of the incident captured on CCTV'
+  ).alter(optionalForPartialValidation),
+
+  bodyWornCamera: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
+    'Select yes if any part of the incident was captured on a body-worn camera'
+  ).alter(optionalForPartialValidation),
+  bodyWornCameraNumbers: joi
+    .when('bodyWornCamera', {
+      is: 'YES',
+      then: arrayOfObjects({
+        cameraNum: requiredStringMsg('Enter the body-worn camera number').alter(optionalForPartialValidation),
+      })
+        .min(1)
+        .message('Enter the body-worn camera number')
+        .ruleset.unique('cameraNum')
+        .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
+        .required()
+        .alter(minZeroForPartialValidation),
+      otherwise: joi.any().strip(),
+    })
+    .meta({ firstFieldName: 'bodyWornCameraNumbers[0]' }),
+})
 
 module.exports = {
-  formConfig: {
-    fields: [
-      {
-        baggedEvidence: {
-          validationMessage: 'Select yes if any evidence was bagged and tagged',
-          sanitiser: toBoolean,
-        },
-      },
-      {
-        evidenceTagAndDescription: {
-          sanitiser: removeEmptyValues(['description', 'evidenceTagReference']),
-          validationMessage: 'Please input both the evidence tag number and the description',
-          dependentOn: 'baggedEvidence',
-          firstFieldName: 'baggedEvidence',
-          predicate: 'true',
-        },
-      },
-      {
-        photographsTaken: {
-          validationMessage: 'Select yes if any photographs were taken',
-          sanitiser: toBoolean,
-        },
-      },
-      {
-        cctvRecording: {
-          validationMessage: 'Select yes if any part of the incident captured on CCTV',
-        },
-      },
-      {
-        bodyWornCamera: {
-          validationMessage: 'Select yes if any part of the incident was captured on a body-worn camera',
-        },
-      },
-      {
-        bodyWornCameraNumbers: {
-          sanitiser: removeEmptyValues(['cameraNum']),
-          dependentOn: 'bodyWornCamera',
-          predicate: 'YES',
-          validationMessage: 'Enter the body-worn camera number',
-          firstFieldName: 'bodyWornCameraNumbers[0][cameraNum]',
-        },
-      },
-    ],
-    schemas: {
-      complete: joi.object({
-        baggedEvidence: requiredBoolean,
-        evidenceTagAndDescription: joi.when(joi.ref('baggedEvidence'), {
-          is: true,
-          then: arrayOfObjects({
-            evidenceTagReference: requiredString.error(setErrorMessage('Enter the evidence tag number')),
-            description: requiredString.error(setErrorMessage('Enter a description of the evidence')),
-          })
-            .min(1)
-            .ruleset.unique('evidenceTagReference')
-            .message("Evidence tag '{#value.evidenceTagReference}' has already been added - remove this evidence tag")
-            .required(),
-        }),
-
-        photographsTaken: requiredBoolean,
-
-        cctvRecording: requiredOneOf('YES', 'NO', 'NOT_KNOWN'),
-
-        bodyWornCamera: requiredOneOf('YES', 'NO', 'NOT_KNOWN'),
-        bodyWornCameraNumbers: joi.when('bodyWornCamera', {
-          is: 'YES',
-          then: arrayOfObjects({
-            cameraNum: requiredString.error(setErrorMessage('Enter the body-worn camera number')),
-          })
-            .min(1)
-            .ruleset.unique('cameraNum')
-            .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
-            .required(),
-        }),
-      }),
-    },
-    isComplete(values) {
-      return isValid(this.schemas.complete, values)
-    },
-    nextPath: {
-      path: bookingId => `/report/${bookingId}/check-your-answers`,
-    },
-  },
+  complete: buildValidationSpec(completeSchema),
+  partial: buildValidationSpec(completeSchema.tailor('partial')),
 }

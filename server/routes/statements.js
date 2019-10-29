@@ -1,7 +1,7 @@
 const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
-const statementForm = require('../config/forms/statementForm')
-const formProcessing = require('../services/formProcessing')
+const { complete } = require('../config/forms/statementForm')
+const { processInput } = require('../services/validation')
 const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
 
@@ -68,11 +68,9 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const saveAndContinue = req.body.submit === 'save-and-continue'
 
-      const validate = saveAndContinue
-
-      const { extractedFields: statement, errors } = formProcessing.processInput({
-        validate,
-        formConfig: statementForm,
+      const { extractedFields: statement, errors } = processInput({
+        validationSpec: complete,
+        shouldValidate: saveAndContinue,
         input: req.body,
       })
 
@@ -81,7 +79,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
       await statementService.save(req.user.username, reportId, statement)
 
-      if (!isValid) {
+      if (saveAndContinue && !isValid) {
         req.flash('errors', errors)
         return res.redirect(`/${reportId}/write-your-statement`)
       }
