@@ -21,9 +21,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
   async function lookup(token, usernames) {
     if (!usernames.length) {
-      return {
-        additionalFields: { involvedStaff: [] },
-      }
+      return []
     }
 
     const { exist = [], missing = [], notVerified = [], success } = await userService.getUsers(token, usernames)
@@ -48,9 +46,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
       .sort(({ i }, { i: j }) => i - j)
       .map(({ i, ...rest }) => rest)
 
-    return {
-      additionalFields: { involvedStaff },
-    }
+    return involvedStaff
   }
 
   const getStaffRequiringStatements = async (currentUser, addedStaff) => {

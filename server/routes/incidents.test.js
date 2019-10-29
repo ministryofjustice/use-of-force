@@ -65,7 +65,7 @@ describe('GET /your-reports', () => {
 })
 
 describe('GET /all-incidents', () => {
-  it('should render page for reviewer', async () => {
+  it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
 
     return request(app)
@@ -77,7 +77,7 @@ describe('GET /all-incidents', () => {
       })
   })
 
-  it('should redirect if not reviewer', async () => {
+  it('should redirect if not reviewer', () => {
     userSupplier.mockReturnValue(user)
     return request(app)
       .get('/all-incidents')

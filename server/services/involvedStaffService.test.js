@@ -87,11 +87,7 @@ describe('lookup', () => {
   test('skips lookup if no users provided', async () => {
     const result = await service.lookup('token-1', [])
 
-    expect(result).toEqual({
-      additionalFields: {
-        involvedStaff: [],
-      },
-    })
+    expect(result).toEqual([])
     expect(userService.getUsers).not.toBeCalled()
   })
 
@@ -136,14 +132,10 @@ describe('lookup', () => {
 
     const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
-    expect(result).toEqual({
-      additionalFields: {
-        involvedStaff: [
-          { email: 'an@email.com', name: 'Bob Smith', staffId: undefined, username: 'Bob' },
-          { missing: true, username: 'June' },
-        ],
-      },
-    })
+    expect(result).toEqual([
+      { email: 'an@email.com', name: 'Bob Smith', staffId: undefined, username: 'Bob' },
+      { missing: true, username: 'June' },
+    ])
   })
 
   test('success', async () => {
@@ -176,30 +168,26 @@ describe('lookup', () => {
 
     const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
-    expect(result).toEqual({
-      additionalFields: {
-        involvedStaff: [
-          {
-            staffId: 1,
-            email: 'bn@email',
-            username: 'June',
-            name: 'June Smith',
-          },
-          {
-            staffId: 2,
-            email: 'cn@email',
-            username: 'Jenny',
-            name: 'Jenny Walker',
-          },
-          {
-            staffId: 3,
-            email: 'an@email',
-            username: 'Bob',
-            name: 'Bob Smith',
-          },
-        ],
+    expect(result).toEqual([
+      {
+        staffId: 1,
+        email: 'bn@email',
+        username: 'June',
+        name: 'June Smith',
       },
-    })
+      {
+        staffId: 2,
+        email: 'cn@email',
+        username: 'Jenny',
+        name: 'Jenny Walker',
+      },
+      {
+        staffId: 3,
+        email: 'an@email',
+        username: 'Bob',
+        name: 'Bob Smith',
+      },
+    ])
   })
 })
 
