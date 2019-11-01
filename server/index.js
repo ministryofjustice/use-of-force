@@ -28,7 +28,7 @@ const eventPublisher = require('./services/eventPublisher')(appInsightsClient)
 // pass in dependencies of service
 
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService })
+const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = createOffenderService(elite2ClientBuilder)
 const reportService = createReportService({

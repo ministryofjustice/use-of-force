@@ -53,7 +53,8 @@ test('getReportForReviewer', () => {
           , submitted_date "submittedDate"
           , reporter_name "reporterName"
           , form_response "form"
-          , booking_id "bookingId"
+          , booking_id    "bookingId"
+          , status
           from report r
           where r.id = $1`,
     values: ['report1'],
@@ -176,8 +177,8 @@ test('submitReport', () => {
   })
 })
 
-test('markCompleted', () => {
-  incidentClient.markCompleted('report1')
+test('changeStatus', () => {
+  incidentClient.changeStatus('report1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE)
 
   expect(db.query).toBeCalledWith({
     text: `update report r

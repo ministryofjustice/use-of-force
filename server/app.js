@@ -249,7 +249,10 @@ module.exports = function createApp({
     })
   )
 
-  app.use('/api/', createApiRouter({ authenticationMiddleware, offenderService, reportingService }))
+  app.use(
+    '/api/',
+    createApiRouter({ authenticationMiddleware, offenderService, reportingService, involvedStaffService })
+  )
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

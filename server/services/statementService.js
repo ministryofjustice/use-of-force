@@ -1,6 +1,6 @@
 const R = require('ramda')
 const logger = require('../../log.js')
-const { StatementStatus } = require('../config/types')
+const { StatementStatus, ReportStatus } = require('../config/types')
 const statementConfig = require('../config/forms/statementForm')
 const { processInput } = require('./validation')
 
@@ -41,7 +41,7 @@ module.exports = function createStatementService({ statementsClient, incidentCli
 
       if (pendingStatementCount === 0) {
         logger.info(`All statements complete on : ${reportId}, marking as complete`)
-        await incidentClient.markCompleted(reportId, client)
+        await incidentClient.changeStatus(reportId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
       }
     })
   }

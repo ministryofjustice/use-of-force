@@ -1,8 +1,8 @@
 const serviceCreator = require('./statementService')
-const { StatementStatus } = require('../config/types')
+const { StatementStatus, ReportStatus } = require('../config/types')
 
 const incidentClient = {
-  markCompleted: jest.fn(),
+  changeStatus: jest.fn(),
 }
 
 const statementsClient = {
@@ -109,7 +109,7 @@ describe('statmentService', () => {
 
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
       expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1', client)
-      expect(incidentClient.markCompleted).not.toHaveBeenCalled()
+      expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
 
     test('marks report as complete if no pending statements', async () => {
@@ -120,7 +120,12 @@ describe('statmentService', () => {
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
       expect(statementsClient.submitStatement).toBeCalledWith('user1', 'incident-1', client)
 
-      expect(incidentClient.markCompleted).toHaveBeenCalledWith('incident-1', client)
+      expect(incidentClient.changeStatus).toHaveBeenCalledWith(
+        'incident-1',
+        ReportStatus.SUBMITTED,
+        ReportStatus.COMPLETE,
+        client
+      )
     })
   })
 

@@ -58,14 +58,14 @@ const submitReport = (userId, bookingId, submittedDate, client = nonTransactiona
   })
 }
 
-const markCompleted = (reportId, client = nonTransactionalClient) => {
+const changeStatus = (reportId, startState, endState, client = nonTransactionalClient) => {
   return client.query({
     text: `update report r
             set status = $1
             ,   updated_date = now()
           where id = $2
           and status = $3`,
-    values: [ReportStatus.COMPLETE.value, reportId, ReportStatus.SUBMITTED.value],
+    values: [endState.value, reportId, startState.value],
   })
 }
 
@@ -103,7 +103,8 @@ const getReportForReviewer = async reportId => {
           , submitted_date "submittedDate"
           , reporter_name "reporterName"
           , form_response "form"
-          , booking_id "bookingId"
+          , booking_id    "bookingId"
+          , status
           from report r
           where r.id = $1`,
     values: [reportId],
@@ -230,7 +231,7 @@ module.exports = {
   createDraftReport,
   updateDraftReport,
   submitReport,
-  markCompleted,
+  changeStatus,
   getCurrentDraftReport,
   getReport,
   getReports,
