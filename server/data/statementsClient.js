@@ -140,7 +140,7 @@ const getNumberOfPendingStatements = async (reportId, client = nonTransactionalC
   return parseInt(rows[0].count, 10)
 }
 
-const createStatements = async (reportId, firstReminder, overdueDate, staff, client = nonTransactionalClient) => {
+const createStatements = async ({ reportId, firstReminder, overdueDate, staff, client = nonTransactionalClient }) => {
   const rows = staff.map(s => [
     reportId,
     s.staffId,
@@ -160,6 +160,14 @@ const createStatements = async (reportId, firstReminder, overdueDate, staff, cli
   return results.rows.reduce((result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }), {})
 }
 
+const isStatementPresentForUser = async (reportId, username, client = nonTransactionalClient) => {
+  const { rows } = await client.query({
+    text: `select count(*) from statement where report_id = $1 and user_id = $2`,
+    values: [reportId, username],
+  })
+  return parseInt(rows[0].count, 10) > 0
+}
+
 module.exports = {
   getStatements,
   getStatementForUser,
@@ -171,4 +179,5 @@ module.exports = {
   getAdditionalComments,
   saveAdditionalComment,
   getNumberOfPendingStatements,
+  isStatementPresentForUser,
 }

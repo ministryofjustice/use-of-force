@@ -58,7 +58,12 @@ const seedReport = ({
     .then(
       result =>
         involvedStaff.length &&
-        statementsClient.createStatements(result.rows[0].id, new Date(), overdueDate, involvedStaff)
+        statementsClient.createStatements({
+          reportId: result.rows[0].id,
+          firstReminder: new Date(),
+          overdueDate,
+          staff: involvedStaff,
+        })
     )
 }
 

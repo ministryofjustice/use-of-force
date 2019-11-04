@@ -1,8 +1,13 @@
 const moment = require('moment')
 const serviceCreator = require('./involvedStaffService')
+const { ReportStatus } = require('../config/types')
 
 const userService = {
   getUsers: jest.fn(),
+}
+
+const db = {
+  inTransaction: fn => fn(client),
 }
 
 const incidentClient = {
@@ -11,10 +16,13 @@ const incidentClient = {
   getInvolvedStaff: jest.fn(),
   deleteInvolvedStaff: jest.fn(),
   updateDraftReport: jest.fn(),
+  getReportForReviewer: jest.fn(),
+  changeStatus: jest.fn(),
 }
 
 const statementsClient = {
   createStatements: jest.fn(),
+  isStatementPresentForUser: jest.fn(),
 }
 
 const client = jest.fn()
@@ -22,7 +30,7 @@ const client = jest.fn()
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ incidentClient, statementsClient, userService })
+  service = serviceCreator({ incidentClient, statementsClient, userService, db })
 })
 
 afterEach(() => {
@@ -245,11 +253,11 @@ describe('save', () => {
       { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
     ])
 
-    expect(statementsClient.createStatements).toBeCalledWith(
-      'form1',
-      expectedFirstReminderDate.toDate(),
-      overdueDate.toDate(),
-      [
+    expect(statementsClient.createStatements).toBeCalledWith({
+      reportId: 'form1',
+      firstReminder: expectedFirstReminderDate.toDate(),
+      overdueDate: overdueDate.toDate(),
+      staff: [
         { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
         {
           email: 'cn@email',
@@ -264,8 +272,8 @@ describe('save', () => {
           userId: 'Bob',
         },
       ],
-      client
-    )
+      client,
+    })
   })
 
   test('when user is not already added', async () => {
@@ -316,11 +324,11 @@ describe('save', () => {
       { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
     ])
 
-    expect(statementsClient.createStatements).toBeCalledWith(
-      'form1',
-      expectedFirstReminderDate.toDate(),
-      overdueDate.toDate(),
-      [
+    expect(statementsClient.createStatements).toBeCalledWith({
+      reportId: 'form1',
+      firstReminder: expectedFirstReminderDate.toDate(),
+      overdueDate: overdueDate.toDate(),
+      staff: [
         { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
         {
           email: 'cn@email',
@@ -335,8 +343,96 @@ describe('save', () => {
           userId: 'Bob',
         },
       ],
-      client
-    )
+      client,
+    })
+  })
+
+  describe('addInvolvedStaff', () => {
+    const staff = [
+      {
+        email: 'an@email',
+        name: 'Bob Smith',
+        staffId: 3,
+        userId: 'Bob',
+      },
+    ]
+
+    beforeEach(() => {
+      userService.getUsers.mockReturnValue({
+        success: true,
+        exist: [
+          {
+            staffId: 3,
+            email: 'an@email',
+            username: 'Bob',
+            name: 'Bob Smith',
+          },
+        ],
+      })
+    })
+
+    test('to complete report', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue({
+        submittedDate: reportSubmittedDate,
+        status: ReportStatus.COMPLETE.value,
+      })
+
+      await service.addInvolvedStaff('token1', 'form1', 'Bob')
+
+      expect(statementsClient.createStatements).toBeCalledWith({
+        reportId: 'form1',
+        firstReminder: null,
+        overdueDate: overdueDate.toDate(),
+        staff,
+        client,
+      })
+
+      expect(incidentClient.changeStatus).toBeCalledWith('form1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
+    })
+
+    test('to report which is not yet complete', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue({
+        submittedDate: reportSubmittedDate,
+        status: ReportStatus.SUBMITTED.value,
+      })
+
+      await service.addInvolvedStaff('token1', 'form1', 'Bob')
+
+      expect(statementsClient.createStatements).toBeCalledWith({
+        reportId: 'form1',
+        firstReminder: null,
+        overdueDate: overdueDate.toDate(),
+        staff,
+        client,
+      })
+
+      expect(incidentClient.changeStatus).not.toBeCalled()
+    })
+
+    test('to non existent report', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue(null)
+
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).rejects.toThrow("Report: 'form1' does not exist")
+
+      expect(statementsClient.createStatements).not.toBeCalled()
+      expect(incidentClient.changeStatus).not.toBeCalled()
+    })
+
+    test('when user already has a statement', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue({
+        submittedDate: reportSubmittedDate,
+        status: ReportStatus.COMPLETE.value,
+      })
+
+      statementsClient.isStatementPresentForUser.mockReturnValue(true)
+
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).rejects.toThrow(
+        "Staff member already exists: 'Bob' on report: 'form1'"
+      )
+
+      expect(statementsClient.createStatements).not.toBeCalled()
+      expect(incidentClient.changeStatus).not.toBeCalled()
+    })
   })
 
   test('fail to find current user', async () => {

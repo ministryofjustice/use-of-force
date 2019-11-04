@@ -71,10 +71,15 @@ test('saveAdditionalComment', () => {
 test('createStatements', async () => {
   db.query.mockReturnValue({ rows: [{ id: 1, userId: 'a' }, { id: 2, userId: 'b' }] })
 
-  const ids = await statementsClient.createStatements('incident-1', 'date1', 'date2', [
-    { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
-    { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
-  ])
+  const ids = await statementsClient.createStatements({
+    reportId: 'incident-1',
+    firstReminder: 'date1',
+    overdueDate: 'date2',
+    staff: [
+      { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
+      { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
+    ],
+  })
 
   expect(ids).toEqual({ a: 1, b: 2 })
   expect(db.query).toBeCalledWith({
@@ -164,5 +169,17 @@ test('getStatementForReviewer', () => {
     left join statement s on r.id = s.report_id
     where s.id = $1`,
     values: ['statement1'],
+  })
+})
+
+test('isStatementPresentForUser', async () => {
+  db.query.mockReturnValue({ rows: [{ count: 1 }] })
+
+  const result = await statementsClient.isStatementPresentForUser('report-1', 'user-1')
+
+  expect(result).toEqual(true)
+  expect(db.query).toBeCalledWith({
+    text: `select count(*) from statement where report_id = $1 and user_id = $2`,
+    values: ['report-1', 'user-1'],
   })
 })
