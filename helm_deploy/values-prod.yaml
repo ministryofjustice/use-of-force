@@ -23,21 +23,8 @@ env:
   EXIT_LOCATION_URL: https://digital.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://use-of-force.service.justice.gov.uk
 
-whitelist:
-  office: '217.33.148.210/32'
-  health-kick: '35.177.252.195/32'
-  mojvpn: '81.134.202.29/32'
-  quantum: '62.25.109.197/32'
-  quantum_alt: '212.137.36.230/32'
-  digitalprisons1: '52.56.112.98/32'
-  digitalprisons2: '52.56.118.154/32'
-  j5-phones-1: '35.177.125.252/32'
-  j5-phones-2: '35.177.137.160/32'
-  dxc-mitcheldean: 195.92.38.16/28
-  ark-dom1-ttp1: "195.59.75.0/24"
-  ark-dom1-farnborough: "194.33.192.0/24"
-  ark-dom1-farnborough-psn: "51.247.3.0/24"
-  ark-dom1-corsham: "194.33.196.0/24"
-  ark-dom1-corsham-psn: "51.247.4.0/24"
-  ark-dom1-non-live-1: "194.33.193.0/25"
-  ark-dom1-non-live-2: "194.33.197.0/25"
+whitelists:
+  - internal
+  - ark
+  - prisons
+  

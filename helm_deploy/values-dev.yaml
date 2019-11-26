@@ -11,7 +11,7 @@ image:
 
 ingress:
   enabled: true
-  enable_whitelist: false
+  enable_whitelist: true
   host: dev.use-of-force.service.justice.gov.uk
   cert_secret: use-of-force-cert
   path: /
@@ -22,3 +22,8 @@ env:
   ELITE2_API_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/elite2api
   EXIT_LOCATION_URL: https://digital-dev.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://dev.use-of-force.service.justice.gov.uk
+
+whitelists:
+  - internal
+  - ark
+  - prisons

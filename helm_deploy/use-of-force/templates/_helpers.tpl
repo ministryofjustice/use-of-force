@@ -38,3 +38,20 @@ Create a string from a list of values joined by a comma
 {{- $local := dict "first" true -}}
 {{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
 {{- end -}}
+
+{{/*
+Create a string from a Map<String,List<String>>. This will concat all lists which are present under the provided keys.
+*/}}
+{{ define "app.pickKeysAndMerge" }}
+    {{- $root := . -}}
+    {{- $list := (list) -}}
+    {{- range .keys -}}
+      {{- $group := pluck . $root.map -}}
+      {{- range $group -}}
+        {{- range . -}}
+          {{- $list = append $list . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{-  $list | join "," -}}
+{{- end -}}
