@@ -5,9 +5,9 @@ const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
 module.exports = function CreateReportRoutes({ reportService, involvedStaffService, offenderService, reviewService }) {
-  const getOffenderNames = (token, incidents) => {
+  const getOffenderNames = (username, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
-    return offenderService.getOffenderNames(token, offenderNos)
+    return offenderService.getOffenderNames(username, offenderNos)
   }
 
   const toReport = namesByOffenderNumber => incident => ({
@@ -19,11 +19,11 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
     offenderName: namesByOffenderNumber[incident.offenderNo],
   })
 
-  const buildReportData = async (report, res) => {
+  const buildReportData = async (report, req, res) => {
     const { id, form, incidentDate, bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+    const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, bookingId)
     const { description: locationDescription = '' } = await offenderService.getLocation(
-      res.locals.user.token,
+      req.user.username,
       form.incidentDetails.locationId
     )
     const involvedStaff = await involvedStaffService.getInvolvedStaff(id)
@@ -55,7 +55,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId)
 
-      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const namesByOffenderNumber = await getOffenderNames(req.user.username, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
       const completedReports = completed.map(toReport(namesByOffenderNumber))
 
@@ -74,7 +74,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         ReportStatus.COMPLETE,
       ])
 
-      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const namesByOffenderNumber = await getOffenderNames(req.user.username, [...awaiting, ...completed])
       const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
       const completedReports = completed.map(toReport(namesByOffenderNumber))
 
@@ -94,7 +94,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
         throw new Error(`Report does not exist: ${reportId}`)
       }
 
-      const data = await buildReportData(report, res)
+      const data = await buildReportData(report, req, res)
 
       return res.render('pages/your-report', { data })
     },
@@ -108,7 +108,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const report = await reviewService.getReport(reportId)
 
-      const data = await buildReportData(report, res)
+      const data = await buildReportData(report, req, res)
 
       return res.render('pages/reviewer/view-report', { data })
     },
@@ -123,7 +123,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
       const report = await reviewService.getReport(reportId)
 
       const { bookingId, reporterName, submittedDate } = report
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, bookingId)
 
       const statements = await reviewService.getStatements(reportId)
 
@@ -140,7 +140,7 @@ module.exports = function CreateReportRoutes({ reportService, involvedStaffServi
 
       const statement = await reviewService.getStatement(statementId)
 
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       return res.render('pages/reviewer/view-statement', {

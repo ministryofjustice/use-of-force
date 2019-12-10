@@ -1,8 +1,10 @@
 const superagent = require('superagent')
 const Agent = require('agentkeepalive')
+const querystring = require('querystring')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
 const config = require('../config')
+const { generateOauthClientToken } = require('../authentication/clientCredentials')
 
 const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
@@ -18,21 +20,41 @@ const agentOptions = {
 
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-module.exports = token => {
-  const userGet = userGetBuilder(token)
+module.exports = {
+  authClientBuilder(token) {
+    const userGet = userGetBuilder(token)
+    return {
+      async getEmail(username) {
+        const path = `${apiUrl}/api/user/${username}/email`
+        const { status, body } = await userGet({ path, raw: true })
+        return { ...body, username, exists: status < 400, verified: status === 200 }
+      },
+      async getUser(username) {
+        const path = `${apiUrl}/api/user/${username}`
+        const body = await userGet({ path })
+        return body
+      },
+    }
+  },
 
-  return {
-    async getEmail(username) {
-      const path = `${apiUrl}/api/user/${username}/email`
-      const { status, body } = await userGet({ path, raw: true })
-      return { ...body, username, exists: status < 400, verified: status === 200 }
-    },
-    async getUser(username) {
-      const path = `${apiUrl}/api/user/${username}`
-      const body = await userGet({ path })
-      return body
-    },
-  }
+  async getApiClientToken(username) {
+    const clientToken = generateOauthClientToken()
+
+    const oauthRequest = username
+      ? querystring.stringify({ grant_type: 'client_credentials', username })
+      : querystring.stringify({ grant_type: 'client_credentials' })
+
+    logger.info(
+      `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
+    )
+
+    return superagent
+      .post(`${apiUrl}/oauth/token`)
+      .set('Authorization', clientToken)
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .send(oauthRequest)
+      .timeout(timeoutSpec)
+  },
 }
 function userGetBuilder(token) {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {

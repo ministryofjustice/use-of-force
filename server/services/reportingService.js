@@ -28,7 +28,7 @@ module.exports = function createReportingService({ reportingClient, offenderServ
       return toCsv([{ key: 'name', header: 'Staff member name' }, { key: 'count', header: 'Count' }], results)
     },
 
-    getMostOftenInvolvedPrisoners: async (token, agencyId, month, year) => {
+    getMostOftenInvolvedPrisoners: async (username, agencyId, month, year) => {
       const date = moment({ years: year, months: month - 1 })
 
       const startDate = moment(date).startOf('month')
@@ -40,7 +40,7 @@ module.exports = function createReportingService({ reportingClient, offenderServ
       const results = await reportingClient.getMostOftenInvolvedPrisoners(agencyId, startDate, endDate)
 
       const offenderNos = results.map(result => result.offenderNo)
-      const nosToNames = await offenderService.getOffenderNames(token, offenderNos)
+      const nosToNames = await offenderService.getOffenderNames(username, offenderNos)
 
       const rows = results.map(({ offenderNo, count }) => ({ name: nosToNames[offenderNo], count }))
 

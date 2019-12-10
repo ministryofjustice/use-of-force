@@ -9,7 +9,7 @@ const reportService = {
 }
 
 const offenderService = {
-  getOffenderDetails: jest.fn(),
+  getOffenderDetailsForUser: jest.fn(),
 }
 
 const tasklistRoute = createRouter({ authenticationMiddleware, reportService, offenderService })
@@ -19,7 +19,7 @@ let app
 beforeEach(() => {
   app = appSetup(tasklistRoute)
   reportService.getCurrentDraft.mockResolvedValue({})
-  offenderService.getOffenderDetails.mockResolvedValue({})
+  offenderService.getOffenderDetailsForUser.mockResolvedValue({})
 })
 
 afterEach(() => {

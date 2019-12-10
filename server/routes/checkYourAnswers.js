@@ -20,10 +20,13 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         return res.redirect(`/`)
       }
 
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, parseInt(bookingId, 10))
+      const offenderDetail = await offenderService.getOffenderDetailsForUser(
+        res.locals.user.token,
+        parseInt(bookingId, 10)
+      )
 
       const { description: locationDescription = '' } = await offenderService.getLocation(
-        res.locals.user.token,
+        req.user.username,
         form.incidentDetails.locationId
       )
 
