@@ -34,7 +34,7 @@ services:
     container_name: use-of-force-db
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=use-of-force
       - POSTGRES_USER=use-of-force
