@@ -58,7 +58,7 @@ executors:
   integration-tests:
     docker:
       - image: circleci/openjdk:11-jdk-node-browsers
-      - image: circleci/postgres:11.4-alpine-ram
+      - image: circleci/postgres:10.6-alpine-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
