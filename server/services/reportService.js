@@ -5,7 +5,7 @@ const { check: getReportStatus } = require('../services/reportStatusChecker')
 
 module.exports = function createReportService({
   incidentClient,
-  elite2ClientBuilder,
+  userElite2ClientBuilder,
   involvedStaffService,
   notificationService,
   db,
@@ -46,7 +46,7 @@ module.exports = function createReportService({
   const startNewReport = async (bookingId, currentUser, incidentDateValue, formObject) => {
     const { username: userId, token, displayName: reporterName } = currentUser
 
-    const elite2Client = elite2ClientBuilder(token)
+    const elite2Client = userElite2ClientBuilder(token)
     const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftReport({
       userId,

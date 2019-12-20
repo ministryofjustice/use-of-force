@@ -6,9 +6,9 @@ const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
 
 module.exports = function CreateReportRoutes({ statementService, offenderService }) {
-  const getOffenderNames = (token, incidents) => {
+  const getOffenderNames = (username, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
-    return offenderService.getOffenderNames(token, offenderNos)
+    return offenderService.getOffenderNames(username, offenderNos)
   }
 
   const toStatement = namesByOffenderNumber => incident => ({
@@ -24,7 +24,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
 
-      const namesByOffenderNumber = await getOffenderNames(res.locals.user.token, [...awaiting, ...completed])
+      const namesByOffenderNumber = await getOffenderNames(req.user.username, [...awaiting, ...completed])
       const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
       const completedStatements = completed.map(toStatement(namesByOffenderNumber))
 
@@ -47,7 +47,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const errors = req.flash('errors')
       const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       res.render('pages/statement/write-your-statement', {
@@ -93,7 +93,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const { reportId } = req.params
 
       const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       const errors = req.flash('errors')
       res.render('pages/statement/check-your-statement', {
@@ -133,7 +133,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         StatementStatus.SUBMITTED
       )
 
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
       res.render('pages/statement/your-statement', {
         data: {
@@ -153,7 +153,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         reportId,
         StatementStatus.SUBMITTED
       )
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, statement.bookingId)
+      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.username, statement.bookingId)
       const { displayName, offenderNo } = offenderDetail
 
       return res.render('pages/statement/add-comment-to-statement', {

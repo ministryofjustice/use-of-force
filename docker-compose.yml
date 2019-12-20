@@ -47,7 +47,7 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - '6379:6379'
+      - "6379:6379"
 
   use-of-force:
     image: mojdigitalstudio/use-of-force:latest
