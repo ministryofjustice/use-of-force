@@ -50,7 +50,7 @@ module.exports = {
     logger.info(
       `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
     )
- 
+
     return superagent
       .post(`${apiUrl}/oauth/token`)
       .set('Authorization', clientToken)
