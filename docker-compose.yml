@@ -28,7 +28,7 @@ services:
       - SPRING_PROFILES_ACTIVE=nomis-hsqldb
 
   use-of-force-db:
-    image: postgres
+    image: postgres:10.6
     networks:
       - hmpps
     container_name: use-of-force-db
