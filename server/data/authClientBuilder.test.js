@@ -82,7 +82,7 @@ describe('authClient', () => {
       const userName = 'Bob'
       fakeApi
         .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
-        .basicAuth({ user: config.apis.oauth2.apiClientId, pass: config.apis.oauth2.apiClientSecret })
+        .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .reply(200, token)
 
@@ -93,7 +93,7 @@ describe('authClient', () => {
     it('without username', async () => {
       fakeApi
         .post(`/oauth/token`, 'grant_type=client_credentials')
-        .basicAuth({ user: config.apis.oauth2.apiClientId, pass: config.apis.oauth2.apiClientSecret })
+        .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .reply(200, token)
 
