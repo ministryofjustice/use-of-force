@@ -38,7 +38,10 @@ module.exports = {
   },
 
   async getApiClientToken(username) {
-    const clientToken = generateOauthClientToken()
+    const clientToken = generateOauthClientToken(
+      config.apis.oauth2.systemClientId,
+      config.apis.oauth2.systemClientSecret
+    )
 
     const oauthRequest = username
       ? querystring.stringify({ grant_type: 'client_credentials', username })
