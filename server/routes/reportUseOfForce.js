@@ -2,7 +2,7 @@ module.exports = function ReportUseOfForceRoutes({ reportService, offenderServic
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-      const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetailsForUser(
+      const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
         res.locals.user.token,
         bookingId
       )

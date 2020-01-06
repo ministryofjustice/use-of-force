@@ -14,7 +14,7 @@ const reportService = {
 }
 
 const offenderService = {
-  getOffenderDetailsForUser: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
+  getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
 }
 
 const involvedStaffService = {

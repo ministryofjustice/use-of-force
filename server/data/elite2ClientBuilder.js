@@ -4,7 +4,6 @@ const { HttpsAgent } = require('agentkeepalive')
 const { Readable } = require('stream')
 const logger = require('../../log')
 const config = require('../config')
-const { getApiClientToken } = require('./authClientBuilder')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -22,82 +21,48 @@ const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions)
 
 const defaultErrorLogger = error => logger.warn(error, 'Error calling elite2api')
 
-const systemTokenAcquirer = async username => {
-  const { body } = await getApiClientToken(username)
-  return body.access_token
+module.exports = token => {
+  const userGet = userGetBuilder(token)
+  const userStream = userStreamBuilder(token)
+  const userPost = userPostBuilder(token)
+  return {
+    async getOffenderDetails(bookingId) {
+      const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
+      return userGet({ path })
+    },
+    async getOffenders(offenderNos) {
+      const path = `${apiUrl}/api/bookings/offenders`
+      return userPost({ path, data: offenderNos })
+    },
+    async getUser() {
+      const path = `${apiUrl}/api/users/me`
+      return userGet({ path })
+    },
+    getUserCaseLoads() {
+      const path = `${apiUrl}/api/users/me/caseLoads`
+      return userGet({ path })
+    },
+    getLocations(agencyId) {
+      const path = `${apiUrl}/api/agencies/${agencyId}/locations`
+      return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
+    },
+    getLocation(locationId) {
+      const path = `${apiUrl}/api/locations/${locationId}`
+      return userGet({ path })
+    },
+    getOffenderImage(bookingId) {
+      const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
+      return userStream({
+        path,
+        logger: error =>
+          error.status === 404
+            ? logger.info(`No offender image available for: ${bookingId}`)
+            : defaultErrorLogger(error),
+      })
+    },
+  }
 }
-
-module.exports = {
-  systemElite2ClientBuilder: async (username, tokenAcquirer = systemTokenAcquirer) => {
-    const token = await tokenAcquirer(username)
-    const get = getBuilder(token)
-    const stream = streamBuilder(token)
-    const post = postBuilder(token)
-    return {
-      async getOffenders(offenderNos) {
-        const path = `${apiUrl}/api/bookings/offenders`
-        return post({ path, data: offenderNos })
-      },
-      getLocation(locationId) {
-        const path = `${apiUrl}/api/locations/${locationId}`
-        return get({ path })
-      },
-      getLocations(agencyId) {
-        const path = `${apiUrl}/api/agencies/${agencyId}/locations`
-        return get({ path, headers: { 'Sort-Fields': 'userDescription' } })
-      },
-      async getOffenderDetails(bookingId) {
-        const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
-        return get({ path })
-      },
-      getOffenderImage(bookingId) {
-        const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
-        return stream({
-          path,
-          logger: error =>
-            error.status === 404
-              ? logger.info(`No offender image available for: ${bookingId}`)
-              : defaultErrorLogger(error),
-        })
-      },
-    }
-  },
-
-  userElite2ClientBuilder: token => {
-    const get = getBuilder(token)
-    const stream = streamBuilder(token)
-    return {
-      async getUser() {
-        const path = `${apiUrl}/api/users/me`
-        return get({ path })
-      },
-      getUserCaseLoads() {
-        const path = `${apiUrl}/api/users/me/caseLoads`
-        return get({ path })
-      },
-      getLocations(agencyId) {
-        const path = `${apiUrl}/api/agencies/${agencyId}/locations`
-        return get({ path, headers: { 'Sort-Fields': 'userDescription' } })
-      },
-      async getOffenderDetails(bookingId) {
-        const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
-        return get({ path })
-      },
-      getOffenderImage(bookingId) {
-        const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
-        return stream({
-          path,
-          logger: error =>
-            error.status === 404
-              ? logger.info(`No offender image available for: ${bookingId}`)
-              : defaultErrorLogger(error),
-        })
-      },
-    }
-  },
-}
-
-function getBuilder(token) {
+function userGetBuilder(token) {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
     try {
@@ -122,7 +87,7 @@ function getBuilder(token) {
   }
 }
 
-function postBuilder(token) {
+function userPostBuilder(token) {
   return async ({ path, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path}`)
     try {
@@ -147,7 +112,7 @@ function postBuilder(token) {
   }
 }
 
-function streamBuilder(token) {
+function userStreamBuilder(token) {
   return ({ path, headers = {}, errorLogger = defaultErrorLogger }) => {
     logger.info(`Get using user credentials: calling elite2api: ${path}`)
     return new Promise((resolve, reject) => {

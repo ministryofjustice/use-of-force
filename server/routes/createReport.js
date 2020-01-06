@@ -92,7 +92,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
   const viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const offenderDetail = await offenderService.getOffenderDetailsForUser(res.locals.user.token, bookingId)
+    const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
     const { displayName, offenderNo, locations } = offenderDetail
 
     const { formId, form, incidentDate = moment() } = await loadForm(req)
