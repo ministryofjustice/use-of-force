@@ -3,10 +3,10 @@ const logger = require('../../log.js')
 const { properCaseName } = require('../utils/utils.js')
 const { usernamePattern } = require('../config/forms/validations')
 
-module.exports = function createUserService(userElite2ClientBuilder, authClientBuilder) {
+module.exports = function createUserService(elite2ClientBuilder, authClientBuilder) {
   async function getUser(token) {
     try {
-      const elite2Client = userElite2ClientBuilder(token)
+      const elite2Client = elite2ClientBuilder(token)
       const user = await elite2Client.getUser()
 
       const activeCaseLoads = user.activeCaseLoadId ? await elite2Client.getUserCaseLoads() : []

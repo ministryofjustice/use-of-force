@@ -63,8 +63,6 @@ module.exports = {
       },
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', requiredInProduction),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
-      systemClientId: get('SYSTEM_CLIENT_ID', get('API_CLIENT_ID', 'use-of-force-system'), requiredInProduction),
-      systemClientSecret: get('SYSTEM_CLIENT_SECRET', get('API_CLIENT_SECRET', 'clientsecret'), requiredInProduction),
     },
     elite2: {
       url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),

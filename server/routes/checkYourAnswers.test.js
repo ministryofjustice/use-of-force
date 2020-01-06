@@ -11,7 +11,7 @@ const reportService = {
 }
 
 const offenderService = {
-  getOffenderDetailsForUser: jest.fn(),
+  getOffenderDetails: jest.fn(),
   getLocation: jest.fn(),
 }
 
@@ -32,7 +32,7 @@ beforeEach(() => {
   app = appSetup(checkAnswersRoute)
   reportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
 
-  offenderService.getOffenderDetailsForUser.mockResolvedValue({})
+  offenderService.getOffenderDetails.mockResolvedValue({})
   offenderService.getLocation.mockResolvedValue({})
 })
 

@@ -12,9 +12,8 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
 
   router.get('/offender/:bookingId/image', (req, res) => {
     const { bookingId } = req.params
-
     offenderService
-      .getOffenderImage(res.locals.user, bookingId)
+      .getOffenderImage(res.locals.user.token, bookingId)
       .then(data => {
         res.type('image/jpeg')
         data.pipe(res)
@@ -74,7 +73,7 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
       const agencyId = res.locals.user.activeCaseLoadId
 
       const results = await reportingService.getMostOftenInvolvedPrisoners(
-        res.locals.user.username,
+        res.locals.user.token,
         agencyId,
         parseInt(month, 10),
         parseInt(year, 10)

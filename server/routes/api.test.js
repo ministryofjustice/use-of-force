@@ -102,7 +102,7 @@ describe('api', () => {
             expect(res.text).toContain('Some,Csv,Content for prisoners')
           })
 
-        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('user1', 'LEI', 10, 2019)
+        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('token', 'LEI', 10, 2019)
       })
 
       it('should not render for standard user', async () => {
