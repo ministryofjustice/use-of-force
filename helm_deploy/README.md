@@ -1,32 +1,69 @@
+# Deployment Notes
 
-### Example deploy command
-```
-helm --namespace use-of-force-dev  --tiller-namespace use-of-force-dev upgrade use-of-force ./use-of-force/ --install --values=values-dev.yaml --values=example-secrets.yaml
-```
+## Prerequisites
 
-### Rolling back a release
-Find the revision number for the deployment you want to roll back:
-```
-helm --tiller-namespace use-of-force-dev history use-of-force -o yaml
-```
-(note, each revision has a description which has the app version and circleci build URL)
+- Ensure you have helm v3 client installed.
 
-Rollback
-```
-helm --tiller-namespace use-of-force-dev rollback use-of-force [INSERT REVISION NUMBER HERE] --wait
+```sh
+$ helm version
+version.BuildInfo{Version:"v3.0.1", GitCommit:"7c22ef9ce89e0ebeb7125ba2ebf7d421f3e82ffa", GitTreeState:"clean", GoVersion:"go1.13.4"}
 ```
 
-### Helm init
+- Ensure a TLS cert for your intended hostname is configured and ready, see section below.
 
+### Useful helm (v3) commands:
+
+__Test chart template rendering:__
+
+This will out the fully rendered kubernetes resources in raw yaml.
+
+```sh
+helm template [path to chart] --values=values-dev.yaml --values=secrets-example.yaml
 ```
-helm init --tiller-namespace use-of-force-dev --service-account tiller --history-max 200
+
+__List releases:__
+
+```sh
+helm --namespace [namespace] list
 ```
 
-### Setup Lets Encrypt cert
+__List current and previously installed application versions:__
 
-Ensure the certificate definition exists in the cloud-platform-environments repo under the relevant namespaces folder
+```sh
+helm --namespace [namespace] history [release name]
+```
+
+__Rollback to previous version:__
+
+```sh
+helm --namespace [namespace] rollback [release name] [revision number] --wait
+```
+
+Note: replace _revision number_ with one from listed in the `history` command)
+
+__Example deploy command:__
+
+The following example is `--dry-run` mode - which will allow for testing. CircleCI normally runs this command with actual secret values (from AWS secret manager), and also updated the chart's application version to match the release version:
+
+```sh
+helm upgrade [release name] [path to chart]. \
+  --install --wait --force --reset-values --timeout 5m --history-max 10 \
+  --dry-run \
+  --namespace [namespace] \
+  --values values-dev.yaml \
+  --values example-secrets.yaml
+```
+
+### Ingress TLS certificate
+
+Ensure a certificate definition exists in the cloud-platform-environments repo under the relevant namespaces folder:
 
 e.g.
-```
+
+```sh
 cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[INSERT NAMESPACE NAME]/05-certificate.yaml
 ```
+
+Ensure the certificate is created and ready for use.
+
+The name of the kubernetes secret where the certificate is stored is used as a value to the helm chart - this is used to configured the ingress.
