@@ -39,7 +39,7 @@ commands:
             sed -i "s/appVersion: \".*\"/appVersion: \"${APP_VERSION}\"/g" ~/git/helm_deploy/use-of-force/Chart.yaml
             aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
             helm upgrade use-of-force ~/git/helm_deploy/use-of-force/. \
-              --install --wait --force --reset-values --timeout 5m --history-max 10 \
+              --install --wait --reset-values --timeout 5m --history-max 10 \
               --namespace=${KUBE_ENV_NAMESPACE} \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
               --values - \
@@ -175,13 +175,13 @@ jobs:
               --label "build.url=$CIRCLE_BUILD_URL" \
               --label "build.gitref=$CIRCLE_SHA1"
 
-            #if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               # publish to docker hub as the tag
               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
               docker tag mojdigitalstudio/use-of-force:$APP_VERSION mojdigitalstudio/use-of-force:latest
               docker push mojdigitalstudio/use-of-force:$APP_VERSION
               docker push mojdigitalstudio/use-of-force:latest
-            #fi
+            fi
   deploy_dev:
     executor: deployer
     steps:
@@ -215,9 +215,9 @@ workflows:
       - build_docker:
           requires:
             - integration_test
-          #filters:
-            #branches:
-              #only: master
+          filters:
+            branches:
+              only: master
       - deploy_dev:
           requires:
             - build_docker
