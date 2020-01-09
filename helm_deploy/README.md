@@ -11,6 +11,7 @@ version.BuildInfo{Version:"v3.0.1", GitCommit:"7c22ef9ce89e0ebeb7125ba2ebf7d421f
 
 - Ensure a TLS cert for your intended hostname is configured and ready, see section below.
 
+
 ### Useful helm (v3) commands:
 
 __Test chart template rendering:__
