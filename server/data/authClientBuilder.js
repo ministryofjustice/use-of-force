@@ -25,7 +25,7 @@ module.exports = token => {
     async getEmail(username) {
       const path = `${apiUrl}/api/user/${username}/email`
       const { status, body } = await userGet({ path, raw: true })
-      return { ...body, username, exists: status < 400, verified: status === 200 }
+      return { email: body.email, username: body.username || username, exists: status < 400, verified: status === 200 }
     },
     async getUser(username) {
       const path = `${apiUrl}/api/user/${username}`
