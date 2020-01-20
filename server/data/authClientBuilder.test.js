@@ -19,7 +19,7 @@ describe('authClient', () => {
 
   describe('getEmail', () => {
     const userName = 'Bob'
-    const userResponse = { username: 'Bob', email: 'an@email.com' }
+    const userResponse = { username: 'BOB', email: 'an@email.com' }
 
     it('email exists', async () => {
       fakeApi
@@ -28,7 +28,7 @@ describe('authClient', () => {
         .reply(200, userResponse)
 
       const output = await client.getEmail(userName)
-      expect(output).toEqual({ username: 'Bob', email: 'an@email.com', exists: true, verified: true })
+      expect(output).toEqual({ username: 'BOB', email: 'an@email.com', exists: true, verified: true })
     })
 
     it('no verified email exists', async () => {
