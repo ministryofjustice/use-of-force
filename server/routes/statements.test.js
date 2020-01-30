@@ -22,7 +22,12 @@ const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
-const route = createRouter({ authenticationMiddleware, statementService, offenderService })
+const route = createRouter({
+  authenticationMiddleware,
+  statementService,
+  offenderService,
+  systemToken: username => `${username}-token`,
+})
 
 let app
 

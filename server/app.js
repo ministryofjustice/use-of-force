@@ -42,6 +42,7 @@ module.exports = function createApp({
   userService,
   reviewService,
   reportingService,
+  systemToken,
 }) {
   const app = express()
 
@@ -246,12 +247,13 @@ module.exports = function createApp({
       reportService,
       involvedStaffService,
       reviewService,
+      systemToken,
     })
   )
 
   app.use(
     '/api/',
-    createApiRouter({ authenticationMiddleware, offenderService, reportingService, involvedStaffService })
+    createApiRouter({ authenticationMiddleware, offenderService, reportingService, involvedStaffService, systemToken })
   )
 
   app.use((req, res, next) => {

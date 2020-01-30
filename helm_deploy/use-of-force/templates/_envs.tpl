@@ -43,6 +43,18 @@ env:
         name: {{ template "app.name" . }}
         key: API_CLIENT_SECRET
 
+  - name: SYSTEM_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: SYSTEM_CLIENT_ID
+
+  - name: SYSTEM_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: SYSTEM_CLIENT_SECRET
+
   - name: APPINSIGHTS_INSTRUMENTATIONKEY
     valueFrom:
       secretKeyRef:

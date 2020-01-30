@@ -16,11 +16,19 @@ module.exports = function Index({
   reportService,
   involvedStaffService,
   reviewService,
+  systemToken,
 }) {
   const router = express.Router()
 
-  const incidents = CreateIncidentRoutes({ reportService, involvedStaffService, offenderService, reviewService })
-  const statements = CreateStatementRoutes({ statementService, offenderService })
+  const incidents = CreateIncidentRoutes({
+    reportService,
+    involvedStaffService,
+    offenderService,
+    reviewService,
+    systemToken,
+  })
+
+  const statements = CreateStatementRoutes({ statementService, offenderService, systemToken })
 
   const createReport = CreateReportRoutes({
     reportService,

@@ -10,7 +10,7 @@ const statementsClient = require('./data/statementsClient')
 const reportingClient = require('./data/reportingClient')
 
 const elite2ClientBuilder = require('./data/elite2ClientBuilder')
-const authClientBuilder = require('./data/authClientBuilder')
+const { authClientBuilder, systemToken } = require('./data/authClientBuilder')
 
 const createSignInService = require('./authentication/signInService')
 
@@ -52,6 +52,7 @@ const app = createApp({
   userService,
   reviewService,
   reportingService,
+  systemToken,
 })
 
 module.exports = app

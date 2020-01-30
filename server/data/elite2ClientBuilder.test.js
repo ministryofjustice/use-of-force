@@ -75,7 +75,7 @@ describe('elite2Client', () => {
 
     it('should return data from api', async () => {
       fakeElite2Api
-        .post('/api/bookings/offenders', offenderNos)
+        .post('/api/bookings/offenders?activeOnly=false', offenderNos)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenders)
 

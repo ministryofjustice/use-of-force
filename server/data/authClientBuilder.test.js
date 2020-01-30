@@ -1,16 +1,16 @@
 const nock = require('nock')
 const config = require('../config')
-const oauthClientBuilder = require('./authClientBuilder')
+const { authClientBuilder, systemToken } = require('./authClientBuilder')
 
 describe('authClient', () => {
   let fakeApi
   let client
 
-  const token = 'token-1'
+  const token = { token: 'token-1' }
 
   beforeEach(() => {
     fakeApi = nock(config.apis.oauth2.url)
-    client = oauthClientBuilder(token)
+    client = authClientBuilder(token)
   })
 
   afterEach(() => {
@@ -73,7 +73,32 @@ describe('authClient', () => {
         .reply(200, userResponse)
 
       const output = await client.getUser(userName)
-      expect(output).toEqual({ username: 'Bob', email: 'an@email.com' })
+      expect(output).toEqual(userResponse)
+    })
+  })
+
+  describe('getSystemClientToken', () => {
+    it('with username', async () => {
+      const userName = 'Bob'
+      fakeApi
+        .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
+        .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
+        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
+        .reply(200, token)
+
+      const output = await systemToken(userName)
+      expect(output).toEqual(token.token)
+    })
+
+    it('without username', async () => {
+      fakeApi
+        .post(`/oauth/token`, 'grant_type=client_credentials')
+        .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
+        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
+        .reply(200, token)
+
+      const output = await systemToken()
+      expect(output).toEqual(token.token)
     })
   })
 })

@@ -32,6 +32,7 @@ const route = createRouter({
   involvedStaffService,
   offenderService,
   reviewService,
+  systemToken: username => `${username}-token`,
 })
 
 let app

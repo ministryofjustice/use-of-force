@@ -14,7 +14,12 @@ const involvedStaffService = {
   addInvolvedStaff: jest.fn(),
 }
 
-const route = createRouter({ authenticationMiddleware, reportingService, involvedStaffService })
+const route = createRouter({
+  authenticationMiddleware,
+  reportingService,
+  involvedStaffService,
+  systemToken: username => `${username}-token`,
+})
 
 let app
 
@@ -38,7 +43,7 @@ describe('api', () => {
           expect(res.body).toEqual({ result: 'ok' })
         })
 
-      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('token', '1', 'sally')
+      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-token', '1', 'sally')
     })
 
     it('should not resolve for reviewer', async () => {
@@ -102,7 +107,7 @@ describe('api', () => {
             expect(res.text).toContain('Some,Csv,Content for prisoners')
           })
 
-        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('token', 'LEI', 10, 2019)
+        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('user1-token', 'LEI', 10, 2019)
       })
 
       it('should not render for standard user', async () => {
