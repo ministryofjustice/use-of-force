@@ -65,7 +65,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'POST',
-        urlPattern: `/api/bookings/offenders`,
+        urlPattern: `/api/bookings/offenders\\?activeOnly=false`,
         bodyPatterns: [{ equalToJson: ['A1234AC'] }],
       },
       response: {

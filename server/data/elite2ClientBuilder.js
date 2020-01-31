@@ -31,7 +31,7 @@ module.exports = token => {
       return userGet({ path })
     },
     async getOffenders(offenderNos) {
-      const path = `${apiUrl}/api/bookings/offenders`
+      const path = `${apiUrl}/api/bookings/offenders?activeOnly=false`
       return userPost({ path, data: offenderNos })
     },
     async getUser() {
@@ -81,7 +81,7 @@ function userGetBuilder(token) {
 
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, 'Error calling elite2api')
+      logger.warn(error, `Error calling elite2api: ${path}`)
       throw error
     }
   }
@@ -106,7 +106,7 @@ function userPostBuilder(token) {
 
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, 'Error calling elite2api')
+      logger.warn(error, `Error calling elite2api: ${path}`)
       throw error
     }
   }

@@ -3,7 +3,13 @@ const path = require('path')
 const httpError = require('http-errors')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware, offenderService, reportingService, involvedStaffService }) {
+module.exports = function Index({
+  authenticationMiddleware,
+  offenderService,
+  reportingService,
+  involvedStaffService,
+  systemToken,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -36,7 +42,7 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
 
       const { reportId, username } = req.params
 
-      await involvedStaffService.addInvolvedStaff(res.locals.user.token, reportId, username)
+      await involvedStaffService.addInvolvedStaff(systemToken(res.locals.user.username), reportId, username)
       res.json({ result: 'ok' })
     })
   )
@@ -73,7 +79,7 @@ module.exports = function Index({ authenticationMiddleware, offenderService, rep
       const agencyId = res.locals.user.activeCaseLoadId
 
       const results = await reportingService.getMostOftenInvolvedPrisoners(
-        res.locals.user.token,
+        systemToken(res.locals.user.username),
         agencyId,
         parseInt(month, 10),
         parseInt(year, 10)
