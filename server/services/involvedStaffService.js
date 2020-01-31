@@ -30,6 +30,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
     if (!success) {
       const error = new Error('Contains one or more users with unverified emails')
+      // @ts-ignore
       error.notVerified = notVerified
       throw error
     }

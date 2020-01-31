@@ -1,12 +1,9 @@
 const statementsClient = require('./statementsClient')
+/** @type {any} */
 const db = require('./dataAccess/db')
 const { StatementStatus } = require('../config/types')
 
 jest.mock('../../server/data/dataAccess/db')
-
-afterEach(() => {
-  db.query.mockReset()
-})
 
 test('getStatements', () => {
   statementsClient.getStatements('user1', StatementStatus.PENDING)

@@ -95,9 +95,9 @@ describe('sanitiser', () => {
   describe('missing data', () => {
     test('no values', () =>
       check({}).toEqual({
-        raw: { day: undefined, month: undefined, year: undefined, time: undefined },
+        raw: { day: null, month: null, year: null, time: null },
         date: { day: null, month: null, year: null },
-        time: undefined,
+        time: null,
         value: null,
         isFutureDate: false,
         isFutureDateTime: false,
@@ -116,14 +116,14 @@ describe('sanitiser', () => {
       }))
 
     test('missing time', () =>
-      check({ date: { day: '1', month: '1', year: '2019' } }).toEqual({
-        raw: { day: '1', month: '1', year: '2019' },
+      check({ date: { day: '1', month: '1', year: '2019', time: null } }).toEqual({
+        raw: { day: '1', month: '1', year: '2019', time: null },
         date: {
           day: 1,
           month: 1,
           year: 2019,
         },
-        time: undefined,
+        time: null,
         value: null,
         isFutureDate: false,
         isFutureDateTime: false,
@@ -154,7 +154,7 @@ describe('sanitiser', () => {
 
     test('missing day', () =>
       check({ date: { month: '01', year: '2019' }, time: '12.45' }).toEqual({
-        raw: { month: '01', year: '2019', time: '12.45' },
+        raw: { day: null, month: '01', year: '2019', time: '12.45' },
         date: { day: null, month: 1, year: 2019 },
         time: '12.45',
         value: null,
@@ -165,7 +165,7 @@ describe('sanitiser', () => {
 
     test('missing month', () =>
       check({ date: { day: '21', year: '2019' }, time: '12.45' }).toEqual({
-        raw: { day: '21', year: '2019', time: '12.45' },
+        raw: { day: '21', month: null, year: '2019', time: '12.45' },
         date: {
           day: 21,
           month: null,
@@ -180,7 +180,7 @@ describe('sanitiser', () => {
 
     test('missing year', () =>
       check({ date: { day: '21', month: '4' }, time: '12.45' }).toEqual({
-        raw: { day: '21', month: '4', time: '12.45' },
+        raw: { day: '21', month: '4', time: '12.45', year: null },
         date: { day: 21, month: 4, year: null },
         time: '12.45',
         value: null,

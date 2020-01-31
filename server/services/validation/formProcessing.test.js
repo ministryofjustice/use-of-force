@@ -104,7 +104,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ validationSpec, shouldValidate: false, input: userInput })
+      const output = await processInput({ validationSpec, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -124,7 +124,7 @@ describe('processInput', () => {
         followUp2: 'Town',
       }
 
-      const output = await processInput({ validationSpec, shouldValidate: false, input: userInput })
+      const output = await processInput({ validationSpec, input: userInput })
 
       expect(output).toEqual({
         errors: [],
@@ -149,7 +149,6 @@ describe('processInput', () => {
           q4: outSchema,
         })
       ),
-      shouldValidate: false,
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })
 
@@ -166,7 +165,6 @@ describe('processInput', () => {
   test('sanitisation', async () => {
     const output = processInput({
       validationSpec: buildValidationSpec(joi.object({ q1: joi.string().meta({ sanitiser: R.toUpper }) })),
-      validate: false,
       input: { q1: 'aaaAAAaa' },
     })
 
@@ -182,7 +180,7 @@ describe('processInput', () => {
   test('validation', async () => {
     const schema = joi.object({ q1: validations.requiredStringMsg('Please give a full name') })
 
-    const output = processInput({ validationSpec: buildValidationSpec(schema), validate: true, input: {} })
+    const output = processInput({ validationSpec: buildValidationSpec(schema), input: {} })
 
     expect(output).toEqual({
       errors: [

@@ -1,7 +1,5 @@
 const request = require('supertest')
-const { appSetup } = require('./testutils/appSetup')
-const createRouter = require('./index')
-const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const { appWithAllRoutes } = require('./testutils/appSetup')
 
 const reportService = {
   getCurrentDraft: jest.fn(),
@@ -12,12 +10,10 @@ const offenderService = {
   getOffenderDetails: jest.fn(),
 }
 
-const tasklistRoute = createRouter({ authenticationMiddleware, reportService, offenderService })
-
 let app
 
 beforeEach(() => {
-  app = appSetup(tasklistRoute)
+  app = appWithAllRoutes({ reportService, offenderService })
   reportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
 })

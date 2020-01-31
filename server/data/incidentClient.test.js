@@ -1,4 +1,5 @@
 const incidentClient = require('./incidentClient')
+/** @type {any} */
 const db = require('./dataAccess/db')
 const { ReportStatus, StatementStatus } = require('../config/types')
 

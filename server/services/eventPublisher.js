@@ -2,7 +2,7 @@ const logger = require('../../log')
 
 module.exports = function ReminderRecorder(appInsightsClient) {
   const client = appInsightsClient || {
-    trackEvent() {
+    trackEvent(_) {
       // do nothing
     },
   }

@@ -45,7 +45,6 @@ const reportingService = createReportingService({ reportingClient, offenderServi
 const app = createApp({
   involvedStaffService,
   offenderService,
-  notificationService,
   reportService,
   signInService: createSignInService(),
   statementService,
