@@ -29,7 +29,7 @@ const toDateTime = ({ minutes, hours, date, months, years }) => {
     : null
 }
 
-module.exports = ({ date: { day, month, year } = {}, time } = {}, now = moment()) => {
+module.exports = ({ date: { day = null, month = null, year = null } = {}, time = null } = {}, now = moment()) => {
   const trimmedTime = time && time.trim()
   const parsedTime = moment(trimmedTime, ['HH.mm', 'HH:mm'], true)
   const hours = validOrNull(parsedTime.hours())

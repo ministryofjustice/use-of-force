@@ -1,7 +1,5 @@
 const request = require('supertest')
-const { appSetup } = require('./testutils/appSetup')
-const createRouter = require('./index')
-const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const { appWithAllRoutes } = require('./testutils/appSetup')
 
 const statementService = {
   getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
@@ -22,18 +20,12 @@ const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
-const route = createRouter({
-  authenticationMiddleware,
-  statementService,
-  offenderService,
-  systemToken: username => `${username}-token`,
-})
 
 let app
 
 beforeEach(() => {
   statementService.validateSavedStatement.mockReturnValue([])
-  app = appSetup(route)
+  app = appWithAllRoutes({ statementService, offenderService })
 })
 
 describe('GET /your-statements', () => {

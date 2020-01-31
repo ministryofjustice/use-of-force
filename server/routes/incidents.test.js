@@ -1,7 +1,5 @@
 const request = require('supertest')
-const { appSetup, user, reviewerUser } = require('./testutils/appSetup')
-const createRouter = require('./index')
-const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const { appWithAllRoutes, user, reviewerUser } = require('./testutils/appSetup')
 
 const userSupplier = jest.fn()
 
@@ -26,20 +24,11 @@ const involvedStaffService = {
   getInvolvedStaff: () => [],
 }
 
-const route = createRouter({
-  authenticationMiddleware,
-  reportService,
-  involvedStaffService,
-  offenderService,
-  reviewService,
-  systemToken: username => `${username}-token`,
-})
-
 let app
 
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
-  app = appSetup(route, userSupplier)
+  app = appWithAllRoutes({ reportService, involvedStaffService, offenderService, reviewService }, userSupplier)
 })
 
 afterEach(() => {
