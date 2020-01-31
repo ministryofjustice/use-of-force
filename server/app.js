@@ -184,7 +184,7 @@ module.exports = function createApp({
           const newToken = await signInService.getRefreshedToken(req.user)
           req.user.token = newToken.token
           req.user.refreshToken = newToken.refreshToken
-          logger.info(`existing refreshTime in the past by ${new Date() - req.user.refreshTime}`)
+          logger.info(`existing refreshTime in the past by ${new Date().getTime() - req.user.refreshTime}`)
           logger.info(
             `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
               newToken.refreshTime

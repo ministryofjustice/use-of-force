@@ -1,4 +1,5 @@
 const superagent = require('superagent')
+/** @type {any} */
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const { Readable } = require('stream')
@@ -54,7 +55,7 @@ module.exports = token => {
       const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
       return userStream({
         path,
-        logger: error =>
+        errorLogger: error =>
           error.status === 404
             ? logger.info(`No offender image available for: ${bookingId}`)
             : defaultErrorLogger(error),
@@ -63,7 +64,7 @@ module.exports = token => {
   }
 }
 function userGetBuilder(token) {
-  return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
+  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent
@@ -88,7 +89,7 @@ function userGetBuilder(token) {
 }
 
 function userPostBuilder(token) {
-  return async ({ path, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
+  return async ({ path = null, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path}`)
     try {
       const result = await superagent
@@ -128,7 +129,7 @@ function userStreamBuilder(token) {
         .set(headers)
         .end((error, response) => {
           if (error) {
-            errorLogger(error, response)
+            errorLogger(error)
             reject(error)
           } else if (response) {
             const s = new Readable()

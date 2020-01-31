@@ -1,5 +1,6 @@
 /* eslint-disable prefer-promise-reject-errors */
 const superagent = require('superagent')
+/** @type {any} */
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const db = require('./dataAccess/db')

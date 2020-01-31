@@ -16,6 +16,7 @@ const involvedStaffService = {
 
 const route = createRouter({
   authenticationMiddleware,
+  offenderService: {},
   reportingService,
   involvedStaffService,
   systemToken: username => `${username}-token`,

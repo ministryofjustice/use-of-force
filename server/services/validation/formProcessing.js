@@ -11,9 +11,10 @@ const processInput = ({ validationSpec, input }) => {
 
 /**
  * Create new object from formObject with field 'formName' replaced by formPayload.
- * @param formObject from database
- * @param formPayload from request
- * @param formName
+ * @param {object} args
+ * @param {any} args.formObject from database
+ * @param {any} args.formPayload from request
+ * @param {any} args.formName
  * @returns {object}
  */
 const mergeIntoPayload = ({ formObject, formPayload, formName }) => {

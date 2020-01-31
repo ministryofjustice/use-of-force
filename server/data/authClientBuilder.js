@@ -1,4 +1,5 @@
 const superagent = require('superagent')
+/** @type {any} */
 const Agent = require('agentkeepalive')
 const querystring = require('querystring')
 const { HttpsAgent } = require('agentkeepalive')
@@ -69,7 +70,7 @@ async function getSystemClientToken(username) {
 }
 
 function userGetBuilder(token) {
-  return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
+  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent

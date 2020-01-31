@@ -90,7 +90,7 @@ const staffTakenToHospital = (staffMembers = []) => {
   return hospitalisedStaff.map(staff => [properCaseFullName(staff.name)])
 }
 
-const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = '') => {
+const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = false) => {
   if (evidenceYesNo === false) {
     return 'No'
   }

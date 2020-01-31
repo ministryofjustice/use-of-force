@@ -1,7 +1,5 @@
 const request = require('supertest')
-const { appSetup, user } = require('./testutils/appSetup')
-const createRouter = require('./index')
-const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const { appWithAllRoutes, user } = require('./testutils/appSetup')
 const types = require('../config/types')
 const incidentDateSanitiser = require('../utils/dateSanitiser')
 
@@ -23,12 +21,10 @@ const involvedStaffService = {
   getDraftInvolvedStaff: jest.fn(),
 }
 
-const formRoute = createRouter({ reportService, authenticationMiddleware, offenderService, involvedStaffService })
-
 let app
 
 beforeEach(() => {
-  app = appSetup(formRoute)
+  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
   involvedStaffService.lookup = async () => []

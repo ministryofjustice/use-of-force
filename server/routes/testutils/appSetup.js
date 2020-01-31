@@ -7,6 +7,8 @@ const path = require('path')
 const db = require('../../../server/data/dataAccess/db')
 const nunjucksSetup = require('../../utils/nunjucksSetup')
 const errorHandler = require('../../errorHandler')
+const allRoutes = require('../index')
+const { authenticationMiddleware } = require('./mockAuthentication')
 
 const user = {
   firstName: 'first',
@@ -27,7 +29,6 @@ const reviewerUser = {
   username: 'user1',
   displayName: 'First Last',
   isReviewer: true,
-  activeCaseLoadId: 1,
   activeCaseLoadId: 'LEI',
 }
 
@@ -57,4 +58,18 @@ const appSetup = (route, userSupplier = () => user) => {
   return app
 }
 
-module.exports = { appSetup, user, reviewerUser }
+const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
+  const route = allRoutes({
+    authenticationMiddleware,
+    statementService: {},
+    offenderService: {},
+    reportService: {},
+    involvedStaffService: {},
+    reviewService: {},
+    systemToken: username => `${username}-token`,
+    ...overrides,
+  })
+  return appSetup(route, userSupplier)
+}
+
+module.exports = { appSetup, appWithAllRoutes, user, reviewerUser }

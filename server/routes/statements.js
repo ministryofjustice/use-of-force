@@ -76,7 +76,6 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const { extractedFields: statement, errors } = processInput({
         validationSpec: complete,
-        shouldValidate: saveAndContinue,
         input: req.body,
       })
 

@@ -64,18 +64,14 @@ describe('send', () => {
 
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
-      await send(
-        client,
-        {
-          ...reminder,
-          isReporter: true,
-          nextReminderDate: now,
-          overdueDate: notOverdue,
-          submittedDate,
-          isOverdue: false,
-        },
-        now
-      )
+      await send(client, {
+        ...reminder,
+        isReporter: true,
+        nextReminderDate: now,
+        overdueDate: notOverdue,
+        submittedDate,
+        isOverdue: false,
+      })
 
       expect(notificationService.sendReporterStatementReminder).toBeCalledTimes(1)
       expect(notificationService.sendReporterStatementReminder).toBeCalledWith(
@@ -93,18 +89,14 @@ describe('send', () => {
     })
 
     test('sendReporterStatementOverdue', async () => {
-      await send(
-        client,
-        {
-          ...reminder,
-          isReporter: true,
-          nextReminderDate: now,
-          overdueDate: overdue,
-          isOverdue: true,
-          statementId: -1,
-        },
-        now
-      )
+      await send(client, {
+        ...reminder,
+        isReporter: true,
+        nextReminderDate: now,
+        overdueDate: overdue,
+        isOverdue: true,
+        statementId: -1,
+      })
 
       expect(notificationService.sendReporterStatementOverdue).toBeCalledTimes(1)
       expect(notificationService.sendReporterStatementOverdue).toBeCalledWith(
@@ -123,17 +115,13 @@ describe('send', () => {
 
   describe('involved staff', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
-      await send(
-        client,
-        {
-          ...reminder,
-          isReporter: false,
-          nextReminderDate: now,
-          overdueDate: notOverdue,
-          isOverdue: false,
-        },
-        now
-      )
+      await send(client, {
+        ...reminder,
+        isReporter: false,
+        nextReminderDate: now,
+        overdueDate: notOverdue,
+        isOverdue: false,
+      })
 
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledTimes(1)
       expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledWith(
@@ -151,17 +139,13 @@ describe('send', () => {
     })
 
     test('sendInvolvedStaffStatementOverdue', async () => {
-      await send(
-        client,
-        {
-          ...reminder,
-          isReporter: false,
-          nextReminderDate: now,
-          overdueDate: overdue,
-          isOverdue: true,
-        },
-        now
-      )
+      await send(client, {
+        ...reminder,
+        isReporter: false,
+        nextReminderDate: now,
+        overdueDate: overdue,
+        isOverdue: true,
+      })
 
       expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledTimes(1)
       expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledWith(
