@@ -270,3 +270,24 @@ test('setNextReminderDate', () => {
     values: ['2019-09-03 11:20:36', -1],
   })
 })
+
+test('deleteReport', async () => {
+  db.inTransaction.mockImplementation(callback => callback(db))
+
+  const date = new Date()
+  await incidentClient.deleteReport(-1, date)
+
+  expect(db.query).toBeCalledWith({
+    text: 'update report set deleted = $1 where id = $2',
+    values: [date, -1],
+  })
+  expect(db.query).toBeCalledWith({
+    text: 'update statement set deleted = $1 where id in (select id from statement where report_id = $2)',
+    values: [date, -1],
+  })
+  expect(db.query).toBeCalledWith({
+    text:
+      'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
+    values: [date, -1],
+  })
+})

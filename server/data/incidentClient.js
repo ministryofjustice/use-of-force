@@ -2,6 +2,8 @@ const format = require('pg-format')
 const nonTransactionalClient = require('./dataAccess/db')
 const { ReportStatus, StatementStatus } = require('../config/types')
 
+const db = nonTransactionalClient
+
 const createDraftReport = async ({
   userId,
   bookingId,
@@ -193,6 +195,22 @@ const getInvolvedStaff = async reportId => {
   return results.rows
 }
 
+const deleteReport = (reportId, now = new Date()) =>
+  db.inTransaction(async client => {
+    await client.query({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
+
+    const statementQuery = `(select id from statement where report_id = $2)`
+
+    await client.query({
+      text: `update statement set deleted = $1 where id in ${statementQuery}`,
+      values: [now, reportId],
+    })
+    await client.query({
+      text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
+      values: [now, reportId],
+    })
+  })
+
 // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
 const getNextNotificationReminder = async transactionalClient => {
   const result = await transactionalClient.query({
@@ -231,6 +249,7 @@ module.exports = {
   createDraftReport,
   updateDraftReport,
   submitReport,
+  deleteReport,
   changeStatus,
   getCurrentDraftReport,
   getReport,
