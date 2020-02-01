@@ -19,6 +19,7 @@ test('getStatements', () => {
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
           and s.statement_status = $2
+          and s.deleted is null
           order by r.incident_date`,
     values: ['user1', StatementStatus.PENDING.value],
   })
@@ -36,9 +37,13 @@ test('getStatementForUser', () => {
     ,      s.job_start_year         "jobStartYear"
     ,      s.statement
     ,      s.submitted_date         "submittedDate"
-    from report r 
+    from report r
     left join statement s on r.id = s.report_id
-    where r.id = $1 and s.user_id = $2 and s.statement_status = $3`,
+    where r.id = $1
+      and r.deleted is null
+      and s.user_id = $2
+      and s.statement_status = $3
+      and s.deleted is null`,
     values: ['incident-1', 'user-1', StatementStatus.PENDING.value],
   })
 })
@@ -50,7 +55,7 @@ test('getAdditionalComments', () => {
     text: `select  
     s.additional_comment "additionalComment",
     s.date_submitted     "dateSubmitted" 
-    from statement_amendments s
+    from v_statement_amendments s
     where s.statement_id = $1`,
     values: [48],
   })
@@ -59,7 +64,7 @@ test('getAdditionalComments', () => {
 test('saveAdditionalComment', () => {
   statementsClient.saveAdditionalComment(50, 'Another comment made')
   expect(db.query).toBeCalledWith({
-    text: `insert into statement_amendments (statement_id, additional_comment)
+    text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
     values: [50, 'Another comment made'],
   })
@@ -81,7 +86,7 @@ test('createStatements', async () => {
   expect(ids).toEqual({ a: 1, b: 2 })
   expect(db.query).toBeCalledWith({
     text:
-      `insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
+      `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
       `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
       `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
   })
@@ -96,7 +101,7 @@ test('saveStatement', () => {
   })
 
   expect(db.query).toBeCalledWith({
-    text: `update statement 
+    text: `update v_statement 
     set last_training_month = $1
     ,   last_training_year = $2
     ,   job_start_year = $3
@@ -114,7 +119,7 @@ test('submitStatement', () => {
   statementsClient.submitStatement('user1', 'incident1')
 
   expect(db.query).toBeCalledWith({
-    text: `update statement 
+    text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
     ,   updated_date = CURRENT_TIMESTAMP
@@ -129,7 +134,7 @@ test('getNumberOfPendingStatements', () => {
   statementsClient.getNumberOfPendingStatements('report1')
 
   expect(db.query).toBeCalledWith({
-    text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
+    text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
     values: ['report1', StatementStatus.PENDING.value],
   })
 })
@@ -142,7 +147,7 @@ test('getStatementsForReviewer', () => {
             ,      name
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
-            from statement where report_id = $2
+            from v_statement where report_id = $2
             order by name`,
     values: [StatementStatus.SUBMITTED.value, 'report1'],
   })
@@ -164,7 +169,8 @@ test('getStatementForReviewer', () => {
     ,      s.submitted_date         "submittedDate"
     from report r
     left join statement s on r.id = s.report_id
-    where s.id = $1`,
+    where s.id = $1
+    and s.deleted is null`,
     values: ['statement1'],
   })
 })
@@ -176,7 +182,7 @@ test('isStatementPresentForUser', async () => {
 
   expect(result).toEqual(true)
   expect(db.query).toBeCalledWith({
-    text: `select count(*) from statement where report_id = $1 and user_id = $2`,
+    text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
     values: ['report-1', 'user-1'],
   })
 })

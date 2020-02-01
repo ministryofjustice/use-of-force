@@ -30,6 +30,7 @@ describe('reportingClient', () => {
           where r.agency_id = $1
           and   r.incident_date >= $2
           and   r.incident_date <= $3
+          and   s.deleted is null
           group by s.user_id, s.name
           order by 2 desc
           limit 10`,
@@ -48,7 +49,7 @@ describe('reportingClient', () => {
 
       expect(db.query).toBeCalledWith({
         text: `select r.offender_no "offenderNo", count(*)
-          from report r
+          from v_report r
           where r.agency_id = $1
           and   r.incident_date >= $2
           and   r.incident_date <= $3

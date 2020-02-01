@@ -11,7 +11,7 @@ const createDraftReport = async ({
   incidentDate,
   formResponse,
 }) => {
-  const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from report where booking_id = $5 and user_id = $2)`
+  const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2)`
   const result = await nonTransactionalClient.query({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
             values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, ${nextSequence}, CURRENT_TIMESTAMP)
@@ -32,7 +32,7 @@ const createDraftReport = async ({
 
 const updateDraftReport = (reportId, incidentDate, formResponse) => {
   return nonTransactionalClient.query({
-    text: `update report r
+    text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
             ,   updated_date = now()
@@ -46,7 +46,7 @@ const maxSequenceForBooking =
 
 const submitReport = (userId, bookingId, submittedDate, client = nonTransactionalClient) => {
   return client.query({
-    text: `update report r
+    text: `update v_report r
             set status = $1
             ,   submitted_date = $2
             ,   updated_date = now()
@@ -60,7 +60,7 @@ const submitReport = (userId, bookingId, submittedDate, client = nonTransactiona
 
 const changeStatus = (reportId, startState, endState, client = nonTransactionalClient) => {
   return client.query({
-    text: `update report r
+    text: `update v_report r
             set status = $1
             ,   updated_date = now()
           where id = $2
@@ -71,7 +71,7 @@ const changeStatus = (reportId, startState, endState, client = nonTransactionalC
 
 const getCurrentDraftReport = async (userId, bookingId) => {
   const results = await nonTransactionalClient.query({
-    text: `select id, incident_date "incidentDate", form_response "form" from report r
+    text: `select id, incident_date "incidentDate", form_response "form" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
           and r.status = $3
@@ -89,7 +89,7 @@ const getReport = async (userId, reportId) => {
           , reporter_name "reporterName"
           , form_response "form"
           , booking_id "bookingId"
-          from report r
+          from v_report r
           where r.user_id = $1 and r.id = $2`,
     values: [userId, reportId],
   })
@@ -105,7 +105,7 @@ const getReportForReviewer = async reportId => {
           , form_response "form"
           , booking_id    "bookingId"
           , status
-          from report r
+          from v_report r
           where r.id = $1`,
     values: [reportId],
   })
@@ -113,7 +113,7 @@ const getReportForReviewer = async reportId => {
 }
 
 const getIncompleteReportsForReviewer = async agencyId => {
-  const isOverdue = `(select count(*) from "statement" s
+  const isOverdue = `(select count(*) from "v_statement" s
                       where r.id = s.report_id 
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
@@ -125,7 +125,7 @@ const getIncompleteReportsForReviewer = async agencyId => {
             , r.offender_no    "offenderNo"
             , r.incident_date  "incidentDate"
             , ${isOverdue}     "isOverdue"
-            from report r
+            from v_report r
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
@@ -140,7 +140,7 @@ const getCompletedReportsForReviewer = async agencyId => {
             , r.reporter_name  "reporterName"
             , r.offender_no    "offenderNo"
             , r.incident_date  "incidentDate"
-            from report r
+            from v_report r
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
@@ -157,7 +157,7 @@ const getReports = (userId, statuses) => {
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
-            from report r
+            from v_report r
           where r.status in (%L)
           and r.user_id = %L
           order by r.incident_date`,
@@ -169,7 +169,7 @@ const getReports = (userId, statuses) => {
 
 const getDraftInvolvedStaff = async reportId => {
   const results = await nonTransactionalClient.query({
-    text: 'select form_response "form" from report where id = $1',
+    text: 'select form_response "form" from v_report where id = $1',
     values: [reportId],
   })
 
@@ -186,7 +186,7 @@ const getInvolvedStaff = async reportId => {
     ,      s.user_id       "userId"
     ,      s.name          "name"
     ,      s.email         "email"
-    from statement s 
+    from v_statement s 
     where s.report_id = $1`,
     values: [reportId],
   })
@@ -209,7 +209,7 @@ const getNextNotificationReminder = async transactionalClient => {
           ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
-          where s.next_reminder_date < now() and s.statement_status = $1
+          where s.next_reminder_date < now() and s.statement_status = $1 and s.deleted is null
           order by s.id
           for update of s skip locked
           LIMIT 1`,
@@ -223,7 +223,7 @@ const getNextNotificationReminder = async transactionalClient => {
 
 const setNextReminderDate = (statementId, nextDate, client = nonTransactionalClient) =>
   client.query({
-    text: 'update statement set next_reminder_date = $1, updated_date = now() where id = $2',
+    text: 'update v_statement set next_reminder_date = $1, updated_date = now() where id = $2',
     values: [nextDate, statementId],
   })
 

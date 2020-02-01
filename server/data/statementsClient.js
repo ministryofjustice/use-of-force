@@ -14,6 +14,7 @@ const getStatements = (userId, status) => {
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
           and s.statement_status = $2
+          and s.deleted is null
           order by r.incident_date`,
     values: [userId, status.value],
   })
@@ -29,9 +30,13 @@ const getStatementForUser = async (userId, reportId, status) => {
     ,      s.job_start_year         "jobStartYear"
     ,      s.statement
     ,      s.submitted_date         "submittedDate"
-    from report r 
+    from report r
     left join statement s on r.id = s.report_id
-    where r.id = $1 and s.user_id = $2 and s.statement_status = $3`,
+    where r.id = $1
+      and r.deleted is null
+      and s.user_id = $2
+      and s.statement_status = $3
+      and s.deleted is null`,
     values: [reportId, userId, status.value],
   })
   return results.rows[0]
@@ -51,7 +56,8 @@ const getStatementForReviewer = async statementId => {
     ,      s.submitted_date         "submittedDate"
     from report r
     left join statement s on r.id = s.report_id
-    where s.id = $1`,
+    where s.id = $1
+    and s.deleted is null`,
     values: [statementId],
   })
   return results.rows[0]
@@ -63,7 +69,7 @@ const getStatementsForReviewer = async reportId => {
             ,      name
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
-            from statement where report_id = $2
+            from v_statement where report_id = $2
             order by name`,
     values: [StatementStatus.SUBMITTED.value, reportId],
   })
@@ -75,7 +81,7 @@ const getAdditionalComments = async statementId => {
     text: `select  
     s.additional_comment "additionalComment",
     s.date_submitted     "dateSubmitted" 
-    from statement_amendments s
+    from v_statement_amendments s
     where s.statement_id = $1`,
     values: [statementId],
   })
@@ -84,7 +90,7 @@ const getAdditionalComments = async statementId => {
 
 const saveAdditionalComment = (statementId, additionalComment, client = nonTransactionalClient) => {
   return client.query({
-    text: `insert into statement_amendments (statement_id, additional_comment)
+    text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
     values: [statementId, additionalComment],
   })
@@ -97,7 +103,7 @@ const saveStatement = (
   client = nonTransactionalClient
 ) => {
   return client.query({
-    text: `update statement 
+    text: `update v_statement 
     set last_training_month = $1
     ,   last_training_year = $2
     ,   job_start_year = $3
@@ -121,7 +127,7 @@ const saveStatement = (
 
 const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
   return client.query({
-    text: `update statement 
+    text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
     ,   updated_date = CURRENT_TIMESTAMP
@@ -134,7 +140,7 @@ const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
 
 const getNumberOfPendingStatements = async (reportId, client = nonTransactionalClient) => {
   const { rows } = await client.query({
-    text: `select count(*) from statement where report_id = $1 AND statement_status = $2`,
+    text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
     values: [reportId, StatementStatus.PENDING.value],
   })
   return parseInt(rows[0].count, 10)
@@ -153,7 +159,7 @@ const createStatements = async ({ reportId, firstReminder, overdueDate, staff, c
   ])
   const results = await client.query({
     text: format(
-      'insert into statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
+      'insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
       rows
     ),
   })
@@ -162,7 +168,7 @@ const createStatements = async ({ reportId, firstReminder, overdueDate, staff, c
 
 const isStatementPresentForUser = async (reportId, username, client = nonTransactionalClient) => {
   const { rows } = await client.query({
-    text: `select count(*) from statement where report_id = $1 and user_id = $2`,
+    text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
     values: [reportId, username],
   })
   return parseInt(rows[0].count, 10) > 0

@@ -19,7 +19,7 @@ describe('getCurrentDraftReport', () => {
     incidentClient.getCurrentDraftReport('user1', -1)
 
     expect(db.query).toBeCalledWith({
-      text: `select id, incident_date "incidentDate", form_response "form" from report r
+      text: `select id, incident_date "incidentDate", form_response "form" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
           and r.status = $3
@@ -38,7 +38,7 @@ test('getReports', () => {
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
-            from report r
+            from v_report r
           where r.status in ('IN_PROGRESS','SUBMITTED')
           and r.user_id = 'user1'
           order by r.incident_date`,
@@ -56,14 +56,14 @@ test('getReportForReviewer', () => {
           , form_response "form"
           , booking_id    "bookingId"
           , status
-          from report r
+          from v_report r
           where r.id = $1`,
     values: ['report1'],
   })
 })
 
 test('getIncompleteReportsForReviewer', () => {
-  const isOverdue = `(select count(*) from "statement" s
+  const isOverdue = `(select count(*) from "v_statement" s
                       where r.id = s.report_id 
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
@@ -77,7 +77,7 @@ test('getIncompleteReportsForReviewer', () => {
             , r.offender_no    "offenderNo"
             , r.incident_date  "incidentDate"
             , ${isOverdue}     "isOverdue"
-            from report r
+            from v_report r
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
@@ -94,7 +94,7 @@ test('getCompletedReportsForReviewer', () => {
             , r.reporter_name  "reporterName"
             , r.offender_no    "offenderNo"
             , r.incident_date  "incidentDate"
-            from report r
+            from v_report r
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
@@ -112,7 +112,7 @@ test('getReport', () => {
           , reporter_name "reporterName"
           , form_response "form"
           , booking_id "bookingId"
-          from report r
+          from v_report r
           where r.user_id = $1 and r.id = $2`,
     values: ['user1', 'report1'],
   })
@@ -134,7 +134,7 @@ test('createDraftReport', async () => {
   expect(id).toEqual(id)
   expect(db.query).toBeCalledWith({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
-            values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
+            values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
             returning id`,
     values: [
       { someData: true },
@@ -153,7 +153,7 @@ test('updateDraftReport', () => {
   incidentClient.updateDraftReport('formId', 'date-1', {})
 
   expect(db.query).toBeCalledWith({
-    text: `update report r
+    text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
             ,   updated_date = now()
@@ -166,7 +166,7 @@ test('submitReport', () => {
   incidentClient.submitReport('user1', 'booking1', 'date1')
 
   expect(db.query).toBeCalledWith({
-    text: `update report r
+    text: `update v_report r
             set status = $1
             ,   submitted_date = $2
             ,   updated_date = now()
@@ -182,7 +182,7 @@ test('changeStatus', () => {
   incidentClient.changeStatus('report1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE)
 
   expect(db.query).toBeCalledWith({
-    text: `update report r
+    text: `update v_report r
             set status = $1
             ,   updated_date = now()
           where id = $2
@@ -214,7 +214,7 @@ test('getDraftInvolvedStaff', async () => {
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(db.query).toBeCalledWith({
-    text: `select form_response "form" from report where id = $1`,
+    text: `select form_response "form" from v_report where id = $1`,
     values: ['incident-1'],
   })
 })
@@ -231,7 +231,7 @@ test('getInvolvedStaff', async () => {
     ,      s.user_id       "userId"
     ,      s.name          "name"
     ,      s.email         "email"
-    from statement s 
+    from v_statement s 
     where s.report_id = $1`,
     values: ['incident-1'],
   })
@@ -254,7 +254,7 @@ test('getNextNotificationReminder', () => {
           ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
-          where s.next_reminder_date < now() and s.statement_status = $1
+          where s.next_reminder_date < now() and s.statement_status = $1 and s.deleted is null
           order by s.id
           for update of s skip locked
           LIMIT 1`,
@@ -266,7 +266,7 @@ test('setNextReminderDate', () => {
   incidentClient.setNextReminderDate(-1, '2019-09-03 11:20:36')
 
   expect(db.query).toBeCalledWith({
-    text: 'update statement set next_reminder_date = $1, updated_date = now() where id = $2',
+    text: 'update v_statement set next_reminder_date = $1, updated_date = now() where id = $2',
     values: ['2019-09-03 11:20:36', -1],
   })
 })
