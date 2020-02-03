@@ -105,6 +105,17 @@ module.exports = function createReportService({
     return false
   }
 
+  const deleteReport = async (username, reportId) => {
+    logger.info(`User: ${username} is deleting report: '${reportId}'`)
+
+    const report = await incidentClient.getReportForReviewer(reportId)
+    if (!report) {
+      throw new Error(`Report: '${reportId}' does not exist`)
+    }
+
+    await incidentClient.deleteReport(reportId)
+  }
+
   return {
     getReport,
     getReports,
@@ -112,6 +123,7 @@ module.exports = function createReportService({
     isDraftComplete,
     update,
     submit,
+    deleteReport,
     getReportStatus,
   }
 }

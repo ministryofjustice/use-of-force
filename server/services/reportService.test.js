@@ -11,6 +11,7 @@ const incidentClient = {
   updateDraftReport: jest.fn(),
   createDraftReport: jest.fn(),
   submitReport: jest.fn(),
+  deleteReport: jest.fn(),
   commitAndStartNewTransaction: jest.fn(),
   getIncompleteReportsForReviewer: jest.fn(),
   getCompletedReportsForReviewer: jest.fn(),
@@ -228,6 +229,22 @@ describe('create', () => {
       reporterName: 'Bob Smith',
       formResponse: formObject,
       incidentDate: '2/2/2019',
+    })
+  })
+  describe('deleteReport', () => {
+    test('when report exists', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue({})
+
+      await service.deleteReport('currentUser', 1)
+
+      expect(incidentClient.deleteReport).toBeCalledWith(1)
+    })
+    test('when report does not exists', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue(null)
+
+      await expect(service.deleteReport('currentUser', 1)).rejects.toThrow(`Report: '1' does not exist`)
+
+      expect(incidentClient.deleteReport).not.toHaveBeenCalled()
     })
   })
 })
