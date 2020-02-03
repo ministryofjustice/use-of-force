@@ -24,7 +24,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
       const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
 
-      const namesByOffenderNumber = await getOffenderNames(systemToken(res.locals.user.username), [
+      const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
         ...awaiting,
         ...completed,
       ])
@@ -51,7 +51,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       const errors = req.flash('errors')
       const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(
-        systemToken(res.locals.user.username),
+        await systemToken(res.locals.user.username),
         statement.bookingId
       )
       const { displayName, offenderNo } = offenderDetail
@@ -99,7 +99,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const statement = await statementService.getStatementForUser(req.user.username, reportId, StatementStatus.PENDING)
       const offenderDetail = await offenderService.getOffenderDetails(
-        systemToken(res.locals.user.username),
+        await systemToken(res.locals.user.username),
         statement.bookingId
       )
       const { displayName, offenderNo } = offenderDetail
@@ -142,7 +142,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
       )
 
       const offenderDetail = await offenderService.getOffenderDetails(
-        systemToken(res.locals.user.username),
+        await systemToken(res.locals.user.username),
         statement.bookingId
       )
       const { displayName, offenderNo } = offenderDetail
@@ -165,7 +165,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         StatementStatus.SUBMITTED
       )
       const offenderDetail = await offenderService.getOffenderDetails(
-        systemToken(res.locals.user.username),
+        await systemToken(res.locals.user.username),
         statement.bookingId
       )
       const { displayName, offenderNo } = offenderDetail

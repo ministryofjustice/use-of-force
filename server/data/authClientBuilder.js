@@ -45,7 +45,7 @@ module.exports = {
 
   async systemToken(username) {
     const systemClientToken = await getSystemClientToken(username)
-    return systemClientToken.token
+    return systemClientToken.access_token
   },
 }
 

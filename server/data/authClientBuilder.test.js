@@ -6,7 +6,7 @@ describe('authClient', () => {
   let fakeApi
   let client
 
-  const token = { token: 'token-1' }
+  const token = { access_token: 'token-1' }
 
   beforeEach(() => {
     fakeApi = nock(config.apis.oauth2.url)
@@ -87,7 +87,7 @@ describe('authClient', () => {
         .reply(200, token)
 
       const output = await systemToken(userName)
-      expect(output).toEqual(token.token)
+      expect(output).toEqual(token.access_token)
     })
 
     it('without username', async () => {
@@ -98,7 +98,7 @@ describe('authClient', () => {
         .reply(200, token)
 
       const output = await systemToken()
-      expect(output).toEqual(token.token)
+      expect(output).toEqual(token.access_token)
     })
   })
 })

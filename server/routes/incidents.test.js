@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { appWithAllRoutes, user, reviewerUser } = require('./testutils/appSetup')
+const { appWithAllRoutes, user, reviewerUser, coordinatorUser } = require('./testutils/appSetup')
 
 const userSupplier = jest.fn()
 
@@ -92,6 +92,42 @@ describe('GET /your-report', () => {
     reportService.getReport.mockReturnValue(undefined)
     return request(app)
       .get('/1/your-report')
+      .expect(500)
+  })
+})
+
+describe('GET /view-report', () => {
+  it('should render page for reviewer', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    return request(app)
+      .get('/1/view-report')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force report')
+        expect(res.text).not.toContain('Delete report')
+      })
+  })
+
+  it('should render page for coordinator', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    return request(app)
+      .get('/1/view-report')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force report')
+        expect(res.text).toContain('Delete report')
+      })
+  })
+
+  it('should fail to render page when no report', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    reviewService.getReport.mockReturnValue(undefined)
+    return request(app)
+      .get('/1/view-report')
       .expect(500)
   })
 })

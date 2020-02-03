@@ -10,15 +10,10 @@ const reportingService = {
   getMostOftenInvolvedPrisoners: jest.fn(),
 }
 
-const involvedStaffService = {
-  addInvolvedStaff: jest.fn(),
-}
-
 const route = createRouter({
   authenticationMiddleware,
   offenderService: {},
   reportingService,
-  involvedStaffService,
   systemToken: username => `${username}-token`,
 })
 
@@ -31,34 +26,6 @@ describe('api', () => {
 
   afterEach(() => {
     jest.resetAllMocks()
-  })
-
-  describe('add involved staff', () => {
-    it('should resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .get('/report/1/involved-staff/sally')
-        .expect('Content-Type', 'application/json; charset=utf-8')
-        .expect(res => {
-          expect(res.body).toEqual({ result: 'ok' })
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-token', '1', 'sally')
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .get('/report/1/involved-staff/sally')
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
   })
 
   describe('reporting', () => {

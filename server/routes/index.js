@@ -6,8 +6,9 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const CreateIncidentRoutes = require('./incidents')
 const CreateStatementRoutes = require('./statements')
 const CreateReportRoutes = require('./createReport')
-const CheckYourAnswerRoutes = require('./checkYourAnswers')
-const ReportUseOfForce = require('./reportUseOfForce')
+const CreateCheckYourAnswerRoutes = require('./checkYourAnswers')
+const CreateReportUseOfForceRoutes = require('./reportUseOfForce')
+const CreateCoordinatorRoutes = require('./coordinator')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -36,9 +37,15 @@ module.exports = function Index({
     involvedStaffService,
   })
 
-  const checkYourAnswers = CheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
+  const checkYourAnswers = CreateCheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
 
-  const reportUseOfForce = ReportUseOfForce({ reportService, offenderService })
+  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService })
+
+  const coordinator = CreateCoordinatorRoutes({
+    reportService,
+    involvedStaffService,
+    systemToken,
+  })
 
   router.use(authenticationMiddleware())
   router.use(bodyParser.urlencoded({ extended: false }))
@@ -106,6 +113,11 @@ module.exports = function Index({
   get('/:reportId/view-report', incidents.reviewReport)
   get('/:reportId/view-statements', incidents.reviewStatements)
   get('/:statementId/view-statement', incidents.reviewStatement)
+
+  // Coordinator
+  get('/report/:reportId/involved-staff/:username', coordinator.addInvolvedStaff)
+  get('/coordinator/report/:reportId/confirm-delete', coordinator.deleteConfirm)
+  post('/coordinator/report/:reportId/delete', coordinator.deleteReport)
 
   return router
 }

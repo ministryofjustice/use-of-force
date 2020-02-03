@@ -29,6 +29,19 @@ const reviewerUser = {
   username: 'user1',
   displayName: 'First Last',
   isReviewer: true,
+  isCoordinator: false,
+  activeCaseLoadId: 'LEI',
+}
+
+const coordinatorUser = {
+  firstName: 'first',
+  lastName: 'last',
+  userId: 'id',
+  token: 'token',
+  username: 'user1',
+  displayName: 'First Last',
+  isReviewer: true,
+  isCoordinator: true,
   activeCaseLoadId: 'LEI',
 }
 
@@ -72,4 +85,4 @@ const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
   return appSetup(route, userSupplier)
 }
 
-module.exports = { appSetup, appWithAllRoutes, user, reviewerUser }
+module.exports = { appSetup, appWithAllRoutes, user, reviewerUser, coordinatorUser }
