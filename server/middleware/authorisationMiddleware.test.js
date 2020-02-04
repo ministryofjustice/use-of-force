@@ -28,27 +28,71 @@ describe('authorisationMiddleware', () => {
     },
   })
 
-  test('Should populate isReviewer for reviewer', () => {
-    const res = createResWithToken({ authorities: ['ROLE_USE_OF_FORCE_REVIEWER'] })
+  describe('isReviewer', () => {
+    test('Should populate isReviewer for reviewer', () => {
+      const res = createResWithToken({ authorities: ['ROLE_USE_OF_FORCE_REVIEWER'] })
 
-    authorisationMiddleware(req, res, next)
+      authorisationMiddleware(req, res, next)
 
-    expect(res.locals.user.isReviewer).toEqual(true)
+      expect(res.locals.user.isReviewer).toEqual(true)
+    })
+
+    test('Should populate isReviewer for coordinator', () => {
+      const res = createResWithToken({ authorities: ['ROLE_USE_OF_FORCE_COORDINATOR'] })
+
+      authorisationMiddleware(req, res, next)
+
+      expect(res.locals.user.isReviewer).toEqual(true)
+    })
+
+    test('Should populate isReviewer for standard user', () => {
+      const res = createResWithToken({ authorities: [] })
+
+      authorisationMiddleware(req, res, next)
+
+      expect(res.locals.user.isReviewer).toEqual(false)
+    })
+
+    test('Should populate isReviewer when no authorities at all', () => {
+      const res = createResWithToken()
+
+      authorisationMiddleware(req, res, next)
+
+      expect(res.locals.user.isReviewer).toEqual(false)
+    })
   })
 
-  test('Should populate isReviewer for standard user', () => {
-    const res = createResWithToken({ authorities: [] })
+  describe('isCoordinator', () => {
+    test('Should populate isCoordinator for reviewer', () => {
+      const res = createResWithToken({ authorities: ['ROLE_USE_OF_FORCE_REVIEWER'] })
 
-    authorisationMiddleware(req, res, next)
+      authorisationMiddleware(req, res, next)
 
-    expect(res.locals.user.isReviewer).toEqual(false)
-  })
+      expect(res.locals.user.isCoordinator).toEqual(false)
+    })
 
-  test('Should populate isReviewer when no authorities at all', () => {
-    const res = createResWithToken()
+    test('Should populate isCoordinator for coordinator', () => {
+      const res = createResWithToken({ authorities: ['ROLE_USE_OF_FORCE_COORDINATOR'] })
 
-    authorisationMiddleware(req, res, next)
+      authorisationMiddleware(req, res, next)
 
-    expect(res.locals.user.isReviewer).toEqual(false)
+      expect(res.locals.user.isCoordinator).toEqual(true)
+    })
+
+    test('Should populate isCoordinator for standard user', () => {
+      const res = createResWithToken({ authorities: [] })
+
+      authorisationMiddleware(req, res, next)
+
+      expect(res.locals.user.isCoordinator).toEqual(false)
+    })
+
+    test('Should populate isCoordinator when no authorities at all', () => {
+      const res = createResWithToken()
+
+      authorisationMiddleware(req, res, next)
+
+      expect(res.locals.user.isCoordinator).toEqual(false)
+    })
   })
 })

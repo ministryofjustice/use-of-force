@@ -253,7 +253,12 @@ module.exports = function createApp({
 
   app.use(
     '/api/',
-    createApiRouter({ authenticationMiddleware, offenderService, reportingService, involvedStaffService, systemToken })
+    createApiRouter({
+      authenticationMiddleware,
+      offenderService,
+      reportingService,
+      systemToken,
+    })
   )
 
   app.use((req, res, next) => {
