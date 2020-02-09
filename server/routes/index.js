@@ -45,6 +45,8 @@ module.exports = function Index({
     reportService,
     involvedStaffService,
     systemToken,
+    offenderService,
+    reviewService,
   })
 
   router.use(authenticationMiddleware())

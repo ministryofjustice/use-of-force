@@ -1,24 +1,45 @@
 
 {% import "./pagesMacros.njk" as pagesMacros %} 
 
+{% macro fieldValue(name, value, dataQa) %}
+  <span class="govuk-label--s">{{name}}:&nbsp;</span>
+  <span data-qa="{{ dataQa }}"> {{ value }}</span>  
+{% endmacro %}
+
 {% macro reportHeading(data) %}
-   <div class="govuk-!-margin-bottom-1">
-    <span class="govuk-label--s">Created by:&nbsp;</span>
-    <span data-qa="reporter-name"> {{ data.reporterName }}</span>
+  <div class="govuk-!-margin-bottom-1">
+    {{ fieldValue('Created by', data.reporterName, 'reporter-name')  }}
     <br/>
-    <span class="govuk-label--s">Date and time:&nbsp;</span>
-    <span data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm')}}</span>
+    {{ fieldValue('Date and time', data.submittedDate | formatDate('D MMMM YYYY, HH:mm'), 'submitted-date')  }}
     <br/>
-    <span class="govuk-label--s">Prisoner name:&nbsp;</span>
-    <span data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</span>
+    {{ fieldValue('Prisoner name', data.offenderDetail.displayName, 'prisoner-name')  }}
     <br/>
-    <span class="govuk-label--s">Prisoner number:&nbsp;</span>
-    <span data-qa="prison-number"> {{ data.offenderDetail.offenderNo }}</span>
+    {{ fieldValue('Prisoner number', data.offenderDetail.offenderNo, 'prisoner-number')  }}
     <br/>
-    <span class="govuk-label--s">Incident number:&nbsp;</span>
-    <span data-qa="incident-number"> {{ data.incidentId }}</span>
+    {{ fieldValue('Incident number', data.incidentId, 'incident-number')  }}
   </div>    
-{% endmacro %}}
+{% endmacro %}
+
+{% macro reportHeadingWithSpacing(data) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-!-margin-bottom-1">
+          <p class="govuk-!-margin-bottom-1">
+            {{ fieldValue('Created by', data.reporterName, 'reporter-name')  }}
+          </p>
+          <p class="govuk-!-margin-bottom-1">
+            {{ fieldValue('Date and time', data.submittedDate | formatDate('D MMMM YYYY, HH:mm'), 'submitted-date')  }}
+          </p>
+          <p class="govuk-!-margin-bottom-1">
+            {{ fieldValue('Prisoner name', data.offenderDetail.displayName, 'prisoner-name')  }}
+          </p>
+          <p class="govuk-!-margin-bottom-1">
+            {{ fieldValue('Prisoner number', data.offenderDetail.offenderNo, 'prisoner-number')  }}
+          </p>
+      </div>    
+    </div>
+  </div>
+{% endmacro %}
 
 {% macro detail(data, bookingId) %}
     {{

@@ -8,7 +8,7 @@ const viewStatementsPage = () =>
 
     prisonerName: () => cy.get('[data-qa="prisoner-name"]'),
 
-    prisonNumber: () => cy.get('[data-qa="prison-number"]'),
+    prisonNumber: () => cy.get('[data-qa="prisoner-number"]'),
 
     getReportId: () => {
       return cy.url().then(url => {

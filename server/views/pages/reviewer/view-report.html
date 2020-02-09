@@ -31,17 +31,6 @@
         attributes: { 'data-qa': 'continue' }
       })
     }}
-  {% if user.isCoordinator %}
-    {{
-      govukButton({
-        text: 'Delete report',
-        name: 'delete',
-        href: '/coordinator/report/' + data.incidentId + '/confirm-delete',
-        classes: 'govuk-button govuk-button--warning float-right govuk-!-margin-top-5',
-        attributes: { 'data-qa': 'continue' }
-      })
-    }}
-  {% endif %}  
   </div>    
 </div>
 

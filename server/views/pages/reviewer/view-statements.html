@@ -1,7 +1,7 @@
 {% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %}
-
+{% import "../reportDetailMacro.njk" as reportDetail %} 
 {% set pageTitle = 'Use of force incident' %}
 
 {% block content %}
@@ -9,42 +9,21 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <div class="govuk-!-margin-bottom-1">
-              <p class="govuk-!-margin-bottom-1">
-                <span class="govuk-label--s">Created by:&nbsp;</span>
-                <span data-qa="reporter-name"> {{ data.reporterName }}</span>
-              </p>
-              <p class="govuk-!-margin-bottom-1">
-                <span class="govuk-label--s">Date and time:&nbsp;</span>
-                <span data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm')}}</span>
-              </p>
-              <p class="govuk-!-margin-bottom-1">
-                <span class="govuk-label--s">Prisoner name:&nbsp;</span>
-                <span data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</span>
-              </p>
-              <p class="govuk-!-margin-bottom-1">
-                <span class="govuk-label--s">Prisoner number:&nbsp;</span>
-                <span data-qa="prison-number"> {{ data.offenderDetail.offenderNo }}</span>
-              </p>
-          </div>    
-        </div>
-      </div>
+      {{ reportDetail.reportHeadingWithSpacing(data) }}
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-top-3">
     <div class="govuk-grid-column-full">    
-      <a
-      href="/{{ data.reportId }}/view-report"
-      draggable="false"
-      class="govuk-link"
-      data-qa="report-link"
-      >
-        View report
-      </a>
-
+      <p class="govuk-!-padding-bottom-2">
+        <a
+          href="/{{ data.reportId }}/view-report"
+          draggable="false"
+          class="govuk-link"
+          data-qa="report-link"
+        >
+          View report details
+        </a>
+      </p>
 
       <table class="govuk-table govuk-!-width-one-third" data-qa="statements">
         <thead class="govuk-table__head">
