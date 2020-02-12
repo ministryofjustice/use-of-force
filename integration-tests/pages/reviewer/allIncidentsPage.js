@@ -32,16 +32,14 @@ const incidentsPage = () =>
       date: () => todoCol(i, 0),
       prisoner: () => todoCol(i, 1),
       reporter: () => todoCol(i, 2),
-      viewReportButton: () => todoCol(i, 3).find('a'),
-      viewStatementsButton: () => todoCol(i, 4).find('a'),
+      viewStatementsButton: () => todoCol(i, 3).find('a'),
       overdue: () => cy.get('[data-qa=overdue]'),
     }),
     getCompleteRow: i => ({
       date: () => completeCol(i, 0),
       prisoner: () => completeCol(i, 1),
       reporter: () => completeCol(i, 2),
-      viewReportButton: () => completeCol(i, 3).find('a'),
-      viewStatementsButton: () => completeCol(i, 4).find('a'),
+      viewStatementsButton: () => completeCol(i, 3).find('a'),
       reportId: () =>
         completeCol(i, 3)
           .find('a')

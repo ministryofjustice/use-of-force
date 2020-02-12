@@ -15,7 +15,9 @@
       <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
       <th class="govuk-table__header reporter" scope="col">Reporter</th>
       <th class="govuk-table__header report" scope="col">Report</th>
-      <th class="govuk-table__header statements" scope="col">Statements</th>
+      {% if user.isCoordinator %}      
+      <th class="govuk-table__header delete" scope="col"></th>
+      {% endif %}      
       <th class="govuk-table__header overdue" scope="col"></th>
     </tr>
   </thead>
@@ -23,30 +25,34 @@
   <tbody class="govuk-table__body">
       {% for report in awaitingReports %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{report.offenderName}}</td>
-          <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell">
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">
             <a
-              href="/{{ report.id }}/view-report"
+              href="/{{ report.id }}/view-statements"
               draggable="false"
               class="govuk-link" 
             >
               View report
             </a>
           </td>
+          {% if user.isCoordinator %}
           <td class="govuk-table__cell">
-            <a
-              href="/{{ report.id }}/view-statements"
-              draggable="false"
-              class="govuk-link"
-            >
-              View statements 
-            </a>
+              {{
+                govukButton({
+                  text: 'Delete report',
+                  name: 'delete',
+                  href: '/coordinator/report/' + report.id + '/confirm-delete',
+                  classes: 'govuk-button govuk-button--secondary',
+                  attributes: { 'data-qa': 'continue' }
+                })
+              }}
           </td>
+          {% endif %}  
           <td class="govuk-table__cell">
             {% if report.isOverdue %}
-              <span data-qa="overdue" class="govuk-tag moj-tag--red">OVERDUE</span>
+              <span data-qa="overdue" class="govuk-tag moj-tag--red govuk-!-margin-top-1">OVERDUE</span>
             {% endif %}
           </td>
       </tr>  
@@ -66,35 +72,41 @@
         <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
         <th class="govuk-table__header reporter" scope="col">Reporter</th>
         <th class="govuk-table__header report" scope="col">Report</th>
-        <th class="govuk-table__header statements" scope="col">Statements</th>
+        {% if user.isCoordinator %}      
+        <th class="govuk-table__header delete" scope="col"></th>
+        {% endif %}      
         <th class="govuk-table__header overdue" scope="col"></th>
-    </tr>
+      </tr>
   </thead>
 
   <tbody class="govuk-table__body">
       {% for report in completedReports %}
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
-        <td class="govuk-table__cell">{{report.offenderName}}</td>
-        <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-        <td class="govuk-table__cell">
-          <a
-          href="/{{ report.id }}/view-report"
-          draggable="false"
-          class="govuk-link" 
-          >
-            View report
-          </a>
-        </td>
-        <td class="govuk-table__cell">
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">
           <a
             href="/{{ report.id }}/view-statements"
             draggable="false"
             class="govuk-link" 
           >
-            View statements 
+            View report
           </a>
         </td>
+        {% if user.isCoordinator %}
+        <td class="govuk-table__cell">
+            {{
+              govukButton({
+                text: 'Delete report',
+                name: 'delete',
+                href: '/coordinator/report/' + report.id + '/confirm-delete',
+                classes: 'govuk-button govuk-button--secondary',
+                attributes: { 'data-qa': 'continue' }
+              })
+            }}
+        </td>
+        {% endif %}  
         <td class="govuk-table__cell">
         </td>
       </tr>  

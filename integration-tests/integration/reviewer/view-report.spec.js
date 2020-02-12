@@ -1,6 +1,7 @@
 const moment = require('moment')
 const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
+const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -60,10 +61,13 @@ context('view review page', () => {
     allIncidentsPage.selectedTab().contains('All incidents')
 
     {
-      const { prisoner, reporter, viewReportButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
-      viewReportButton().click()
+      viewStatementsButton().click()
+
+      const viewStatementsPage = ViewStatementsPage.verifyOnPage()
+      viewStatementsPage.reportLink().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
@@ -76,10 +80,13 @@ context('view review page', () => {
     }
 
     {
-      const { prisoner, reporter, viewReportButton } = allIncidentsPage.getTodoRow(1)
+      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(1)
       prisoner().contains('Smith, Norman')
       reporter().contains('Anne OtherUser')
-      viewReportButton().click()
+      viewStatementsButton().click()
+
+      const viewStatementsPage = ViewStatementsPage.verifyOnPage()
+      viewStatementsPage.reportLink().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')

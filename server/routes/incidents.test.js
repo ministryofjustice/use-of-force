@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { appWithAllRoutes, user, reviewerUser, coordinatorUser } = require('./testutils/appSetup')
+const { appWithAllRoutes, user, reviewerUser } = require('./testutils/appSetup')
 
 const userSupplier = jest.fn()
 
@@ -107,19 +107,6 @@ describe('GET /view-report', () => {
       .expect(res => {
         expect(res.text).toContain('Use of force report')
         expect(res.text).not.toContain('Delete report')
-      })
-  })
-
-  it('should render page for coordinator', () => {
-    userSupplier.mockReturnValue(coordinatorUser)
-    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
-    return request(app)
-      .get('/1/view-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force report')
-        expect(res.text).toContain('Delete report')
       })
   })
 
