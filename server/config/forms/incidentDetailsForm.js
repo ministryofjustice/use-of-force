@@ -1,6 +1,6 @@
-const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
+const { joi, asMeta, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
-const { toDate, removeEmptyObjects } = require('./sanitisers')
+const { toDate, removeEmptyObjects, toBoolean } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
 
 const {
@@ -9,6 +9,7 @@ const {
   requiredIntegerMsg,
   requiredString,
   requiredStringMsg,
+  optionalString,
   requiredPatternMsg,
   requiredBoolean,
   requiredBooleanMsg,
@@ -82,7 +83,16 @@ const transientSchema = joi.object({
 })
 
 const persistentSchema = transientSchema.fork('involvedStaff.username', schema =>
-  schema.append({ name: requiredString, email: requiredString, staffId: requiredNumber })
+  schema.append({
+    name: requiredString,
+    email: optionalString,
+    staffId: requiredNumber,
+    missing: joi
+      .boolean()
+      .valid(false)
+      .meta(asMeta(toBoolean)),
+    verified: joi.boolean().meta(asMeta(toBoolean)),
+  })
 )
 module.exports = {
   optionalInvolvedStaff: transientSchema.extract('involvedStaff'),

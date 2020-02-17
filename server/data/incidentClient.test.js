@@ -254,7 +254,10 @@ test('getNextNotificationReminder', () => {
           ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
-          where s.next_reminder_date < now() and s.statement_status = $1 and s.deleted is null
+          where s.next_reminder_date < now()
+          and s.statement_status = $1
+          and s.deleted is null
+          and s.email is not null
           order by s.id
           for update of s skip locked
           LIMIT 1`,

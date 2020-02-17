@@ -24,6 +24,11 @@ const requiredString = joi
   .required()
   .meta(asMeta(trimmedString))
 
+const optionalString = joi
+  .string()
+  .trim(true)
+  .meta(asMeta(trimmedString))
+
 const requiredStringMsg = message =>
   requiredString.messages({
     'any.required': message,
@@ -135,7 +140,7 @@ module.exports = {
   usernamePattern,
   namePattern,
   caseInsensitiveComparator,
-
+  asMeta,
   validations: {
     any: joi.any(),
 
@@ -150,6 +155,7 @@ module.exports = {
     requiredYearNotInFuture,
     requiredYearNotInFutureMsg,
 
+    optionalString,
     requiredString,
     requiredStringMsg,
 

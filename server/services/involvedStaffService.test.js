@@ -3,6 +3,7 @@ const serviceCreator = require('./involvedStaffService')
 const { ReportStatus } = require('../config/types')
 
 const userService = {
+  getUser: jest.fn(),
   getUsers: jest.fn(),
 }
 
@@ -92,110 +93,32 @@ describe('getInvolvedStaff', () => {
 })
 
 describe('lookup', () => {
-  test('skips lookup if no users provided', async () => {
-    const result = await service.lookup('token-1', [])
-
-    expect(result).toEqual([])
-    expect(userService.getUsers).not.toBeCalled()
-  })
-
-  test('fails when invalid users', async () => {
-    userService.getUsers.mockReturnValue({
-      exist: [
-        {
-          i: 0,
-          email: 'an@email.com',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-      ],
-      missing: [{ i: 1, exists: false, username: 'June', verified: false }],
-      notVerified: [{ i: 2, exists: true, username: 'Jenny', verified: false }],
-      success: false,
-    })
-
-    await expect(service.lookup('token-1', ['Bob', 'June', 'Jenny'])).rejects.toThrow(
-      'Contains one or more users with unverified emails'
-    )
-  })
-
-  test('succeeds when unavailable users', async () => {
-    userService.getUsers.mockReturnValue({
-      exist: [
-        {
-          i: 0,
-          email: 'an@email.com',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-      ],
-      missing: [{ i: 1, exists: false, username: 'June', verified: true }],
-      notVerified: [],
-      success: true,
-    })
-
-    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
-
-    expect(result).toEqual([
-      { email: 'an@email.com', name: 'Bob Smith', staffId: undefined, username: 'Bob' },
-      { missing: true, username: 'June' },
-    ])
-  })
-
   test('success', async () => {
-    userService.getUsers.mockReturnValue({
-      exist: [
-        {
-          staffId: 3,
-          i: 2,
-          email: 'an@email',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-        { staffId: 1, i: 0, exists: true, email: 'bn@email', username: 'June', name: 'June Smith', verified: true },
-        {
-          staffId: 2,
-          i: 1,
-          exists: true,
-          email: 'cn@email',
-          username: 'Jenny',
-          name: 'Jenny Walker',
-          verified: true,
-        },
-      ],
-      missing: [],
-      notVerified: [],
-      success: true,
-    })
-
-    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
-
-    expect(result).toEqual([
-      {
-        staffId: 1,
-        email: 'bn@email',
-        username: 'June',
-        name: 'June Smith',
-      },
-      {
-        staffId: 2,
-        email: 'cn@email',
-        username: 'Jenny',
-        name: 'Jenny Walker',
-      },
+    const results = [
       {
         staffId: 3,
         email: 'an@email',
-        username: 'Bob',
+        missing: true,
         name: 'Bob Smith',
+        username: 'Bob',
+        verified: true,
       },
-    ])
+      { staffId: 1, missing: true, email: 'bn@email', username: 'June', name: 'June Smith', verified: true },
+      {
+        staffId: 2,
+        missing: true,
+        email: 'cn@email',
+        username: 'Jenny',
+        name: 'Jenny Walker',
+        verified: true,
+      },
+    ]
+
+    userService.getUsers.mockReturnValue(results)
+
+    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
+
+    expect(result).toEqual(results)
   })
 })
 
@@ -294,17 +217,14 @@ describe('save', () => {
       },
     ])
 
-    userService.getUsers.mockReturnValue({
-      success: true,
-      exist: [
-        {
-          staffId: 3,
-          email: 'an@email',
-          username: 'Bob',
-          name: 'Bob Smith',
-        },
-      ],
-    })
+    userService.getUsers.mockReturnValue([
+      {
+        staffId: 3,
+        email: 'an@email',
+        username: 'Bob',
+        name: 'Bob Smith',
+      },
+    ])
 
     const result = await service.save(
       'form1',
@@ -358,17 +278,14 @@ describe('save', () => {
     ]
 
     beforeEach(() => {
-      userService.getUsers.mockReturnValue({
-        success: true,
-        exist: [
-          {
-            staffId: 3,
-            email: 'an@email',
-            username: 'Bob',
-            name: 'Bob Smith',
-          },
-        ],
-      })
+      userService.getUsers.mockReturnValue([
+        {
+          staffId: 3,
+          email: 'an@email',
+          username: 'Bob',
+          name: 'Bob Smith',
+        },
+      ])
     })
 
     test('to complete report', async () => {
@@ -451,14 +368,10 @@ describe('save', () => {
       },
     ])
 
-    userService.getUsers.mockReturnValue({
-      success: false,
-      exist: [],
-      missing: [{}],
-    })
+    userService.getUsers.mockReturnValue([{ missing: true }])
 
     await expect(
       service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
-    ).rejects.toThrow(`Could not retrieve user details for 'Bob', missing: 'true', not verified: 'false'`)
+    ).rejects.toThrow(`Could not retrieve user details for missing user: 'Bob'`)
   })
 })
