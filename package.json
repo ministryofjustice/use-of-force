@@ -82,7 +82,7 @@
     ]
   },
   "dependencies": {
-    "@hapi/joi": "^16.1.7",
+    "@hapi/joi": "^17.1.0",
     "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "0.0.13-alpha",
     "agentkeepalive": "^4.1.0",
