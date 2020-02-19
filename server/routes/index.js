@@ -75,6 +75,8 @@ module.exports = function Index({
   get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
   post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
 
+  get(reportPath('email-not-verified'), createReport.viewUnverifiedEmails)
+
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
   get(reportPath('edit-use-of-force-details'), createReport.viewEdit('useOfForceDetails'))
