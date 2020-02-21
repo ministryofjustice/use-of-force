@@ -1,9 +1,12 @@
-FROM node:10.15.3-slim
+FROM node:10-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-RUN apt-get update && apt-get install -y make python && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y make python curl wget && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/London
@@ -19,9 +22,7 @@ WORKDIR /app
 # Install AWS RDS Root cert
 RUN mkdir /home/appuser/.postgresql \
   && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
-    > /app/root.cert
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem \
-    >> /app/root.cert
+    > /app/root.cert        
 
 COPY --chown=appuser:appgroup . .
 
