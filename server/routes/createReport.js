@@ -212,7 +212,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
             return `/report/${bookingId}/check-your-answers`
           }
           default:
-            throw new Error(`unexpected state: ${nextDestination}`)
+            return `/report/${bookingId}/incident-details`
         }
       }
 
@@ -220,7 +220,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const { formId } = await loadForm(req)
       const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
       const unverifiedUsers = involvedStaff.filter(staff => staff.verified === false).map(staff => staff.name)
-      const nextDestination = getFromFlash(req, 'nextDestination', types.Destinations.TASKLIST)
+      const nextDestination = getFromFlash(req, 'nextDestination')
       const nextLocation = getLocationForDestination(bookingId, nextDestination)
       if (!unverifiedUsers.length) {
         return res.redirect(nextLocation)

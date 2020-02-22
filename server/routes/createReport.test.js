@@ -365,7 +365,7 @@ describe('User does not have verified email address', () => {
     request(app)
       .get(`/report/1/email-not-verified`)
       .expect(302)
-      .expect('Location', '/report/1/report-use-of-force'))
+      .expect('Location', '/report/1/incident-details'))
 
   test('view when single unverified user', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
