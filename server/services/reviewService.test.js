@@ -11,12 +11,17 @@ const incidentClient = {
   getIncompleteReportsForReviewer: jest.fn(),
   getCompletedReportsForReviewer: jest.fn(),
 }
+const authClient = {
+  getEmail: jest.fn(),
+}
+
+const authClientBuilder = jest.fn().mockReturnValue(authClient)
 
 let service
 
 describe('reviewService', () => {
   beforeEach(() => {
-    service = serviceCreator({ statementsClient, incidentClient })
+    service = serviceCreator({ statementsClient, incidentClient, authClientBuilder })
   })
 
   afterEach(() => {
@@ -24,11 +29,12 @@ describe('reviewService', () => {
   })
 
   test('getStatements', async () => {
+    authClient.getEmail.mockResolvedValueOnce({ verified: false }).mockResolvedValueOnce({ verified: true })
     statementsClient.getStatementsForReviewer.mockReturnValue([{ id: 1 }, { id: 2 }])
 
-    const statements = await service.getStatements('report-1')
+    const statements = await service.getStatements('token-1', 'report-1')
 
-    expect(statements).toEqual([{ id: 1 }, { id: 2 }])
+    expect(statements).toEqual([{ id: 1, isVerified: false }, { id: 2, isVerified: true }])
     expect(statementsClient.getStatementsForReviewer).toBeCalledWith('report-1')
   })
 

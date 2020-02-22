@@ -75,7 +75,12 @@
     }
   },
   "lint-staged": {
-    "*.{js,json,css},!package.json,!package-lock.json": [
+    "*.{js,css}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json}": [
       "prettier --write",
       "eslint --fix",
       "git add"

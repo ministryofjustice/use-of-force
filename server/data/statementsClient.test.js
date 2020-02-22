@@ -145,6 +145,7 @@ test('getStatementsForReviewer', () => {
   expect(db.query).toBeCalledWith({
     text: `select id
             ,      name
+            ,      user_id                  "userId"
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
             from v_statement where report_id = $2
