@@ -145,7 +145,7 @@ module.exports = function CreateReportRoutes({
 
       const statements = await reviewService.getStatements(reportId)
 
-      const data = { reportId, reporterName, submittedDate, offenderDetail, statements }
+      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements }
       return res.render('pages/reviewer/view-statements', { data })
     },
 
