@@ -139,6 +139,17 @@ const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
   })
 }
 
+const setEmail = (userId, reportId, emailAddress, client = nonTransactionalClient) => {
+  return client.query({
+    text: `update v_statement 
+    set email = $3
+    ,   updated_date = CURRENT_TIMESTAMP
+    where user_id = $1
+    and report_id = $2`,
+    values: [userId, reportId, emailAddress],
+  })
+}
+
 const getNumberOfPendingStatements = async (reportId, client = nonTransactionalClient) => {
   const { rows } = await client.query({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
@@ -183,6 +194,7 @@ module.exports = {
   createStatements,
   saveStatement,
   submitStatement,
+  setEmail,
   getAdditionalComments,
   saveAdditionalComment,
   getNumberOfPendingStatements,
