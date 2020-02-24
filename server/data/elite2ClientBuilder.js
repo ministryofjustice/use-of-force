@@ -82,7 +82,11 @@ function userGetBuilder(token) {
 
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, `Error calling elite2api: ${path}`)
+      const response = error.response && error.response.text
+      logger.warn(
+        `Error calling elite2, path: '${path}', verb: 'GET', query: '${query}', response: '${response}'`,
+        error.stack
+      )
       throw error
     }
   }
@@ -90,7 +94,7 @@ function userGetBuilder(token) {
 
 function userPostBuilder(token) {
   return async ({ path = null, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
-    logger.info(`Get using user credentials: calling elite2api: ${path}`)
+    logger.info(`Post using user credentials: calling elite2api: ${path}`)
     try {
       const result = await superagent
         .post(path)
@@ -107,7 +111,11 @@ function userPostBuilder(token) {
 
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, `Error calling elite2api: ${path}`)
+      const response = error.response && error.response.text
+      logger.warn(
+        `Error calling elite2, path: '${path}', verb: 'GET', query: 'POST', response: '${response}'`,
+        error.stack
+      )
       throw error
     }
   }

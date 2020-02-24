@@ -192,7 +192,7 @@ module.exports = {
 
   notificationServiceFactory: eventPublisher => {
     const stubClient = {
-      sendEmail: args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
+      sendEmail: async args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
     }
 
     const notifyClient = enabled === true ? new NotifyClient(notifyKey) : stubClient

@@ -1,11 +1,23 @@
 /* eslint-disable no-await-in-loop */
-module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
+module.exports = (db, incidentClient, sendReminder, eventPublisher, emailResolver) => {
   const processReminder = async client => {
     const reminder = await incidentClient.getNextNotificationReminder(client)
-    if (reminder) {
+
+    if (reminder && reminder.email) {
       await sendReminder(client, reminder)
+      return reminder
     }
-    return reminder
+
+    if (reminder) {
+      // Check to see if email has been verified since last poll
+      const email = await emailResolver.resolveEmail(client, reminder.userId, reminder.reportId)
+      if (email) {
+        await sendReminder(client, reminder)
+        return reminder
+      }
+    }
+
+    return null
   }
 
   return async () => {

@@ -130,6 +130,19 @@ test('submitStatement', () => {
   })
 })
 
+test('setEmail', () => {
+  statementsClient.setEmail('user1', 'incident1', 'user@gov.uk')
+
+  expect(db.query).toBeCalledWith({
+    text: `update v_statement 
+    set email = $3
+    ,   updated_date = CURRENT_TIMESTAMP
+    where user_id = $1
+    and report_id = $2`,
+    values: ['user1', 'incident1', 'user@gov.uk'],
+  })
+})
+
 test('getNumberOfPendingStatements', () => {
   statementsClient.getNumberOfPendingStatements('report1')
 
@@ -145,6 +158,7 @@ test('getStatementsForReviewer', () => {
   expect(db.query).toBeCalledWith({
     text: `select id
             ,      name
+            ,      user_id                  "userId"
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
             from v_statement where report_id = $2

@@ -60,7 +60,9 @@ context('view statement page', () => {
       cy.reload()
 
       viewStatementsPage.statements().then(result => {
-        expect(result).to.deep.equal([{ username: 'TEST_USER name', link: 'View statement', isOverdue: false }])
+        expect(result).to.deep.equal([
+          { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
+        ])
       })
 
       viewStatementsPage.statementLink(0).click()

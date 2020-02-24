@@ -17,6 +17,11 @@ const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   })
 }
 
+const getFromFlash = (req, name, defaultValue) => {
+  const result = req.flash(name)
+  return result.length !== 0 ? result[0] : defaultValue
+}
+
 const getDestination = ({ editMode, saveAndContinue }) => {
   if (editMode) {
     return types.Destinations.CHECK_YOUR_ANSWERS
@@ -49,7 +54,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     if (
       form === 'incidentDetails' &&
       payloadFields.involvedStaff &&
-      payloadFields.involvedStaff.some(staff => staff.missing)
+      payloadFields.involvedStaff.some(staff => staff.missing || staff.verified === false)
     ) {
       req.flash('nextDestination', getDestination({ editMode, saveAndContinue }))
       return `/report/${bookingId}/username-does-not-exist`
@@ -153,7 +158,8 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
      */
     const { formId, form } = await loadForm(req)
 
-    /** mergeIntoPayload returns false if no change, or merges formPayload onto the persisted form.
+    /**
+     * mergeIntoPayload returns false if no change, or merges formPayload onto the persisted form.
      * like so: { ...form, [formName]: formPayload }
      */
     const updatedPayload = mergeIntoPayload({
@@ -185,11 +191,42 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
       const missingUsers = involvedStaff.filter(staff => staff.missing).map(staff => staff.username)
       if (!missingUsers.length) {
-        return res.redirect(`/report/${bookingId}/incident-details`)
+        return res.redirect(`/report/${bookingId}/email-not-verified`)
       }
-      const nextDestination = req.flash('nextDestination')
+      const nextDestination = getFromFlash(req, 'nextDestination')
       return res.render(`formPages/incident/username-does-not-exist`, {
         data: { bookingId, missingUsers, nextDestination },
+      })
+    },
+
+    viewUnverifiedEmails: async (req, res) => {
+      const getLocationForDestination = (bookingId, nextDestination) => {
+        switch (nextDestination) {
+          case types.Destinations.TASKLIST: {
+            return `/report/${bookingId}/report-use-of-force`
+          }
+          case types.Destinations.CONTINUE: {
+            return `/report/${bookingId}/use-of-force-details`
+          }
+          case types.Destinations.CHECK_YOUR_ANSWERS: {
+            return `/report/${bookingId}/check-your-answers`
+          }
+          default:
+            return `/report/${bookingId}/incident-details`
+        }
+      }
+
+      const { bookingId } = req.params
+      const { formId } = await loadForm(req)
+      const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
+      const unverifiedUsers = involvedStaff.filter(staff => staff.verified === false).map(staff => staff.name)
+      const nextDestination = getFromFlash(req, 'nextDestination')
+      const nextLocation = getLocationForDestination(bookingId, nextDestination)
+      if (!unverifiedUsers.length) {
+        return res.redirect(nextLocation)
+      }
+      return res.render(`formPages/incident/email-not-verified`, {
+        data: { bookingId, unverifiedUsers, nextLocation },
       })
     },
 
@@ -201,20 +238,8 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       if (formId) {
         await involvedStaffService.removeMissingDraftInvolvedStaff(req.user.username, parseInt(bookingId, 10))
       }
-
-      switch (nextDestination) {
-        case types.Destinations.TASKLIST: {
-          return res.redirect(`/report/${bookingId}/report-use-of-force`)
-        }
-        case types.Destinations.CONTINUE: {
-          return res.redirect(`/report/${bookingId}/use-of-force-details`)
-        }
-        case types.Destinations.CHECK_YOUR_ANSWERS: {
-          return res.redirect(`/report/${bookingId}/check-your-answers`)
-        }
-        default:
-          throw new Error(`unexpected state: ${nextDestination}`)
-      }
+      req.flash('nextDestination', nextDestination)
+      return res.redirect(`/report/${bookingId}/email-not-verified`)
     },
 
     view: formName => view(formName, false),
@@ -233,7 +258,9 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       } = await loadForm(req)
 
       const hasMissingStaff =
-        formName === 'incidentDetails' && involvedStaff && involvedStaff.some(staff => staff.missing)
+        formName === 'incidentDetails' &&
+        involvedStaff &&
+        involvedStaff.some(staff => staff.missing || staff.verified === false)
 
       req.flash('nextDestination', getDestination({ editMode: true, saveAndContinue: false }))
 

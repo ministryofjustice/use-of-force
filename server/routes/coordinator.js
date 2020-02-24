@@ -32,7 +32,7 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
         await systemToken(res.locals.user.username),
         bookingId
       )
-      const data = { reportId, reporterName, submittedDate, offenderDetail }
+      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 
       res.render('pages/coordinator/confirm-deletion.html', { errors, data })
     },

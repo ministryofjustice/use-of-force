@@ -43,6 +43,8 @@ module.exports = on => {
 
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 
+    stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
+
     submitStatement,
   })
 }

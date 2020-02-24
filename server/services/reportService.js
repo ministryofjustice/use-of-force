@@ -63,7 +63,8 @@ module.exports = function createReportService({
 
   const requestStatements = ({ reportId, currentUser, incidentDate, overdueDate, submittedDate, staffMembers }) => {
     const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
-    return staffExcludingReporter.map(staff =>
+    const staffExcludingUnverified = staffExcludingReporter.filter(staff => staff.email)
+    const notifications = staffExcludingUnverified.map(staff =>
       notificationService.sendStatementRequest(
         staff.email,
         {
@@ -76,6 +77,7 @@ module.exports = function createReportService({
         { reportId, statementId: staff.statementId }
       )
     )
+    return Promise.all(notifications)
   }
 
   async function submit(currentUser, bookingId, now = moment()) {

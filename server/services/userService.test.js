@@ -53,62 +53,62 @@ describe('getUser', () => {
 describe('getUsers', () => {
   it('All successfull', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'June', email: 'an@email.com', exists: true, verified: true }
+    const user2 = { username: 'June', email: 'bn@email.com', exists: true, verified: true }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' }).mockResolvedValueOnce({ name: 'June Jones' })
+    authClient.getUser
+      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
+      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234 })
 
     const result = await service.getUsers(token, ['Bob', 'June'])
 
-    expect(result).toEqual({
-      exist: [
-        {
-          i: 0,
-          email: 'an@email.com',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-        {
-          i: 1,
-          email: 'an@email.com',
-          exists: true,
-          username: 'June',
-          name: 'June Jones',
-          verified: true,
-        },
-      ],
-      missing: [],
-      notVerified: [],
-      success: true,
-    })
+    expect(result).toEqual([
+      {
+        username: 'Bob',
+        name: 'Bob Smith',
+        staffId: 123,
+        email: 'an@email.com',
+        missing: false,
+        verified: true,
+      },
+      {
+        username: 'June',
+        name: 'June Jones',
+        staffId: 234,
+        email: 'bn@email.com',
+        missing: false,
+        verified: true,
+      },
+    ])
   })
 
   it('One non existent', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'June', exists: false, verified: true }
+    const user2 = { username: 'June', exists: false, verified: false }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
 
     const result = await service.getUsers(token, ['Bob', 'June'])
 
-    expect(result).toEqual({
-      exist: [
-        {
-          i: 0,
-          email: 'an@email.com',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-      ],
-      missing: [{ i: 1, exists: false, username: 'June', verified: true }],
-      notVerified: [],
-      success: true,
-    })
+    expect(result).toEqual([
+      {
+        username: 'Bob',
+        name: 'Bob Smith',
+        staffId: 123,
+        email: 'an@email.com',
+        missing: false,
+        verified: true,
+      },
+      {
+        username: 'June',
+        name: undefined,
+        staffId: undefined,
+        email: undefined,
+        missing: true,
+        verified: false,
+      },
+    ])
   })
 
   it('One not verified', async () => {
@@ -116,25 +116,30 @@ describe('getUsers', () => {
     const user2 = { username: 'June', exists: true, verified: false }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
+    authClient.getUser
+      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
+      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234 })
 
     const result = await service.getUsers(token, ['Bob', 'June'])
 
-    expect(result).toEqual({
-      exist: [
-        {
-          i: 0,
-          email: 'an@email.com',
-          exists: true,
-          name: 'Bob Smith',
-          username: 'Bob',
-          verified: true,
-        },
-      ],
-      missing: [],
-      notVerified: [{ i: 1, exists: true, username: 'June', verified: false }],
-      success: false,
-    })
+    expect(result).toEqual([
+      {
+        username: 'Bob',
+        name: 'Bob Smith',
+        staffId: 123,
+        email: 'an@email.com',
+        missing: false,
+        verified: true,
+      },
+      {
+        username: 'June',
+        name: 'June Jones',
+        staffId: 234,
+        email: undefined,
+        missing: false,
+        verified: false,
+      },
+    ])
   })
 
   it('should use the user token', async () => {
