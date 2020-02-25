@@ -29,7 +29,7 @@ const getDestination = ({ editMode, saveAndContinue }) => {
   return saveAndContinue ? types.Destinations.CONTINUE : types.Destinations.TASKLIST
 }
 
-module.exports = function NewIncidentRoutes({ reportService, offenderService, involvedStaffService }) {
+module.exports = function NewIncidentRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
   const loadForm = async req => {
     const { bookingId } = req.params
     const { id: formId, incidentDate, form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
@@ -97,10 +97,13 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
   const viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, bookingId)
-    const { displayName, offenderNo, locations } = offenderDetail
-
     const { formId, form, incidentDate = moment() } = await loadForm(req)
+
+    const offenderDetail = await offenderService.getOffenderDetails(
+      isNilOrEmpty(formId) ? res.locals.user.token : await systemToken(res.locals.user.username),
+      bookingId
+    )
+    const { displayName, offenderNo, locations } = offenderDetail
 
     const input = firstItem(req.flash('userInput'))
 

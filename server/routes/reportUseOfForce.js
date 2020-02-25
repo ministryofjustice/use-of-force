@@ -1,14 +1,15 @@
-module.exports = function ReportUseOfForceRoutes({ reportService, offenderService }) {
+const { isNilOrEmpty } = require('../utils/utils')
+
+module.exports = function ReportUseOfForceRoutes({ reportService, offenderService, systemToken }) {
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
+      const { id: formId, form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
+      const status = reportService.getReportStatus(form)
       const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
-        res.locals.user.token,
+        isNilOrEmpty(formId) ? res.locals.user.token : await systemToken(res.locals.user.username),
         bookingId
       )
-      const { form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
-      const status = reportService.getReportStatus(form)
-
       res.render('pages/report-use-of-force', {
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },
         bookingId: req.params.bookingId,

@@ -35,11 +35,17 @@ module.exports = function Index({
     reportService,
     offenderService,
     involvedStaffService,
+    systemToken,
   })
 
-  const checkYourAnswers = CreateCheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
+  const checkYourAnswers = CreateCheckYourAnswerRoutes({
+    reportService,
+    offenderService,
+    involvedStaffService,
+    systemToken,
+  })
 
-  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService })
+  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService, systemToken })
 
   const coordinator = CreateCoordinatorRoutes({
     reportService,
