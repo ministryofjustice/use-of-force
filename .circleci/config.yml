@@ -43,7 +43,8 @@ commands:
               --namespace=${KUBE_ENV_NAMESPACE} \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
               --values - \
-              --set image.tag="${APP_VERSION}"
+              --set image.tag="${APP_VERSION}" \
+              --set namespace="${KUBE_ENV_NAMESPACE}"
 
 executors:
   deployer:
