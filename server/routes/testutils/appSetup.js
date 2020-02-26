@@ -79,7 +79,7 @@ const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
     reportService: {},
     involvedStaffService: {},
     reviewService: {},
-    systemToken: username => `${username}-token`,
+    systemToken: username => `${username}-system-token`,
     ...overrides,
   })
   return appSetup(route, userSupplier)

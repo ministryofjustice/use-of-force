@@ -47,7 +47,7 @@ describe('coordinator', () => {
           expect(res.body).toEqual({ result: 'ok' })
         })
 
-      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-token', '1', 'sally')
+      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', '1', 'sally')
     })
 
     it('should not resolve for reviewer', async () => {

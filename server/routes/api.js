@@ -3,17 +3,28 @@ const path = require('path')
 const httpError = require('http-errors')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware, offenderService, reportingService, systemToken }) {
+module.exports = function Index({
+  authenticationMiddleware,
+  offenderService,
+  reportingService,
+  reportService,
+  systemToken,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
 
   const placeHolder = path.join(__dirname, '../assets/images/image-missing.png')
 
-  router.get('/offender/:bookingId/image', (req, res) => {
+  router.get('/offender/:bookingId/image', async (req, res) => {
     const { bookingId } = req.params
-    offenderService
-      .getOffenderImage(res.locals.user.token, bookingId)
+
+    const token = (await reportService.isDraftInProgress(req.user.username, bookingId))
+      ? await systemToken(req.user.username)
+      : res.locals.user.token
+
+    await offenderService
+      .getOffenderImage(token, bookingId)
       .then(data => {
         res.type('image/jpeg')
         data.pipe(res)

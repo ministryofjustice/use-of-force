@@ -1,7 +1,7 @@
 const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
-module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService }) {
+module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
   const currentUserIfNotPresent = (involvedStaff, currentUser) =>
     involvedStaff.find(staff => staff.username === currentUser.username)
       ? []
@@ -20,10 +20,13 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         return res.redirect(`/`)
       }
 
-      const offenderDetail = await offenderService.getOffenderDetails(res.locals.user.token, parseInt(bookingId, 10))
+      const offenderDetail = await offenderService.getOffenderDetails(
+        await systemToken(res.locals.user.username),
+        parseInt(bookingId, 10)
+      )
 
       const { description: locationDescription = '' } = await offenderService.getLocation(
-        res.locals.user.token,
+        await systemToken(res.locals.user.username),
         form.incidentDetails.locationId
       )
 

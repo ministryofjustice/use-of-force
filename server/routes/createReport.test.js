@@ -12,7 +12,7 @@ const reportService = {
 }
 
 const offenderService = {
-  getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
+  getOffenderDetails: jest.fn(),
 }
 
 const involvedStaffService = {
@@ -27,7 +27,9 @@ beforeEach(() => {
   app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
-  involvedStaffService.lookup = async () => []
+  offenderService.getOffenderDetails.mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] })(
+    (involvedStaffService.lookup = async () => [])
+  )
 })
 
 afterEach(() => {
@@ -35,17 +37,26 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
-  test.each`
-    expectedContent
-    ${'Prisoner'}
-  `('should render $expectedContent for $path', ({ expectedContent }) =>
-    request(app)
+  test('should render incident-details for new report using personal creds', () => {
+    reportService.getCurrentDraft.mockResolvedValue({})
+    return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('token', '1')
       })
-  )
+  })
+  test('should render incident-details for existing report using system creds', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+      })
+  })
 })
 
 describe('POST save and continue /section/form', () => {

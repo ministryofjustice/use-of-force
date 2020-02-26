@@ -37,6 +37,7 @@ describe('GET /check-your-answers', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Check your answers')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', -35)
       })
   })
 
