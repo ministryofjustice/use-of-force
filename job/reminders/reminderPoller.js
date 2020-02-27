@@ -9,7 +9,7 @@ module.exports = (db, incidentClient, reminderSender, eventPublisher, emailResol
 
     if (email) {
       logger.info('Found verified email')
-      await reminderSender.sendReminder(client, reminder)
+      await reminderSender.send(client, reminder)
       return reminder
     }
 
@@ -31,7 +31,7 @@ module.exports = (db, incidentClient, reminderSender, eventPublisher, emailResol
     }
 
     logger.info('Found reminder', reminder)
-    await reminderSender.sendReminder(client, reminder)
+    await reminderSender.send(client, reminder)
     return reminder
   }
 

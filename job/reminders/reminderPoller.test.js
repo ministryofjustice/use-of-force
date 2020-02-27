@@ -1,6 +1,6 @@
 const reminderPoller = require('./reminderPoller')
 
-const reminderSender = { sendReminder: jest.fn(), setNextReminderDate: jest.fn() }
+const reminderSender = { send: jest.fn(), setNextReminderDate: jest.fn() }
 
 const eventPublisher = { publish: jest.fn() }
 const client = { inTransaction: true }
@@ -31,7 +31,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.sendReminder).toBeCalledTimes(0)
+    expect(reminderSender.send).toBeCalledTimes(0)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -51,7 +51,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(reminderSender.sendReminder).toBeCalledTimes(1)
+    expect(reminderSender.send).toBeCalledTimes(1)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -72,7 +72,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.sendReminder).toBeCalledTimes(0)
+    expect(reminderSender.send).toBeCalledTimes(0)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -95,7 +95,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(reminderSender.sendReminder).toBeCalledTimes(1)
+    expect(reminderSender.send).toBeCalledTimes(1)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -116,7 +116,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(50)
-    expect(reminderSender.sendReminder).toBeCalledTimes(50)
+    expect(reminderSender.send).toBeCalledTimes(50)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
