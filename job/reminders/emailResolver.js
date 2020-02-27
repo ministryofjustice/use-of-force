@@ -6,7 +6,7 @@ class EmailResolver {
   }
 
   async resolveEmail(transactionalClient, userId, reportId) {
-    const authClient = this.authClientBuilder(this.systemToken())
+    const authClient = this.authClientBuilder(await this.systemToken())
     const { verified, email } = await authClient.getEmail(userId)
     if (verified) {
       await this.statementsClient.setEmail(userId, reportId, email, transactionalClient)
