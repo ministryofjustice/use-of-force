@@ -57,8 +57,16 @@ describe('authClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 
-      const output = await client.getEmail(userName)
-      expect(output).toEqual({ username: 'Bob', exists: false, verified: false })
+      expect(client.getEmail(userName)).rejects.toThrow('Bad Request')
+    })
+
+    it('not authorised error', async () => {
+      fakeApi
+        .get(`/api/user/${userName}/email`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(401)
+
+      expect(client.getEmail(userName)).rejects.toThrow('Unauthorized')
     })
   })
 
