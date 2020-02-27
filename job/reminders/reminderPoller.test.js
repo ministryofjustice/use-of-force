@@ -1,6 +1,6 @@
 const reminderPoller = require('./reminderPoller')
 
-const sendReminder = jest.fn()
+const reminderSender = { sendReminder: jest.fn(), setNextReminderDate: jest.fn() }
 
 const eventPublisher = { publish: jest.fn() }
 const client = { inTransaction: true }
@@ -20,7 +20,7 @@ const emailResolver = {
   resolveEmail: jest.fn(),
 }
 
-const poll = reminderPoller(db, incidentClient, sendReminder, eventPublisher, emailResolver)
+const poll = reminderPoller(db, incidentClient, reminderSender, eventPublisher, emailResolver)
 
 afterEach(() => {
   jest.resetAllMocks()
@@ -31,7 +31,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(sendReminder).toBeCalledTimes(0)
+    expect(reminderSender.sendReminder).toBeCalledTimes(0)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -51,7 +51,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(sendReminder).toBeCalledTimes(1)
+    expect(reminderSender.sendReminder).toBeCalledTimes(1)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -72,7 +72,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(sendReminder).toBeCalledTimes(0)
+    expect(reminderSender.sendReminder).toBeCalledTimes(0)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -84,6 +84,7 @@ describe('poll for reminders', () => {
         },
       ],
     ])
+    expect(reminderSender.setNextReminderDate).toBeCalledTimes(1)
     expect(emailResolver.resolveEmail).toHaveBeenCalledWith(client, 'BOB', 2)
   })
 
@@ -94,7 +95,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(sendReminder).toBeCalledTimes(1)
+    expect(reminderSender.sendReminder).toBeCalledTimes(1)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
@@ -115,7 +116,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(50)
-    expect(sendReminder).toBeCalledTimes(50)
+    expect(reminderSender.sendReminder).toBeCalledTimes(50)
 
     expect(eventPublisher.publish).toBeCalledTimes(2)
     expect(eventPublisher.publish.mock.calls).toEqual([
