@@ -16,7 +16,14 @@ const eventPublisher = require('../server/services/eventPublisher')(appInsightsc
 const emailResolver = new EmailResolver(authClientBuilder, systemToken, statementsClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 
-const reminderSender = reminderSenderFactory(notificationService, incidentClient)
-const poll = reminderPoller(db, incidentClient, reminderSender, eventPublisher, emailResolver)
+const reminderSender = reminderSenderFactory(notificationService)
 
-poll().catch(error => logger.error(error, 'Problem polling for reminders'))
+const poll = reminderPoller(db, incidentClient, reminderSender, emailResolver)
+
+async function runJob() {
+  eventPublisher.publish({ name: 'StartingToSendReminders', properties: {}, detail: null })
+  const totalSent = await poll()
+  eventPublisher.publish({ name: 'FinishedSendingReminders', properties: { totalSent }, detail: null })
+}
+
+runJob().catch(error => logger.error(error, 'Problem polling for reminders'))

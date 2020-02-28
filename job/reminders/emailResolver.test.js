@@ -28,7 +28,7 @@ describe('resolve emails', () => {
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 
-    expect(email).toEqual(null)
+    expect(email).toEqual(false)
 
     expect(authClientBuilder).toHaveBeenCalledWith('token-1')
     expect(authClient.getEmail).toHaveBeenCalledWith('user1')
@@ -40,7 +40,7 @@ describe('resolve emails', () => {
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 
-    expect(email).toEqual('user@gov.uk')
+    expect(email).toEqual(true)
 
     expect(authClientBuilder).toHaveBeenCalledWith('token-1')
     expect(authClient.getEmail).toHaveBeenCalledWith('user1')

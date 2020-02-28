@@ -1,15 +1,9 @@
-const moment = require('moment')
 const logger = require('../../log')
 
-module.exports = (notificationService, incidentClient) => {
-  const getNextReminderDate = ({ nextReminderDate }) => {
-    const startdate = moment(nextReminderDate)
-    return startdate.add(1, 'day').toDate()
-  }
-
+module.exports = notificationService => {
   const context = ({ statementId, reportId }) => ({ statementId, reportId })
 
-  const handleOverdue = async (client, reminder) => {
+  const handleOverdue = async reminder => {
     if (reminder.isReporter) {
       await notificationService.sendReporterStatementOverdue(
         reminder.recipientEmail,
@@ -31,18 +25,9 @@ module.exports = (notificationService, incidentClient) => {
         context(reminder)
       )
     }
-    await incidentClient.setNextReminderDate(reminder.statementId, null, client)
   }
 
-  const setNextReminderDate = async (client, reminder) => {
-    const nextReminderDate = getNextReminderDate(reminder)
-    logger.info(
-      `Setting next reminder date of: '${nextReminderDate}' for staff: '${reminder.userId}', statementId: '${reminder.statementId}'`
-    )
-    await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate, client)
-  }
-
-  const handleReminder = async (client, reminder) => {
+  const handleReminder = async reminder => {
     if (reminder.isReporter) {
       await notificationService.sendReporterStatementReminder(
         reminder.recipientEmail,
@@ -66,15 +51,16 @@ module.exports = (notificationService, incidentClient) => {
         context(reminder)
       )
     }
-    await setNextReminderDate(client, reminder)
   }
 
   return {
-    getNextReminderDate,
-    setNextReminderDate,
-    send: (client, reminder) => {
+    send: async reminder => {
       logger.info('processing reminder', reminder)
-      return reminder.isOverdue ? handleOverdue(client, reminder) : handleReminder(client, reminder)
+      if (reminder.isOverdue) {
+        await handleOverdue(reminder)
+      } else {
+        await handleReminder(reminder)
+      }
     },
   }
 }
