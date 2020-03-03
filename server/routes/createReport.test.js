@@ -13,6 +13,7 @@ const reportService = {
 
 const offenderService = {
   getOffenderDetails: jest.fn(),
+  getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
 const involvedStaffService = {
@@ -27,9 +28,12 @@ beforeEach(() => {
   app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
-  offenderService.getOffenderDetails.mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] })(
-    (involvedStaffService.lookup = async () => [])
-  )
+  offenderService.getOffenderDetails.mockReturnValue({
+    displayName: 'Bob Smith',
+    offenderNo: '1234',
+    agencyId: 'current-agency-id',
+  })((involvedStaffService.lookup = async () => []))
+  offenderService.getIncidentLocations.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -55,6 +59,26 @@ describe('GET /section/form', () => {
       .expect(res => {
         expect(res.text).toContain('Incident details')
         expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+      })
+  })
+  test('should render incident-details using locations for current agency if new report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({})
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getIncidentLocations).toBeCalledWith('token', 'current-agency-id')
+      })
+  })
+  test('should render incident-details using locations for persisted agency if existing report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
       })
   })
 })

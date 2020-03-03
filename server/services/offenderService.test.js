@@ -27,24 +27,16 @@ describe('getOffenderDetails', () => {
   it('should format display name', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: '1980-12-31' }
     elite2Client.getOffenderDetails.mockReturnValue(details)
-    elite2Client.getLocations.mockReturnValue([
-      { locationType: 'BOX', userDescription: 'Box 1' },
-      { locationType: 'WING', userDescription: 'Wing A' },
-      { locationType: 'WING', userDescription: '' },
-      { locationType: 'CELL', userDescription: 'Cell A' },
-    ])
-
     const result = await service.getOffenderDetails(token, -5)
 
     expect(result).toEqual({
       ...details,
       dateOfBirth: '1980-12-31',
       displayName: 'Sam Smith',
-      locations: [],
     })
   })
 
-  it('should use the user token', async () => {
+  it('should use the token', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH' }
     elite2Client.getOffenderDetails.mockReturnValue(details)
     elite2Client.getLocations.mockReturnValue([])
@@ -79,5 +71,22 @@ describe('getOffenders', () => {
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
     expect(elite2ClientBuilder).toBeCalledWith(token)
     expect(elite2Client.getOffenders).toBeCalledWith(['AAA', 'BBB'])
+  })
+
+  describe('getIncidentLocations', () => {
+    it('should retrieve locations', async () => {
+      elite2Client.getLocations.mockReturnValue([])
+
+      const result = await service.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([])
+      expect(elite2Client.getLocations).toBeCalledWith('WRI')
+    })
+
+    it('should use token', async () => {
+      await service.getIncidentLocations(token, 'WRI')
+
+      expect(elite2ClientBuilder).toBeCalledWith(token)
+    })
   })
 })
