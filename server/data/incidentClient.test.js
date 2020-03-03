@@ -19,7 +19,7 @@ describe('getCurrentDraftReport', () => {
     incidentClient.getCurrentDraftReport('user1', -1)
 
     expect(db.query).toBeCalledWith({
-      text: `select id, incident_date "incidentDate", form_response "form" from v_report r
+      text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
           and r.status = $3

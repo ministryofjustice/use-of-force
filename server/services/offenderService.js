@@ -13,15 +13,10 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
         return []
       }
 
-      const unfilteredLocations = await elite2Client.getLocations(result.agencyId)
-      const locations = locationsFilter(unfilteredLocations)
-
       const displayName = `${properCaseName(result.firstName)} ${properCaseName(result.lastName)}`
-
       const { dateOfBirth } = result
 
       return {
-        locations,
         displayName,
         ...result,
         dateOfBirth,
@@ -56,10 +51,24 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     return elite2Client.getLocation(locationId)
   }
 
+  const getIncidentLocations = async (token, agencyId) => {
+    try {
+      const elite2Client = elite2ClientBuilder(token)
+
+      const unfilteredLocations = await elite2Client.getLocations(agencyId)
+      const locations = locationsFilter(unfilteredLocations)
+      return locations
+    } catch (error) {
+      logger.error(error, 'Error during getOffenderDetails')
+      throw error
+    }
+  }
+
   return {
     getOffenderDetails,
     getOffenderImage,
     getOffenderNames,
     getLocation,
+    getIncidentLocations,
   }
 }

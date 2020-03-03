@@ -32,8 +32,11 @@ const getDestination = ({ editMode, saveAndContinue }) => {
 module.exports = function NewIncidentRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
   const loadForm = async req => {
     const { bookingId } = req.params
-    const { id: formId, incidentDate, form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
-    return { formId, incidentDate, form }
+    const { id: formId, incidentDate, form = {}, agencyId } = await reportService.getCurrentDraft(
+      req.user.username,
+      bookingId
+    )
+    return { formId, incidentDate, form, agencyId }
   }
 
   const verifyInvolvedStaff = async (res, form, { involvedStaff = [] }) => {
@@ -97,13 +100,17 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
 
   const viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const { formId, form, incidentDate = moment() } = await loadForm(req)
+    const { formId, form, incidentDate = moment(), agencyId: persistedAgencyId } = await loadForm(req)
 
-    const offenderDetail = await offenderService.getOffenderDetails(
-      isNilOrEmpty(formId) ? res.locals.user.token : await systemToken(res.locals.user.username),
-      bookingId
-    )
-    const { displayName, offenderNo, locations } = offenderDetail
+    // If report has been created, use system token which is robust against offender moving establishments
+    const token = isNilOrEmpty(formId) ? res.locals.user.token : await systemToken(res.locals.user.username)
+    const offenderDetail = await offenderService.getOffenderDetails(token, bookingId)
+
+    // If report has been created, use persisted agency Id which is robust against offender moving establishments
+    const agencyId = persistedAgencyId || offenderDetail.agencyId
+    const locations = await offenderService.getIncidentLocations(token, agencyId)
+
+    const { displayName, offenderNo } = offenderDetail
 
     const input = firstItem(req.flash('userInput'))
 
