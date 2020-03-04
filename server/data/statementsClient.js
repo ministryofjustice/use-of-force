@@ -178,6 +178,19 @@ const createStatements = async ({ reportId, firstReminder, overdueDate, staff, c
   return results.rows.reduce((result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }), {})
 }
 
+const deleteStatement = async ({ statementId, client, now = new Date() }) => {
+  const statementQuery = `(select id from statement where statement_id = $2)`
+
+  await client.query({
+    text: `update statement set deleted = $1 where id in ${statementQuery}`,
+    values: [now, statementId],
+  })
+  await client.query({
+    text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
+    values: [now, statementId],
+  })
+}
+
 const isStatementPresentForUser = async (reportId, username, client = nonTransactionalClient) => {
   const { rows } = await client.query({
     text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
@@ -192,6 +205,7 @@ module.exports = {
   getStatementForReviewer,
   getStatementsForReviewer,
   createStatements,
+  deleteStatement,
   saveStatement,
   submitStatement,
   setEmail,
