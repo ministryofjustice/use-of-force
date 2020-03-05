@@ -5,6 +5,10 @@ const { StatementStatus } = require('../config/types')
 
 jest.mock('../../server/data/dataAccess/db')
 
+beforeEach(() => {
+  jest.resetAllMocks()
+})
+
 test('getStatements', () => {
   statementsClient.getStatements('user1', StatementStatus.PENDING)
 
@@ -89,6 +93,23 @@ test('createStatements', async () => {
       `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
       `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
       `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
+  })
+})
+
+test('deleteStatement', async () => {
+  db.query.mockReturnValue({ rows: [] })
+
+  const date = new Date()
+  await statementsClient.deleteStatement({ statementId: -1, client: db, now: date })
+
+  expect(db.query).toBeCalledWith({
+    text: 'update statement set deleted = $1 where id in (select id from statement where statement_id = $2)',
+    values: [date, -1],
+  })
+  expect(db.query).toBeCalledWith({
+    text:
+      'update statement_amendments set deleted = $1 where statement_id in (select id from statement where statement_id = $2)',
+    values: [date, -1],
   })
 })
 

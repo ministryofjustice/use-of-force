@@ -115,12 +115,34 @@ module.exports = function createReportService({ incidentClient, statementsClient
       }
     })
   }
+  const removeInvolvedStaff = async (reportId, statementId) => {
+    logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
+
+    await db.inTransaction(async client => {
+      const pendingStatementBeforeDeletion = await statementsClient.getNumberOfPendingStatements(reportId, client)
+
+      await statementsClient.deleteStatement({
+        statementId,
+        client,
+      })
+
+      if (pendingStatementBeforeDeletion !== 0) {
+        const pendingStatementCount = await statementsClient.getNumberOfPendingStatements(reportId, client)
+
+        if (pendingStatementCount === 0) {
+          logger.info(`All statements complete on : ${reportId}, marking as complete`)
+          await incidentClient.changeStatus(reportId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+        }
+      }
+    })
+  }
 
   return {
     getInvolvedStaff,
     removeMissingDraftInvolvedStaff,
     getDraftInvolvedStaff,
     addInvolvedStaff,
+    removeInvolvedStaff,
     save,
     lookup,
   }

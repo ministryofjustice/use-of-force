@@ -24,6 +24,8 @@ const incidentClient = {
 const statementsClient = {
   createStatements: jest.fn(),
   isStatementPresentForUser: jest.fn(),
+  deleteStatement: jest.fn(),
+  getNumberOfPendingStatements: jest.fn(),
 }
 
 const client = jest.fn()
@@ -349,6 +351,47 @@ describe('save', () => {
 
       expect(statementsClient.createStatements).not.toBeCalled()
       expect(incidentClient.changeStatus).not.toBeCalled()
+    })
+  })
+
+  describe('removeInvolvedStaff', () => {
+    test('to already complete report', async () => {
+      statementsClient.getNumberOfPendingStatements.mockResolvedValueOnce(0).mockResolvedValueOnce(0)
+
+      await service.removeInvolvedStaff(1, 2)
+
+      expect(statementsClient.deleteStatement).toBeCalledWith({
+        statementId: 2,
+        client,
+      })
+
+      expect(incidentClient.changeStatus).not.toHaveBeenCalled()
+    })
+
+    test('completing report', async () => {
+      statementsClient.getNumberOfPendingStatements.mockResolvedValueOnce(1).mockResolvedValueOnce(0)
+
+      await service.removeInvolvedStaff(1, 2)
+
+      expect(statementsClient.deleteStatement).toBeCalledWith({
+        statementId: 2,
+        client,
+      })
+
+      expect(incidentClient.changeStatus).toHaveBeenCalledWith(1, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+    })
+
+    test('with outstanding statements still remaining', async () => {
+      statementsClient.getNumberOfPendingStatements.mockResolvedValueOnce(2).mockResolvedValueOnce(1)
+
+      await service.removeInvolvedStaff(1, 2)
+
+      expect(statementsClient.deleteStatement).toBeCalledWith({
+        statementId: 2,
+        client,
+      })
+
+      expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
   })
 
