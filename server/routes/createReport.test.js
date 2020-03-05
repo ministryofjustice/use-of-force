@@ -12,7 +12,8 @@ const reportService = {
 }
 
 const offenderService = {
-  getOffenderDetails: jest.fn().mockReturnValue({ displayName: 'Bob Smith', offenderNo: '1234', locations: [] }),
+  getOffenderDetails: jest.fn(),
+  getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
 const involvedStaffService = {
@@ -27,7 +28,12 @@ beforeEach(() => {
   app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
-  involvedStaffService.lookup = async () => []
+  offenderService.getOffenderDetails.mockReturnValue({
+    displayName: 'Bob Smith',
+    offenderNo: '1234',
+    agencyId: 'current-agency-id',
+  })((involvedStaffService.lookup = async () => []))
+  offenderService.getIncidentLocations.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -35,17 +41,46 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
-  test.each`
-    expectedContent
-    ${'Prisoner'}
-  `('should render $expectedContent for $path', ({ expectedContent }) =>
-    request(app)
+  test('should render incident-details for new report using personal creds', () => {
+    reportService.getCurrentDraft.mockResolvedValue({})
+    return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('token', '1')
       })
-  )
+  })
+  test('should render incident-details for existing report using system creds', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+      })
+  })
+  test('should render incident-details using locations for current agency if new report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({})
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getIncidentLocations).toBeCalledWith('token', 'current-agency-id')
+      })
+  })
+  test('should render incident-details using locations for persisted agency if existing report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Incident details')
+        expect(offenderService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
+      })
+  })
 })
 
 describe('POST save and continue /section/form', () => {
@@ -297,7 +332,7 @@ describe('User name does not exists', () => {
     request(app)
       .get(`/report/1/username-does-not-exist`)
       .expect(302)
-      .expect('Location', '/report/1/incident-details'))
+      .expect('Location', '/report/1/email-not-verified'))
 
   test('view when missing users', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
@@ -311,7 +346,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and back to task list', () => {
+  test('submit and back to task list goes via email-not-verified', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -320,14 +355,14 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.TASKLIST,
       })
       .expect(302)
-      .expect('Location', '/report/1/report-use-of-force')
+      .expect('Location', '/report/1/email-not-verified')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 
-  test('submit and continue on', () => {
+  test('submit and continue on goes via email-not-verified', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -336,14 +371,14 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.CONTINUE,
       })
       .expect(302)
-      .expect('Location', '/report/1/use-of-force-details')
+      .expect('Location', '/report/1/email-not-verified')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 
-  test('submit and return to check-your-answers', () => {
+  test('submit and return to check-your-answers goes via email-not-verified', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -352,10 +387,46 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.CHECK_YOUR_ANSWERS,
       })
       .expect(302)
-      .expect('Location', '/report/1/check-your-answers')
+      .expect('Location', '/report/1/email-not-verified')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
+      })
+  })
+})
+
+describe('User does not have verified email address', () => {
+  test('view when no users have unverified addresses', () =>
+    request(app)
+      .get(`/report/1/email-not-verified`)
+      .expect(302)
+      .expect('Location', '/report/1/incident-details'))
+
+  test('view when single unverified user', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ name: 'BOB', verified: false }])
+    return request(app)
+      .get(`/report/1/email-not-verified`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('BOB has not verified their email address')
+      })
+  })
+
+  test('view when multiple unverified users', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([
+      { name: 'BOB', verified: false },
+      { name: 'AOB', verified: false },
+      { name: 'COB', verified: true },
+    ])
+    return request(app)
+      .get(`/report/1/email-not-verified`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Some staff members have not verified their email address')
       })
   })
 })

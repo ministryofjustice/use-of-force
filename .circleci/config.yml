@@ -43,7 +43,8 @@ commands:
               --namespace=${KUBE_ENV_NAMESPACE} \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
               --values - \
-              --set image.tag="${APP_VERSION}"
+              --set image.tag="${APP_VERSION}" \
+              --set namespace="${KUBE_ENV_NAMESPACE}"
 
 executors:
   deployer:
@@ -52,7 +53,7 @@ executors:
     working_directory: ~/app
   builder:
     docker:
-      - image: circleci/node:10.15.3-browsers
+      - image: circleci/node:10-buster-browsers
     working_directory: ~/app
   integration-tests:
     docker:

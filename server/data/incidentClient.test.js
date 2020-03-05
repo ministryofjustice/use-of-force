@@ -19,7 +19,7 @@ describe('getCurrentDraftReport', () => {
     incidentClient.getCurrentDraftReport('user1', -1)
 
     expect(db.query).toBeCalledWith({
-      text: `select id, incident_date "incidentDate", form_response "form" from v_report r
+      text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
           and r.status = $3
@@ -243,6 +243,7 @@ test('getNextNotificationReminder', () => {
   expect(client.query).toBeCalledWith({
     text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
+          ,       s.user_id                "userId"
           ,       s.email                  "recipientEmail" 
           ,       s.name                   "recipientName"
           ,       s.next_reminder_date     "nextReminderDate"  
@@ -254,7 +255,9 @@ test('getNextNotificationReminder', () => {
           ,       s.overdue_date <= now()  "isOverdue"
           from statement s
           left join report r on r.id = s.report_id
-          where s.next_reminder_date < now() and s.statement_status = $1 and s.deleted is null
+          where s.next_reminder_date < now()
+          and s.statement_status = $1
+          and s.deleted is null
           order by s.id
           for update of s skip locked
           LIMIT 1`,

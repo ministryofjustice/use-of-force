@@ -114,12 +114,16 @@ context('Submitting details page form', () => {
             name: 'AAAA name',
             staffId: 231232,
             username: 'AAAA',
+            missing: false,
+            verified: true,
           },
           {
             email: 'BBBB@gov.uk',
             name: 'BBBB name',
             staffId: 231232,
             username: 'BBBB',
+            missing: false,
+            verified: true,
           },
         ],
       })

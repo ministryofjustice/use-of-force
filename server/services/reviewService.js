@@ -1,4 +1,17 @@
-module.exports = function createReviewService({ statementsClient, incidentClient }) {
+module.exports = function createReviewService({ statementsClient, incidentClient, authClientBuilder }) {
+  /**
+   * @param {string} token
+   * @param {any[]} statements
+   * @return {Promise<any[]>}
+   */
+  const statementsWithVerifiedInfo = async (token, statements) => {
+    const authClient = authClientBuilder(token)
+    const results = statements.map(statement =>
+      authClient.getEmail(statement.userId).then(email => ({ ...statement, isVerified: email.verified }))
+    )
+    return Promise.all(results)
+  }
+
   return {
     getReport: async reportId => {
       const report = await incidentClient.getReportForReviewer(reportId)
@@ -15,7 +28,10 @@ module.exports = function createReviewService({ statementsClient, incidentClient
       return { completed: completed.rows, awaiting: awaiting.rows }
     },
 
-    getStatements: statementsClient.getStatementsForReviewer,
+    getStatements: async (token, reportId) => {
+      const statements = await statementsClient.getStatementsForReviewer(reportId)
+      return statementsWithVerifiedInfo(token, statements)
+    },
 
     getStatement: async statementId => {
       const statement = await statementsClient.getStatementForReviewer(statementId)

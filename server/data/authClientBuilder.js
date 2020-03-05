@@ -23,11 +23,11 @@ const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions)
 
 module.exports = {
   authClientBuilder(token) {
-    const userGet = userGetBuilder(token)
+    const get = getBuilder(token)
     return {
       async getEmail(username) {
         const path = `${apiUrl}/api/user/${username}/email`
-        const { status, body } = await userGet({ path, raw: true })
+        const { status, body } = await get({ path, raw: true })
         return {
           email: body.email,
           username: body.username || username,
@@ -37,7 +37,7 @@ module.exports = {
       },
       async getUser(username) {
         const path = `${apiUrl}/api/user/${username}`
-        const body = await userGet({ path })
+        const body = await get({ path })
         return body
       },
     }
@@ -69,13 +69,13 @@ async function getSystemClientToken(username) {
   return result.body
 }
 
-function userGetBuilder(token) {
+function getBuilder(token) {
   return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent
         .get(path)
-        .ok(res => res.status < 500)
+        .ok(res => [200, 204, 404].includes(res.status))
         .agent(keepaliveAgent)
         .retry(2, (err, res) => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)

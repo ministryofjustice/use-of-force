@@ -5,6 +5,10 @@ const { StatementStatus } = require('../config/types')
 
 jest.mock('../../server/data/dataAccess/db')
 
+beforeEach(() => {
+  jest.resetAllMocks()
+})
+
 test('getStatements', () => {
   statementsClient.getStatements('user1', StatementStatus.PENDING)
 
@@ -92,6 +96,23 @@ test('createStatements', async () => {
   })
 })
 
+test('deleteStatement', async () => {
+  db.query.mockReturnValue({ rows: [] })
+
+  const date = new Date()
+  await statementsClient.deleteStatement({ statementId: -1, client: db, now: date })
+
+  expect(db.query).toBeCalledWith({
+    text: 'update statement set deleted = $1 where id in (select id from statement where statement_id = $2)',
+    values: [date, -1],
+  })
+  expect(db.query).toBeCalledWith({
+    text:
+      'update statement_amendments set deleted = $1 where statement_id in (select id from statement where statement_id = $2)',
+    values: [date, -1],
+  })
+})
+
 test('saveStatement', () => {
   statementsClient.saveStatement('user1', 'incident1', {
     lastTrainingMonth: 1,
@@ -130,6 +151,19 @@ test('submitStatement', () => {
   })
 })
 
+test('setEmail', () => {
+  statementsClient.setEmail('user1', 'incident1', 'user@gov.uk')
+
+  expect(db.query).toBeCalledWith({
+    text: `update v_statement 
+    set email = $3
+    ,   updated_date = CURRENT_TIMESTAMP
+    where user_id = $1
+    and report_id = $2`,
+    values: ['user1', 'incident1', 'user@gov.uk'],
+  })
+})
+
 test('getNumberOfPendingStatements', () => {
   statementsClient.getNumberOfPendingStatements('report1')
 
@@ -145,6 +179,7 @@ test('getStatementsForReviewer', () => {
   expect(db.query).toBeCalledWith({
     text: `select id
             ,      name
+            ,      user_id                  "userId"
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
             from v_statement where report_id = $2

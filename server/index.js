@@ -39,7 +39,7 @@ const reportService = createReportService({
   db,
 })
 const statementService = createStatementService({ statementsClient, incidentClient, db })
-const reviewService = createReviewService({ statementsClient, incidentClient })
+const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
 const reportingService = createReportingService({ reportingClient, offenderService })
 
 const app = createApp({

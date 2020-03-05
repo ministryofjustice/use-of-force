@@ -1,25 +1,56 @@
 /* eslint-disable no-await-in-loop */
-module.exports = (db, incidentClient, sendReminder, eventPublisher) => {
+const moment = require('moment')
+const logger = require('../../log')
+
+module.exports = (db, incidentClient, reminderSender, emailResolver) => {
+  const Status = { REMINDER_SENT: 0, REMINDER_NOT_SENT: 1, COMPLETE: 2 }
+
+  const getNextReminderDate = ({ nextReminderDate }) => {
+    const startdate = moment(nextReminderDate)
+    return startdate.add(1, 'day').toDate()
+  }
+
+  const setNextPollTime = async (client, reminder) => {
+    const nextReminderDate = reminder.isOverdue ? null : getNextReminderDate(reminder)
+    logger.info(
+      `Setting next reminder date of: '${nextReminderDate}' for staff: '${reminder.userId}', statementId: '${reminder.statementId}'`
+    )
+    await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate, client)
+  }
+
   const processReminder = async client => {
     const reminder = await incidentClient.getNextNotificationReminder(client)
-    if (reminder) {
-      await sendReminder(client, reminder)
+
+    if (!reminder) {
+      logger.info('No more reminders to process')
+      return Status.COMPLETE
     }
-    return reminder
+
+    if (reminder.recipientEmail) {
+      logger.info('Found reminder', reminder)
+      await reminderSender.send(reminder)
+      await setNextPollTime(client, reminder)
+      return Status.REMINDER_SENT
+    }
+
+    const found = await emailResolver.resolveEmail(client, reminder.userId, reminder.reportId)
+    if (!found) {
+      // If email has been resolved then we will allow this to be processed normally on the next claim
+      // otherwise, we will check again at the next eligible poll time (or never, if now overdue)
+      await setNextPollTime(client, reminder)
+    }
+    return Status.REMINDER_NOT_SENT
   }
 
   return async () => {
-    eventPublisher.publish({ name: 'StartingToSendReminders' })
+    let currentStatus = null
+    let totalSent = 0
 
-    let result = true
-    let count = 0
-
-    while (result && count < 50) {
-      result = await db.inTransaction(processReminder)
-      count += result ? 1 : 0
+    while (currentStatus !== Status.COMPLETE && totalSent < 50) {
+      currentStatus = await db.inTransaction(processReminder)
+      totalSent += currentStatus === Status.REMINDER_SENT ? 1 : 0
     }
 
-    eventPublisher.publish({ name: 'FinishedSendingReminders', properties: { totalSent: count } })
-    return count
+    return totalSent
   }
 }

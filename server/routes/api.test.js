@@ -10,22 +10,56 @@ const reportingService = {
   getMostOftenInvolvedPrisoners: jest.fn(),
 }
 
+const reportService = {
+  isDraftInProgress: jest.fn(),
+}
+
+const offenderService = {
+  getOffenderImage: jest.fn(),
+}
+
 const route = createRouter({
   authenticationMiddleware,
-  offenderService: {},
+  offenderService,
   reportingService,
-  systemToken: username => `${username}-token`,
+  reportService,
+  systemToken: username => `${username}-system-token`,
 })
 
 let app
 
 describe('api', () => {
   beforeEach(() => {
+    offenderService.getOffenderImage.mockResolvedValue('')
     app = appSetup(route, userSupplier)
   })
 
   afterEach(() => {
     jest.resetAllMocks()
+  })
+
+  describe('GET /offender/:bookingId/image', () => {
+    beforeEach(() => {
+      userSupplier.mockReturnValue(user)
+    })
+    it('should render using user creds for non saved draft', async () => {
+      reportService.isDraftInProgress.mockResolvedValue(false)
+      await request(app)
+        .get('/offender/1234/image')
+        .expect('Content-Type', 'image/jpeg')
+        .expect(() => {
+          expect(offenderService.getOffenderImage).toBeCalledWith('token', '1234')
+        })
+    })
+    it('should render using system creds for saved draft', async () => {
+      reportService.isDraftInProgress.mockResolvedValue(true)
+      await request(app)
+        .get('/offender/1234/image')
+        .expect('Content-Type', 'image/jpeg')
+        .expect(() => {
+          expect(offenderService.getOffenderImage).toBeCalledWith('user1-system-token', '1234')
+        })
+    })
   })
 
   describe('reporting', () => {
@@ -75,7 +109,7 @@ describe('api', () => {
             expect(res.text).toContain('Some,Csv,Content for prisoners')
           })
 
-        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('user1-token', 'LEI', 10, 2019)
+        expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
       })
 
       it('should not render for standard user', async () => {

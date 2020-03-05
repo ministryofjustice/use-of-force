@@ -35,19 +35,30 @@ context('Submit the incident report', () => {
     checkAnswersPage.clickSubmit()
     const reportSentPage = ReportSentPage.verifyOnPage()
 
-    reportSentPage
-      .getReportId()
-      .then(reportId =>
-        cy
-          .task('getAllStatementsForReport', reportId)
-          .then(staff =>
-            expect(staff).to.deep.equal([
-              { name: 'MR_ZAGATO name', email: 'MR_ZAGATO@gov.uk', userid: 'MR_ZAGATO', status: 'PENDING' },
-              { name: 'MRS_JONES name', email: 'MRS_JONES@gov.uk', userid: 'MRS_JONES', status: 'PENDING' },
-              { name: 'TEST_USER name', email: 'TEST_USER@gov.uk', userid: 'TEST_USER', status: 'PENDING' },
-            ])
-          )
+    reportSentPage.getReportId().then(reportId =>
+      cy.task('getAllStatementsForReport', reportId).then(staff =>
+        expect(staff).to.deep.equal([
+          {
+            name: 'MR_ZAGATO name',
+            email: 'MR_ZAGATO@gov.uk',
+            userid: 'MR_ZAGATO',
+            status: 'PENDING',
+          },
+          {
+            name: 'MRS_JONES name',
+            email: 'MRS_JONES@gov.uk',
+            userid: 'MRS_JONES',
+            status: 'PENDING',
+          },
+          {
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+            userid: 'TEST_USER',
+            status: 'PENDING',
+          },
+        ])
       )
+    )
 
     reportSentPage
       .getReportId()

@@ -64,8 +64,8 @@ context('view statements page', () => {
         .statements()
         .then(result =>
           expect(result).to.deep.equal([
-            { username: 'Another user name', link: '', isOverdue: false },
-            { username: 'TEST_USER name', link: '', isOverdue: false },
+            { username: 'Another user name', link: 'EMAIL NOT VERIFIED', isOverdue: false, isUnverified: true },
+            { username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false },
           ])
         )
 
@@ -118,8 +118,8 @@ context('view statements page', () => {
       .statements()
       .then(result =>
         expect(result).to.deep.equal([
-          { username: 'Another user name', link: 'OVERDUE', isOverdue: true },
-          { username: 'TEST_USER name', link: 'OVERDUE', isOverdue: true },
+          { username: 'Another user name', link: 'EMAIL NOT VERIFIED, OVERDUE', isOverdue: true, isUnverified: true },
+          { username: 'TEST_USER name', link: 'OVERDUE', isOverdue: true, isUnverified: false },
         ])
       )
 

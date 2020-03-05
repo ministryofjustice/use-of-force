@@ -67,6 +67,7 @@ const getStatementsForReviewer = async reportId => {
   const results = await nonTransactionalClient.query({
     text: `select id
             ,      name
+            ,      user_id                  "userId"
             ,      overdue_date <= now()    "isOverdue"
             ,      statement_status = $1    "isSubmitted"
             from v_statement where report_id = $2
@@ -138,6 +139,17 @@ const submitStatement = (userId, reportId, client = nonTransactionalClient) => {
   })
 }
 
+const setEmail = (userId, reportId, emailAddress, client = nonTransactionalClient) => {
+  return client.query({
+    text: `update v_statement 
+    set email = $3
+    ,   updated_date = CURRENT_TIMESTAMP
+    where user_id = $1
+    and report_id = $2`,
+    values: [userId, reportId, emailAddress],
+  })
+}
+
 const getNumberOfPendingStatements = async (reportId, client = nonTransactionalClient) => {
   const { rows } = await client.query({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
@@ -166,6 +178,19 @@ const createStatements = async ({ reportId, firstReminder, overdueDate, staff, c
   return results.rows.reduce((result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }), {})
 }
 
+const deleteStatement = async ({ statementId, client, now = new Date() }) => {
+  const statementQuery = `(select id from statement where statement_id = $2)`
+
+  await client.query({
+    text: `update statement set deleted = $1 where id in ${statementQuery}`,
+    values: [now, statementId],
+  })
+  await client.query({
+    text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
+    values: [now, statementId],
+  })
+}
+
 const isStatementPresentForUser = async (reportId, username, client = nonTransactionalClient) => {
   const { rows } = await client.query({
     text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
@@ -180,8 +205,10 @@ module.exports = {
   getStatementForReviewer,
   getStatementsForReviewer,
   createStatements,
+  deleteStatement,
   saveStatement,
   submitStatement,
+  setEmail,
   getAdditionalComments,
   saveAdditionalComment,
   getNumberOfPendingStatements,
