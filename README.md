@@ -1,4 +1,7 @@
 # Use of Force
+[![CircleCI](https://circleci.com/gh/ministryofjustice/use-of-force/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/use-of-force)
+[![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/use-of-force/badge.svg)](https://snyk.io/test/github/ministryofjustice/use-of-force)
+
 A service to allow recording of Use of Force incidents.
 
 ## Getting started

@@ -8,35 +8,11 @@ const notificationService = {
   sendInvolvedStaffStatementOverdue: jest.fn(),
 }
 
-const client = jest.fn()
-
-const incidentClient = {
-  setNextReminderDate: jest.fn(),
-}
-
 afterEach(() => {
   jest.resetAllMocks()
 })
 
-const { getNextReminderDate, send } = reminderSender(notificationService, incidentClient)
-
-describe('getNextReminderDate', () => {
-  const checkGetNextReminderDate = val =>
-    expect(moment(getNextReminderDate({ nextReminderDate: moment(val) })).format('YYYY-MM-DD HH:mm:ss'))
-
-  test('normal day', async () => {
-    checkGetNextReminderDate('2019-09-06 21:26:17').toEqual('2019-09-07 21:26:17')
-  })
-
-  test('end of month', async () => {
-    checkGetNextReminderDate('2019-09-30 21:26:17').toEqual('2019-10-01 21:26:17')
-  })
-
-  test('leap year', async () => {
-    checkGetNextReminderDate('2020-02-28 23:59:59').toEqual('2020-02-29 23:59:59')
-    checkGetNextReminderDate('2020-02-29 23:59:59').toEqual('2020-03-01 23:59:59')
-  })
-})
+const { send } = reminderSender(notificationService)
 
 describe('send', () => {
   const recipientEmail = 'smith@prison.org'
@@ -64,7 +40,7 @@ describe('send', () => {
 
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
-      await send(client, {
+      await send({
         ...reminder,
         isReporter: true,
         nextReminderDate: now,
@@ -84,12 +60,10 @@ describe('send', () => {
         },
         expectedContext
       )
-
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate(), client)
     })
 
     test('sendReporterStatementOverdue', async () => {
-      await send(client, {
+      await send({
         ...reminder,
         isReporter: true,
         nextReminderDate: now,
@@ -108,14 +82,12 @@ describe('send', () => {
         },
         expectedContext
       )
-
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null, client)
     })
   })
 
   describe('involved staff', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
-      await send(client, {
+      await send({
         ...reminder,
         isReporter: false,
         nextReminderDate: now,
@@ -134,12 +106,10 @@ describe('send', () => {
         },
         expectedContext
       )
-
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, moment('2019-09-07 21:26:17').toDate(), client)
     })
 
     test('sendInvolvedStaffStatementOverdue', async () => {
-      await send(client, {
+      await send({
         ...reminder,
         isReporter: false,
         nextReminderDate: now,
@@ -157,8 +127,6 @@ describe('send', () => {
         },
         expectedContext
       )
-
-      expect(incidentClient.setNextReminderDate).toBeCalledWith(-1, null, client)
     })
   })
 })

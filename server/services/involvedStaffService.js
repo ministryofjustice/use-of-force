@@ -2,6 +2,13 @@ const moment = require('moment')
 const logger = require('../../log.js')
 const { ReportStatus } = require('../config/types')
 
+/**
+ * @param {object} args
+ * @param {any} args.incidentClient
+ * @param {import('../types/uof').UserService} args.userService
+ * @param {any} args.statementsClient
+ * @param {any} args.db
+ */
 module.exports = function createReportService({ incidentClient, statementsClient, userService, db }) {
   const getDraftInvolvedStaff = reportId => incidentClient.getDraftInvolvedStaff(reportId)
 
@@ -22,47 +29,17 @@ module.exports = function createReportService({ incidentClient, statementsClient
   const getInvolvedStaff = reportId => incidentClient.getInvolvedStaff(reportId)
 
   async function lookup(token, usernames) {
-    if (!usernames.length) {
-      return []
-    }
-
-    const { exist = [], missing = [], notVerified = [], success } = await userService.getUsers(token, usernames)
-
-    if (!success) {
-      const error = new Error('Contains one or more users with unverified emails')
-      // @ts-ignore
-      error.notVerified = notVerified
-      throw error
-    }
-
-    const existingStaff = exist.map(user => {
-      const { i, name, email, staffId, username } = user
-      return { i, name, email, staffId, username }
-    })
-
-    const missingStaff = missing.map(user => {
-      const { i, username } = user
-      return { i, username, missing: true }
-    })
-
-    const involvedStaff = [...existingStaff, ...missingStaff]
-      .sort(({ i }, { i: j }) => i - j)
-      .map(({ i, ...rest }) => rest)
-
-    return involvedStaff
+    return userService.getUsers(token, usernames)
   }
 
   const loadUser = async (token, username) => {
-    const { success, exist = [], missing = [], notVerified = [] } = await userService.getUsers(token, [username])
+    const results = await userService.getUsers(token, [username])
 
-    if (!success) {
-      throw new Error(
-        `Could not retrieve user details for '${username}', missing: '${Boolean(
-          missing.length
-        )}', not verified: '${Boolean(notVerified.length)}'`
-      )
+    if (!results || results[0].missing) {
+      throw new Error(`Could not retrieve user details for missing user: '${username}'`)
     }
-    const [user] = exist
+    const [user] = results
+    logger.info('Found user:', user)
     return user
   }
 
@@ -138,12 +115,34 @@ module.exports = function createReportService({ incidentClient, statementsClient
       }
     })
   }
+  const removeInvolvedStaff = async (reportId, statementId) => {
+    logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
+
+    await db.inTransaction(async client => {
+      const pendingStatementBeforeDeletion = await statementsClient.getNumberOfPendingStatements(reportId, client)
+
+      await statementsClient.deleteStatement({
+        statementId,
+        client,
+      })
+
+      if (pendingStatementBeforeDeletion !== 0) {
+        const pendingStatementCount = await statementsClient.getNumberOfPendingStatements(reportId, client)
+
+        if (pendingStatementCount === 0) {
+          logger.info(`All statements complete on : ${reportId}, marking as complete`)
+          await incidentClient.changeStatus(reportId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+        }
+      }
+    })
+  }
 
   return {
     getInvolvedStaff,
     removeMissingDraftInvolvedStaff,
     getDraftInvolvedStaff,
     addInvolvedStaff,
+    removeInvolvedStaff,
     save,
     lookup,
   }

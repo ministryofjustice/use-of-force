@@ -25,6 +25,11 @@ module.exports = function createReportService({
     return complete
   }
 
+  async function isDraftInProgress(username, bookingId) {
+    const { id } = await getCurrentDraft(username, bookingId)
+    return !isNilOrEmpty(id)
+  }
+
   async function update({ currentUser, formId, bookingId, formObject, incidentDate }) {
     const incidentDateValue = incidentDate ? incidentDate.value : null
     const formValue = !isNilOrEmpty(formObject) ? formObject : null
@@ -63,7 +68,8 @@ module.exports = function createReportService({
 
   const requestStatements = ({ reportId, currentUser, incidentDate, overdueDate, submittedDate, staffMembers }) => {
     const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
-    return staffExcludingReporter.map(staff =>
+    const staffExcludingUnverified = staffExcludingReporter.filter(staff => staff.email)
+    const notifications = staffExcludingUnverified.map(staff =>
       notificationService.sendStatementRequest(
         staff.email,
         {
@@ -76,6 +82,7 @@ module.exports = function createReportService({
         { reportId, statementId: staff.statementId }
       )
     )
+    return Promise.all(notifications)
   }
 
   async function submit(currentUser, bookingId, now = moment()) {
@@ -125,5 +132,6 @@ module.exports = function createReportService({
     submit,
     deleteReport,
     getReportStatus,
+    isDraftInProgress,
   }
 }

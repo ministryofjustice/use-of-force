@@ -28,8 +28,10 @@ const viewStatementsPage = () =>
               username: Cypress.$(tds[0]).text(),
               link: Cypress.$(tds[1])
                 .text()
-                .trim(),
+                .trim()
+                .replace(/\s\s+/g, ', '),
               isOverdue: Cypress.$(tds[1]).find('[data-qa="overdue"]').length === 1,
+              isUnverified: Cypress.$(tds[1]).find('[data-qa="unverified"]').length === 1,
             }
           })
         ),

@@ -19,15 +19,29 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  reportService.getCurrentDraft.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('GET /task-list', () => {
-  it('should render page content', () =>
-    request(app)
+  it('should render page content for new report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({})
+    return request(app)
       .get('/report/-35/report-use-of-force')
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-      }))
+        expect(offenderService.getOffenderDetails).toBeCalledWith('token', '-35')
+      })
+  })
+
+  it('should render page content for existing report', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    return request(app)
+      .get('/report/-35/report-use-of-force')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Report use of force')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '-35')
+      })
+  })
 })

@@ -2,6 +2,7 @@ const moment = require('moment')
 const {
   complete,
   partial,
+  persistent,
   optionalInvolvedStaff,
   optionalInvolvedStaffWhenPersisted,
 } = require('./incidentDetailsForm')
@@ -848,6 +849,78 @@ describe("'partial' validation", () => {
 
       expect(errors).toEqual([])
       expect(formResponse).toEqual({})
+    })
+  })
+})
+
+describe("'persistent' validation", () => {
+  const check = buildCheck(persistent)
+
+  beforeEach(() => {
+    validInput = {
+      incidentDate: {
+        date: { day: '15', month: '1', year: '2019' },
+        time: '12:45',
+      },
+      locationId: -1,
+      plannedUseOfForce: 'true',
+      involvedStaff: [
+        {
+          name: 'Licence Batchloader',
+          missing: 'false',
+          staffId: 6,
+          username: 'NOMIS_BATCHLOAD',
+          verified: 'true',
+        },
+      ],
+      witnesses: [{ name: 'User bob' }, { name: '' }],
+    }
+  })
+
+  describe('Incident details page - persistent', () => {
+    it('Should return no validation error messages if no invalid data', () => {
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([])
+    })
+
+    it('unverified users are valid', () => {
+      const { errors } = check({
+        ...validInput,
+        involvedStaff: [
+          {
+            name: 'Licence Batchloader',
+            missing: 'false',
+            staffId: 6,
+            username: 'NOMIS_BATCHLOAD',
+            verified: 'false',
+          },
+        ],
+      })
+
+      expect(errors).toEqual([])
+    })
+
+    it('missing users are invalid', () => {
+      const { errors } = check({
+        ...validInput,
+        involvedStaff: [
+          {
+            name: 'Licence Batchloader',
+            missing: 'true',
+            staffId: 6,
+            username: 'NOMIS_BATCHLOAD',
+            verified: 'false',
+          },
+        ],
+      })
+
+      expect(errors).toEqual([
+        {
+          href: '#involvedStaff[0][missing]',
+          text: '"involvedStaff[0].missing" must be [false]',
+        },
+      ])
     })
   })
 })

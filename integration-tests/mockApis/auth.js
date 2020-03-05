@@ -138,8 +138,24 @@ const stubEmail = username =>
     },
   })
 
+const stubUnverifiedEmail = username =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/auth/api/user/${encodeURI(username)}/email`,
+    },
+    response: {
+      status: 204,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {},
+    },
+  })
+
 module.exports = {
   getLoginUrl,
   stubLogin: options => Promise.all([favicon(), redirect(), logout(), token(options)]),
   stubUserDetailsRetrieval: username => Promise.all([stubUser(username), stubEmail(username)]),
+  stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
 }

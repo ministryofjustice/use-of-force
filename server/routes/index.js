@@ -35,11 +35,17 @@ module.exports = function Index({
     reportService,
     offenderService,
     involvedStaffService,
+    systemToken,
   })
 
-  const checkYourAnswers = CreateCheckYourAnswerRoutes({ reportService, offenderService, involvedStaffService })
+  const checkYourAnswers = CreateCheckYourAnswerRoutes({
+    reportService,
+    offenderService,
+    involvedStaffService,
+    systemToken,
+  })
 
-  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService })
+  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService, systemToken })
 
   const coordinator = CreateCoordinatorRoutes({
     reportService,
@@ -74,6 +80,8 @@ module.exports = function Index({
 
   get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
   post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
+
+  get(reportPath('email-not-verified'), createReport.viewUnverifiedEmails)
 
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
