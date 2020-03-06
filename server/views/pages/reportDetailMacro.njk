@@ -83,12 +83,13 @@
         'data-qa': 'staffInvolved'
       })
     %}
-    <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+    <dd class="govuk-summary-list__value" data-qa="staffInvolved">
         
       {%for item in data.incidentDetails.staffInvolved %}
           {{item.name}} - {{item.username}}
           {%- if user.isCoordinator and item.statementId -%}      
-            <a href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">Delete</a>
+            <a data-qa="delete-statement-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
+             Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
           {%- endif -%}  
         {% if not loop.last %}<br/>{% endif %}
       {% endfor %} 

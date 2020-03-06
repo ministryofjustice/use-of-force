@@ -15,6 +15,8 @@ const viewReportPage = () =>
 
     verifyInputs: reportDetails.verifyInputs,
 
+    deleteInvolvedStaff: username => cy.get(`[data-qa="delete-statement-${username}"]`),
+
     getReportId: () => {
       return cy.url().then(url => {
         const match = url.match(/.*\/(.*)\/view-report/)
