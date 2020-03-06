@@ -28,6 +28,15 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
   const getInvolvedStaff = reportId => incidentClient.getInvolvedStaff(reportId)
 
+  const loadInvolvedStaff = async (reportId, statementId) => {
+    const involvedStaff = await incidentClient.getInvolvedStaff(reportId)
+    const found = involvedStaff.find(staff => staff.statementId === statementId)
+    if (!found) {
+      throw new Error(`Staff with id: ${statementId}, does not exist on report: '${reportId}'`)
+    }
+    return found
+  }
+
   async function lookup(token, usernames) {
     return userService.getUsers(token, usernames)
   }
@@ -115,6 +124,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
       }
     })
   }
+
   const removeInvolvedStaff = async (reportId, statementId) => {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
@@ -139,6 +149,7 @@ module.exports = function createReportService({ incidentClient, statementsClient
 
   return {
     getInvolvedStaff,
+    loadInvolvedStaff,
     removeMissingDraftInvolvedStaff,
     getDraftInvolvedStaff,
     addInvolvedStaff,

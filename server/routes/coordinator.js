@@ -17,7 +17,7 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
       res.json({ result: 'ok' })
     },
 
-    deleteConfirm: async (req, res) => {
+    confirmDeleteReport: async (req, res) => {
       if (!res.locals.user.isCoordinator) {
         throw httpError(401, 'Not authorised to access this resource')
       }
@@ -34,7 +34,7 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
       )
       const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 
-      res.render('pages/coordinator/confirm-deletion.html', { errors, data })
+      res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
     },
 
     deleteReport: async (req, res) => {
@@ -55,6 +55,42 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
       }
 
       return res.redirect('/')
+    },
+
+    confirmDeleteStatement: async (req, res) => {
+      if (!res.locals.user.isCoordinator) {
+        throw httpError(401, 'Not authorised to access this resource')
+      }
+
+      const { reportId, statementId } = req.params
+
+      const staffMember = await involvedStaffService.loadInvolvedStaff(reportId, parseInt(statementId, 10))
+
+      const errors = req.flash('errors')
+
+      const data = { reportId, statementId, displayName: staffMember.name }
+
+      res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+    },
+
+    deleteStatement: async (req, res) => {
+      if (!res.locals.user.isCoordinator) {
+        throw httpError(401, 'Not authorised to access this resource')
+      }
+
+      const { reportId, statementId } = req.params
+      const { confirm } = req.body
+
+      if (!confirm) {
+        req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
+        return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/confirm-delete`)
+      }
+
+      if (confirm === 'yes') {
+        await involvedStaffService.removeInvolvedStaff(reportId, statementId)
+      }
+
+      return res.redirect(`/${reportId}/view-report`)
     },
   }
 }

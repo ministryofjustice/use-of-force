@@ -44,7 +44,7 @@
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId) %}
+{% macro detail(data, bookingId, user) %}
     {{
       pagesMacros.sectionHeading({
         id: 'incidentDetails', 
@@ -78,14 +78,22 @@
         dataValue: data.incidentDetails.plannedUseOfForce | toYesNo
       })
     }}
-    {{
-      pagesMacros.tableRow({
+    {% call pagesMacros.tableRowWithContent({
         label: 'Staff involved',
-        'data-qa': 'staffInvolved',
-        dataValue: data.incidentDetails.staffInvolved,
-        type: 'itemPerLine'
+        'data-qa': 'staffInvolved'
       })
-    }}
+    %}
+    <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+        
+      {%for item in data.incidentDetails.staffInvolved %}
+          {{item.name}} - {{item.username}}
+          {%- if user.isCoordinator and item.statementId -%}      
+            <a href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">Delete</a>
+          {%- endif -%}  
+        {% if not loop.last %}<br/>{% endif %}
+      {% endfor %} 
+    </dd>
+    {% endcall %}
     {{
       pagesMacros.tableRow({
         label: 'Witnesses',
