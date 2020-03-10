@@ -26,6 +26,7 @@ describe('statusCheck', () => {
       handcuffsApplied: false,
       positiveCommunication: false,
       personalProtectionTechniques: true,
+      painInducingTechniques: false,
     },
     evidence: {
       cctvRecording: 'NO',
@@ -100,6 +101,7 @@ describe('statusCheck', () => {
         handcuffsApplied: null,
         positiveCommunication: false,
         personalProtectionTechniques: undefined,
+        painInducingTechniques: null,
       },
     }
 

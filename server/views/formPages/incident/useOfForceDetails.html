@@ -126,8 +126,16 @@
   }}
   </div>
 
-
     <!-- Q7 -->
+    {{ incidentMacro.radio( {
+      text: "Were pain inducing techniques used?",
+      name: "painInducingTechniques",
+      value: data.painInducingTechniques,
+      options: yesNoOptions,
+      errorMessage: errors | findError('painInducingTechniques')
+    })}}
+
+    <!-- Q8 -->
     {{ incidentMacro.radio( {
       text: "Were handcuffs applied?",
       name: "handcuffsApplied",

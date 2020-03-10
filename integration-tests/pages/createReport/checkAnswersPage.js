@@ -13,6 +13,7 @@ const checkAnswersPage = () =>
     useOfForcePlanned: reportDetails.useOfForcePlanned,
     positiveCommunicationUsed: reportDetails.positiveCommunicationUsed,
     handcuffsApplied: reportDetails.handcuffsApplied,
+    painInducingTechniques: reportDetails.painInducingTechniques,
     prisonerCompliant: reportDetails.prisonerCompliant,
     photosTaken: reportDetails.photosTaken,
     verifyInputs: reportDetails.verifyInputs,

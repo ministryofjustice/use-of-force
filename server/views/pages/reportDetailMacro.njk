@@ -153,6 +153,13 @@
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were pain inducing techniques used?',
+        'data-qa': 'painInducingTechniques',
+        dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo
+      })
+    }}
       {{
       pagesMacros.tableRow({
         label: 'Were handcuffs applied?',
@@ -160,8 +167,6 @@
         dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo
       })
     }}
-
-
     {{
       pagesMacros.sectionHeading({
         id: 'relocationAndInjuries',
