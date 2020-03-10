@@ -153,6 +153,7 @@
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
+    {% if data.useOfForceDetails.painInducingTechniques %}
     {{
       pagesMacros.tableRow({
         label: 'Were pain inducing techniques used?',
@@ -160,6 +161,7 @@
         dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo
       })
     }}
+    {% endif %}
       {{
       pagesMacros.tableRow({
         label: 'Were handcuffs applied?',
