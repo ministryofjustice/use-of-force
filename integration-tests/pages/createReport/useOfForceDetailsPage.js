@@ -27,6 +27,7 @@ const useOfForceDetailsPage = () =>
 
     restraint: () => cy.get('[name="restraint"]'),
     handcuffsApplied: () => cy.get('[name="handcuffsApplied"]'),
+    painInducingTechniques: () => cy.get('[name="painInducingTechniques"]'),
 
     fillForm() {
       this.postiveCommunication().check('true')
@@ -40,6 +41,7 @@ const useOfForceDetailsPage = () =>
       this.restraint().check('true')
       this.restraintPositions.check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       this.handcuffsApplied().check('true')
+      this.painInducingTechniques().check('true')
     },
 
     errorSummary() {

@@ -46,6 +46,7 @@ const expectedPayload = {
     positiveCommunication: true,
     guidingHoldOfficersInvolved: 2,
     personalProtectionTechniques: true,
+    painInducingTechniques: true,
   },
   relocationAndInjuries: {
     f213CompletedBy: 'Dr Taylor',

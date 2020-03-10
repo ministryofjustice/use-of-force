@@ -33,6 +33,7 @@ const createUseOfForceDetails = (details = {}) => {
     controlAndRestraintUsed: whenPresent(details.restraint, value =>
       value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
     ),
+    painInducingTechniques: details.painInducingTechniques,
     handcuffsApplied: details.handcuffsApplied,
   }
 }
