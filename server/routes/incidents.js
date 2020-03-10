@@ -36,14 +36,19 @@ module.exports = function CreateReportRoutes({
       form.incidentDetails.locationId
     )
     const involvedStaff = await involvedStaffService.getInvolvedStaff(id)
-    const involvedStaffNames = involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.userId}`])
+    const involvedStaffNameAndUsernames = involvedStaff.map(staff => ({
+      name: properCaseFullName(staff.name),
+      username: staff.userId,
+      reportId: id,
+      statementId: staff.statementId,
+    }))
 
     return {
       incidentId: id,
       reporterName,
       submittedDate,
       bookingId,
-      ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate),
+      ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNameAndUsernames, incidentDate),
     }
   }
 

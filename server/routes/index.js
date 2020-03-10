@@ -126,8 +126,10 @@ module.exports = function Index({
 
   // Coordinator
   get('/report/:reportId/involved-staff/:username', coordinator.addInvolvedStaff)
-  get('/coordinator/report/:reportId/confirm-delete', coordinator.deleteConfirm)
+  get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
   post('/coordinator/report/:reportId/delete', coordinator.deleteReport)
+  get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
+  post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
 
   return router
 }

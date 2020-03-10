@@ -103,12 +103,11 @@ test('deleteStatement', async () => {
   await statementsClient.deleteStatement({ statementId: -1, client: db, now: date })
 
   expect(db.query).toBeCalledWith({
-    text: 'update statement set deleted = $1 where id in (select id from statement where statement_id = $2)',
+    text: 'update statement set deleted = $1 where id = $2',
     values: [date, -1],
   })
   expect(db.query).toBeCalledWith({
-    text:
-      'update statement_amendments set deleted = $1 where statement_id in (select id from statement where statement_id = $2)',
+    text: 'update statement_amendments set deleted = $1 where statement_id = $2',
     values: [date, -1],
   })
 })

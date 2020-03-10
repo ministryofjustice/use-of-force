@@ -7,13 +7,13 @@ const {
 } = require('../../config/types')
 const { properCaseFullName } = require('../../utils/utils')
 
-const createIncidentDetails = (offenderDetail, description, incidentDetails = {}, involvedStaffNames, incidentDate) => {
+const createIncidentDetails = (offenderDetail, description, incidentDetails = {}, involvedStaff, incidentDate) => {
   return {
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
     location: description,
     plannedUseOfForce: incidentDetails.plannedUseOfForce,
-    staffInvolved: involvedStaffNames,
+    staffInvolved: involvedStaff,
     witnesses: incidentDetails.witnesses
       ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])
       : 'None',
@@ -107,14 +107,14 @@ const extractCommaSeparatedList = (attr, dataArray = []) => {
   return dataArray.map(element => element[attr]).join(', ')
 }
 
-module.exports = (form, offenderDetail, locationDescription, involvedStaffNames, incidentDate) => {
+module.exports = (form, offenderDetail, locationDescription, involvedStaff, incidentDate) => {
   const { incidentDetails, useOfForceDetails, relocationAndInjuries, evidence } = form
   return {
     incidentDetails: createIncidentDetails(
       offenderDetail,
       locationDescription,
       incidentDetails,
-      involvedStaffNames,
+      involvedStaff,
       incidentDate
     ),
     offenderDetail,
