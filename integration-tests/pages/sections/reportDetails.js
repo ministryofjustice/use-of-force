@@ -3,7 +3,7 @@ const positiveCommunicationUsed = () => cy.get('[data-qa="positiveCommunication"
 const handcuffsApplied = () => cy.get('[data-qa=handcuffsApplied]')
 const prisonerCompliant = () => cy.get('[data-qa="compliancy"]')
 const photosTaken = () => cy.get('[data-qa="photographs"]')
-const painInducingTechniques = () => cy.get('[data-qa=painInducingTechniques]')
+const painInducingTechniques = () => cy.get('[data-qa=handcuffsApplied]')
 
 module.exports = {
   useOfForcePlanned,
