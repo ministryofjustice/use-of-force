@@ -41,6 +41,45 @@ describe('GET /check-your-answers', () => {
       })
   })
 
+  it('Should not contain the pain inducing techniques question', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Were pain inducing techniques used?')
+      })
+  })
+
+  it('Should contain the pain inducing techniques question', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          pavaDrawn: false,
+          restraint: false,
+          batonDrawn: false,
+          guidingHold: false,
+          handcuffsApplied: false,
+          positiveCommunication: false,
+          painInducingTechniques: true,
+          personalProtectionTechniques: false,
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Were pain inducing techniques used?')
+      })
+  })
+
   it('Redirect if report is not complete', () => {
     reportService.getReportStatus.mockReturnValue({ complete: false })
 
