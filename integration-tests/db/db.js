@@ -6,8 +6,11 @@ const { expectedPayload } = require('../integration/seedData')
 const db = require('../../server/data/dataAccess/db')
 const incidentClient = require('../../server/data/incidentClient')
 const statementsClient = require('../../server/data/statementsClient')
+const createStatementService = require('../../server/services/statementService')
 const { ReportStatus } = require('../../server/config/types')
 const { equals } = require('../../server/utils/utils')
+
+const statementService = createStatementService({ statementsClient, incidentClient, db })
 
 const getCurrentDraft = bookingId => incidentClient.getCurrentDraftReport('TEST_USER', bookingId)
 
@@ -75,7 +78,10 @@ const submitStatement = ({ userId, reportId }) =>
       jobStartYear: 2017,
       statement: 'Things happened',
     })
-    .then(() => statementsClient.submitStatement(userId, reportId))
+    .then(() => {
+      statementService.submitStatement(userId, reportId)
+      return null
+    })
 
 const deleteRows = table => db.query({ text: format('delete from %I', table) })
 
