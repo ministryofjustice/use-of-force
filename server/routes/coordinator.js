@@ -1,27 +1,61 @@
-const httpError = require('http-errors')
+const { AddStaffResult } = require('../services/involvedStaffService')
+const { firstItem } = require('../utils/utils')
 
 module.exports = function Index({ reportService, involvedStaffService, reviewService, offenderService, systemToken }) {
-  /**
-   * TODO: integrate this into the app properly once we have designs and time.
-   * This is currently a GET to get around CSRF issues and to allow access via a browser using current authenticated session :-/
-   */
   return {
-    addInvolvedStaff: async (req, res) => {
-      if (!res.locals.user.isCoordinator) {
-        throw httpError(401, 'Not authorised to access this resource')
+    viewAddInvolvedStaff: async (req, res) => {
+      const { reportId } = req.params
+
+      const errors = req.flash('errors')
+      const data = { incidentId: reportId }
+
+      res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+    },
+
+    submitAddInvolvedStaff: async (req, res) => {
+      const {
+        params: { reportId },
+        body: { username },
+      } = req
+
+      if (!username.trim()) {
+        req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
+        return res.redirect(`/coordinator/report/${reportId}/add-staff`)
       }
 
-      const { reportId, username } = req.params
+      const result = await involvedStaffService.addInvolvedStaff(
+        await systemToken(res.locals.user.username),
+        reportId,
+        username
+      )
 
-      await involvedStaffService.addInvolvedStaff(await systemToken(res.locals.user.username), reportId, username)
-      res.json({ result: 'ok' })
+      req.flash('username', username.toUpperCase())
+      return res.redirect(`/coordinator/report/${reportId}/add-staff/result/${result}`)
+    },
+
+    viewAddInvolvedStaffResult: async (req, res) => {
+      const { reportId, result } = req.params
+      const username = firstItem(req.flash('username'))
+
+      const knownResult = Object.values(AddStaffResult).some(knownValue => knownValue === result)
+
+      if (!username || !knownResult || result === AddStaffResult.SUCCESS) {
+        return res.redirect(`/${reportId}/view-report`)
+      }
+
+      if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
+        const user = await involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+        return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
+          reportId,
+          username,
+          name: user.name,
+        })
+      }
+
+      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, { reportId, username })
     },
 
     confirmDeleteReport: async (req, res) => {
-      if (!res.locals.user.isCoordinator) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { reportId } = req.params
 
       const errors = req.flash('errors')
@@ -38,10 +72,6 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
     },
 
     deleteReport: async (req, res) => {
-      if (!res.locals.user.isCoordinator) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { reportId } = req.params
       const { confirm } = req.body
 
@@ -58,10 +88,6 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
     },
 
     confirmDeleteStatement: async (req, res) => {
-      if (!res.locals.user.isCoordinator) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { reportId, statementId } = req.params
 
       const staffMember = await involvedStaffService.loadInvolvedStaff(reportId, parseInt(statementId, 10))
@@ -74,10 +100,6 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
     },
 
     deleteStatement: async (req, res) => {
-      if (!res.locals.user.isCoordinator) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { reportId, statementId } = req.params
       const { confirm } = req.body
 

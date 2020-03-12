@@ -63,10 +63,6 @@ module.exports = function CreateReportRoutes({
     },
 
     viewAllIncidents: async (req, res) => {
-      if (!res.locals.user.isReviewer) {
-        return res.redirect('/')
-      }
-
       const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId)
 
       const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
@@ -122,10 +118,6 @@ module.exports = function CreateReportRoutes({
     reviewReport: async (req, res) => {
       const { reportId } = req.params
 
-      if (!res.locals.user.isReviewer) {
-        return res.redirect('/')
-      }
-
       const report = await reviewService.getReport(reportId)
 
       const data = await buildReportData(report, res)
@@ -134,10 +126,6 @@ module.exports = function CreateReportRoutes({
     },
 
     reviewStatements: async (req, res) => {
-      if (!res.locals.user.isReviewer) {
-        return res.redirect('/')
-      }
-
       const { reportId } = req.params
 
       const report = await reviewService.getReport(reportId)
@@ -155,10 +143,6 @@ module.exports = function CreateReportRoutes({
     },
 
     reviewStatement: async (req, res) => {
-      if (!res.locals.user.isReviewer) {
-        return res.redirect('/')
-      }
-
       const { statementId } = req.params
 
       const statement = await reviewService.getStatement(statementId)

@@ -2,6 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const bodyParser = require('body-parser')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const { coordinatorOnly, reviewerOrCoordinatorOnly } = require('../middleware/roleCheck')
 
 const CreateIncidentRoutes = require('./incidents')
 const CreateStatementRoutes = require('./statements')
@@ -66,70 +67,86 @@ module.exports = function Index({
     next()
   })
 
-  const reportPath = formName => `/report/:bookingId/${formName}`
+  // All users
+  {
+    const get = (path, handler) => router.get(path, asyncMiddleware(handler))
+    const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
-  const get = (path, handler) => router.get(path, asyncMiddleware(handler))
-  const post = (path, handler) => router.post(path, asyncMiddleware(handler))
+    const reportPath = formName => `/report/:bookingId/${formName}`
 
-  get(reportPath('report-use-of-force'), reportUseOfForce.view)
+    get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  get(reportPath('incident-details'), createReport.viewIncidentDetails({ edit: false }))
-  post(reportPath('incident-details'), createReport.submit('incidentDetails'))
-  get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
-  post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
+    get(reportPath('incident-details'), createReport.viewIncidentDetails({ edit: false }))
+    post(reportPath('incident-details'), createReport.submit('incidentDetails'))
+    get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
+    post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
 
-  get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
-  post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
+    get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
+    post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
 
-  get(reportPath('email-not-verified'), createReport.viewUnverifiedEmails)
+    get(reportPath('email-not-verified'), createReport.viewUnverifiedEmails)
 
-  get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
-  post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
-  get(reportPath('edit-use-of-force-details'), createReport.viewEdit('useOfForceDetails'))
-  post(reportPath('edit-use-of-force-details'), createReport.submitEdit('useOfForceDetails'))
+    get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
+    post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
+    get(reportPath('edit-use-of-force-details'), createReport.viewEdit('useOfForceDetails'))
+    post(reportPath('edit-use-of-force-details'), createReport.submitEdit('useOfForceDetails'))
 
-  get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
-  post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
-  get(reportPath('edit-relocation-and-injuries'), createReport.viewEdit('relocationAndInjuries'))
-  post(reportPath('edit-relocation-and-injuries'), createReport.submitEdit('relocationAndInjuries'))
+    get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
+    post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
+    get(reportPath('edit-relocation-and-injuries'), createReport.viewEdit('relocationAndInjuries'))
+    post(reportPath('edit-relocation-and-injuries'), createReport.submitEdit('relocationAndInjuries'))
 
-  get(reportPath('evidence'), createReport.view('evidence'))
-  post(reportPath('evidence'), createReport.submit('evidence'))
-  get(reportPath('edit-evidence'), createReport.viewEdit('evidence'))
-  post(reportPath('edit-evidence'), createReport.submitEdit('evidence'))
+    get(reportPath('evidence'), createReport.view('evidence'))
+    post(reportPath('evidence'), createReport.submit('evidence'))
+    get(reportPath('edit-evidence'), createReport.viewEdit('evidence'))
+    post(reportPath('edit-evidence'), createReport.submitEdit('evidence'))
 
-  get(reportPath('check-your-answers'), checkYourAnswers.view)
-  post(reportPath('check-your-answers'), checkYourAnswers.submit)
-  get(`${reportPath('cancel-edit')}/:formName`, createReport.cancelEdit)
+    get(reportPath('check-your-answers'), checkYourAnswers.view)
+    post(reportPath('check-your-answers'), checkYourAnswers.submit)
+    get(`${reportPath('cancel-edit')}/:formName`, createReport.cancelEdit)
 
-  get('/:reportId/report-sent', incidents.viewReportSent)
+    get('/:reportId/report-sent', incidents.viewReportSent)
 
-  get('/', incidents.redirectToHomePage)
-  get('/your-reports', incidents.viewYourReports)
-  get('/:reportId/your-report', incidents.viewYourReport)
+    get('/', incidents.redirectToHomePage)
+    get('/your-reports', incidents.viewYourReports)
+    get('/:reportId/your-report', incidents.viewYourReport)
 
-  get('/your-statements', statements.viewYourStatements)
-  get('/:reportId/write-your-statement', statements.viewWriteYourStatement)
-  post('/:reportId/write-your-statement', statements.submitWriteYourStatement)
-  get('/:reportId/check-your-statement', statements.viewCheckYourStatement)
-  post('/:reportId/check-your-statement', statements.submitCheckYourStatement)
-  get('/:reportId/statement-submitted', statements.viewStatementSubmitted)
-  get('/:reportId/your-statement', statements.viewYourStatement)
-  get('/:reportId/add-comment-to-statement', statements.viewAddCommentToStatement)
-  post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
+    get('/your-statements', statements.viewYourStatements)
+    get('/:reportId/write-your-statement', statements.viewWriteYourStatement)
+    post('/:reportId/write-your-statement', statements.submitWriteYourStatement)
+    get('/:reportId/check-your-statement', statements.viewCheckYourStatement)
+    post('/:reportId/check-your-statement', statements.submitCheckYourStatement)
+    get('/:reportId/statement-submitted', statements.viewStatementSubmitted)
+    get('/:reportId/your-statement', statements.viewYourStatement)
+    get('/:reportId/add-comment-to-statement', statements.viewAddCommentToStatement)
+    post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
+  }
 
   // Reviewer
-  get('/all-incidents', incidents.viewAllIncidents)
-  get('/:reportId/view-report', incidents.reviewReport)
-  get('/:reportId/view-statements', incidents.reviewStatements)
-  get('/:statementId/view-statement', incidents.reviewStatement)
+  {
+    const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
+
+    get('/all-incidents', incidents.viewAllIncidents)
+    get('/:reportId/view-report', incidents.reviewReport)
+    get('/:reportId/view-statements', incidents.reviewStatements)
+    get('/:statementId/view-statement', incidents.reviewStatement)
+  }
 
   // Coordinator
-  get('/report/:reportId/involved-staff/:username', coordinator.addInvolvedStaff)
-  get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
-  post('/coordinator/report/:reportId/delete', coordinator.deleteReport)
-  get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
-  post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
+  {
+    const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
+    const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
+
+    get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
+    post('/coordinator/report/:reportId/delete', coordinator.deleteReport)
+
+    get('/coordinator/report/:reportId/add-staff', coordinator.viewAddInvolvedStaff)
+    post('/coordinator/report/:reportId/add-staff', coordinator.submitAddInvolvedStaff)
+    get('/coordinator/report/:reportId/add-staff/result/:result', coordinator.viewAddInvolvedStaffResult)
+
+    get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
+    post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
+  }
 
   return router
 }

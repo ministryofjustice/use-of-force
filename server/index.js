@@ -14,7 +14,7 @@ const { authClientBuilder, systemToken } = require('./data/authClientBuilder')
 
 const createSignInService = require('./authentication/signInService')
 
-const createInvolvedStaffService = require('./services/involvedStaffService')
+const { createInvolvedStaffService } = require('./services/involvedStaffService')
 const createOffenderService = require('./services/offenderService')
 const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
