@@ -1,5 +1,5 @@
 const moment = require('moment')
-const serviceCreator = require('./involvedStaffService')
+const { createInvolvedStaffService, AddStaffResult } = require('./involvedStaffService')
 const { ReportStatus } = require('../config/types')
 
 const userService = {
@@ -33,7 +33,7 @@ const client = jest.fn()
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ incidentClient, statementsClient, userService, db })
+  service = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
 })
 
 afterEach(() => {
@@ -282,10 +282,11 @@ describe('save', () => {
     beforeEach(() => {
       userService.getUsers.mockReturnValue([
         {
-          staffId: 3,
           email: 'an@email',
-          username: 'Bob',
           name: 'Bob Smith',
+          staffId: 3,
+          username: 'Bob',
+          verified: true,
         },
       ])
     })
@@ -296,7 +297,7 @@ describe('save', () => {
         status: ReportStatus.COMPLETE.value,
       })
 
-      await service.addInvolvedStaff('token1', 'form1', 'Bob')
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
       expect(statementsClient.createStatements).toBeCalledWith({
         reportId: 'form1',
@@ -315,7 +316,7 @@ describe('save', () => {
         status: ReportStatus.SUBMITTED.value,
       })
 
-      await service.addInvolvedStaff('token1', 'form1', 'Bob')
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
       expect(statementsClient.createStatements).toBeCalledWith({
         reportId: 'form1',
@@ -345,11 +346,39 @@ describe('save', () => {
 
       statementsClient.isStatementPresentForUser.mockReturnValue(true)
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).rejects.toThrow(
-        "Staff member already exists: 'Bob' on report: 'form1'"
-      )
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.ALREADY_EXISTS)
 
       expect(statementsClient.createStatements).not.toBeCalled()
+      expect(incidentClient.changeStatus).not.toBeCalled()
+    })
+
+    test('when user is unverified', async () => {
+      incidentClient.getReportForReviewer.mockReturnValue({
+        submittedDate: reportSubmittedDate,
+        status: ReportStatus.IN_PROGRESS.value,
+      })
+
+      userService.getUsers.mockReturnValue([
+        {
+          staffId: 3,
+          email: 'an@email',
+          username: 'Bob',
+          name: 'Bob Smith',
+          verified: false,
+        },
+      ])
+
+      statementsClient.isStatementPresentForUser.mockReturnValue(false)
+
+      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
+
+      expect(statementsClient.createStatements).toBeCalledWith({
+        reportId: 'form1',
+        firstReminder: null,
+        overdueDate: overdueDate.toDate(),
+        staff,
+        client,
+      })
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
   })
@@ -415,6 +444,6 @@ describe('save', () => {
 
     await expect(
       service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
-    ).rejects.toThrow(`Could not retrieve user details for missing user: 'Bob'`)
+    ).rejects.toThrow(`Could not retrieve user details for current user: 'Bob'`)
   })
 })

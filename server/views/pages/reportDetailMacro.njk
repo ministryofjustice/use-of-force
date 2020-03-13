@@ -44,7 +44,7 @@
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId) %}
+{% macro detail(data, bookingId, incidentId, user) %}
     {{
       pagesMacros.sectionHeading({
         id: 'incidentDetails', 
@@ -78,14 +78,29 @@
         dataValue: data.incidentDetails.plannedUseOfForce | toYesNo
       })
     }}
-    {{
-      pagesMacros.tableRow({
+    {% call pagesMacros.tableRowWithContent({
         label: 'Staff involved',
-        'data-qa': 'staffInvolved',
-        dataValue: data.incidentDetails.staffInvolved,
-        type: 'itemPerLine'
+        'data-qa': 'staffInvolved'
       })
-    }}
+    %}
+    <dd class="govuk-summary-list__value" data-qa="staffInvolved">
+        
+      {%for item in data.incidentDetails.staffInvolved %}
+          {{item.name}} - {{item.username}}
+          {%- if user.isCoordinator and item.statementId -%}      
+            <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
+              Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
+          {%- endif -%}  
+        {% if not loop.last %}<br/>{% endif %}
+      {% endfor %} 
+
+      {%- if user.isCoordinator -%}
+        <br/>
+        <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
+            Add another member of staff</a>
+      {%- endif -%}
+    </dd>
+    {% endcall %}
     {{
       pagesMacros.tableRow({
         label: 'Witnesses',
@@ -144,6 +159,15 @@
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
+    {% if data.useOfForceDetails.painInducingTechniques %}
+    {{
+      pagesMacros.tableRow({
+        label: 'Were pain inducing techniques used?',
+        'data-qa': 'painInducingTechniques',
+        dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo
+      })
+    }}
+    {% endif %}
       {{
       pagesMacros.tableRow({
         label: 'Were handcuffs applied?',
@@ -151,8 +175,6 @@
         dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo
       })
     }}
-
-
     {{
       pagesMacros.sectionHeading({
         id: 'relocationAndInjuries',

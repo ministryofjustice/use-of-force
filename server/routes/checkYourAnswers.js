@@ -5,7 +5,7 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
   const currentUserIfNotPresent = (involvedStaff, currentUser) =>
     involvedStaff.find(staff => staff.username === currentUser.username)
       ? []
-      : [[`${currentUser.displayName} - ${currentUser.username}`]]
+      : [{ name: currentUser.displayName, username: currentUser.username }]
 
   return {
     view: async (req, res) => {
@@ -30,14 +30,14 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         form.incidentDetails.locationId
       )
 
-      const involvedStaff = await involvedStaffService.getDraftInvolvedStaff(id)
+      const draftInvolvedStaff = await involvedStaffService.getDraftInvolvedStaff(id)
 
-      const involvedStaffNames = [
-        ...currentUserIfNotPresent(involvedStaff, res.locals.user),
-        ...involvedStaff.map(staff => [`${properCaseFullName(staff.name)} - ${staff.username}`]),
+      const involvedStaff = [
+        ...currentUserIfNotPresent(draftInvolvedStaff, res.locals.user),
+        ...draftInvolvedStaff.map(staff => ({ name: properCaseFullName(staff.name), username: staff.username })),
       ]
 
-      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaffNames, incidentDate)
+      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
 
       return res.render('pages/check-your-answers', { data, bookingId })
     },

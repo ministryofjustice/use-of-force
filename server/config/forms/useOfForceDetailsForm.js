@@ -60,6 +60,10 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
+  painInducingTechniques: requiredBooleanMsg('Select yes if pain inducing techniques were used').alter(
+    optionalForPartialValidation
+  ),
+
   handcuffsApplied: requiredBooleanMsg('Select yes if handcuffs were applied').alter(optionalForPartialValidation),
 })
 

@@ -21,6 +21,7 @@ beforeEach(() => {
     restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
+    painInducingTechniques: 'true',
   }
 })
 
@@ -45,10 +46,11 @@ describe('complete schema', () => {
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
+        painInducingTechniques: true,
       })
     })
 
-    it('Should return 7 error massages if no input field is completed', () => {
+    it('Should return 8 error massages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -78,12 +80,16 @@ describe('complete schema', () => {
           text: 'Select yes if control and restraint was used',
         },
         {
+          href: '#painInducingTechniques',
+          text: 'Select yes if pain inducing techniques were used',
+        },
+        {
           href: '#handcuffsApplied',
           text: 'Select yes if handcuffs were applied',
         },
       ])
 
-      expect(errors.length).toEqual(7)
+      expect(errors.length).toEqual(8)
 
       expect(formResponse).toEqual({})
     })
@@ -304,6 +310,22 @@ describe('complete schema', () => {
       ])
       expect(formResponse.handcuffsAplied).toBe(undefined)
     })
+
+    it("Not selecting an option for 'pain inducing techniques' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        painInducingTechniques: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#painInducingTechniques',
+          text: 'Select yes if pain inducing techniques were used',
+        },
+      ])
+      expect(formResponse.painInducingTechniques).toBe(undefined)
+    })
   })
 })
 
@@ -328,6 +350,7 @@ describe('partial schema', () => {
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
+        painInducingTechniques: true,
       })
     })
 

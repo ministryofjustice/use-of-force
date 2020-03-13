@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken')
 const { stubFor, getRequests } = require('./wiremock')
 
-const createToken = isReviewer => {
+const createToken = (isReviewer, isCoordinator) => {
   const payload = {
     user_name: 'ITAG_USER',
     scope: ['read', 'write'],
     auth_source: 'nomis',
     authorities: [
       ...(isReviewer ? ['ROLE_USE_OF_FORCE_REVIEWER'] : []),
+      ...(isCoordinator ? ['ROLE_USE_OF_FORCE_COORDINATOR'] : []),
       'ROLE_MAINTAIN_ACCESS_ROLES_ADMIN',
       'ROLE_CATEGORISATION_SECURITY',
       'ROLE_GLOBAL_SEARCH',
@@ -73,7 +74,7 @@ const logout = () =>
     },
   })
 
-const token = ({ isReviewer = false }) =>
+const token = ({ isReviewer = false, isCoordinator = false }) =>
   stubFor({
     request: {
       method: 'POST',
@@ -86,7 +87,7 @@ const token = ({ isReviewer = false }) =>
         Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
-        access_token: createToken(isReviewer),
+        access_token: createToken(isReviewer, isCoordinator),
         token_type: 'bearer',
         refresh_token: 'refresh',
         user_name: 'TEST_USER',

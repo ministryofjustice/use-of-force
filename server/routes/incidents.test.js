@@ -67,12 +67,12 @@ describe('GET /all-incidents', () => {
       })
   })
 
-  it('should redirect if not reviewer', () => {
+  it('should not allow if not reviewer', () => {
     userSupplier.mockReturnValue(user)
     return request(app)
       .get('/all-incidents')
-      .expect(302)
-      .expect('Location', '/')
+      .expect(401)
+      .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
   })
 })
 
@@ -133,14 +133,14 @@ describe('GET /view-statements', () => {
       })
   })
 
-  it('should redirect if not reviewer', () => {
+  it('should not allow if not reviewer', () => {
     userSupplier.mockReturnValue(user)
     reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
     reviewService.getStatements.mockReturnValue([])
     return request(app)
       .get('/1/view-statements')
-      .expect(302)
-      .expect('Location', '/')
+      .expect(401)
+      .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
   })
 
   it('should error if report doesnt exist', () => {

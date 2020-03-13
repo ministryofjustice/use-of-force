@@ -179,14 +179,12 @@ const createStatements = async ({ reportId, firstReminder, overdueDate, staff, c
 }
 
 const deleteStatement = async ({ statementId, client, now = new Date() }) => {
-  const statementQuery = `(select id from statement where statement_id = $2)`
-
   await client.query({
-    text: `update statement set deleted = $1 where id in ${statementQuery}`,
+    text: `update statement set deleted = $1 where id = $2`,
     values: [now, statementId],
   })
   await client.query({
-    text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
+    text: `update statement_amendments set deleted = $1 where statement_id = $2`,
     values: [now, statementId],
   })
 }
