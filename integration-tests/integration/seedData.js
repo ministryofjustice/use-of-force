@@ -53,7 +53,7 @@ const expectedPayload = {
     prisonerInjuries: true,
     healthcareInvolved: true,
     prisonerRelocation: 'SEGREGATION_UNIT',
-    relocationCompliancy: true,
+    prisonerCompliant: true,
     staffMedicalAttention: true,
     prisonerHospitalisation: true,
     healthcarePractionerName: 'Dr Smith',

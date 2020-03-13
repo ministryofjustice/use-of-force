@@ -3,7 +3,8 @@ const EvidencePage = require('./evidencePage')
 
 const relocationAndInjuriesPage = () =>
   page('Relocation and injuries', {
-    prisonerCompliant: () => cy.get('[name="relocationCompliancy"]'),
+    prisonerCompliant: () => cy.get('[name="prisonerCompliant"]'),
+    relocationType: () => cy.get('[name="relocationType"]'),
     fillForm() {
       cy.get('[name="prisonerRelocation"]').select('Segregation unit')
       this.prisonerCompliant().check('true')

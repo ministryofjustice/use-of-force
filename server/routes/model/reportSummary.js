@@ -41,7 +41,8 @@ const createUseOfForceDetails = (details = {}) => {
 const createRelocation = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-    prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
+    prisonerCompliant: relocationAndInjuries.prisonerCompliant,
+    relocationType: relocationAndInjuries.relocationType,
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
     ),

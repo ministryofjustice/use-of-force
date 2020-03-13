@@ -14,7 +14,7 @@ let validInput = {}
 beforeEach(() => {
   validInput = {
     prisonerRelocation: 'SEGREGATION_UNIT',
-    relocationCompliancy: 'true',
+    prisonerCompliant: 'true',
     healthcareInvolved: 'true',
     healthcarePractionerName: 'Dr. Jones',
     f213CompletedBy: 'Jane Smith',
@@ -36,7 +36,7 @@ describe("'complete' schema", () => {
 
       expect(formResponse).toEqual({
         prisonerRelocation: 'SEGREGATION_UNIT',
-        relocationCompliancy: true,
+        prisonerCompliant: true,
         healthcareInvolved: true,
         healthcarePractionerName: 'Dr. Jones',
         f213CompletedBy: 'Jane Smith',
@@ -57,7 +57,7 @@ describe("'complete' schema", () => {
           text: 'Select where the prisoner was relocated to',
         },
         {
-          href: '#relocationCompliancy',
+          href: '#prisonerCompliant',
           text: 'Select yes if the prisoner was compliant',
         },
         {
@@ -86,6 +86,28 @@ describe("'complete' schema", () => {
 
       expect(formResponse).toEqual({})
     })
+
+    it('Should return validation error message if prisoner compliant secondary question not answered', () => {
+      const invalidInput = {
+        prisonerRelocation: 'SEGREGATION_UNIT',
+        prisonerCompliant: 'false',
+        healthcareInvolved: 'true',
+        healthcarePractionerName: 'Dr. Jones',
+        f213CompletedBy: 'Jane Smith',
+        prisonerInjuries: 'true',
+        prisonerHospitalisation: 'true',
+        staffMedicalAttention: 'true',
+        staffNeedingMedicalAttention: [{ name: 'Person Someone', hospitalisation: 'true' }],
+      }
+      const { errors } = check(invalidInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#relocationType',
+          text: 'Select the type of relocation',
+        },
+      ])
+    })
   })
 
   describe('Relocation and Injuries page inputs', () => {
@@ -106,12 +128,12 @@ describe("'complete' schema", () => {
     it('Not selecting an option for Was the prisoner compliant returns a validation error message', () => {
       const input = {
         ...validInput,
-        relocationCompliancy: undefined,
+        prisonerCompliant: undefined,
       }
       const { errors } = check(input)
       expect(errors).toEqual([
         {
-          href: '#relocationCompliancy',
+          href: '#prisonerCompliant',
           text: 'Select yes if the prisoner was compliant',
         },
       ])
@@ -410,7 +432,7 @@ describe("'partial' schema", () => {
 
     expect(formResponse).toEqual({
       prisonerRelocation: 'SEGREGATION_UNIT',
-      relocationCompliancy: true,
+      prisonerCompliant: true,
       healthcareInvolved: true,
       healthcarePractionerName: 'Dr. Jones',
       f213CompletedBy: 'Jane Smith',
