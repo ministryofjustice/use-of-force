@@ -159,7 +159,7 @@
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
       })
     }}
-    {% if data.useOfForceDetails.painInducingTechniques %}
+    {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
     {{
       pagesMacros.tableRow({
         label: 'Were pain inducing techniques used?',
