@@ -41,8 +41,22 @@ describe('GET /check-your-answers', () => {
       })
   })
 
-  it('Should not contain the pain inducing techniques question', () => {
+  it('Should not contain the pain inducing techniques question [pain inducing techniques = undefined]', () => {
     reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          pavaDrawn: false,
+          restraint: false,
+          batonDrawn: false,
+          guidingHold: false,
+          handcuffsApplied: false,
+          positiveCommunication: false,
+          personalProtectionTechniques: false,
+        },
+      },
+    })
 
     return request(app)
       .get('/report/-35/check-your-answers')
@@ -53,7 +67,7 @@ describe('GET /check-your-answers', () => {
       })
   })
 
-  it('Should contain the pain inducing techniques question', () => {
+  it('Should contain the pain inducing techniques question [pain inducing techniques = true]', () => {
     reportService.getReportStatus.mockReturnValue({ complete: true })
     reportService.getCurrentDraft.mockResolvedValue({
       form: {
@@ -66,6 +80,33 @@ describe('GET /check-your-answers', () => {
           handcuffsApplied: false,
           positiveCommunication: false,
           painInducingTechniques: true,
+          personalProtectionTechniques: false,
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Were pain inducing techniques used?')
+      })
+  })
+
+  it('Should contain the pain inducing techniques question [pain inducing techniques = false]', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          pavaDrawn: false,
+          restraint: false,
+          batonDrawn: false,
+          guidingHold: false,
+          handcuffsApplied: false,
+          positiveCommunication: false,
+          painInducingTechniques: false,
           personalProtectionTechniques: false,
         },
       },
