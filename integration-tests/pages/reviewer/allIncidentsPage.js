@@ -34,7 +34,13 @@ const incidentsPage = () =>
       reporter: () => todoCol(i, 2),
       viewStatementsButton: () => todoCol(i, 3).find('a'),
       overdue: () => cy.get('[data-qa=overdue]'),
+      reportId: () =>
+        todoCol(i, 3)
+          .find('a')
+          .invoke('attr', 'href')
+          .then(link => link.match(/\/(.*?)\/view-statements/)[1]),
     }),
+
     getCompleteRow: i => ({
       date: () => completeCol(i, 0),
       prisoner: () => completeCol(i, 1),

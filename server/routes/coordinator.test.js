@@ -37,17 +37,51 @@ describe('coordinator', () => {
     jest.resetAllMocks()
   })
 
-  describe('add involved staff', () => {
+  describe('view add involved staff', () => {
     it('should resolve for coordinator', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
       await request(app)
-        .get('/report/1/involved-staff/sally')
+        .get('/coordinator/report/1/add-staff')
         .expect(200)
-        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.body).toEqual({ result: 'ok' })
+          expect(res.text).toContain('Add another member of staff')
         })
+    })
+
+    it('should not resolve for reviewer', async () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
+      await request(app)
+        .get('/coordinator/report/1/add-staff')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('should not resolve for user', async () => {
+      userSupplier.mockReturnValue(user)
+
+      await request(app)
+        .get('/coordinator/report/1/add-staff')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+  })
+
+  describe('submit add involved staff', () => {
+    it('should resolve for coordinator', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      involvedStaffService.addInvolvedStaff.mockResolvedValue('success')
+      await request(app)
+        .post('/coordinator/report/1/add-staff')
+        .send({ username: 'sally' })
+        .expect(302)
+        .expect('Location', '/coordinator/report/1/add-staff/result/success')
 
       expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', '1', 'sally')
     })
@@ -56,7 +90,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/report/1/involved-staff/sally')
+        .post('/coordinator/report/1/add-staff')
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -69,13 +103,46 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/report/1/involved-staff/sally')
+        .post('/coordinator/report/1/add-staff')
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
         })
 
       expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
+    })
+  })
+
+  describe('view add involved staff results', () => {
+    it('should resolve for coordinator', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      involvedStaffService.addInvolvedStaff.mockResolvedValue('success')
+      await request(app)
+        .get('/coordinator/report/1/add-staff/result/success')
+        .expect(302)
+        .expect('Location', '/1/view-report')
+    })
+
+    it('should not resolve for reviewer', async () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
+      await request(app)
+        .get('/coordinator/report/1/add-staff/result/success')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('should not resolve for user', async () => {
+      userSupplier.mockReturnValue(user)
+
+      await request(app)
+        .get('/coordinator/report/1/add-staff/result/success')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
     })
   })
 

@@ -39,7 +39,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('A reviewer can remove staff on otherwise complete report and it will complete the report', () => {
+  it('A coordinator can remove staff on otherwise complete report and it will complete the report', () => {
     cy.task('stubCoordinatorLogin')
     cy.login(bookingId)
 
@@ -57,8 +57,10 @@ context('A use of force coordinator can remove involved staff', () => {
     }
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.getReportId().then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
-    cy.reload()
+    viewStatementsPage
+      .getReportId()
+      .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
+      .then(() => cy.reload())
 
     viewStatementsPage
       .statements()
