@@ -71,12 +71,4 @@ module.exports = (app, path) => {
     }
     return value ? 'Yes' : 'No'
   })
-
-  njkEnv.addFilter('ifDefined', value => {
-    return value === undefined ? '' : ` - ${value}`
-  })
-
-  njkEnv.addFilter('snakeToSentence', value => {
-    return value.split('_').join(' ')
-  })
 }

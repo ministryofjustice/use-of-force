@@ -44,7 +44,7 @@ describe('statusCheck', () => {
       prisonerInjuries: false,
       healthcareInvolved: true,
       prisonerRelocation: 'OWN_CELL',
-      prisonerCompliant: false,
+      relocationCompliancy: false,
       relocationType: 'relocation_to_vehicle',
       staffMedicalAttention: true,
       prisonerHospitalisation: true,

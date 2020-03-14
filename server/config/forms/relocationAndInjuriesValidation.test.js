@@ -14,7 +14,7 @@ let validInput = {}
 beforeEach(() => {
   validInput = {
     prisonerRelocation: 'SEGREGATION_UNIT',
-    prisonerCompliant: 'true',
+    relocationCompliancy: 'true',
     healthcareInvolved: 'true',
     healthcarePractionerName: 'Dr. Jones',
     f213CompletedBy: 'Jane Smith',
@@ -36,7 +36,7 @@ describe("'complete' schema", () => {
 
       expect(formResponse).toEqual({
         prisonerRelocation: 'SEGREGATION_UNIT',
-        prisonerCompliant: true,
+        relocationCompliancy: true,
         healthcareInvolved: true,
         healthcarePractionerName: 'Dr. Jones',
         f213CompletedBy: 'Jane Smith',
@@ -57,7 +57,7 @@ describe("'complete' schema", () => {
           text: 'Select where the prisoner was relocated to',
         },
         {
-          href: '#prisonerCompliant',
+          href: '#relocationCompliancy',
           text: 'Select yes if the prisoner was compliant',
         },
         {
@@ -90,7 +90,7 @@ describe("'complete' schema", () => {
     it('Should return validation error message if prisoner compliant secondary question not answered', () => {
       const invalidInput = {
         prisonerRelocation: 'SEGREGATION_UNIT',
-        prisonerCompliant: 'false',
+        relocationCompliancy: 'false',
         healthcareInvolved: 'true',
         healthcarePractionerName: 'Dr. Jones',
         f213CompletedBy: 'Jane Smith',
@@ -128,12 +128,12 @@ describe("'complete' schema", () => {
     it('Not selecting an option for Was the prisoner compliant returns a validation error message', () => {
       const input = {
         ...validInput,
-        prisonerCompliant: undefined,
+        relocationCompliancy: undefined,
       }
       const { errors } = check(input)
       expect(errors).toEqual([
         {
-          href: '#prisonerCompliant',
+          href: '#relocationCompliancy',
           text: 'Select yes if the prisoner was compliant',
         },
       ])
@@ -432,7 +432,7 @@ describe("'partial' schema", () => {
 
     expect(formResponse).toEqual({
       prisonerRelocation: 'SEGREGATION_UNIT',
-      prisonerCompliant: true,
+      relocationCompliancy: true,
       healthcareInvolved: true,
       healthcarePractionerName: 'Dr. Jones',
       f213CompletedBy: 'Jane Smith',

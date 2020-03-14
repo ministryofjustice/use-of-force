@@ -126,8 +126,10 @@ describe('GET /check-your-answers', () => {
     reportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
+        useOfForceDetails: {},
+        evidence: {},
         relocationAndInjuries: {
-          prisonerCompliant: true,
+          relocationCompliancy: true,
         },
       },
     })
@@ -148,8 +150,8 @@ describe('GET /check-your-answers', () => {
       form: {
         incidentDetails: {},
         relocationAndInjuries: {
-          prisonerCompliant: false,
-          relocationType: 'relocation to vehicle',
+          relocationCompliancy: false,
+          relocationType: 'VEHICLE',
         },
       },
     })
@@ -159,7 +161,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('No - relocation to vehicle')
+        expect(res.text).toContain('No - Relocated to vehicle')
       })
   })
 

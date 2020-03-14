@@ -19,9 +19,11 @@ const completeSchema = joi.object({
     optionalForPartialValidation
   ),
 
-  prisonerCompliant: requiredBooleanMsg('Select yes if the prisoner was compliant').alter(optionalForPartialValidation),
+  relocationCompliancy: requiredBooleanMsg('Select yes if the prisoner was compliant').alter(
+    optionalForPartialValidation
+  ),
 
-  relocationType: joi.when('prisonerCompliant', {
+  relocationType: joi.when('relocationCompliancy', {
     is: false,
     then: requiredStringMsg('Select the type of relocation').alter(optionalForPartialValidation),
     otherwise: joi.any().strip(),

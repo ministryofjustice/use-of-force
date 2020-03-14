@@ -36,7 +36,11 @@
 </div>
 {% endmacro %}
 
+
 {% macro radiosWithNestedRadios(question) %}
+
+{% set radio_button_orientation = 'govuk-radios--inline' if question.orientation === 'inline' else 'govuk-radios'%}
+
 {% if question.primaryQuestion.errorMessage %}
 {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
 {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
@@ -59,93 +63,14 @@
       {{ primaryErrorMessageText}}
     </span>
     <div class="govuk-!-margin-bottom-6">
-      <div class="{% if question.primaryquestion.options | length < 3 %} govuk-radios--inline{% endif %}"
-        data-module="govuk-radios">
+      <div class={{radio_button_orientation}} data-module="govuk-radios">
         {% set name1 = question.primaryQuestion.name %}
         {% for option in question.primaryQuestion.options %}
         <div class="govuk-radios__item">
           <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name1}} {% else %}
             id="id-{{name1}}-{{loop.index}}" {% endif %} name="{{name1}}" type="radio" value="{{option.value}}"
-            {% if option.value === question.primaryQuestion.value %} checked {% endif %} {% if option.value === true %}
-            data-aria-controls="conditional-{{name1}}" {% endif %}>
-          <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name1}} {% else %}
-            for="id-{{name1}}-{{loop.index}}" {% endif %}>
-            {{option.label}}
-          </label>
-        </div>
-        {% endfor %}
-
-        <!-- followup-->
-        {% if question.followUpQuestion %}
-        <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{name1}}">
-          <div class="{{govukFormGroupErrorInner}}">
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                {{question.followUpQuestion.text}}
-              </legend>
-
-              <span class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ followUpErrorMessageText}}
-              </span>
-              {% set name2 = question.followUpQuestion.name %}
-              <div class="{% if question.followUpQuestion.options | length < 3 %} govuk-radios--inline {% endif %}">
-                {% for option in question.followUpQuestion.options %}
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name2}} {% else %}
-                    id="id-{{name2}}-{{loop.index}}" {% endif %} name="{{name2}}" type="radio" value="{{option.value}}"
-                    {% if option.value === question.followUpQuestion.value %} checked {% endif %}>
-                  <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name2}} {% else %}
-                    for="id-{{name2}}-{{loop.index}}" {% endif %}>
-                    {{option.label}}
-                  </label>
-                </div>
-                {% endfor %}
-              </div>
-            </fieldset>
-          </div>
-        </div>
-        {% endif %}
-        <!-- end of followup -->
-      </div>
-    </div>
-  </fieldset>
-</div>
-
-{% endmacro %}
-
-
-{% macro radiosWithNestedRadiosDeterminantNo(question) %}
-{% if question.primaryQuestion.errorMessage %}
-{% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
-{% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
-{% endif %}
-
-{% if not question.primaryQuestion.errorMessage and question.followUpQuestion.errorMessage.text %}
-{% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
-{% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
-{% endif %}
-
-
-<div class="govuk-form-group {{govukFormGroupErrorOuter}}">
-  <fieldset class="govuk-fieldset">
-    <!-- primary  -->
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-      {{question.primaryQuestion.text}}
-    </legend>
-    <span class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span>
-      {{ primaryErrorMessageText}}
-    </span>
-    <div class="govuk-!-margin-bottom-6">
-      <div class="govuk-radios" data-module="govuk-radios">
-        {% set name1 = question.primaryQuestion.name %}
-        {% for option in question.primaryQuestion.options %}
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name1}} {% else %}
-            id="id-{{name1}}-{{loop.index}}" {% endif %} name="{{name1}}" type="radio" value="{{option.value}}"
-            {% if option.value === question.primaryQuestion.value %} checked {% endif %} {% if option.value === false %}
-            data-aria-controls="conditional-{{name1}}" {% endif %}>
+            {% if option.value === question.primaryQuestion.value %} checked {% endif %}
+            {% if option.value === question.followUpQuestionTriggeredOn %} data-aria-controls="conditional-{{name1}}" {% endif %}>
           <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name1}} {% else %}
             for="id-{{name1}}-{{loop.index}}" {% endif %}>
             {{option.label}}
@@ -243,8 +168,8 @@
 
               <div class="govuk-checkboxes__item ">
                 <input class="govuk-checkboxes__input" {% if loop.index === 1 %} id={{name}} {% else %}
-                  id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}[{{loop.index}}]"  type="checkbox" value="{{option.value}}"
-                  {% if option.value in question.followUpQuestion.value %} checked {% endif %}>
+                  id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}[{{loop.index}}]" type="checkbox"
+                  value="{{option.value}}" {% if option.value in question.followUpQuestion.value %} checked {% endif %}>
                 <label class="govuk-label govuk-checkboxes__label" {% if loop.index === 1 %} for={{name}} {% else %}
                   for="id-{{name}}-{{loop.index}}" {% endif %}>
                   {{option.label}}

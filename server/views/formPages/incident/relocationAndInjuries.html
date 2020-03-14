@@ -30,11 +30,11 @@
 
 
 
-    {{ incidentMacro.radiosWithNestedRadiosDeterminantNo({
+    {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was the prisoner compliant?",
-        name: "prisonerCompliant",
-        value: data.prisonerCompliant,
+        name: "relocationCompliancy",
+        value: data.relocationCompliancy,
         options: [{
           value: true,
           label: "Yes"
@@ -42,7 +42,7 @@
           value: false,
           label: "No"
         }],
-        errorMessage: errors | findError('prisonerCompliant')
+        errorMessage: errors | findError('relocationCompliancy')
 
       },
       followUpQuestion: {
@@ -50,20 +50,12 @@
         name: "relocationType",
         value: data.relocationType,
         errorMessage: errors | findError('relocationType'),
-        options: [{
-          value: "side_relocation",
-          label: "Side relocation"
-        }, 
-        {
-          value: "full_relocation",
-          label: "Full relocation"
-        },
-        {
-          value: "relocation_to_vehicle",
-          label: "Relocated to vehicle"
-        }]
-      }
-    })}}
+        options: data.types.RelocationType | list | extractAttr('value') | toOptions('value', 'label')
+      },
+      followUpQuestionTriggeredOn: false,
+      orientation: 'stacked'
+    }
+    )}}
 
     <hr />
 
