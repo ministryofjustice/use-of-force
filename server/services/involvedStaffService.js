@@ -2,12 +2,12 @@ const moment = require('moment')
 const logger = require('../../log.js')
 const { ReportStatus } = require('../config/types')
 
-const AddStaffResult = {
+const AddStaffResult = Object.freeze({
   SUCCESS: 'success',
   SUCCESS_UNVERIFIED: 'unverified',
   MISSING: 'missing',
   ALREADY_EXISTS: 'already-exists',
-}
+})
 
 module.exports = {
   AddStaffResult,
