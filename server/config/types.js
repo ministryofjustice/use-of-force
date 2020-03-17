@@ -47,6 +47,12 @@ const Destinations = {
   CHECK_YOUR_ANSWERS: 'check-your-answers',
 }
 
+const RelocationType = {
+  SIDE: { value: 'SIDE', label: 'Side relocation' },
+  FULL: { value: 'FULL', label: 'Full relocation' },
+  VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
+}
+
 module.exports = {
   BodyWornCameras: Object.freeze(BodyWornCameras),
   Cctv: Object.freeze(Cctv),
@@ -56,4 +62,5 @@ module.exports = {
   StatementStatus: Object.freeze(StatementStatus),
   Destinations: Object.freeze(Destinations),
   toLabel,
+  RelocationType: Object.freeze(RelocationType),
 }

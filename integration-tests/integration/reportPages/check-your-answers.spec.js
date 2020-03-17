@@ -52,7 +52,7 @@ context('Check your answers page', () => {
       checkAnswersPage,
       initialValue: 'Yes',
       operation: page => page.clickSave(),
-      finalValue: 'No',
+      finalValue: 'No - Relocated to vehicle',
     })
 
     canEditEvidencePage({
@@ -124,6 +124,7 @@ context('Check your answers page', () => {
     checkAnswersPage.editRelocationAndInjuriesLink().click()
     const relocationAndInjuriesPage = RelocationAndInjuriesPage.verifyOnPage()
     relocationAndInjuriesPage.prisonerCompliant().check('false')
+    relocationAndInjuriesPage.relocationType().check('VEHICLE')
     operation(relocationAndInjuriesPage)
     const revisitedAnswersPage = CheckAnswersPage.verifyOnPage()
     revisitedAnswersPage.prisonerCompliant().contains(finalValue)

@@ -121,6 +121,49 @@ describe('GET /check-your-answers', () => {
       })
   })
 
+  it('Should contain prisoner compliant', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {},
+        evidence: {},
+        relocationAndInjuries: {
+          relocationCompliancy: true,
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Was the prisoner compliant?')
+      })
+  })
+
+  it('Should contain vehicle', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+    reportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        relocationAndInjuries: {
+          relocationCompliancy: false,
+          relocationType: 'VEHICLE',
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('No - Relocated to vehicle')
+      })
+  })
+
   it('Redirect if report is not complete', () => {
     reportService.getReportStatus.mockReturnValue({ complete: false })
 
