@@ -56,19 +56,7 @@ module.exports = function Index({
     reviewService,
   })
 
-  router.use(authenticationMiddleware())
-  router.use(bodyParser.urlencoded({ extended: false }))
-  router.use(flash())
-
-  router.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-      res.locals.csrfToken = req.csrfToken()
-    }
-    next()
-  })
-
-  // All users
-  {
+  const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
@@ -122,8 +110,7 @@ module.exports = function Index({
     post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
   }
 
-  // Reviewer
-  {
+  const reviewerRoutes = () => {
     const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
 
     get('/all-incidents', incidents.viewAllIncidents)
@@ -132,8 +119,7 @@ module.exports = function Index({
     get('/:statementId/view-statement', incidents.reviewStatement)
   }
 
-  // Coordinator
-  {
+  const coordinatorRoutes = () => {
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
 
@@ -147,6 +133,21 @@ module.exports = function Index({
     get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
     post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
   }
+
+  router.use(authenticationMiddleware())
+  router.use(bodyParser.urlencoded({ extended: false }))
+  router.use(flash())
+
+  router.use((req, res, next) => {
+    if (typeof req.csrfToken === 'function') {
+      res.locals.csrfToken = req.csrfToken()
+    }
+    next()
+  })
+
+  userRoutes()
+  reviewerRoutes()
+  coordinatorRoutes()
 
   return router
 }
