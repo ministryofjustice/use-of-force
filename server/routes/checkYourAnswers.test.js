@@ -160,7 +160,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('No - Relocated to vehicle')
+        expect(res.text).toContain('No - relocated to vehicle')
       })
   })
 

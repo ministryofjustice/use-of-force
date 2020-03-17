@@ -52,7 +52,7 @@ context('Check your answers page', () => {
       checkAnswersPage,
       initialValue: 'Yes',
       operation: page => page.clickSave(),
-      finalValue: 'No - Relocated to vehicle',
+      finalValue: 'No - relocated to vehicle',
     })
 
     canEditEvidencePage({

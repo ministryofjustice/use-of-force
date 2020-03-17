@@ -64,7 +64,7 @@ const createRelocation = (relocationAndInjuries = {}) => {
 }
 
 const getRelocationType = relocationType => {
-  return relocationType ? ` - ${toLabel(RelocationType, relocationType)}` : ''
+  return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
 }
 
 const createEvidence = (evidence = {}) => {
