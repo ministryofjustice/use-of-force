@@ -42,10 +42,9 @@ const createUseOfForceDetails = (details = {}) => {
 const createRelocation = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-    relocationCompliancy: whenPresent(relocationAndInjuries.relocationCompliancy, value =>
-      value ? 'Yes' : `No - ${toLabel(RelocationType, relocationAndInjuries.relocationType)}`
-    ),
-    relocationType: relocationAndInjuries.relocationType,
+    relocationCompliancy: relocationAndInjuries.relocationType
+      ? `No - ${toLabel(RelocationType, relocationAndInjuries.relocationType)}`
+      : getRelocationCompliancy(relocationAndInjuries),
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
     ),
@@ -59,6 +58,10 @@ const createRelocation = (relocationAndInjuries = {}) => {
       value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
     ),
   }
+}
+
+const getRelocationCompliancy = relocationAndInjuries => {
+  return relocationAndInjuries.relocationCompliancy === true ? 'Yes' : 'No'
 }
 
 const createEvidence = (evidence = {}) => {

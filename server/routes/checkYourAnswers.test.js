@@ -140,7 +140,6 @@ describe('GET /check-your-answers', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Was the prisoner compliant?')
-        expect(res.text).toContain('Yes')
       })
   })
 
