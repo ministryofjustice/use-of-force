@@ -1,6 +1,6 @@
 const nonTransactionalClient = require('./dataAccess/db')
 
-const getMostOftenInvolvedStaff = async (agencyId, startDate, endDate) => {
+const getMostOftenInvolvedStaff = async (agencyId, [startDate, endDate]) => {
   const results = await nonTransactionalClient.query({
     text: `select s.name, count(*) 
           from statement s
@@ -17,7 +17,7 @@ const getMostOftenInvolvedStaff = async (agencyId, startDate, endDate) => {
   return results.rows
 }
 
-const getMostOftenInvolvedPrisoners = async (agencyId, startDate, endDate) => {
+const getMostOftenInvolvedPrisoners = async (agencyId, [startDate, endDate]) => {
   const results = await nonTransactionalClient.query({
     text: `select r.offender_no "offenderNo", count(*)
           from v_report r
@@ -32,7 +32,42 @@ const getMostOftenInvolvedPrisoners = async (agencyId, startDate, endDate) => {
   return results.rows
 }
 
+const getIncidentsOverview = async (agencyId, [startDate, endDate]) => {
+  const results = await nonTransactionalClient.query({
+    text: `
+      select
+        count(*) "total",
+        count(*) filter (where (incidentDetails ->> 'plannedUseOfForce')::boolean = true) "planned",
+        count(*) filter (where (incidentDetails ->> 'plannedUseOfForce')::boolean = false) "unplanned",
+        count(*) filter (where (useOfForceDetails ->> 'handcuffsApplied')::boolean = true) "handcuffsApplied",
+        count(*) filter (where (useOfForceDetails ->> 'batonDrawn')::boolean = true) "batonDrawn",
+        count(*) filter (where (useOfForceDetails ->> 'batonUsed')::boolean = true) "batonUsed",
+        count(*) filter (where (useOfForceDetails ->> 'pavaDrawn')::boolean = true) "pavaDrawn",
+        count(*) filter (where (useOfForceDetails ->> 'pavaUsed')::boolean = true) "pavaUsed",
+        count(*) filter (where (useOfForceDetails ->> 'personalProtectionTechniques')::boolean = true) "personalProtectionTechniques",
+        count(*) filter (where evidence ->> 'cctvRecording' = 'YES') "cctvRecording",
+        count(*) filter (where evidence ->> 'bodyWornCamera' = 'YES') "bodyWornCamera",
+        count(*) filter (where evidence ->> 'bodyWornCamera' = 'NOT_KNOWN') "bodyWornCameraUnknown"
+      from
+        (
+        select
+          form_response  -> 'incidentDetails'   incidentDetails,
+          form_response  -> 'useOfForceDetails' useOfForceDetails,
+          form_response  -> 'evidence'          evidence
+        from
+          report
+        where
+          status != 'IN_PROGRESS'
+          and agency_id = $1
+          and submitted_date between $2 and $3) incidents`,
+    values: [agencyId, startDate.toDate(), endDate.toDate()],
+  })
+
+  return results.rows
+}
+
 module.exports = {
   getMostOftenInvolvedStaff,
   getMostOftenInvolvedPrisoners,
+  getIncidentsOverview,
 }

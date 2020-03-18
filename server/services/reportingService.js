@@ -12,32 +12,31 @@ const toCsv = (columns, results) =>
     })
   })
 
+/** @return {[moment.Moment, moment.Moment]} */
+const dateRange = (month, year) => {
+  const date = moment({ years: year, months: month - 1 })
+
+  const startDate = moment(date).startOf('month')
+  const endDate = moment(date).endOf('month')
+  return [startDate, endDate]
+}
+
+const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
+
 module.exports = function createReportingService({ reportingClient, offenderService }) {
   return {
     getMostOftenInvolvedStaff: async (agencyId, month, year) => {
-      const date = moment({ years: year, months: month - 1 })
-
-      const startDate = moment(date).startOf('month')
-      const endDate = moment(date).endOf('month')
-
-      logger.info(
-        `Retrieve most involved staff for agency: ${agencyId}, between '${startDate.format()}' and '${endDate.format()}'`
-      )
-      const results = await reportingClient.getMostOftenInvolvedStaff(agencyId, startDate, endDate)
+      const range = dateRange(month, year)
+      logger.info(`Retrieve most involved staff for agency: ${agencyId}, between '${formatRange(range)}'`)
+      const results = await reportingClient.getMostOftenInvolvedStaff(agencyId, range)
 
       return toCsv([{ key: 'name', header: 'Staff member name' }, { key: 'count', header: 'Count' }], results)
     },
 
     getMostOftenInvolvedPrisoners: async (token, agencyId, month, year) => {
-      const date = moment({ years: year, months: month - 1 })
-
-      const startDate = moment(date).startOf('month')
-      const endDate = moment(date).endOf('month')
-
-      logger.info(
-        `Retrieve most involved prisoner for agency: ${agencyId}, between '${startDate.format()}' and '${endDate.format()}'`
-      )
-      const results = await reportingClient.getMostOftenInvolvedPrisoners(agencyId, startDate, endDate)
+      const range = dateRange(month, year)
+      logger.info(`Retrieve most involved prisoner for agency: ${agencyId}, between '${formatRange(range)}'`)
+      const results = await reportingClient.getMostOftenInvolvedPrisoners(agencyId, range)
 
       const offenderNos = results.map(result => result.offenderNo)
       const nosToNames = await offenderService.getOffenderNames(token, offenderNos)
@@ -45,6 +44,31 @@ module.exports = function createReportingService({ reportingClient, offenderServ
       const rows = results.map(({ offenderNo, count }) => ({ name: nosToNames[offenderNo], count }))
 
       return toCsv([{ key: 'name', header: 'Prisoner name' }, { key: 'count', header: 'Count' }], rows)
+    },
+
+    getIncidentsOverview: async (agencyId, month, year) => {
+      const range = dateRange(month, year)
+      logger.info(`Retrieve incident agency for agency: ${agencyId}, between '${formatRange(range)}'`)
+
+      const results = await reportingClient.getIncidentsOverview(agencyId, range)
+
+      return toCsv(
+        [
+          { key: 'total', header: 'Total' },
+          { key: 'planned', header: 'Planned incidents' },
+          { key: 'unplanned', header: 'Unplanned incidents' },
+          { key: 'handcuffsApplied', header: 'Handcuffs applied' },
+          { key: 'batonDrawn', header: 'Baton drawn' },
+          { key: 'batonUsed', header: 'Baton used' },
+          { key: 'pavaDrawn', header: 'Pava drawn' },
+          { key: 'pavaUsed', header: 'Pava used' },
+          { key: 'personalProtectionTechniques', header: 'Personal protection techniques' },
+          { key: 'cctvRecording', header: 'CCTV recording' },
+          { key: 'bodyWornCamera', header: 'Body worn camera recording' },
+          { key: 'bodyWornCameraUnknown', header: 'Body worn camera recording unknown' },
+        ],
+        results
+      )
     },
   }
 }

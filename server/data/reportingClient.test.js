@@ -21,7 +21,7 @@ describe('reportingClient', () => {
       const startDate = moment()
       const endDate = moment().add(1, 'month')
 
-      reportingClient.getMostOftenInvolvedStaff(agencyId, startDate, endDate)
+      reportingClient.getMostOftenInvolvedStaff(agencyId, [startDate, endDate])
 
       expect(db.query).toBeCalledWith({
         text: `select s.name, count(*) 
@@ -45,7 +45,7 @@ describe('reportingClient', () => {
       const startDate = moment()
       const endDate = moment().add(1, 'month')
 
-      reportingClient.getMostOftenInvolvedPrisoners(agencyId, startDate, endDate)
+      reportingClient.getMostOftenInvolvedPrisoners(agencyId, [startDate, endDate])
 
       expect(db.query).toBeCalledWith({
         text: `select r.offender_no "offenderNo", count(*)
@@ -56,6 +56,46 @@ describe('reportingClient', () => {
           group by offender_no
           order by 2 desc
           limit 10`,
+        values: [agencyId, startDate.toDate(), endDate.toDate()],
+      })
+    })
+  })
+
+  describe('getIncidentsOverview', () => {
+    test('it should pass om the correct sql', () => {
+      const agencyId = 'LEI'
+      const startDate = moment()
+      const endDate = moment().add(1, 'month')
+
+      reportingClient.getIncidentsOverview(agencyId, [startDate, endDate])
+
+      expect(db.query).toBeCalledWith({
+        text: `
+      select
+        count(*) "total",
+        count(*) filter (where (incidentDetails ->> 'plannedUseOfForce')::boolean = true) "planned",
+        count(*) filter (where (incidentDetails ->> 'plannedUseOfForce')::boolean = false) "unplanned",
+        count(*) filter (where (useOfForceDetails ->> 'handcuffsApplied')::boolean = true) "handcuffsApplied",
+        count(*) filter (where (useOfForceDetails ->> 'batonDrawn')::boolean = true) "batonDrawn",
+        count(*) filter (where (useOfForceDetails ->> 'batonUsed')::boolean = true) "batonUsed",
+        count(*) filter (where (useOfForceDetails ->> 'pavaDrawn')::boolean = true) "pavaDrawn",
+        count(*) filter (where (useOfForceDetails ->> 'pavaUsed')::boolean = true) "pavaUsed",
+        count(*) filter (where (useOfForceDetails ->> 'personalProtectionTechniques')::boolean = true) "personalProtectionTechniques",
+        count(*) filter (where evidence ->> 'cctvRecording' = 'YES') "cctvRecording",
+        count(*) filter (where evidence ->> 'bodyWornCamera' = 'YES') "bodyWornCamera",
+        count(*) filter (where evidence ->> 'bodyWornCamera' = 'NOT_KNOWN') "bodyWornCameraUnknown"
+      from
+        (
+        select
+          form_response  -> 'incidentDetails'   incidentDetails,
+          form_response  -> 'useOfForceDetails' useOfForceDetails,
+          form_response  -> 'evidence'          evidence
+        from
+          report
+        where
+          status != 'IN_PROGRESS'
+          and agency_id = $1
+          and submitted_date between $2 and $3) incidents`,
         values: [agencyId, startDate.toDate(), endDate.toDate()],
       })
     })
