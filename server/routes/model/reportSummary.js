@@ -3,6 +3,7 @@ const {
   Cctv,
   RelocationLocation,
   ControlAndRestraintPosition,
+  RelocationType,
   toLabel,
 } = require('../../config/types')
 const { properCaseFullName } = require('../../utils/utils')
@@ -41,7 +42,12 @@ const createUseOfForceDetails = (details = {}) => {
 const createRelocation = (relocationAndInjuries = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
-    prisonerCompliancy: relocationAndInjuries.relocationCompliancy,
+
+    relocationCompliancy:
+      relocationAndInjuries.relocationCompliancy === true
+        ? 'Yes'
+        : `No${getRelocationType(relocationAndInjuries.relocationType)}`,
+
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
     ),
@@ -55,6 +61,10 @@ const createRelocation = (relocationAndInjuries = {}) => {
       value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
     ),
   }
+}
+
+const getRelocationType = relocationType => {
+  return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
 }
 
 const createEvidence = (evidence = {}) => {

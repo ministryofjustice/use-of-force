@@ -1,6 +1,6 @@
-{% extends "../formTemplate.html" %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
-{% from "govuk/components/radios/macro.njk" import govukRadios %} 
+{% extends "../formTemplate.html" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% import "../incidentMacros.njk" as incidentMacro %}
@@ -55,8 +55,11 @@
         name: "batonUsed",
         options: yesNoOptions,
         errorMessage: errors | findError('batonUsed')
-      }
-    })}}
+      },
+      followUpQuestionTriggeredOn: true,
+      orientation: 'inline'
+    }
+    )}}
 
     <!-- Q4 -->
     {{ incidentMacro.radiosWithNestedRadios({
@@ -74,8 +77,9 @@
         value: data.pavaUsed,
         options: yesNoOptions,
         errorMessage: errors | findError('pavaUsed')
-
-      }
+      },
+      followUpQuestionTriggeredOn: true,
+      orientation: 'inline'
     }
     )}}
 
@@ -102,8 +106,11 @@
           value: 2,
           label: "2"
         }]
-      }
-    })}}
+      },
+      followUpQuestionTriggeredOn: true,
+      orientation: 'inline'
+    }
+    )}}
 
     <!-- Q6 -->
     <div id="control-and-restraint">

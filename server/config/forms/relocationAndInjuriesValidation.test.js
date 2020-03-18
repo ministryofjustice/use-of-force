@@ -86,6 +86,28 @@ describe("'complete' schema", () => {
 
       expect(formResponse).toEqual({})
     })
+
+    it('Should return validation error message if prisoner compliant secondary question not answered', () => {
+      const invalidInput = {
+        prisonerRelocation: 'SEGREGATION_UNIT',
+        relocationCompliancy: 'false',
+        healthcareInvolved: 'true',
+        healthcarePractionerName: 'Dr. Jones',
+        f213CompletedBy: 'Jane Smith',
+        prisonerInjuries: 'true',
+        prisonerHospitalisation: 'true',
+        staffMedicalAttention: 'true',
+        staffNeedingMedicalAttention: [{ name: 'Person Someone', hospitalisation: 'true' }],
+      }
+      const { errors } = check(invalidInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#relocationType',
+          text: 'Select the type of relocation',
+        },
+      ])
+    })
   })
 
   describe('Relocation and Injuries page inputs', () => {
