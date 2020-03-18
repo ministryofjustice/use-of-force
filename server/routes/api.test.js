@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { appSetup, user, reviewerUser } = require('./testutils/appSetup')
+const { appSetup, user, reviewerUser, coordinatorUser } = require('./testutils/appSetup')
 const createRouter = require('./api')
 const { authenticationMiddleware } = require('./testutils/mockAuthentication')
 
@@ -8,6 +8,7 @@ const userSupplier = jest.fn()
 const reportingService = {
   getMostOftenInvolvedStaff: jest.fn(),
   getMostOftenInvolvedPrisoners: jest.fn(),
+  getIncidentsOverview: jest.fn(),
 }
 
 const reportService = {
@@ -66,20 +67,35 @@ describe('api', () => {
     beforeEach(() => {
       reportingService.getMostOftenInvolvedStaff.mockResolvedValue('Some,Csv,Content for involved staff')
       reportingService.getMostOftenInvolvedPrisoners.mockResolvedValue('Some,Csv,Content for prisoners')
+      reportingService.getIncidentsOverview.mockResolvedValue('Some,Csv,Content for prisoners')
     })
     describe('GET /reports/mostOftenInvolvedStaff/:year/:month', () => {
-      it('should render for reviewer', async () => {
-        userSupplier.mockReturnValue(reviewerUser)
+      it('should render for coordinator', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
           .get('/reports/mostOftenInvolvedStaff/2019/10')
-          .expect('Content-Type', 'text/csv; charset=utf-8')
+          .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="involved-staff-LEI-10-2019.csv"`)
           .expect(res => {
             expect(res.text).toContain('Some,Csv,Content for involved staff')
           })
 
         expect(reportingService.getMostOftenInvolvedStaff).toBeCalledWith('LEI', 10, 2019)
+      })
+
+      it('should not render for reviewer', async () => {
+        userSupplier.mockReturnValue(reviewerUser)
+
+        await request(app)
+          .get('/reports/mostOftenInvolvedStaff/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getMostOftenInvolvedStaff).not.toBeCalled()
       })
 
       it('should not render for standard user', async () => {
@@ -98,18 +114,32 @@ describe('api', () => {
     })
 
     describe('GET /reports/mostOftenInvolvedPrisoners/:year/:month', () => {
-      it('should render for reviewer', async () => {
-        userSupplier.mockReturnValue(reviewerUser)
+      it('should render for coordinator', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
           .get('/reports/mostOftenInvolvedPrisoners/2019/10')
-          .expect('Content-Type', 'text/csv; charset=utf-8')
+          .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="prisoners-LEI-10-2019.csv"`)
           .expect(res => {
             expect(res.text).toContain('Some,Csv,Content for prisoners')
           })
 
         expect(reportingService.getMostOftenInvolvedPrisoners).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
+      })
+
+      it('should not render for reviewer', async () => {
+        userSupplier.mockReturnValue(reviewerUser)
+
+        await request(app)
+          .get('/reports/mostOftenInvolvedPrisoners/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getMostOftenInvolvedPrisoners).not.toBeCalled()
       })
 
       it('should not render for standard user', async () => {
@@ -124,6 +154,50 @@ describe('api', () => {
           })
 
         expect(reportingService.getMostOftenInvolvedPrisoners).not.toBeCalled()
+      })
+    })
+
+    describe('GET /reports/overview/:year/:month', () => {
+      it('should render for coordinator', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+
+        await request(app)
+          .get('/reports/overview/2019/10')
+          .expect('Content-Type', /text\/csv/)
+          .expect('Content-Disposition', `attachment; filename="overview-LEI-10-2019.csv"`)
+          .expect(res => {
+            expect(res.text).toContain('Some,Csv,Content for prisoners')
+          })
+
+        expect(reportingService.getIncidentsOverview).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
+      })
+
+      it('should not render for reviewer', async () => {
+        userSupplier.mockReturnValue(reviewerUser)
+
+        await request(app)
+          .get('/reports/overview/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentsOverview).not.toBeCalled()
+      })
+
+      it('should not render for standard user', async () => {
+        userSupplier.mockReturnValue(user)
+
+        await request(app)
+          .get('/reports/overview/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentsOverview).not.toBeCalled()
       })
     })
   })

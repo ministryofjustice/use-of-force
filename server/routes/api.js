@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require('path')
-const httpError = require('http-errors')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const { coordinatorOnly } = require('../middleware/roleCheck')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -36,11 +36,8 @@ module.exports = function Index({
 
   router.get(
     '/reports/mostOftenInvolvedStaff/:year/:month',
+    coordinatorOnly,
     asyncMiddleware(async (req, res) => {
-      if (!res.locals.user.isReviewer) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { year, month } = req.params
       const agencyId = res.locals.user.activeCaseLoadId
 
@@ -57,11 +54,8 @@ module.exports = function Index({
 
   router.get(
     '/reports/mostOftenInvolvedPrisoners/:year/:month',
+    coordinatorOnly,
     asyncMiddleware(async (req, res) => {
-      if (!res.locals.user.isReviewer) {
-        throw httpError(401, 'Not authorised to access this resource')
-      }
-
       const { year, month } = req.params
       const agencyId = res.locals.user.activeCaseLoadId
 
@@ -73,6 +67,25 @@ module.exports = function Index({
       )
       res.setHeader('Content-Type', 'text/csv')
       res.setHeader('Content-Disposition', `attachment; filename="prisoners-${agencyId}-${month}-${year}.csv"`)
+      res.send(results)
+    })
+  )
+
+  router.get(
+    '/reports/overview/:year/:month',
+    coordinatorOnly,
+    asyncMiddleware(async (req, res) => {
+      const { year, month } = req.params
+      const agencyId = res.locals.user.activeCaseLoadId
+
+      const results = await reportingService.getIncidentsOverview(
+        await systemToken(res.locals.user.username),
+        agencyId,
+        parseInt(month, 10),
+        parseInt(year, 10)
+      )
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', `attachment; filename="overview-${agencyId}-${month}-${year}.csv"`)
       res.send(results)
     })
   )
