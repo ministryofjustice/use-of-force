@@ -1,6 +1,5 @@
 const logger = require('../../log.js')
 const { isNilOrEmpty, properCaseName } = require('../utils/utils')
-const locationsFilter = require('./locationsFilter')
 
 module.exports = function createOffendersService(elite2ClientBuilder) {
   const getOffenderDetails = async (token, bookingId) => {
@@ -55,9 +54,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     try {
       const elite2Client = elite2ClientBuilder(token)
 
-      const unfilteredLocations = await elite2Client.getLocations(agencyId)
-      const locations = locationsFilter(unfilteredLocations)
-      return locations
+      return elite2Client.getLocations(agencyId)
     } catch (error) {
       logger.error(error, 'Error during getOffenderDetails')
       throw error

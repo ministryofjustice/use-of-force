@@ -106,7 +106,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/api/agencies/${agencyId}/locations`,
+        urlPattern: `/api/agencies/${agencyId}/locations?eventType=OCCUR`,
       },
       response: {
         status: 200,
