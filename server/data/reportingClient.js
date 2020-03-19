@@ -55,7 +55,7 @@ const getIncidentsOverview = async (agencyId, [startDate, endDate]) => {
           form_response  -> 'useOfForceDetails' useOfForceDetails,
           form_response  -> 'evidence'          evidence
         from
-          report
+          v_report
         where
           status != 'IN_PROGRESS'
           and agency_id = $1

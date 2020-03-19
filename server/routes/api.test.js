@@ -169,7 +169,7 @@ describe('api', () => {
             expect(res.text).toContain('Some,Csv,Content for prisoners')
           })
 
-        expect(reportingService.getIncidentsOverview).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
+        expect(reportingService.getIncidentsOverview).toBeCalledWith('LEI', 10, 2019)
       })
 
       it('should not render for reviewer', async () => {
