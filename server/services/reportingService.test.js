@@ -76,18 +76,18 @@ Charlotte,5
   it('getIncidentsOverview', async () => {
     reportingClient.getIncidentsOverview.mockReturnValue([
       {
-        total: 'total-1',
-        planned: 'planned-1',
-        unplanned: 'unplanned-1',
-        handcuffsApplied: 'handcuffsApplied-1',
-        batonDrawn: 'batonDrawn-1',
-        batonUsed: 'batonUsed-1',
-        pavaDrawn: 'pavaDrawn-1',
-        pavaUsed: 'pavaUsed-1',
-        personalProtectionTechniques: 'personalProtectionTechniques-1',
-        cctvRecording: 'cctvRecording-1',
-        bodyWornCamera: 'bodyWornCamera-1',
-        bodyWornCameraUnknown: 'bodyWornCameraUnknown-1',
+        total: 1,
+        planned: 2,
+        unplanned: 3,
+        handcuffsApplied: 4,
+        batonDrawn: 5,
+        batonUsed: 6,
+        pavaDrawn: 7,
+        pavaUsed: 8,
+        personalProtectionTechniques: 9,
+        cctvRecording: 10,
+        bodyWornCamera: 11,
+        bodyWornCameraUnknown: 12,
       },
     ])
 
@@ -99,7 +99,7 @@ Charlotte,5
 
     expect(result)
       .toEqual(`Total,Planned incidents,Unplanned incidents,Handcuffs applied,Baton drawn,Baton used,Pava drawn,Pava used,Personal protection techniques,CCTV recording,Body worn camera recording,Body worn camera recording unknown
-total-1,planned-1,unplanned-1,handcuffsApplied-1,batonDrawn-1,batonUsed-1,pavaDrawn-1,pavaUsed-1,personalProtectionTechniques-1,cctvRecording-1,bodyWornCamera-1,bodyWornCameraUnknown-1
+1,2,3,4,5,6,7,8,9,10,11,12
 `)
 
     expect(reportingClient.getIncidentsOverview).toBeCalledWith('LEI', [startDate, endDate])
