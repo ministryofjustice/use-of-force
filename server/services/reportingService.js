@@ -39,7 +39,13 @@ module.exports = function createReportingService(reportingClient, offenderServic
       logger.info(`Retrieve most involved staff for agency: ${agencyId}, between '${formatRange(range)}'`)
       const results = await reportingClient.getMostOftenInvolvedStaff(agencyId, range)
 
-      return toCsv([{ key: 'name', header: 'Staff member name' }, { key: 'count', header: 'Count' }], results)
+      return toCsv(
+        [
+          { key: 'name', header: 'Staff member name' },
+          { key: 'count', header: 'Count' },
+        ],
+        results
+      )
     },
 
     getMostOftenInvolvedPrisoners: async (token, agencyId, month, year) => {
@@ -52,7 +58,13 @@ module.exports = function createReportingService(reportingClient, offenderServic
 
       const rows = results.map(({ offenderNo, count }) => ({ name: nosToNames[offenderNo], count }))
 
-      return toCsv([{ key: 'name', header: 'Prisoner name' }, { key: 'count', header: 'Count' }], rows)
+      return toCsv(
+        [
+          { key: 'name', header: 'Prisoner name' },
+          { key: 'count', header: 'Count' },
+        ],
+        rows
+      )
     },
 
     getIncidentsOverview: async (agencyId, month, year) => {
@@ -67,7 +79,10 @@ module.exports = function createReportingService(reportingClient, offenderServic
         ReportStatus.IN_PROGRESS,
       ])
 
-      const results = [{ ...completeResults, type: 'Complete' }, { ...inprogressResults, type: 'In progress' }]
+      const results = [
+        { ...completeResults, type: 'Complete' },
+        { ...inprogressResults, type: 'In progress' },
+      ]
 
       return toCsv(
         [

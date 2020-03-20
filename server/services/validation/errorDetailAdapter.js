@@ -30,13 +30,7 @@ const detailAdapterBuilder = firstFieldNameMap => {
  */
 const extractFirstFieldNameMap = R.pipe(
   R.propOr({}, 'keys'),
-  R.map(
-    R.pipe(
-      R.prop('metas'),
-      R.mergeAll,
-      R.prop('firstFieldName')
-    )
-  ),
+  R.map(R.pipe(R.prop('metas'), R.mergeAll, R.prop('firstFieldName'))),
   R.reject(R.isNil)
 )
 
@@ -48,10 +42,7 @@ const extractFirstFieldNameMap = R.pipe(
  * where 'text' is detail.message and href is an HTTP tag locator.
  * @type {Function|*}
  */
-const buildErrorDetailAdapter = R.pipe(
-  extractFirstFieldNameMap,
-  detailAdapterBuilder
-)
+const buildErrorDetailAdapter = R.pipe(extractFirstFieldNameMap, detailAdapterBuilder)
 
 module.exports = {
   extractFirstFieldNameMap,

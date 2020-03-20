@@ -1,7 +1,7 @@
 const moment = require('moment')
 const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/utils')
-const { check: getReportStatus } = require('../services/reportStatusChecker')
+const { check: getReportStatus } = require('./reportStatusChecker')
 
 module.exports = function createReportService({
   incidentClient,

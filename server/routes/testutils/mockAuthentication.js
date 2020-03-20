@@ -1,7 +1,7 @@
 const session = require('cookie-session')
 const passport = require('passport')
 
-const auth = require('../../../server/authentication/auth')
+const auth = require('../../authentication/auth')
 
 const setupMockAuthentication = (app, signInService) => {
   auth.init(signInService)

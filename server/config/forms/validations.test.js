@@ -135,7 +135,7 @@ describe('requiredBoolean', () => {
   })
 
   describe('accepts bespoke error messages', () => {
-    const rbvm = buildValidator(requiredBooleanMsg('Please supply a value for "{#label}"').label('Thing'))
+    const rbvm = buildValidator(requiredBooleanMsg('Please supply a value for {#label}').label('Thing'))
 
     it('uses bespoke errorMessage', () => {
       expect(rbvm('xxx').error.details[0].message).toEqual('Please supply a value for "Thing"')
@@ -155,9 +155,9 @@ describe('requiredBoolean', () => {
         .message('Wrong size')
         .required()
         .messages({
-          'string.base': 'Yo, duuude! The "{#label}" gotta be a string',
+          'string.base': 'Yo, duuude! The {#label} gotta be a string',
           'string.empty': 'Please supply a string',
-          'any.required': 'The "{#label}" is required',
+          'any.required': 'The {#label} is required',
         })
         .label('Thing')
     )

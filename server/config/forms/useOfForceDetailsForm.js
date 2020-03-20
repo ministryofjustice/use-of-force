@@ -33,9 +33,10 @@ const completeSchema = joi.object({
 
   guidingHoldOfficersInvolved: joi.when('guidingHold', {
     is: true,
-    then: requiredIntegerRangeMsg(1, 2)('Select how many officers were involved in the guiding hold').alter(
-      optionalForPartialValidation
-    ),
+    then: requiredIntegerRangeMsg(
+      1,
+      2
+    )('Select how many officers were involved in the guiding hold').alter(optionalForPartialValidation),
     otherwise: joi.any().strip(),
   }),
 
@@ -49,9 +50,12 @@ const completeSchema = joi.object({
         joi
           .array()
           .items(
-            requiredOneOfMsg('STANDING', 'FACE_DOWN', 'ON_BACK', 'KNEELING')(
-              'Select the control and restraint positions used'
-            ).alter(optionalForPartialValidation)
+            requiredOneOfMsg(
+              'STANDING',
+              'FACE_DOWN',
+              'ON_BACK',
+              'KNEELING'
+            )('Select the control and restraint positions used').alter(optionalForPartialValidation)
           )
       )
       .required()

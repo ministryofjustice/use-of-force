@@ -84,19 +84,16 @@ export default function createHeatmapBuilder(elite2ClientBuilder: any): HeatmapB
       totalCount: hours.length,
     }
   }
+  const compareRow = (rowA: HeatmapRow, rowB: HeatmapRow): number => {
+    const rowCompare = rowB.totalCount - rowA.totalCount
+    return rowCompare !== 0 ? rowCompare : rowA.location.localeCompare(rowB.location)
+  }
 
   return {
     async build(token: string, agencyId: string, incidents: Incident[]): Promise<Heatmap> {
       const locationFinder = await createLocationFinder(token, agencyId)
       const locationsToDates = getLocationToDates(locationFinder, incidents)
-      const rows = Array.from(locationsToDates, toHeatMapRow).sort((rowA: HeatmapRow, rowB: HeatmapRow) => {
-        const rowCompare = rowB.totalCount - rowA.totalCount
-        if (rowCompare !== 0) {
-          return rowCompare
-        }
-        return rowA.location.localeCompare(rowB.location)
-      })
-      return rows
+      return Array.from(locationsToDates, toHeatMapRow).sort(compareRow)
     },
   } as HeatmapBuilder
 }

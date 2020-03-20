@@ -2,14 +2,7 @@ const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
 const R = require('ramda')
 const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = require('./sanitisers')
 
-const caseInsensitiveComparator = key =>
-  R.eqBy(
-    R.pipe(
-      R.propOr('', key),
-      R.trim,
-      R.toUpper
-    )
-  )
+const caseInsensitiveComparator = key => R.eqBy(R.pipe(R.propOr('', key), R.trim, R.toUpper))
 
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/

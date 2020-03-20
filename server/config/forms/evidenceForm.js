@@ -34,13 +34,17 @@ const completeSchema = joi.object({
 
   photographsTaken: requiredBooleanMsg('Select yes if any photographs were taken').alter(optionalForPartialValidation),
 
-  cctvRecording: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
-    'Select yes if any part of the incident captured on CCTV'
-  ).alter(optionalForPartialValidation),
+  cctvRecording: requiredOneOfMsg(
+    'YES',
+    'NO',
+    'NOT_KNOWN'
+  )('Select yes if any part of the incident captured on CCTV').alter(optionalForPartialValidation),
 
-  bodyWornCamera: requiredOneOfMsg('YES', 'NO', 'NOT_KNOWN')(
-    'Select yes if any part of the incident was captured on a body-worn camera'
-  ).alter(optionalForPartialValidation),
+  bodyWornCamera: requiredOneOfMsg(
+    'YES',
+    'NO',
+    'NOT_KNOWN'
+  )('Select yes if any part of the incident was captured on a body-worn camera').alter(optionalForPartialValidation),
   bodyWornCameraNumbers: joi
     .when('bodyWornCamera', {
       is: 'YES',
