@@ -120,7 +120,7 @@
     "morgan": "^1.9.1",
     "node-sass-middleware": "0.11.0",
     "notifications-node-client": "^4.6.0",
-    "nunjucks": "^3.2.0",
+    "nunjucks": "^3.2.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.5.0",
@@ -135,7 +135,7 @@
   },
   "devDependencies": {
     "@types/jest": "^25.1.1",
-    "cypress": "^3.4.1",
+    "cypress": "^4.2.0",
     "cypress-multi-reporters": "^1.2.3",
     "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
