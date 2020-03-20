@@ -60,7 +60,7 @@ describe('elite2Client', () => {
     const locations = []
     it('should return data from api', async () => {
       fakeElite2Api
-        .get('/api/agencies/123/locations')
+        .get('/api/agencies/123/locations?eventType=OCCUR')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 

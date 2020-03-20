@@ -44,7 +44,7 @@ module.exports = token => {
       return userGet({ path })
     },
     getLocations(agencyId) {
-      const path = `${apiUrl}/api/agencies/${agencyId}/locations`
+      const path = `${apiUrl}/api/agencies/${agencyId}/locations?eventType=OCCUR`
       return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
     },
     getLocation(locationId) {
