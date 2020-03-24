@@ -1,3 +1,4 @@
+const format = require('pg-format')
 const nonTransactionalClient = require('./dataAccess/db')
 
 const getMostOftenInvolvedStaff = async (agencyId, [startDate, endDate]) => {
@@ -32,9 +33,10 @@ const getMostOftenInvolvedPrisoners = async (agencyId, [startDate, endDate]) => 
   return results.rows
 }
 
-const getIncidentsOverview = async (agencyId, [startDate, endDate]) => {
+const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) => {
   const results = await nonTransactionalClient.query({
-    text: `
+    text: format(
+      `
       select
         count(*) "total",
         count(*) filter (where (incidentDetails ->> 'plannedUseOfForce')::boolean = true) "planned",
@@ -57,10 +59,14 @@ const getIncidentsOverview = async (agencyId, [startDate, endDate]) => {
         from
           v_report
         where
-          status != 'IN_PROGRESS'
-          and agency_id = $1
-          and submitted_date between $2 and $3) incidents`,
-    values: [agencyId, startDate.toDate(), endDate.toDate()],
+          status in (%L)
+          and agency_id = %L
+          and incident_date between %L and %L) incidents`,
+      statuses,
+      agencyId,
+      startDate.toDate(),
+      endDate.toDate()
+    ),
   })
 
   return results.rows

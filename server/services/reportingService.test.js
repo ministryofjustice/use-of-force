@@ -1,5 +1,6 @@
 const moment = require('moment')
 const serviceCreator = require('./reportingService')
+const { ReportStatus } = require('../config/types')
 
 const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),
@@ -74,22 +75,39 @@ Charlotte,5
   })
 
   it('getIncidentsOverview', async () => {
-    reportingClient.getIncidentsOverview.mockReturnValue([
-      {
-        total: 1,
-        planned: 2,
-        unplanned: 3,
-        handcuffsApplied: 4,
-        batonDrawn: 5,
-        batonUsed: 6,
-        pavaDrawn: 7,
-        pavaUsed: 8,
-        personalProtectionTechniques: 9,
-        cctvRecording: 10,
-        bodyWornCamera: 11,
-        bodyWornCameraUnknown: 12,
-      },
-    ])
+    reportingClient.getIncidentsOverview
+      .mockReturnValueOnce([
+        {
+          total: 1,
+          planned: 2,
+          unplanned: 3,
+          handcuffsApplied: 4,
+          batonDrawn: 5,
+          batonUsed: 6,
+          pavaDrawn: 7,
+          pavaUsed: 8,
+          personalProtectionTechniques: 9,
+          cctvRecording: 10,
+          bodyWornCamera: 11,
+          bodyWornCameraUnknown: 12,
+        },
+      ])
+      .mockReturnValueOnce([
+        {
+          total: 11,
+          planned: 22,
+          unplanned: 33,
+          handcuffsApplied: 44,
+          batonDrawn: 55,
+          batonUsed: 66,
+          pavaDrawn: 77,
+          pavaUsed: 88,
+          personalProtectionTechniques: 99,
+          cctvRecording: 100,
+          bodyWornCamera: 110,
+          bodyWornCameraUnknown: 120,
+        },
+      ])
 
     const date = moment({ years: 2019, months: 1 })
     const startDate = moment(date).startOf('month')
@@ -98,10 +116,16 @@ Charlotte,5
     const result = await service.getIncidentsOverview('LEI', 2, 2019)
 
     expect(result)
-      .toEqual(`Total,Planned incidents,Unplanned incidents,Handcuffs applied,Baton drawn,Baton used,Pava drawn,Pava used,Personal protection techniques,CCTV recording,Body worn camera recording,Body worn camera recording unknown
-1,2,3,4,5,6,7,8,9,10,11,12
+      .toEqual(`Type,Total,Planned incidents,Unplanned incidents,Handcuffs applied,Baton drawn,Baton used,Pava drawn,Pava used,Personal protection techniques,CCTV recording,Body worn camera recording,Body worn camera recording unknown
+Complete,1,2,3,4,5,6,7,8,9,10,11,12
+In progress,11,22,33,44,55,66,77,88,99,100,110,120
 `)
 
-    expect(reportingClient.getIncidentsOverview).toBeCalledWith('LEI', [startDate, endDate])
+    expect(reportingClient.getIncidentsOverview).toBeCalledWith(
+      'LEI',
+      [startDate, endDate],
+      [ReportStatus.SUBMITTED, ReportStatus.COMPLETE]
+    )
+    expect(reportingClient.getIncidentsOverview).toBeCalledWith('LEI', [startDate, endDate], [ReportStatus.IN_PROGRESS])
   })
 })

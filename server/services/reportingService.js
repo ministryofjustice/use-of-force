@@ -1,6 +1,7 @@
 const moment = require('moment')
 const stringify = require('csv-stringify')
 const logger = require('../../log')
+const { ReportStatus } = require('../config/types')
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -50,10 +51,19 @@ module.exports = function createReportingService({ reportingClient, offenderServ
       const range = dateRange(month, year)
       logger.info(`Retrieve incident agency for agency: ${agencyId}, between '${formatRange(range)}'`)
 
-      const results = await reportingClient.getIncidentsOverview(agencyId, range)
+      const [completeResults] = await reportingClient.getIncidentsOverview(agencyId, range, [
+        ReportStatus.SUBMITTED,
+        ReportStatus.COMPLETE,
+      ])
+      const [inprogressResults] = await reportingClient.getIncidentsOverview(agencyId, range, [
+        ReportStatus.IN_PROGRESS,
+      ])
+
+      const results = [{ ...completeResults, type: 'Complete' }, { ...inprogressResults, type: 'In progress' }]
 
       return toCsv(
         [
+          { key: 'type', header: 'Type' },
           { key: 'total', header: 'Total' },
           { key: 'planned', header: 'Planned incidents' },
           { key: 'unplanned', header: 'Unplanned incidents' },
