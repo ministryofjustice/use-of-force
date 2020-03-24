@@ -64,10 +64,10 @@ describe('reportingClient', () => {
   describe('getIncidentsOverview', () => {
     test('it should pass om the correct sql', () => {
       const agencyId = 'LEI'
-      const startDate = moment()
-      const endDate = moment().add(1, 'month')
+      const startDate = moment('2012-01-02 01:03')
+      const endDate = moment(startDate).add(1, 'month')
 
-      reportingClient.getIncidentsOverview(agencyId, [startDate, endDate])
+      reportingClient.getIncidentsOverview(agencyId, [startDate, endDate], ['IN_PROGRESS', 'COMPLETE'])
 
       expect(db.query).toBeCalledWith({
         text: `
@@ -93,10 +93,9 @@ describe('reportingClient', () => {
         from
           v_report
         where
-          status != 'IN_PROGRESS'
-          and agency_id = $1
-          and submitted_date between $2 and $3) incidents`,
-        values: [agencyId, startDate.toDate(), endDate.toDate()],
+          status in ('IN_PROGRESS','COMPLETE')
+          and agency_id = 'LEI'
+          and incident_date between '2012-01-02 01:03:00.000+00' and '2012-02-02 01:03:00.000+00') incidents`,
       })
     })
   })
