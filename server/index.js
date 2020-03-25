@@ -14,6 +14,7 @@ const { authClientBuilder, systemToken } = require('./data/authClientBuilder')
 
 const createSignInService = require('./authentication/signInService')
 
+const createHeatmapBuilder = require('./services/heatmapBuilder')
 const { createInvolvedStaffService } = require('./services/involvedStaffService')
 const createOffenderService = require('./services/offenderService')
 const createReportService = require('./services/reportService')
@@ -27,6 +28,7 @@ const eventPublisher = require('./services/eventPublisher')(appInsightsClient)
 
 // pass in dependencies of service
 
+const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
 const notificationService = notificationServiceFactory(eventPublisher)
@@ -40,7 +42,7 @@ const reportService = createReportService({
 })
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
-const reportingService = createReportingService({ reportingClient, offenderService })
+const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 
 const app = createApp({
   involvedStaffService,

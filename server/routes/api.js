@@ -85,5 +85,24 @@ module.exports = function Index({
     })
   )
 
+  router.get(
+    '/reports/heatmap/:year/:month',
+    coordinatorOnly,
+    asyncMiddleware(async (req, res) => {
+      const { year, month } = req.params
+      const agencyId = res.locals.user.activeCaseLoadId
+
+      const results = await reportingService.getIncidentHeatmap(
+        await systemToken(res.locals.user.username),
+        agencyId,
+        parseInt(month, 10),
+        parseInt(year, 10)
+      )
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', `attachment; filename="heatmap-${agencyId}-${month}-${year}.csv"`)
+      res.send(results)
+    })
+  )
+
   return router
 }
