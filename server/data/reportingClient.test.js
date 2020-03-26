@@ -1,5 +1,5 @@
 const moment = require('moment')
-
+const { ReportStatus } = require('../config/types')
 const reportingClient = require('./reportingClient')
 /** @type {any} */
 const db = require('./dataAccess/db')
@@ -67,7 +67,11 @@ describe('reportingClient', () => {
       const startDate = moment('2012-01-02 01:03')
       const endDate = moment(startDate).add(1, 'month')
 
-      reportingClient.getIncidentsOverview(agencyId, [startDate, endDate], ['IN_PROGRESS', 'COMPLETE'])
+      reportingClient.getIncidentsOverview(
+        agencyId,
+        [startDate, endDate],
+        [ReportStatus.IN_PROGRESS, ReportStatus.COMPLETE]
+      )
 
       expect(db.query).toBeCalledWith({
         text: `

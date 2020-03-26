@@ -34,6 +34,7 @@ const getMostOftenInvolvedPrisoners = async (agencyId, [startDate, endDate]) => 
 }
 
 const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) => {
+  const statusValues = statuses.map(s => s.value)
   const results = await nonTransactionalClient.query({
     text: format(
       `
@@ -62,7 +63,7 @@ const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) =>
           status in (%L)
           and agency_id = %L
           and incident_date between %L and %L) incidents`,
-      statuses,
+      statusValues,
       agencyId,
       startDate.toDate(),
       endDate.toDate()
