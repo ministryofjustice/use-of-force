@@ -56,7 +56,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
 
       return elite2Client.getLocations(agencyId)
     } catch (error) {
-      logger.error(error, 'Error during getOffenderDetails')
+      logger.error(error, 'Error during getIncidentLocations')
       throw error
     }
   }

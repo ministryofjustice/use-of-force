@@ -73,8 +73,26 @@ const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) =>
   return results.rows
 }
 
+const getIncidentLocationsAndTimes = async (agencyId, [startDate, endDate]) => {
+  const results = await nonTransactionalClient.query({
+    text: `
+      select
+        incident_date "incidentDate",
+        form_response -> 'incidentDetails' -> 'locationId' "locationId"
+      from
+        report
+      where
+        agency_id = $1
+        and submitted_date between $2 and $3`,
+    values: [agencyId, startDate.toDate(), endDate.toDate()],
+  })
+
+  return results.rows
+}
+
 module.exports = {
   getMostOftenInvolvedStaff,
   getMostOftenInvolvedPrisoners,
   getIncidentsOverview,
+  getIncidentLocationsAndTimes,
 }

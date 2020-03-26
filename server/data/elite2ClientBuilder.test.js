@@ -67,6 +67,15 @@ describe('elite2Client', () => {
       const output = await elite2Client.getLocations(123)
       expect(output).toEqual(locations)
     })
+    it('can search without filter', async () => {
+      fakeElite2Api
+        .get('/api/agencies/123/locations')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, locations)
+
+      const output = await elite2Client.getLocations(123, false)
+      expect(output).toEqual(locations)
+    })
   })
 
   describe('getOffenders', () => {

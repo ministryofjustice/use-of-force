@@ -1,3 +1,5 @@
+/** @typedef {import('./heatmapBuilder').HeatmapBuilder} HeatmapBuilder */
+
 const moment = require('moment')
 const stringify = require('csv-stringify')
 const logger = require('../../log')
@@ -24,7 +26,12 @@ const dateRange = (month, year) => {
 
 const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
 
-module.exports = function createReportingService({ reportingClient, offenderService }) {
+/**
+ * @param {any} reportingClient
+ * @param {any} offenderService
+ * @param {HeatmapBuilder} heatmapBuilder
+ */
+module.exports = function createReportingService(reportingClient, offenderService, heatmapBuilder) {
   return {
     getMostOftenInvolvedStaff: async (agencyId, month, year) => {
       const range = dateRange(month, year)
@@ -49,7 +56,7 @@ module.exports = function createReportingService({ reportingClient, offenderServ
 
     getIncidentsOverview: async (agencyId, month, year) => {
       const range = dateRange(month, year)
-      logger.info(`Retrieve incident agency for agency: ${agencyId}, between '${formatRange(range)}'`)
+      logger.info(`Retrieve incident overview for agency: ${agencyId}, between '${formatRange(range)}'`)
 
       const [completeResults] = await reportingClient.getIncidentsOverview(agencyId, range, [
         ReportStatus.SUBMITTED,
@@ -78,6 +85,37 @@ module.exports = function createReportingService({ reportingClient, offenderServ
           { key: 'bodyWornCameraUnknown', header: 'Body worn camera recording unknown' },
         ],
         results
+      )
+    },
+
+    getIncidentHeatmap: async (token, agencyId, month, year) => {
+      const range = dateRange(month, year)
+      logger.info(`Retrieve heatmap for agency: ${agencyId}, between '${formatRange(range)}'`)
+
+      const results = await reportingClient.getIncidentLocationsAndTimes(agencyId, range)
+
+      const heatmap = await heatmapBuilder.build(token, agencyId, results)
+
+      return toCsv(
+        [
+          { key: 'location', header: 'Location' },
+          { key: 'six', header: '06:00' },
+          { key: 'seven', header: '07:00' },
+          { key: 'eight', header: '08:00' },
+          { key: 'nine', header: '09:00' },
+          { key: 'ten', header: '10:00' },
+          { key: 'eleven', header: '11:00' },
+          { key: 'twelve', header: '12:00' },
+          { key: 'onePm', header: '13:00' },
+          { key: 'twoPm', header: '14:00' },
+          { key: 'threePm', header: '15:00' },
+          { key: 'fourPm', header: '16:00' },
+          { key: 'fivePm', header: '17:00' },
+          { key: 'sixPm', header: '18:00' },
+          { key: 'sevenPm', header: '19:00' },
+          { key: 'afterEight', header: '20:00+' },
+        ],
+        heatmap
       )
     },
   }
