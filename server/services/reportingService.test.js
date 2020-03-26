@@ -6,16 +6,21 @@ const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),
   getMostOftenInvolvedPrisoners: jest.fn(),
   getIncidentsOverview: jest.fn(),
+  getIncidentLocationsAndTimes: jest.fn(),
 }
 
 const offenderService = {
   getOffenderNames: jest.fn(),
 }
 
+const heatmapBuilder = {
+  build: jest.fn(),
+}
+
 let service
 
 beforeEach(() => {
-  service = serviceCreator({ reportingClient, offenderService })
+  service = serviceCreator(reportingClient, offenderService, heatmapBuilder)
 })
 
 afterEach(() => {
@@ -127,5 +132,67 @@ In progress,11,22,33,44,55,66,77,88,99,100,110,120
       [ReportStatus.SUBMITTED, ReportStatus.COMPLETE]
     )
     expect(reportingClient.getIncidentsOverview).toBeCalledWith('LEI', [startDate, endDate], [ReportStatus.IN_PROGRESS])
+  })
+
+  test('getIncidentHeatmap', async () => {
+    reportingClient.getIncidentLocationsAndTimes.mockResolvedValue([{ locationId: 1, incidentDate: new Date(0) }])
+    heatmapBuilder.build.mockReturnValue([
+      {
+        location: 'The kitchen',
+        six: 1,
+        seven: 2,
+        eight: 3,
+        nine: 4,
+        ten: 5,
+        eleven: 6,
+        twelve: 7,
+        onePm: 8,
+        twoPm: 9,
+        threePm: 10,
+        fourPm: 11,
+        fivePm: 12,
+        sixPm: 13,
+        sevenPm: 14,
+        afterEight: 15,
+      },
+      {
+        location: 'The bathroom',
+        six: 10,
+        seven: 20,
+        eight: 30,
+        nine: 40,
+        ten: 50,
+        eleven: 60,
+        twelve: 70,
+        onePm: 80,
+        twoPm: 90,
+        threePm: 100,
+        fourPm: 110,
+        fivePm: 120,
+        sixPm: 130,
+        sevenPm: 140,
+        afterEight: 150,
+      },
+    ])
+
+    const date = moment({ years: 2019, months: 1 })
+    const startDate = moment(date).startOf('month')
+    const endDate = moment(date).endOf('month')
+
+    const result = await service.getIncidentHeatmap('token-1', 'LEI', 2, 2019)
+
+    expect(result)
+      .toEqual(`Location,06:00,07:00,08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00+
+The kitchen,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
+`)
+
+    expect(reportingClient.getIncidentLocationsAndTimes).toBeCalledWith('LEI', [startDate, endDate])
+    expect(heatmapBuilder.build).toBeCalledWith('token-1', 'LEI', [
+      {
+        locationId: 1,
+        incidentDate: new Date(0),
+      },
+    ])
   })
 })

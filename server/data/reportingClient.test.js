@@ -99,4 +99,27 @@ describe('reportingClient', () => {
       })
     })
   })
+
+  describe('getIncidentLocationsAndTimes', () => {
+    test('it should pass om the correct sql', () => {
+      const agencyId = 'LEI'
+      const startDate = moment()
+      const endDate = moment().add(1, 'month')
+
+      reportingClient.getIncidentLocationsAndTimes(agencyId, [startDate, endDate])
+
+      expect(db.query).toBeCalledWith({
+        text: `
+      select
+        incident_date "incidentDate",
+        form_response -> 'incidentDetails' -> 'locationId' "locationId"
+      from
+        report
+      where
+        agency_id = $1
+        and submitted_date between $2 and $3`,
+        values: [agencyId, startDate.toDate(), endDate.toDate()],
+      })
+    })
+  })
 })

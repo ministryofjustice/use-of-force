@@ -9,6 +9,7 @@ const reportingService = {
   getMostOftenInvolvedStaff: jest.fn(),
   getMostOftenInvolvedPrisoners: jest.fn(),
   getIncidentsOverview: jest.fn(),
+  getIncidentHeatmap: jest.fn(),
 }
 
 const reportService = {
@@ -68,6 +69,7 @@ describe('api', () => {
       reportingService.getMostOftenInvolvedStaff.mockResolvedValue('Some,Csv,Content for involved staff')
       reportingService.getMostOftenInvolvedPrisoners.mockResolvedValue('Some,Csv,Content for prisoners')
       reportingService.getIncidentsOverview.mockResolvedValue('Some,Csv,Content for prisoners')
+      reportingService.getIncidentHeatmap.mockResolvedValue('Some,Csv,Content for prisoners')
     })
     describe('GET /reports/mostOftenInvolvedStaff/:year/:month', () => {
       it('should render for coordinator', async () => {
@@ -198,6 +200,50 @@ describe('api', () => {
           })
 
         expect(reportingService.getIncidentsOverview).not.toBeCalled()
+      })
+    })
+
+    describe('GET /reports/heatmap/:year/:month', () => {
+      it('should render for coordinator', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+
+        await request(app)
+          .get('/reports/heatmap/2019/10')
+          .expect('Content-Type', /text\/csv/)
+          .expect('Content-Disposition', `attachment; filename="heatmap-LEI-10-2019.csv"`)
+          .expect(res => {
+            expect(res.text).toContain('Some,Csv,Content for prisoners')
+          })
+
+        expect(reportingService.getIncidentHeatmap).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
+      })
+
+      it('should not render for reviewer', async () => {
+        userSupplier.mockReturnValue(reviewerUser)
+
+        await request(app)
+          .get('/reports/heatmap/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentHeatmap).not.toBeCalled()
+      })
+
+      it('should not render for standard user', async () => {
+        userSupplier.mockReturnValue(user)
+
+        await request(app)
+          .get('/reports/heatmap/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentHeatmap).not.toBeCalled()
       })
     })
   })
