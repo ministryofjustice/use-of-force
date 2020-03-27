@@ -126,4 +126,29 @@ describe('reportingClient', () => {
       })
     })
   })
+
+  describe('getIncidentCountByOffenderNo', () => {
+    test('it should pass om the correct sql', () => {
+      const agencyId = 'LEI'
+      const startDate = moment()
+      const endDate = moment().add(1, 'month')
+
+      reportingClient.getIncidentCountByOffenderNo(agencyId, [startDate, endDate])
+
+      expect(db.query).toBeCalledWith({
+        text: `
+    select
+        count(*) "incidentCount",
+        offender_no "offenderNo"
+      from
+        v_report
+     where
+        agency_id = $1
+        and incident_date between $2 and $3
+    group by
+        offender_no`,
+        values: [agencyId, startDate.toDate(), endDate.toDate()],
+      })
+    })
+  })
 })

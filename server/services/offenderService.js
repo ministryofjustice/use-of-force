@@ -26,6 +26,22 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     }
   }
 
+  const getPrisonersDetails = async (token, offenderNumbers) => {
+    try {
+      const elite2Client = elite2ClientBuilder(token)
+      const result = await elite2Client.getPrisoners(offenderNumbers)
+
+      if (isNilOrEmpty(result)) {
+        logger.warn(`No details found for offenderNumbers ${offenderNumbers}`)
+        return []
+      }
+      return result
+    } catch (error) {
+      logger.error(error, 'Error during getPrisonersDetails')
+      throw error
+    }
+  }
+
   const getOffenderImage = (token, bookingId) => {
     const elite2Client = elite2ClientBuilder(token)
     return elite2Client.getOffenderImage(bookingId)
@@ -63,6 +79,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
 
   return {
     getOffenderDetails,
+    getPrisonersDetails,
     getOffenderImage,
     getOffenderNames,
     getLocation,

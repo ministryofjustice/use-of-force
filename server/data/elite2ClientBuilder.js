@@ -35,6 +35,13 @@ module.exports = token => {
       const path = `${apiUrl}/api/bookings/offenders?activeOnly=false`
       return userPost({ path, data: offenderNos })
     },
+    async getPrisoners(offenderNos) {
+      const path = `${apiUrl}/api/prisoners`
+      const query = { offenderNo: offenderNos }
+      const headers = { 'Page-Limit': 5000 }
+      // @ts-ignore
+      return userGet({ path, query, headers })
+    },
     async getUser() {
       const path = `${apiUrl}/api/users/me`
       return userGet({ path })
@@ -63,6 +70,7 @@ module.exports = token => {
     },
   }
 }
+
 function userGetBuilder(token) {
   return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)

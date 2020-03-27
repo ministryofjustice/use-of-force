@@ -4,6 +4,7 @@ const moment = require('moment')
 const stringify = require('csv-stringify')
 const logger = require('../../log')
 const { ReportStatus } = require('../config/types')
+const { incidentsByReligiousGroup, csvRendererConfiguration } = require('./religiousGrouping')
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -117,6 +118,29 @@ module.exports = function createReportingService(reportingClient, offenderServic
         ],
         heatmap
       )
+    },
+
+    getIncidentsByReligiousGroup: async (token, agencyId, month, year) => {
+      const range = dateRange(month, year)
+      logger.info(`Retrieve incidents by religion for agency: ${agencyId}, between '${formatRange(range)}'`)
+
+      const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
+
+      const offenderNumberToIncidentCount = offenderNoWithIncidentCounts.reduce(
+        (accumulator, { offenderNo, incidentCount }) => {
+          accumulator[offenderNo] = incidentCount
+          return accumulator
+        },
+        {}
+      )
+
+      const prisonersDetails = await offenderService.getPrisonersDetails(
+        token,
+        Object.keys(offenderNumberToIncidentCount)
+      )
+
+      const answer = incidentsByReligiousGroup(offenderNumberToIncidentCount, prisonersDetails)
+      return toCsv(csvRendererConfiguration, [answer])
     },
   }
 }

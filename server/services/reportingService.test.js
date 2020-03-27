@@ -7,10 +7,12 @@ const reportingClient = {
   getMostOftenInvolvedPrisoners: jest.fn(),
   getIncidentsOverview: jest.fn(),
   getIncidentLocationsAndTimes: jest.fn(),
+  getIncidentCountByOffenderNo: jest.fn(),
 }
 
 const offenderService = {
   getOffenderNames: jest.fn(),
+  getPrisonersDetails: jest.fn(),
 }
 
 const heatmapBuilder = {
@@ -194,5 +196,25 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
         incidentDate: new Date(0),
       },
     ])
+  })
+
+  test('getIncidentsByReligiousGroup', async () => {
+    reportingClient.getIncidentCountByOffenderNo.mockResolvedValue([
+      { offenderNo: 'A1', incidentCount: 2 },
+      { offenderNo: 'A2', incidentCount: 1 },
+    ])
+
+    offenderService.getPrisonersDetails.mockResolvedValue([
+      { offenderNo: 'A1', religion: 'CE' },
+      { offenderNo: 'A2', religion: 'SHIA' },
+    ])
+
+    const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
+
+    expect(result).toEqual(
+      `Buddhist,Christian,Hindu,Jewish,Muslim,No religion,Other,Other Religious Groups,Sikh
+0,2,0,0,1,0,0,0,0
+`
+    )
   })
 })
