@@ -5,13 +5,17 @@
   "repository": "git@github.com:ministryofjustice/use-of-force.git",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "start:dev": "npm run build && DEBUG=gov-starter-server* DB_PORT=5433 nodemon server.js | bunyan -o short",
-    "start-feature": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5432 NODE_ENV=development node $NODE_DEBUG_OPTION server.js | bunyan -o short",
-    "start-feature:dev": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5432 NODE_ENV=development nodemon $NODE_DEBUG_OPTION server.js | bunyan -o short",
-    "build": "npm run css-build",
+    "copy-views": "cp -R server/views/ dist/server/views/",
+    "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
+    "watch-ts": "tsc -w",
+    "watch-node": "DEBUG=gov-starter-server* DB_PORT=5433 nodemon --watch dist/ dist/server.js | bunyan -o short",
+    "start:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "start-feature": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5432 NODE_ENV=development node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
+    "watch-node-feature": "NOTIFY_ENABLED=false PORT=3007 NOMIS_AUTH_URL=http://localhost:9091/auth ELITE2API_ENDPOINT_URL=http://localhost:9091 DB_NAME=use-of-force-int DB_PORT=5432 NODE_ENV=development nodemon --watch dist/ $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
+    "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node-feature\"",
+    "build": "npm run css-build && tsc && npm run copy-views",
     "css-build": "./bin/build-css",
-    "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
+    "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "typecheck": "tsc",
     "test": "jest",
@@ -19,7 +23,7 @@
     "int-test-ui": "DB_NAME=use-of-force-int DB_PORT=5432 cypress open",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
-    "send-reminders": "node job/sendReminders"
+    "send-reminders": "node dist/job/sendReminders"
   },
   "engines": {
     "node": ">=10.15.3",
@@ -77,12 +81,10 @@
   "lint-staged": {
     "*.{js,css}": [
       "prettier --write",
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ],
     "*.{json}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "dependencies": {
@@ -135,6 +137,7 @@
   },
   "devDependencies": {
     "@types/jest": "^25.1.1",
+    "concurrently": "^5.1.0",
     "cypress": "^3.4.1",
     "cypress-multi-reporters": "^1.2.3",
     "eslint": "^6.5.1",
