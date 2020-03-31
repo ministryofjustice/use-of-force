@@ -1,5 +1,5 @@
-const moment = require('moment')
-const createHeatmapBuilder = require('./heatmapBuilder')
+import moment from 'moment'
+import createHeatmapBuilder from './heatmapBuilder'
 
 const location1 = { locationId: 1, userDescription: 'The kitchen' }
 const location2 = { locationId: 2, userDescription: 'The bathroom' }

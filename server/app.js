@@ -9,7 +9,6 @@ const moment = require('moment')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
-const sassMiddleware = require('node-sass-middleware')
 
 const redis = require('redis')
 const session = require('express-session')
@@ -108,20 +107,6 @@ module.exports = function createApp({
       res.locals.version = moment.now().toString()
       return next()
     })
-  }
-
-  if (!production) {
-    app.use(
-      '/assets',
-      sassMiddleware({
-        src: path.join(__dirname, '../assets/sass'),
-        dest: path.join(__dirname, '../assets/stylesheets'),
-        debug: true,
-        outputStyle: 'compressed',
-        prefix: '/stylesheets/',
-        includePaths: ['node_modules/govuk-frontend'],
-      })
-    )
   }
 
   //  Static Resources Configuration
