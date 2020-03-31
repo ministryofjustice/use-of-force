@@ -119,6 +119,7 @@ jobs:
           paths:
             - node_modules
             - build-info.json
+            - dist
             - assets/stylesheets
             - .cache/Cypress
 

@@ -128,17 +128,17 @@ module.exports = function createApp({
   const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
 
   ;[
-    '../assets',
-    '../assets/stylesheets',
-    '../assets/js',
-    '../node_modules/govuk-frontend/govuk/assets',
-    '../node_modules/govuk-frontend',
-    '../node_modules/@ministryofjustice/frontend/',
+    '/assets',
+    '/assets/stylesheets',
+    '/assets/js',
+    `/node_modules/govuk-frontend/govuk/assets`,
+    `/node_modules/govuk-frontend`,
+    `/node_modules/@ministryofjustice/frontend/`,
   ].forEach(dir => {
-    app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
+    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
-  ;['../node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
-    app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
+  ;[`/node_modules/govuk_frontend_toolkit/images`].forEach(dir => {
+    app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
 
   const healthcheck = healthcheckFactory(config.apis.oauth2.url, config.apis.elite2.url)
