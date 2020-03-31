@@ -1,6 +1,6 @@
 const R = require('ramda')
 
-const RELIGION_UNKNOWN = 'UNKN'
+const RELIGION_UNKNOWN = 'OTH'
 const OTHER_GROUP = 'OTHER'
 
 const RELIGIOUS_GROUPS = {
@@ -9,7 +9,6 @@ const RELIGIOUS_GROUPS = {
     description: 'Christian',
     religions: [
       'ADV',
-      'APO',
       'BAPT',
       'CALV',
       'CCOG',
@@ -32,23 +31,49 @@ const RELIGIOUS_GROUPS = {
       'GOSP',
       'GROX',
       'JEHV',
-      'LUTH',
       'METH',
-      'ORTH',
+      'MORM',
+      'NONC',
+      'OORTH',
       'PENT',
       'PRES',
       'PROT',
+      'QUAK',
       'RC',
       'RUSS',
+      'SALV',
       'SDAY',
+      'UNIT',
+      'UR',
+      'WELS',
     ],
   },
   HINDU: { description: 'Hindu', religions: ['HARE', 'HIND'] },
   JEWISH: { description: 'Jewish', religions: ['JEW'] },
   MUSLIM: { description: 'Muslim', religions: ['BLAC', 'MOS', 'SHIA', 'SUNI'] },
-  NONE: { description: 'No religion', religions: ['NIL'] },
-  [OTHER_GROUP]: { description: 'Other', religions: ['AGNO', 'ATHE', RELIGION_UNKNOWN] },
-  OTHER_RELIGIOUS: { description: 'Other Religious Groups', religions: ['TAO', 'SCIE', 'SATN', 'PAG'] },
+  NONE: { description: 'No religion', religions: ['AGNO', 'ATHE', 'NIL', 'UNKN'] },
+  [OTHER_GROUP]: { description: 'Not recognised / not recorded', religions: ['NONP', RELIGION_UNKNOWN] },
+  OTHER_RELIGIOUS: {
+    description: 'Other',
+    religions: [
+      'APO',
+      'BAHA',
+      'DRU',
+      'HUM',
+      'JAIN',
+      'LUTH',
+      'PAG',
+      'PARS',
+      'RAST',
+      'SATN',
+      'SCIE',
+      'SHIN',
+      'SPIR',
+      'TAO',
+      'UNIF',
+      'ZORO',
+    ],
+  },
   SIKH: { description: 'Sikh', religions: ['SIKH'] },
 }
 

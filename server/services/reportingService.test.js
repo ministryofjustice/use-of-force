@@ -212,7 +212,7 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
 
     expect(result).toEqual(
-      `Buddhist,Christian,Hindu,Jewish,Muslim,No religion,Other,Other Religious Groups,Sikh
+      `Buddhist,Christian,Hindu,Jewish,Muslim,No religion,Not recognised / not recorded,Other,Sikh
 0,2,0,0,1,0,0,0,0
 `
     )
