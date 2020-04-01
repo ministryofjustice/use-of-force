@@ -1,3 +1,8 @@
+jest.mock('moment', () => () => ({
+  year: () => 2019,
+  month: () => 9,
+}))
+
 const { validate } = require('../../services/validation/fieldValidation')
 const { buildValidationSpec } = require('../../services/validation')
 const {
@@ -13,11 +18,6 @@ const {
     requiredPatternMsg,
   },
 } = require('./validations')
-
-jest.mock('moment', () => () => ({
-  year: () => 2019,
-  month: () => 9,
-}))
 
 describe('requiredMonthIndexNotInFuture', () => {
   const formSchema = joi.object({

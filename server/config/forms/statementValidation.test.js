@@ -1,3 +1,8 @@
+jest.mock('moment', () => () => ({
+  year: () => 2019,
+  month: () => 9,
+}))
+
 const moment = require('moment')
 const { complete } = require('./statementForm')
 const { processInput } = require('../../services/validation')
@@ -13,11 +18,6 @@ const validInput = {
   jobStartYear: '1995',
   statement: 'A statement about the incident',
 }
-
-jest.mock('moment', () => () => ({
-  year: () => 2019,
-  month: () => 9,
-}))
 
 it('successful input', () => {
   const { errors, formResponse } = check(validInput)

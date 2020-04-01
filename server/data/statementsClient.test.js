@@ -1,9 +1,9 @@
+jest.mock('../../server/data/dataAccess/db')
+
 const statementsClient = require('./statementsClient')
 /** @type {any} */
 const db = require('./dataAccess/db')
 const { StatementStatus } = require('../config/types')
-
-jest.mock('../../server/data/dataAccess/db')
 
 beforeEach(() => {
   jest.resetAllMocks()

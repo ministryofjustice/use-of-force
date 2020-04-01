@@ -1,5 +1,6 @@
 const knex = require('knex')
 const knexfile = require('./knexfile')
+/** @type {any} */
 const app = require('./server/index')
 const log = require('./log')
 
