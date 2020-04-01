@@ -129,6 +129,7 @@
     "querystring": "^0.2.0",
     "ramda": "^0.27.0",
     "redis": "^2.8.0",
+    "request": "^2.88.2",
     "sass-middleware": "^0.0.3",
     "superagent": "^5.1.0",
     "uuid": "^3.3.3"
