@@ -90,9 +90,29 @@ const getIncidentLocationsAndTimes = async (agencyId, [startDate, endDate]) => {
   return results.rows
 }
 
+const getIncidentCountByOffenderNo = async (agencyId, [startDate, endDate]) => {
+  const results = await nonTransactionalClient.query({
+    text: `
+    select
+        count(*) "incidentCount",
+        offender_no "offenderNo"
+      from
+        v_report
+     where
+        agency_id = $1
+        and incident_date between $2 and $3
+    group by
+        offender_no`,
+    values: [agencyId, startDate.toDate(), endDate.toDate()],
+  })
+
+  return results.rows
+}
+
 module.exports = {
   getMostOftenInvolvedStaff,
   getMostOftenInvolvedPrisoners,
   getIncidentsOverview,
   getIncidentLocationsAndTimes,
+  getIncidentCountByOffenderNo,
 }

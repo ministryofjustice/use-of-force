@@ -92,4 +92,16 @@ describe('elite2Client', () => {
       expect(output).toEqual(offenders)
     })
   })
+
+  describe('getPrisoners', () => {
+    it('should formqt query string', async () => {
+      fakeElite2Api
+        .get('/api/prisoners?offenderNo=A123&offenderNo=B123')
+        .matchHeader('page-limit', 5000)
+        .reply(200, [])
+
+      const output = await elite2Client.getPrisoners(['A123', 'B123'])
+      expect(output).toEqual([])
+    })
+  })
 })
