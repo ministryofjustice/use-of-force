@@ -1,14 +1,9 @@
+jest.mock('./dataAccess/db')
+
 const moment = require('moment')
 const { ReportStatus } = require('../config/types')
 const reportingClient = require('./reportingClient')
-/** @type {any} */
 const db = require('./dataAccess/db')
-
-jest.mock('../../server/data/dataAccess/db')
-
-afterEach(() => {
-  db.query.mockReset()
-})
 
 afterEach(() => {
   jest.resetAllMocks()

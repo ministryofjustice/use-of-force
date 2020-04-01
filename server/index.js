@@ -14,7 +14,7 @@ const { authClientBuilder, systemToken } = require('./data/authClientBuilder')
 
 const createSignInService = require('./authentication/signInService')
 
-const createHeatmapBuilder = require('./services/heatmapBuilder')
+const createHeatmapBuilder = require('./services/heatmapBuilder').default
 const { createInvolvedStaffService } = require('./services/involvedStaffService')
 const createOffenderService = require('./services/offenderService')
 const createReportService = require('./services/reportService')
