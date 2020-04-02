@@ -205,8 +205,8 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
     ])
 
     offenderService.getPrisonersDetails.mockResolvedValue([
-      { offenderNo: 'A1', religion: 'CE' },
-      { offenderNo: 'A2', religion: 'SHIA' },
+      { offenderNo: 'A1', religionCode: 'CE' },
+      { offenderNo: 'A2', religionCode: 'SHIA' },
     ])
 
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
