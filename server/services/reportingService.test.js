@@ -200,20 +200,22 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 
   test('getIncidentsByReligiousGroup', async () => {
     reportingClient.getIncidentCountByOffenderNo.mockResolvedValue([
-      { offenderNo: 'A1', incidentCount: 2 },
-      { offenderNo: 'A2', incidentCount: 1 },
+      { offenderNo: 'A1', incidentCount: '2' },
+      { offenderNo: 'A2', incidentCount: '1' },
+      { offenderNo: 'A3', incidentCount: '2' },
     ])
 
     offenderService.getPrisonersDetails.mockResolvedValue([
       { offenderNo: 'A1', religionCode: 'CE' },
       { offenderNo: 'A2', religionCode: 'SHIA' },
+      { offenderNo: 'A3', religionCode: 'CE' },
     ])
 
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
 
     expect(result).toEqual(
       `Buddhist,Christian,Hindu,Jewish,Muslim,No religion,Not recognised / not recorded,Other,Sikh
-0,2,0,0,1,0,0,0,0
+0,4,0,0,1,0,0,0,0
 `
     )
   })
