@@ -44,4 +44,14 @@ describe('GET /task-list', () => {
         expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '-35')
       })
   })
+
+  it('shows the exit link', () => {
+    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    return request(app)
+      .get('/report/-35/report-use-of-force')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/<a href="\/" .*? data-qa="exit-to-dps-link">Exit to Digital Prison Services<\/a>/)
+      })
+  })
 })
