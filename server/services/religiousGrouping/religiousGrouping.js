@@ -80,17 +80,18 @@ const RELIGIOUS_GROUPS = {
 const invertGroupings = R.pipe(
   R.toPairs,
   R.chain(([groupName, { religions }]) => (religions ? religions.map(religion => [religion, groupName]) : [])),
-  R.fromPairs
+  R.fromPairs,
+  Object.freeze
 )
 
 const incidentsByReligiousGroupFactory = religionsByGroup => {
   const groupsByReligion = invertGroupings(religionsByGroup)
 
   return (offenderNumberToIncidentCountMap, prisonersDetails) =>
-    prisonersDetails.reduce((accumulator, { offenderNo, religion = RELIGION_UNKNOWN }) => {
-      const religiousGroup = groupsByReligion[religion] || OTHER_GROUP
+    prisonersDetails.reduce((accumulator, { offenderNo, religionCode = RELIGION_UNKNOWN }) => {
+      const religiousGroup = groupsByReligion[religionCode] || OTHER_GROUP
       const accumulatedCount = accumulator[religiousGroup]
-      accumulator[religiousGroup] = accumulatedCount + (offenderNumberToIncidentCountMap[offenderNo] || 0)
+      accumulator[religiousGroup] = accumulatedCount + offenderNumberToIncidentCountMap[offenderNo]
       return accumulator
     }, R.map(() => 0, religionsByGroup))
 }

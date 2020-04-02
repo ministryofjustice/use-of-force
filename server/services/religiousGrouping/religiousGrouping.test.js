@@ -92,16 +92,16 @@ describe('Religious Groupings logic', () => {
 
     it('aggregates incidents for one offender', () => {
       const aggregator = incidentsByReligiousGroupFactory(ONE_GROUP)
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religion: 'X' }])).toEqual({ A: 1 })
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'X' }])).toEqual({ A: 1 })
     })
 
     it('aggregates incidents for several offenders', () => {
       const aggregator = incidentsByReligiousGroupFactory(ONE_GROUP)
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3 }, [
-          { offenderNo: 'O1', religion: 'X' },
-          { offenderNo: 'O2', religion: 'X' },
-          { offenderNo: 'O3', religion: 'X' },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'X' },
+          { offenderNo: 'O3', religionCode: 'X' },
         ])
       ).toEqual({ A: 6 })
     })
@@ -113,7 +113,7 @@ describe('Religious Groupings logic', () => {
 
     it('aggregates incidents for unknown religion', () => {
       const aggregator = incidentsByReligiousGroupFactory(THREE_GROUPS_AND_OTHER)
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religion: 'XXX' }])).toEqual({
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'XXX' }])).toEqual({
         ...DEFAULT_COUNTS,
         [OTHER_GROUP]: 1,
       })
@@ -123,25 +123,25 @@ describe('Religious Groupings logic', () => {
       const aggregator = incidentsByReligiousGroupFactory(THREE_GROUPS_AND_OTHER)
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3 }, [
-          { offenderNo: 'O1', religion: 'X' },
-          { offenderNo: 'O2', religion: 'P' },
-          { offenderNo: 'O3', religion: 'L' },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'P' },
+          { offenderNo: 'O3', religionCode: 'L' },
         ])
       ).toEqual({ ...DEFAULT_COUNTS, A: 1, B: 2, C: 3 })
     })
 
-    it('aggregates counts accross groups', () => {
+    it('aggregates counts across groups', () => {
       const aggregator = incidentsByReligiousGroupFactory(THREE_GROUPS_AND_OTHER)
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3, O4: 10, O5: 20, O6: 30, O7: 40, O8: 50 }, [
-          { offenderNo: 'O1', religion: 'X' },
-          { offenderNo: 'O2', religion: 'P' },
-          { offenderNo: 'O3', religion: 'L' },
-          { offenderNo: 'O4', religion: 'X' },
-          { offenderNo: 'O5', religion: 'Q' },
-          { offenderNo: 'O6', religion: 'M' },
-          { offenderNo: 'O7', religion: '-' },
-          { offenderNo: 'O8', religion: null },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'P' },
+          { offenderNo: 'O3', religionCode: 'L' },
+          { offenderNo: 'O4', religionCode: 'X' },
+          { offenderNo: 'O5', religionCode: 'Q' },
+          { offenderNo: 'O6', religionCode: 'M' },
+          { offenderNo: 'O7', religionCode: '-' },
+          { offenderNo: 'O8', religionCode: null },
         ])
       ).toEqual({ A: 11, B: 22, C: 33, [OTHER_GROUP]: 90 })
     })
@@ -158,10 +158,10 @@ describe('Religious Groupings logic', () => {
             Z: 4,
           },
           [
-            { offenderNo: 'W', religion: 'UNKN' },
-            { offenderNo: 'X', religion: 'AGNO' },
-            { offenderNo: 'Y', religion: 'ATHE' },
-            { offenderNo: 'Z', religion: 'NIL' },
+            { offenderNo: 'W', religionCode: 'UNKN' },
+            { offenderNo: 'X', religionCode: 'AGNO' },
+            { offenderNo: 'Y', religionCode: 'ATHE' },
+            { offenderNo: 'Z', religionCode: 'NIL' },
           ]
         )
       ).toEqual({
@@ -188,9 +188,9 @@ describe('Religious Groupings logic', () => {
           },
           [
             { offenderNo: 'W' },
-            { offenderNo: 'X', religion: 'XXXXXXX' },
-            { offenderNo: 'Y', religion: 'NONP' },
-            { offenderNo: 'Z', religion: 'OTH' },
+            { offenderNo: 'X', religionCode: 'XXXXXXX' },
+            { offenderNo: 'Y', religionCode: 'NONP' },
+            { offenderNo: 'Z', religionCode: 'OTH' },
           ]
         )
       ).toEqual({
@@ -293,86 +293,86 @@ describe('Religious Groupings logic', () => {
             J04: 1,
           },
           [
-            { offenderNo: 'A01', religion: 'SIKH' },
-            { offenderNo: 'B01', religion: 'ADV' },
-            { offenderNo: 'B02', religion: 'BAPT' },
-            { offenderNo: 'B03', religion: 'CALV' },
-            { offenderNo: 'B04', religion: 'CCOG' },
-            { offenderNo: 'B05', religion: 'CE' },
-            { offenderNo: 'B06', religion: 'CHRST' },
-            { offenderNo: 'B07', religion: 'CHSC' },
-            { offenderNo: 'B08', religion: 'CINW' },
-            { offenderNo: 'B09', religion: 'COFE' },
-            { offenderNo: 'B10', religion: 'COFI' },
-            { offenderNo: 'B11', religion: 'COFN' },
-            { offenderNo: 'B12', religion: 'COFS' },
-            { offenderNo: 'B13', religion: 'CONG' },
-            { offenderNo: 'B14', religion: 'COPT' },
-            { offenderNo: 'B15', religion: 'CSW' },
-            { offenderNo: 'B16', religion: 'EODX' },
-            { offenderNo: 'B17', religion: 'EORTH' },
-            { offenderNo: 'B18', religion: 'EPIS' },
-            { offenderNo: 'B19', religion: 'ETHO' },
-            { offenderNo: 'B20', religion: 'EVAN' },
-            { offenderNo: 'B21', religion: 'GOSP' },
-            { offenderNo: 'B22', religion: 'GROX' },
-            { offenderNo: 'B23', religion: 'JEHV' },
-            { offenderNo: 'B24', religion: 'METH' },
-            { offenderNo: 'B25', religion: 'MORM' },
-            { offenderNo: 'B26', religion: 'NONC' },
-            { offenderNo: 'B27', religion: 'OORTH' },
-            { offenderNo: 'B28', religion: 'PENT' },
-            { offenderNo: 'B29', religion: 'PRES' },
-            { offenderNo: 'B30', religion: 'PROT' },
-            { offenderNo: 'B31', religion: 'QUAK' },
-            { offenderNo: 'B32', religion: 'RC' },
-            { offenderNo: 'B33', religion: 'RUSS' },
-            { offenderNo: 'B34', religion: 'SALV' },
-            { offenderNo: 'B35', religion: 'SDAY' },
-            { offenderNo: 'B36', religion: 'UNIT' },
-            { offenderNo: 'B37', religion: 'UR' },
-            { offenderNo: 'B38', religion: 'WELS' },
+            { offenderNo: 'A01', religionCode: 'SIKH' },
+            { offenderNo: 'B01', religionCode: 'ADV' },
+            { offenderNo: 'B02', religionCode: 'BAPT' },
+            { offenderNo: 'B03', religionCode: 'CALV' },
+            { offenderNo: 'B04', religionCode: 'CCOG' },
+            { offenderNo: 'B05', religionCode: 'CE' },
+            { offenderNo: 'B06', religionCode: 'CHRST' },
+            { offenderNo: 'B07', religionCode: 'CHSC' },
+            { offenderNo: 'B08', religionCode: 'CINW' },
+            { offenderNo: 'B09', religionCode: 'COFE' },
+            { offenderNo: 'B10', religionCode: 'COFI' },
+            { offenderNo: 'B11', religionCode: 'COFN' },
+            { offenderNo: 'B12', religionCode: 'COFS' },
+            { offenderNo: 'B13', religionCode: 'CONG' },
+            { offenderNo: 'B14', religionCode: 'COPT' },
+            { offenderNo: 'B15', religionCode: 'CSW' },
+            { offenderNo: 'B16', religionCode: 'EODX' },
+            { offenderNo: 'B17', religionCode: 'EORTH' },
+            { offenderNo: 'B18', religionCode: 'EPIS' },
+            { offenderNo: 'B19', religionCode: 'ETHO' },
+            { offenderNo: 'B20', religionCode: 'EVAN' },
+            { offenderNo: 'B21', religionCode: 'GOSP' },
+            { offenderNo: 'B22', religionCode: 'GROX' },
+            { offenderNo: 'B23', religionCode: 'JEHV' },
+            { offenderNo: 'B24', religionCode: 'METH' },
+            { offenderNo: 'B25', religionCode: 'MORM' },
+            { offenderNo: 'B26', religionCode: 'NONC' },
+            { offenderNo: 'B27', religionCode: 'OORTH' },
+            { offenderNo: 'B28', religionCode: 'PENT' },
+            { offenderNo: 'B29', religionCode: 'PRES' },
+            { offenderNo: 'B30', religionCode: 'PROT' },
+            { offenderNo: 'B31', religionCode: 'QUAK' },
+            { offenderNo: 'B32', religionCode: 'RC' },
+            { offenderNo: 'B33', religionCode: 'RUSS' },
+            { offenderNo: 'B34', religionCode: 'SALV' },
+            { offenderNo: 'B35', religionCode: 'SDAY' },
+            { offenderNo: 'B36', religionCode: 'UNIT' },
+            { offenderNo: 'B37', religionCode: 'UR' },
+            { offenderNo: 'B38', religionCode: 'WELS' },
 
-            { offenderNo: 'C01', religion: 'BUDD' },
+            { offenderNo: 'C01', religionCode: 'BUDD' },
 
-            { offenderNo: 'D01', religion: 'HARE' },
-            { offenderNo: 'D02', religion: 'HIND' },
+            { offenderNo: 'D01', religionCode: 'HARE' },
+            { offenderNo: 'D02', religionCode: 'HIND' },
 
-            { offenderNo: 'E01', religion: 'JEW' },
+            { offenderNo: 'E01', religionCode: 'JEW' },
 
-            { offenderNo: 'F01', religion: 'BLAC' },
-            { offenderNo: 'F02', religion: 'MOS' },
-            { offenderNo: 'F03', religion: 'SHIA' },
-            { offenderNo: 'F04', religion: 'SUNI' },
+            { offenderNo: 'F01', religionCode: 'BLAC' },
+            { offenderNo: 'F02', religionCode: 'MOS' },
+            { offenderNo: 'F03', religionCode: 'SHIA' },
+            { offenderNo: 'F04', religionCode: 'SUNI' },
 
-            { offenderNo: 'G01', religion: 'NIL' },
+            { offenderNo: 'G01', religionCode: 'NIL' },
 
-            { offenderNo: 'H01', religion: 'AGNO' },
-            { offenderNo: 'H02', religion: 'ATHE' },
-            { offenderNo: 'H03', religion: 'NIL' },
-            { offenderNo: 'H04', religion: 'UNKN' },
+            { offenderNo: 'H01', religionCode: 'AGNO' },
+            { offenderNo: 'H02', religionCode: 'ATHE' },
+            { offenderNo: 'H03', religionCode: 'NIL' },
+            { offenderNo: 'H04', religionCode: 'UNKN' },
 
-            { offenderNo: 'I01', religion: 'APO' },
-            { offenderNo: 'I02', religion: 'BAHA' },
-            { offenderNo: 'I03', religion: 'DRU' },
-            { offenderNo: 'I04', religion: 'HUM' },
-            { offenderNo: 'I05', religion: 'JAIN' },
-            { offenderNo: 'I06', religion: 'LUTH' },
-            { offenderNo: 'I07', religion: 'PAG' },
-            { offenderNo: 'I08', religion: 'PARS' },
-            { offenderNo: 'I09', religion: 'RAST' },
-            { offenderNo: 'I10', religion: 'SATN' },
-            { offenderNo: 'I11', religion: 'SCIE' },
-            { offenderNo: 'I12', religion: 'SHIN' },
-            { offenderNo: 'I13', religion: 'SPIR' },
-            { offenderNo: 'I14', religion: 'TAO' },
-            { offenderNo: 'I15', religion: 'UNIF' },
-            { offenderNo: 'I16', religion: 'ZORO' },
+            { offenderNo: 'I01', religionCode: 'APO' },
+            { offenderNo: 'I02', religionCode: 'BAHA' },
+            { offenderNo: 'I03', religionCode: 'DRU' },
+            { offenderNo: 'I04', religionCode: 'HUM' },
+            { offenderNo: 'I05', religionCode: 'JAIN' },
+            { offenderNo: 'I06', religionCode: 'LUTH' },
+            { offenderNo: 'I07', religionCode: 'PAG' },
+            { offenderNo: 'I08', religionCode: 'PARS' },
+            { offenderNo: 'I09', religionCode: 'RAST' },
+            { offenderNo: 'I10', religionCode: 'SATN' },
+            { offenderNo: 'I11', religionCode: 'SCIE' },
+            { offenderNo: 'I12', religionCode: 'SHIN' },
+            { offenderNo: 'I13', religionCode: 'SPIR' },
+            { offenderNo: 'I14', religionCode: 'TAO' },
+            { offenderNo: 'I15', religionCode: 'UNIF' },
+            { offenderNo: 'I16', religionCode: 'ZORO' },
 
-            { offenderNo: 'J01', religion: 'NONP' },
-            { offenderNo: 'J02', religion: RELIGION_UNKNOWN },
+            { offenderNo: 'J01', religionCode: 'NONP' },
+            { offenderNo: 'J02', religionCode: RELIGION_UNKNOWN },
             { offenderNo: 'J03' },
-            { offenderNo: 'J04', religion: 'XXX' },
+            { offenderNo: 'J04', religionCode: 'XXX' },
           ]
         )
       ).toEqual({
