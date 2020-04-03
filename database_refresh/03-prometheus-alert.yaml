@@ -1,0 +1,19 @@
+---
+    apiVersion: monitoring.coreos.com/v1
+    kind: PrometheusRule
+    metadata:
+      labels:
+        app: dps-db-refresh-job
+      name: dps-prometheus-rules-db-refresh
+    spec:
+      groups:
+      - name: kubernetes-apps
+        rules:
+        - alert: DB-refresh-job-failed
+          annotations:
+            message: Database refresh {{ $labels.namespace }}/{{ $labels.job_name }} failed to complete.
+            runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobfailed
+          expr: kube_job_status_failed{namespace="use-of-force-prod",job_name=~"db-refresh-job.*"} > 0
+          for: 1m
+          labels:
+            severity: digital-prison-service
