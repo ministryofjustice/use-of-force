@@ -67,7 +67,7 @@ describe('Ethnic Grouping', () => {
 
             { offenderNo: 'D01', ethnicityCode: 'B1' },
             { offenderNo: 'D01', ethnicityCode: 'B2' },
-            { offenderNo: 'D01', ethnicityCode: 'B3' },
+            { offenderNo: 'D01', ethnicityCode: 'B9' },
 
             { offenderNo: 'E01', ethnicityCode: 'M1' },
             { offenderNo: 'E02', ethnicityCode: 'M2' },
