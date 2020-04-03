@@ -219,4 +219,26 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 `
     )
   })
+
+  test('getIncidentsByEthnicGroup', async () => {
+    reportingClient.getIncidentCountByOffenderNo.mockResolvedValue([
+      { offenderNo: 'A1', incidentCount: '2' },
+      { offenderNo: 'A2', incidentCount: '1' },
+      { offenderNo: 'A3', incidentCount: '2' },
+    ])
+
+    offenderService.getPrisonersDetails.mockResolvedValue([
+      { offenderNo: 'A1', ethnicityCode: 'W1' },
+      { offenderNo: 'A2', ethnicityCode: 'A2' },
+      { offenderNo: 'A3', ethnicityCode: 'NS' },
+    ])
+
+    const result = await service.getIncidentsByEthnicGroup('token-1', 'LEI', 2, 2019)
+
+    expect(result).toEqual(
+      `White,Asian or Asian British,Black or Black British,Mixed Ethnic Groups,Other Ethnic Group,Not known
+2,1,0,0,0,2
+`
+    )
+  })
 })

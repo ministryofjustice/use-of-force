@@ -4,7 +4,8 @@ const moment = require('moment')
 const stringify = require('csv-stringify')
 const logger = require('../../log')
 const { ReportStatus } = require('../config/types')
-const { incidentsByReligiousGroup, csvRendererConfiguration } = require('./religiousGrouping')
+const religiousGroupAggregator = require('./religiousGroupAggregator')
+const ethinicGroupAggregator = require('./ethnicGroupAggregator')
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -27,12 +28,36 @@ const dateRange = (month, year) => {
 
 const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
 
+const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, range) => {
+  const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
+
+  return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
+    accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
+    return accumulator
+  }, {})
+}
+
 /**
  * @param {any} reportingClient
  * @param {any} offenderService
  * @param {HeatmapBuilder} heatmapBuilder
  */
 module.exports = function createReportingService(reportingClient, offenderService, heatmapBuilder) {
+  const aggregateIncidentsUsing = aggregator => async (token, agencyId, month, year) => {
+    const range = dateRange(month, year)
+    logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
+    const incidentCountsByOffenderNumber = await getIncidentCountsByOffenderNumber(reportingClient, agencyId, range)
+
+    const prisonersDetails = await offenderService.getPrisonersDetails(
+      token,
+      Object.keys(incidentCountsByOffenderNumber)
+    )
+
+    const answer = aggregator.aggregator(incidentCountsByOffenderNumber, prisonersDetails)
+
+    return toCsv(aggregator.csvRendererConfiguration, [answer])
+  }
+
   return {
     getMostOftenInvolvedStaff: async (agencyId, month, year) => {
       const range = dateRange(month, year)
@@ -135,27 +160,7 @@ module.exports = function createReportingService(reportingClient, offenderServic
       )
     },
 
-    getIncidentsByReligiousGroup: async (token, agencyId, month, year) => {
-      const range = dateRange(month, year)
-      logger.info(`Retrieve incidents by religion for agency: ${agencyId}, between '${formatRange(range)}'`)
-
-      const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
-
-      const offenderNumberToIncidentCount = offenderNoWithIncidentCounts.reduce(
-        (accumulator, { offenderNo, incidentCount }) => {
-          accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
-          return accumulator
-        },
-        {}
-      )
-
-      const prisonersDetails = await offenderService.getPrisonersDetails(
-        token,
-        Object.keys(offenderNumberToIncidentCount)
-      )
-
-      const answer = incidentsByReligiousGroup(offenderNumberToIncidentCount, prisonersDetails)
-      return toCsv(csvRendererConfiguration, [answer])
-    },
+    getIncidentsByReligiousGroup: aggregateIncidentsUsing(religiousGroupAggregator),
+    getIncidentsByEthnicGroup: aggregateIncidentsUsing(ethinicGroupAggregator),
   }
 }
