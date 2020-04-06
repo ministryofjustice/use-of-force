@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ .Values.namespace }}
+  name: {{ .Release.Namespace }}
 spec:
   groups:
   - name: use-of-force
@@ -10,7 +10,7 @@ spec:
       annotations:
         message: CronJob {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.cronjob {{ "}}" }} was scheduled to start over 10 minutes ago
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubecronjobrunning
-      expr: time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace="{{ .Values.namespace }}"} > 600
+      expr: time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} > 600
       for: 10m
       labels:
         severity: digital-prison-service
@@ -19,7 +19,7 @@ spec:
         message: CronJob {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.job_name {{ "}}" }} failed.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobcompletion
       expr: |-
-        kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics", namespace="{{ .Values.namespace }}"} > 0
+        kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} > 0
       for: 10m
       labels:
         severity: digital-prison-service
