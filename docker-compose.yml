@@ -50,7 +50,7 @@ services:
       - '6379:6379'
 
   use-of-force:
-    image: mojdigitalstudio/use-of-force:latest
+    image: quay.io/hmpps/use-of-force:latest
     networks:
       - hmpps
     depends_on:
