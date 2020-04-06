@@ -1,11 +1,14 @@
-/** @typedef {import('./heatmapBuilder').HeatmapBuilder} HeatmapBuilder */
-
-const moment = require('moment')
-const stringify = require('csv-stringify')
-const logger = require('../../log')
+import moment from 'moment'
+import stringify from 'csv-stringify'
+import logger from '../../log'
 const { ReportStatus } = require('../config/types')
-const religiousGroupAggregator = require('./religiousGroupAggregator')
-const ethinicGroupAggregator = require('./ethnicGroupAggregator')
+import { HeatmapBuilder } from './heatmapBuilder'
+import { PrisonerDetail } from '../types/uof'
+import { Aggregator } from './incidentCountAggregator'
+import religiousGroupAggregator from './religiousGroupAggregator'
+import ethinicGroupAggregator from './ethnicGroupAggregator'
+
+type DateRange = [moment.Moment, moment.Moment]
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -17,8 +20,7 @@ const toCsv = (columns, results) =>
     })
   })
 
-/** @return {[moment.Moment, moment.Moment]} */
-const dateRange = (month, year) => {
+const dateRange = (month, year): DateRange => {
   const date = moment({ years: year, months: month - 1 })
 
   const startDate = moment(date).startOf('month')
@@ -37,13 +39,8 @@ const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, rang
   }, {})
 }
 
-/**
- * @param {any} reportingClient
- * @param {any} offenderService
- * @param {HeatmapBuilder} heatmapBuilder
- */
-module.exports = function createReportingService(reportingClient, offenderService, heatmapBuilder) {
-  const aggregateIncidentsUsing = aggregator => async (token, agencyId, month, year) => {
+export default function createReportingService (reportingClient, offenderService, heatmapBuilder: HeatmapBuilder)  {
+  const aggregateIncidentsUsing = (aggregator: Aggregator) => async (token, agencyId, month, year) => {
     const range = dateRange(month, year)
     logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
     const incidentCountsByOffenderNumber = await getIncidentCountsByOffenderNumber(reportingClient, agencyId, range)
@@ -53,7 +50,7 @@ module.exports = function createReportingService(reportingClient, offenderServic
       Object.keys(incidentCountsByOffenderNumber)
     )
 
-    const answer = aggregator.aggregator(incidentCountsByOffenderNumber, prisonersDetails)
+    const answer = aggregator.aggregate(incidentCountsByOffenderNumber, prisonersDetails)
 
     return toCsv(aggregator.csvRendererConfiguration, [answer])
   }

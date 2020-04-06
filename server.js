@@ -1,3 +1,8 @@
+// Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
+// In particular, applicationinsights automatically collects bunyan logs
+
+import { defaultAppInsightsClient } from './server/utils/azure-appinsights'
+
 const knex = require('knex')
 const knexfile = require('./knexfile')
 /** @type {any} */

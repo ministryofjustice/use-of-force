@@ -1,10 +1,10 @@
-const { aggregator, csvRendererConfiguration } = require('./index')
+import aggregator from './index'
 
 describe('Religious Grouping', () => {
   describe('aggregator', () => {
     it('aggregates unknown religion, AGNO, ATHE and UNKN to OTHER_GROUP', () => {
       expect(
-        aggregator(
+        aggregator.aggregate(
           {
             W: 1,
             X: 2,
@@ -33,7 +33,7 @@ describe('Religious Grouping', () => {
 
     it('aggregates not recognised, not recorded, NONP and OTH to OTHER group ', () => {
       expect(
-        aggregator(
+        aggregator.aggregate(
           {
             W: 1,
             X: 2,
@@ -42,9 +42,9 @@ describe('Religious Grouping', () => {
           },
           [
             { offenderNo: 'W' },
-            { offenderNo: 'X', religionreligionCode: 'XXXXXXX' },
-            { offenderNo: 'Y', religionreligionCode: 'NONP' },
-            { offenderNo: 'Z', religionreligionCode: 'OTH' },
+            { offenderNo: 'X', religionCode: 'XXXXXXX' },
+            { offenderNo: 'Y', religionCode: 'NONP' },
+            { offenderNo: 'Z', religionCode: 'OTH' },
           ]
         )
       ).toEqual({
@@ -62,7 +62,7 @@ describe('Religious Grouping', () => {
 
     it('aggregates all known religionCodes to all groups', () => {
       expect(
-        aggregator(
+        aggregator.aggregate(
           {
             A01: 1,
 
@@ -245,7 +245,7 @@ describe('Religious Grouping', () => {
 
   describe('csvRenderConfiguration', () => {
     it('should yield the configuration', () => {
-      expect(csvRendererConfiguration).toEqual([
+      expect(aggregator.csvRendererConfiguration).toEqual([
         { header: 'Buddhist', key: 'BUDDHIST' },
         { header: 'Christian', key: 'CHRISTIAN' },
         { header: 'Hindu', key: 'HINDU' },

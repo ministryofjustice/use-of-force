@@ -1,4 +1,4 @@
-const serviceCreator = require('./offenderService')
+import serviceCreator from './offenderService'
 
 const token = 'token-1'
 

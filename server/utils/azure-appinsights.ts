@@ -1,5 +1,5 @@
-const appInsights = require('applicationinsights')
-const applicationVersion = require('../application-version')
+import appInsights from 'applicationinsights'
+import applicationVersion from '../application-version'
 
 const defaultName = () => {
   const {
@@ -8,7 +8,7 @@ const defaultName = () => {
   return name
 }
 
-module.exports = (name = defaultName()) => {
+const buildAppInsightsClient = (name = defaultName()) => {
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     // eslint-disable-next-line no-console
     console.log('Enabling azure application insights')
@@ -22,3 +22,6 @@ module.exports = (name = defaultName()) => {
   }
   return null
 }
+
+export const defaultAppInsightsClient = buildAppInsightsClient()
+export const reminderJobAppInsightsClient = buildAppInsightsClient('use-of-force-reminder-job')

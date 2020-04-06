@@ -1,10 +1,10 @@
-const { aggregator, csvRendererConfiguration } = require('./index')
+import aggregator from './index'
 
 describe('Ethnic Grouping', () => {
   describe('aggregator', () => {
     it('aggregates unknown codes to UNKNOWN group', () => {
       expect(
-        aggregator(
+        aggregator.aggregate(
           {
             W: 1,
             X: 2,
@@ -24,7 +24,7 @@ describe('Ethnic Grouping', () => {
 
     it('aggregates all known ethnicityCodes to all groups', () => {
       expect(
-        aggregator(
+        aggregator.aggregate(
           {
             B01: 1,
             B02: 1,
@@ -95,7 +95,7 @@ describe('Ethnic Grouping', () => {
 
   describe('csvRenderConfiguration', () => {
     it('should yield the configuration', () => {
-      expect(csvRendererConfiguration).toEqual([
+      expect(aggregator.csvRendererConfiguration).toEqual([
         { header: 'White', key: 'WHITE' },
         { header: 'Asian or Asian British', key: 'ASIAN' },
         { header: 'Black or Black British', key: 'BLACK' },

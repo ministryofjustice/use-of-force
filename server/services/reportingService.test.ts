@@ -1,6 +1,6 @@
-const moment = require('moment')
-const serviceCreator = require('./reportingService')
-const { ReportStatus } = require('../config/types')
+import moment from 'moment'
+import serviceCreator from './reportingService'
+import { ReportStatus } from '../config/types'
 
 const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),

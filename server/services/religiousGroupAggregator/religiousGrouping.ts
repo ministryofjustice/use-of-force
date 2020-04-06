@@ -1,6 +1,8 @@
-const DEFAULT_GROUP = 'OTHER'
+import { DescribedGroups } from '../incidentCountAggregator/aggregatorFunctions'
 
-const GROUPS = {
+export const DEFAULT_GROUP = 'OTHER'
+
+export const GROUPS: DescribedGroups = {
   BUDDHIST: { description: 'Buddhist', codes: ['BUDD'] },
   CHRISTIAN: {
     description: 'Christian',
@@ -72,9 +74,4 @@ const GROUPS = {
     ],
   },
   SIKH: { description: 'Sikh', codes: ['SIKH'] },
-}
-
-module.exports = {
-  GROUPS,
-  DEFAULT_GROUP,
 }

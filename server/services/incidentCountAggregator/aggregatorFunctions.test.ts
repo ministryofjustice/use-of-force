@@ -1,4 +1,4 @@
-const { invertGroupings, aggregatorFactory } = require('./aggregatorFunctions')
+import { invertGroupings, aggregatorFactory } from './aggregatorFunctions'
 
 describe('Aggregator Functions', () => {
   describe('invertGroupings', () => {
@@ -11,7 +11,7 @@ describe('Aggregator Functions', () => {
     })
 
     it('inverts a single group with no members', () => {
-      expect(invertGroupings({ A: {} })).toEqual({})
+      expect(invertGroupings({ A: { codes: undefined } })).toEqual({})
     })
 
     it('inverts a single group with many members', () => {
@@ -70,73 +70,73 @@ describe('Aggregator Functions', () => {
     const DEFAULT_COUNTS = { A: 0, B: 0, C: 0, [DEFAULT_GROUP_NAME]: 0 }
 
     it('empty grouping', () => {
-      const aggregator = aggregatorFactory(EMPTY_GROUP)
+      const aggregator = aggregatorFactory(EMPTY_GROUP, 'X', 'x')
       expect(aggregator({}, [])).toEqual({})
     })
 
     it('one group', () => {
-      const aggregator = aggregatorFactory(ONE_GROUP)
+      const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'x')
       expect(aggregator({}, [])).toEqual({ A: 0 })
     })
 
     it('several groups', () => {
-      const aggregator = aggregatorFactory(THREE_GROUPS)
+      const aggregator = aggregatorFactory(THREE_GROUPS, 'X', 'x')
 
       expect(aggregator({}, [])).toEqual({ A: 0, B: 0, C: 0 })
     })
 
     it('aggregates incidents for one offender', () => {
-      const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'code')
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', code: 'X' }])).toEqual({ A: 1 })
+      const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'religionCode')
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'X' }])).toEqual({ A: 1 })
     })
 
     it('aggregates incidents for several offenders', () => {
-      const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'code')
+      const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'religionCode')
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3 }, [
-          { offenderNo: 'O1', code: 'X' },
-          { offenderNo: 'O2', code: 'X' },
-          { offenderNo: 'O3', code: 'X' },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'X' },
+          { offenderNo: 'O3', religionCode: 'X' },
         ])
       ).toEqual({ A: 6 })
     })
 
     it('aggregates incidents for missing code', () => {
-      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'code')
+      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
       expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1' }])).toEqual({ ...DEFAULT_COUNTS, [DEFAULT_GROUP_NAME]: 1 })
     })
 
     it('aggregates incidents for unknown code', () => {
-      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'code')
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', code: 'XXX' }])).toEqual({
+      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'XXX' }])).toEqual({
         ...DEFAULT_COUNTS,
         [DEFAULT_GROUP_NAME]: 1,
       })
     })
 
     it('distributes counts to groups', () => {
-      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'code')
+      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3 }, [
-          { offenderNo: 'O1', code: 'X' },
-          { offenderNo: 'O2', code: 'P' },
-          { offenderNo: 'O3', code: 'L' },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'P' },
+          { offenderNo: 'O3', religionCode: 'L' },
         ])
       ).toEqual({ ...DEFAULT_COUNTS, A: 1, B: 2, C: 3 })
     })
 
     it('aggregates counts across groups', () => {
-      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'code')
+      const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
       expect(
         aggregator({ O1: 1, O2: 2, O3: 3, O4: 10, O5: 20, O6: 30, O7: 40, O8: 50 }, [
-          { offenderNo: 'O1', code: 'X' },
-          { offenderNo: 'O2', code: 'P' },
-          { offenderNo: 'O3', code: 'L' },
-          { offenderNo: 'O4', code: 'X' },
-          { offenderNo: 'O5', code: 'Q' },
-          { offenderNo: 'O6', code: 'M' },
-          { offenderNo: 'O7', code: '-' },
-          { offenderNo: 'O8', code: null },
+          { offenderNo: 'O1', religionCode: 'X' },
+          { offenderNo: 'O2', religionCode: 'P' },
+          { offenderNo: 'O3', religionCode: 'L' },
+          { offenderNo: 'O4', religionCode: 'X' },
+          { offenderNo: 'O5', religionCode: 'Q' },
+          { offenderNo: 'O6', religionCode: 'M' },
+          { offenderNo: 'O7', religionCode: '-' },
+          { offenderNo: 'O8', religionCode: null },
         ])
       ).toEqual({ A: 11, B: 22, C: 33, [DEFAULT_GROUP_NAME]: 90 })
     })
