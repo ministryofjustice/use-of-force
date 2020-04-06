@@ -175,7 +175,6 @@ workflows:
       - dps/deploy_env:
           name: deploy_prod
           env: "prod"
-          app_name: << pipeline.parameters.app_name >>
           slack_notification: true
           context: use-of-force-prod
           requires:
