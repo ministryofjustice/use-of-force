@@ -1,6 +1,15 @@
 import appInsights from 'applicationinsights'
 import applicationVersion from '../application-version'
 
+if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+  // eslint-disable-next-line no-console
+  console.log('Enabling azure application insights')
+  appInsights
+    .setup()
+    .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
+    .start()
+}
+
 const defaultName = () => {
   const {
     packageData: { name },
@@ -8,7 +17,7 @@ const defaultName = () => {
   return name
 }
 
-const buildAppInsightsClient = (name = defaultName()) => {
+export default function(name = defaultName()) {
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     // eslint-disable-next-line no-console
     console.log('Enabling azure application insights')
@@ -23,5 +32,8 @@ const buildAppInsightsClient = (name = defaultName()) => {
   return null
 }
 
-export const defaultAppInsightsClient = buildAppInsightsClient()
-export const reminderJobAppInsightsClient = buildAppInsightsClient('use-of-force-reminder-job')
+/**
+ * A function that does nothing.  Importing this module ensures that application insights is loaded and configured.
+ * Having a call to this function is cosmetic: It stops linters, prettier etc complaining about unused imports.
+ */
+export const doNothing = () => undefined

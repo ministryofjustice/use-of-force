@@ -1,4 +1,4 @@
-import { defaultAppInsightsClient } from './utils/azure-appinsights'
+import buildAppInsightsClient from './utils/azure-appinsights'
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 
@@ -21,9 +21,9 @@ const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
 const createReviewService = require('./services/reviewService')
 const { notificationServiceFactory } = require('./services/notificationService')
-const eventPublisher = require('./services/eventPublisher')(defaultAppInsightsClient)
+const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
 
-// pass in dependencies of service
+// inject service dependencies
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
