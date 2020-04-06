@@ -3,12 +3,9 @@ parameters:
   image_name:
     type: string
     default: "quay.io/hmpps/use-of-force"
-  app_name:
-    type: string
-    default: "use-of-force"
 
 orbs:
-  dps: ministryofjustice/dps@1.1.0
+  dps: ministryofjustice/dps@1.2.0
 
 executors:
   builder:
@@ -65,7 +62,7 @@ jobs:
             - assets/stylesheets
             - .cache/Cypress
 
-  test:
+  unit_test:
     executor: builder
     steps:
       - checkout
@@ -108,22 +105,6 @@ jobs:
       - store_artifacts:
           path: integration-tests/screenshots
 
-  security_audit:
-    executor: builder
-    steps:
-      - checkout
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: 'npm ci --no-audit'
-      - run:
-          name: run-security-audit
-          command: 'npm run security_audit'
-
 workflows:
   version: 2
   build-test-and-deploy:
@@ -132,12 +113,14 @@ workflows:
         filters:
           tags:
             ignore: /.*/
-      - test:
+      - unit_test:
           requires:
             - build
       - integration_test:
           requires:
-            - test
+            - build
+      - dps/helm_lint:
+          name: helm_lint
       - dps/build_docker:
           name: build_docker
           image_name: << pipeline.parameters.image_name >>
@@ -148,12 +131,13 @@ workflows:
       - dps/deploy_env:
           name: deploy_dev
           env: "dev"
-          app_name: << pipeline.parameters.app_name >>
           filters:
             branches:
               only:
                 - master
           requires:
+            - helm_lint
+            - unit_test
             - integration_test
             - build_docker
       - request-preprod-approval:
@@ -163,7 +147,6 @@ workflows:
       - dps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          app_name: << pipeline.parameters.app_name >>
           context: use-of-force-preprod
           requires:
             - request-preprod-approval
@@ -174,7 +157,6 @@ workflows:
       - dps/deploy_env:
           name: deploy_prod
           env: "prod"
-          app_name: << pipeline.parameters.app_name >>
           slack_notification: true
           context: use-of-force-prod
           requires:
@@ -189,4 +171,4 @@ workflows:
               only:
                 - master
     jobs:
-      - security_audit
+      - dps/npm_security_audit
