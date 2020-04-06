@@ -62,7 +62,7 @@ jobs:
             - assets/stylesheets
             - .cache/Cypress
 
-  test:
+  unit_test:
     executor: builder
     steps:
       - checkout
@@ -129,7 +129,7 @@ workflows:
         filters:
           tags:
             ignore: /.*/
-      - test:
+      - unit_test:
           requires:
             - build
       - integration_test:
@@ -156,8 +156,8 @@ workflows:
                 - test_orb
           requires:
             - helm_lint
+            - unit_tests 
             - integration_test
-            - test 
             - build_docker
       - request-preprod-approval:
           type: approval
