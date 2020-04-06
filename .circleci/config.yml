@@ -134,7 +134,7 @@ workflows:
             - build
       - integration_test:
           requires:
-            - test
+            - build
       - dps/helm_lint:
           name: helm_lint
       - dps/npm_security_audit
@@ -157,6 +157,7 @@ workflows:
           requires:
             - helm_lint
             - integration_test
+            - test 
             - build_docker
       - request-preprod-approval:
           type: approval
