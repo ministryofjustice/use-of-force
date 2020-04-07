@@ -1,4 +1,4 @@
-import buildAppInsightsClient from './utils/azure-appinsights'
+import { buildAppInsightsClient } from './utils/azure-appinsights'
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 
