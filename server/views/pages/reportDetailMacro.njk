@@ -94,7 +94,7 @@
         {% if not loop.last %}<br/>{% endif %}
       {% endfor %} 
 
-      {%- if user.isCoordinator -%}
+      {%- if user.isCoordinator and incidentId -%}
         <br/>
         <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
             Add another member of staff</a>

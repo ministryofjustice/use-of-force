@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-refresh-script-adhoc
+data:
+  entrypoint.sh: |-
+    #!/bin/bash
+    set -e
+    echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
+    echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
+    chmod 0600 ~/.pgpass
+    set -x
+    pg_dump -h $DB_HOST -U $DB_USER -Fc --no-privileges -v --file=/tmp/db.dump $DB_NAME
+    pg_restore -h $DB_HOST_PREPROD -U $DB_USER_PREPROD --clean --no-owner -v -d $DB_NAME_PREPROD /tmp/db.dump
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-refresh-script-adhoc
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1200
+  template:
+    spec:
+      securityContext:
+        runAsUser: 999
+      containers:
+      - name: dbrefresh
+        image: "postgres:11.4"
+        command:
+        - /bin/entrypoint.sh
+        volumeMounts:
+        - name: db-refresh-script-adhoc
+          mountPath: /bin/entrypoint.sh
+          readOnly: true
+          subPath: entrypoint.sh
+        env:
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output
+              key: database_name
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output
+              key: database_username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output
+              key: database_password
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output
+              key: rds_instance_address
+        - name: DB_NAME_PREPROD
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output-preprod
+              key: database_name
+        - name: DB_USER_PREPROD
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output-preprod
+              key: database_username
+        - name: DB_PASS_PREPROD
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output-preprod
+              key: database_password
+        - name: DB_HOST_PREPROD
+          valueFrom:
+            secretKeyRef:
+              name: dps-rds-instance-output-preprod
+              key: rds_instance_address
+      restartPolicy: "Never"
+      volumes:
+      - name: db-refresh-script-adhoc
+        configMap:
+          name: db-refresh-script-adhoc
+          defaultMode: 0755

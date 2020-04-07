@@ -1,0 +1,21 @@
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: db-refresh-script
+    data:
+      entrypoint.sh: |-
+        #!/bin/bash
+        set -e
+        # Refreshes only happen every other week, crontab doesnt really support this
+        week=$(date +%U)
+        if [ $(($week % 2)) == 0 ]; then
+          echo "Not running refresh this week, refreshes only happens on odd week numbers, check back next week."
+          exit 0
+        fi
+        echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
+        echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
+        chmod 0600 ~/.pgpass
+        set -x
+        pg_dump -h $DB_HOST -U $DB_USER -Fc --no-privileges -v --file=/tmp/db.dump $DB_NAME
+        pg_restore -h $DB_HOST_PREPROD -U $DB_USER_PREPROD --clean --no-owner -v -d $DB_NAME_PREPROD /tmp/db.dump

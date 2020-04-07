@@ -1,4 +1,5 @@
 const { isNilOrEmpty } = require('../utils/utils')
+const { links } = require('../config.js')
 
 module.exports = function ReportUseOfForceRoutes({ reportService, offenderService, systemToken }) {
   return {
@@ -14,6 +15,7 @@ module.exports = function ReportUseOfForceRoutes({ reportService, offenderServic
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },
         bookingId: req.params.bookingId,
         status,
+        links,
       })
     },
   }

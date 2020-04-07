@@ -143,7 +143,7 @@ module.exports = function createReportingService(reportingClient, offenderServic
 
       const offenderNumberToIncidentCount = offenderNoWithIncidentCounts.reduce(
         (accumulator, { offenderNo, incidentCount }) => {
-          accumulator[offenderNo] = incidentCount
+          accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
           return accumulator
         },
         {}
