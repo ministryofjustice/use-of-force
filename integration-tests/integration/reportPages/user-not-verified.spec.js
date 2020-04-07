@@ -5,7 +5,7 @@ const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistP
 const UserNotVerifiedPage = require('../../pages/createReport/userNotVerifiedPage')
 const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
 const { ReportStatus } = require('../../../server/config/types')
-const { expectedPayload } = require('../../integration/seedData')
+const { expectedPayload } = require('../seedData')
 
 context('Submitting details page form', () => {
   const bookingId = 1001

@@ -2,17 +2,9 @@ const R = require('ramda')
 
 const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
 
-const getFieldDetail = (fieldPath, fieldConfig) =>
-  R.pipe(
-    R.values,
-    R.head,
-    R.path(fieldPath)
-  )(fieldConfig)
+const getFieldDetail = (fieldPath, fieldConfig) => R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
 
-const getFieldName = R.pipe(
-  R.keys,
-  R.head
-)
+const getFieldName = R.pipe(R.keys, R.head)
 
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word

@@ -1,6 +1,6 @@
 const nock = require('nock')
 const config = require('../config')
-const elite2ClientBuilder = require('../../server/data/elite2ClientBuilder')
+const elite2ClientBuilder = require('./elite2ClientBuilder')
 
 describe('elite2Client', () => {
   let fakeElite2Api

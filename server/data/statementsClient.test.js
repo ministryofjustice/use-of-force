@@ -75,7 +75,12 @@ test('saveAdditionalComment', () => {
 })
 
 test('createStatements', async () => {
-  db.query.mockReturnValue({ rows: [{ id: 1, userId: 'a' }, { id: 2, userId: 'b' }] })
+  db.query.mockReturnValue({
+    rows: [
+      { id: 1, userId: 'a' },
+      { id: 2, userId: 'b' },
+    ],
+  })
 
   const ids = await statementsClient.createStatements({
     reportId: 'incident-1',

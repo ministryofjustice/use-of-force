@@ -81,7 +81,10 @@ describe('removeMissingDraftInvolvedStaff', () => {
       },
       incidentDetails: {
         locationId: -1,
-        involvedStaff: [{ name: 'user1', missing: false }, { name: 'user3', missing: false }],
+        involvedStaff: [
+          { name: 'user1', missing: false },
+          { name: 'user3', missing: false },
+        ],
       },
     })
   })

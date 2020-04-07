@@ -34,7 +34,10 @@ describe('reviewService', () => {
 
     const statements = await service.getStatements('token-1', 'report-1')
 
-    expect(statements).toEqual([{ id: 1, isVerified: false }, { id: 2, isVerified: true }])
+    expect(statements).toEqual([
+      { id: 1, isVerified: false },
+      { id: 2, isVerified: true },
+    ])
     expect(statementsClient.getStatementsForReviewer).toBeCalledWith('report-1')
   })
 

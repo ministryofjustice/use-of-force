@@ -60,14 +60,12 @@ context('view statements page', () => {
       viewStatementsPage.prisonerName().contains('Norman Smith')
       viewStatementsPage.prisonNumber().contains('A1234AC')
 
-      viewStatementsPage
-        .statements()
-        .then(result =>
-          expect(result).to.deep.equal([
-            { username: 'Another user name', link: 'EMAIL NOT VERIFIED', isOverdue: false, isUnverified: true },
-            { username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false },
-          ])
-        )
+      viewStatementsPage.statements().then(result =>
+        expect(result).to.deep.equal([
+          { username: 'Another user name', link: 'EMAIL NOT VERIFIED', isOverdue: false, isUnverified: true },
+          { username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false },
+        ])
+      )
 
       viewStatementsPage.return().click()
 
@@ -114,14 +112,12 @@ context('view statements page', () => {
     viewStatementsPage.prisonerName().contains('Norman Smith')
     viewStatementsPage.prisonNumber().contains('A1234AC')
 
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'Another user name', link: 'EMAIL NOT VERIFIED, OVERDUE', isOverdue: true, isUnverified: true },
-          { username: 'TEST_USER name', link: 'OVERDUE', isOverdue: true, isUnverified: false },
-        ])
-      )
+    viewStatementsPage.statements().then(result =>
+      expect(result).to.deep.equal([
+        { username: 'Another user name', link: 'EMAIL NOT VERIFIED, OVERDUE', isOverdue: true, isUnverified: true },
+        { username: 'TEST_USER name', link: 'OVERDUE', isOverdue: true, isUnverified: false },
+      ])
+    )
 
     viewStatementsPage.return().click()
 

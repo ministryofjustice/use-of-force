@@ -62,14 +62,12 @@ context('A use of force coordinator can remove involved staff', () => {
       .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
       .then(() => cy.reload())
 
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'MRS_JONES name', link: '', isOverdue: false, isUnverified: false },
-          { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
-      )
+    viewStatementsPage.statements().then(result =>
+      expect(result).to.deep.equal([
+        { username: 'MRS_JONES name', link: '', isOverdue: false, isUnverified: false },
+        { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
+      ])
+    )
 
     viewStatementsPage.reportLink().click()
     let reportPage = ViewReportPage.verifyOnPage()
@@ -126,14 +124,12 @@ context('A use of force coordinator can remove involved staff', () => {
 
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
 
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'MRS_JONES name', link: '', isOverdue: false, isUnverified: false },
-          { username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false },
-        ])
-      )
+    viewStatementsPage.statements().then(result =>
+      expect(result).to.deep.equal([
+        { username: 'MRS_JONES name', link: '', isOverdue: false, isUnverified: false },
+        { username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false },
+      ])
+    )
 
     viewStatementsPage.reportLink().click()
     const reportPage = ViewReportPage.verifyOnPage()
