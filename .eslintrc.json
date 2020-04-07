@@ -12,6 +12,9 @@
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true
+      },
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
     }
   },
@@ -42,6 +45,17 @@
     "no-use-before-define": 0,
     "semi": 0,
     "import/no-unresolved": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "mjs": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "comma-dangle": [
       "error",
       {

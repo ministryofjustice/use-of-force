@@ -1,4 +1,11 @@
-const appInsightsclient = require('../server/utils/azure-appinsights')('use-of-force-reminder-job')
+/*
+ * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
+ * In particular, applicationinsights automatically collects bunyan logs
+ */
+import { initialiseAppInsights, buildAppInsightsClient } from '../server/utils/azure-appinsights'
+
+initialiseAppInsights()
+
 const logger = require('../log')
 const { notificationServiceFactory } = require('../server/services/notificationService')
 const EmailResolver = require('./reminders/emailResolver')
@@ -11,7 +18,7 @@ const { authClientBuilder, systemToken } = require('../server/data/authClientBui
 const db = require('../server/data/dataAccess/db')
 const reminderPoller = require('./reminders/reminderPoller')
 const reminderSenderFactory = require('./reminders/reminderSender')
-const eventPublisher = require('../server/services/eventPublisher')(appInsightsclient)
+const eventPublisher = require('../server/services/eventPublisher')(buildAppInsightsClient('use-of-force-reminder-job'))
 
 const emailResolver = new EmailResolver(authClientBuilder, systemToken, statementsClient)
 const notificationService = notificationServiceFactory(eventPublisher)

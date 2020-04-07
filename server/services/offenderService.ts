@@ -1,7 +1,8 @@
-const logger = require('../../log.js')
-const { isNilOrEmpty, properCaseName } = require('../utils/utils')
+import logger from '../../log'
+import { isNilOrEmpty, properCaseName } from '../utils/utils'
+import { PrisonerDetail } from '../types/uof'
 
-module.exports = function createOffendersService(elite2ClientBuilder) {
+export default function createOffenderService(elite2ClientBuilder) {
   const getOffenderDetails = async (token, bookingId) => {
     try {
       const elite2Client = elite2ClientBuilder(token)
@@ -26,7 +27,7 @@ module.exports = function createOffendersService(elite2ClientBuilder) {
     }
   }
 
-  const getPrisonersDetails = async (token, offenderNumbers) => {
+  const getPrisonersDetails = async (token: string, offenderNumbers: [string]): Promise<Array<PrisonerDetail>> => {
     try {
       const elite2Client = elite2ClientBuilder(token)
       const result = await elite2Client.getPrisoners(offenderNumbers)

@@ -1,6 +1,6 @@
-// Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
-// In particular, applicationinsights automatically collects bunyan logs
-const appInsightsClient = require('./utils/azure-appinsights')()
+import { buildAppInsightsClient } from './utils/azure-appinsights'
+import createOffenderService from './services/offenderService'
+import createReportingService from './services/reportingService'
 
 const createApp = require('./app')
 
@@ -16,17 +16,14 @@ const createSignInService = require('./authentication/signInService')
 
 const createHeatmapBuilder = require('./services/heatmapBuilder').default
 const { createInvolvedStaffService } = require('./services/involvedStaffService')
-const createOffenderService = require('./services/offenderService')
 const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
 const createReviewService = require('./services/reviewService')
-const createReportingService = require('./services/reportingService')
-
 const { notificationServiceFactory } = require('./services/notificationService')
-const eventPublisher = require('./services/eventPublisher')(appInsightsClient)
+const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
 
-// pass in dependencies of service
+// inject service dependencies
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)

@@ -1,10 +1,14 @@
-/** @typedef {import('./heatmapBuilder').HeatmapBuilder} HeatmapBuilder */
-
-const moment = require('moment')
-const stringify = require('csv-stringify')
-const logger = require('../../log')
+import moment from 'moment'
+import stringify from 'csv-stringify'
+import logger from '../../log'
 const { ReportStatus } = require('../config/types')
-const { incidentsByReligiousGroup, csvRendererConfiguration } = require('./religiousGrouping')
+import { HeatmapBuilder } from './heatmapBuilder'
+import { PrisonerDetail } from '../types/uof'
+import { Aggregator } from './incidentCountAggregator'
+import religiousGroupAggregator from './religiousGroupAggregator'
+import ethinicGroupAggregator from './ethnicGroupAggregator'
+
+type DateRange = [moment.Moment, moment.Moment]
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -16,8 +20,7 @@ const toCsv = (columns, results) =>
     })
   })
 
-/** @return {[moment.Moment, moment.Moment]} */
-const dateRange = (month, year) => {
+const dateRange = (month, year): DateRange => {
   const date = moment({ years: year, months: month - 1 })
 
   const startDate = moment(date).startOf('month')
@@ -27,12 +30,31 @@ const dateRange = (month, year) => {
 
 const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
 
-/**
- * @param {any} reportingClient
- * @param {any} offenderService
- * @param {HeatmapBuilder} heatmapBuilder
- */
-module.exports = function createReportingService(reportingClient, offenderService, heatmapBuilder) {
+const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, range) => {
+  const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
+
+  return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
+    accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
+    return accumulator
+  }, {})
+}
+
+export default function createReportingService (reportingClient, offenderService, heatmapBuilder: HeatmapBuilder)  {
+  const aggregateIncidentsUsing = (aggregator: Aggregator) => async (token, agencyId, month, year) => {
+    const range = dateRange(month, year)
+    logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
+    const incidentCountsByOffenderNumber = await getIncidentCountsByOffenderNumber(reportingClient, agencyId, range)
+
+    const prisonersDetails = await offenderService.getPrisonersDetails(
+      token,
+      Object.keys(incidentCountsByOffenderNumber)
+    )
+
+    const answer = aggregator.aggregate(incidentCountsByOffenderNumber, prisonersDetails)
+
+    return toCsv(aggregator.csvRendererConfiguration, [answer])
+  }
+
   return {
     getMostOftenInvolvedStaff: async (agencyId, month, year) => {
       const range = dateRange(month, year)
@@ -135,27 +157,7 @@ module.exports = function createReportingService(reportingClient, offenderServic
       )
     },
 
-    getIncidentsByReligiousGroup: async (token, agencyId, month, year) => {
-      const range = dateRange(month, year)
-      logger.info(`Retrieve incidents by religion for agency: ${agencyId}, between '${formatRange(range)}'`)
-
-      const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
-
-      const offenderNumberToIncidentCount = offenderNoWithIncidentCounts.reduce(
-        (accumulator, { offenderNo, incidentCount }) => {
-          accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
-          return accumulator
-        },
-        {}
-      )
-
-      const prisonersDetails = await offenderService.getPrisonersDetails(
-        token,
-        Object.keys(offenderNumberToIncidentCount)
-      )
-
-      const answer = incidentsByReligiousGroup(offenderNumberToIncidentCount, prisonersDetails)
-      return toCsv(csvRendererConfiguration, [answer])
-    },
+    getIncidentsByReligiousGroup: aggregateIncidentsUsing(religiousGroupAggregator),
+    getIncidentsByEthnicGroup: aggregateIncidentsUsing(ethinicGroupAggregator),
   }
 }
