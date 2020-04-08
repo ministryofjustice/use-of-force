@@ -4,7 +4,9 @@
     "node": true,
     "jest": true
   },
+
   "plugins": ["import"],
+
   "settings": {
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"]
@@ -18,12 +20,13 @@
       }
     }
   },
+
   "overrides": [
     {
+      "plugins": ["@typescript-eslint"],
+      "parser": "@typescript-eslint/parser",
       "files": ["**/*.ts"],
       "excludedFiles": "*.js",
-      "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
       "extends": [
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
@@ -34,6 +37,7 @@
   ],
 
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
+
   "rules": {
     "no-unused-vars": [
       1,

@@ -1,29 +1,31 @@
-import appInsights from 'applicationinsights'
+import { config } from 'dotenv'
+import { setup, defaultClient, TelemetryClient, DistributedTracingModes } from 'applicationinsights'
 import applicationVersion from '../application-version'
 
 export const initialiseAppInsights = (): void => {
+  // Loads .env file contents into | process.env
+  config()
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     // eslint-disable-next-line no-console
     console.log('Enabling azure application insights')
-    appInsights
-      .setup()
-      .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
+
+    setup()
+      .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
       .start()
   }
 }
 
-const defaultName = () => {
+const defaultName = (): string => {
   const {
     packageData: { name },
   } = applicationVersion
   return name
 }
 
-export const buildAppInsightsClient = (name = defaultName()) => {
+export const buildAppInsightsClient = (name = defaultName()): TelemetryClient => {
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
-    const client = appInsights.defaultClient
-    client.context.tags['ai.cloud.role'] = `${name}`
-    return client
+    defaultClient.context.tags['ai.cloud.role'] = `${name}`
+    return defaultClient
   }
   return null
 }
