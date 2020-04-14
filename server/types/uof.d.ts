@@ -1,3 +1,14 @@
+import moment from 'moment'
+
+export type DateRange = [moment.Moment, moment.Moment]
+
+export type AgencyId = string
+
+export interface OffenderNoWithIncidentDate {
+  offenderNo: string
+  incidentDate: Date
+}
+
 type User = {
   staffId: number
   username: string

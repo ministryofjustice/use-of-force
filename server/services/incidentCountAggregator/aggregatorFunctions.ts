@@ -43,14 +43,17 @@ export const aggregatorFactory = (
   const groupsByCode = invertGroupings(codesByGroup)
 
   return (offenderNumberToIncidentCountMap, prisonersDetails) =>
-    prisonersDetails.reduce((accumulator, prisonerDetail) => {
-      const code = prisonerDetail[prisonerDetailPropertyName]
+    prisonersDetails.reduce(
+      (accumulator, prisonerDetail) => {
+        const code = prisonerDetail[prisonerDetailPropertyName]
 
-      const group = groupsByCode[code] || defaultGroup
-      const accumulatedCount = accumulator[group]
-      accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
-      return accumulator
-    }, R.map(() => 0, codesByGroup))
+        const group = groupsByCode[code] || defaultGroup
+        const accumulatedCount = accumulator[group]
+        accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
+        return accumulator
+      },
+      R.map(() => 0, codesByGroup)
+    )
 }
 
 export const buildCsvRendererConfiguration = (groups: DescribedGroups): CsvRendererConfiguration =>
