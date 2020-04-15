@@ -1,12 +1,14 @@
 import moment from 'moment'
 import stringify from 'csv-stringify'
+import * as R from 'ramda'
 import logger from '../../log'
 import { HeatmapBuilder } from './heatmapBuilder'
-import { Aggregator } from './incidentCountAggregator'
+import { Aggregator, buildCsvRendererConfiguration } from './incidentCountAggregator'
 import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ReportStatus } from '../config/types'
 import { DateRange, OffenderNoWithIncidentDate, PrisonerDetail } from '../types/uof'
+import { DescribedGroups, invertGroupings } from './incidentCountAggregator/aggregatorFunctions'
 
 const toCsv = (columns, results) =>
   new Promise((resolve, reject) => {
@@ -53,6 +55,23 @@ export const findOffenderAgeInYearsOnIncidentDate = (prisonersDetails: Array<Pri
     return incidentMoment.diff(dateOfBirth, 'years')
   }
 }
+
+const ageGroups: DescribedGroups = {
+  '18-20': { codes: R.range(18, 20), description: '18 - 20' },
+  '21-24': { codes: R.range(21, 24), description: '21 - 24' },
+  '25-29': { codes: R.range(25, 29), description: '25 - 29' },
+  '30-39': { codes: R.range(30, 39), description: '30 - 39' },
+  '30-49': { codes: R.range(40, 49), description: '40 - 49' },
+  '50-59': { codes: R.range(50, 50), description: '50 - 59' },
+  '60-69': { codes: R.range(60, 69), description: '60 - 69' },
+  '70-79': { codes: R.range(70, 79), description: '70 - 79' },
+  '80+': { codes: R.range(80, 130), description: '80+' },
+  UNKNOWN: { description: 'Unknown' },
+}
+
+const ageGroupsByAge = invertGroupings(ageGroups)
+
+const ageGroupCsvRendererConfig = buildCsvRendererConfiguration(ageGroups)
 
 export default function createReportingService(reportingClient, offenderService, heatmapBuilder: HeatmapBuilder) {
   const aggregateIncidentsUsing = (aggregator: Aggregator) => async (token, agencyId, month, year) => {
@@ -190,6 +209,16 @@ export default function createReportingService(reportingClient, offenderService,
 
       const ages = incidents.map(findOffenderAgeInYearsOnIncidentDate(prisonersDetails))
 
+      // const incidentsByAgeGroup = ages.reduce(
+      //   (groups, age) => {
+      //     const ageGroup = ageGroupsByAge[age]
+      //     groups[ageGroup] = groups[ageGroup] + 1
+      //     return groups
+      //   },
+      //   R.map(() => 0, ageGroups)
+      // )
+      //
+      // return toCsv(ageGroupCsvRendererConfig, incidentsByAgeGroup)
       return ''
     },
   }
