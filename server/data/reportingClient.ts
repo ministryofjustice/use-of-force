@@ -1,5 +1,4 @@
 import format from 'pg-format'
-import { QueryResult } from 'pg'
 import * as nonTransactionalClient from './dataAccess/db'
 import { AgencyId, DateRange, OffenderNoWithIncidentDate } from '../types/uof'
 
