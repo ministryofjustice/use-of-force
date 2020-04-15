@@ -1,5 +1,5 @@
 import moment from 'moment'
-import serviceCreator, { findOffenderAgeInYearsOnIncidentDate } from './reportingService'
+import serviceCreator, { buildIncidentToOffenderAge } from './reportingService'
 import { ReportStatus } from '../config/types'
 
 const reportingClient = {
@@ -13,6 +13,10 @@ const reportingClient = {
 const offenderService = {
   getOffenderNames: jest.fn(),
   getPrisonersDetails: jest.fn(),
+  getOffenderDetails: jest.fn(),
+  getIncidentLocations: jest.fn(),
+  getLocation: jest.fn(),
+  getOffenderImage: jest.fn(),
 }
 
 const heatmapBuilder = {
@@ -205,11 +209,13 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
       { offenderNo: 'A3', incidentCount: '2' },
     ])
 
-    offenderService.getPrisonersDetails.mockResolvedValue([
-      { offenderNo: 'A1', religionCode: 'CE' },
-      { offenderNo: 'A2', religionCode: 'SHIA' },
-      { offenderNo: 'A3', religionCode: 'CE' },
-    ])
+    offenderService.getPrisonersDetails.mockResolvedValue(
+      Promise.resolve([
+        { offenderNo: 'A1', religionCode: 'CE' },
+        { offenderNo: 'A2', religionCode: 'SHIA' },
+        { offenderNo: 'A3', religionCode: 'CE' },
+      ])
+    )
 
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
 
@@ -242,42 +248,42 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
     )
   })
 
-  describe('findOffenderAgeInYearsOnIncidentDate', () => {
+  describe('incidentToOffenderAge + factory', () => {
     const incidentDate1 = moment({ year: 2020, month: 1, day: 2 }).toDate()
 
     it('Returns undefined when there are no PrisonerDetails', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
+      const incidentToOffenderAge = buildIncidentToOffenderAge([])
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
     })
 
     it('Returns undefined when PrisonerDetails do not match', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([{ offenderNo: 'Y' }])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'Y' }])
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
     })
 
     it('Returns undefined when PrisonerDetail has no dateOfBirth', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([{ offenderNo: 'X' }])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X' }])
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
     })
 
     it('Returns age in years when offenderNo matches', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([{ offenderNo: 'X', dateOfBirth: '2010-02-02' }])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(10)
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X', dateOfBirth: '2010-02-02' }])
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(10)
     })
 
     it('Returns age in years when off by one day', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([{ offenderNo: 'X', dateOfBirth: '2010-02-03' }])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X', dateOfBirth: '2010-02-03' }])
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
     })
 
     it('Correctly matches multiple offender numbers', () => {
-      const finder = findOffenderAgeInYearsOnIncidentDate([
+      const incidentToOffenderAge = buildIncidentToOffenderAge([
         { offenderNo: 'X', dateOfBirth: '2010-02-03' },
         { offenderNo: 'Y', dateOfBirth: '2010-02-02' },
         { offenderNo: 'Z', dateOfBirth: '2011-01-01' },
       ])
-      expect(finder({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
-      expect(finder({ offenderNo: 'Y', incidentDate: incidentDate1 })).toBe(10)
+      expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
+      expect(incidentToOffenderAge({ offenderNo: 'Y', incidentDate: incidentDate1 })).toBe(10)
     })
   })
 })

@@ -1,6 +1,6 @@
 import format from 'pg-format'
 import * as nonTransactionalClient from './dataAccess/db'
-import { AgencyId, DateRange, OffenderNoWithIncidentDate } from '../types/uof'
+import { AgencyId, DateRange, OffenderNoWithIncidentCount, OffenderNoWithIncidentDate } from '../types/uof'
 
 export const getMostOftenInvolvedStaff = async (agencyId: AgencyId, [startDate, endDate]: DateRange) => {
   const results = await nonTransactionalClient.query({
@@ -91,8 +91,11 @@ export const getIncidentLocationsAndTimes = async (agencyId: AgencyId, [startDat
   return results.rows
 }
 
-export const getIncidentCountByOffenderNo = async (agencyId: AgencyId, [startDate, endDate]: DateRange) => {
-  const results = await nonTransactionalClient.query({
+export const getIncidentCountByOffenderNo = async (
+  agencyId: AgencyId,
+  [startDate, endDate]: DateRange
+): Promise<Array<OffenderNoWithIncidentCount>> => {
+  const results = await nonTransactionalClient.query<OffenderNoWithIncidentCount>({
     text: `
     select
         count(*) "incidentCount",

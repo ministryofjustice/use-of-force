@@ -22,7 +22,10 @@ export interface IncidentCountByGroup {
   [group: string]: number
 }
 
-export const invertGroupings: (groups: Groups) => [{ code: string; group: string }] = R.pipe(
+/**
+ * Invert a Groups object to yield a map of code -> groupName as an object
+ */
+export const invertGroupings: (groups: Groups) => { [code: string]: string } = R.pipe(
   R.toPairs,
   R.chain(([groupName, { codes }]) => (codes ? codes.map(code => [code, groupName]) : [])),
   R.fromPairs,

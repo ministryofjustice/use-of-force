@@ -9,6 +9,11 @@ export interface OffenderNoWithIncidentDate {
   incidentDate: Date
 }
 
+export interface OffenderNoWithIncidentCount {
+  offenderNo: string
+  incidentCount: number
+}
+
 type User = {
   staffId: number
   username: string
@@ -35,11 +40,34 @@ type GetUsersResults = {
   staffId?: number // only if exists
 }
 
+export interface PrisonLocation {
+  agencyId?: string
+  currentOccupancy?: number
+  description?: string
+  internalLocationCode?: string
+  locationId?: number
+  locationPrefix?: string
+  locationType?: string
+  locationUsage?: string
+  operationalCapacity?: number
+  parentLocationId?: number
+  userDescription?: string
+}
+
 export interface UserService {
   /** get current user */
   getUser: (token: string) => Promise<User>
   /** Get details for users along with email address */
   getUsers: (token: string, usernames: string[]) => Promise<GetUsersResults[]>
+}
+
+export interface OffenderService {
+  getOffenderDetails: (token: string, bookingId: string) => Promise<object>
+  getPrisonersDetails: (token: string, offenderNumbers: string[]) => Promise<PrisonerDetail[]>
+  getOffenderImage: (token: string, bookingId: string) => Promise<ReadableStream>
+  getOffenderNames: (token: string, offenderNos: string[]) => Promise<{ [offenderNo: string]: string }>
+  getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
+  getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
 }
 
 export interface PrisonerDetail {

@@ -7,10 +7,10 @@ import { Aggregator, buildCsvRendererConfiguration } from './incidentCountAggreg
 import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ReportStatus } from '../config/types'
-import { DateRange, OffenderNoWithIncidentDate, PrisonerDetail } from '../types/uof'
+import { DateRange, OffenderNoWithIncidentDate, OffenderService, PrisonerDetail } from '../types/uof'
 import { DescribedGroups, invertGroupings } from './incidentCountAggregator/aggregatorFunctions'
 
-const toCsv = (columns, results) =>
+const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
     stringify(results, { columns, header: true }, (err, data) => {
       if (err) {
@@ -28,9 +28,13 @@ const dateRange = (month, year): DateRange => {
   return [startDate, endDate]
 }
 
-const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
+const formatRange = ([start, end]): string => `${start.format()}' and '${end.format()}`
 
-const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, range) => {
+const getIncidentCountsByOffenderNumber = async (
+  reportingClient,
+  agencyId,
+  range: DateRange
+): Promise<{ [offenderNo: string]: number }> => {
   const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
 
   return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
@@ -39,13 +43,22 @@ const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, rang
   }, {})
 }
 
-export const findOffenderAgeInYearsOnIncidentDate = (prisonersDetails: Array<PrisonerDetail>) => {
+/**
+ * Given a set of PrisonerDetail return a function that maps an OffenderNoWithDate to the age of the offender, in years,
+ * on the date that the incident occurred.  An answer will only be provided when the offenderNo on a PrisonerDetails
+ * object matches the offenderNo on the OffenderNoWithIncidentDate object.
+ * @param prisonersDetails The set of PrisonerDetail used to define offender's dateOfBirth
+ * @return a function that maps from offenderNoWithIncidentDate to an age in years. Rounded down to nearest whole year.
+ */
+export const buildIncidentToOffenderAge = (
+  prisonersDetails: Array<PrisonerDetail>
+): ((onwid: OffenderNoWithIncidentDate) => number) => {
   const prisonerDetailMap = prisonersDetails.reduce(
     (map, prisonerDetail) => map.set(prisonerDetail.offenderNo, prisonerDetail),
     new Map<string, PrisonerDetail>()
   )
 
-  return ({ offenderNo, incidentDate }: OffenderNoWithIncidentDate): number => {
+  return ({ offenderNo, incidentDate }) => {
     const prisonerDetail = prisonerDetailMap.get(offenderNo)
 
     if (!prisonerDetail || !prisonerDetail.dateOfBirth) return undefined
@@ -73,7 +86,11 @@ const ageGroupsByAge = invertGroupings(ageGroups)
 
 const ageGroupCsvRendererConfig = buildCsvRendererConfiguration(ageGroups)
 
-export default function createReportingService(reportingClient, offenderService, heatmapBuilder: HeatmapBuilder) {
+export default function createReportingService(
+  reportingClient,
+  offenderService: OffenderService,
+  heatmapBuilder: HeatmapBuilder
+) {
   const aggregateIncidentsUsing = (aggregator: Aggregator) => async (token, agencyId, month, year) => {
     const range = dateRange(month, year)
     logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
@@ -198,16 +215,19 @@ export default function createReportingService(reportingClient, offenderService,
       const range = dateRange(month, year)
       logger.info(`Retrieve incidents by age group for agency: ${agencyId}, between '${formatRange(range)}'`)
 
-      const incidents = await reportingClient.getIncidentsForAgencyAndDateRange(token, range)
-
-      const offenderNumbers: Set<string> = incidents.reduce(
-        (offenderNos, { offenderNo }) => offenderNos.add(offenderNo),
-        new Set<string>()
+      const incidents: Array<OffenderNoWithIncidentDate> = await reportingClient.getIncidentsForAgencyAndDateRange(
+        token,
+        range
       )
 
-      const prisonersDetails: Array<PrisonerDetail> = await offenderService.getPrisonersDetails(token, offenderNumbers)
+      const offenderNumbers = Array.from(
+        incidents.reduce((offenderNos, { offenderNo }) => offenderNos.add(offenderNo), new Set<string>())
+      )
 
-      const ages = incidents.map(findOffenderAgeInYearsOnIncidentDate(prisonersDetails))
+      const prisonersDetails = await offenderService.getPrisonersDetails(token, offenderNumbers)
+
+      const incidentToOffenderAge = buildIncidentToOffenderAge(prisonersDetails)
+      const ages = incidents.map(incidentToOffenderAge)
 
       // const incidentsByAgeGroup = ages.reduce(
       //   (groups, age) => {
