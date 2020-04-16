@@ -1,5 +1,6 @@
 import moment from 'moment'
-import { buildIncidentToOffenderAge } from './index'
+import * as R from 'ramda'
+import { buildIncidentToOffenderAge, groupAges } from './index'
 
 describe('incidentsByAgeAggregator', () => {
   describe('incidentToOffenderAge + factory', () => {
@@ -38,6 +39,45 @@ describe('incidentsByAgeAggregator', () => {
       ])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
       expect(incidentToOffenderAge({ offenderNo: 'Y', incidentDate: incidentDate1 })).toBe(10)
+    })
+  })
+  describe('groupAges', () => {
+    const defaultValues = {
+      '18-20': 0,
+      '21-24': 0,
+      '25-29': 0,
+      '30-39': 0,
+      '40-49': 0,
+      '50-59': 0,
+      '60-69': 0,
+      '70-79': 0,
+      '80+': 0,
+      UNKNOWN: 0,
+    }
+    it('Returns zero for each age group', () => {
+      expect(groupAges([])).toEqual(defaultValues)
+    })
+
+    it('Correctly assigns ages to groups', () => {
+      expect(groupAges(R.range(0, 100))).toEqual({
+        '18-20': 3,
+        '21-24': 4,
+        '25-29': 5,
+        '30-39': 10,
+        '40-49': 10,
+        '50-59': 10,
+        '60-69': 10,
+        '70-79': 10,
+        '80+': 20,
+        UNKNOWN: 18,
+      })
+    })
+
+    it('null and undefined ages fall in the UNKNOWN group', () => {
+      expect(groupAges([undefined, null])).toEqual({
+        ...defaultValues,
+        UNKNOWN: 2,
+      })
     })
   })
 })
