@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { PrisonerDetail } from '../../types/uof'
 
 export interface Groups {
