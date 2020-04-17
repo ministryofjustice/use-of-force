@@ -5,11 +5,7 @@ import { HeatmapBuilder } from './heatmapBuilder'
 import { Aggregator } from './incidentCountAggregator'
 import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
-import {
-  ageGroupCsvRendererConfig,
-  buildIncidentToOffenderAge,
-  aggregateIncidentsByAgeGroup,
-} from './incidentsByAgeAggregator'
+import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import { ReportStatus } from '../config/types'
 import { DateRange, OffenderNoWithIncidentDate, OffenderService, ReportingClient } from '../types/uof'
 

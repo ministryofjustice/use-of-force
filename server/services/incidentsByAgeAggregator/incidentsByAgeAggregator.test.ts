@@ -1,8 +1,21 @@
 import moment from 'moment'
 import * as R from 'ramda'
-import { buildIncidentToOffenderAge, groupAges } from './index'
+import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 
 describe('incidentsByAgeAggregator', () => {
+  const defaultValues = {
+    '18-20': 0,
+    '21-24': 0,
+    '25-29': 0,
+    '30-39': 0,
+    '40-49': 0,
+    '50-59': 0,
+    '60-69': 0,
+    '70-79': 0,
+    '80+': 0,
+    UNKNOWN: 0,
+  }
+
   describe('incidentToOffenderAge + factory', () => {
     const incidentDate1 = moment({ year: 2020, month: 1, day: 2 }).toDate()
 
@@ -42,18 +55,6 @@ describe('incidentsByAgeAggregator', () => {
     })
   })
   describe('groupAges', () => {
-    const defaultValues = {
-      '18-20': 0,
-      '21-24': 0,
-      '25-29': 0,
-      '30-39': 0,
-      '40-49': 0,
-      '50-59': 0,
-      '60-69': 0,
-      '70-79': 0,
-      '80+': 0,
-      UNKNOWN: 0,
-    }
     it('Returns zero for each age group', () => {
       expect(groupAges([])).toEqual(defaultValues)
     })
@@ -78,6 +79,57 @@ describe('incidentsByAgeAggregator', () => {
         ...defaultValues,
         UNKNOWN: 2,
       })
+    })
+  })
+
+  describe('aggregateIncidentsByAgeGroup', () => {
+    it('Returns zero if no incidents in month', () => {
+      expect(aggregateIncidentsByAgeGroup([], [])).toEqual(defaultValues)
+    })
+
+    it('Returns 1 UNKNOWN if one incident but prisoner details not known', () => {
+      expect(
+        aggregateIncidentsByAgeGroup(
+          [
+            {
+              offenderNo: 'ABC',
+              incidentDate: new Date('December 17, 1995 03:24:00'),
+            },
+          ],
+          []
+        )
+      ).toEqual({
+        ...defaultValues,
+        UNKNOWN: 1,
+      })
+    })
+
+    it('Returns 1 incident in age range 30-39', () => {
+      expect(
+        aggregateIncidentsByAgeGroup(
+          [
+            {
+              offenderNo: 'ABC',
+              incidentDate: new Date('April 17, 2019 03:24:00'),
+            },
+          ],
+          [{ offenderNo: 'ABC', dateOfBirth: '1981-03-24' }]
+        )
+      ).toEqual({ ...defaultValues, '30-39': 1 })
+    })
+
+    it('Returns 1 incident but DOB absent', () => {
+      expect(
+        aggregateIncidentsByAgeGroup(
+          [
+            {
+              offenderNo: 'ABC',
+              incidentDate: new Date('April 17, 2019 03:24:00'),
+            },
+          ],
+          [{ offenderNo: 'ABC' }]
+        )
+      ).toEqual({ ...defaultValues, UNKNOWN: 1 })
     })
   })
 })
