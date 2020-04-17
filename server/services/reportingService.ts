@@ -171,10 +171,7 @@ export default function createReportingService(
       const range = dateRange(month, year)
       logger.info(`Retrieve incidents by age group for agency: ${agencyId}, between '${formatRange(range)}'`)
 
-      const incidents: OffenderNoWithIncidentDate[] = await reportingClient.getIncidentsForAgencyAndDateRange(
-        token,
-        range
-      )
+      const incidents = await reportingClient.getIncidentsForAgencyAndDateRange(token, range)
 
       const offenderNumbers = Array.from(
         incidents.reduce((offenderNos, { offenderNo }) => offenderNos.add(offenderNo), new Set<string>())

@@ -11,6 +11,7 @@ const reportingService = {
   getIncidentsOverview: jest.fn(),
   getIncidentHeatmap: jest.fn(),
   getIncidentsByReligiousGroup: jest.fn(),
+  getIncidentsByAgeGroup: jest.fn(),
 }
 
 const reportService = {
@@ -72,6 +73,7 @@ describe('api', () => {
       reportingService.getIncidentsOverview.mockResolvedValue('Some,Csv,Content for prisoners')
       reportingService.getIncidentHeatmap.mockResolvedValue('Some,Csv,Content for prisoners')
       reportingService.getIncidentsByReligiousGroup.mockResolvedValue('A,B,C\n1,2,3\n')
+      reportingService.getIncidentsByAgeGroup.mockResolvedValue('X,Y,Z\n3,4,5\n')
     })
     describe('GET /reports/mostOftenInvolvedStaff/:year/:month', () => {
       it('should render for coordinator', async () => {
@@ -290,6 +292,48 @@ describe('api', () => {
           })
 
         expect(reportingService.getIncidentsByReligiousGroup).not.toBeCalled()
+      })
+    })
+    describe('GET /reports/incidentsByAgeGroup/:year/:month', () => {
+      it('should render for coordinator', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+
+        await request(app)
+          .get('/reports/incidentsByAgeGroup/2019/10')
+          .expect('Content-Type', /text\/csv/)
+          .expect('Content-Disposition', `attachment; filename="age-LEI-10-2019.csv"`)
+          .expect(res => {
+            expect(res.text).toContain('X,Y,Z\n3,4,5\n')
+          })
+
+        expect(reportingService.getIncidentsByAgeGroup).toBeCalledWith('user1-system-token', 'LEI', 10, 2019)
+      })
+
+      it('should not render for reviewer', async () => {
+        userSupplier.mockReturnValue(reviewerUser)
+
+        await request(app)
+          .get('/reports/incidentsByAgeGroup/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentsByAgeGroup).not.toBeCalled()
+      })
+      it('should not render for standard user', async () => {
+        userSupplier.mockReturnValue(user)
+
+        await request(app)
+          .get('/reports/incidentsByAgeGroup/2019/10')
+          .expect('Content-Type', /text\/html/)
+          .expect(401)
+          .expect(res => {
+            expect(res.text).toContain('Not authorised to access this resource')
+          })
+
+        expect(reportingService.getIncidentsByAgeGroup).not.toBeCalled()
       })
     })
   })

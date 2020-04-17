@@ -141,5 +141,23 @@ module.exports = function Index({
       res.send(results)
     })
   )
+  router.get(
+    '/reports/incidentsByAgeGroup/:year/:month',
+    coordinatorOnly,
+    asyncMiddleware(async (req, res) => {
+      const { year, month } = req.params
+      const agencyId = res.locals.user.activeCaseLoadId
+
+      const results = await reportingService.getIncidentsByAgeGroup(
+        await systemToken(res.locals.user.username),
+        agencyId,
+        parseInt(month, 10),
+        parseInt(year, 10)
+      )
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', `attachment; filename="age-${agencyId}-${month}-${year}.csv"`)
+      res.send(results)
+    })
+  )
   return router
 }

@@ -248,4 +248,24 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 `
     )
   })
+
+  test('getIncidentsByAgeGroup', async () => {
+    reportingClient.getIncidentsForAgencyAndDateRange.mockResolvedValue([
+      { offenderNo: 'A1', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+      { offenderNo: 'A2', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+      { offenderNo: 'A3', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+    ])
+
+    offenderService.getPrisonersDetails.mockResolvedValue([
+      { offenderNo: 'A1', dateOfBirth: '1980-02-25' },
+      { offenderNo: 'A2', dateOfBirth: '1981-02-25' },
+      { offenderNo: 'A3', dateOfBirth: '1970-02-25' },
+    ])
+
+    const result = await service.getIncidentsByAgeGroup('token-1', 'LEI', 2, 2019)
+
+    expect(result).toEqual(
+      '18 - 20,21 - 24,25 - 29,30 - 39,40 - 49,50 - 59,60 - 69,70 - 79,80+,Unknown\n0,0,0,2,1,0,0,0,0,0\n'
+    )
+  })
 })
