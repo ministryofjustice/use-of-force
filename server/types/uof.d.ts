@@ -86,7 +86,7 @@ export interface PrisonerDetail {
   offenderNo: string
   firstName?: string
   lastName?: string
-  dateOfBirth?: string // ISO 8601 date format
+  dateOfBirth?: string // ISO 8601 date format eg 1984-02-24
   gender?: string
   sexCode?: 'M' | 'F'
   nationalities?: string
