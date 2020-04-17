@@ -7,7 +7,7 @@ import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import { ReportStatus } from '../config/types'
-import { DateRange, OffenderNoWithIncidentDate, OffenderService, ReportingClient } from '../types/uof'
+import { DateRange, OffenderService, ReportingClient } from '../types/uof'
 
 const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -171,7 +171,7 @@ export default function createReportingService(
       const range = dateRange(month, year)
       logger.info(`Retrieve incidents by age group for agency: ${agencyId}, between '${formatRange(range)}'`)
 
-      const incidents = await reportingClient.getIncidentsForAgencyAndDateRange(token, range)
+      const incidents = await reportingClient.getIncidentsForAgencyAndDateRange(agencyId, range)
 
       const offenderNumbers = Array.from(
         incidents.reduce((offenderNos, { offenderNo }) => offenderNos.add(offenderNo), new Set<string>())
