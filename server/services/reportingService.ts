@@ -1,16 +1,15 @@
 import moment from 'moment'
 import stringify from 'csv-stringify'
 import logger from '../../log'
-const { ReportStatus } = require('../config/types')
 import { HeatmapBuilder } from './heatmapBuilder'
-import { PrisonerDetail } from '../types/uof'
 import { Aggregator } from './incidentCountAggregator'
 import religiousGroupAggregator from './religiousGroupAggregator'
-import ethinicGroupAggregator from './ethnicGroupAggregator'
+import ethnicGroupAggregator from './ethnicGroupAggregator'
+import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
+import { ReportStatus } from '../config/types'
+import { DateRange, OffenderService, ReportingClient } from '../types/uof'
 
-type DateRange = [moment.Moment, moment.Moment]
-
-const toCsv = (columns, results) =>
+const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
     stringify(results, { columns, header: true }, (err, data) => {
       if (err) {
@@ -28,9 +27,13 @@ const dateRange = (month, year): DateRange => {
   return [startDate, endDate]
 }
 
-const formatRange = ([start, end]) => `${start.format()}' and '${end.format()}`
+const formatRange = ([start, end]): string => `${start.format()}' and '${end.format()}`
 
-const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, range) => {
+const getIncidentCountsByOffenderNumber = async (
+  reportingClient,
+  agencyId,
+  range: DateRange
+): Promise<{ [offenderNo: string]: number }> => {
   const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
 
   return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
@@ -39,7 +42,11 @@ const getIncidentCountsByOffenderNumber = async (reportingClient, agencyId, rang
   }, {})
 }
 
-export default function createReportingService (reportingClient, offenderService, heatmapBuilder: HeatmapBuilder)  {
+export default function createReportingService(
+  reportingClient: ReportingClient,
+  offenderService: OffenderService,
+  heatmapBuilder: HeatmapBuilder
+) {
   const aggregateIncidentsUsing = (aggregator: Aggregator) => async (token, agencyId, month, year) => {
     const range = dateRange(month, year)
     logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
@@ -158,6 +165,22 @@ export default function createReportingService (reportingClient, offenderService
     },
 
     getIncidentsByReligiousGroup: aggregateIncidentsUsing(religiousGroupAggregator),
-    getIncidentsByEthnicGroup: aggregateIncidentsUsing(ethinicGroupAggregator),
+    getIncidentsByEthnicGroup: aggregateIncidentsUsing(ethnicGroupAggregator),
+
+    getIncidentsByAgeGroup: async (token: string, agencyId: string, month: number, year: number): Promise<string> => {
+      const range = dateRange(month, year)
+      logger.info(`Retrieve incidents by age group for agency: ${agencyId}, between '${formatRange(range)}'`)
+
+      const incidents = await reportingClient.getIncidentsForAgencyAndDateRange(agencyId, range)
+
+      const offenderNumbers = Array.from(
+        incidents.reduce((offenderNos, { offenderNo }) => offenderNos.add(offenderNo), new Set<string>())
+      )
+
+      const prisonersDetails = await offenderService.getPrisonersDetails(token, offenderNumbers)
+
+      const incidentsByAgeGroup = aggregateIncidentsByAgeGroup(incidents, prisonersDetails)
+      return toCsv(ageGroupCsvRendererConfig, [incidentsByAgeGroup])
+    },
   }
 }

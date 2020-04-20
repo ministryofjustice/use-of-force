@@ -1,3 +1,19 @@
+import moment from 'moment'
+
+export type DateRange = [moment.Moment, moment.Moment]
+
+export type AgencyId = string
+
+export interface OffenderNoWithIncidentDate {
+  offenderNo: string
+  incidentDate: Date
+}
+
+export interface OffenderNoWithIncidentCount {
+  offenderNo: string
+  incidentCount: number
+}
+
 type User = {
   staffId: number
   username: string
@@ -24,6 +40,20 @@ type GetUsersResults = {
   staffId?: number // only if exists
 }
 
+export interface PrisonLocation {
+  agencyId?: string
+  currentOccupancy?: number
+  description?: string
+  internalLocationCode?: string
+  locationId?: number
+  locationPrefix?: string
+  locationType?: string
+  locationUsage?: string
+  operationalCapacity?: number
+  parentLocationId?: number
+  userDescription?: string
+}
+
 export interface UserService {
   /** get current user */
   getUser: (token: string) => Promise<User>
@@ -31,11 +61,32 @@ export interface UserService {
   getUsers: (token: string, usernames: string[]) => Promise<GetUsersResults[]>
 }
 
+export interface OffenderService {
+  getOffenderDetails: (token: string, bookingId: string) => Promise<object>
+  getPrisonersDetails: (token: string, offenderNumbers: string[]) => Promise<PrisonerDetail[]>
+  getOffenderImage: (token: string, bookingId: string) => Promise<ReadableStream>
+  getOffenderNames: (token: string, offenderNos: string[]) => Promise<{ [offenderNo: string]: string }>
+  getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
+  getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
+}
+
+export interface ReportingClient {
+  getMostOftenInvolvedStaff: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
+  getMostOftenInvolvedPrisoners: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
+  getIncidentsOverview: (agencyId: AgencyId, range: DateRange, statuses) => Promise<Array<any>>
+  getIncidentLocationsAndTimes: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
+  getIncidentCountByOffenderNo: (agencyId: AgencyId, range: DateRange) => Promise<Array<OffenderNoWithIncidentCount>>
+  getIncidentsForAgencyAndDateRange: (
+    agencyId: AgencyId,
+    range: DateRange
+  ) => Promise<Array<OffenderNoWithIncidentDate>>
+}
+
 export interface PrisonerDetail {
   offenderNo: string
   firstName?: string
   lastName?: string
-  dateOfBirth?: string // ISO 8601 date format
+  dateOfBirth?: string // ISO 8601 date format eg 1984-02-24
   gender?: string
   sexCode?: 'M' | 'F'
   nationalities?: string

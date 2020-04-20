@@ -3,12 +3,12 @@ const format = require('pg-format')
 const moment = require('moment')
 
 const { expectedPayload } = require('../integration/seedData')
-const db = require('../../server/data/dataAccess/db')
-const incidentClient = require('../../server/data/incidentClient')
-const statementsClient = require('../../server/data/statementsClient')
-const createStatementService = require('../../server/services/statementService')
-const { ReportStatus } = require('../../server/config/types')
-const { equals } = require('../../server/utils/utils')
+const db = require('../../dist/server/data/dataAccess/db')
+const incidentClient = require('../../dist/server/data/incidentClient')
+const statementsClient = require('../../dist/server/data/statementsClient')
+const createStatementService = require('../../dist/server/services/statementService')
+const { ReportStatus } = require('../../dist/server/config/types')
+const { equals } = require('../../dist/server/utils/utils')
 
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 

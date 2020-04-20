@@ -146,4 +146,26 @@ describe('reportingClient', () => {
       })
     })
   })
+  describe('getIncidentsForAgencyAndDateRange', () => {
+    test('it should pass om the correct sql', () => {
+      const agencyId = 'WRI'
+      const startDate = moment()
+      const endDate = moment().add(1, 'month')
+
+      reportingClient.getIncidentsForAgencyAndDateRange(agencyId, [startDate, endDate])
+
+      expect(db.query).toBeCalledWith({
+        text: `
+    select
+        offender_no "offenderNo",
+        incident_date "incidentDate"
+      from
+        v_report
+     where
+        agency_id = $1
+        and incident_date between $2 and $3`,
+        values: [agencyId, startDate.toDate(), endDate.toDate()],
+      })
+    })
+  })
 })

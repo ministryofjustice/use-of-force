@@ -50,6 +50,7 @@ const appSetup = (route, userSupplier = () => user) => {
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
   db.pool.connect = jest.fn()
+  // @ts-ignore
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 
   app.set('view engine', 'html')

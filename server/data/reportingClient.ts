@@ -1,7 +1,8 @@
-const format = require('pg-format')
-const nonTransactionalClient = require('./dataAccess/db')
+import format from 'pg-format'
+import * as nonTransactionalClient from './dataAccess/db'
+import { AgencyId, DateRange, OffenderNoWithIncidentCount, OffenderNoWithIncidentDate } from '../types/uof'
 
-const getMostOftenInvolvedStaff = async (agencyId, [startDate, endDate]) => {
+export const getMostOftenInvolvedStaff = async (agencyId: AgencyId, [startDate, endDate]: DateRange) => {
   const results = await nonTransactionalClient.query({
     text: `select s.name, count(*) 
           from statement s
@@ -18,7 +19,7 @@ const getMostOftenInvolvedStaff = async (agencyId, [startDate, endDate]) => {
   return results.rows
 }
 
-const getMostOftenInvolvedPrisoners = async (agencyId, [startDate, endDate]) => {
+export const getMostOftenInvolvedPrisoners = async (agencyId: AgencyId, [startDate, endDate]: DateRange) => {
   const results = await nonTransactionalClient.query({
     text: `select r.offender_no "offenderNo", count(*)
           from v_report r
@@ -33,7 +34,7 @@ const getMostOftenInvolvedPrisoners = async (agencyId, [startDate, endDate]) => 
   return results.rows
 }
 
-const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) => {
+export const getIncidentsOverview = async (agencyId: AgencyId, [startDate, endDate]: DateRange, statuses) => {
   const statusValues = statuses.map(s => s.value)
   const results = await nonTransactionalClient.query({
     text: format(
@@ -73,7 +74,7 @@ const getIncidentsOverview = async (agencyId, [startDate, endDate], statuses) =>
   return results.rows
 }
 
-const getIncidentLocationsAndTimes = async (agencyId, [startDate, endDate]) => {
+export const getIncidentLocationsAndTimes = async (agencyId: AgencyId, [startDate, endDate]: DateRange) => {
   const results = await nonTransactionalClient.query({
     text: `
       select
@@ -90,8 +91,11 @@ const getIncidentLocationsAndTimes = async (agencyId, [startDate, endDate]) => {
   return results.rows
 }
 
-const getIncidentCountByOffenderNo = async (agencyId, [startDate, endDate]) => {
-  const results = await nonTransactionalClient.query({
+export const getIncidentCountByOffenderNo = async (
+  agencyId: AgencyId,
+  [startDate, endDate]: DateRange
+): Promise<Array<OffenderNoWithIncidentCount>> => {
+  const results = await nonTransactionalClient.query<OffenderNoWithIncidentCount>({
     text: `
     select
         count(*) "incidentCount",
@@ -109,10 +113,22 @@ const getIncidentCountByOffenderNo = async (agencyId, [startDate, endDate]) => {
   return results.rows
 }
 
-module.exports = {
-  getMostOftenInvolvedStaff,
-  getMostOftenInvolvedPrisoners,
-  getIncidentsOverview,
-  getIncidentLocationsAndTimes,
-  getIncidentCountByOffenderNo,
+export const getIncidentsForAgencyAndDateRange = async (
+  agencyId: AgencyId,
+  [startDate, endDate]: DateRange
+): Promise<Array<OffenderNoWithIncidentDate>> => {
+  const results = await nonTransactionalClient.query<OffenderNoWithIncidentDate>({
+    text: `
+    select
+        offender_no "offenderNo",
+        incident_date "incidentDate"
+      from
+        v_report
+     where
+        agency_id = $1
+        and incident_date between $2 and $3`,
+    values: [agencyId, startDate.toDate(), endDate.toDate()],
+  })
+
+  return results.rows
 }

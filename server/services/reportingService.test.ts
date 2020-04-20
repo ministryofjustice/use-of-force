@@ -8,11 +8,16 @@ const reportingClient = {
   getIncidentsOverview: jest.fn(),
   getIncidentLocationsAndTimes: jest.fn(),
   getIncidentCountByOffenderNo: jest.fn(),
+  getIncidentsForAgencyAndDateRange: jest.fn(),
 }
 
 const offenderService = {
   getOffenderNames: jest.fn(),
   getPrisonersDetails: jest.fn(),
+  getOffenderDetails: jest.fn(),
+  getIncidentLocations: jest.fn(),
+  getLocation: jest.fn(),
+  getOffenderImage: jest.fn(),
 }
 
 const heatmapBuilder = {
@@ -205,11 +210,13 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
       { offenderNo: 'A3', incidentCount: '2' },
     ])
 
-    offenderService.getPrisonersDetails.mockResolvedValue([
-      { offenderNo: 'A1', religionCode: 'CE' },
-      { offenderNo: 'A2', religionCode: 'SHIA' },
-      { offenderNo: 'A3', religionCode: 'CE' },
-    ])
+    offenderService.getPrisonersDetails.mockResolvedValue(
+      Promise.resolve([
+        { offenderNo: 'A1', religionCode: 'CE' },
+        { offenderNo: 'A2', religionCode: 'SHIA' },
+        { offenderNo: 'A3', religionCode: 'CE' },
+      ])
+    )
 
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
 
@@ -240,5 +247,43 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 2,1,0,0,0,2
 `
     )
+  })
+
+  test('getIncidentsByAgeGroup', async () => {
+    reportingClient.getIncidentsForAgencyAndDateRange.mockResolvedValue([
+      { offenderNo: 'A1', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+      { offenderNo: 'A2', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+      { offenderNo: 'A3', incidentDate: moment({ year: 2019, month: 1, day: 1 }).toDate() },
+    ])
+
+    offenderService.getPrisonersDetails.mockResolvedValue([
+      { offenderNo: 'A1', dateOfBirth: '1980-02-25' },
+      { offenderNo: 'A2', dateOfBirth: '1981-02-25' },
+      { offenderNo: 'A3', dateOfBirth: '1970-02-25' },
+    ])
+
+    const result = await service.getIncidentsByAgeGroup('token-1', 'LEI', 2, 2019)
+
+    expect(result).toEqual(
+      '18 - 20,21 - 24,25 - 29,30 - 39,40 - 49,50 - 59,60 - 69,70 - 79,80+,Unknown\n0,0,0,2,1,0,0,0,0,0\n'
+    )
+
+    const startDate = moment({ year: 2019, month: 1, day: 1 })
+    const endDate = moment({ year: 2019, month: 1, day: 28, hour: 23, minute: 59, seconds: 59, milliseconds: 999 })
+
+    const mockCalls = reportingClient.getIncidentsForAgencyAndDateRange.mock.calls
+
+    expect(mockCalls.length).toBe(1)
+    expect(mockCalls[0][0]).toEqual('LEI')
+
+    const actualDates = mockCalls[0][1]
+    expect(actualDates[0].isSame(startDate)).toBeTruthy()
+    expect(actualDates[1].isSame(endDate)).toBeTruthy()
+  })
+
+  it('compares moments', () => {
+    const d1 = moment({ years: 2019, months: 1, days: 1 })
+    const d2 = moment({ years: 2019, months: 1, days: 28, hours: 23, minutes: 59, seconds: 59, milliseconds: 999 })
+    expect([d1, d2]).toEqual([d1.clone(), d2.clone()])
   })
 })

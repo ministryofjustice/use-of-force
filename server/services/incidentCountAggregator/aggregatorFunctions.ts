@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { PrisonerDetail } from '../../types/uof'
 
 export interface Groups {
@@ -22,7 +22,10 @@ export interface IncidentCountByGroup {
   [group: string]: number
 }
 
-export const invertGroupings: (groups: Groups) => [{ code: string; group: string }] = R.pipe(
+/**
+ * Invert a Groups object to yield a map of code -> groupName as an object
+ */
+export const invertGroupings: (groups: Groups) => { [code: string]: string } = R.pipe(
   R.toPairs,
   R.chain(([groupName, { codes }]) => (codes ? codes.map(code => [code, groupName]) : [])),
   R.fromPairs,
@@ -43,14 +46,17 @@ export const aggregatorFactory = (
   const groupsByCode = invertGroupings(codesByGroup)
 
   return (offenderNumberToIncidentCountMap, prisonersDetails) =>
-    prisonersDetails.reduce((accumulator, prisonerDetail) => {
-      const code = prisonerDetail[prisonerDetailPropertyName]
+    prisonersDetails.reduce(
+      (accumulator, prisonerDetail) => {
+        const code = prisonerDetail[prisonerDetailPropertyName]
 
-      const group = groupsByCode[code] || defaultGroup
-      const accumulatedCount = accumulator[group]
-      accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
-      return accumulator
-    }, R.map(() => 0, codesByGroup))
+        const group = groupsByCode[code] || defaultGroup
+        const accumulatedCount = accumulator[group]
+        accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
+        return accumulator
+      },
+      R.map(() => 0, codesByGroup)
+    )
 }
 
 export const buildCsvRendererConfiguration = (groups: DescribedGroups): CsvRendererConfiguration =>
