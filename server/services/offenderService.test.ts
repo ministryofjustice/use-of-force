@@ -83,6 +83,80 @@ describe('getOffenders', () => {
       expect(elite2Client.getLocations).toBeCalledWith('WRI')
     })
 
+    it('should sort retrieved locations with top 2 primary locations at the begining', async () => {
+      elite2Client.getLocations.mockReturnValue([
+        { id: 2, userDescription: 'place 2' },
+        { id: 'o', userDescription: 'Other cell' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 1, userDescription: 'place 1' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+
+      const result = await service.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 'o', userDescription: 'Other cell' },
+        { id: 1, userDescription: 'place 1' },
+        { id: 2, userDescription: 'place 2' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+    })
+
+    it('should sort retrieved locations with only 1 primary location at the begining', async () => {
+      elite2Client.getLocations.mockReturnValue([
+        { id: 2, userDescription: 'place 2' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 1, userDescription: 'place 1' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+
+      const result = await service.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 1, userDescription: 'place 1' },
+        { id: 2, userDescription: 'place 2' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+    })
+
+    it('should sort retrieved locations with zero primary locations at the begining', async () => {
+      elite2Client.getLocations.mockReturnValue([
+        { id: 2, userDescription: 'place 2' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 1, userDescription: 'place 1' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+
+      const result = await service.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([
+        { id: 1, userDescription: 'place 1' },
+        { id: 2, userDescription: 'place 2' },
+        { id: 3, userDescription: 'place 3' },
+        { id: 4, userDescription: 'place 4' },
+      ])
+    })
+
+    it('should sort retrieved locations with zero other locations', async () => {
+      elite2Client.getLocations.mockReturnValue([
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 'o', userDescription: 'Other cell' },
+      ])
+
+      const result = await service.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([
+        { id: 'p', userDescription: "Prisoner's cell" },
+        { id: 'o', userDescription: 'Other cell' },
+      ])
+    })
+
     it('should use token', async () => {
       await service.getIncidentLocations(token, 'WRI')
 
