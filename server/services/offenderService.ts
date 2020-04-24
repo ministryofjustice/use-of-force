@@ -2,16 +2,6 @@ import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
 import { AgencyId, OffenderService, PrisonerDetail, PrisonLocation } from '../types/uof'
 
-const compare = (a, b): number => {
-  let comparison = 0
-  if (a.userDescription.toUpperCase() > b.userDescription.toUpperCase()) {
-    comparison = 1
-  } else if (a.userDescription.toUpperCase() < b.userDescription.toUpperCase()) {
-    comparison = -1
-  }
-  return comparison
-}
-
 export default function createOffenderService(elite2ClientBuilder): OffenderService {
   const getOffenderDetails = async (token, bookingId): Promise<object> => {
     try {
@@ -83,23 +73,20 @@ export default function createOffenderService(elite2ClientBuilder): OffenderServ
       const elite2Client = elite2ClientBuilder(token)
       const incidentLocations = await elite2Client.getLocations(agencyId)
 
-      const primaryLocations = incidentLocations.filter(
-        loc =>
-          loc.userDescription.toUpperCase() === "PRISONER'S CELL" || loc.userDescription.toUpperCase() === 'OTHER CELL'
+      const prisonersCell = incidentLocations.find(
+        location => location.userDescription.toUpperCase() === "PRISONER'S CELL"
       )
+      const otherCell = incidentLocations.find(location => location.userDescription.toUpperCase() === 'OTHER CELL')
+
       const remainingLocations = incidentLocations
         .filter(
-          loc =>
-            loc.userDescription.toUpperCase() !== "PRISONER'S CELL" &&
-            loc.userDescription.toUpperCase() !== 'OTHER CELL'
+          location =>
+            location.userDescription.toUpperCase() !== 'OTHER CELL' &&
+            location.userDescription.toUpperCase() !== "PRISONER'S CELL"
         )
-        .sort(compare)
+        .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
 
-      if (primaryLocations.length === 2 && primaryLocations[0].userDescription.toUpperCase() !== "PRISONER'S CELL") {
-        primaryLocations.reverse()
-      }
-
-      return [...primaryLocations, ...remainingLocations]
+      return [...(prisonersCell ? [prisonersCell] : []), ...(otherCell ? [otherCell] : []), ...remainingLocations]
     } catch (error) {
       logger.error(error, 'Error during getIncidentLocations')
       throw error
