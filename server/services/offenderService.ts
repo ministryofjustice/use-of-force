@@ -80,7 +80,8 @@ export default function createOffenderService(elite2ClientBuilder): OffenderServ
 
   const getIncidentLocations = async (token: string, agencyId: AgencyId): Promise<PrisonLocation[]> => {
     try {
-      const incidentLocations = elite2ClientBuilder(token).getLocations(agencyId)
+      const elite2Client = elite2ClientBuilder(token)
+      const incidentLocations = await elite2Client.getLocations(agencyId)
 
       const primaryLocations = incidentLocations.filter(
         loc =>
