@@ -71,8 +71,22 @@ export default function createOffenderService(elite2ClientBuilder): OffenderServ
   const getIncidentLocations = async (token: string, agencyId: AgencyId): Promise<PrisonLocation[]> => {
     try {
       const elite2Client = elite2ClientBuilder(token)
+      const incidentLocations = await elite2Client.getLocations(agencyId)
 
-      return elite2Client.getLocations(agencyId)
+      const prisonersCell = incidentLocations.find(
+        location => location.userDescription.toUpperCase() === "PRISONER'S CELL"
+      )
+      const otherCell = incidentLocations.find(location => location.userDescription.toUpperCase() === 'OTHER CELL')
+
+      const remainingLocations = incidentLocations
+        .filter(
+          location =>
+            location.userDescription.toUpperCase() !== 'OTHER CELL' &&
+            location.userDescription.toUpperCase() !== "PRISONER'S CELL"
+        )
+        .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
+
+      return [...(prisonersCell ? [prisonersCell] : []), ...(otherCell ? [otherCell] : []), ...remainingLocations]
     } catch (error) {
       logger.error(error, 'Error during getIncidentLocations')
       throw error
