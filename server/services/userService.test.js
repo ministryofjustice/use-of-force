@@ -112,8 +112,8 @@ describe('getUsers', () => {
   })
 
   it('One not verified', async () => {
-    const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'June', exists: true, verified: false }
+    const user1 = { username: 'BOB', email: 'an@email.com', exists: true, verified: true }
+    const user2 = { username: 'JUNE', exists: true, verified: false }
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
     authClient.getUser
@@ -124,7 +124,7 @@ describe('getUsers', () => {
 
     expect(result).toEqual([
       {
-        username: 'Bob',
+        username: 'BOB',
         name: 'Bob Smith',
         staffId: 123,
         email: 'an@email.com',
@@ -132,7 +132,7 @@ describe('getUsers', () => {
         verified: true,
       },
       {
-        username: 'June',
+        username: 'JUNE',
         name: 'June Jones',
         staffId: 234,
         email: undefined,
@@ -140,6 +140,8 @@ describe('getUsers', () => {
         verified: false,
       },
     ])
+
+    expect(authClient.getEmail.mock.calls).toEqual([['BOB'], ['JUNE']])
   })
 
   it('should use the user token', async () => {

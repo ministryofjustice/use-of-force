@@ -38,7 +38,9 @@ module.exports = function createUserService(elite2ClientBuilder, authClientBuild
 
         const getEmailSafely = R.ifElse(R.test(usernamePattern), client.getEmail, emailNotExistPromise)
 
-        const requests = usernames.map((username, i) => getEmailSafely(username).then(email => ({ ...email, i })))
+        const requests = usernames.map((username, i) =>
+          getEmailSafely(username.toUpperCase()).then(email => ({ ...email, i }))
+        )
         const responses = await Promise.all(requests)
 
         const missing = responses.filter(email => !email.exists)
