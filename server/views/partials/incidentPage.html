@@ -2,7 +2,20 @@
 
 {% set pageTitle = 'Use of force incidents' %}
 
-    {% block content %}
+{% macro exitLink(qa) %}
+    <div class="govuk-grid-column-full">
+        <a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="{{qa}}">Exit to Digital Prison Services</a>
+    </div>
+{% endmacro %}
+
+{% block beforeContent %}
+    <div class="govuk-grid-row">
+        {{ exitLink("exit-to-dps-link-top") }}
+    </div>    
+{% endblock %}
+
+{% block content %}
+
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
     <div class="govuk-tabs">
@@ -32,9 +45,7 @@
         {% block tabContent %}
         {% endblock %}
         <div class="govuk-grid-row govuk-!-margin-top-4">
-            <div class="govuk-grid-column-full">
-                <a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a>
-            </div>
+            {{ exitLink("exit-to-dps-link") }}
         </div>
     </div>
 {% endblock %}
