@@ -14,8 +14,8 @@ module.exports = function createReportService({
 
   const getReport = (userId, reportId) => incidentClient.getReport(userId, reportId)
 
-  async function getReports(userId, status) {
-    const result = await incidentClient.getReports(userId, status)
+  async function getReports(userId, status, opts) {
+    const result = await incidentClient.getReports(userId, status, opts)
     return result.rows
   }
 
