@@ -158,11 +158,15 @@ header.govuk-header
 .reviewer-incidents  
   @include govuk-media-query($from: tablet)
   .prisoner, .reporter
-    width: 20% !important
-  .date, .statements
-    width: 18% !important
+    width: 15% !important
+  .prisonNo
+    width: 10% !important
+  .date
+    width: 15% !important
   .report
-    width: 13.33% !important
+    width: 10% !important
+  .delete
+    width: 10% !important  
   .overdue
     width: 10% !important
 
@@ -176,3 +180,9 @@ header.govuk-header
 
 .edit-incident-date
   margin-top: 19px
+
+
+.app-\!-width-one-fifth 
+  width: 100% !important
+  @include govuk-media-query($from: tablet)
+    width: 20% !important

@@ -21,21 +21,23 @@ const incidentsPage = () =>
         .get('[data-qa=incidents-todo]')
         .find('tbody')
         .find('tr'),
+    getNoTodoRows: () => cy.get('[data-qa=no-incidents-todo]'),
     getCompleteRows: () =>
       cy
         .get('[data-qa=incidents-complete]')
         .find('tbody')
         .find('tr'),
-
+    getNoCompleteRows: () => cy.get('[data-qa=no-incidents-complete]'),
     getTodoRow: i => ({
       row: () => cy.get('[data-qa=incidents-todo]'),
       date: () => todoCol(i, 0),
       prisoner: () => todoCol(i, 1),
-      reporter: () => todoCol(i, 2),
-      viewStatementsButton: () => todoCol(i, 3).find('a'),
+      prisonNumber: () => todoCol(i, 2),
+      reporter: () => todoCol(i, 3),
+      viewStatementsButton: () => todoCol(i, 4).find('a'),
       overdue: () => cy.get('[data-qa=overdue]'),
       reportId: () =>
-        todoCol(i, 3)
+        todoCol(i, 4)
           .find('a')
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/view-statements/)[1]),
@@ -44,10 +46,11 @@ const incidentsPage = () =>
     getCompleteRow: i => ({
       date: () => completeCol(i, 0),
       prisoner: () => completeCol(i, 1),
-      reporter: () => completeCol(i, 2),
-      viewStatementsButton: () => completeCol(i, 3).find('a'),
+      prisonNumber: () => completeCol(i, 2),
+      reporter: () => completeCol(i, 3),
+      viewStatementsButton: () => completeCol(i, 4).find('a'),
       reportId: () =>
-        completeCol(i, 3)
+        completeCol(i, 4)
           .find('a')
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),

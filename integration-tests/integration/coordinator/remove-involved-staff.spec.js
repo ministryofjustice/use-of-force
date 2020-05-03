@@ -47,7 +47,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
     let allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
 
     {
       const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
@@ -87,13 +87,14 @@ context('A use of force coordinator can remove involved staff', () => {
     reportPage.continue().click()
 
     allIncidentsPage = AllIncidentsPage.verifyOnPage()
-    allIncidentsPage.getTodoRows().should('have.length', 0)
+    allIncidentsPage.getNoTodoRows().should('exist')
     allIncidentsPage.getCompleteRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getCompleteRow(0)
+      const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getCompleteRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
+      prisonNumber().contains('A1234AC')
       viewStatementsButton().click()
     }
 
@@ -117,9 +118,10 @@ context('A use of force coordinator can remove involved staff', () => {
     const allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+    const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
+    prisonNumber().contains('A1234AC')
     viewStatementsButton().click()
 
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()

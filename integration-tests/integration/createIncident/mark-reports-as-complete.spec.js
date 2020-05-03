@@ -36,12 +36,13 @@ context('Marking a report as complete', () => {
     let allIncidentsPage = AllIncidentsPage.verifyOnPage()
 
     allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
 
     {
-      const { date, prisoner, reporter } = allIncidentsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      const { date, prisoner, prisonNumber, reporter } = allIncidentsPage.getTodoRow(0)
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
+      prisonNumber().contains('A1234AC')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
 
@@ -68,13 +69,14 @@ context('Marking a report as complete', () => {
 
     allIncidentsPage = AllIncidentsPage.verifyOnPage()
 
-    allIncidentsPage.getTodoRows().should('have.length', 0)
+    allIncidentsPage.getNoTodoRows().should('exist')
     allIncidentsPage.getCompleteRows().should('have.length', 1)
 
     {
-      const { date, prisoner, reporter } = allIncidentsPage.getCompleteRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      const { date, prisoner, prisonNumber, reporter } = allIncidentsPage.getCompleteRow(0)
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
+      prisonNumber().contains('A1234AC')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
   })

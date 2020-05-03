@@ -19,18 +19,22 @@ const yourReportsPage = () =>
     getTodoRow: i => ({
       date: () => todoCol(i, 0),
       prisoner: () => todoCol(i, 1),
-      startButton: () => todoCol(i, 2).find('a'),
+      prisonNumber: () => todoCol(i, 3),
+      startButton: () => todoCol(i, 3).find('a'),
     }),
+    getNoTodoRows: () => cy.get('[data-qa=no-statements-todo]'),
     getCompleteRow: i => ({
       date: () => completeCol(i, 0),
       prisoner: () => completeCol(i, 1),
-      viewButton: () => completeCol(i, 2).find('a'),
+      prisonNumber: () => completeCol(i, 2),
+      viewButton: () => completeCol(i, 3).find('a'),
       reportId: () =>
         completeCol(i, 3)
           .find('a')
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
+    getNoCompleteRows: () => cy.get('[data-qa=no-statements-complete]'),
   })
 
 export default {

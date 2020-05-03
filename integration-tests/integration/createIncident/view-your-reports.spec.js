@@ -49,13 +49,13 @@ context('A reporter views their report list', () => {
 
     {
       const { date, prisoner } = yourReportsPage.getCompleteRow(0)
-      prisoner().should('contain', 'Smith, Norman')
+      prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
 
     {
       const { startButton, date, prisoner } = yourReportsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
+      prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
 
       startButton().click()

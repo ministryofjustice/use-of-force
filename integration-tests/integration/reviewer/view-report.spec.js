@@ -56,7 +56,7 @@ context('view review page', () => {
 
     const allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 2)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
 
     allIncidentsPage.selectedTab().contains('All incidents')
 
@@ -80,9 +80,10 @@ context('view review page', () => {
     }
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(1)
+      const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getTodoRow(1)
       prisoner().contains('Smith, Norman')
       reporter().contains('Anne OtherUser')
+      prisonNumber().contains('A1234AC')
       viewStatementsButton().click()
 
       const viewStatementsPage = ViewStatementsPage.verifyOnPage()

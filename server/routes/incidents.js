@@ -23,6 +23,7 @@ module.exports = function CreateReportRoutes({
     staffMemberName: incident.reporterName,
     isOverdue: incident.isOverdue,
     offenderName: namesByOffenderNumber[incident.offenderNo],
+    offenderNo: incident.offenderNo,
   })
 
   const buildReportData = async (report, res) => {
