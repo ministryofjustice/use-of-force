@@ -145,12 +145,12 @@ const getCompletedReportsForReviewer = async agencyId => {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
-          order by r.incident_date`,
+          order by r.incident_date desc`,
     values: [ReportStatus.COMPLETE.value, agencyId],
   })
 }
 
-const getReports = (userId, statuses) => {
+const getReports = (userId, statuses, opts = { orderByDescDate: false }) => {
   const statusValues = statuses.map(status => status.value)
   return nonTransactionalClient.query({
     text: format(
@@ -162,7 +162,7 @@ const getReports = (userId, statuses) => {
             from v_report r
           where r.status in (%L)
           and r.user_id = %L
-          order by r.incident_date`,
+          order by r.incident_date${opts.orderByDescDate ? ' desc' : ''}`,
       statusValues,
       userId
     ),

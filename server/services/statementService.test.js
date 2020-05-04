@@ -42,12 +42,12 @@ describe('statmentService', () => {
 
   describe('getStatements', () => {
     test('retrieve  details', async () => {
-      const output = await service.getStatements('user1', StatementStatus.PENDING)
+      const output = await service.getStatements('user1', StatementStatus.PENDING, { orderByDateDesc: true })
 
       expect(output).toEqual([{ id: 1 }, { id: 2 }])
 
       expect(statementsClient.getStatements).toBeCalledTimes(1)
-      expect(statementsClient.getStatements).toBeCalledWith('user1', StatementStatus.PENDING)
+      expect(statementsClient.getStatements).toBeCalledWith('user1', StatementStatus.PENDING, { orderByDateDesc: true })
     })
   })
 

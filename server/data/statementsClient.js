@@ -2,7 +2,7 @@ const format = require('pg-format')
 const nonTransactionalClient = require('./dataAccess/db')
 const { StatementStatus } = require('../config/types')
 
-const getStatements = (userId, status) => {
+const getStatements = (userId, status, opts = { orderByDescDate: false }) => {
   return nonTransactionalClient.query({
     text: `select r.id
             , r.reporter_name "reporterName"
@@ -15,7 +15,7 @@ const getStatements = (userId, status) => {
           where s.user_id = $1
           and s.statement_status = $2
           and s.deleted is null
-          order by r.incident_date`,
+          order by r.incident_date${opts.orderByDescDate ? ' desc' : ''}`,
     values: [userId, status.value],
   })
 }
