@@ -83,10 +83,13 @@ module.exports = function CreateReportRoutes({
 
     viewYourReports: async (req, res) => {
       const awaiting = await reportService.getReports(req.user.username, [ReportStatus.IN_PROGRESS])
-      const completed = await reportService.getReports(req.user.username, [
-        ReportStatus.SUBMITTED,
-        ReportStatus.COMPLETE,
-      ])
+      const completed = await reportService.getReports(
+        req.user.username,
+        [ReportStatus.SUBMITTED, ReportStatus.COMPLETE],
+        {
+          orderByDescDate: true,
+        }
+      )
 
       const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
         ...awaiting,

@@ -44,6 +44,22 @@ test('getReports', () => {
   })
 })
 
+test('getReports order by date desc', () => {
+  incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED], { orderByDescDate: true })
+
+  expect(db.query).toBeCalledWith({
+    text: `select r.id
+            , r.booking_id    "bookingId"
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            from v_report r
+          where r.status in ('IN_PROGRESS','SUBMITTED')
+          and r.user_id = 'user1'
+          order by r.incident_date desc`,
+  })
+})
+
 test('getReportForReviewer', () => {
   incidentClient.getReportForReviewer('report1')
 
@@ -96,7 +112,7 @@ test('getCompletedReportsForReviewer', () => {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
-          order by r.incident_date`,
+          order by r.incident_date desc`,
     values: [ReportStatus.COMPLETE.value, 'agency-1'],
   })
 })

@@ -5,8 +5,8 @@ const statementConfig = require('../config/forms/statementForm')
 const { processInput } = require('./validation')
 
 module.exports = function createStatementService({ statementsClient, incidentClient, db }) {
-  const getStatements = async (userId, status) => {
-    const data = await statementsClient.getStatements(userId, status)
+  const getStatements = async (userId, status, opts) => {
+    const data = await statementsClient.getStatements(userId, status, opts)
     return data.rows
   }
 

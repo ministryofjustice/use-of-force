@@ -23,7 +23,9 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
   return {
     viewYourStatements: async (req, res) => {
       const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
-      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED)
+      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED, {
+        orderByDescDate: true,
+      })
 
       const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
         ...awaiting,

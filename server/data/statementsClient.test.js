@@ -29,6 +29,25 @@ test('getStatements', () => {
   })
 })
 
+test('getStatements order by date desc', () => {
+  statementsClient.getStatements('user1', StatementStatus.PENDING, { orderByDescDate: true })
+
+  expect(db.query).toBeCalledWith({
+    text: `select r.id
+            , r.reporter_name "reporterName"
+            , r.offender_no   "offenderNo"
+            , r.incident_date "incidentDate"
+            , s."name"
+            , s.in_progress   "inProgress"
+            from statement s 
+            inner join report r on s.report_id = r.id   
+          where s.user_id = $1
+          and s.statement_status = $2
+          and s.deleted is null
+          order by r.incident_date desc`,
+    values: ['user1', StatementStatus.PENDING.value],
+  })
+})
 test('getStatementForUser', () => {
   statementsClient.getStatementForUser('user-1', 'incident-1', StatementStatus.PENDING)
 
