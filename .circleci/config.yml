@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  dps: ministryofjustice/dps@1.2.1
+  hmpps: ministryofjustice/hmpps@1.0.0
 
 executors:
   builder:
@@ -115,15 +115,15 @@ workflows:
       - integration_test:
           requires:
             - build
-      - dps/helm_lint:
+      - hmpps/helm_lint:
           name: helm_lint
-      - dps/build_docker:
+      - hmpps/build_docker:
           name: build_docker
           filters:
             branches:
               only:
                 - master
-      - dps/deploy_env:
+      - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
           filters:
@@ -139,7 +139,7 @@ workflows:
           type: approval
           requires:
             - deploy_dev
-      - dps/deploy_env:
+      - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
           context: use-of-force-preprod
@@ -149,7 +149,7 @@ workflows:
           type: approval
           requires:
             - deploy_preprod
-      - dps/deploy_env:
+      - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
           slack_notification: true
@@ -166,4 +166,4 @@ workflows:
               only:
                 - master
     jobs:
-      - dps/npm_security_audit
+      - hmpps/npm_security_audit
