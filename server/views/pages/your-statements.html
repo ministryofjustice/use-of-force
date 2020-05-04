@@ -4,6 +4,8 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel" id="past-day">
+
+{% if awaitingStatements.length %}
 <table class="govuk-table incidents" data-qa="statements-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
@@ -11,10 +13,11 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Incident date</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prisoner</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prison no.</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Reporter</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col"></th>
     </tr>
   </thead>
 
@@ -23,6 +26,7 @@
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{statement.offenderName}}</td>
+          <td class="govuk-table__cell">{{statement.offenderNo}}</td>
           <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
@@ -36,10 +40,14 @@
           </td>
       </tr>  
       {% endfor %}
-
   </tbody>
 </table>
+{% else %}
+<h3 class="govuk-heading-m">Not completed</h3>
+<p class="govuk-body">You have no incomplete statements</p>
+{% endif %}
 
+{% if completedStatements.length %}
 <table class="govuk-table incidents" data-qa="statements-complete">
   <caption class="govuk-table__caption govuk-heading-m">
     Completed
@@ -47,10 +55,11 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Reporter</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Incident date</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prisoner</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prison no.</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Reporter</th>
+      <th class="govuk-table__header app-!-width-one-fifth" scope="col"></th>
     </tr>
   </thead>
 
@@ -59,13 +68,13 @@
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{statement.offenderName}}</td>
+          <td class="govuk-table__cell">{{statement.offenderNo}}</td>
           <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-1">
             <a
               href="/{{ statement.id }}/your-statement"
-              role="button"
               draggable="false"
-              class="govuk-button govuk-button--secondary govuk-!-width-three-quarters"
+              class="govuk-!-margin-left-3 govuk-link"
             >
             View statement
             </a>
@@ -75,5 +84,9 @@
 
   </tbody>
 </table>
+{% else %}
+<h3 class="govuk-heading-m">Not completed</h3>
+<p class="govuk-body">You have not completed any statements</p>
+{% endif %}
 </section>
 {% endblock %}

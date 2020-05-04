@@ -4,6 +4,7 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel" id="past-day">
+{% if awaitingReports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
@@ -13,8 +14,9 @@
     <tr class="govuk-table__row">
       <th class="govuk-table__header date" scope="col">Date</th>
       <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
+      <th class="govuk-table__header prisonNo" scope="col">Prison no.</th>
       <th class="govuk-table__header reporter" scope="col">Reporter</th>
-      <th class="govuk-table__header report" scope="col">Report</th>
+      <th class="govuk-table__header report" scope="col"></th>
       {% if user.isCoordinator %}      
       <th class="govuk-table__header delete" scope="col"></th>
       {% endif %}      
@@ -27,6 +29,7 @@
       <tr class="govuk-table__row">
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderNo}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">
             <a
@@ -34,14 +37,14 @@
               draggable="false"
               class="govuk-link" 
             >
-              View report
+              View incident
             </a>
           </td>
           {% if user.isCoordinator %}
           <td class="govuk-table__cell">
               {{
                 govukButton({
-                  text: 'Delete report',
+                  text: 'Delete',
                   name: 'delete',
                   href: '/coordinator/report/' + report.id + '/confirm-delete',
                   classes: 'govuk-button govuk-button--secondary',
@@ -57,10 +60,14 @@
           </td>
       </tr>  
       {% endfor %}
-
   </tbody>
 </table>
+{% else %}
+<h3 class="govuk-heading-m">Not completed</h3>
+<p class="govuk-body" data-qa="no-incidents-todo">There are no incomplete reports</p>
+{% endif %}
 
+{% if completedReports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-complete">
   <caption class="govuk-table__caption govuk-heading-m">
     Completed
@@ -70,8 +77,9 @@
     <tr class="govuk-table__row">
         <th class="govuk-table__header date" scope="col">Date</th>
         <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
+        <th class="govuk-table__header prisonNo" scope="col">Prison no.</th>
         <th class="govuk-table__header reporter" scope="col">Reporter</th>
-        <th class="govuk-table__header report" scope="col">Report</th>
+        <th class="govuk-table__header report" scope="col"></th>
         {% if user.isCoordinator %}      
         <th class="govuk-table__header delete" scope="col"></th>
         {% endif %}      
@@ -84,6 +92,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderNo}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">
           <a
@@ -91,14 +100,14 @@
             draggable="false"
             class="govuk-link" 
           >
-            View report
+            View incident
           </a>
         </td>
         {% if user.isCoordinator %}
         <td class="govuk-table__cell">
             {{
               govukButton({
-                text: 'Delete report',
+                text: 'Delete',
                 name: 'delete',
                 href: '/coordinator/report/' + report.id + '/confirm-delete',
                 classes: 'govuk-button govuk-button--secondary',
@@ -114,5 +123,9 @@
 
   </tbody>
 </table>
+{% else %}
+<h3 class="govuk-heading-m">Not completed</h3>
+<p class="govuk-body" data-qa="no-incidents-complete">There are no completed reports</p>
+{% endif %}
 </section>
 {% endblock %}

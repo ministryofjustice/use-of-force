@@ -53,7 +53,7 @@ context('A use of force reviewer can view all incidents at the current agency', 
 
     const allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
 
     allIncidentsPage
       .allTabs()
@@ -62,9 +62,10 @@ context('A use of force reviewer can view all incidents at the current agency', 
     allIncidentsPage.selectedTab().contains('All incidents')
 
     {
-      const { date, prisoner, reporter, overdue } = allIncidentsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      const { date, prisoner, prisonNumber, reporter, overdue } = allIncidentsPage.getTodoRow(0)
+      prisoner().contains('Smith, Norman')
+      prisonNumber().contains('A1234AC')
+      reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('not.exist')
     }
@@ -98,9 +99,10 @@ context('A use of force reviewer can view all incidents at the current agency', 
     allIncidentsPage.exitLink().then(location => expect(location).to.equal('/'))
 
     {
-      const { date, prisoner, reporter, overdue } = allIncidentsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      const { date, prisoner, prisonNumber, reporter, overdue } = allIncidentsPage.getTodoRow(0)
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
+      prisonNumber().contains('A1234AC')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('exist')
     }

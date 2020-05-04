@@ -42,14 +42,14 @@ context('A use of force coordinator can add involved staff', () => {
 
     const allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
 
     const { reportId } = allIncidentsPage.getTodoRow(0)
     reportId().then(id => cy.task('submitStatement', { userId: 'TEST_USER', reportId: id }))
 
     cy.reload()
 
-    allIncidentsPage.getTodoRows().should('have.length', 0)
+    allIncidentsPage.getNoTodoRows().should('exist')
     allIncidentsPage.getCompleteRows().should('have.length', 1)
   }
 
@@ -89,7 +89,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     const allIncidentsPage = AllIncidentsPage.verifyOnPage()
     allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 0)
+    allIncidentsPage.getNoCompleteRows().should('exist')
     allIncidentsPage
       .getTodoRow(0)
       .viewStatementsButton()

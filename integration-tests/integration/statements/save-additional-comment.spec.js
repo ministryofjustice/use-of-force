@@ -67,7 +67,7 @@ context('Add comments to statement', () => {
     yourStatementPage.addComment().click()
 
     addCommentToStatementPage = AddCommentToStatementPage.verifyOnPage()
-    addCommentToStatementPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
+    addCommentToStatementPage.viewAdditionalComment(1).contains('Some new comment 1')
     addCommentToStatementPage.additionalComment().should('be.empty')
     addCommentToStatementPage.additionalComment(2).type('Some new comment 2')
     addCommentToStatementPage.save().click()
@@ -79,8 +79,8 @@ context('Add comments to statement', () => {
       .click()
 
     yourStatementPage = YourStatementPage.verifyOnPage()
-    yourStatementPage.viewAdditionalComment(1).should('contain', 'Some new comment 1')
-    yourStatementPage.viewAdditionalComment(2).should('contain', 'Some new comment 2')
+    yourStatementPage.viewAdditionalComment(1).contains('Some new comment 1')
+    yourStatementPage.viewAdditionalComment(2).contains('Some new comment 2')
     yourStatementPage.continue().click()
 
     YourStatementsPage.verifyOnPage()

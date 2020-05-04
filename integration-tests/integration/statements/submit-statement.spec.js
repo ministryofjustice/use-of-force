@@ -34,8 +34,8 @@ context('Submit statement', () => {
     {
       const yourStatementsPage = YourStatementsPage.goTo()
       const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       startButton().should('contain.text', 'Start statement')
       startButton().click()
@@ -52,8 +52,8 @@ context('Submit statement', () => {
     {
       const yourStatementsPage = YourStatementsPage.goTo()
       const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       startButton().should('contain.text', 'Continue statement')
       startButton().click()
@@ -72,8 +72,8 @@ context('Submit statement', () => {
     {
       const incidentsPage = statementSubmittedPage.finish()
       const { date, prisoner, reporter } = incidentsPage.getCompleteRow(0)
-      prisoner().should('contain', 'Smith, Norman')
-      reporter().should('contain', 'James Stuart')
+      prisoner().contains('Smith, Norman')
+      reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
   })
@@ -106,8 +106,8 @@ context('Submit statement', () => {
     const incidentsPage = statementSubmittedPage.finish()
 
     const { date, prisoner, reporter, reportId } = incidentsPage.getCompleteRow(0)
-    prisoner().should('contain', 'Smith, Norman')
-    reporter().should('contain', 'James Stuart')
+    prisoner().contains('Smith, Norman')
+    reporter().contains('James Stuart')
     date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
 
     reportId().then(id =>
@@ -152,10 +152,10 @@ context('Submit statement', () => {
     writeYourStatementPage.statement().type('This is my statement')
 
     const checkYourStatementPage = writeYourStatementPage.submit()
-    checkYourStatementPage.offenderName().should('contain', 'Norman Smith')
-    checkYourStatementPage.statement().should('contain', 'This is my statement')
-    checkYourStatementPage.lastTraining().should('contain', 'March 2010')
-    checkYourStatementPage.jobStartYear().should('contain', '1999')
+    checkYourStatementPage.offenderName().contains('Norman Smith')
+    checkYourStatementPage.statement().contains('This is my statement')
+    checkYourStatementPage.lastTraining().contains('March 2010')
+    checkYourStatementPage.jobStartYear().contains('1999')
 
     const statementSubmittedPage = checkYourStatementPage.submit()
 
@@ -167,9 +167,9 @@ context('Submit statement', () => {
       .click()
 
     const yourStatementPage = YourStatementPage.verifyOnPage()
-    yourStatementPage.offenderName().should('contain', 'Norman Smith')
-    yourStatementPage.statement().should('contain', 'This is my statement')
-    yourStatementPage.lastTraining().should('contain', 'March 2010')
-    yourStatementPage.jobStartYear().should('contain', '1999')
+    yourStatementPage.offenderName().contains('Norman Smith')
+    yourStatementPage.statement().contains('This is my statement')
+    yourStatementPage.lastTraining().contains('March 2010')
+    yourStatementPage.jobStartYear().contains('1999')
   })
 })
