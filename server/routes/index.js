@@ -10,6 +10,7 @@ const CreateReportRoutes = require('./createReport')
 const CreateCheckYourAnswerRoutes = require('./checkYourAnswers')
 const CreateReportUseOfForceRoutes = require('./reportUseOfForce')
 const CreateCoordinatorRoutes = require('./coordinator')
+const CreateSearchForPrisonerRoutes = require('./searchForPrisoner')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -55,6 +56,8 @@ module.exports = function Index({
     offenderService,
     reviewService,
   })
+
+  const searchForPrisoner = CreateSearchForPrisonerRoutes()
 
   const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
@@ -108,6 +111,9 @@ module.exports = function Index({
     get('/:reportId/your-statement', statements.viewYourStatement)
     get('/:reportId/add-comment-to-statement', statements.viewAddCommentToStatement)
     post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
+
+    get('/search-for-prisoner', searchForPrisoner.view)
+    post('/search-for-prisoner', searchForPrisoner.submit)
   }
 
   const reviewerRoutes = () => {
