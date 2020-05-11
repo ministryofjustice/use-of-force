@@ -1,0 +1,161 @@
+{% extends "../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "./pagesMacros.njk" as pagesMacros %} 
+{% import "./reportDetailMacro.njk" as reportDetail %} 
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+
+{% set pageTitle = 'Search for a prisoner' %}
+
+{% block content %}
+
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
+    <h1 class="govuk-heading-xl"> {{pageTitle}} </h1>
+   
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+      {{ govukInput({
+        label: {
+          text: "Prison number"
+        },
+        hint: {
+          text: "Enter in the format: A1234AA",
+          id: "prison-number"
+        },
+        classes: "govuk-input--width-10",
+        id: "prison-number",
+        name: "prisonNumber",
+        value: data.form.prisonNumber
+      }) }}
+
+      <details class="govuk-details" data-module="govuk-details" {{ 'open' if data.form.openDetails else '' }}>
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Search using other details
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          {% call govukFieldset({
+            legend: {
+              text: "You must search using prison number or last name and prison",
+              classes: "govuk-hint"
+            }
+          }) %}
+
+            {{ govukInput({
+              label: {
+                text: 'First name'
+              },
+              classes: "govuk-input--width-20",
+              name: "firstName",
+              value: data.form.firstName
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: 'Last name'
+              },
+              classes: "govuk-input--width-20",
+              name: "lastName",
+              value: data.form.lastName
+            }) }}
+
+            {{
+              govukSelect({
+                name: 'agencyId',
+                classes: 'govuk-!-width-two-thirds',
+                errorMessage: errors | findError('agencyId'),
+                label: {
+                  text: 'Prison:',
+                  isPageHeading: false,
+                  classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+                },
+                items: data.prisons | toSelect('agencyId', 'description', data.form.agencyId )
+              })
+            }}
+
+          {% endcall %}
+        </div>
+      </details>
+
+      {{
+        govukButton({
+          text: 'Search',
+          classes: 'govuk-button',
+          attributes: { 'data-submit': true }
+        })
+      }}
+
+      {{
+        govukButton({
+          text: 'Cancel',
+          href: '/',
+          classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3',
+          attributes: { 'data-qa': 'return-to-incidents-page' }
+        })
+      }}
+    </form>
+    {% if data.results.length %}
+      <div>
+        <p>Showing {{ data.results.length }} results</p>
+
+        {% set results = [] %}
+
+        {% for result in data.results %}
+          {% set results = (results.push([
+            {
+              text: result.name
+            },
+            {
+              text: result.prisonNumber
+            },
+            {
+              text: result.prison
+            },
+            {
+              html: '<a class="govuk-link" href="/report/' + result.bookingId + '/report-use-of-force">Report use of force</a>'
+            }
+          ]), results) %}
+        {% endfor %}
+
+        {{ govukTable({
+          head: [
+            {
+              html: '<span class="th-content">Name <i class="arrow-up"></i></span>',
+              classes: "sortableLink"
+            },
+            {
+              text: "Prison number"
+            },
+            {
+              text: "Current prison"
+            },
+            {
+              text: ""
+            }
+          ],
+          rows: results,
+          attributes: { id: "search-results" },
+          classes: 'search-results'
+        }) }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    new SortableTable('search-results')
+</script>
+{% endblock %}

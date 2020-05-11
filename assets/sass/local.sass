@@ -186,3 +186,27 @@ header.govuk-header
   width: 100% !important
   @include govuk-media-query($from: tablet)
     width: 20% !important
+
+.search-results
+  tbody
+    tr:nth-child(odd)
+      background:  govuk-colour("light-grey")
+
+
+.sortableLink
+    cursor: pointer
+
+.sortableLink,
+.sortableLink:hover
+  text-decoration: none
+  color: $govuk-link-colour
+
+.arrow-up
+  content: url("/assets/images/Triangle_asc.png")
+
+.arrow-down
+  content: url("/assets/images/Triangle_desc.png")
+
+i[class^="arrow-"]
+    transform: scale(.50)
+    vertical-align: middle
