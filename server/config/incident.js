@@ -26,6 +26,7 @@ module.exports = {
   },
   partial: {
     incidentDetails: incidentDetails.partial,
+    useOfForceDetails: useOfForceDetailsForm.partial,
     changePrison: changePrisonForm.partial,
     relocationAndInjuries: relocationAndInjuriesForm.partial,
     evidence: evidenceForm.partial,

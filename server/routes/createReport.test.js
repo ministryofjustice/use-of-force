@@ -40,6 +40,7 @@ beforeEach(() => {
   })((involvedStaffService.lookup = async () => []))
   offenderService.getIncidentLocations.mockResolvedValue([])
   locationService.getPrisonById.mockResolvedValue({})
+  locationService.getPrisonById.mockRejectedValue(null)
 })
 
 afterEach(() => {

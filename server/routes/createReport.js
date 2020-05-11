@@ -125,7 +125,7 @@ module.exports = function NewIncidentRoutes({
 
     const prison = await locationService.getPrisonById(token, agencyId).catch(err => {
       logger.warn(err, 'Prison details not found in elite-2')
-      return { description: 'No details received' }
+      return { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) }
     })
 
     const data = {
@@ -135,7 +135,7 @@ module.exports = function NewIncidentRoutes({
       incidentDate: getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       involvedStaff,
-      prison: prison.description || getIn(['assignedLivingUnit', 'agencyName'], offenderDetail),
+      prison: prison.description,
       editMode,
       bookingId,
     }

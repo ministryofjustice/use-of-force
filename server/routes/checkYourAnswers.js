@@ -1,4 +1,4 @@
-const { properCaseFullName } = require('../utils/utils')
+const { properCaseFullName, getIn } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 const logger = require('../../log')
 
@@ -49,7 +49,7 @@ module.exports = function CheckAnswerRoutes({
       const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
       const prison = await locationService.getPrisonById(token, prisonId).catch(err => {
         logger.warn(err, 'Prison details not found in elite-2')
-        return { description: 'No details received' }
+        return { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) }
       })
       return res.render('pages/check-your-answers', { data, bookingId, prison })
     },

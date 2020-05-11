@@ -30,6 +30,7 @@ beforeEach(() => {
   offenderService.getOffenderDetails.mockResolvedValue({})
   offenderService.getLocation.mockResolvedValue({})
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' })
+  locationService.getPrisonById.mockRejectedValue(null)
 })
 
 describe('GET /check-your-answers', () => {
