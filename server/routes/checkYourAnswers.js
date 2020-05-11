@@ -1,7 +1,14 @@
 const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
+const logger = require('../../log')
 
-module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
+module.exports = function CheckAnswerRoutes({
+  reportService,
+  offenderService,
+  involvedStaffService,
+  systemToken,
+  locationService,
+}) {
   const currentUserIfNotPresent = (involvedStaff, currentUser) =>
     involvedStaff.find(staff => staff.username === currentUser.username)
       ? []
@@ -10,9 +17,11 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-
-      const { id, form = {}, incidentDate } = await reportService.getCurrentDraft(req.user.username, bookingId)
-
+      const { token } = res.locals.user
+      const { id, form = {}, incidentDate, agencyId: prisonId } = await reportService.getCurrentDraft(
+        req.user.username,
+        bookingId
+      )
       const { complete } = reportService.getReportStatus(form)
 
       if (!complete) {
@@ -38,8 +47,11 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
       ]
 
       const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
-
-      return res.render('pages/check-your-answers', { data, bookingId })
+      const prison = await locationService.getPrisonById(token, prisonId).catch(err => {
+        logger.warn(err, 'Prison details not found in elite-2')
+        return { description: 'No details received' }
+      })
+      return res.render('pages/check-your-answers', { data, bookingId, prison })
     },
 
     submit: async (req, res) => {

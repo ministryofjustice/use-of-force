@@ -16,6 +16,10 @@ const offenderService = {
   getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
+const locationService = {
+  getPrisonById: jest.fn(),
+}
+
 const involvedStaffService = {
   lookup: async () => [],
   removeMissingDraftInvolvedStaff: jest.fn(),
@@ -25,15 +29,17 @@ const involvedStaffService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
+  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService, locationService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
   offenderService.getOffenderDetails.mockReturnValue({
     displayName: 'Bob Smith',
     offenderNo: '1234',
     agencyId: 'current-agency-id',
+    assignedLivingUnit: { agencyName: 'Brixton' },
   })((involvedStaffService.lookup = async () => []))
   offenderService.getIncidentLocations.mockResolvedValue([])
+  locationService.getPrisonById.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -41,16 +47,18 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
-  test('should render incident-details for new report using system creds', () => {
-    reportService.getCurrentDraft.mockResolvedValue({})
+  test('should render Leeds prison', () => {
+    locationService.getPrisonById.mockResolvedValue({
+      description: 'Leeds prison',
+    })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Incident details')
-        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+        expect(res.text).toContain('Leeds prison')
       })
   })
+
   test('should render incident-details for existing report using system creds', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)

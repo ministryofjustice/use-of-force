@@ -44,6 +44,7 @@ export default function createApp({
   reviewService,
   reportingService,
   systemToken,
+  locationService,
 }) {
   const app = express()
 
@@ -236,6 +237,7 @@ export default function createApp({
       prisonerSearchService,
       reviewService,
       systemToken,
+      locationService,
     })
   )
 

@@ -17,14 +17,19 @@ const involvedStaffService = {
   getDraftInvolvedStaff: () => [],
 }
 
+const locationService = {
+  getPrisonById: jest.fn(),
+}
+
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
+  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService, locationService })
   reportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   offenderService.getLocation.mockResolvedValue({})
+  locationService.getPrisonById.mockResolvedValue({ description: 'prison name' })
 })
 
 describe('GET /check-your-answers', () => {
@@ -171,6 +176,21 @@ describe('GET /check-your-answers', () => {
       .get('/report/-35/check-your-answers')
       .expect(302)
       .expect('Location', '/')
+  })
+
+  it('Should contain the prison where the incident took place', () => {
+    reportService.getReportStatus.mockReturnValue({ complete: true })
+    locationService.getPrisonById.mockResolvedValue({ description: 'Sheffield' })
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prison')
+      })
+      .expect(res => {
+        expect(res.text).toContain('Sheffield')
+      })
   })
 })
 

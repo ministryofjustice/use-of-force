@@ -98,6 +98,23 @@
       }}
     </div>
   </div>
+  <div class="govuk-!-margin-bottom-6">
+    {% if data.editMode %}
+    {% set formName = "edit-change-prison" %}
+    {% else %}
+    {% set formName = "change-prison" %}
+    {% endif %}
+
+      <span class="govuk-label--s">Prison:&nbsp;</span>
+      <span data-qa="prison"> 
+        {{ data.prison }} &nbsp; 
+        <a id="change-date" class="govuk-link" data-qa="prison" href='/report/{{data.bookingId}}/{{ formName }}'>
+          Change<span class="govuk-visually-hidden"> change prison location</span>
+        </a>
+      </span>
+
+  </div>
+  <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{

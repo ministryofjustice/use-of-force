@@ -177,6 +177,19 @@ test('updateDraftReport', () => {
   })
 })
 
+test('updateAgencyId', () => {
+  incidentClient.updateAgencyId('agencyId', 'username', 'bookingId')
+
+  expect(db.query).toBeCalledWith({
+    text: `update v_report r
+                set agency_id = COALESCE($1,   r.agency_id)
+                where r.user_id = $2
+                and r.booking_id = $3
+                and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
+    values: ['agencyId', 'username', 'bookingId'],
+  })
+})
+
 test('submitReport', () => {
   incidentClient.submitReport('user1', 'booking1', 'date1')
 

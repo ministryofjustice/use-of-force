@@ -1,9 +1,10 @@
 const moment = require('moment')
-const { isNilOrEmpty, firstItem } = require('../utils/utils')
+const { isNilOrEmpty, firstItem, getIn } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
 const { processInput, mergeIntoPayload } = require('../services/validation')
 const { paths, full, partial } = require('../config/incident')
+const logger = require('../../log')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   const { bookingId } = req.params
@@ -29,7 +30,13 @@ const getDestination = ({ editMode, saveAndContinue }) => {
   return saveAndContinue ? types.Destinations.CONTINUE : types.Destinations.TASKLIST
 }
 
-module.exports = function NewIncidentRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
+module.exports = function NewIncidentRoutes({
+  reportService,
+  offenderService,
+  involvedStaffService,
+  systemToken,
+  locationService,
+}) {
   const loadForm = async req => {
     const { bookingId } = req.params
     const { id: formId, incidentDate, form = {}, agencyId } = await reportService.getCurrentDraft(
@@ -116,6 +123,11 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const involvedStaff =
       (input && input.involvedStaff) || (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
 
+    const prison = await locationService.getPrisonById(token, agencyId).catch(err => {
+      logger.warn(err, 'Prison details not found in elite-2')
+      return { description: 'No details received' }
+    })
+
     const data = {
       ...input,
       displayName,
@@ -123,6 +135,9 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
       incidentDate: getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       involvedStaff,
+      prison: prison.description || getIn(['assignedLivingUnit', 'agencyName'], offenderDetail),
+      editMode,
+      bookingId,
     }
 
     renderForm({ req, res, form, data, formName: 'incidentDetails', editMode })

@@ -2,6 +2,7 @@ const incidentDetails = require('./forms/incidentDetailsForm')
 const useOfForceDetailsForm = require('./forms/useOfForceDetailsForm')
 const relocationAndInjuriesForm = require('./forms/relocationAndInjuriesForm')
 const evidenceForm = require('./forms/evidenceForm')
+const changePrisonForm = require('./forms/changePrisonForm')
 
 module.exports = {
   paths: {
@@ -12,6 +13,7 @@ module.exports = {
   },
   full: {
     incidentDetails: incidentDetails.complete,
+    changePrison: changePrisonForm.complete,
     useOfForceDetails: useOfForceDetailsForm.complete,
     relocationAndInjuries: relocationAndInjuriesForm.complete,
     evidence: evidenceForm.complete,
@@ -24,7 +26,7 @@ module.exports = {
   },
   partial: {
     incidentDetails: incidentDetails.partial,
-    useOfForceDetails: useOfForceDetailsForm.partial,
+    changePrison: changePrisonForm.partial,
     relocationAndInjuries: relocationAndInjuriesForm.partial,
     evidence: evidenceForm.partial,
   },

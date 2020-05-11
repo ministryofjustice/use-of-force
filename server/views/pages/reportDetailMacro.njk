@@ -44,7 +44,7 @@
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId, incidentId, user) %}
+{% macro detail(data, bookingId, incidentId, user, prison) %}
     {{
       pagesMacros.sectionHeading({
         id: 'incidentDetails', 
@@ -64,6 +64,16 @@
               dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm') 
       })
     }}
+    {% if prison %}
+      {{
+        pagesMacros.tableRow({
+          label: 'Prison',
+          'data-qa': 'prison',
+          dataValue: prison.description
+        })
+      }}
+    {% endif %}
+  
     {{
       pagesMacros.tableRow({
         label: 'Location',

@@ -80,6 +80,7 @@ export const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
     reviewService: {},
     prisonerSearchService: {},
     systemToken: username => `${username}-system-token`,
+    locationService: {},
     ...overrides,
   })
   return appSetup(route, userSupplier)

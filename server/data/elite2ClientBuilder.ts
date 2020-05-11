@@ -57,5 +57,14 @@ export default function builder(token) {
             : logger.warn(sanitiseError(error), `Error calling elite2`),
       })
     },
+    getActiveAgenciesByType(type) {
+      const path = `${apiUrl}/api/agencies/type/${type}`
+      return userGet({ path })
+    },
+
+    getPrisonById(agencyId) {
+      const path = `${apiUrl}/api/agencies/prison/${agencyId}`
+      return userGet({ path })
+    },
   }
 }

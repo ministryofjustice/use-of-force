@@ -1,4 +1,5 @@
-import express, { IRouterMatcher } from 'express'
+
+import express from 'express'
 import flash from 'connect-flash'
 import bodyParser from 'body-parser'
 import asyncMiddleware from '../middleware/asyncMiddleware'
@@ -11,7 +12,7 @@ import CreateSearchForPrisonerRoutes from './searchForPrisoner'
 import CreateCheckYourAnswerRoutes from './checkYourAnswers'
 import CreateReportUseOfForceRoutes from './reportUseOfForce'
 import CreateCoordinatorRoutes from './coordinator'
-
+import CreateLocationRoutes from './locations'
 export default function Index({
   authenticationMiddleware,
   statementService,
@@ -21,6 +22,7 @@ export default function Index({
   involvedStaffService,
   reviewService,
   systemToken,
+  locationService,
 }) {
   const router = express.Router()
 
@@ -30,6 +32,7 @@ export default function Index({
     offenderService,
     reviewService,
     systemToken,
+    locationService
   })
 
   const statements = CreateStatementRoutes({ statementService, offenderService, systemToken })
@@ -39,6 +42,7 @@ export default function Index({
     offenderService,
     involvedStaffService,
     systemToken,
+    locationService,
   })
 
   const checkYourAnswers = CreateCheckYourAnswerRoutes({
@@ -46,6 +50,7 @@ export default function Index({
     offenderService,
     involvedStaffService,
     systemToken,
+    locationService,
   })
 
   const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService, systemToken })
@@ -58,7 +63,10 @@ export default function Index({
     reviewService,
   })
 
-  const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
+  const searchForPrisoner = CreateSearchForPrisonerRoutes(prisonerSearchService)
+  const locations = CreateLocationRoutes({
+    locationService,
+  })
 
   const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
@@ -72,6 +80,11 @@ export default function Index({
     post(reportPath('incident-details'), createReport.submit('incidentDetails'))
     get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
     post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
+
+    get(reportPath('change-prison'), locations.viewPrisons({ edit: false }))
+    post(reportPath('change-prison'), locations.submit('changePrison'))
+    get(reportPath('edit-change-prison'), locations.viewPrisons({ edit: true }))
+    post(reportPath('edit-change-prison'), locations.submitEdit('changePrison'))
 
     get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
     post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
