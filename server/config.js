@@ -78,6 +78,18 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    prisonerSearch: {
+      url: get('PRISONER_SEARCH_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),
+      timeout: {
+        response: get('PRISONER_SEARCH_ENDPOINT_TIMEOUT_RESPONSE', 10000),
+        deadline: get('PRISONER_SEARCH_ENDPOINT_TIMEOUT_DEADLINE', 10000),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {

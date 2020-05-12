@@ -1,29 +1,20 @@
 const url = require('url')
 
-module.exports = function SearchForPrisonerRoutes() {
+module.exports = function SearchForPrisonerRoutes({ prisonerSearchService }) {
   const extractSearchForm = ({ prisonNumber, firstName, lastName, agencyId }) => ({
-    prisonNumber,
-    firstName,
-    lastName,
-    agencyId,
+    form: { prisonNumber, firstName, lastName, agencyId },
     openDetails: Boolean(firstName || lastName || agencyId),
   })
 
-  const getResults = ({ openDetails, prisonNumber }) =>
-    openDetails || prisonNumber
-      ? [
-          { name: 'Norman Bates', prisonNumber: 'A1234AC', prison: 'HMP Leeds', bookingId: -3 },
-          { name: 'Arthur Anderson', prisonNumber: 'A1234AA', prison: 'HMP Hull', bookingId: -1 },
-          { name: 'Gillian Anderson', prisonNumber: 'A1234AB', prison: 'HMP Leeds', bookingId: -2 },
-        ]
-      : []
-
   return {
     view: async (req, res) => {
-      const prisons = []
-      const form = extractSearchForm(req.query)
-      const results = getResults(form)
-      return res.render('pages/search-for-prisoner', { data: { prisons, results, form }, errors: [] })
+      const { form, openDetails } = extractSearchForm(req.query)
+      const results = await await prisonerSearchService.search(form)
+      const prisons = await prisonerSearchService.getPrisons()
+      return res.render('pages/search-for-prisoner', {
+        data: { prisons, results, form: { ...form, openDetails } },
+        errors: [],
+      })
     },
 
     submit: async (req, res) => {

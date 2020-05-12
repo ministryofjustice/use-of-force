@@ -1,6 +1,9 @@
 import { buildAppInsightsClient } from './utils/azure-appinsights'
+import PrisonerSearchClient from './data/prisonerSearchClient'
+
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
+import PrisonSearchService from './services/prisonerSearchService'
 
 const createApp = require('./app')
 
@@ -20,6 +23,7 @@ const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
 const createReviewService = require('./services/reviewService')
+
 const { notificationServiceFactory } = require('./services/notificationService')
 const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
 
@@ -40,6 +44,7 @@ const reportService = createReportService({
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
+const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 
 const app = createApp({
   involvedStaffService,
@@ -48,6 +53,7 @@ const app = createApp({
   signInService: createSignInService(),
   statementService,
   userService,
+  prisonerSearchService,
   reviewService,
   reportingService,
   systemToken,
