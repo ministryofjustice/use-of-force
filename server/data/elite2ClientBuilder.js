@@ -1,161 +1,53 @@
-const superagent = require('superagent')
-/** @type {any} */
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
-const { Readable } = require('stream')
 const logger = require('../../log')
 const config = require('../config')
+const createRestClientBuilder = require('./restClient')
 
-const timeoutSpec = {
-  response: config.apis.elite2.timeout.response,
-  deadline: config.apis.elite2.timeout.deadline,
-}
-const apiUrl = config.apis.elite2.url
-
-const agentOptions = {
-  maxSockets: config.apis.elite2.agent.maxSockets,
-  maxFreeSockets: config.apis.elite2.agent.maxFreeSockets,
-  freeSocketTimeout: config.apis.elite2.agent.freeSocketTimeout,
-}
-
-const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
-
-const defaultErrorLogger = error => logger.warn(error, 'Error calling elite2api')
+const restClientBuilder = createRestClientBuilder('elite2api', config.apis.elite2)
 
 module.exports = token => {
-  const userGet = userGetBuilder(token)
-  const userStream = userStreamBuilder(token)
-  const userPost = userPostBuilder(token)
+  const restClient = restClientBuilder(token)
+
   return {
     async getOffenderDetails(bookingId) {
-      const path = `${apiUrl}/api/bookings/${bookingId}?basicInfo=false`
-      return userGet({ path })
+      return restClient.get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
     },
     async getOffenders(offenderNos) {
-      const path = `${apiUrl}/api/bookings/offenders?activeOnly=false`
-      return userPost({ path, data: offenderNos })
+      return restClient.post({ path: '/api/bookings/offenders?activeOnly=false', data: offenderNos })
     },
     async getPrisoners(offenderNos) {
-      const path = `${apiUrl}/api/prisoners`
       const query = { offenderNo: offenderNos }
       const headers = { 'Page-Limit': 5000 }
       // @ts-ignore
-      return userGet({ path, query, headers })
+      return restClient.get({ path: '/api/prisoners', query, headers })
     },
     async getUser() {
-      const path = `${apiUrl}/api/users/me`
-      return userGet({ path })
+      return restClient.get({ path: '/api/users/me' })
     },
     getUserCaseLoads() {
-      const path = `${apiUrl}/api/users/me/caseLoads`
-      return userGet({ path })
+      return restClient.get({ path: '/api/users/me/caseLoads' })
+    },
+    getPrisons() {
+      return restClient.get({
+        path: `/api/agencies/type/INST?active=true`,
+      })
     },
     getLocations(agencyId, occurrenceLocationsOnly = true) {
-      const path = `${apiUrl}/api/agencies/${agencyId}/locations${occurrenceLocationsOnly ? '?eventType=OCCUR' : ''}`
-      return userGet({ path, headers: { 'Sort-Fields': 'userDescription' } })
+      return restClient.get({
+        path: `/api/agencies/${agencyId}/locations${occurrenceLocationsOnly ? '?eventType=OCCUR' : ''}`,
+        headers: { 'Sort-Fields': 'userDescription' },
+      })
     },
     getLocation(locationId) {
-      const path = `${apiUrl}/api/locations/${locationId}`
-      return userGet({ path })
+      return restClient.get({ path: `/api/locations/${locationId}` })
     },
     getOffenderImage(bookingId) {
-      const path = `${apiUrl}/api/bookings/${bookingId}/image/data`
-      return userStream({
-        path,
+      return restClient.stream({
+        path: `/api/bookings/${bookingId}/image/data`,
         errorLogger: error =>
           error.status === 404
             ? logger.info(`No offender image available for: ${bookingId}`)
-            : defaultErrorLogger(error),
+            : logger.warn(error, `Error calling elite2`),
       })
     },
-  }
-}
-
-function userGetBuilder(token) {
-  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
-    try {
-      const result = await superagent
-        .get(path)
-        .agent(keepaliveAgent)
-        .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
-        .query(query)
-        .auth(token, { type: 'bearer' })
-        .set(headers)
-        .responseType(responseType)
-        .timeout(timeoutSpec)
-
-      return raw ? result : result.body
-    } catch (error) {
-      const response = error.response && error.response.text
-      logger.warn(
-        `Error calling elite2, path: '${path}', verb: 'GET', query: '${query}', response: '${response}'`,
-        error.stack
-      )
-      throw error
-    }
-  }
-}
-
-function userPostBuilder(token) {
-  return async ({ path = null, headers = {}, responseType = '', data = {}, raw = false } = {}) => {
-    logger.info(`Post using user credentials: calling elite2api: ${path}`)
-    try {
-      const result = await superagent
-        .post(path)
-        .send(data)
-        .agent(keepaliveAgent)
-        .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
-        .auth(token, { type: 'bearer' })
-        .set(headers)
-        .responseType(responseType)
-        .timeout(timeoutSpec)
-
-      return raw ? result : result.body
-    } catch (error) {
-      const response = error.response && error.response.text
-      logger.warn(
-        `Error calling elite2, path: '${path}', verb: 'GET', query: 'POST', response: '${response}'`,
-        error.stack
-      )
-      throw error
-    }
-  }
-}
-
-function userStreamBuilder(token) {
-  return ({ path, headers = {}, errorLogger = defaultErrorLogger }) => {
-    logger.info(`Get using user credentials: calling elite2api: ${path}`)
-    return new Promise((resolve, reject) => {
-      superagent
-        .get(path)
-        .agent(keepaliveAgent)
-        .auth(token, { type: 'bearer' })
-        .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
-        .timeout(timeoutSpec)
-        .set(headers)
-        .end((error, response) => {
-          if (error) {
-            errorLogger(error)
-            reject(error)
-          } else if (response) {
-            const s = new Readable()
-            // eslint-disable-next-line no-underscore-dangle
-            s._read = () => {}
-            s.push(response.body)
-            s.push(null)
-            resolve(s)
-          }
-        })
-    })
   }
 }

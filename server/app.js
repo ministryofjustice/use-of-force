@@ -39,6 +39,7 @@ module.exports = function createApp({
   signInService,
   statementService,
   userService,
+  prisonerSearchService,
   reviewService,
   reportingService,
   systemToken,
@@ -231,6 +232,7 @@ module.exports = function createApp({
       offenderService,
       reportService,
       involvedStaffService,
+      prisonerSearchService,
       reviewService,
       systemToken,
     })

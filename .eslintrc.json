@@ -69,6 +69,7 @@
         "exports": "always-multiline",
         "functions": "never"
       }
-    ]
+    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }]
   }
 }

@@ -16,6 +16,7 @@ module.exports = function Index({
   authenticationMiddleware,
   statementService,
   offenderService,
+  prisonerSearchService,
   reportService,
   involvedStaffService,
   reviewService,
@@ -57,7 +58,7 @@ module.exports = function Index({
     reviewService,
   })
 
-  const searchForPrisoner = CreateSearchForPrisonerRoutes()
+  const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
 
   const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))

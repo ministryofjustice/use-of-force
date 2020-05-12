@@ -80,6 +80,7 @@ const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
     reportService: {},
     involvedStaffService: {},
     reviewService: {},
+    prisonerSearchService: {},
     systemToken: username => `${username}-system-token`,
     ...overrides,
   })

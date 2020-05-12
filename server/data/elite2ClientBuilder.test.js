@@ -56,6 +56,18 @@ describe('elite2Client', () => {
     })
   })
 
+  describe('getPrisons', () => {
+    const locations = []
+    it('should return data from api', async () => {
+      fakeElite2Api
+        .get('/api/agencies/type/INST?active=true')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, locations)
+
+      const output = await elite2Client.getPrisons()
+      expect(output).toEqual(locations)
+    })
+  })
   describe('getLocations', () => {
     const locations = []
     it('should return data from api', async () => {
@@ -94,7 +106,7 @@ describe('elite2Client', () => {
   })
 
   describe('getPrisoners', () => {
-    it('should formqt query string', async () => {
+    it('should format query string', async () => {
       fakeElite2Api
         .get('/api/prisoners?offenderNo=A123&offenderNo=B123')
         .matchHeader('page-limit', 5000)
