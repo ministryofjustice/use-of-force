@@ -63,7 +63,7 @@ export default function Index({
     reviewService,
   })
 
-  const searchForPrisoner = CreateSearchForPrisonerRoutes(prisonerSearchService)
+  const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
   const locations = CreateLocationRoutes({
     locationService,
   })

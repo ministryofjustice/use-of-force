@@ -58,13 +58,15 @@ export default function builder(token) {
       })
     },
     getActiveAgenciesByType(type) {
-      const path = `${apiUrl}/api/agencies/type/${type}`
-      return userGet({ path })
+      return restClient.get({
+        path: `/api/agencies/type/${type}`,
+      })
     },
 
     getPrisonById(agencyId) {
-      const path = `${apiUrl}/api/agencies/prison/${agencyId}`
-      return userGet({ path })
+      return restClient.get({
+        path: `/api/agencies/prison/${agencyId}`,
+      })
     },
   }
 }
