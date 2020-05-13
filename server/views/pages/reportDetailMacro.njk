@@ -63,14 +63,14 @@
               'data-qa': 'incidentTime',    
               dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm') 
       })
-    }} 
-      {{
-        pagesMacros.tableRow({
-          label: 'Prison',
-          'data-qa': 'prison',
-          dataValue: prison.description
-        })
-      }}
+    }}
+    {{
+      pagesMacros.tableRow({
+        label: 'Prison',
+        'data-qa': 'prison',
+        dataValue: prison.description
+      })
+    }}  
     {{
       pagesMacros.tableRow({
         label: 'Location',

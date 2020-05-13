@@ -16,7 +16,6 @@ module.exports = function CheckAnswerRoutes({
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-      const { token } = res.locals.user
       const { id, form = {}, incidentDate, agencyId: prisonId } = await reportService.getCurrentDraft(
         req.user.username,
         bookingId
@@ -47,7 +46,7 @@ module.exports = function CheckAnswerRoutes({
 
       const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
 
-      const prison = await locationService.getPrisonById(token, prisonId)
+      const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
 
       return res.render('pages/check-your-answers', { data, bookingId, prison })
     },
