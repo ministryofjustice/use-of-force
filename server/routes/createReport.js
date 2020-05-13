@@ -45,7 +45,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     }
 
     const verifiedInvolvedStaff = await involvedStaffService.lookup(
-      res.locals.user.token,
+      await systemToken(res.locals.user.username),
       involvedStaff.map(u => u.username)
     )
     return { additionalFields: { involvedStaff: verifiedInvolvedStaff } }
@@ -102,8 +102,7 @@ module.exports = function NewIncidentRoutes({ reportService, offenderService, in
     const { bookingId } = req.params
     const { formId, form, incidentDate = moment(), agencyId: persistedAgencyId } = await loadForm(req)
 
-    // If report has been created, use system token which is robust against offender moving establishments
-    const token = isNilOrEmpty(formId) ? res.locals.user.token : await systemToken(res.locals.user.username)
+    const token = await systemToken(res.locals.user.username)
     const offenderDetail = await offenderService.getOffenderDetails(token, bookingId)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments

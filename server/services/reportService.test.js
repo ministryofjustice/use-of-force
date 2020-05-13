@@ -52,20 +52,6 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('isDraftInProgress', () => {
-  test('report is in progress', async () => {
-    incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 2 })
-    const exists = await service.isDraftInProgress('user-1', 2)
-    expect(exists).toBe(true)
-    expect(incidentClient.getCurrentDraftReport).toHaveBeenCalledWith('user-1', 2)
-  })
-  test('report is not in progress', async () => {
-    incidentClient.getCurrentDraftReport.mockResolvedValue({})
-    const exists = await service.isDraftInProgress('user-1', 2)
-    expect(exists).toBe(false)
-  })
-})
-
 describe('submit', () => {
   test('it should save statements and submit the report', async () => {
     involvedStaffService.save.mockReturnValue([])

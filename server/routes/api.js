@@ -3,25 +3,17 @@ const path = require('path')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { coordinatorOnly } = require('../middleware/roleCheck')
 
-module.exports = function Index({
-  authenticationMiddleware,
-  offenderService,
-  reportingService,
-  reportService,
-  systemToken,
-}) {
+module.exports = function Index({ authenticationMiddleware, offenderService, reportingService, systemToken }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
 
-  const placeHolder = path.join(__dirname, '../assets/images/image-missing.png')
+  const placeHolder = path.join(process.cwd(), '/assets/images/image-missing.png')
 
   router.get('/offender/:bookingId/image', async (req, res) => {
     const { bookingId } = req.params
 
-    const token = (await reportService.isDraftInProgress(req.user.username, bookingId))
-      ? await systemToken(req.user.username)
-      : res.locals.user.token
+    const token = await systemToken(req.user.username)
 
     await offenderService
       .getOffenderImage(token, bookingId)

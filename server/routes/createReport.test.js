@@ -41,14 +41,14 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
-  test('should render incident-details for new report using personal creds', () => {
+  test('should render incident-details for new report using system creds', () => {
     reportService.getCurrentDraft.mockResolvedValue({})
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getOffenderDetails).toBeCalledWith('token', '1')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
       })
   })
   test('should render incident-details for existing report using system creds', () => {
@@ -68,7 +68,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getIncidentLocations).toBeCalledWith('token', 'current-agency-id')
+        expect(offenderService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
       })
   })
   test('should render incident-details using locations for persisted agency if existing report', () => {
