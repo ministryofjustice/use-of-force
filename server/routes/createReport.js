@@ -113,8 +113,8 @@ module.exports = function NewIncidentRoutes({
     const offenderDetail = await offenderService.getOffenderDetails(token, bookingId)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
-    const agencyId = persistedAgencyId || offenderDetail.agencyId
-    const locations = await offenderService.getIncidentLocations(token, agencyId)
+    const prisonId = persistedAgencyId || offenderDetail.agencyId
+    const locations = await offenderService.getIncidentLocations(token, prisonId)
 
     const { displayName, offenderNo } = offenderDetail
 
@@ -123,7 +123,7 @@ module.exports = function NewIncidentRoutes({
     const involvedStaff =
       (input && input.involvedStaff) || (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
 
-    const prison = await locationService.getPrisonById(token, agencyId).catch(err => {
+    const prison = await locationService.getPrisonById(token, prisonId).catch(err => {
       logger.warn(err, 'Prison details not found in elite-2')
       return { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) }
     })

@@ -117,28 +117,6 @@ describe('elite2Client', () => {
     })
   })
 
-  describe('getActiveAgenciesByType', () => {
-    const mockAgencies = [
-      {
-        active: true,
-        agencyId: 'MDI',
-        agencyType: 'INST',
-        description: 'Moorland (HMP & YOI)',
-      },
-      {
-        active: true,
-        agencyId: 'LEI',
-        agencyType: 'INST',
-        description: 'LEEDS',
-      },
-    ]
-    it('should return a list of agencies', async () => {
-      fakeElite2Api.get('/api/agencies/type/INST').reply(200, mockAgencies)
-
-      const output = await elite2Client.getActiveAgenciesByType('INST')
-      expect(output).toEqual(mockAgencies)
-    })
-  })
   describe('getPrisonById', () => {
     const mockPrison = {
       active: true,
@@ -146,8 +124,8 @@ describe('elite2Client', () => {
       agencyType: 'INST',
       description: 'Moorland',
     }
-    it('should return details of one prison', async () => {
-      fakeElite2Api.get('/api/agencies/prison/MDI').reply(200, mockPrison)
+    it('should return prison details from its id', async () => {
+      fakeElite2Api.get('/api/agencies/MDI?activeOnly=false').reply(200, mockPrison)
 
       const output = await elite2Client.getPrisonById('MDI')
       expect(output).toEqual(mockPrison)

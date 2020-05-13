@@ -12,7 +12,7 @@ import CreateSearchForPrisonerRoutes from './searchForPrisoner'
 import CreateCheckYourAnswerRoutes from './checkYourAnswers'
 import CreateReportUseOfForceRoutes from './reportUseOfForce'
 import CreateCoordinatorRoutes from './coordinator'
-import CreateLocationRoutes from './locations'
+import CreateChangePrisonRoutes from './changePrison'
 export default function Index({
   authenticationMiddleware,
   statementService,
@@ -64,8 +64,9 @@ export default function Index({
   })
 
   const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
-  const locations = CreateLocationRoutes({
+  const changePrison = CreateChangePrisonRoutes({
     locationService,
+    systemToken,
   })
 
   const userRoutes = () => {
@@ -81,10 +82,10 @@ export default function Index({
     get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
     post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
 
-    get(reportPath('change-prison'), locations.viewPrisons({ edit: false }))
-    post(reportPath('change-prison'), locations.submit('changePrison'))
-    get(reportPath('edit-change-prison'), locations.viewPrisons({ edit: true }))
-    post(reportPath('edit-change-prison'), locations.submitEdit('changePrison'))
+    get(reportPath('change-prison'), changePrison.viewPrisons({ edit: false }))
+    post(reportPath('change-prison'), changePrison.submit)
+    get(reportPath('edit-change-prison'), changePrison.viewPrisons({ edit: true }))
+    post(reportPath('edit-change-prison'), changePrison.submitEdit)
 
     get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
     post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)

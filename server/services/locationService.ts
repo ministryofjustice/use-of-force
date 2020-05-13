@@ -5,17 +5,17 @@ import logger = require('../../log.js')
 import incidentClient = require('../data/incidentClient')
 
 export default function createLocationService({ elite2ClientBuilder }) {
-  const getActiveAgenciesByType = async (token: string, type: string): Promise<Prison[]> => {
+  const getPrisons = async (token: string): Promise<Prison[]> => {
     const elite2Client = elite2ClientBuilder(token)
-    const prisons = await elite2Client.getActiveAgenciesByType(type)
+    const prisons = await elite2Client.getPrisons()
     logger.info('Retrieving all agencies from elite2')
     return prisons.sort((a, b) => a.description.localeCompare(b.description, 'en', { ignorePunctuation: true }))
   }
 
-  const getPrisonById = async (token: string, agencyId: string): Promise<Prison> => {
+  const getPrisonById = async (token: string, prisonId: string): Promise<Prison> => {
     const elite2Client = elite2ClientBuilder(token)
     logger.info('Retrieving single prison from elite2')
-    return elite2Client.getPrisonById(agencyId)
+    return elite2Client.getPrisonById(prisonId)
   }
 
   const updateAgencyId = async (agencyId, username, bookingId) => {
@@ -24,7 +24,7 @@ export default function createLocationService({ elite2ClientBuilder }) {
   }
 
   return {
-    getActiveAgenciesByType,
+    getPrisons,
     getPrisonById,
     updateAgencyId,
   }

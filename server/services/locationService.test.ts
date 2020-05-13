@@ -5,7 +5,7 @@ import incidentClient = require('../data/incidentClient')
 const token = 'token'
 
 const elite2Client = {
-  getActiveAgenciesByType: jest.fn(),
+  getPrisons: jest.fn(),
   getPrisonById: jest.fn(),
 }
 
@@ -19,17 +19,17 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  elite2Client.getActiveAgenciesByType.mockReset()
+  elite2Client.getPrisons.mockReset()
   elite2Client.getPrisonById.mockReset()
 })
 
 describe('locationService', () => {
-  describe('getActiveAgenciesByType', () => {
+  describe('getPrisons', () => {
     it('should return no prison', async () => {
       const prisons = ['hello']
 
-      elite2Client.getActiveAgenciesByType.mockReturnValue(prisons)
-      const result = await locationService.getActiveAgenciesByType(token, 'INST')
+      elite2Client.getPrisons.mockReturnValue(prisons)
+      const result = await locationService.getPrisons(token)
       expect(result).toEqual(prisons)
     })
 
@@ -64,29 +64,16 @@ describe('locationService', () => {
         },
       ]
 
-      elite2Client.getActiveAgenciesByType.mockReturnValue(prisonsMock)
-      const result = await locationService.getActiveAgenciesByType(token, 'INST')
+      elite2Client.getPrisons.mockReturnValue(prisonsMock)
+      const result = await locationService.getPrisons(token)
       expect(result).toEqual(prisonsInOrder)
-    })
-  })
-
-  describe('getPrisonById', () => {
-    it('should return single prison', async () => {
-      const prison = {
-        agencyId: 'MDI',
-        description: 'ABC',
-      }
-
-      elite2Client.getPrisonById.mockReturnValue(prison)
-      const result = await locationService.getPrisonById(token, 'MDI')
-      expect(result).toEqual(prison)
     })
   })
 
   describe('updateAgencyId', () => {
     it('incidentClient.updateAgencyId should be called', async () => {
-      await locationService.updateAgencyId('x', 'y', 'z')
-      expect(incidentClient.updateAgencyId).toBeCalledWith('x', 'y', 'z')
+      await locationService.updateAgencyId('BXI', 'CA user', '1')
+      expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', '1')
     })
   })
 })

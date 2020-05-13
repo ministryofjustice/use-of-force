@@ -2,14 +2,19 @@ const request = require('supertest')
 const { appWithAllRoutes } = require('./testutils/appSetup')
 
 const locationService = {
-  getActiveAgenciesByType: jest.fn(),
+  getPrisons: jest.fn(),
 }
 
 let app
 
 beforeEach(() => {
   app = appWithAllRoutes({ locationService })
-  locationService.getActiveAgenciesByType.mockResolvedValue([])
+  locationService.getPrisons.mockResolvedValue([
+    {
+      agencyId: 'BXI',
+      description: 'Brixton',
+    },
+  ])
 })
 
 afterEach(() => {
@@ -26,13 +31,12 @@ describe('GET /change-prison', () => {
       })
   })
 
-  test('should contain the Continue and Cancel buttons', () => {
+  test('should contain Brixton as one of the options in the select', () => {
     return request(app)
       .get(`/report/-19/change-prison`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Continue')
-        expect(res.text).toContain('Cancel')
+        expect(res.text).toContain('Brixton')
       })
   })
 })
