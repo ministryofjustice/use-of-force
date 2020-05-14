@@ -25,11 +25,6 @@ module.exports = function createReportService({
     return complete
   }
 
-  async function isDraftInProgress(username, bookingId) {
-    const { id } = await getCurrentDraft(username, bookingId)
-    return !isNilOrEmpty(id)
-  }
-
   async function update({ currentUser, formId, bookingId, formObject, incidentDate }) {
     const incidentDateValue = incidentDate ? incidentDate.value : null
     const formValue = !isNilOrEmpty(formObject) ? formObject : null
@@ -132,6 +127,5 @@ module.exports = function createReportService({
     submit,
     deleteReport,
     getReportStatus,
-    isDraftInProgress,
   }
 }

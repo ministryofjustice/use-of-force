@@ -14,10 +14,6 @@ const reportingService = {
   getIncidentsByAgeGroup: jest.fn(),
 }
 
-const reportService = {
-  isDraftInProgress: jest.fn(),
-}
-
 const offenderService = {
   getOffenderImage: jest.fn(),
 }
@@ -26,7 +22,6 @@ const route = createRouter({
   authenticationMiddleware,
   offenderService,
   reportingService,
-  reportService,
   systemToken: username => `${username}-system-token`,
 })
 
@@ -46,17 +41,7 @@ describe('api', () => {
     beforeEach(() => {
       userSupplier.mockReturnValue(user)
     })
-    it('should render using user creds for non saved draft', async () => {
-      reportService.isDraftInProgress.mockResolvedValue(false)
-      await request(app)
-        .get('/offender/1234/image')
-        .expect('Content-Type', 'image/jpeg')
-        .expect(() => {
-          expect(offenderService.getOffenderImage).toBeCalledWith('token', '1234')
-        })
-    })
-    it('should render using system creds for saved draft', async () => {
-      reportService.isDraftInProgress.mockResolvedValue(true)
+    it('should render using system creds for retrieving image', async () => {
       await request(app)
         .get('/offender/1234/image')
         .expect('Content-Type', 'image/jpeg')

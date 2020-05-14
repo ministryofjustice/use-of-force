@@ -30,7 +30,7 @@ describe('GET /task-list', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-        expect(offenderService.getOffenderDetails).toBeCalledWith('token', '-35')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '-35')
       })
   })
 

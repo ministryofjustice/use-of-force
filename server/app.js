@@ -244,7 +244,6 @@ module.exports = function createApp({
       authenticationMiddleware,
       offenderService,
       reportingService,
-      reportService,
       systemToken,
     })
   )
