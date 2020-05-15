@@ -67,6 +67,12 @@ env:
         name: {{ template "app.name" . }}
         key: NOTIFY_API_KEY
 
+  - name: TAG_MANAGER_KEY
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: TAG_MANAGER_KEY
+
   - name: SESSION_SECRET
     valueFrom:
       secretKeyRef:

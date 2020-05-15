@@ -97,4 +97,5 @@ module.exports = {
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
   https: production,
+  tagManagerKey: get('TAG_MANAGER_KEY', null),
 }
