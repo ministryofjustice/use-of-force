@@ -102,6 +102,26 @@ module.exports = {
       },
     })
   },
+  stubPrison: prisonId => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/api/agencies/${prisonId}\\?activeOnly=false`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: {
+          agencyId: prisonId,
+          description: 'Moorland',
+          agencyType: 'INST',
+          active: true,
+        },
+      },
+    })
+  },
   stubLocations: agencyId => {
     return stubFor({
       request: {

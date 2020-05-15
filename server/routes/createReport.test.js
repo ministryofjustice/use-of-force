@@ -39,8 +39,7 @@ beforeEach(() => {
     assignedLivingUnit: { agencyName: 'Brixton' },
   })((involvedStaffService.lookup = async () => []))
   offenderService.getIncidentLocations.mockResolvedValue([])
-  locationService.getPrisonById.mockResolvedValue({})
-  locationService.getPrisonById.mockRejectedValue(null)
+  locationService.getPrisonById.mockResolvedValue(null)
 })
 
 afterEach(() => {

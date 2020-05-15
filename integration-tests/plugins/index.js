@@ -36,6 +36,8 @@ module.exports = on => {
     stubPrisons: elite2api.stubPrisons,
 
     stubSearch: search.stubSearch,
+    
+    stubPrison: elite2api.stubPrison,
 
     getCurrentDraft: (userId, bookingId, formName) => getCurrentDraft(userId, bookingId, formName),
 

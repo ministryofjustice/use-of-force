@@ -123,10 +123,7 @@ module.exports = function NewIncidentRoutes({
     const involvedStaff =
       (input && input.involvedStaff) || (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
 
-    const prison = await locationService.getPrisonById(token, prisonId).catch(err => {
-      logger.warn(err, 'Prison details not found in elite-2')
-      return { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) }
-    })
+    const prison = await locationService.getPrisonById(token, prisonId)
 
     const data = {
       ...input,
@@ -135,7 +132,7 @@ module.exports = function NewIncidentRoutes({
       incidentDate: getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       involvedStaff,
-      prison: prison.description,
+      prison: prison || { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) },
       editMode,
       bookingId,
     }

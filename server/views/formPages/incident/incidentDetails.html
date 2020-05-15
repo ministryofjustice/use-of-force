@@ -106,10 +106,10 @@
     {% endif %}
 
       <span class="govuk-label--s">Prison:&nbsp;</span>
-      <span data-qa="prison"> 
-        {{ data.prison }} &nbsp; 
-        <a id="change-date" class="govuk-link" data-qa="prison" href='/report/{{data.bookingId}}/{{ formName }}'>
-          Change<span class="govuk-visually-hidden"> change prison location</span>
+      <span data-qa="prison" id='prison'> 
+        {{ data.prison.description }} &nbsp; 
+        <a id="change-prison-link" class="govuk-link" data-qa="change-prison-link" href='/report/{{data.bookingId}}/{{ formName }}'>
+          Change<span class="govuk-visually-hidden"> change prison </span>
         </a>
       </span>
 
