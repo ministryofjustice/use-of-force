@@ -20,6 +20,10 @@ const reviewService = {
   getReport: jest.fn(),
 }
 
+const locationService = {
+  getPrisonById: jest.fn().mockResolvedValue({ agencyId: 'MDI', description: 'HMP Moorland' }),
+}
+
 const involvedStaffService = {
   getInvolvedStaff: () => [],
 }
@@ -28,7 +32,10 @@ let app
 
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
-  app = appWithAllRoutes({ reportService, involvedStaffService, offenderService, reviewService }, userSupplier)
+  app = appWithAllRoutes(
+    { reportService, involvedStaffService, offenderService, reviewService, locationService },
+    userSupplier
+  )
 })
 
 afterEach(() => {

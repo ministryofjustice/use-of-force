@@ -7,6 +7,7 @@ const reportSummary = require('./model/reportSummary')
 module.exports = function CreateReportRoutes({
   reportService,
   involvedStaffService,
+  locationService,
   offenderService,
   reviewService,
   systemToken,
@@ -27,7 +28,7 @@ module.exports = function CreateReportRoutes({
   })
 
   const buildReportData = async (report, res) => {
-    const { id, form, incidentDate, bookingId, reporterName, submittedDate } = report
+    const { id, form, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
     const offenderDetail = await offenderService.getOffenderDetails(
       await systemToken(res.locals.user.username),
       bookingId
@@ -44,12 +45,14 @@ module.exports = function CreateReportRoutes({
       statementId: staff.statementId,
     }))
 
+    const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
+
     return {
       incidentId: id,
       reporterName,
       submittedDate,
       bookingId,
-      ...reportSummary(form, offenderDetail, locationDescription, involvedStaffNameAndUsernames, incidentDate),
+      ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
     }
   }
 

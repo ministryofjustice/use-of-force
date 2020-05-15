@@ -12,6 +12,7 @@ context('A use of force coordinator can remove involved staff', () => {
     cy.task('reset')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')

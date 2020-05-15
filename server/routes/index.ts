@@ -29,6 +29,7 @@ export default function Index({
   const incidents = CreateIncidentRoutes({
     reportService,
     involvedStaffService,
+    locationService,
     offenderService,
     reviewService,
     systemToken,

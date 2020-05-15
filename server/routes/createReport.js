@@ -1,10 +1,9 @@
 const moment = require('moment')
-const { isNilOrEmpty, firstItem, getIn } = require('../utils/utils')
+const { isNilOrEmpty, firstItem } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const types = require('../config/types')
 const { processInput, mergeIntoPayload } = require('../services/validation')
 const { paths, full, partial } = require('../config/incident')
-const logger = require('../../log')
 
 const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
   const { bookingId } = req.params
@@ -16,6 +15,12 @@ const renderForm = ({ req, res, form, formName, data = {}, editMode }) => {
     errors,
     editMode,
   })
+}
+
+const SubmitType = {
+  SAVE_AND_CONTINUE: 'save-and-continue',
+  SAVE_AND_RETURN: 'save-and-return',
+  SAVE_AND_CHANGE_PRISON: 'save-and-change-prison',
 }
 
 const getFromFlash = (req, name, defaultValue) => {
@@ -58,16 +63,24 @@ module.exports = function NewIncidentRoutes({
     return { additionalFields: { involvedStaff: verifiedInvolvedStaff } }
   }
 
-  const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, editMode, saveAndContinue) => {
+  const getSubmitRedirectLocation = async (req, payloadFields, form, bookingId, editMode, submitType) => {
     const { username } = req.user
 
-    if (
-      form === 'incidentDetails' &&
-      payloadFields.involvedStaff &&
-      payloadFields.involvedStaff.some(staff => staff.missing || staff.verified === false)
-    ) {
-      req.flash('nextDestination', getDestination({ editMode, saveAndContinue }))
-      return `/report/${bookingId}/username-does-not-exist`
+    if (form === 'incidentDetails') {
+      if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
+        return editMode ? `/report/${bookingId}/edit-change-prison` : `/report/${bookingId}/change-prison`
+      }
+
+      if (
+        payloadFields.involvedStaff &&
+        payloadFields.involvedStaff.some(staff => staff.missing || staff.verified === false)
+      ) {
+        req.flash(
+          'nextDestination',
+          getDestination({ editMode, saveAndContinue: submitType === SubmitType.SAVE_AND_CONTINUE })
+        )
+        return `/report/${bookingId}/username-does-not-exist`
+      }
     }
 
     if (editMode) {
@@ -79,7 +92,8 @@ module.exports = function NewIncidentRoutes({
     }
 
     const nextPath = getPathFor({ data: payloadFields, config: paths[form] })(bookingId)
-    return saveAndContinue ? nextPath : `/report/${bookingId}/report-use-of-force`
+
+    return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
   const getIncidentDate = (savedValue, formValue) => {
@@ -132,7 +146,7 @@ module.exports = function NewIncidentRoutes({
       incidentDate: getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       involvedStaff,
-      prison: prison || { description: getIn(['assignedLivingUnit', 'agencyName'], offenderDetail) },
+      prison,
       editMode,
       bookingId,
     }
@@ -147,9 +161,9 @@ module.exports = function NewIncidentRoutes({
 
   const submit = (formName, editMode) => async (req, res) => {
     const { bookingId } = req.params
-    const saveAndContinue = req.body.submit === 'save-and-continue'
+    const { submitType } = req.body
 
-    const fullValidation = editMode || saveAndContinue
+    const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
     const { payloadFields, extractedFields, errors } = processInput({
       validationSpec: fullValidation ? full[formName] : partial[formName],
@@ -199,7 +213,7 @@ module.exports = function NewIncidentRoutes({
       })
     }
 
-    const location = await getSubmitRedirectLocation(req, formPayload, formName, bookingId, editMode, saveAndContinue)
+    const location = await getSubmitRedirectLocation(req, formPayload, formName, bookingId, editMode, submitType)
     return res.redirect(location)
   }
 

@@ -1,9 +1,9 @@
 module.exports = ({ locationService, systemToken }) => {
-  const viewPrisons = editMode => async (req, res) => {
+  const viewPrisons = ({ edit }) => async (req, res) => {
     const token = await systemToken(res.locals.user.username)
     const prisons = await locationService.getPrisons(token)
     const errors = req.flash('errors')
-    const data = { prisons, editMode, errors }
+    const data = { prisons, editMode: edit, errors }
     res.render('formPages/incident/changePrison', data)
   }
 

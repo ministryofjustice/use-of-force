@@ -10,6 +10,7 @@ context('A use of force reviewer can view all incidents at the current agency', 
     cy.task('reset')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')

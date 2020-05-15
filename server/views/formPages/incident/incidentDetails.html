@@ -1,12 +1,13 @@
-{% extends "../formTemplate.html" %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
-{% from "govuk/components/select/macro.njk" import govukSelect %} 
+{% extends "../formTemplate.html" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% set pageTitle = 'Incident details' %}
+{% set showCancelEditButton = data.locationId %}
 
 {% block formItems %}
 <div class="govuk-body">
@@ -19,18 +20,18 @@
           <span data-qa="offender-name"> {{ data.displayName }}</span>
         </p>
         {% set formattedDate = data.incidentDate.value | formatDate('D MMMM YYYY') %}
-        {% set editMode = not formattedDate or errors | hasErrorWithPrefix(['incidentDate[value]','incidentDate[date]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']) %}
-        <p id="read-date" class="{{'hidden' if editMode }}">
+        {% set editDate = not formattedDate or errors | hasErrorWithPrefix(['incidentDate[value]','incidentDate[date]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']) %}
+        <p id="read-date" class="{{'hidden' if editDate }}">
           <span class="govuk-label--s">Date of incident:&nbsp;</span>
           <span data-qa="date-and-time">
             {{ formattedDate }} &nbsp;<a id="change-date" href="" class="govuk-link">Change</a>
           </span>
         </p>
-        <div id="edit-date" class="edit-incident-date {{'hidden' if not editMode }}">
-        {% macro errorClass(field) -%}
+        <div id="edit-date" class="edit-incident-date {{'hidden' if not editDate }}">
+          {% macro errorClass(field) -%}
           {{ ' govuk-input--error' if errors | hasErrorWithPrefix([field, 'incidentDate[value]', 'incidentDate[isFutureDate]']) else '' }}
-        {%- endmacro %}
-        {{ govukDateInput({
+          {%- endmacro %}
+          {{ govukDateInput({
           id: "incident-date",
           fieldset: {
             legend: {
@@ -105,13 +106,13 @@
     {% set formName = "change-prison" %}
     {% endif %}
 
-      <span class="govuk-label--s">Prison:&nbsp;</span>
-      <span data-qa="prison" id='prison'> 
-        {{ data.prison.description }} &nbsp; 
-        <a id="change-prison-link" class="govuk-link" data-qa="change-prison-link" href='/report/{{data.bookingId}}/{{ formName }}'>
-          Change<span class="govuk-visually-hidden"> change prison </span>
-        </a>
-      </span>
+    <span class="govuk-label--s">Prison:&nbsp;</span>
+    <span data-qa="prison" id='prison'>
+      {{ data.prison.description }} &nbsp;
+      <a id="change-prison-link" class="govuk-link" data-qa="change-prison-link" href='#'>
+        Change<span class="govuk-visually-hidden"> prison </span>
+      </a>
+    </span>
 
   </div>
   <hr />
@@ -194,7 +195,8 @@
           </div>
           <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
             {% if showRemove %}
-            <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+            <button type="button"
+              class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
               Remove
             </button>
             {% endif %}
@@ -202,7 +204,7 @@
         </div>
         {% endcall %}
         {% endmacro %}
-        
+
         {% for staffMember in data.involvedStaff %}
         {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
         {% else %}
@@ -226,7 +228,7 @@
       <h3>Witnesses to the incident</h3>
       <div class="add-another-witness">
         {% macro addWitness(index, value, showRemove) %}
-          {% call govukFieldset({ classes: 'add-another__item' }) %}
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-third" id="witnesses[{{index}}]">
             {{
@@ -247,16 +249,17 @@
           </div>
           <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
             {% if showRemove %}
-              <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+            <button type="button"
+              class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
               Remove
-              </button>
+            </button>
             {% endif  %}
           </div>
         </div>
-        {% endcall %} 
-      {% endmacro %}
-      
-      {% for witness in data.witnesses %}
+        {% endcall %}
+        {% endmacro %}
+
+        {% for witness in data.witnesses %}
         {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
         {% else %}
         {{ addWitness(index = 0, value = null, showRemove = false) }}
@@ -278,13 +281,25 @@
 
 {% block script %}
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     new AddAnother($('.add-another-staff-member'), '.remove-button-container')
     new AddAnother($('.add-another-witness'), '.remove-button-container')
-    $('#change-date').click(function(e) {
+    $('#change-date').click(function (e) {
       $('#read-date, #edit-date').toggle()
       return false
     })
+
+    $('#change-prison-link').click((e) => {
+      e.preventDefault()
+      var input = $("<input>")
+               .attr("type", "hidden")
+               .attr("name", "submitType").val("save-and-change-prison");
+      $('#form').append(input)
+      $('form').submit()
+})
   })
+
+
+
 </script>
 {% endblock %}

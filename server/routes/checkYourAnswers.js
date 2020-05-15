@@ -44,11 +44,11 @@ module.exports = function CheckAnswerRoutes({
         ...draftInvolvedStaff.map(staff => ({ name: properCaseFullName(staff.name), username: staff.username })),
       ]
 
-      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
-
       const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
 
-      return res.render('pages/check-your-answers', { data, bookingId, prison })
+      const data = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+
+      return res.render('pages/check-your-answers', { data, bookingId })
     },
 
     submit: async (req, res) => {

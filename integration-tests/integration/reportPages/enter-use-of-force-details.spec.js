@@ -8,6 +8,7 @@ context('Submitting use of force details page', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
     cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
   })

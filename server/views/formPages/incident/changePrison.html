@@ -1,5 +1,7 @@
-{% extends "../formTemplate.html" %}
+{% extends "../../partials/layout.html" %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
 
@@ -42,17 +44,27 @@
     </div>
   </div>
 
+    {% if editMode %}
+      {% set continueOrSave = 'Save' %}
+    {% else %}
+      {% set continueOrSave = 'Continue' %}
+    {% endif %}
+
     {{ govukButton({
-      text: "Continue",
+      text: continueOrSave,
       name: "submit",
       value: 'save-and-continue',
       attributes: {'data-qa': 'save-and-continue'}
     }) }}
 
-    {% if editMode %}
-      {% set formName = "edit-incident-details" %}
-    {% else %}
-      {% set formName = "incident-details" %}
-    {% endif %}
+    {{ govukButton({
+      text: "Cancel",
+      name: "submit",
+      value: 'cancel',
+      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {'data-qa': 'cancel'}
+    }) }}
 
+</form>
 
+{% endblock %}
