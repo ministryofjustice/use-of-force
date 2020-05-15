@@ -1,11 +1,14 @@
 const nunjucks = require('nunjucks')
 const moment = require('moment')
+const { tagManagerKey } = require('../config')
 
 module.exports = (app, path) => {
   const njkEnv = nunjucks.configure([path.join(__dirname, '../../server/views'), 'node_modules/govuk-frontend/'], {
     autoescape: true,
     express: app,
   })
+
+  njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
 
   njkEnv.addFilter('findError', (array, formFieldId) => {
     const item = array.find(error => error.href === `#${formFieldId}`)
