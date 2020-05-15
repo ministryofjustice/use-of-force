@@ -56,7 +56,7 @@ describe('GET /section/form', () => {
         expect(res.text).toContain('Leeds prison')
       })
   })
-  
+
   test('should render incident-details for existing report using system creds', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)
