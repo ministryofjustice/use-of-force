@@ -74,9 +74,9 @@ const transientSchema = joi.object({
   involvedStaff: optionalInvolvedStaff,
 
   witnesses: arrayOfObjects({
-    name: requiredPatternMsg(namePattern)('Witness names can only contain letters, spaces, hyphens, apostrophe').alter(
-      optionalForPartialValidation
-    ),
+    name: requiredPatternMsg(namePattern)(
+      'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe'
+    ).alter(optionalForPartialValidation),
   })
     .ruleset.unique(caseInsensitiveComparator('name'))
     .message("Witness '{#value.name}' has already been added - remove this witness"),
