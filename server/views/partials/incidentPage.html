@@ -4,7 +4,7 @@
 
 {% macro exitLink(qa) %}
     <div class="govuk-grid-column-full">
-        <a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="{{qa}}">Exit to Digital Prison Services</a>
+        <a href="{{ links.exitUrl }}" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" data-qa="{{qa}}">Exit to Digital Prison Services</a>
     </div>
 {% endmacro %}
 
@@ -40,6 +40,11 @@
                 Your reports
             </a>
             </li>
+            <li class="float-right" >
+                <a class="govuk-link govuk-link--no-visited-state tab-link" data-qa="report-in-another-prison-link" href="/search-for-prisoner">
+                    Report use of force on a prisoner in another prison
+                </a>
+                </li>
         </ul>
 
         {% block tabContent %}

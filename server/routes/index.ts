@@ -1,18 +1,18 @@
-const express = require('express')
-const flash = require('connect-flash')
-const bodyParser = require('body-parser')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
-const { coordinatorOnly, reviewerOrCoordinatorOnly } = require('../middleware/roleCheck')
+import express, { IRouterMatcher } from 'express'
+import flash from 'connect-flash'
+import bodyParser from 'body-parser'
+import asyncMiddleware from '../middleware/asyncMiddleware'
+import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../middleware/roleCheck'
 
-const CreateIncidentRoutes = require('./incidents')
-const CreateStatementRoutes = require('./statements')
-const CreateReportRoutes = require('./createReport')
-const CreateCheckYourAnswerRoutes = require('./checkYourAnswers')
-const CreateReportUseOfForceRoutes = require('./reportUseOfForce')
-const CreateCoordinatorRoutes = require('./coordinator')
-const CreateSearchForPrisonerRoutes = require('./searchForPrisoner')
+import CreateIncidentRoutes from './incidents'
+import CreateStatementRoutes from './statements'
+import CreateReportRoutes from './createReport'
+import CreateSearchForPrisonerRoutes from './searchForPrisoner'
+import CreateCheckYourAnswerRoutes from './checkYourAnswers'
+import CreateReportUseOfForceRoutes from './reportUseOfForce'
+import CreateCoordinatorRoutes from './coordinator'
 
-module.exports = function Index({
+export default function Index({
   authenticationMiddleware,
   statementService,
   offenderService,
@@ -64,7 +64,7 @@ module.exports = function Index({
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
-    const reportPath = formName => `/report/:bookingId/${formName}`
+    const reportPath = (formName): string => `/report/:bookingId/${formName}`
 
     get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
@@ -114,6 +114,7 @@ module.exports = function Index({
     post('/:reportId/add-comment-to-statement', statements.saveAdditionalComment)
 
     get('/search-for-prisoner', searchForPrisoner.view)
+    get('/search-for-prisoner-results', searchForPrisoner.showResults)
     post('/search-for-prisoner', searchForPrisoner.submit)
   }
 

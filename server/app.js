@@ -1,3 +1,5 @@
+import createRouter from './routes'
+
 const express = require('express')
 const loggingSerialiser = require('./loggingSerialiser') // eslint-disable-line
 const log = require('bunyan-request-logger')({ name: 'Use of force http', serializers: loggingSerialiser })
@@ -16,7 +18,6 @@ const RedisStore = require('connect-redis')(session)
 
 const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
-const createRouter = require('./routes')
 
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
@@ -32,7 +33,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({
+export default function createApp({
   reportService,
   involvedStaffService,
   offenderService,

@@ -5,7 +5,7 @@ import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 
-const createApp = require('./app')
+import createApp from './app'
 
 const db = require('./data/dataAccess/db')
 const incidentClient = require('./data/incidentClient')
