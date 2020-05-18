@@ -1,6 +1,8 @@
 const auth = require('../mockApis/auth')
 const { resetStubs } = require('../mockApis/wiremock')
 const elite2api = require('../mockApis/elite2api')
+const search = require('../mockApis/search')
+
 const {
   clearDb,
   getCurrentDraft,
@@ -30,6 +32,10 @@ module.exports = on => {
     stubOffenders: elite2api.stubOffenders,
 
     stubLocations: elite2api.stubLocations,
+
+    stubPrisons: elite2api.stubPrisons,
+
+    stubSearch: search.stubSearch,
 
     getCurrentDraft: (userId, bookingId, formName) => getCurrentDraft(userId, bookingId, formName),
 

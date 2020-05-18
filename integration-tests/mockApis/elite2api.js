@@ -167,4 +167,32 @@ module.exports = {
       },
     })
   },
+  stubPrisons: () => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/api/agencies/type/INST\\?active=true`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: [
+          {
+            description: 'HMP Moorland',
+            agencyId: 'MDI',
+          },
+          {
+            description: 'HMP Leeds',
+            agencyId: 'LEI',
+          },
+          {
+            description: 'HMP Risley',
+            agencyId: 'RSI',
+          },
+        ],
+      },
+    })
+  },
 }

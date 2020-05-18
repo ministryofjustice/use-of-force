@@ -2,7 +2,9 @@
 
 SortableTable = function(tableId) {
   const sortableTable = document.getElementById(tableId)
-  sortTable(sortableTable)
+  if (sortableTable) {
+    sortTable(sortableTable)
+  }
 }
 
 let sortOrder

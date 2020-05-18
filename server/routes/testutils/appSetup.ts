@@ -1,16 +1,16 @@
-/* eslint-disable */
+import express from 'express'
+import bodyParser from 'body-parser'
+import cookieSession from 'cookie-session'
+import path from 'path'
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const cookieSession = require('cookie-session')
-const path = require('path')
-const db = require('../../../server/data/dataAccess/db')
-const nunjucksSetup = require('../../utils/nunjucksSetup')
-const errorHandler = require('../../errorHandler')
-const allRoutes = require('../index')
-const { authenticationMiddleware } = require('./mockAuthentication')
+import allRoutes from '../index'
+import * as db from '../../data/dataAccess/db'
+import nunjucksSetup from '../../utils/nunjucksSetup'
+import errorHandler from '../../errorHandler'
 
-const user = {
+import { authenticationMiddleware } from './mockAuthentication'
+
+export const user = {
   firstName: 'first',
   lastName: 'last',
   userId: 'id',
@@ -21,7 +21,7 @@ const user = {
   activeCaseLoadId: 'MDI',
 }
 
-const reviewerUser = {
+export const reviewerUser = {
   firstName: 'first',
   lastName: 'last',
   userId: 'id',
@@ -33,7 +33,7 @@ const reviewerUser = {
   activeCaseLoadId: 'LEI',
 }
 
-const coordinatorUser = {
+export const coordinatorUser = {
   firstName: 'first',
   lastName: 'last',
   userId: 'id',
@@ -45,13 +45,11 @@ const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-const appSetup = (route, userSupplier = () => user) => {
+export const appSetup = (route, userSupplier = () => user) => {
   const app = express()
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-  db.pool.connect = jest.fn()
-  // @ts-ignore
-  db.pool.connect.mockResolvedValue(mockTransactionalClient)
+  db.pool.connect = jest.fn().mockResolvedValue(mockTransactionalClient)
 
   app.set('view engine', 'html')
 
@@ -72,7 +70,7 @@ const appSetup = (route, userSupplier = () => user) => {
   return app
 }
 
-const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
+export const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
   const route = allRoutes({
     authenticationMiddleware,
     statementService: {},
@@ -86,5 +84,3 @@ const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
   })
   return appSetup(route, userSupplier)
 }
-
-module.exports = { appSetup, appWithAllRoutes, user, reviewerUser, coordinatorUser }
