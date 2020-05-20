@@ -1,6 +1,7 @@
 const nunjucks = require('nunjucks')
 const moment = require('moment')
-const { tagManagerKey } = require('../config')
+const nodeCrypto = require('crypto')
+const { key: tagManagerKey, environment: tagManagerEnvironment } = require('../config').googleTagManager
 
 module.exports = (app, path) => {
   const njkEnv = nunjucks.configure([path.join(__dirname, '../../server/views'), 'node_modules/govuk-frontend/'], {
@@ -9,6 +10,7 @@ module.exports = (app, path) => {
   })
 
   njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
+  njkEnv.addGlobal('googleTagManagerEnvironment', tagManagerEnvironment)
 
   njkEnv.addFilter('findError', (array, formFieldId) => {
     const item = array.find(error => error.href === `#${formFieldId}`)
@@ -74,4 +76,13 @@ module.exports = (app, path) => {
     }
     return value ? 'Yes' : 'No'
   })
+
+  njkEnv.addFilter('MD5', value =>
+    value
+      ? nodeCrypto
+          .createHash('md5')
+          .update(value)
+          .digest('hex')
+      : value
+  )
 }

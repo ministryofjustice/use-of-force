@@ -97,5 +97,8 @@ module.exports = {
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
   https: production,
-  tagManagerKey: get('TAG_MANAGER_KEY', null),
+  googleTagManager: {
+    key: get('TAG_MANAGER_KEY', null),
+    environment: get('TAG_MANAGER_ENVIRONMENT', ''), // The additional GTM snippet string that configures a non-prod environment
+  },
 }

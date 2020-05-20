@@ -73,6 +73,12 @@ env:
         name: {{ template "app.name" . }}
         key: TAG_MANAGER_KEY
 
+  - name: TAG_MANAGER_ENVIRONMENT
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: TAG_MANAGER_ENVIRONMENT
+
   - name: SESSION_SECRET
     valueFrom:
       secretKeyRef:
