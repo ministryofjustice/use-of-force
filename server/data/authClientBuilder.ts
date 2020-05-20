@@ -1,11 +1,11 @@
-const superagent = require('superagent')
+import superagent from 'superagent'
 /** @type {any} */
-const Agent = require('agentkeepalive')
-const querystring = require('querystring')
-const { HttpsAgent } = require('agentkeepalive')
-const logger = require('../../log')
-const config = require('../config')
-const { generateOauthClientToken } = require('../authentication/clientCredentials')
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import querystring from 'querystring'
+import sanitiseError from '../utils/errorSanitiser'
+import logger from '../../log'
+import config from '../config'
+import { generateOauthClientToken } from '../authentication/clientCredentials'
 
 const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
@@ -21,40 +21,14 @@ const agentOptions = {
 
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-module.exports = {
-  authClientBuilder(token) {
-    const get = getBuilder(token)
-    return {
-      async getEmail(username) {
-        const path = `${apiUrl}/api/user/${username}/email`
-        const { status, body } = await get({ path, raw: true })
-        return {
-          email: body.email,
-          username: body.username || username,
-          exists: status < 400,
-          verified: status === 200,
-        }
-      },
-      async getUser(username) {
-        const path = `${apiUrl}/api/user/${username}`
-        const body = await get({ path })
-        return body
-      },
-    }
-  },
-
-  async systemToken(username) {
-    const systemClientToken = await getSystemClientToken(username)
-    return systemClientToken.access_token
-  },
-}
-
-async function getSystemClientToken(username) {
+async function getSystemClientToken(username?: string) {
   const clientToken = generateOauthClientToken(config.apis.oauth2.systemClientId, config.apis.oauth2.systemClientSecret)
 
   const oauthRequest = username
-    ? querystring.stringify({ grant_type: 'client_credentials', username })
-    : querystring.stringify({ grant_type: 'client_credentials' })
+    ? // eslint-disable-next-line @typescript-eslint/camelcase
+      querystring.stringify({ grant_type: 'client_credentials', username })
+    : // eslint-disable-next-line @typescript-eslint/camelcase
+      querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
     `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
@@ -89,8 +63,34 @@ function getBuilder(token) {
 
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, `Error calling auth: ${path}`)
+      logger.warn({ path, ...sanitiseError(error), query }, `Error calling auth: ${path}`)
       throw error
     }
   }
+}
+
+export function authClientBuilder(token) {
+  const get = getBuilder(token)
+  return {
+    async getEmail(username) {
+      const path = `${apiUrl}/api/user/${username}/email`
+      const { status, body } = await get({ path, raw: true })
+      return {
+        email: body.email,
+        username: body.username || username,
+        exists: status < 400,
+        verified: status === 200,
+      }
+    },
+    async getUser(username) {
+      const path = `${apiUrl}/api/user/${username}`
+      const body = await get({ path })
+      return body
+    },
+  }
+}
+
+export async function systemToken(username?: string) {
+  const systemClientToken = await getSystemClientToken(username)
+  return systemClientToken.access_token
 }

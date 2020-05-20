@@ -1,11 +1,12 @@
-const nock = require('nock')
-const config = require('../config')
-const { authClientBuilder, systemToken } = require('./authClientBuilder')
+import nock from 'nock'
+import config from '../config'
+import { authClientBuilder, systemToken } from './authClientBuilder'
 
 describe('authClient', () => {
   let fakeApi
   let client
 
+  // eslint-disable-next-line @typescript-eslint/camelcase
   const token = { access_token: 'token-1' }
 
   beforeEach(() => {
