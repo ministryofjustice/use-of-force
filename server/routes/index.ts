@@ -1,4 +1,3 @@
-
 import express from 'express'
 import flash from 'connect-flash'
 import bodyParser from 'body-parser'
@@ -13,6 +12,7 @@ import CreateCheckYourAnswerRoutes from './checkYourAnswers'
 import CreateReportUseOfForceRoutes from './reportUseOfForce'
 import CreateCoordinatorRoutes from './coordinator'
 import CreateChangePrisonRoutes from './changePrison'
+
 export default function Index({
   authenticationMiddleware,
   statementService,
@@ -33,7 +33,6 @@ export default function Index({
     offenderService,
     reviewService,
     systemToken,
-    locationService
   })
 
   const statements = CreateStatementRoutes({ statementService, offenderService, systemToken })

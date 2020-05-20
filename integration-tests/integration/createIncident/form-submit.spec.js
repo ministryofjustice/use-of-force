@@ -66,7 +66,7 @@ context('Submit the incident report', () => {
       .then(reportId => cy.task('getPayload', reportId).then(payload => expect(payload).to.deep.equal(expectedPayload)))
   })
 
-  xit('After submitting, can not resubmit, go on to view all incidents', () => {
+  it('After submitting, can not resubmit, go on to view all incidents', () => {
     cy.login(bookingId)
 
     cy.task('seedReport', {
@@ -91,7 +91,7 @@ context('Submit the incident report', () => {
     YourStatementsPage.verifyOnPage()
   })
 
-  xit('Can exit after completing report and before creating statement', () => {
+  it('Can exit after completing report and before creating statement', () => {
     cy.login(bookingId)
 
     cy.task('seedReport', {

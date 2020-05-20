@@ -103,6 +103,14 @@ module.exports = {
     })
   },
   stubPrison: prisonId => {
+    const getPrisonDescription = () => {
+      const prisons = [
+        { id: 'LEI', description: 'Leeds' },
+        { id: 'MDI', description: 'Moorland' },
+      ]
+      return prisons.find(prison => prison.id === prisonId).description
+    }
+
     return stubFor({
       request: {
         method: 'GET',
@@ -115,7 +123,7 @@ module.exports = {
         },
         jsonBody: {
           agencyId: prisonId,
-          description: 'Moorland',
+          description: getPrisonDescription(),
           agencyType: 'INST',
           active: true,
         },
@@ -138,49 +146,49 @@ module.exports = {
             locationId: 1,
             locationType: 'RESI',
             description: 'RES',
-            agencyId: 'MDI',
+            agencyId,
             currentOccupancy: 0,
-            locationPrefix: 'MDI-RES',
+            locationPrefix: `${agencyId}-RES`,
             userDescription: 'Residential',
           },
           {
             locationId: 27233,
             locationType: 'SPOR',
             description: 'GYM-5-A-SIDE COM',
-            agencyId: 'MDI',
+            agencyId,
             parentLocationId: 1,
             currentOccupancy: 0,
-            locationPrefix: 'MDI-GYM-5-A-SIDE COM',
+            locationPrefix: `${agencyId}-GYM-5-A-SIDE COM`,
             userDescription: '5-a-side Com',
           },
           {
             locationId: 27187,
             locationType: 'ADJU',
             description: 'RES-MCASU-MCASU',
-            agencyId: 'MDI',
+            agencyId,
             parentLocationId: 1,
             currentOccupancy: 0,
-            locationPrefix: 'MDI-RES-MCASU-MCASU',
+            locationPrefix: `${agencyId}-RES-MCASU-MCASU`,
             userDescription: 'Adj',
           },
           {
             locationId: 357591,
             locationType: 'ASSO',
             description: 'RES-HB6-HB6ASSO A',
-            agencyId: 'MDI',
+            agencyId,
             parentLocationId: 1,
             currentOccupancy: 0,
-            locationPrefix: 'MDI-RES-HB6-HB6ASSO A',
+            locationPrefix: `${agencyId}-RES-HB6-HB6ASSO A`,
             userDescription: 'Asso A Wing',
           },
           {
             locationId: 357592,
             locationType: 'ASSO',
             description: 'RES-HB6-HB6ASSO B',
-            agencyId: 'MDI',
+            agencyId,
             parentLocationId: 1,
             currentOccupancy: 0,
-            locationPrefix: 'MDI-RES-HB6-HB6ASSO B',
+            locationPrefix: `${agencyId}-RES-HB6-HB6ASSO B`,
             userDescription: 'Asso B Wing',
           },
         ],

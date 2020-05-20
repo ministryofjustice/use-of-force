@@ -5,6 +5,8 @@ const incidentDetailsPage = () =>
   page('Incident details', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#locationId'),
+    prison: () => cy.get('[data-qa=prison]'),
+    changePrison: () => cy.get('[data-qa=change-prison-link]'),
 
     forceType: {
       check: value => cy.get('[name="plannedUseOfForce"]').check(value),

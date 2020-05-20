@@ -1,3 +1,4 @@
+const prison = () => cy.get('[data-qa="prison"]')
 const useOfForcePlanned = () => cy.get('[data-qa="incidentType"]')
 const positiveCommunicationUsed = () => cy.get('[data-qa="positiveCommunication"]')
 const handcuffsApplied = () => cy.get('[data-qa=handcuffsApplied]')
@@ -12,6 +13,7 @@ module.exports = {
   prisonerCompliant,
   photosTaken,
   painInducingTechniques,
+  prison,
 
   verifyInputs({ involvedStaff = ['MR_ZAGATO', 'MRS_JONES'] } = {}) {
     cy.get('[data-qa="incidentDate"]')
@@ -22,6 +24,9 @@ module.exports = {
       .invoke('text')
       .invoke('trim')
       .should('match', /\d{2}:\d{2}/)
+
+    prison().contains('Moorland')
+
     cy.get('[data-qa="location"]').contains('ASSO A Wing')
     useOfForcePlanned().contains('Yes')
     involvedStaff.forEach(staff => {

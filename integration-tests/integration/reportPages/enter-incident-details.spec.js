@@ -244,4 +244,12 @@ context('Submitting details page form', () => {
       .name()
       .should('not.exist')
   })
+  it('Displays the current prison', () => {
+    cy.login(bookingId)
+    fillFormAndSave()
+    cy.go('back')
+
+    const updatedIncidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    updatedIncidentDetailsPage.prison().contains('Moorland')
+  })
 })
