@@ -1,6 +1,6 @@
-const nock = require('nock')
-const config = require('../config')
-const elite2ClientBuilder = require('./elite2ClientBuilder')
+import nock from 'nock'
+import config from '../config'
+import elite2ClientBuilder from './elite2ClientBuilder'
 
 describe('elite2Client', () => {
   let fakeElite2Api

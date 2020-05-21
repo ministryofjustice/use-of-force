@@ -1,11 +1,18 @@
-const superagent = require('superagent')
-/** @type {any} */
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
-const { Readable } = require('stream')
-const logger = require('../../log')
+import superagent from 'superagent'
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import { Readable } from 'stream'
+import logger from '../../log'
+import sanitiseError from '../utils/errorSanitiser'
 
-module.exports = (name, config) => {
+interface GetRequest {
+  path?: string
+  query?: any
+  headers?: object
+  responseType?: string
+  raw?: boolean
+}
+
+export default function builder(name, config) {
   const timeoutSpec = {
     response: config.timeout.response,
     deadline: config.timeout.deadline,
@@ -20,10 +27,10 @@ module.exports = (name, config) => {
 
   const agent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-  const defaultErrorLogger = error => logger.warn(error, `Error calling ${name}`)
+  const defaultErrorLogger = error => logger.warn(sanitiseError(error), `Error calling ${name}`)
 
   return token => ({
-    async get({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) {
+    async get({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetRequest = {}) {
       logger.info(`Get using user credentials: calling ${name}: ${path} ${query}`)
       try {
         const result = await superagent
@@ -96,7 +103,7 @@ module.exports = (name, config) => {
               reject(error)
             } else if (response) {
               const s = new Readable()
-              // eslint-disable-next-line no-underscore-dangle
+              // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-empty-function
               s._read = () => {}
               s.push(response.body)
               s.push(null)

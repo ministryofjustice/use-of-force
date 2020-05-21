@@ -7,13 +7,14 @@ import PrisonSearchService from './services/prisonerSearchService'
 
 import createApp from './app'
 
+import elite2ClientBuilder from './data/elite2ClientBuilder'
+
+import { authClientBuilder, systemToken } from './data/authClientBuilder'
+
 const db = require('./data/dataAccess/db')
 const incidentClient = require('./data/incidentClient')
 const statementsClient = require('./data/statementsClient')
 const reportingClient = require('./data/reportingClient')
-
-const elite2ClientBuilder = require('./data/elite2ClientBuilder')
-const { authClientBuilder, systemToken } = require('./data/authClientBuilder')
 
 const createSignInService = require('./authentication/signInService')
 
