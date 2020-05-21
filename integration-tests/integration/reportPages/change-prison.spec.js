@@ -1,6 +1,8 @@
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
 const ChangePrisonPage = require('../../pages/createReport/changePrisonPage')
+const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
+const { ReportStatus } = require('../../../server/config/types')
 
 context('Submitting details page form', () => {
   const bookingId = 1001
@@ -8,11 +10,17 @@ context('Submitting details page form', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
+    cy.task('stubLocation', '357591')
     cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubPrisons', 'MDI')
     cy.task('stubLocations', 'LEI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubPrison', 'LEI')
+    cy.task('stubPrisons', 'MDI')
+    cy.task('stubOffenders')
+    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
+    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('seedReport', { status: ReportStatus.IN_PROGRESS })
   })
 
   const fillFormAndSave = () => {
@@ -21,8 +29,7 @@ context('Submitting details page form', () => {
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
-    const detailsPage = incidentDetailsPage.save()
-    return detailsPage
+    incidentDetailsPage.save()
   }
 
   const completeIncidentDetails = () => {
@@ -45,6 +52,18 @@ context('Submitting details page form', () => {
     changePrisonPage.clickSave()
 
     incidentDetailsPage.prison().contains('Leeds')
+
+    incidentDetailsPage.location().select('Asso A Wing')
+
+    incidentDetailsPage.saveAndReturn()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.verifyOnPage()
+
+    reportUseOfForcePage.checkYourAnswersLink().click()
+
+    const checkAnswersPage = CheckAnswersPage.verifyOnPage()
+
+    checkAnswersPage.prison().contains('Leeds')
   })
 
   it('Cancelling will not edit prison', () => {

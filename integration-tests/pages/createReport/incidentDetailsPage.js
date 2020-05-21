@@ -85,6 +85,9 @@ const incidentDetailsPage = () =>
     },
     clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
+    saveAndReturn: () => {
+      cy.get('[data-qa="save-and-return"]').click()
+    },
   })
 
 export default { verifyOnPage: incidentDetailsPage }
