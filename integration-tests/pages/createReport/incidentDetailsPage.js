@@ -6,7 +6,7 @@ const incidentDetailsPage = () =>
     offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#locationId'),
     prison: () => cy.get('[data-qa=prison]'),
-    changePrison: () => cy.get('[data-qa=change-prison-link]'),
+    clickChangePrison: () => cy.get('[data-qa=change-prison-link]').click(),
 
     forceType: {
       check: value => cy.get('[name="plannedUseOfForce"]').check(value),
@@ -88,6 +88,7 @@ const incidentDetailsPage = () =>
     saveAndReturn: () => {
       cy.get('[data-qa="save-and-return"]').click()
     },
+    cancelButton: () => cy.get('[data-qa="cancel"]'),
   })
 
 export default { verifyOnPage: incidentDetailsPage }
