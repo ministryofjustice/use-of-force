@@ -23,33 +23,31 @@ context('Submitting details page form', () => {
     cy.task('seedReport', { status: ReportStatus.IN_PROGRESS })
   })
 
-  const fillFormAndSave = () => {
+  const completeIncidentDetails = () => {
+    cy.login(bookingId)
     const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
     incidentDetailsPage.save()
-  }
-
-  const completeIncidentDetails = () => {
-    cy.login(bookingId)
-    fillFormAndSave()
     cy.go('back')
   }
 
   it('Can edit prison prior to reaching check-your-answers page', () => {
     completeIncidentDetails()
 
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.clickChangePrison()
 
     const changePrisonPage = ChangePrisonPage.verifyOnPage()
 
-    changePrisonPage.changePrisonToLeeds()
+    changePrisonPage.prison().select('LEI')
 
     changePrisonPage.clickSave()
+
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.prison().contains('Leeds')
 
@@ -67,7 +65,7 @@ context('Submitting details page form', () => {
   })
 
   it('Can navigate from check-your-answers to incident-details and change prison', () => {
-    cy.login(bookingId)
+    completeIncidentDetails()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
 
@@ -75,7 +73,7 @@ context('Submitting details page form', () => {
 
     checkAnswersPage.editIncidentDetailsLink().click()
 
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.prison().contains('Moorland')
 
@@ -83,9 +81,11 @@ context('Submitting details page form', () => {
 
     const changePrisonPage = ChangePrisonPage.verifyOnPage()
 
-    changePrisonPage.changePrisonToLeeds()
+    changePrisonPage.prison().select('LEI')
 
     changePrisonPage.clickSave()
+
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.prison().contains('Leeds')
 
@@ -101,7 +101,7 @@ context('Submitting details page form', () => {
   it('Cancelling will not edit prison', () => {
     completeIncidentDetails()
 
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+    let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.prison().contains('Moorland')
 
@@ -109,9 +109,11 @@ context('Submitting details page form', () => {
 
     const changePrisonPage = ChangePrisonPage.verifyOnPage()
 
-    changePrisonPage.changePrisonToLeeds()
+    changePrisonPage.prison().select('LEI')
 
     changePrisonPage.clickCancel()
+
+    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
     incidentDetailsPage.prison().contains('Moorland')
   })

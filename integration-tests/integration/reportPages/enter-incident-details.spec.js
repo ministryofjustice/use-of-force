@@ -20,6 +20,7 @@ context('Submitting details page form', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
+    incidentDetailsPage.prison().contains('Moorland')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
@@ -243,13 +244,5 @@ context('Submitting details page form', () => {
       .staffInvolved(3)
       .name()
       .should('not.exist')
-  })
-  it('Displays the current prison', () => {
-    cy.login(bookingId)
-    fillFormAndSave()
-    cy.go('back')
-
-    const updatedIncidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-    updatedIncidentDetailsPage.prison().contains('Moorland')
   })
 })

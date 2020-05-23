@@ -103,13 +103,7 @@ module.exports = {
     })
   },
   stubPrison: prisonId => {
-    const getPrisonDescription = () => {
-      const prisons = [
-        { id: 'LEI', description: 'Leeds' },
-        { id: 'MDI', description: 'Moorland' },
-      ]
-      return prisons.find(prison => prison.id === prisonId).description
-    }
+    const descriptions = { LEI: 'Leeds', MDI: 'Moorland' }
 
     return stubFor({
       request: {
@@ -123,7 +117,7 @@ module.exports = {
         },
         jsonBody: {
           agencyId: prisonId,
-          description: getPrisonDescription(),
+          description: descriptions[prisonId],
           agencyType: 'INST',
           active: true,
         },

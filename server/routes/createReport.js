@@ -147,8 +147,6 @@ module.exports = function NewIncidentRoutes({
       locations,
       involvedStaff,
       prison,
-      editMode,
-      bookingId,
     }
 
     renderForm({ req, res, form, data, formName: 'incidentDetails', editMode })

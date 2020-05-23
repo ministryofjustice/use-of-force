@@ -7,11 +7,11 @@ module.exports = ({ locationService, systemToken }) => {
     res.render('formPages/incident/changePrison', data)
   }
 
-  const submit = editMode => async (req, res) => {
+  const submitPrison = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const { agencyId } = req.body
+    const { agencyId, submit } = req.body
     const { username } = res.locals.user
-    const saveAndContinue = req.body.submit === 'save-and-continue'
+    const saveAndContinue = submit === 'save-and-continue'
 
     if (saveAndContinue) {
       const error = [
@@ -34,7 +34,7 @@ module.exports = ({ locationService, systemToken }) => {
 
   return {
     viewPrisons: editMode => viewPrisons(editMode),
-    submit: submit(false),
-    submitEdit: submit(true),
+    submit: submitPrison(false),
+    submitEdit: submitPrison(true),
   }
 }

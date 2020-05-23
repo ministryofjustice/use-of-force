@@ -100,12 +100,6 @@
     </div>
   </div>
   <div class="govuk-!-margin-bottom-6">
-    {% if data.editMode %}
-    {% set formName = "edit-change-prison" %}
-    {% else %}
-    {% set formName = "change-prison" %}
-    {% endif %}
-
     <span class="govuk-label--s">Prison:&nbsp;</span>
     <span data-qa="prison" id='prison'>
       {{ data.prison.description }} &nbsp;
