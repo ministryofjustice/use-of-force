@@ -47,7 +47,7 @@ const statementService = createStatementService({ statementsClient, incidentClie
 const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
-const locationService = createLocationService({ elite2ClientBuilder })
+const locationService = createLocationService(elite2ClientBuilder, incidentClient)
 
 const app = createApp({
   involvedStaffService,
