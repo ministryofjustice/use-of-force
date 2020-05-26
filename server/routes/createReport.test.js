@@ -13,11 +13,11 @@ const reportService = {
 
 const offenderService = {
   getOffenderDetails: jest.fn(),
-  getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
 const locationService = {
   getPrisonById: jest.fn(),
+  getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
 const involvedStaffService = {
@@ -37,7 +37,7 @@ beforeEach(() => {
     offenderNo: '1234',
     agencyId: 'current-agency-id',
   })((involvedStaffService.lookup = async () => []))
-  offenderService.getIncidentLocations.mockResolvedValue([])
+  locationService.getIncidentLocations.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -74,7 +74,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
       })
   })
   test('should render incident-details using locations for persisted agency if existing report', () => {
@@ -84,7 +84,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
+        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
       })
   })
 })

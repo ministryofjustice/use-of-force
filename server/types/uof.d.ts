@@ -66,8 +66,6 @@ export interface OffenderService {
   getPrisonersDetails: (token: string, offenderNumbers: string[]) => Promise<PrisonerDetail[]>
   getOffenderImage: (token: string, bookingId: string) => Promise<ReadableStream>
   getOffenderNames: (token: string, offenderNos: string[]) => Promise<{ [offenderNo: string]: string }>
-  getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
-  getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
 }
 
 export interface ReportingClient {
@@ -114,4 +112,12 @@ export interface Prison {
   agencyId?: string
   agencyType?: string
   description?: string
+}
+
+export interface LocationService {
+  getPrisons: (token: string) => Promise<Prison[]>
+  getPrisonById: (token: string, prisonId: string) => Promise<Prison>
+  updateAgencyId: (agencyId, username, bookingId) => Promise<void>
+  getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
+  getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
 }

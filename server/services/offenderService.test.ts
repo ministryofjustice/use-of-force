@@ -1,4 +1,5 @@
-import serviceCreator from './offenderService'
+import offenderServiceCreator from './offenderService'
+import locationServiceCreator from './locationService'
 
 const token = 'token-1'
 
@@ -10,12 +11,15 @@ const elite2Client = {
 }
 
 const elite2ClientBuilder = jest.fn()
+const incidentClient = jest.fn()
 
-let service
+let offenderService
+let locationService
 
 beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
-  service = serviceCreator(elite2ClientBuilder)
+  offenderService = offenderServiceCreator(elite2ClientBuilder)
+  locationService = locationServiceCreator(elite2ClientBuilder, incidentClient)
 })
 
 afterEach(() => {
@@ -27,7 +31,7 @@ describe('getOffenderDetails', () => {
   it('should format display name', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: '1980-12-31' }
     elite2Client.getOffenderDetails.mockReturnValue(details)
-    const result = await service.getOffenderDetails(token, -5)
+    const result = await offenderService.getOffenderDetails(token, -5)
 
     expect(result).toEqual({
       ...details,
@@ -40,7 +44,7 @@ describe('getOffenderDetails', () => {
     const details = { firstName: 'SAM', lastName: 'SMITH' }
     elite2Client.getOffenderDetails.mockReturnValue(details)
     elite2Client.getLocations.mockReturnValue([])
-    await service.getOffenderDetails(token, -5)
+    await offenderService.getOffenderDetails(token, -5)
 
     expect(elite2ClientBuilder).toBeCalledWith(token)
   })
@@ -50,7 +54,7 @@ describe('getOffenderImage', () => {
   it('Can retrieve image', () => {
     const image = 'a stream'
     elite2Client.getOffenderImage.mockReturnValue(image)
-    service.getOffenderImage(token, -5)
+    offenderService.getOffenderImage(token, -5)
 
     expect(elite2ClientBuilder).toBeCalledWith(token)
     expect(elite2Client.getOffenderImage).toBeCalledWith(-5)
@@ -66,7 +70,7 @@ describe('getOffenders', () => {
     elite2Client.getOffenders.mockReturnValue(offenders)
 
     const offenderNos = ['AAA', 'BBB', 'AAA']
-    const names = await service.getOffenderNames(token, offenderNos)
+    const names = await offenderService.getOffenderNames(token, offenderNos)
 
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
     expect(elite2ClientBuilder).toBeCalledWith(token)
@@ -77,7 +81,7 @@ describe('getOffenders', () => {
     it('should retrieve locations', async () => {
       elite2Client.getLocations.mockReturnValue([])
 
-      const result = await service.getIncidentLocations(token, 'WRI')
+      const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([])
       expect(elite2Client.getLocations).toBeCalledWith('WRI')
@@ -93,7 +97,7 @@ describe('getOffenders', () => {
         { id: 4, userDescription: 'place 4' },
       ])
 
-      const result = await service.getIncidentLocations(token, 'WRI')
+      const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
         { id: 5, userDescription: "Prisoner's cell" },
@@ -114,7 +118,7 @@ describe('getOffenders', () => {
         { id: 4, userDescription: 'place 4' },
       ])
 
-      const result = await service.getIncidentLocations(token, 'WRI')
+      const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
         { id: 5, userDescription: "Prisoner's cell" },
@@ -133,7 +137,7 @@ describe('getOffenders', () => {
         { id: 4, userDescription: 'place 4' },
       ])
 
-      const result = await service.getIncidentLocations(token, 'WRI')
+      const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
         { id: 1, userDescription: 'place 1' },
@@ -149,7 +153,7 @@ describe('getOffenders', () => {
         { id: 5, userDescription: "Prisoner's cell" },
       ])
 
-      const result = await service.getIncidentLocations(token, 'WRI')
+      const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
         { id: 5, userDescription: "Prisoner's cell" },
@@ -158,7 +162,7 @@ describe('getOffenders', () => {
     })
 
     it('should use token', async () => {
-      await service.getIncidentLocations(token, 'WRI')
+      await locationService.getIncidentLocations(token, 'WRI')
 
       expect(elite2ClientBuilder).toBeCalledWith(token)
     })

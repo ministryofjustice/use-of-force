@@ -33,7 +33,7 @@ module.exports = function CreateReportRoutes({
       await systemToken(res.locals.user.username),
       bookingId
     )
-    const { description: locationDescription = '' } = await offenderService.getLocation(
+    const { description: locationDescription = '' } = await locationService.getLocation(
       await systemToken(res.locals.user.username),
       form.incidentDetails.locationId
     )
