@@ -10,6 +10,7 @@ context('Submitting details page form', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubUserDetailsRetrieval', 'AAAA')
     cy.task('stubUserDetailsRetrieval', 'BBBB')
     cy.task('stubUserDetailsRetrieval', 'TEST_USER')
@@ -19,6 +20,7 @@ context('Submitting details page form', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
+    incidentDetailsPage.prison().contains('Moorland')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 

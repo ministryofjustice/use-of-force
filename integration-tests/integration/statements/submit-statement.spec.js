@@ -12,6 +12,7 @@ context('Submit statement', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', 'TEST_USER')

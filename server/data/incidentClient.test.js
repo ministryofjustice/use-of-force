@@ -66,6 +66,7 @@ test('getReportForReviewer', () => {
   expect(db.query).toBeCalledWith({
     text: `select id
           , incident_date "incidentDate"
+          , agency_id "agencyId"
           , submitted_date "submittedDate"
           , reporter_name "reporterName"
           , form_response "form"
@@ -123,6 +124,7 @@ test('getReport', () => {
   expect(db.query).toBeCalledWith({
     text: `select id
           , incident_date "incidentDate"
+          , agency_id "agencyId"
           , submitted_date "submittedDate"
           , reporter_name "reporterName"
           , form_response "form"
@@ -174,6 +176,20 @@ test('updateDraftReport', () => {
             ,   updated_date = now()
             where r.id = $3`,
     values: [{}, 'date-1', 'formId'],
+  })
+})
+
+test('updateAgencyId', () => {
+  incidentClient.updateAgencyId('agencyId', 'username', 'bookingId')
+
+  expect(db.query).toBeCalledWith({
+    text: `update v_report r
+                set agency_id = COALESCE($1,   r.agency_id)
+                ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
+                where r.user_id = $2
+                and r.booking_id = $3
+                and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
+    values: ['agencyId', 'username', 'bookingId'],
   })
 })
 

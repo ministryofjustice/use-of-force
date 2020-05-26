@@ -1,7 +1,13 @@
 const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
-module.exports = function CheckAnswerRoutes({ reportService, offenderService, involvedStaffService, systemToken }) {
+module.exports = function CheckAnswerRoutes({
+  reportService,
+  offenderService,
+  involvedStaffService,
+  systemToken,
+  locationService,
+}) {
   const currentUserIfNotPresent = (involvedStaff, currentUser) =>
     involvedStaff.find(staff => staff.username === currentUser.username)
       ? []
@@ -10,9 +16,10 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-
-      const { id, form = {}, incidentDate } = await reportService.getCurrentDraft(req.user.username, bookingId)
-
+      const { id, form = {}, incidentDate, agencyId: prisonId } = await reportService.getCurrentDraft(
+        req.user.username,
+        bookingId
+      )
       const { complete } = reportService.getReportStatus(form)
 
       if (!complete) {
@@ -37,7 +44,9 @@ module.exports = function CheckAnswerRoutes({ reportService, offenderService, in
         ...draftInvolvedStaff.map(staff => ({ name: properCaseFullName(staff.name), username: staff.username })),
       ]
 
-      const data = reportSummary(form, offenderDetail, locationDescription, involvedStaff, incidentDate)
+      const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
+
+      const data = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
 
       return res.render('pages/check-your-answers', { data, bookingId })
     },

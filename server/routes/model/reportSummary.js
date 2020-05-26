@@ -8,10 +8,18 @@ const {
 } = require('../../config/types')
 const { properCaseFullName } = require('../../utils/utils')
 
-const createIncidentDetails = (offenderDetail, description, incidentDetails = {}, involvedStaff, incidentDate) => {
+const createIncidentDetails = (
+  offenderDetail,
+  prison,
+  description,
+  incidentDetails = {},
+  involvedStaff,
+  incidentDate
+) => {
   return {
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
+    prison,
     location: description,
     plannedUseOfForce: incidentDetails.plannedUseOfForce,
     staffInvolved: involvedStaff,
@@ -118,11 +126,12 @@ const extractCommaSeparatedList = (attr, dataArray = []) => {
   return dataArray.map(element => element[attr]).join(', ')
 }
 
-module.exports = (form, offenderDetail, locationDescription, involvedStaff, incidentDate) => {
+module.exports = (form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate) => {
   const { incidentDetails, useOfForceDetails, relocationAndInjuries, evidence } = form
   return {
     incidentDetails: createIncidentDetails(
       offenderDetail,
+      prison,
       locationDescription,
       incidentDetails,
       involvedStaff,

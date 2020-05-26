@@ -17,6 +17,7 @@ const checkAnswersPage = () =>
     prisonerCompliant: reportDetails.prisonerCompliant,
     photosTaken: reportDetails.photosTaken,
     verifyInputs: reportDetails.verifyInputs,
+    prison: reportDetails.prison,
 
     clickSubmit,
     backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),

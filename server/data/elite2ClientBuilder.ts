@@ -57,5 +57,10 @@ export default function builder(token) {
             : logger.warn(sanitiseError(error), `Error calling elite2`),
       })
     },
+    getPrisonById(prisonId) {
+      return restClient.get({
+        path: `/api/agencies/${prisonId}?activeOnly=false`,
+      })
+    },
   }
 }

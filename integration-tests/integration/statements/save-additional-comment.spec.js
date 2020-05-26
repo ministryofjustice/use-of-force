@@ -21,6 +21,7 @@ context('Add comments to statement', () => {
     })
     cy.task('stubOffenderDetails', bookingId)
     cy.task('stubLocations', 'MDI')
+    cy.task('stubPrison', 'MDI')
     cy.task('stubOffenders')
     cy.task('stubLocation', '357591')
   })

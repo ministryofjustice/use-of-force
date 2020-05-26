@@ -108,3 +108,10 @@ export interface PrisonerDetail {
   receptionDate?: string // ISO-8601 date format
   maritalStatus?: string
 }
+
+export interface Prison {
+  active?: boolean
+  agencyId?: string
+  agencyType?: string
+  description?: string
+}

@@ -16,6 +16,10 @@ const offenderService = {
   getIncidentLocations: jest.fn().mockReturnValue([]),
 }
 
+const locationService = {
+  getPrisonById: jest.fn(),
+}
+
 const involvedStaffService = {
   lookup: async () => [],
   removeMissingDraftInvolvedStaff: jest.fn(),
@@ -25,7 +29,7 @@ const involvedStaffService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService })
+  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService, locationService })
   reportService.getCurrentDraft.mockResolvedValue({})
   reportService.getUpdatedFormObject.mockResolvedValue({})
   offenderService.getOffenderDetails.mockReturnValue({
@@ -41,16 +45,18 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
-  test('should render incident-details for new report using system creds', () => {
-    reportService.getCurrentDraft.mockResolvedValue({})
+  test('should render Leeds prison', () => {
+    locationService.getPrisonById.mockResolvedValue({
+      description: 'Leeds prison',
+    })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Incident details')
-        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+        expect(res.text).toContain('Leeds prison')
       })
   })
+
   test('should render incident-details for existing report using system creds', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)
@@ -90,7 +96,7 @@ describe('POST save and continue /section/form', () => {
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
-        submit: 'save-and-continue',
+        submitType: 'save-and-continue',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -125,7 +131,7 @@ describe('POST save and continue /section/form', () => {
     request(app)
       .post(`/report/1/incident-details`)
       .send({
-        submit: 'save-and-continue',
+        submitType: 'save-and-continue',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -147,7 +153,7 @@ describe('POST save and return to tasklist', () => {
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
-        submit: 'save-and-return',
+        submitType: 'save-and-return',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -178,13 +184,50 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
+  test('successfully submit change prison', () => {
+    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+
+    return request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submitType: 'save-and-change-prison',
+        incidentDate: {
+          date: { day: '21', month: '01', year: '2019' },
+          time: '12:45',
+        },
+        locationId: -1,
+        plannedUseOfForce: 'true',
+        involvedStaff: [{ username: 'User_bob' }, { username: '' }],
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/change-prison')
+      .expect(() => {
+        expect(reportService.update).toBeCalledTimes(1)
+        expect(reportService.update).toBeCalledWith({
+          currentUser: user,
+          bookingId: 1,
+          formId: undefined,
+          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          formObject: {
+            incidentDetails: {
+              locationId: -1,
+              plannedUseOfForce: true,
+              involvedStaff: [{ username: 'USER_BOB' }],
+              witnesses: [{ name: 'User bob' }],
+            },
+          },
+        })
+      })
+  })
+
   test('Submitting invalid update is allowed', () => {
     involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
 
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
-        submit: 'save-and-return',
+        submitType: 'save-and-return',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -216,7 +259,7 @@ describe('POST save and return to tasklist', () => {
     request(app)
       .post(`/report/1/incident-details`)
       .send({
-        submit: 'save-and-return',
+        submitType: 'save-and-return',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -235,7 +278,7 @@ describe('POST save and return to check-your-answers', () => {
     return request(app)
       .post(`/report/1/edit-incident-details`)
       .send({
-        submit: 'save-and-continue',
+        submitType: 'save-and-continue',
         incidentDate: {
           date: { day: '21', month: '01', year: '2019' },
           time: '12:45',
@@ -270,7 +313,7 @@ describe('POST save and return to check-your-answers', () => {
     request(app)
       .post(`/report/1/edit-incident-details`)
       .send({
-        submit: 'save-and-continue',
+        submitType: 'save-and-continue',
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -295,7 +338,7 @@ describe('Submitting evidence page', () => {
       return request(app)
         .post(`/report/1/evidence`)
         .send({
-          submit: submitType,
+          submitType,
           baggedEvidence: 'true',
           bodyWornCamera: 'YES',
           bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],

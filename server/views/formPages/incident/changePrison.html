@@ -1,0 +1,70 @@
+{% extends "../../partials/layout.html" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+  {% set pageTitle = 'What prison did the use of force take place in?' %}
+
+  <div class="govuk-body">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+        <div class="govuk-!-margin-bottom-6">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{
+        govukSelect({
+          id: 'agencyId',
+          name: 'agencyId',
+          classes: 'govuk-!-width-one-third',
+          errorMessage: errors | findError('agencyId'),
+          label: {
+            text: '',
+            isPageHeading: false,
+            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+          },
+          items: prisons | toSelect('agencyId', 'description', agencyId )
+        })
+      }}
+    </div>
+  </div>
+
+    {% if editMode %}
+      {% set continueOrSave = 'Save' %}
+    {% else %}
+      {% set continueOrSave = 'Continue' %}
+    {% endif %}
+
+    {{ govukButton({
+      text: continueOrSave,
+      name: "submit",
+      value: 'save-and-continue',
+      attributes: {'data-qa': 'save-and-continue'}
+    }) }}
+
+    {{ govukButton({
+      text: "Cancel",
+      name: "submit",
+      value: 'cancel',
+      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {'data-qa': 'cancel'}
+    }) }}
+
+</form>
+
+{% endblock %}

@@ -116,4 +116,19 @@ describe('elite2Client', () => {
       expect(output).toEqual([])
     })
   })
+
+  describe('getPrisonById', () => {
+    const mockPrison = {
+      active: true,
+      agencyId: 'MDI',
+      agencyType: 'INST',
+      description: 'Moorland',
+    }
+    it('should return prison details from its id', async () => {
+      fakeElite2Api.get('/api/agencies/MDI?activeOnly=false').reply(200, mockPrison)
+
+      const output = await elite2Client.getPrisonById('MDI')
+      expect(output).toEqual(mockPrison)
+    })
+  })
 })

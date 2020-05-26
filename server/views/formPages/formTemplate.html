@@ -3,6 +3,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
+{% set showCancelEditButton =showCancelEditButton | default(true) %}
+
 {% block content %}
 
 {% if errors.length > 0 %}
@@ -12,7 +14,7 @@
   }) }}
 {% endif %}
 
-<form method="post">
+<form id="form" method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
   {% block formItems %}
@@ -23,32 +25,36 @@
 
     {{ govukButton({
       text: "Save",
-      name: "submit",
+      name: "submitType",
       value: 'save-and-continue',
       attributes: {'data-qa': 'save-and-continue'}
     }) }}
 
-    {{ govukButton({
-      text: "Cancel",
-      name: "submit",
-      href: '/report/' + data.bookingId + '/cancel-edit/' + formName,
-      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
-      attributes: {'data-qa': 'cancel'}
-    }) }}
+    {% if showCancelEditButton %}
+
+      {{ govukButton({
+        text: "Cancel",
+        name: "submitType",
+        href: '/report/' + data.bookingId + '/cancel-edit/' + formName,
+        classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+        attributes: {'data-qa': 'cancel'}
+      }) }}
+
+    {% endif %}
 
 
   {% else %}
 
     {{ govukButton({
       text: "Save and continue",
-      name: "submit",
+      name: "submitType",
       value: 'save-and-continue',
       attributes: {'data-qa': 'save-and-continue'}
     }) }}
 
     {{ govukButton({
       text: "Save and return to report use of force",
-      name: "submit",
+      name: "submitType",
       value: 'save-and-return',
       classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
       attributes: {'data-qa': 'save-and-return'}
