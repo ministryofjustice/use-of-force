@@ -69,7 +69,7 @@ context('Submitting details page form', () => {
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
 
-    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
+    let checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.editIncidentDetailsLink().click()
 
@@ -94,6 +94,8 @@ context('Submitting details page form', () => {
     incidentDetailsPage.cancelButton().should('not.exist')
 
     incidentDetailsPage.clickSave()
+
+    checkAnswersPage = CheckAnswersPage.verifyOnPage()
 
     checkAnswersPage.prison().contains('Leeds')
   })
