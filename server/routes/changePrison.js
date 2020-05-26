@@ -1,4 +1,4 @@
-module.exports = ({ locationService, systemToken }) => {
+module.exports = ({ locationService, reportService, systemToken }) => {
   const viewPrisons = ({ edit }) => async (req, res) => {
     const token = await systemToken(res.locals.user.username)
     const prisons = await locationService.getPrisons(token)
@@ -26,7 +26,7 @@ module.exports = ({ locationService, systemToken }) => {
         return res.redirect(req.originalUrl)
       }
 
-      await locationService.updateAgencyId(agencyId, username, bookingId)
+      await reportService.updateAgencyId(agencyId, username, bookingId)
     }
 
     return res.redirect(`/report/${bookingId}/${editMode ? 'edit-' : ''}incident-details`)

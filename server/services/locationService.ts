@@ -16,11 +16,6 @@ export default function createLocationService(elite2ClientBuilder, incidentClien
     return elite2Client.getPrisonById(prisonId)
   }
 
-  const updateAgencyId = async (agencyId, username, bookingId) => {
-    logger.info('updating agencyId')
-    await incidentClient.updateAgencyId(agencyId, username, bookingId)
-  }
-
   const getLocation = (token: string, locationId: string): Promise<PrisonLocation> => {
     if (!locationId) {
       return Promise.resolve({})
@@ -57,7 +52,7 @@ export default function createLocationService(elite2ClientBuilder, incidentClien
   return {
     getPrisons,
     getPrisonById,
-    updateAgencyId,
+    // updateAgencyId,
     getLocation,
     getIncidentLocations,
   }

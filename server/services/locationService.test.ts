@@ -69,13 +69,6 @@ describe('locationService', () => {
     })
   })
 
-  describe('updateAgencyId', () => {
-    it('incidentClient.updateAgencyId should be called', async () => {
-      await locationService.updateAgencyId('BXI', 'CA user', '1')
-      expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', '1')
-    })
-  })
-
   describe('getIncidentLocations', () => {
     it('should retrieve locations', async () => {
       elite2Client.getLocations.mockReturnValue([])

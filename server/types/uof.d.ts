@@ -117,7 +117,6 @@ export interface Prison {
 export interface LocationService {
   getPrisons: (token: string) => Promise<Prison[]>
   getPrisonById: (token: string, prisonId: string) => Promise<Prison>
-  updateAgencyId: (agencyId, username, bookingId) => Promise<void>
   getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
   getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
 }
