@@ -118,7 +118,7 @@
     "https-proxy-agent": "^5.0.0",
     "jwt-decode": "^2.2.0",
     "knex": "^0.20.12",
-    "moment": "^2.24.0",
+    "moment": "^2.25.3",
     "morgan": "^1.9.1",
     "notifications-node-client": "^4.7.2",
     "nunjucks": "^3.2.1",
