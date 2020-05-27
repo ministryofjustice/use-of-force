@@ -128,7 +128,7 @@ module.exports = function NewIncidentRoutes({
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
-    const locations = await offenderService.getIncidentLocations(token, prisonId)
+    const locations = await locationService.getIncidentLocations(token, prisonId)
 
     const { displayName, offenderNo } = offenderDetail
 

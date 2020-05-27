@@ -66,6 +66,7 @@ export default function Index({
   const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
   const changePrison = CreateChangePrisonRoutes({
     locationService,
+    reportService,
     systemToken,
   })
 
