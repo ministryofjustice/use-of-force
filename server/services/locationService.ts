@@ -52,7 +52,6 @@ export default function createLocationService(elite2ClientBuilder, incidentClien
   return {
     getPrisons,
     getPrisonById,
-    // updateAgencyId,
     getLocation,
     getIncidentLocations,
   }
