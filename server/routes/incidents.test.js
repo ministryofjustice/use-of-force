@@ -10,7 +10,6 @@ const reportService = {
 
 const offenderService = {
   getOffenderNames: () => [],
-  getLocation: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
 }
 
@@ -22,6 +21,7 @@ const reviewService = {
 
 const locationService = {
   getPrisonById: jest.fn().mockResolvedValue({ agencyId: 'MDI', description: 'HMP Moorland' }),
+  getLocation: () => [],
 }
 
 const involvedStaffService = {

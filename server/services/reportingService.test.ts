@@ -15,8 +15,6 @@ const offenderService = {
   getOffenderNames: jest.fn(),
   getPrisonersDetails: jest.fn(),
   getOffenderDetails: jest.fn(),
-  getIncidentLocations: jest.fn(),
-  getLocation: jest.fn(),
   getOffenderImage: jest.fn(),
 }
 

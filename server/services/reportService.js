@@ -34,6 +34,11 @@ module.exports = function createReportService({
       : startNewReport(bookingId, currentUser, incidentDateValue, formObject)
   }
 
+  const updateAgencyId = async (agencyId, username, bookingId) => {
+    logger.info('updating agencyId')
+    await incidentClient.updateAgencyId(agencyId, username, bookingId)
+  }
+
   const updateReport = async (formId, bookingId, currentUser, incidentDateValue, formValue) => {
     const { username: userId } = currentUser
     if (incidentDateValue || formValue) {
@@ -127,5 +132,6 @@ module.exports = function createReportService({
     submit,
     deleteReport,
     getReportStatus,
+    updateAgencyId,
   }
 }
