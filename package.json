@@ -117,7 +117,7 @@
     "http-errors": "^1.7.3",
     "https-proxy-agent": "^5.0.0",
     "jwt-decode": "^2.2.0",
-    "knex": "^0.20.12",
+    "knex": "^0.21.1",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "notifications-node-client": "^4.7.2",
