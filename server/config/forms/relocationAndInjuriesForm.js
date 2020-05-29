@@ -11,7 +11,7 @@ const {
 
 const f213CompletedBy = requiredStringMsg('Enter the name of who completed the F213 form')
   .pattern(namePattern)
-  .message('Names may only contain letters, spaces, hyphens or apostrophes')
+  .message('Names may only contain letters, spaces, full stops, hyphens or apostrophes')
   .alter(optionalForPartialValidation)
 
 const completeSchema = joi.object({
@@ -44,7 +44,7 @@ const completeSchema = joi.object({
     then: requiredStringMsg('Enter the name of the member of healthcare')
       .alter(optionalForPartialValidation)
       .pattern(namePattern)
-      .message('Names may only contain letters, spaces, hyphens or apostrophes'),
+      .message('Names may only contain letters, spaces, full stops, hyphens or apostrophes'),
     otherwise: joi.any().strip(),
   }),
 
@@ -62,7 +62,7 @@ const completeSchema = joi.object({
       then: arrayOfObjects({
         name: requiredStringMsg('Enter the name of who needed medical attention')
           .pattern(namePattern)
-          .message('Names may only contain letters, spaces, hyphens or apostrophes')
+          .message('Names may only contain letters, spaces, full stops, hyphens or apostrophes')
           .alter(optionalForPartialValidation),
         hospitalisation: requiredBooleanMsg('Select yes if the staff member had to go to hospital').alter(
           optionalForPartialValidation
