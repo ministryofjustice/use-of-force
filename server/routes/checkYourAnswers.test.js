@@ -10,7 +10,6 @@ const reportService = {
 
 const offenderService = {
   getOffenderDetails: jest.fn(),
-  getLocation: jest.fn(),
 }
 
 const involvedStaffService = {
@@ -19,6 +18,7 @@ const involvedStaffService = {
 
 const locationService = {
   getPrisonById: jest.fn(),
+  getLocation: jest.fn(),
 }
 
 let app
@@ -28,7 +28,7 @@ beforeEach(() => {
   reportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
-  offenderService.getLocation.mockResolvedValue({})
+  locationService.getLocation.mockResolvedValue({})
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' })
 })
 

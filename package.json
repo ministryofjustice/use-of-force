@@ -91,7 +91,7 @@
     "@hapi/joi": "^17.1.1",
     "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "0.0.17-alpha",
-    "agentkeepalive": "^4.1.0",
+    "agentkeepalive": "^4.1.2",
     "applicationinsights": "^1.7.3",
     "applicationinsights-native-metrics": "0.0.5",
     "axios": "^0.19.2",

@@ -176,7 +176,7 @@ describe("'complete' schema", () => {
       expect(errors).toEqual([
         {
           href: '#f213CompletedBy',
-          text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+          text: 'Names may only contain letters, spaces, full stops, hyphens or apostrophes',
         },
       ])
     })
@@ -343,7 +343,7 @@ describe("'complete' schema", () => {
       expect(errors).toEqual([
         {
           href: '#staffNeedingMedicalAttention[0][name]',
-          text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+          text: 'Names may only contain letters, spaces, full stops, hyphens or apostrophes',
         },
       ])
     })
@@ -376,7 +376,7 @@ describe("'complete' schema", () => {
       expect(errors).toEqual([
         {
           href: '#healthcarePractionerName',
-          text: 'Names may only contain letters, spaces, hyphens or apostrophes',
+          text: 'Names may only contain letters, spaces, full stops, hyphens or apostrophes',
         },
       ])
     })

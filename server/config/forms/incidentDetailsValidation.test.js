@@ -256,7 +256,7 @@ describe("'complete' validation", () => {
       expect(errors).toEqual([
         {
           href: '#witnesses[0][name]',
-          text: 'Witness names can only contain letters, spaces, hyphens, apostrophe',
+          text: 'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe',
         },
       ])
     })

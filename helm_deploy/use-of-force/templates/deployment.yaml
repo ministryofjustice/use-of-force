@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "app.fullname" . }}
@@ -41,7 +41,6 @@ spec:
       containers:
         - name: use-of-force
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.image.port }}
               protocol: TCP

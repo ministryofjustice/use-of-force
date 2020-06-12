@@ -15,6 +15,7 @@ const incidentClient = {
   commitAndStartNewTransaction: jest.fn(),
   getIncompleteReportsForReviewer: jest.fn(),
   getCompletedReportsForReviewer: jest.fn(),
+  updateAgencyId: jest.fn(),
 }
 
 const client = 'client-1'
@@ -52,6 +53,12 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
+describe('updateAgencyId', () => {
+  it('incidentClient.updateAgencyId should be called', async () => {
+    await service.updateAgencyId('BXI', 'CA user', '1')
+    expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', '1')
+  })
+})
 describe('submit', () => {
   test('it should save statements and submit the report', async () => {
     involvedStaffService.save.mockReturnValue([])
