@@ -2,7 +2,6 @@ const moment = require('moment')
 const { isNilOrEmpty } = require('../utils/utils')
 const { complete } = require('../config/forms/statementForm')
 const { processInput } = require('../services/validation')
-const { links } = require('../config.js')
 const { StatementStatus } = require('../config/types')
 
 module.exports = function CreateReportRoutes({ statementService, offenderService, systemToken }) {
@@ -38,7 +37,6 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         awaitingStatements,
         completedStatements,
         selectedTab: 'your-statements',
-        links,
       })
     },
 

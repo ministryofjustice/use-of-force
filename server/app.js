@@ -84,7 +84,8 @@ export default function createApp({
       cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
-      saveUninitialized: true,
+      saveUninitialized: false,
+      rolling: true,
     })
   )
 

@@ -1,6 +1,5 @@
 const moment = require('moment')
 const { ReportStatus } = require('../config/types')
-const { links } = require('../config.js')
 const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
@@ -63,7 +62,7 @@ module.exports = function CreateReportRoutes({
     },
 
     viewReportSent: async (req, res) => {
-      res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId, links })
+      res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId })
     },
 
     viewAllIncidents: async (req, res) => {
@@ -80,7 +79,6 @@ module.exports = function CreateReportRoutes({
         awaitingReports,
         completedReports,
         selectedTab: 'all-incidents',
-        links,
       })
     },
 
@@ -105,7 +103,6 @@ module.exports = function CreateReportRoutes({
         awaitingReports,
         completedReports,
         selectedTab: 'your-reports',
-        links,
       })
     },
 

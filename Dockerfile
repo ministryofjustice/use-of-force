@@ -37,10 +37,7 @@ COPY . .
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF ${GIT_REF:-dummy}
 
-# Remove cypress as it takes ~1 minute to download and install
-RUN sed -ie 's/"cypress.*//g' package.json
-
-RUN npm install && npm run build  && \
+RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && npm run build  && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
