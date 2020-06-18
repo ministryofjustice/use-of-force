@@ -54,21 +54,21 @@ describe('POST /:reportId/write-your-statement', () => {
   it('save and return should redirect to incidents page', () =>
     request(app)
       .post('/-1/write-your-statement')
-      .send('submit=save-and-return')
+      .send('submitType=save-and-return')
       .expect(302)
       .expect('Location', '/'))
 
   it('save and continue with invalid data will redirect to same page', () =>
     request(app)
       .post('/-1/write-your-statement')
-      .send('submit=save-and-continue')
+      .send('submitType=save-and-continue')
       .expect(302)
       .expect('Location', '/-1/write-your-statement'))
 
   it('save and continue with valid data should forward to confirm page', () =>
     request(app)
       .post('/-1/write-your-statement')
-      .send('submit=save-and-continue&statement=bob&jobStartYear=1999&lastTrainingMonth=1&lastTrainingYear=1999')
+      .send('submitType=save-and-continue&statement=bob&jobStartYear=1999&lastTrainingMonth=1&lastTrainingYear=1999')
       .expect(302)
       .expect('Location', '/-1/check-your-statement'))
 })
@@ -116,7 +116,7 @@ describe('POST /:reportId/add-comment-to-statement', () => {
   it('should save amendment', () =>
     request(app)
       .post('/-1/add-comment-to-statement')
-      .send('additionalComment=statement1&submit=true')
+      .send('additionalComment=statement1&submitType=true')
       .expect(302)
       .expect('Location', '/your-statements')
       .expect(() => {

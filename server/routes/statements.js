@@ -73,7 +73,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
     submitWriteYourStatement: async (req, res) => {
       const { reportId } = req.params
 
-      const saveAndContinue = req.body.submit === 'save-and-continue'
+      const saveAndContinue = req.body.submitType === 'save-and-continue'
 
       const { extractedFields: statement, errors } = processInput({
         validationSpec: complete,
