@@ -4,10 +4,6 @@ orbs:
   hmpps: ministryofjustice/hmpps@1.0.0
 
 executors:
-  builder:
-    docker:
-      - image: circleci/node:12-buster-browsers
-    working_directory: ~/app
   integration-tests:
     docker:
       - image: circleci/openjdk:11-jdk-node-browsers
@@ -23,7 +19,7 @@ executors:
 
 jobs:
   build:
-    executor: builder
+    executor: hmpps/node
     steps:
       - checkout
       - run:
@@ -59,7 +55,7 @@ jobs:
             - .cache/Cypress
 
   unit_test:
-    executor: builder
+    executor: hmpps/node
     steps:
       - checkout
       - restore_cache:
@@ -122,14 +118,14 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
           filters:
             branches:
               only:
-                - master
+                - main
           requires:
             - helm_lint
             - unit_test
@@ -164,6 +160,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - hmpps/npm_security_audit
