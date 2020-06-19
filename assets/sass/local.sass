@@ -29,7 +29,7 @@ header.govuk-header
   font-size: 26px
   flex-grow: 1
   text-decoration: none
-  padding-left: 0px
+  padding-left: 0
   @include govuk-media-query($from: mobile)
     margin-left: 58px
   @include govuk-media-query($from: desktop)
@@ -73,10 +73,10 @@ header.govuk-header
         padding: 0 10px
   @include govuk-media-query($from: desktop)
     position: inherit
-    bottom: 0px
-    padding-bottom: 0px
-    margin-right: 0px
-    margin-left: 0px
+    bottom: 0
+    padding-bottom: 0
+    margin-right: 0
+    margin-left: 0
     ul
       li
         padding: 0 30px
@@ -220,3 +220,6 @@ i[class^="arrow-"]
 
 .flex-container 
   display: flex
+
+dt.summary-list__key__wider
+  width: 80%
