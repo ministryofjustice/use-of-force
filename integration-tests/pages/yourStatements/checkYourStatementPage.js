@@ -12,6 +12,9 @@ const confirmStatementPage = () =>
       cy.get('[data-qa=submit]').click()
       return StatementSubmittedPage.verifyOnPage()
     },
+    completeLater: () => {
+      cy.get('[data-qa=save-and-complete-later]').click()
+    },
   })
 
 export default {
