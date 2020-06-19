@@ -22,9 +22,15 @@ const defaultName = (): string => {
   return name
 }
 
+const version = (): string => {
+  const { buildNumber } = applicationVersion
+  return buildNumber
+}
+
 export const buildAppInsightsClient = (name = defaultName()): TelemetryClient => {
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
-    defaultClient.context.tags['ai.cloud.role'] = `${name}`
+    defaultClient.context.tags['ai.cloud.role'] = name
+    defaultClient.context.tags['ai.application.ver'] = version()
     return defaultClient
   }
   return null
