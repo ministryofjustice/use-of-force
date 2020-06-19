@@ -1,6 +1,5 @@
 const page = require('../page')
 const StatementSubmittedPage = require('./statementSubmittedPage')
-const YourStatementsPage = require('./yourStatementsPage')
 
 const confirmStatementPage = () =>
   page('Check your statement before submitting it', {
