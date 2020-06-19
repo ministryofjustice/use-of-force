@@ -1,5 +1,6 @@
 const page = require('../page')
 const StatementSubmittedPage = require('./statementSubmittedPage')
+const YourStatementsPage = require('./yourStatementsPage')
 
 const confirmStatementPage = () =>
   page('Check your statement before submitting it', {
@@ -11,6 +12,9 @@ const confirmStatementPage = () =>
     submit: () => {
       cy.get('[data-qa=submit]').click()
       return StatementSubmittedPage.verifyOnPage()
+    },
+    completeLater: () => {
+      cy.get('[data-qa=save-and-complete-later]').click()
     },
   })
 
