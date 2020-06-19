@@ -1,6 +1,6 @@
 
 {% macro submitLink(props) %}
-    <a class="govuk-link govuk-link--no-visited-state js-submitLink" data-value="{{props.value}}" data-qa="{{props.qa}}" href='#'>
-        {{props.label}}
+    <a class="govuk-body govuk-link govuk-link--no-visited-state js-submitLink" data-value="{{props.value}}" data-qa="{{props.qa}}" href='#'>
+        {{props.label | safe }}
     </a>
 {% endmacro %}
