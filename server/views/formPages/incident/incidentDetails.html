@@ -1,4 +1,5 @@
 {% extends "../formTemplate.html" %}
+{% from  "../../macros.njk" import submitLink %}    
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
@@ -12,7 +13,7 @@
 {% block formItems %}
 <div class="govuk-body">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
       <div class="govuk-!-margin-bottom-6">
         <p class="govuk-!-margin-bottom-1">
@@ -24,7 +25,7 @@
         <p id="read-date" class="{{'hidden' if editDate }}">
           <span class="govuk-label--s">Date of incident:&nbsp;</span>
           <span data-qa="date-and-time">
-            {{ formattedDate }} &nbsp;<a id="change-date" href="" class="govuk-link">Change</a>
+            {{ formattedDate }} &nbsp;<a id="change-date" href="" class="govuk-link govuk-link--no-visited-state">Change</a>
           </span>
         </p>
         <div id="edit-date" class="edit-incident-date {{'hidden' if not editDate }}">
@@ -76,11 +77,11 @@
         }) }}
         </div>
       </div>
+      <hr />
     </div>
   </div>
-  <hr />
   <div class="govuk-grid-row govuk-!-margin-top-3">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       {{
         govukInput({
           label: {
@@ -99,19 +100,24 @@
       }}
     </div>
   </div>
-  <div class="govuk-!-margin-bottom-6">
-    <span class="govuk-label--s">Prison:&nbsp;</span>
-    <span data-qa="prison" id='prison'>
-      {{ data.prison.description }} &nbsp;
-      <a id="change-prison-link" class="govuk-link" data-qa="change-prison-link" href='#'>
-        Change<span class="govuk-visually-hidden"> prison </span>
-      </a>
-    </span>
-
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-label--s">Prison:&nbsp;</span>
+      <span data-qa="prison" id='prison'>
+        {{ data.prison.description }} &nbsp;
+        {{ 
+          submitLink({
+            label: 'Change<span class="govuk-visually-hidden"> prison </span>', 
+            qa: 'change-prison-link', 
+            value: 'save-and-change-prison'
+          }) 
+        }}
+      </span>
+      <hr />
+    </div>
   </div>
-  <hr />
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       {{
         govukSelect({
           id: 'locationId',
@@ -126,11 +132,12 @@
           items: data.locations | toSelect('locationId', 'userDescription', data.locationId )
         })
       }}
+      <hr />
     </div>
   </div>
-  <hr />
+
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       {{ govukRadios({
         classes: "govuk-radios--inline",
         idPrefix: "plannedUseOfForce",
@@ -156,11 +163,11 @@
           }
         ]
       }) }}
+      <hr />
     </div>
   </div>
-  <hr />
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       <h3 class="govuk-!-margin-bottom-1">Other staff involved in use of force</h3>
       <span class="govuk-hint">
         You do not have to add yourself
@@ -214,11 +221,11 @@
           }}
         </div>
       </div>
+      <hr />
     </div>
   </div>
-  <hr />
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       <h3>Witnesses to the incident</h3>
       <div class="add-another-witness">
         {% macro addWitness(index, value, showRemove) %}
@@ -282,18 +289,6 @@
       $('#read-date, #edit-date').toggle()
       return false
     })
-
-    $('#change-prison-link').click((e) => {
-      e.preventDefault()
-      var input = $("<input>")
-               .attr("type", "hidden")
-               .attr("name", "submitType").val("save-and-change-prison");
-      $('#form').append(input)
-      $('form').submit()
-})
   })
-
-
-
 </script>
 {% endblock %}
