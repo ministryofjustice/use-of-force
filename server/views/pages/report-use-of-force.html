@@ -4,89 +4,90 @@
 
 {% macro section(name, label, url, value) %}
 <li class="app-task-list__item" data-qa-{{name}}={{value}}>
-  {% if url %}
-  <a href="{{ url }}" class="govuk-link" data-qa-{{name}}-link>{{ label }}</a>
-  {% else %}
-  <span>{{ label }}</span>
-  {% endif %}
-  {% switch value %}
-    {% case 'INCOMPLETE' %}
-    <strong class="govuk-tag moj-tag--black float-right report-use-of-force-label">IN PROGRESS</strong>
-    {% case 'COMPLETE' %}
-    <strong class="govuk-tag moj-tag--blue float-right report-use-of-force-label">COMPLETE</strong>
-    {% default %}
-  {% endswitch %}
+    {% if url %}
+    <a href="{{ url }}" class="govuk-link" data-qa-{{name}}-link>{{ label }}</a>
+    {% else %}
+    <span>{{ label }}</span>
+    {% endif %}
+    {% switch value %}
+      {% case 'INCOMPLETE' %}
+      <strong class="govuk-tag moj-tag--black float-right report-use-of-force-label">IN PROGRESS</strong>
+      {% case 'COMPLETE' %}
+      <strong class="govuk-tag moj-tag--blue float-right  report-use-of-force-label">COMPLETE</strong>
+      {% default %}
+    {% endswitch %}
 </li>
 {% endmacro %}
 
 {% macro field(name, label, value) %}
-<p class="govuk-!-margin-bottom-1 govuk-label--xs">{{ label }}</p>
-<p class="govuk-!-margin-bottom-5 govuk-label--s" data-qa="{{ name }}">
+<p class="govuk-!-margin-bottom-1 govuk-label--s">{{ label }}</p>
+<p class="govuk-!-margin-bottom-5 govuk-label--xs" data-qa="{{ name }}">
   {{ value }}
 </p>
 {% endmacro %}
 
 {% block content %}
-<h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 <div class="govuk-grid-row govuk-body">
-  <hr />
-  <div class="govuk-grid-column-one-third">
-    <div class="govuk-grid-column-one-half">
-      <img
-        src="/api/offender/{{ bookingId }}/image"
-        height="150"
-        width="120"
-        alt="Headshot of {{ displayName }}"
-        data-qa="offender-image"
-      />
-    </div>
-    <div class="govuk-grid-column-one-half">
-      {{ field(name='offender-name', label='Name', value=data.displayName) }}
-    </div>
-  </div>
   <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-column-one-quarter">
-      {{ field(name='nomis-id', label='Prison number', value=data.offenderNo) }}
-    </div>
-    <div class="govuk-grid-column-two-thirds">
-      {{ field(name='dob', label='Date of birth', value=data.dateOfBirth | formatDate('D MMMM YYYY')) }}
-    </div>
-  </div>
-</div>
-<div class="govuk-grid-row govuk-body">
-  <ol class="app-task-list">
-    <li>
-      <ul class="app-task-list__items">
+    <h1 class="govuk-heading-xl mainHeading  ">{{ pageTitle }}</h1>
 
-        {{  section(name = "new-incident", 
-                  label = "Incident details",  
-                  url = "/report/" + bookingId + "/incident-details", 
-                  value = status.incidentDetails) }}
+    <hr>
 
-        {{  section(name = "details", 
-                  label = "Use of force details",  
-                  url = "/report/" + bookingId + "/use-of-force-details", 
-                  value = status.useOfForceDetails) }}
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-left-0 report-use-of-force-prisoner-details">
+        <img
+          src="/api/offender/{{ bookingId }}/image"
+          height="150"
+          width="120"
+          alt="Headshot of {{ displayName }}"
+          data-qa="offender-image"
+        />
+      </div>
+      <div class="govuk-grid-column-one-half report-use-of-force-prisoner-name govuk-!-padding-left-0">
+        {{ field(name='offender-name', label='Name', value=data.displayName) }}
+      </div>
 
-        {{  section(name = "relocation-and-injuries", 
-                  label = "Relocation and Injuries",  
-                  url = "/report/" + bookingId + "/relocation-and-injuries", 
-                  value = status.relocationAndInjuries) }}
+      <div class="govuk-grid-column-one-quarter report-use-of-force-prisoner-details govuk-!-padding-left-0">
+        {{ field(name='nomis-id', label='Prison number', value=data.offenderNo) }}
+      </div>
 
-        {{  section(name = "evidence", 
-                  label = "Evidence",  
-                  url = "/report/" + bookingId + "/evidence", 
-                  value = status.evidence) }}
+      <div class="govuk-grid-column-one-quarter report-use-of-force-prisoner-details govuk-!-padding-left-0">
+        {{ field(name='dob', label='Date of birth', value=data.dateOfBirth | formatDate('D MMMM YYYY')) }}
+      </div>
 
-        {{  section(name = "check-answers", 
-                  label = "Check then send report",  
-                  url = status.complete and "/report/" + bookingId + '/check-your-answers') }}
+       <ol class="app-task-list clear-both govuk-!-padding-0">
         <li>
-          <div class="govuk-!-margin-top-8"><a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a></div> 
+          <ul class="app-task-list__items">
+
+            {{  section(name = "new-incident", 
+                      label = "Incident details",  
+                      url = "/report/" + bookingId + "/incident-details", 
+                      value = status.incidentDetails) }}
+
+            {{  section(name = "details", 
+                      label = "Use of force details",  
+                      url = "/report/" + bookingId + "/use-of-force-details", 
+                      value = status.useOfForceDetails) }}
+
+            {{  section(name = "relocation-and-injuries", 
+                      label = "Relocation and Injuries",  
+                      url = "/report/" + bookingId + "/relocation-and-injuries", 
+                      value = status.relocationAndInjuries) }}
+
+            {{  section(name = "evidence", 
+                      label = "Evidence",  
+                      url = "/report/" + bookingId + "/evidence", 
+                      value = status.evidence) }}
+
+            {{  section(name = "check-answers", 
+                      label = "Check then send report",  
+                      url = status.complete and "/report/" + bookingId + '/check-your-answers') }}
+            <li>
+              <div class="govuk-!-margin-top-8"><a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a></div> 
+            </li>
+          </ul>
         </li>
-      </ul>
-    </li>
-  </ol>
+      </ol>
+  </div>
 </div>
 
 {% endblock %}
