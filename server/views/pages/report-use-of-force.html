@@ -28,12 +28,12 @@
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <h1 class="govuk-heading-xl mainHeading  ">{{ pageTitle }}</h1>
 
     <hr>
 
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-left-0 report-use-of-force-prisoner-details">
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-left-0 report-use-of-force-prisoner-image">
         <img
           src="/api/offender/{{ bookingId }}/image"
           height="150"
@@ -42,15 +42,15 @@
           data-qa="offender-image"
         />
       </div>
-      <div class="govuk-grid-column-one-half report-use-of-force-prisoner-name govuk-!-padding-left-0">
+      <div class="govuk-grid-column-one-half govuk-!-padding-left-0 report-use-of-force-prisoner-name ">
         {{ field(name='offender-name', label='Name', value=data.displayName) }}
       </div>
 
-      <div class="govuk-grid-column-one-quarter report-use-of-force-prisoner-details govuk-!-padding-left-0">
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-left-0 report-use-of-force-prisoner-number">
         {{ field(name='nomis-id', label='Prison number', value=data.offenderNo) }}
       </div>
 
-      <div class="govuk-grid-column-one-quarter report-use-of-force-prisoner-details govuk-!-padding-left-0">
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-left-0 report-use-of-force-prisoner-dob">
         {{ field(name='dob', label='Date of birth', value=data.dateOfBirth | formatDate('D MMMM YYYY')) }}
       </div>
 
