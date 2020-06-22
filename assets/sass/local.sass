@@ -107,8 +107,7 @@ header.govuk-header
   @include govuk-responsive-margin(9, "bottom")
   list-style: none
   padding-left: 0
-  @include govuk-media-query($from: tablet)
-    padding-left: govuk-spacing(6)
+
 
 .app-task-list__item
   border-bottom: 1px solid $govuk-border-colour
@@ -176,7 +175,25 @@ header.govuk-header
 .report-use-of-force-label  
   @include govuk-media-query($from: tablet)
     text-align: center
-    width: 10% !important
+
+.report-use-of-force-prisoner-image
+  @include govuk-media-query($from: desktop)
+    max-width: 18% !important
+
+.report-use-of-force-prisoner-name
+  @include govuk-media-query($from: desktop)
+    max-width: 37% !important
+    word-wrap: break-word
+
+
+.report-use-of-force-prisoner-number
+  @include govuk-media-query($from: desktop)
+    max-width: 20% !important
+  
+
+.report-use-of-force-prisoner-dob
+  @include govuk-media-query($from: desktop)
+    max-width: 25% !important
 
 .hidden
   display: none
