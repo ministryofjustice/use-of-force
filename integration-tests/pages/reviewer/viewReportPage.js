@@ -26,7 +26,7 @@ const viewReportPage = () =>
       })
     },
 
-    continue: () => cy.get('[data-qa="continue"]'),
+    returnToIncidentOverview: () => cy.get('[data-qa="return-to-incident-overview"]'),
   })
 
 export default {

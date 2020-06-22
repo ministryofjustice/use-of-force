@@ -30,15 +30,9 @@
         })
       }}
 
-      {{
-        govukButton({
-          text: 'Return to report use of force',
-          name: 'submit',
-          href: '/report/' + bookingId + '/report-use-of-force',
-          classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3',
-          attributes: { 'data-qa': 'return-to-tasklist' }
-        })
-      }}
+      <div class="govuk-body">
+        <a href="/report/{{ bookingId }}/report-use-of-force" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-tasklist">Save and complete later</a>
+      </div> 
     </form>
   </div>
 </div>

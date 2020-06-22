@@ -85,7 +85,10 @@ context('A use of force coordinator can remove involved staff', () => {
     reportPage = ViewReportPage.verifyOnPage()
     reportPage.deleteInvolvedStaff('TEST_USER').should('be.visible')
     reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
-    reportPage.continue().click()
+    reportPage.returnToIncidentOverview().click()
+
+    viewStatementsPage = ViewStatementsPage.verifyOnPage()
+    viewStatementsPage.return().click()
 
     allIncidentsPage = AllIncidentsPage.verifyOnPage()
     allIncidentsPage.getNoTodoRows().should('exist')

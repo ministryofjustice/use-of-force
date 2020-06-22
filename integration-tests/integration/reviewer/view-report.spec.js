@@ -67,7 +67,7 @@ context('view review page', () => {
       reporter().contains('James Stuart')
       viewStatementsButton().click()
 
-      const viewStatementsPage = ViewStatementsPage.verifyOnPage()
+      let viewStatementsPage = ViewStatementsPage.verifyOnPage()
       viewStatementsPage.reportLink().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
@@ -77,7 +77,9 @@ context('view review page', () => {
         viewReportPage.incidentNumber().contains(reportId)
       })
 
-      viewReportPage.continue().click()
+      viewReportPage.returnToIncidentOverview().click()
+      viewStatementsPage = ViewStatementsPage.verifyOnPage()
+      viewStatementsPage.return().click()
     }
 
     {
@@ -93,7 +95,7 @@ context('view review page', () => {
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')
       viewReportPage.verifyInputs({ involvedStaff: ['Another User Name - ANOTHER_USER'] })
-      viewReportPage.continue().click()
+      viewReportPage.returnToIncidentOverview().click()
     }
   })
 })

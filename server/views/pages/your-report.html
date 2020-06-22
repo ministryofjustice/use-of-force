@@ -22,15 +22,9 @@
       reportDetail.detail(data, null, data.incidentId, user)
     }}
 
-    {{
-      govukButton({
-        text: 'Continue',
-        name: 'continue',
-        href: '/your-reports',
-        classes: 'govuk-button  govuk-!-margin-top-5',
-        attributes: { 'data-qa': 'continue' }
-      })
-    }}
+    <div class="govuk-!-margin-top-5">
+      <a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-your-reports">Return to your reports</a>
+    </div> 
   </div>
 </div>
 

@@ -18,7 +18,7 @@ context('A reporter views their own report', () => {
     cy.task('stubUserDetailsRetrieval', 'TEST_USER')
   })
 
-  it('A user can submit their statement from incidents page', () => {
+  it('A user can submit view their own report', () => {
     cy.login(bookingId)
 
     cy.task('seedReport', {
@@ -65,8 +65,8 @@ context('A reporter views their own report', () => {
     })
     yourReportPage.verifyInputs()
 
-    yourReportPage.continue().click()
+    yourReportPage.returnToYourReports().click()
 
-    YourStatementsPage.verifyOnPage()
+    YourReportsPage.verifyOnPage()
   })
 })
