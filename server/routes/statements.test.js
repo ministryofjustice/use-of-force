@@ -56,7 +56,7 @@ describe('POST /:reportId/write-your-statement', () => {
       .post('/-1/write-your-statement')
       .send('submitType=save-and-return')
       .expect(302)
-      .expect('Location', '/'))
+      .expect('Location', '/your-statements'))
 
   it('save and continue with invalid data will redirect to same page', () =>
     request(app)

@@ -82,7 +82,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
 
       const isValid = isNilOrEmpty(errors)
 
-      // Always persist to prevent loss of work and avoiding issues with storing large content in cookie session state
+      // Always persist to prevent loss of work
       await statementService.save(req.user.username, reportId, statement)
 
       if (saveAndContinue && !isValid) {
@@ -90,7 +90,7 @@ module.exports = function CreateReportRoutes({ statementService, offenderService
         return res.redirect(`/${reportId}/write-your-statement`)
       }
 
-      const location = saveAndContinue ? `/${reportId}/check-your-statement` : `/`
+      const location = saveAndContinue ? `/${reportId}/check-your-statement` : `/your-statements`
 
       return res.redirect(location)
     },
