@@ -66,7 +66,7 @@ context('A use of force coordinator can add involved staff', () => {
       .viewStatementsButton()
       .click()
 
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
+    let viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage
       .statements()
       .then(result =>
@@ -87,7 +87,10 @@ context('A use of force coordinator can add involved staff', () => {
 
     const reportPage = ViewReportPage.verifyOnPage()
     reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible')
-    reportPage.continue().click()
+    reportPage.returnToIncidentOverview().click()
+
+    viewStatementsPage = ViewStatementsPage.verifyOnPage()
+    viewStatementsPage.return().click()
 
     const allIncidentsPage = AllIncidentsPage.verifyOnPage()
     allIncidentsPage.getTodoRows().should('have.length', 1)

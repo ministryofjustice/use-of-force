@@ -22,7 +22,7 @@ const viewYourReportPage = () =>
       })
     },
 
-    continue: () => cy.get('[data-qa="continue"]'),
+    returnToYourReports: () => cy.get('[data-qa="return-to-your-reports"]'),
   })
 
 export default {
