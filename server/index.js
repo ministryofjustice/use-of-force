@@ -5,6 +5,7 @@ import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 import createLocationService from './services/locationService'
+import ReportDetailBuilder from './services/reportDetailBuilder'
 
 import createApp from './app'
 
@@ -44,11 +45,18 @@ const reportService = createReportService({
   db,
   systemToken,
 })
+
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 const locationService = createLocationService(elite2ClientBuilder, incidentClient)
+const reportDetailBuilder = new ReportDetailBuilder({
+  involvedStaffService,
+  locationService,
+  offenderService,
+  systemToken,
+})
 
 const app = createApp({
   involvedStaffService,
@@ -62,6 +70,7 @@ const app = createApp({
   reportingService,
   systemToken,
   locationService,
+  reportDetailBuilder,
 })
 
 module.exports = app

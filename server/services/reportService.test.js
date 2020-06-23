@@ -142,9 +142,14 @@ describe('getCurrentDraft', () => {
 
 describe('getReport', () => {
   test('it should call query on db', async () => {
+    incidentClient.getReport.mockResolvedValue({})
     await service.getReport('user1', 'report1')
     expect(incidentClient.getReport).toBeCalledTimes(1)
     expect(incidentClient.getReport).toBeCalledWith('user1', 'report1')
+  })
+
+  test('it should throw an error if report doesnt exist', async () => {
+    await expect(service.getReport('user1', 'report1')).rejects.toThrow('Report does not exist: report1')
   })
 })
 

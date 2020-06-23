@@ -45,6 +45,7 @@ export default function createApp({
   reportingService,
   systemToken,
   locationService,
+  reportDetailBuilder,
 }) {
   const app = express()
 
@@ -239,6 +240,7 @@ export default function createApp({
       reviewService,
       systemToken,
       locationService,
+      reportDetailBuilder,
     })
   )
 
