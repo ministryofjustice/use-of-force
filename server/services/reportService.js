@@ -13,7 +13,14 @@ module.exports = function createReportService({
 }) {
   const getCurrentDraft = (userId, bookingId) => incidentClient.getCurrentDraftReport(userId, bookingId)
 
-  const getReport = (userId, reportId) => incidentClient.getReport(userId, reportId)
+  const getReport = async (userId, reportId) => {
+    const report = incidentClient.getReport(userId, reportId)
+
+    if (!report) {
+      throw new Error(`Report does not exist: ${reportId}`)
+    }
+    return report
+  }
 
   async function getReports(userId, status, opts) {
     const result = await incidentClient.getReports(userId, status, opts)

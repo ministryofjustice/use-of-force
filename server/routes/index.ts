@@ -5,8 +5,10 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../middleware/roleCheck'
 
 import CreateIncidentRoutes from './incidents'
+import CreateReviewRoutes from './reviewer'
 import CreateStatementRoutes from './statements'
 import CreateReportRoutes from './createReport'
+
 import CreateSearchForPrisonerRoutes from './searchForPrisoner'
 import CreateCheckYourAnswerRoutes from './checkYourAnswers'
 import CreateReportUseOfForceRoutes from './reportUseOfForce'
@@ -23,15 +25,21 @@ export default function Index({
   reviewService,
   systemToken,
   locationService,
+  reportDetailBuilder,
 }) {
   const router = express.Router()
 
   const incidents = CreateIncidentRoutes({
     reportService,
-    involvedStaffService,
-    locationService,
     offenderService,
+    reportDetailBuilder,
+    systemToken,
+  })
+
+  const reviewer = CreateReviewRoutes({
     reviewService,
+    offenderService,
+    reportDetailBuilder,
     systemToken,
   })
 
@@ -136,10 +144,10 @@ export default function Index({
   const reviewerRoutes = () => {
     const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
 
-    get('/all-incidents', incidents.viewAllIncidents)
-    get('/:reportId/view-report', incidents.reviewReport)
-    get('/:reportId/view-statements', incidents.reviewStatements)
-    get('/:statementId/view-statement', incidents.reviewStatement)
+    get('/all-incidents', reviewer.viewAllIncidents)
+    get('/:reportId/view-report', reviewer.reviewReport)
+    get('/:reportId/view-statements', reviewer.reviewStatements)
+    get('/:statementId/view-statement', reviewer.reviewStatement)
   }
 
   const coordinatorRoutes = () => {

@@ -8,6 +8,10 @@ afterEach(() => {
   db.query.mockReset()
 })
 
+beforeEach(() => {
+  db.query.mockResolvedValue({ rows: [] })
+})
+
 describe('getCurrentDraftReport', () => {
   test('it should call query on db', () => {
     incidentClient.getCurrentDraftReport('user1')

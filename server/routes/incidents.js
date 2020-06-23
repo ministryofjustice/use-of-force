@@ -1,16 +1,6 @@
-const moment = require('moment')
 const { ReportStatus } = require('../config/types')
-const { properCaseFullName } = require('../utils/utils')
-const reportSummary = require('./model/reportSummary')
 
-module.exports = function CreateReportRoutes({
-  reportService,
-  involvedStaffService,
-  locationService,
-  offenderService,
-  reviewService,
-  systemToken,
-}) {
+module.exports = function CreateIncidentRoutes({ reportService, offenderService, reportDetailBuilder, systemToken }) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
@@ -26,35 +16,6 @@ module.exports = function CreateReportRoutes({
     offenderNo: incident.offenderNo,
   })
 
-  const buildReportData = async (report, res) => {
-    const { id, form, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
-    const offenderDetail = await offenderService.getOffenderDetails(
-      await systemToken(res.locals.user.username),
-      bookingId
-    )
-    const { description: locationDescription = '' } = await locationService.getLocation(
-      await systemToken(res.locals.user.username),
-      form.incidentDetails.locationId
-    )
-    const involvedStaff = await involvedStaffService.getInvolvedStaff(id)
-    const involvedStaffNameAndUsernames = involvedStaff.map(staff => ({
-      name: properCaseFullName(staff.name),
-      username: staff.userId,
-      reportId: id,
-      statementId: staff.statementId,
-    }))
-
-    const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
-
-    return {
-      incidentId: id,
-      reporterName,
-      submittedDate,
-      bookingId,
-      ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
-    }
-  }
-
   return {
     redirectToHomePage: async (req, res) => {
       const location = res.locals.user.isReviewer ? '/all-incidents' : '/your-statements'
@@ -63,23 +24,6 @@ module.exports = function CreateReportRoutes({
 
     viewReportSent: async (req, res) => {
       res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId })
-    },
-
-    viewAllIncidents: async (req, res) => {
-      const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId)
-
-      const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
-        ...awaiting,
-        ...completed,
-      ])
-      const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
-      const completedReports = completed.map(toReport(namesByOffenderNumber))
-
-      return res.render('pages/all-incidents', {
-        awaitingReports,
-        completedReports,
-        selectedTab: 'all-incidents',
-      })
     },
 
     viewYourReports: async (req, res) => {
@@ -110,61 +54,9 @@ module.exports = function CreateReportRoutes({
       const { reportId } = req.params
       const report = await reportService.getReport(req.user.username, reportId)
 
-      if (!report) {
-        throw new Error(`Report does not exist: ${reportId}`)
-      }
-
-      const data = await buildReportData(report, res)
+      const data = await reportDetailBuilder.build(res.locals.user.username, report)
 
       return res.render('pages/your-report', { data })
-    },
-
-    reviewReport: async (req, res) => {
-      const { reportId } = req.params
-
-      const report = await reviewService.getReport(reportId)
-
-      const data = await buildReportData(report, res)
-
-      return res.render('pages/reviewer/view-report', { data })
-    },
-
-    reviewStatements: async (req, res) => {
-      const { reportId } = req.params
-
-      const report = await reviewService.getReport(reportId)
-
-      const { bookingId, reporterName, submittedDate } = report
-      const offenderDetail = await offenderService.getOffenderDetails(
-        await systemToken(res.locals.user.username),
-        bookingId
-      )
-
-      const statements = await reviewService.getStatements(await systemToken(res.locals.user.username), reportId)
-
-      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements }
-      return res.render('pages/reviewer/view-statements', { data })
-    },
-
-    reviewStatement: async (req, res) => {
-      const { statementId } = req.params
-
-      const statement = await reviewService.getStatement(statementId)
-
-      const offenderDetail = await offenderService.getOffenderDetails(
-        await systemToken(res.locals.user.username),
-        statement.bookingId
-      )
-      const { displayName, offenderNo } = offenderDetail
-
-      return res.render('pages/reviewer/view-statement', {
-        data: {
-          displayName,
-          offenderNo,
-          ...statement,
-          lastTrainingMonth: moment.months(statement.lastTrainingMonth),
-        },
-      })
     },
   }
 }

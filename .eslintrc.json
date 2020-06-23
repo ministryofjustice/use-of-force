@@ -32,7 +32,20 @@
         "plugin:@typescript-eslint/recommended",
         "prettier/@typescript-eslint",
         "plugin:prettier/recommended"
-      ]
+      ],
+      "rules": {
+        "@typescript-eslint/no-use-before-define": 0,
+        "class-methods-use-this": 0,
+        "@typescript-eslint/no-unused-vars": [
+          1,
+          {
+            "argsIgnorePattern": "res|next|^err|_",
+            "ignoreRestSiblings": true
+          }
+        ],
+        "@typescript-eslint/semi": 0,
+        "import/no-unresolved": "error"
+      }
     }
   ],
 
