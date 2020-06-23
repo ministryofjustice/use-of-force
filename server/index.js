@@ -42,6 +42,7 @@ const reportService = createReportService({
   involvedStaffService,
   notificationService,
   db,
+  systemToken,
 })
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
