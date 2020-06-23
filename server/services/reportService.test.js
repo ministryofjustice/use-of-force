@@ -39,12 +39,20 @@ const elite2Client = {
 const currentUser = { username: 'user1', displayName: 'Bob Smith' }
 
 let service
+let elite2ClientBuilder
 
 beforeEach(() => {
-  const elite2ClientBuilder = jest.fn()
+  elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
-
-  service = serviceCreator({ incidentClient, elite2ClientBuilder, involvedStaffService, notificationService, db })
+  const systemToken = jest.fn().mockResolvedValue('system-token-1')
+  service = serviceCreator({
+    incidentClient,
+    elite2ClientBuilder,
+    involvedStaffService,
+    notificationService,
+    db,
+    systemToken,
+  })
   incidentClient.getCurrentDraftReport.mockReturnValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockReturnValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
@@ -237,7 +245,9 @@ describe('create', () => {
       formResponse: formObject,
       incidentDate: '2/2/2019',
     })
+    expect(elite2ClientBuilder).toHaveBeenCalledWith('system-token-1')
   })
+
   describe('deleteReport', () => {
     test('when report exists', async () => {
       incidentClient.getReportForReviewer.mockReturnValue({})

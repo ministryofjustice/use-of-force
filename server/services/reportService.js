@@ -9,6 +9,7 @@ module.exports = function createReportService({
   involvedStaffService,
   notificationService,
   db,
+  systemToken,
 }) {
   const getCurrentDraft = (userId, bookingId) => incidentClient.getCurrentDraftReport(userId, bookingId)
 
@@ -49,8 +50,9 @@ module.exports = function createReportService({
   }
 
   const startNewReport = async (bookingId, currentUser, incidentDateValue, formObject) => {
-    const { username: userId, token, displayName: reporterName } = currentUser
+    const { username: userId, displayName: reporterName } = currentUser
 
+    const token = await systemToken(userId)
     const elite2Client = elite2ClientBuilder(token)
     const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
     const id = await incidentClient.createDraftReport({
