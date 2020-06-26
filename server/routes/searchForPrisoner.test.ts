@@ -24,6 +24,9 @@ describe('GET /search-for-prisoner', () => {
       .expect(res => {
         expect(res.text).toContain('Search for a prisoner')
         expect(res.text).not.toContain('id="search-results"')
+
+        expect(prisonerSearchService.getPrisons).toHaveBeenCalledWith('user1')
+        expect(prisonerSearchService.search).not.toHaveBeenCalled()
       })
   })
 
@@ -54,6 +57,14 @@ describe('GET /search-for-prisoner', () => {
         expect(res.text).toContain('id="search-results"')
         expect(res.text).toContain('<span data-qa="result-count">3</span>')
         expect(res.text).toContain('Norman Bates')
+
+        expect(prisonerSearchService.getPrisons).toHaveBeenCalledWith('user1')
+        expect(prisonerSearchService.search).toHaveBeenCalledWith('user1', {
+          agencyId: undefined,
+          firstName: undefined,
+          lastName: undefined,
+          prisonNumber: 'A1234AA',
+        })
       })
   })
 
