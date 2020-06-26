@@ -18,7 +18,7 @@ let service: PrisonerSearchService
 beforeEach(() => {
   elite2Client = { getPrisons: jest.fn() }
   elite2ClientBuilder = jest.fn().mockReturnValue(elite2Client)
-  systemToken = jest.fn().mockResolvedValue('token-1')
+  systemToken = async (user: string): Promise<string> => `${user}-token-1`
   service = new PrisonerSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 })
 
@@ -40,7 +40,7 @@ describe('prisonerSearchService', () => {
           prisonerNumber: 'AAA122AB',
         },
       ])
-      const results = await service.search({ prisonNumber: 'ABC123AA' })
+      const results = await service.search('user1', { prisonNumber: 'ABC123AA' })
       expect(results).toStrictEqual([
         {
           bookingId: 1,
@@ -49,7 +49,7 @@ describe('prisonerSearchService', () => {
           prisonNumber: 'AAA122AB',
         },
       ])
-      expect(PrisonerSearchClient).toBeCalledWith('token-1')
+      expect(PrisonerSearchClient).toBeCalledWith('user1-token-1')
     })
   })
 
@@ -57,9 +57,9 @@ describe('prisonerSearchService', () => {
     it('get Prisons passes down arg', async () => {
       const expected = [{ agencyId: 'MDI', description: 'HMP Moorlands' }]
       elite2Client.getPrisons.mockResolvedValue(expected)
-      const results = await service.getPrisons()
+      const results = await service.getPrisons('user1')
       expect(results).toStrictEqual(expected)
-      expect(elite2ClientBuilder).toBeCalledWith('token-1')
+      expect(elite2ClientBuilder).toBeCalledWith('user1-token-1')
     })
   })
 })
