@@ -1,3 +1,5 @@
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
@@ -8,24 +10,21 @@ const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
 
 context('Submitting details page form', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'AAAA')
-    cy.task('stubUserDetailsRetrieval', 'BBBB')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['AAAA', 'BBBB', 'TEST_USER'])
     cy.task('stubUnverifiedUserDetailsRetrieval', 'UNVERIFIED_USER')
   })
 
   it('Adding unverified involved staff', () => {
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
@@ -54,9 +53,9 @@ context('Submitting details page form', () => {
   })
 
   it('Adding unverified and missing involved staff', () => {
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
@@ -89,7 +88,7 @@ context('Submitting details page form', () => {
   })
 
   it('Adding unverified and missing involved staff from edit', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
@@ -97,7 +96,7 @@ context('Submitting details page form', () => {
       payload: { ...expectedPayload, incidentDetails: { ...expectedPayload.incidentDetails, involvedStaff: [] } },
     })
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
     checkAnswersPage.editIncidentDetailsLink().click()
     let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()

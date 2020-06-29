@@ -1,23 +1,23 @@
 const moment = require('moment')
+
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
 const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistPage')
 
 context('Submitting details page form', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubUserDetailsRetrieval', 'AAAA')
-    cy.task('stubUserDetailsRetrieval', 'BBBB')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubUserDetailsRetrieval', ['AAAA', 'BBBB', 'TEST_USER'])
   })
 
   const fillFormAndSave = () => {
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.prison().contains('Moorland')
@@ -46,7 +46,7 @@ context('Submitting details page form', () => {
   }
 
   it('Can edit date', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave()
 
@@ -95,45 +95,47 @@ context('Submitting details page form', () => {
   })
 
   it('Can login and create a new report', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'incidentDetails' }).then(({ payload, incidentDate }) => {
-      const incidentDateInMillis = moment(incidentDate).valueOf()
-      const nowInMillis = moment().valueOf()
+    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(
+      ({ payload, incidentDate }) => {
+        const incidentDateInMillis = moment(incidentDate).valueOf()
+        const nowInMillis = moment().valueOf()
 
-      const millisBetweenSavedDateAndNow = nowInMillis - incidentDateInMillis
-      expect(millisBetweenSavedDateAndNow).to.be.above(0)
+        const millisBetweenSavedDateAndNow = nowInMillis - incidentDateInMillis
+        expect(millisBetweenSavedDateAndNow).to.be.above(0)
 
-      expect(payload).to.deep.equal({
-        locationId: 357591,
-        plannedUseOfForce: true,
-        witnesses: [{ name: 'jimmy-ray' }],
-        involvedStaff: [
-          {
-            email: 'AAAA@gov.uk',
-            name: 'AAAA name',
-            staffId: 231232,
-            username: 'AAAA',
-            missing: false,
-            verified: true,
-          },
-          {
-            email: 'BBBB@gov.uk',
-            name: 'BBBB name',
-            staffId: 231232,
-            username: 'BBBB',
-            missing: false,
-            verified: true,
-          },
-        ],
-      })
-    })
+        expect(payload).to.deep.equal({
+          locationId: 357591,
+          plannedUseOfForce: true,
+          witnesses: [{ name: 'jimmy-ray' }],
+          involvedStaff: [
+            {
+              email: 'AAAA@gov.uk',
+              name: 'AAAA name',
+              staffId: 231232,
+              username: 'AAAA',
+              missing: false,
+              verified: true,
+            },
+            {
+              email: 'BBBB@gov.uk',
+              name: 'BBBB name',
+              staffId: 231232,
+              username: 'BBBB',
+              missing: false,
+              verified: true,
+            },
+          ],
+        })
+      }
+    )
   })
 
   it('Can revisit saved data', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave()
     cy.go('back')
@@ -173,9 +175,9 @@ context('Submitting details page form', () => {
   })
 
   it('Adding missing involved staff', () => {
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     let incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')

@@ -1,3 +1,5 @@
+const { offender } = require('../../mockApis/data')
+
 const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
 const YourStatementPage = require('../../pages/yourStatements/yourStatementPage')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
@@ -5,7 +7,6 @@ const AddCommentToStatementPage = require('../../pages/yourStatements/addComment
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Add comments to statement', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
@@ -19,15 +20,15 @@ context('Add comments to statement', () => {
         },
       ],
     })
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
   })
 
   it('A user can select a specific statement, add to it and then return back to statements page', () => {
-    cy.login(bookingId)
+    cy.login()
 
     let yourStatementsPage = YourStatementsPage.goTo()
 

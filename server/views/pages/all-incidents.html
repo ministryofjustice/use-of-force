@@ -3,8 +3,10 @@
 {% from "govuk/components/table/macro.njk" import govukTable %} 
 
 {% block tabContent %}
-<section class="govuk-tabs__panel" id="past-day">
-{% if awaitingReports.length %}
+<section class="govuk-tabs__panel">
+  {% include "../partials/incidentSearchPanel.html" %}
+  
+  {% if awaitingReports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
   <caption class="govuk-table__caption govuk-heading-m">
     Not completed
@@ -14,7 +16,7 @@
     <tr class="govuk-table__row">
       <th class="govuk-table__header date" scope="col">Incident date</th>
       <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
-      <th class="govuk-table__header prisonNo" scope="col">Prison no.</th>
+      <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
       <th class="govuk-table__header reporter" scope="col">Reporter</th>
       <th class="govuk-table__header report" scope="col"></th>
       {% if user.isCoordinator %}      
@@ -27,7 +29,7 @@
   <tbody class="govuk-table__body">
       {% for report in awaitingReports %}
       <tr class="govuk-table__row">
-          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMM YYYY')}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderNo}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
@@ -77,7 +79,7 @@
     <tr class="govuk-table__row">
         <th class="govuk-table__header date" scope="col">Incident date</th>
         <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
-        <th class="govuk-table__header prisonNo" scope="col">Prison no.</th>
+        <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
         <th class="govuk-table__header reporter" scope="col">Reporter</th>
         <th class="govuk-table__header report" scope="col"></th>
         {% if user.isCoordinator %}      
@@ -90,7 +92,7 @@
   <tbody class="govuk-table__body">
       {% for report in completedReports %}
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{report.incidentdate | formatDate('D MMM YYYY')}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderNo}}</td>
         <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>

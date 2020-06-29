@@ -1,24 +1,22 @@
+const { offender } = require('../../mockApis/data')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const SearchForPrisonerPage = require('../../pages/createReport/searchForPrisonerPage')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 
 context('Creating reports for prisoners in other prisons', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubPrisons')
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
   it('A user can create a report for a prisoner in another prison using prison number', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('stubSearch', {
       query: {
@@ -54,7 +52,7 @@ context('Creating reports for prisoners in other prisons', () => {
       link.click()
     })
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     reportUseOfForcePage.offenderName().contains('Norman Smith')
     reportUseOfForcePage.dob().contains('26 December 2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')
@@ -62,7 +60,7 @@ context('Creating reports for prisoners in other prisons', () => {
   })
 
   it('A user can create a report for a prisoner in another prison using last name', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('stubSearch', {
       query: {
@@ -114,7 +112,7 @@ context('Creating reports for prisoners in other prisons', () => {
       }
     })
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     reportUseOfForcePage.offenderName().contains('Norman Smith')
     reportUseOfForcePage.dob().contains('26 December 2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')

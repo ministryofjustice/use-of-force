@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
@@ -7,17 +8,14 @@ const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatemen
 const { ReportStatus } = require('../../../server/config/types')
 
 context('A use of force coordinator can remove involved staff', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
   const seedReport = () =>
@@ -42,7 +40,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
   it('A coordinator can remove staff on otherwise complete report and it will complete the report', () => {
     cy.task('stubCoordinatorLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedReport()
 
@@ -115,7 +113,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
   it('A reviewer user should not be able to remove staff', () => {
     cy.task('stubReviewerLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedReport()
 

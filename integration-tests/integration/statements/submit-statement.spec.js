@@ -1,25 +1,28 @@
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const SubmittedPage = require('../../pages/createReport/reportSentPage')
 const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
 const YourStatementPage = require('../../pages/yourStatements/yourStatementPage')
+const CheckYourStatementPage = require('../../pages/yourStatements/checkYourStatementPage')
+
 const { StatementStatus, ReportStatus } = require('../../../server/config/types')
 
 context('Submit statement', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['TEST_USER'])
   })
 
   it('A user can submit their statement from incidents page', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
@@ -80,14 +83,14 @@ context('Submit statement', () => {
   })
 
   it('A user can submit their own statement after submitting report', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
     })
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.clickSubmit()
@@ -127,7 +130,7 @@ context('Submit statement', () => {
   })
 
   it('Can view a submitted statement', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
@@ -172,5 +175,36 @@ context('Submit statement', () => {
     yourStatementPage.statement().contains('This is my statement')
     yourStatementPage.lastTraining().contains('March 2010')
     yourStatementPage.jobStartYear().contains('1999')
+  })
+
+  it('A user can leave the submission for another time', () => {
+    cy.login()
+
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      involvedStaff: [
+        {
+          userId: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
+        },
+      ],
+    })
+
+    {
+      const yourStatementsPage = YourStatementsPage.goTo()
+      const { startButton } = yourStatementsPage.getTodoRow(0)
+      startButton().click()
+    }
+    const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
+    writeYourStatementPage.offenderName().contains('Norman Smith')
+    writeYourStatementPage.lastTrainingMonth().select('March')
+    writeYourStatementPage.lastTrainingYear().type('2010')
+    writeYourStatementPage.jobStartYear().type('1999')
+    writeYourStatementPage.statement().type('This is my statement')
+    writeYourStatementPage.submit()
+    const checkYourStatementPage = CheckYourStatementPage.verifyOnPage()
+    checkYourStatementPage.completeLater()
+    YourStatementsPage.verifyOnPage()
   })
 })

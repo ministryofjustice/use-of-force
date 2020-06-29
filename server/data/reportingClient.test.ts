@@ -1,9 +1,17 @@
-jest.mock('./dataAccess/db')
+/* eslint-disable import/first */
+import moment = require('moment')
+import { ReportStatus } from '../config/types'
+import * as reportingClient from './reportingClient'
 
-const moment = require('moment')
-const { ReportStatus } = require('../config/types')
-const reportingClient = require('./reportingClient')
-const db = require('./dataAccess/db')
+jest.mock('./dataAccess/db')
+// eslint-disable-next-line import/first
+import * as original from './dataAccess/db'
+
+const db: any = original
+
+beforeEach(() => {
+  db.query.mockResolvedValue({ rows: [] })
+})
 
 afterEach(() => {
   jest.resetAllMocks()

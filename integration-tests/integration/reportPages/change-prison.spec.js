@@ -1,3 +1,5 @@
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
 const ChangePrisonPage = require('../../pages/createReport/changePrisonPage')
@@ -5,27 +7,24 @@ const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submitting details page form', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
+    cy.task('stubOffenderDetails', offender)
     cy.task('stubLocation', '357591')
-    cy.task('stubLocations', 'MDI')
+    cy.task('stubLocations', offender.agencyId)
     cy.task('stubLocations', 'LEI')
-    cy.task('stubPrison', 'MDI')
+    cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrison', 'LEI')
     cy.task('stubPrisons')
-    cy.task('stubOffenders')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubOffenders', [offender])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
     cy.task('seedReport', { status: ReportStatus.IN_PROGRESS })
   })
 
   const completeIncidentDetails = () => {
-    cy.login(bookingId)
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    cy.login()
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
@@ -67,7 +66,7 @@ context('Submitting details page form', () => {
   it('Can navigate from check-your-answers to incident-details and change prison', () => {
     completeIncidentDetails()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
 
     let checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 

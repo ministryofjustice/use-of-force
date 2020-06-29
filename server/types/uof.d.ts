@@ -40,6 +40,8 @@ type GetUsersResults = {
   staffId?: number // only if exists
 }
 
+export type SystemToken = (string?) => Promise<string>
+
 export interface PrisonLocation {
   agencyId?: string
   currentOccupancy?: number
@@ -62,7 +64,7 @@ export interface UserService {
 }
 
 export interface OffenderService {
-  getOffenderDetails: (token: string, bookingId: string) => Promise<object>
+  getOffenderDetails: (token: string, bookingId: string) => Promise<any>
   getPrisonersDetails: (token: string, offenderNumbers: string[]) => Promise<PrisonerDetail[]>
   getOffenderImage: (token: string, bookingId: string) => Promise<ReadableStream>
   getOffenderNames: (token: string, offenderNos: string[]) => Promise<{ [offenderNo: string]: string }>

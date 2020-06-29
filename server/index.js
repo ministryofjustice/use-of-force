@@ -1,11 +1,13 @@
 import { buildAppInsightsClient } from './utils/azure-appinsights'
 import PrisonerSearchClient from './data/prisonerSearchClient'
+import incidentClient from './data/incidentClient'
 
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 import createLocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
+import ReviewService from './services/reviewService'
 
 import createApp from './app'
 
@@ -14,7 +16,7 @@ import elite2ClientBuilder from './data/elite2ClientBuilder'
 import { authClientBuilder, systemToken } from './data/authClientBuilder'
 
 const db = require('./data/dataAccess/db')
-const incidentClient = require('./data/incidentClient')
+
 const statementsClient = require('./data/statementsClient')
 const reportingClient = require('./data/reportingClient')
 
@@ -25,7 +27,6 @@ const { createInvolvedStaffService } = require('./services/involvedStaffService'
 const createReportService = require('./services/reportService')
 const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
-const createReviewService = require('./services/reviewService')
 
 const { notificationServiceFactory } = require('./services/notificationService')
 const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
@@ -47,7 +48,7 @@ const reportService = createReportService({
 })
 
 const statementService = createStatementService({ statementsClient, incidentClient, db })
-const reviewService = createReviewService({ statementsClient, incidentClient, authClientBuilder })
+const reviewService = new ReviewService(statementsClient, incidentClient, authClientBuilder)
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 const locationService = createLocationService(elite2ClientBuilder, incidentClient)

@@ -1,7 +1,19 @@
-const moment = require('moment')
+import moment from 'moment'
+import { Request, Response } from 'express'
+import { removeKeysWithEmptyValues, parseDate } from '../utils/utils'
+import { OffenderService, SystemToken } from '../types/uof'
+import ReportDataBuilder from '../services/reportDetailBuilder'
+import ReviewService from '../services/reviewService'
 
-module.exports = function CreateReviewRoutes({ offenderService, reportDetailBuilder, reviewService, systemToken }) {
-  const getOffenderNames = (token, incidents) => {
+interface Params {
+  offenderService: OffenderService
+  reportDetailBuilder: ReportDataBuilder
+  reviewService: ReviewService
+  systemToken: SystemToken
+}
+
+export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, reviewService, systemToken }: Params) {
+  const getOffenderNames = (token, incidents): Promise<{ [offenderNo: string]: string }> => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
   }
@@ -17,8 +29,16 @@ module.exports = function CreateReviewRoutes({ offenderService, reportDetailBuil
   })
 
   return {
-    viewAllIncidents: async (req, res) => {
-      const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId)
+    viewAllIncidents: async (req: Request, res: Response): Promise<void> => {
+      const { prisonNumber, reporter, dateFrom, dateTo } = req.query
+      const query = removeKeysWithEmptyValues({
+        prisonNumber,
+        reporter,
+        dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
+        dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
+      })
+
+      const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId, query)
 
       const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
         ...awaiting,
@@ -30,11 +50,12 @@ module.exports = function CreateReviewRoutes({ offenderService, reportDetailBuil
       return res.render('pages/all-incidents', {
         awaitingReports,
         completedReports,
+        query,
         selectedTab: 'all-incidents',
       })
     },
 
-    reviewReport: async (req, res) => {
+    reviewReport: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
 
       const report = await reviewService.getReport(reportId)
@@ -44,7 +65,7 @@ module.exports = function CreateReviewRoutes({ offenderService, reportDetailBuil
       return res.render('pages/reviewer/view-report', { data })
     },
 
-    reviewStatements: async (req, res) => {
+    reviewStatements: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
 
       const report = await reviewService.getReport(reportId)
@@ -61,7 +82,7 @@ module.exports = function CreateReviewRoutes({ offenderService, reportDetailBuil
       return res.render('pages/reviewer/view-statements', { data })
     },
 
-    reviewStatement: async (req, res) => {
+    reviewStatement: async (req: Request, res: Response): Promise<void> => {
       const { statementId } = req.params
 
       const statement = await reviewService.getStatement(statementId)

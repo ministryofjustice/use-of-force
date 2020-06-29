@@ -1,4 +1,5 @@
 const R = require('ramda')
+const moment = require('moment')
 
 const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
 
@@ -10,6 +11,19 @@ const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
 const isBlank = str => !str || /^\s*$/.test(str)
+
+const removeKeysWithEmptyValues = vals =>
+  Object.entries(vals).reduce((result, [k, v]) => {
+    return isNilOrEmpty(v) ? result : { ...result, [k]: v }
+  }, {})
+
+const parseDate = (val, format) => {
+  if (!val) {
+    return null
+  }
+  const date = moment(val, format, true)
+  return date.isValid() ? date : null
+}
 
 /**
  * Converts a name (first name, last name, middle name, etc.) to proper case equivalent, handling double-barreled names
@@ -45,4 +59,6 @@ module.exports = {
   firstItem: R.head,
   mergeWithRight: R.mergeDeepRight,
   isBlank,
+  removeKeysWithEmptyValues,
+  parseDate,
 }

@@ -6,6 +6,7 @@ import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
 import config from '../config'
 import { generateOauthClientToken } from '../authentication/clientCredentials'
+import { SystemToken } from '../types/uof'
 
 const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
@@ -90,7 +91,7 @@ export function authClientBuilder(token) {
   }
 }
 
-export async function systemToken(username?: string) {
+export const systemToken: SystemToken = async (username?: string): Promise<string> => {
   const systemClientToken = await getSystemClientToken(username)
   return systemClientToken.access_token
 }

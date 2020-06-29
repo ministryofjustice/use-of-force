@@ -1,4 +1,5 @@
-const { properCaseName, properCaseFullName, isNilOrEmpty } = require('./utils')
+const moment = require('moment')
+const { properCaseName, properCaseFullName, isNilOrEmpty, removeKeysWithEmptyValues, parseDate } = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -53,5 +54,44 @@ describe('nilOrEmpty', () => {
     expect(isNilOrEmpty(undefined)).toBe(true)
     expect(isNilOrEmpty('')).toBe(true)
     expect(isNilOrEmpty('x')).toBe(false)
+  })
+})
+
+describe('removeKeysWithEmptyValues', () => {
+  it('empty', () => {
+    expect(removeKeysWithEmptyValues({})).toEqual({})
+  })
+  it('does not alter non empty values', () => {
+    expect(removeKeysWithEmptyValues({ a: 1, b: true, c: 'bob' })).toEqual({ a: 1, b: true, c: 'bob' })
+  })
+  it('does not remove other falsy values', () => {
+    expect(removeKeysWithEmptyValues({ a: 0, b: false, c: NaN })).toEqual({ a: 0, b: false, c: NaN })
+  })
+  it('remove nulls and undefined values', () => {
+    expect(removeKeysWithEmptyValues({ a: true, b: null, c: undefined, d: '', e: [], f: {} })).toEqual({ a: true })
+  })
+})
+
+describe('parseDate', () => {
+  it('null', () => {
+    expect(parseDate(null, 'D MMM YYYY')).toEqual(null)
+  })
+  it('empty', () => {
+    expect(parseDate('', 'D MMM YYYY')).toEqual(null)
+  })
+  it('valid', () => {
+    expect(parseDate('30 Jan 2020', 'D MMM YYYY').toDate()).toEqual(moment('2020-01-30').toDate())
+  })
+  it('invalid month', () => {
+    expect(parseDate('30 Jon 2020', 'D MMM YYYY')).toEqual(null)
+  })
+  it('invalid day', () => {
+    expect(parseDate('32 Jan 2020', 'D MMM YYYY')).toEqual(null)
+  })
+  it('wrong format', () => {
+    expect(parseDate('2020-02-31', 'D MMM YYYY')).toEqual(null)
+  })
+  it('just wrong', () => {
+    expect(parseDate('this is not a date', 'D MMM YYYY')).toEqual(null)
   })
 })

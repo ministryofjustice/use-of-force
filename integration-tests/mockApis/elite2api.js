@@ -40,48 +40,34 @@ module.exports = {
       },
     })
   },
-  stubOffenderDetails: bookingId => {
+  stubOffenderDetails: details => {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/api/bookings/${bookingId}\\?basicInfo=false`,
+        urlPattern: `/api/bookings/${details.bookingId}\\?basicInfo=false`,
       },
       response: {
         status: 200,
         headers: {
           'Content-Type': 'application/json;charset=UTF-8',
         },
-        jsonBody: {
-          offenderNo: 'A1234AC',
-          firstName: 'NORMAN',
-          lastName: 'SMITH',
-          agencyId: 'MDI',
-          dateOfBirth: '2000-12-26',
-        },
+        jsonBody: details,
       },
     })
   },
-  stubOffenders: () => {
+  stubOffenders: offenders => {
     return stubFor({
       request: {
         method: 'POST',
         urlPattern: `/api/bookings/offenders\\?activeOnly=false`,
-        bodyPatterns: [{ equalToJson: ['A1234AC'] }],
+        bodyPatterns: [{ equalToJson: offenders.map(o => o.offenderNo) }],
       },
       response: {
         status: 200,
         headers: {
           'Content-Type': 'application/json;charset=UTF-8',
         },
-        jsonBody: [
-          {
-            offenderNo: 'A1234AC',
-            firstName: 'NORMAN',
-            lastName: 'SMITH',
-            agencyId: 'MDI',
-            dateOfBirth: '2000-12-26',
-          },
-        ],
+        jsonBody: offenders,
       },
     })
   },

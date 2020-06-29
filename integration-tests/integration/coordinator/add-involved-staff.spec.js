@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const AddInvolvedStaffPage = require('../../pages/reviewer/addInvolvedStaffPage')
@@ -9,18 +10,15 @@ const ViewReportPage = require('../../pages/reviewer/viewReportPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('A use of force coordinator can add involved staff', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubPrisons', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubPrisons')
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
     cy.task('stubUnverifiedUserDetailsRetrieval', 'UNVERIFIED_USER')
   })
 
@@ -47,9 +45,7 @@ context('A use of force coordinator can add involved staff', () => {
     allIncidentsPage.getNoCompleteRows().should('exist')
 
     const { reportId } = allIncidentsPage.getTodoRow(0)
-    reportId().then(id => cy.task('submitStatement', { userId: 'TEST_USER', reportId: id }))
-
-    cy.reload()
+    reportId().then(id => cy.task('submitStatement', { userId: 'TEST_USER', reportId: id }).then(() => cy.reload()))
 
     allIncidentsPage.getNoTodoRows().should('exist')
     allIncidentsPage.getCompleteRows().should('have.length', 1)
@@ -57,7 +53,7 @@ context('A use of force coordinator can add involved staff', () => {
 
   it('A coordinator can add staff on a complete report and it will complete the report', () => {
     cy.task('stubCoordinatorLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedAndCompleteReport()
 
@@ -112,7 +108,7 @@ context('A use of force coordinator can add involved staff', () => {
 
   it('Attempting to add a missing staff member', () => {
     cy.task('stubCoordinatorLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedAndCompleteReport()
 
@@ -142,7 +138,7 @@ context('A use of force coordinator can add involved staff', () => {
 
   it('Attempting to re-add an existing staff member', () => {
     cy.task('stubCoordinatorLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedAndCompleteReport()
 
@@ -172,7 +168,7 @@ context('A use of force coordinator can add involved staff', () => {
 
   it('Attempting to add an unverified staff member', () => {
     cy.task('stubCoordinatorLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedAndCompleteReport()
 
@@ -204,7 +200,7 @@ context('A use of force coordinator can add involved staff', () => {
 
   it('A reviewer user should not be able to add staff', () => {
     cy.task('stubReviewerLogin')
-    cy.login(bookingId)
+    cy.login()
 
     seedReport()
 
