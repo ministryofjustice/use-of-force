@@ -36,11 +36,11 @@ export default class PrisonSearchService {
     }
   }
 
-  async search(form: SearchForm): Promise<any[]> {
+  async search(searchingUserName: string, form: SearchForm): Promise<any[]> {
     if (!isFormComplete(form)) {
       return []
     }
-    const token = await this.systemToken()
+    const token = await this.systemToken(searchingUserName)
     const client = new this.PrisonerSearchClient(token)
     const results = await client.search(form)
     const prisonNameLookup = await this.createPrisonNameLookup(token)
@@ -53,7 +53,7 @@ export default class PrisonSearchService {
     }))
   }
 
-  async getPrisons(): Promise<Prison[]> {
-    return this.getPrisonsUsing(await this.systemToken())
+  async getPrisons(username: string): Promise<Prison[]> {
+    return this.getPrisonsUsing(await this.systemToken(username))
   }
 }

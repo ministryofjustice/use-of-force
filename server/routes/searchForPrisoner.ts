@@ -16,8 +16,8 @@ export default function SearchForPrisonerRoutes({ prisonerSearchService }): any 
   const renderView = validate => async (req, res): Promise<void> => {
     const { form, openDetails } = extractForm(req.query)
     const error = validate ? validateForm(form) : null
-    const results = error || !validate ? [] : await prisonerSearchService.search(form)
-    const prisons = await prisonerSearchService.getPrisons()
+    const results = error || !validate ? [] : await prisonerSearchService.search(req.user.username, form)
+    const prisons = await prisonerSearchService.getPrisons(req.user.username)
 
     return res.render('pages/search-for-prisoner', {
       data: { prisons, results, form: { ...form, openDetails } },
