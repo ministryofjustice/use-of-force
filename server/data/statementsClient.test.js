@@ -7,6 +7,7 @@ const { StatementStatus } = require('../config/types')
 
 beforeEach(() => {
   jest.resetAllMocks()
+  db.query.mockResolvedValue({ rows: [] })
 })
 
 test('getStatements', () => {
@@ -187,9 +188,11 @@ test('setEmail', () => {
   })
 })
 
-test('getNumberOfPendingStatements', () => {
-  statementsClient.getNumberOfPendingStatements('report1')
+test('getNumberOfPendingStatements', async () => {
+  db.query.mockResolvedValue({ rows: [{ count: 10 }] })
+  const count = await statementsClient.getNumberOfPendingStatements('report1')
 
+  expect(count).toBe(10)
   expect(db.query).toBeCalledWith({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
     values: ['report1', StatementStatus.PENDING.value],

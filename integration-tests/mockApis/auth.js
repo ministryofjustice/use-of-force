@@ -157,6 +157,7 @@ const stubUnverifiedEmail = username =>
 module.exports = {
   getLoginUrl,
   stubLogin: options => Promise.all([favicon(), redirect(), logout(), token(options)]),
-  stubUserDetailsRetrieval: username => Promise.all([stubUser(username), stubEmail(username)]),
+  stubUserDetailsRetrieval: usernames =>
+    Promise.all(usernames.flatMap(username => [stubUser(username), stubEmail(username)])),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
 }

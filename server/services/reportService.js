@@ -23,8 +23,7 @@ module.exports = function createReportService({
   }
 
   async function getReports(userId, status, opts) {
-    const result = await incidentClient.getReports(userId, status, opts)
-    return result.rows
+    return incidentClient.getReports(userId, status, opts)
   }
 
   async function isDraftComplete(username, bookingId) {

@@ -1,4 +1,12 @@
-const serviceCreator = require('./reviewService')
+/* eslint-disable import/first */
+jest.mock('../data/incidentClient')
+
+import moment from 'moment'
+import { IncidentClient } from '../data/incidentClient'
+import ReviewService from './reviewService'
+import { ReportSummary } from '../data/incidentClientTypes'
+
+let incidentClient: jest.Mocked<IncidentClient>
 
 const statementsClient = {
   getStatementsForReviewer: jest.fn(),
@@ -6,11 +14,6 @@ const statementsClient = {
   getAdditionalComments: jest.fn(),
 }
 
-const incidentClient = {
-  getReportForReviewer: jest.fn(),
-  getIncompleteReportsForReviewer: jest.fn(),
-  getCompletedReportsForReviewer: jest.fn(),
-}
 const authClient = {
   getEmail: jest.fn(),
 }
@@ -21,7 +24,8 @@ let service
 
 describe('reviewService', () => {
   beforeEach(() => {
-    service = serviceCreator({ statementsClient, incidentClient, authClientBuilder })
+    incidentClient = new IncidentClient() as jest.Mocked<IncidentClient>
+    service = new ReviewService(statementsClient, incidentClient, authClientBuilder)
   })
 
   afterEach(() => {
@@ -48,9 +52,9 @@ describe('reviewService', () => {
       statementsClient.getAdditionalComments.mockReturnValue([
         {
           id: 1,
-          statement_id: 1,
-          additional_comment: 'comment1',
-          data_submitted: '2019-03-05 01:03:28',
+          statementId: 1,
+          additionalComment: 'comment1',
+          dataSubmitted: '2019-03-05 01:03:28',
         },
       ])
 
@@ -61,9 +65,9 @@ describe('reviewService', () => {
         additionalComments: [
           {
             id: 1,
-            statement_id: 1,
-            additional_comment: 'comment1',
-            data_submitted: '2019-03-05 01:03:28',
+            statementId: 1,
+            additionalComment: 'comment1',
+            dataSubmitted: '2019-03-05 01:03:28',
           },
         ],
       })
@@ -80,7 +84,7 @@ describe('reviewService', () => {
 
   describe('getReport', () => {
     test('it should call query on db', async () => {
-      incidentClient.getReportForReviewer.mockReturnValue({ id: 2 })
+      incidentClient.getReportForReviewer.mockResolvedValue({ id: 2 })
       await service.getReport('report1')
       expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
       expect(incidentClient.getReportForReviewer).toBeCalledWith('report1')
@@ -95,14 +99,23 @@ describe('reviewService', () => {
 
   describe('getReports', () => {
     test('it should call query on db', async () => {
-      incidentClient.getIncompleteReportsForReviewer.mockReturnValue({ rows: [{ id: 1 }] })
-      incidentClient.getCompletedReportsForReviewer.mockReturnValue({ rows: [{ id: 2 }] })
+      const reportSummary = (id: number): ReportSummary => ({
+        id,
+        bookingId: id + 1,
+        reporterName: `reporter-${id}`,
+        offenderNo: `offender-${id}`,
+        incidentDate: new Date(id),
+      })
+      const query = { prisonNumber: 'AA' }
 
-      const result = await service.getReports('agency-1')
-      expect(result).toEqual({ awaiting: [{ id: 1 }], completed: [{ id: 2 }] })
+      incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
+      incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
 
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
+      const result = await service.getReports('agency-1', query)
+      expect(result).toEqual({ awaiting: [reportSummary(1)], completed: [reportSummary(2)] })
+
+      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1', query)
+      expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
     })
   })
 })

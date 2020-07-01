@@ -1,0 +1,64 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./datePicker.njk" import datePicker %}
+
+<form id="search" class="search-again" autocomplete="off">
+    <div class="incident-search">
+      <h3 class="govuk-heading-m heading">View by</h3>
+      <div class="govuk-grid-row">
+        <div class="filter-item prison-number">
+          {{ govukInput({
+            label: {
+              text: "Prison number"
+            },
+            name: "prisonNumber",
+            value: query.prisonNumber
+          }) }} 
+        </div>
+        <div class="filter-item reporter">
+          {{ govukInput({
+            label: {
+              text: "Reporter"
+            },
+            name: "reporter",
+            value: query.reporter
+          }) }} 
+        </div>
+        <div class="filter-item date-from">
+          {{ datePicker({
+            id: 'dateFrom',
+            label: 'Date from',
+            name: 'dateFrom',
+            date: query.dateFrom | formatDate('D MMM YYYY'),
+            classes: 'narrow-date',
+            attributes: {
+              'disable-future-dates': 'true'
+            }
+        }) }}
+        </div>
+        <div class="filter-item date-to">
+          {{ datePicker({
+            id: 'dateTo',
+            label: 'Date to',
+            name: 'dateTo',
+            date: query.dateTo | formatDate('D MMM YYYY'),
+            classes: 'narrow-date',
+            attributes: {
+              'disable-future-dates': 'true'
+            }
+        }) }} 
+        </div>
+        <div class="filter-item apply">
+          {{ govukButton({
+            text: "Apply",
+            attributes: {
+              "data-qa": "apply"
+            }
+          }) }}
+        </div>
+        <div class="filter-item clear-filter">
+          <a href="/all-incidents" class="govuk-body govuk-link govuk-link--no-visited-state clear">Clear</a>
+        </div>
+      </div>
+    </div>
+  </form>

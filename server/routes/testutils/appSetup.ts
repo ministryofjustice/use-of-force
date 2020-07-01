@@ -45,7 +45,7 @@ export const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-export const appSetup = (route, userSupplier = () => user) => {
+export const appSetup = (route, userSupplier = (): any => user) => {
   const app = express()
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }

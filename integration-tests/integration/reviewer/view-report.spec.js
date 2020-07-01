@@ -1,4 +1,7 @@
 const moment = require('moment')
+
+const { offender } = require('../../mockApis/data')
+
 const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
@@ -9,14 +12,12 @@ context('view review page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
   it('A reviewer can view reports they did and did not raise', () => {
@@ -37,23 +38,23 @@ context('view review page', () => {
           email: 'TEST_USER@gov.uk',
         },
       ],
-    })
-
-    cy.task('seedReport', {
-      status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      userId: 'ANOTHER_USER',
-      reporterName: 'Anne OtherUser',
-      agencyId: 'MDI',
-      bookingId,
-      involvedStaff: [
-        {
-          userId: 'ANOTHER_USER',
-          name: 'Another user name',
-          email: 'TEST_USER@gov.uk',
-        },
-      ],
-    })
+    }).then(() =>
+      cy.task('seedReport', {
+        status: ReportStatus.SUBMITTED,
+        submittedDate: moment().toDate(),
+        userId: 'ANOTHER_USER',
+        reporterName: 'Anne OtherUser',
+        agencyId: 'MDI',
+        bookingId,
+        involvedStaff: [
+          {
+            userId: 'ANOTHER_USER',
+            name: 'Another user name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
+    )
 
     const allIncidentsPage = AllIncidentsPage.goTo()
     allIncidentsPage.getTodoRows().should('have.length', 2)

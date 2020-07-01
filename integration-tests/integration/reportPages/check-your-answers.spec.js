@@ -1,3 +1,5 @@
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistPage')
 const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
@@ -10,17 +12,14 @@ const EvidencePage = require('../../pages/createReport/evidencePage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Check your answers page', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubOffenders')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
@@ -30,9 +29,9 @@ context('Check your answers page', () => {
 
   it('Can edit answers from check your answers page ', () => {
     cy.task('stubLogin')
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     canEditIncidentDetailsPage({
@@ -66,9 +65,9 @@ context('Check your answers page', () => {
 
   it('Can cancel editing answers from check your answers page ', () => {
     cy.task('stubLogin')
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     canEditIncidentDetailsPage({
@@ -144,9 +143,9 @@ context('Check your answers page', () => {
   describe('Redirect logic around adding invalid staff to incident details whilst editting ', () => {
     it('Attempt to save invalid staff', () => {
       cy.task('stubLogin')
-      cy.login(bookingId)
+      cy.login()
 
-      const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+      const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
       const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
       checkAnswersPage.editIncidentDetailsLink().click()
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
@@ -177,9 +176,9 @@ context('Check your answers page', () => {
 
     it('Still need to resolve invalid staff, even if cancelling out half way', () => {
       cy.task('stubLogin')
-      cy.login(bookingId)
+      cy.login()
 
-      const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+      const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
       const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
       checkAnswersPage.editIncidentDetailsLink().click()
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()

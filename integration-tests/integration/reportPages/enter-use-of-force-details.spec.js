@@ -1,20 +1,20 @@
+const { offender } = require('../../mockApis/data')
+
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 
 context('Submitting use of force details page', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubPrison', 'MDI')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES'])
   })
 
   const fillFormAndSave = ({ restraintPositions = ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'] } = {}) => {
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.fillForm()
     const useOfForceDetailsPage = incidentDetailsPage.save()
@@ -35,11 +35,11 @@ context('Submitting use of force details page', () => {
   }
 
   it('Details data is saved correctly', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
+    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
       expect(payload).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,
@@ -58,11 +58,11 @@ context('Submitting use of force details page', () => {
   })
 
   it('Single position is stored correctly', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave({ restraintPositions: ['STANDING'] })
 
-    cy.task('getCurrentDraft', { bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
+    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
       expect(payload).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,
@@ -81,7 +81,7 @@ context('Submitting use of force details page', () => {
   })
 
   it('Can revisit saved data', () => {
-    cy.login(bookingId)
+    cy.login()
 
     fillFormAndSave({ restraintPositions: ['STANDING', 'KNEELING'] })
     cy.go('back')
@@ -105,9 +105,9 @@ context('Submitting use of force details page', () => {
   })
 
   it('Displays validation messages', () => {
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.fillForm()
     const useOfForceDetailsPage = incidentDetailsPage.save()

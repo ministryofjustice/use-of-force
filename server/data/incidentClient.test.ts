@@ -1,8 +1,12 @@
-jest.mock('../../server/data/dataAccess/db')
-const incidentClient = require('./incidentClient')
-/** @type {any} */
-const db = require('./dataAccess/db')
-const { ReportStatus, StatementStatus } = require('../config/types')
+import moment from 'moment'
+import incidentClient from './incidentClient'
+import { ReportStatus, StatementStatus } from '../config/types'
+
+jest.mock('./dataAccess/db')
+// eslint-disable-next-line import/first
+import * as original from './dataAccess/db'
+
+const db: any = original
 
 afterEach(() => {
   db.query.mockReset()
@@ -14,7 +18,7 @@ beforeEach(() => {
 
 describe('getCurrentDraftReport', () => {
   test('it should call query on db', () => {
-    incidentClient.getCurrentDraftReport('user1')
+    incidentClient.getCurrentDraftReport('user1', 1)
     expect(db.query).toBeCalledTimes(1)
   })
 
@@ -88,7 +92,12 @@ test('getIncompleteReportsForReviewer', () => {
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
-  incidentClient.getIncompleteReportsForReviewer('agency-1')
+  incidentClient.getIncompleteReportsForReviewer('agency-1', {
+    prisonNumber: 'A1234AB',
+    reporter: 'reporter',
+    dateFrom: moment('2020-01-29'),
+    dateTo: moment('2020-01-30'),
+  })
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
@@ -100,13 +109,30 @@ test('getIncompleteReportsForReviewer', () => {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
+          and   r.offender_no = coalesce($4, r.offender_no)
+          and   r.reporter_name Ilike coalesce($5, r.reporter_name)
+          and   date_trunc('day', r.incident_date) >= coalesce($6, date_trunc('day', r.incident_date))
+          and   date_trunc('day', r.incident_date) <= coalesce($7, date_trunc('day', r.incident_date))
           order by r.incident_date`,
-    values: [ReportStatus.SUBMITTED.value, 'agency-1', StatementStatus.PENDING.value],
+    values: [
+      ReportStatus.SUBMITTED.value,
+      'agency-1',
+      StatementStatus.PENDING.value,
+      'A1234AB',
+      '%reporter%',
+      moment('2020-01-29').toDate(),
+      moment('2020-01-30').toDate(),
+    ],
   })
 })
 
 test('getCompletedReportsForReviewer', () => {
-  incidentClient.getCompletedReportsForReviewer('agency-1')
+  incidentClient.getCompletedReportsForReviewer('agency-1', {
+    prisonNumber: 'A1234AB',
+    reporter: 'reporter',
+    dateFrom: moment('2020-01-29'),
+    dateTo: moment('2020-01-30'),
+  })
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
@@ -117,8 +143,19 @@ test('getCompletedReportsForReviewer', () => {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
+          and   r.offender_no = coalesce($3, r.offender_no)
+          and   r.reporter_name Ilike coalesce($4, r.reporter_name)
+          and   date_trunc('day', r.incident_date) >= coalesce($5, date_trunc('day', r.incident_date))
+          and   date_trunc('day', r.incident_date) <= coalesce($6, date_trunc('day', r.incident_date))
           order by r.incident_date desc`,
-    values: [ReportStatus.COMPLETE.value, 'agency-1'],
+    values: [
+      ReportStatus.COMPLETE.value,
+      'agency-1',
+      'A1234AB',
+      '%reporter%',
+      moment('2020-01-29').toDate(),
+      moment('2020-01-30').toDate(),
+    ],
   })
 })
 
@@ -155,8 +192,8 @@ test('createDraftReport', async () => {
   expect(id).toEqual(id)
   expect(db.query).toBeCalledWith({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
-            values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
-            returning id`,
+              values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
+              returning id`,
     values: [
       { someData: true },
       'user1',
@@ -188,11 +225,11 @@ test('updateAgencyId', () => {
 
   expect(db.query).toBeCalledWith({
     text: `update v_report r
-                set agency_id = COALESCE($1,   r.agency_id)
-                ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
-                where r.user_id = $2
-                and r.booking_id = $3
-                and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
+                  set agency_id = COALESCE($1,   r.agency_id)
+                  ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
+                  where r.user_id = $2
+                  and r.booking_id = $3
+                  and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
     values: ['agencyId', 'username', 'bookingId'],
   })
 })
@@ -273,7 +310,7 @@ test('getInvolvedStaff', async () => {
 })
 
 test('getNextNotificationReminder', () => {
-  const client = { query: jest.fn() }
+  const client = { query: jest.fn().mockResolvedValue({ rows: [] }) }
   incidentClient.getNextNotificationReminder(client)
   expect(client.query).toBeCalledWith({
     text: `select s.id                     "statementId"

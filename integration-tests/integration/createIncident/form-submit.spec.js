@@ -1,3 +1,4 @@
+const { offender } = require('../../mockApis/data')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const ReportSentPage = require('../../pages/createReport/reportSentPage')
@@ -5,24 +6,21 @@ const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
 
 context('Submit the incident report', () => {
-  const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubOffenderDetails', bookingId)
-    cy.task('stubLocations', 'MDI')
-    cy.task('stubOffenders')
-    cy.task('stubPrison', 'MDI')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubOffenders', [offender])
+    cy.task('stubPrison', offender.agencyId)
     cy.task('stubLocation', '357591')
-    cy.task('stubUserDetailsRetrieval', 'TEST_USER')
-    cy.task('stubUserDetailsRetrieval', 'MR_ZAGATO')
-    cy.task('stubUserDetailsRetrieval', 'MRS_JONES')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
   it('Submitting a form', () => {
-    cy.login(bookingId)
+    cy.login()
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.fillForm()
     const detailsPage = incidentDetailsPage.save()
@@ -67,14 +65,14 @@ context('Submit the incident report', () => {
   })
 
   it('After submitting, can not resubmit, go on to view all incidents', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
     })
 
-    let reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    let reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     let checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.backToTasklist().click()
@@ -92,14 +90,14 @@ context('Submit the incident report', () => {
   })
 
   it('Can exit after completing report and before creating statement', () => {
-    cy.login(bookingId)
+    cy.login()
 
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
     })
 
-    const reportUseOfForcePage = ReportUseOfForcePage.visit(bookingId)
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
     checkAnswersPage.clickSubmit()

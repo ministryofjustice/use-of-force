@@ -4,12 +4,13 @@ const moment = require('moment')
 
 const { expectedPayload } = require('../integration/seedData')
 const db = require('../../dist/server/data/dataAccess/db')
-const incidentClient = require('../../dist/server/data/incidentClient')
+const { IncidentClient } = require('../../dist/server/data/incidentClient')
 const statementsClient = require('../../dist/server/data/statementsClient')
 const createStatementService = require('../../dist/server/services/statementService')
 const { ReportStatus } = require('../../dist/server/config/types')
 const { equals } = require('../../dist/server/utils/utils')
 
+const incidentClient = new IncidentClient()
 const statementService = createStatementService({ statementsClient, incidentClient, db })
 
 const getCurrentDraft = bookingId => incidentClient.getCurrentDraftReport('TEST_USER', bookingId)
@@ -40,23 +41,38 @@ const seedReport = ({
   userId = 'TEST_USER',
   reporterName = 'James Stuart',
   bookingId = 1001,
+  offenderNumber = 'A1234AC',
   payload = expectedPayload,
   involvedStaff = [],
   agencyId = 'MDI',
+  incidentDate = moment('2019-09-10 09:57:40.000').toDate(),
   submittedDate = moment('2019-09-10 10:30:43.122').toDate(),
   overdueDate = moment(submittedDate)
     .add(3, 'd')
     .toDate(),
+  sequenceNumber = 0,
 }) => {
   const submitDate = equals(status, ReportStatus.SUBMITTED) ? submittedDate : null
   return db
     .query({
       text: `INSERT INTO report
-      (form_response, user_id, booking_id, created_date, status, submitted_date, offender_no, reporter_name, incident_date, agency_id)
-      VALUES($1, $2, $3, $4, $5, $6, 'A1234AC', $7, '2019-09-10 09:57:40.000', $8)
+      (form_response, user_id, booking_id, created_date, status, submitted_date, offender_no, reporter_name, incident_date, agency_id, sequence_no)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       returning id;
       `,
-      values: [payload, userId, bookingId, '2019-09-10 09:57:43.122', status.value, submitDate, reporterName, agencyId],
+      values: [
+        payload,
+        userId,
+        bookingId,
+        '2019-09-10 09:57:43.122',
+        status.value,
+        submitDate,
+        offenderNumber,
+        reporterName,
+        incidentDate,
+        agencyId,
+        sequenceNumber,
+      ],
     })
     .then(
       result =>
@@ -78,8 +94,8 @@ const submitStatement = ({ userId, reportId }) =>
       jobStartYear: 2017,
       statement: 'Things happened',
     })
-    .then(() => {
-      statementService.submitStatement(userId, reportId)
+    .then(async () => {
+      await statementService.submitStatement(userId, reportId)
       return null
     })
 

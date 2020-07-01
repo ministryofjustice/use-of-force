@@ -16,6 +16,13 @@ const completeCol = (i, j) =>
 const incidentsPage = () =>
   page('Use of force incidents', {
     ...tabs,
+    filter: {
+      prisonNumber: () => cy.get('[name="prisonNumber"]'),
+      reporter: () => cy.get('[name="reporter"]'),
+      dateFrom: () => cy.get('[name="dateFrom"]'),
+      dateTo: () => cy.get('[name="dateTo"]'),
+      apply: () => cy.get('[data-qa="apply"]'),
+    },
     getTodoRows: () =>
       cy
         .get('[data-qa=incidents-todo]')

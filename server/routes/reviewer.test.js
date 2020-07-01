@@ -1,5 +1,6 @@
 const request = require('supertest')
 const { appWithAllRoutes, user, reviewerUser } = require('./testutils/appSetup')
+const { parseDate } = require('../utils/utils')
 
 const userSupplier = jest.fn()
 
@@ -10,7 +11,7 @@ const offenderService = {
 
 const reviewService = {
   getStatements: jest.fn(),
-  getReports: () => ({ awaiting: [], completed: [] }),
+  getReports: jest.fn(),
   getReport: jest.fn(),
 }
 
@@ -23,6 +24,7 @@ let app
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
   reviewService.getReport.mockResolvedValue({})
+  reviewService.getReports.mockResolvedValue({ awaiting: [], completed: [] })
   app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
 })
 
@@ -40,6 +42,40 @@ describe('GET /all-incidents', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
+      })
+  })
+
+  it('should pass search query params through', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+
+    return request(app)
+      .get('/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+        expect(reviewService.getReports).toHaveBeenCalledWith('LEI', {
+          dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
+          dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
+          prisonNumber: 'A1234AA',
+          reporter: 'Bob',
+        })
+      })
+  })
+
+  it('should pass handle invalid dates', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+
+    return request(app)
+      .get('/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=&dateTo=blarh')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+        expect(reviewService.getReports).toHaveBeenCalledWith('LEI', {
+          prisonNumber: 'A1234AA',
+          reporter: 'Bob',
+        })
       })
   })
 
