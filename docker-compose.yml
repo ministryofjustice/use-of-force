@@ -1,11 +1,11 @@
 version: '3.1'
 services:
 
-  oauth-server:
-    image: quay.io/hmpps/nomis-oauth2-server:latest
+  auth-server:
+    image: quay.io/hmpps/hmpps-auth:latest
     networks:
       - hmpps
-    container_name: oauth-server
+    container_name: auth-server
     ports:
       - "9090:8080"
     healthcheck:
@@ -19,7 +19,7 @@ services:
       - hmpps
     container_name: prison-api
     depends_on:
-      - oauth-server
+      - auth-server
     ports:
       - "8080:8080"
     healthcheck:
@@ -56,7 +56,7 @@ services:
     depends_on:
       - use-of-force-db
       - use-of-force-redis
-      - oauth-server
+      - auth-server
       - prison-api
     ports:
       - "3000:3000"
@@ -69,7 +69,7 @@ services:
       - DB_SERVER=use-of-force-db
       - DB_NAME=use-of-force
       - DB_SSL_ENABLED=no
-      - NOMIS_AUTH_URL=http://oauth-server:8080/auth
+      - NOMIS_AUTH_URL=http://auth-server:8080/auth
       - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
       - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
       - NODE_ENV=development
