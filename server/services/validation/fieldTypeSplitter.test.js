@@ -37,10 +37,7 @@ describe('fieldTypeSplitter', () => {
   it('merges data from multiple meta-data objects', () => {
     const schema = joi.object({
       a: joi.any(),
-      b: joi
-        .any()
-        .meta({ fieldType: 'Y' })
-        .meta({ fieldType: 'X' }),
+      b: joi.any().meta({ fieldType: 'Y' }).meta({ fieldType: 'X' }),
     })
 
     const splitter = buildSplitter(schema)

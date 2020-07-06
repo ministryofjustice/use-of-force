@@ -151,10 +151,7 @@ context('Check your answers page', () => {
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
       // attempt to enter invalid user
-      incidentDetailsPage
-        .staffInvolved(0)
-        .name()
-        .type('AAAA')
+      incidentDetailsPage.staffInvolved(0).name().type('AAAA')
       incidentDetailsPage.clickSave()
 
       // prevented from leaving without addressing issue
@@ -184,10 +181,7 @@ context('Check your answers page', () => {
       let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
       // attempt to enter invalid user
-      incidentDetailsPage
-        .staffInvolved(0)
-        .name()
-        .type('AAAA')
+      incidentDetailsPage.staffInvolved(0).name().type('AAAA')
       incidentDetailsPage.clickSave()
 
       // prevented from leaving without addressing issue

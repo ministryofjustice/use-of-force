@@ -144,10 +144,7 @@ context('Submit statement', () => {
     })
 
     let yourStatementsPage = YourStatementsPage.goTo()
-    yourStatementsPage
-      .getTodoRow(0)
-      .startButton()
-      .click()
+    yourStatementsPage.getTodoRow(0).startButton().click()
 
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
     writeYourStatementPage.lastTrainingMonth().select('March')
@@ -165,10 +162,7 @@ context('Submit statement', () => {
 
     yourStatementsPage = statementSubmittedPage.finish()
 
-    yourStatementsPage
-      .getCompleteRow(0)
-      .viewButton()
-      .click()
+    yourStatementsPage.getCompleteRow(0).viewButton().click()
 
     const yourStatementPage = YourStatementPage.verifyOnPage()
     yourStatementPage.offenderName().contains('Norman Smith')

@@ -1,17 +1,11 @@
-const page = require('../page')
-const tabs = require('../sections/incidentTabs')
+import page from '../page'
+import tabs from '../sections/incidentTabs'
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 
-const todoCol = (i, j) =>
-  row('incidents-todo', i)
-    .find('td')
-    .eq(j)
+const todoCol = (i, j) => row('incidents-todo', i).find('td').eq(j)
 
-const completeCol = (i, j) =>
-  row('incidents-complete', i)
-    .find('td')
-    .eq(j)
+const completeCol = (i, j) => row('incidents-complete', i).find('td').eq(j)
 
 const incidentsPage = () =>
   page('Use of force incidents', {
@@ -23,17 +17,9 @@ const incidentsPage = () =>
       dateTo: () => cy.get('[name="dateTo"]'),
       apply: () => cy.get('[data-qa="apply"]'),
     },
-    getTodoRows: () =>
-      cy
-        .get('[data-qa=incidents-todo]')
-        .find('tbody')
-        .find('tr'),
+    getTodoRows: () => cy.get('[data-qa=incidents-todo]').find('tbody').find('tr'),
     getNoTodoRows: () => cy.get('[data-qa=no-incidents-todo]'),
-    getCompleteRows: () =>
-      cy
-        .get('[data-qa=incidents-complete]')
-        .find('tbody')
-        .find('tr'),
+    getCompleteRows: () => cy.get('[data-qa=incidents-complete]').find('tbody').find('tr'),
     getNoCompleteRows: () => cy.get('[data-qa=no-incidents-complete]'),
     getTodoRow: i => ({
       row: () => cy.get('[data-qa=incidents-todo]'),
@@ -64,7 +50,7 @@ const incidentsPage = () =>
     }),
   })
 
-export default {
+module.exports = {
   verifyOnPage: incidentsPage,
   goTo: () => {
     cy.visit('/all-incidents')

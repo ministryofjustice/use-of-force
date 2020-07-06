@@ -605,10 +605,7 @@ describe("'complete' validation", () => {
       const day = now.format('D')
       const month = now.format('M')
       const year = now.format('YYYY')
-      const timeInTheFuture = moment(now)
-        .seconds(0)
-        .milliseconds(0)
-        .add(2, 'minute')
+      const timeInTheFuture = moment(now).seconds(0).milliseconds(0).add(2, 'minute')
       const time = timeInTheFuture.format('HH:mm')
 
       const input = {
@@ -657,10 +654,7 @@ describe("'complete' validation", () => {
 
     it('date in the future', () => {
       const now = moment()
-      const dateInTheFuture = moment(now)
-        .seconds(0)
-        .milliseconds(0)
-        .add(1, 'day')
+      const dateInTheFuture = moment(now).seconds(0).milliseconds(0).add(1, 'day')
 
       const day = dateInTheFuture.format('D')
       const month = dateInTheFuture.format('M')

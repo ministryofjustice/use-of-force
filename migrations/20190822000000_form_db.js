@@ -1,13 +1,7 @@
 exports.up = knex =>
   knex.schema.table('statement', table => {
-    table
-      .integer('staff_id')
-      .notNullable()
-      .defaultTo(-1)
-    table
-      .timestamp('created_date')
-      .notNullable()
-      .defaultTo(knex.fn.now(6))
+    table.integer('staff_id').notNullable().defaultTo(-1)
+    table.timestamp('created_date').notNullable().defaultTo(knex.fn.now(6))
     table.timestamp('updated_date')
   })
 

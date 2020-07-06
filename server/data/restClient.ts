@@ -7,7 +7,7 @@ import sanitiseError from '../utils/errorSanitiser'
 interface GetRequest {
   path?: string
   query?: any
-  headers?: object
+  headers?: any
   responseType?: string
   raw?: boolean
 }

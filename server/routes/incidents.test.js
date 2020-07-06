@@ -29,11 +29,7 @@ afterEach(() => {
 })
 
 describe('GET /incidents', () => {
-  it('should render page', () =>
-    request(app)
-      .get('/')
-      .expect(302)
-      .expect('Location', '/your-statements'))
+  it('should render page', () => request(app).get('/').expect(302).expect('Location', '/your-statements'))
 })
 
 describe('GET /your-reports', () => {

@@ -1,5 +1,5 @@
-const page = require('../page')
-const StatementSubmittedPage = require('./statementSubmittedPage')
+import page from '../page'
+import StatementSubmittedPage from './statementSubmittedPage'
 
 const confirmStatementPage = () =>
   page('Check your statement before submitting it', {
@@ -17,6 +17,6 @@ const confirmStatementPage = () =>
     },
   })
 
-export default {
+module.exports = {
   verifyOnPage: confirmStatementPage,
 }

@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const userDoesNotExistPage = () =>
   page('A username you have entered does not exist', {
@@ -8,6 +8,6 @@ const userDoesNotExistPage = () =>
     return: () => cy.get('[data-qa=return-to-incident-details]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: userDoesNotExistPage,
 }

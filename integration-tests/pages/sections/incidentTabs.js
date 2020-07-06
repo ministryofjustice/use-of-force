@@ -1,12 +1,6 @@
 module.exports = {
   allTabs: () =>
-    cy.get(`.govuk-tabs__list-item`).spread((...rest) =>
-      rest.map(element =>
-        Cypress.$(element)
-          .text()
-          .trim()
-      )
-    ),
+    cy.get(`.govuk-tabs__list-item`).spread((...rest) => rest.map(element => Cypress.$(element).text().trim())),
   selectedTab: () => cy.get('.govuk-tabs__list-item--selected'),
   allIncidentsTab: () => cy.get('[data-qa="all-incidents-link"]'),
   yourReportsTab: () => cy.get('[data-qa="your-reports-link"]'),

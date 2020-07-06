@@ -172,10 +172,7 @@ describe('GET /check-your-answers', () => {
   it('Redirect if report is not complete', () => {
     reportService.getReportStatus.mockReturnValue({ complete: false })
 
-    return request(app)
-      .get('/report/-35/check-your-answers')
-      .expect(302)
-      .expect('Location', '/')
+    return request(app).get('/report/-35/check-your-answers').expect(302).expect('Location', '/')
   })
 
   it('Should contain the prison where the incident took place', () => {
@@ -199,19 +196,14 @@ describe('POST /check-your-answers', () => {
     reportService.isDraftComplete.mockReturnValue(true)
     reportService.submit.mockReturnValue(2)
 
-    await request(app)
-      .post('/report/-35/check-your-answers')
-      .expect(302)
-      .expect('Location', '/2/report-sent')
+    await request(app).post('/report/-35/check-your-answers').expect(302).expect('Location', '/2/report-sent')
     expect(reportService.submit).toBeCalledWith(user, '-35')
   })
 
   it('An error is throw if the report is not complete', async () => {
     reportService.isDraftComplete.mockReturnValue(false)
 
-    await request(app)
-      .post('/report/-35/check-your-answers')
-      .expect(500)
+    await request(app).post('/report/-35/check-your-answers').expect(500)
 
     expect(reportService.submit).not.toBeCalledWith()
   })

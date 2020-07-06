@@ -87,10 +87,7 @@ const persistentSchema = transientSchema.fork('involvedStaff.username', schema =
     name: requiredString,
     email: optionalString,
     staffId: requiredNumber,
-    missing: joi
-      .boolean()
-      .valid(false)
-      .meta(asMeta(toBoolean)),
+    missing: joi.boolean().valid(false).meta(asMeta(toBoolean)),
     verified: joi.boolean().meta(asMeta(toBoolean)),
   })
 )

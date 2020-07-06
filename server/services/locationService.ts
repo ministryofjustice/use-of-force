@@ -2,7 +2,7 @@ import { AgencyId, LocationService, Prison, PrisonLocation } from '../types/uof'
 
 import logger = require('../../log.js')
 
-export default function createLocationService(elite2ClientBuilder, incidentClient): LocationService {
+export default function createLocationService(elite2ClientBuilder): LocationService {
   const getPrisons = async (token: string): Promise<Prison[]> => {
     const elite2Client = elite2ClientBuilder(token)
     const prisons = await elite2Client.getPrisons()

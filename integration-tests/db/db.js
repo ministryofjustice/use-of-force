@@ -47,9 +47,7 @@ const seedReport = ({
   agencyId = 'MDI',
   incidentDate = moment('2019-09-10 09:57:40.000').toDate(),
   submittedDate = moment('2019-09-10 10:30:43.122').toDate(),
-  overdueDate = moment(submittedDate)
-    .add(3, 'd')
-    .toDate(),
+  overdueDate = moment(submittedDate).add(3, 'd').toDate(),
   sequenceNumber = 0,
 }) => {
   const submitDate = equals(status, ReportStatus.SUBMITTED) ? submittedDate : null

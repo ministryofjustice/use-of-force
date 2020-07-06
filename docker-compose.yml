@@ -13,11 +13,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
-  elite2-api:
-    image: quay.io/hmpps/elite2-api:latest
+  prison-api:
+    image: quay.io/hmpps/prison-api:latest
     networks:
       - hmpps
-    container_name: elite2-api
+    container_name: prison-api
     depends_on:
       - oauth-server
     ports:
@@ -57,7 +57,7 @@ services:
       - use-of-force-db
       - use-of-force-redis
       - oauth-server
-      - elite2-api
+      - prison-api
     ports:
       - "3000:3000"
     healthcheck:

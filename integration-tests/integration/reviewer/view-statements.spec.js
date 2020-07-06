@@ -26,9 +26,7 @@ context('view statements page', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
-      overdueDate: moment()
-        .add(1, 'day')
-        .toDate(),
+      overdueDate: moment().add(1, 'day').toDate(),
       userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: offender.agencyId,
@@ -81,9 +79,7 @@ context('view statements page', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
-      overdueDate: moment()
-        .add(-1, 'day')
-        .toDate(),
+      overdueDate: moment().add(-1, 'day').toDate(),
       userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: offender.agencyId,
@@ -132,9 +128,7 @@ context('view statements page', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
-      overdueDate: moment()
-        .add(1, 'day')
-        .toDate(),
+      overdueDate: moment().add(1, 'day').toDate(),
       userId: 'TEST_USER',
       reporterName: 'James Stuart',
       agencyId: offender.agencyId,

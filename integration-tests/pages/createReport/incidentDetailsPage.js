@@ -1,5 +1,5 @@
-const page = require('../page')
-const UseOfForceDetailsPage = require('./useOfForceDetailsPage')
+import page from '../page'
+import UseOfForceDetailsPage from './useOfForceDetailsPage'
 
 const incidentDetailsPage = () =>
   page('Incident details', {
@@ -17,37 +17,21 @@ const incidentDetailsPage = () =>
     fillForm() {
       this.location().select('Asso A Wing')
       this.forceType.check('true')
-      this.staffInvolved(0)
-        .name()
-        .type('Dr Smith')
+      this.staffInvolved(0).name().type('Dr Smith')
       this.addAnotherStaff().click()
-      this.staffInvolved(1)
-        .name()
-        .type('MR_ZAGATO')
+      this.staffInvolved(1).name().type('MR_ZAGATO')
       this.addAnotherStaff().click()
-      this.staffInvolved(2)
-        .name()
-        .type('MRS_JONES')
+      this.staffInvolved(2).name().type('MRS_JONES')
 
-      this.witnesses(0)
-        .name()
-        .type('Witness A')
+      this.witnesses(0).name().type('Witness A')
       this.addAnotherWitness().click()
-      this.witnesses(1)
-        .name()
-        .type('Witness B')
+      this.witnesses(1).name().type('Witness B')
       this.addAnotherWitness().click()
-      this.witnesses(2)
-        .name()
-        .type('Tom Jones')
+      this.witnesses(2).name().type('Tom Jones')
 
-      this.staffInvolved(0)
-        .remove()
-        .click()
+      this.staffInvolved(0).remove().click()
 
-      this.witnesses(1)
-        .remove()
-        .click()
+      this.witnesses(1).remove().click()
     },
 
     incidentDateTime: {
@@ -91,4 +75,4 @@ const incidentDetailsPage = () =>
     cancelButton: () => cy.get('[data-qa="cancel"]'),
   })
 
-export default { verifyOnPage: incidentDetailsPage }
+module.exports = { verifyOnPage: incidentDetailsPage }

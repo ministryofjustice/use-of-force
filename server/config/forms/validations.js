@@ -11,16 +11,9 @@ const asMeta = sanitiser => ({
   sanitiser,
 })
 
-const requiredString = joi
-  .string()
-  .trim(true)
-  .required()
-  .meta(asMeta(trimmedString))
+const requiredString = joi.string().trim(true).required().meta(asMeta(trimmedString))
 
-const optionalString = joi
-  .string()
-  .trim(true)
-  .meta(asMeta(trimmedString))
+const optionalString = joi.string().trim(true).meta(asMeta(trimmedString))
 
 const requiredStringMsg = message =>
   requiredString.messages({
@@ -30,10 +23,7 @@ const requiredStringMsg = message =>
     'string.min': message,
   })
 
-const requiredBoolean = joi
-  .boolean()
-  .required()
-  .meta(asMeta(toBoolean))
+const requiredBoolean = joi.boolean().required().meta(asMeta(toBoolean))
 
 const requiredBooleanMsg = message =>
   requiredBoolean.messages({
@@ -61,56 +51,29 @@ const requiredIntegerMsg = message =>
   requiredInteger.messages({ 'any.required': message, 'number.base': message, 'number.integer': message })
 
 const requiredIntegerRangeMsg = (min, max) => message =>
-  requiredIntegerMsg(message)
-    .$.min(min)
-    .max(max)
-    .message(message)
+  requiredIntegerMsg(message).$.min(min).max(max).message(message)
 
-const requiredPatternMsg = pattern => message =>
-  requiredStringMsg(message)
-    .pattern(pattern)
-    .message(message)
+const requiredPatternMsg = pattern => message => requiredStringMsg(message).pattern(pattern).message(message)
 
-const arrayOfObjects = objectKeys =>
-  joi
-    .array()
-    .items(joi.object(objectKeys))
-    .meta(asMeta(removeEmptyObjects))
+const arrayOfObjects = objectKeys => joi.array().items(joi.object(objectKeys)).meta(asMeta(removeEmptyObjects))
 
-const requiredYearNotInFuture = joi
-  .number()
-  .min(1900)
-  .max(joi.ref('$year'))
-  .required()
+const requiredYearNotInFuture = joi.number().min(1900).max(joi.ref('$year')).required()
 
 const requiredYearNotInFutureMsg = (notAnIntegerMsg, yearOutOfRangeMsg) =>
-  requiredIntegerMsg(notAnIntegerMsg)
-    .ruleset.min(1900)
-    .max(joi.ref('$year'))
-    .message(yearOutOfRangeMsg)
+  requiredIntegerMsg(notAnIntegerMsg).ruleset.min(1900).max(joi.ref('$year')).message(yearOutOfRangeMsg)
 
-const requiredMonthIndex = joi
-  .number()
-  .min(0)
-  .max(11)
-  .required()
+const requiredMonthIndex = joi.number().min(0).max(11).required()
 
 const requiredMonthIndexNotInFuture = (yearRef, outOfRangeMessage) =>
   requiredIntegerMsg(outOfRangeMessage).when(joi.ref(yearRef), {
     switch: [
       {
         is: joi.number().less(joi.ref('$year')),
-        then: requiredIntegerMsg(outOfRangeMessage)
-          .$.min(0)
-          .max(11)
-          .message(outOfRangeMessage),
+        then: requiredIntegerMsg(outOfRangeMessage).$.min(0).max(11).message(outOfRangeMessage),
       },
       {
         is: joi.number().valid(joi.ref('$year')),
-        then: requiredIntegerMsg(outOfRangeMessage)
-          .$.min(0)
-          .max(joi.ref('$month'))
-          .message(outOfRangeMessage),
+        then: requiredIntegerMsg(outOfRangeMessage).$.min(0).max(joi.ref('$month')).message(outOfRangeMessage),
         otherwise: joi.any().optional(),
       },
     ],
@@ -121,11 +84,7 @@ const optionalForPartialValidation = {
 }
 
 const minZeroForPartialValidation = {
-  partial: s =>
-    s
-      .allow(null)
-      .optional()
-      .min(0),
+  partial: s => s.allow(null).optional().min(0),
 }
 
 module.exports = {

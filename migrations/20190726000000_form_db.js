@@ -9,12 +9,7 @@ exports.up = knex =>
 
     knex.schema.createTable('involved_staff', table => {
       table.increments('id').primary('pk_form')
-      table
-        .integer('incident_id')
-        .references('id')
-        .inTable('incidents')
-        .notNull()
-        .onDelete('cascade')
+      table.integer('incident_id').references('id').inTable('incidents').notNull().onDelete('cascade')
       table.string('user_id').nullable()
       table.string('name').nullable()
       table.string('email').nullable()

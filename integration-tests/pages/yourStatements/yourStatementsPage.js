@@ -1,17 +1,11 @@
-const page = require('../page')
-const tabs = require('../sections/incidentTabs')
+import page from '../page'
+import tabs from '../sections/incidentTabs'
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 
-const todoCol = (i, j) =>
-  row('statements-todo', i)
-    .find('td')
-    .eq(j)
+const todoCol = (i, j) => row('statements-todo', i).find('td').eq(j)
 
-const completeCol = (i, j) =>
-  row('statements-complete', i)
-    .find('td')
-    .eq(j)
+const completeCol = (i, j) => row('statements-complete', i).find('td').eq(j)
 
 const yourStatementsPage = () =>
   page('Use of force incidents', {
@@ -37,7 +31,7 @@ const yourStatementsPage = () =>
     }),
   })
 
-export default {
+module.exports = {
   verifyOnPage: yourStatementsPage,
   goTo: () => {
     cy.visit('/your-statements')

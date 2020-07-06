@@ -83,10 +83,7 @@ describe('POST /:reportId/check-your-statement', () => {
 
   it('submit redirects due to form not being complete', () => {
     statementService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
-    return request(app)
-      .post('/-1/check-your-statement')
-      .expect(302)
-      .expect('Location', '/-1/write-your-statement')
+    return request(app).post('/-1/check-your-statement').expect(302).expect('Location', '/-1/write-your-statement')
   })
 })
 

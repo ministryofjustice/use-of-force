@@ -1,5 +1,5 @@
-const page = require('../page')
-const reportDetails = require('../sections/reportDetails')
+import page from '../page'
+import reportDetails from '../sections/reportDetails'
 
 const clickSubmit = () => cy.get('[data-submit]').click()
 
@@ -23,4 +23,4 @@ const checkAnswersPage = () =>
     backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),
   })
 
-export default { verifyOnPage: checkAnswersPage }
+module.exports = { verifyOnPage: checkAnswersPage }

@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const viewStatementPage = username =>
   page(`${username}'s statement`, {
@@ -13,6 +13,6 @@ const viewStatementPage = username =>
     continue: () => cy.get('[data-qa=continue]'),
   })
 
-export default {
+module.exports = {
   verifyOnPageForUser: username => viewStatementPage(username),
 }

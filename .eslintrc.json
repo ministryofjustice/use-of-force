@@ -44,7 +44,17 @@
           }
         ],
         "@typescript-eslint/semi": 0,
-        "import/no-unresolved": "error"
+        "import/no-unresolved": "error",
+        "prettier/prettier": [
+          "error",
+          {
+            "trailingComma": "es5",
+            "singleQuote": true,
+            "printWidth": 120,
+            "semi": false,
+            "arrowParens": "avoid"
+          }
+        ]
       }
     }
   ],
@@ -83,6 +93,16 @@
         "functions": "never"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }]
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }],
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 120,
+        "semi": false,
+        "arrowParens": "avoid"
+      }
+    ]
   }
 }

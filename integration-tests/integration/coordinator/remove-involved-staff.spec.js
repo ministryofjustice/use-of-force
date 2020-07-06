@@ -71,10 +71,7 @@ context('A use of force coordinator can remove involved staff', () => {
     viewStatementsPage.reportLink().click()
     let reportPage = ViewReportPage.verifyOnPage()
     reportPage.deleteInvolvedStaff('TEST_USER').should('be.visible')
-    reportPage
-      .deleteInvolvedStaff('MRS_JONES')
-      .should('be.visible')
-      .click()
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
 
     const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
     confirmStatementDeletePage.confirm()

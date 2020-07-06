@@ -15,14 +15,8 @@ describe('errorDetailAdapter', () => {
         .boolean()
         .meta({ sanitiser: x => x })
         .meta(ffn('cFn')),
-      d: joi
-        .array()
-        .meta({ sanitiser })
-        .items(joi.string().meta({ sanitiser })),
-      e: joi
-        .valid(1, 'a')
-        .meta({ sanitiser })
-        .meta(ffn('eFn')),
+      d: joi.array().meta({ sanitiser }).items(joi.string().meta({ sanitiser })),
+      e: joi.valid(1, 'a').meta({ sanitiser }).meta(ffn('eFn')),
       f: joi
         .when('c', {
           is: true,
