@@ -248,32 +248,29 @@ dt.summary-list__key__wider
     display: block
     box-sizing: border-box
     margin: govuk-spacing(2)
+    float: left
+  .prisoner-name
+    @include govuk-media-query($from: tablet)
+      width: 14%
   .prison-number
     @include govuk-media-query($from: tablet)
-      margin-left: 20%
-      float: left
       width: 14%
   .reporter
     @include govuk-media-query($from: tablet)
-      float: left
       width: 20%
   .date-from
     @include govuk-media-query($from: tablet)
-      float: left
       width: 11%
   .date-to
     @include govuk-media-query($from: tablet)
-      float: left
       width: 11%
   .apply
     @include govuk-media-query($from: tablet)
-      float: left
       margin-top: govuk-spacing(7)
       width: 6%
   .clear-filter
     @include govuk-media-query($from: tablet)
-      float: left
-      margin-top: govuk-spacing(8)   
+      margin-top: govuk-spacing(8)
       width: 6%
 
 .ui-widget-header

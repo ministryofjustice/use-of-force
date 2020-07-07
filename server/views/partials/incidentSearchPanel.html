@@ -6,6 +6,15 @@
     <div class="incident-search">
       <h3 class="govuk-heading-m heading">View by</h3>
       <div class="govuk-grid-row">
+        <div class="filter-item prisoner-name">
+          {{ govukInput({
+          label: {
+          text: "Prisoner's name"
+          },
+          name: "prisonerName",
+          value: query.prisonerName
+          }) }}
+        </div>
         <div class="filter-item prison-number">
           {{ govukInput({
             label: {

@@ -1,9 +1,10 @@
 /* eslint-disable import/first */
+import { OffenderService } from '../types/uof'
+
 jest.mock('../data/incidentClient')
 
-import moment from 'moment'
 import { IncidentClient } from '../data/incidentClient'
-import ReviewService from './reviewService'
+import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { ReportSummary } from '../data/incidentClientTypes'
 
 let incidentClient: jest.Mocked<IncidentClient>
@@ -20,12 +21,24 @@ const authClient = {
 
 const authClientBuilder = jest.fn().mockReturnValue(authClient)
 
-let service
+interface MockOS extends OffenderService {
+  getOffenderNames: jest.Mock<Promise<{ [offenderNo: string]: string }>, [string, string[]]>
+}
+const offenderService: MockOS = {
+  getOffenderDetails: undefined,
+  getOffenderNames: jest.fn(),
+  getPrisonersDetails: undefined,
+  getOffenderImage: undefined,
+}
+
+let service: ReviewService
 
 describe('reviewService', () => {
   beforeEach(() => {
     incidentClient = new IncidentClient() as jest.Mocked<IncidentClient>
-    service = new ReviewService(statementsClient, incidentClient, authClientBuilder)
+    service = new ReviewService(statementsClient, incidentClient, authClientBuilder, offenderService, username =>
+      Promise.resolve(`${username}-system-token`)
+    )
   })
 
   afterEach(() => {
@@ -98,24 +111,62 @@ describe('reviewService', () => {
   })
 
   describe('getReports', () => {
+    const reportSummary = (id: number): ReportSummary => ({
+      id,
+      bookingId: id + 1,
+      reporterName: `reporter-${id}`,
+      offenderNo: `offender-${id}`,
+      incidentDate: new Date(id),
+    })
+
+    const incidentSummary = (id: number): IncidentSummary => ({
+      id,
+      bookingId: id + 1,
+      incidentdate: new Date(id),
+      staffMemberName: `reporter-${id}`,
+      isOverdue: false,
+      offenderName: `Prisoner prisoner-${id}`,
+      offenderNo: `offender-${id}`,
+    })
+
     test('it should call query on db', async () => {
-      const reportSummary = (id: number): ReportSummary => ({
-        id,
-        bookingId: id + 1,
-        reporterName: `reporter-${id}`,
-        offenderNo: `offender-${id}`,
-        incidentDate: new Date(id),
-      })
       const query = { prisonNumber: 'AA' }
 
       incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
       incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
+      offenderService.getOffenderNames.mockResolvedValue(
+        Promise.resolve({
+          'offender-1': 'Prisoner prisoner-1',
+          'offender-2': 'Prisoner prisoner-2',
+        })
+      )
 
-      const result = await service.getReports('agency-1', query)
-      expect(result).toEqual({ awaiting: [reportSummary(1)], completed: [reportSummary(2)] })
+      const result = await service.getReports('userName', 'agency-1', query)
+      expect(result).toEqual({ awaitingReports: [incidentSummary(1)], completedReports: [incidentSummary(2)] })
 
       expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1', query)
       expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
+      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+    })
+
+    test('it should filter on prisoner name', async () => {
+      const query = { prisonerName: 'OnER-2' }
+
+      incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
+      incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
+      offenderService.getOffenderNames.mockResolvedValue(
+        Promise.resolve({
+          'offender-1': 'Prisoner prisoner-1',
+          'offender-2': 'Prisoner prisoner-2',
+        })
+      )
+
+      const result = await service.getReports('userName', 'agency-1', query)
+      expect(result).toEqual({ awaitingReports: [], completedReports: [incidentSummary(2)] })
+
+      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1', query)
+      expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
+      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
     })
   })
 })
