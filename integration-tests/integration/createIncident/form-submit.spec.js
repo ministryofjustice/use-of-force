@@ -102,9 +102,7 @@ context('Submit the incident report', () => {
 
     checkAnswersPage.clickSubmit()
 
-    ReportSentPage.verifyOnPage()
-      .exit()
-      .click()
+    ReportSentPage.verifyOnPage().exit().click()
 
     // Exit location is configurable - in dev this points to / which for this user redirects to 'Your statements'
     YourStatementsPage.verifyOnPage()

@@ -1,10 +1,7 @@
 exports.up = knex =>
   Promise.all([
     knex.schema.table('statement', table => {
-      table
-        .boolean('in_progress')
-        .notNullable()
-        .defaultTo(false)
+      table.boolean('in_progress').notNullable().defaultTo(false)
     }),
   ])
 

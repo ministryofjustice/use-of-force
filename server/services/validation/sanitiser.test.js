@@ -20,13 +20,7 @@ const {
 
 describe('using meta to specify sanitisers', () => {
   it('allows a sanitiser to be attached as metadata', () => {
-    expect(
-      joi
-        .string()
-        .required()
-        .meta({ sanitiser: trimmedString })
-        .describe()
-    ).toEqual({
+    expect(joi.string().required().meta({ sanitiser: trimmedString }).describe()).toEqual({
       flags: {
         presence: 'required',
       },
@@ -149,12 +143,7 @@ describe('using meta to specify sanitisers', () => {
 
   it('allows multiple sanitisers to be attached as metadata', () => {
     expect(
-      joi
-        .string()
-        .required()
-        .meta({ sanitiser: trimmedString })
-        .meta({ sanitiser: toInteger })
-        .describe()
+      joi.string().required().meta({ sanitiser: trimmedString }).meta({ sanitiser: toInteger }).describe()
     ).toEqual({
       flags: {
         presence: 'required',
@@ -360,12 +349,7 @@ describe('building sanitisers', () => {
   const addTestItemSanitiser = { sanitiser: R.append('test') }
 
   describe('an array sanitiser', () => {
-    const sanitiser = sanitiserFor(
-      joi
-        .array()
-        .items(joi.string().meta(doublerSanitiser))
-        .meta(addTestItemSanitiser)
-    )
+    const sanitiser = sanitiserFor(joi.array().items(joi.string().meta(doublerSanitiser)).meta(addTestItemSanitiser))
 
     it('sanitises an empty array', () => expect(sanitiser([])).toEqual(['test']))
     it('sanitises a single item array', () => expect(sanitiser(['a'])).toEqual(['aa', 'test']))
@@ -379,23 +363,14 @@ describe('building sanitisers', () => {
     const sanitiser = sanitiserFor(
       joi
         .object({
-          a: joi
-            .string()
-            .required()
-            .meta(doublerSanitiser),
+          a: joi.string().required().meta(doublerSanitiser),
           b: joi
             .array()
             .items(
               joi
                 .object({
-                  p: joi
-                    .number()
-                    .required()
-                    .meta(doublerSanitiser),
-                  q: joi
-                    .boolean()
-                    .required()
-                    .meta(booleanToggleSanitiser),
+                  p: joi.number().required().meta(doublerSanitiser),
+                  q: joi.boolean().required().meta(booleanToggleSanitiser),
                 })
                 .min(1)
                 .max(2)

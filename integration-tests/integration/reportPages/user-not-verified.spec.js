@@ -29,20 +29,11 @@ context('Submitting details page form', () => {
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .type('AAAA')
+    incidentDetailsPage.staffInvolved(0).name().type('AAAA')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .type('UNVERIFIED_USER')
+    incidentDetailsPage.staffInvolved(1).name().type('UNVERIFIED_USER')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(2)
-      .name()
-      .type('BBBB')
+    incidentDetailsPage.staffInvolved(2).name().type('BBBB')
     incidentDetailsPage.addAnotherStaff().click()
 
     incidentDetailsPage.clickSave()
@@ -60,20 +51,11 @@ context('Submitting details page form', () => {
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .type('AAAA')
+    incidentDetailsPage.staffInvolved(0).name().type('AAAA')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .type('UNVERIFIED_USER')
+    incidentDetailsPage.staffInvolved(1).name().type('UNVERIFIED_USER')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(2)
-      .name()
-      .type('MISSING_USER')
+    incidentDetailsPage.staffInvolved(2).name().type('MISSING_USER')
     incidentDetailsPage.addAnotherStaff().click()
 
     incidentDetailsPage.clickSave()
@@ -101,15 +83,9 @@ context('Submitting details page form', () => {
     checkAnswersPage.editIncidentDetailsLink().click()
     let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .type('UNVERIFIED_USER')
+    incidentDetailsPage.staffInvolved(0).name().type('UNVERIFIED_USER')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .type('MISSING_USER')
+    incidentDetailsPage.staffInvolved(1).name().type('MISSING_USER')
     incidentDetailsPage.addAnotherStaff().click()
 
     incidentDetailsPage.clickSave()

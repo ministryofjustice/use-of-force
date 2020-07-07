@@ -32,9 +32,7 @@ module.exports = {
     involvedStaff.forEach(staff => {
       cy.get('[data-qa="staffInvolved"]').contains(staff)
     })
-    cy.get('[data-qa="witnesses"]')
-      .contains('Witness A')
-      .contains('Tom Jones')
+    cy.get('[data-qa="witnesses"]').contains('Witness A').contains('Tom Jones')
 
     positiveCommunicationUsed().contains('Yes')
     cy.get('[data-qa="personalProtection"]').contains('Yes')
@@ -51,12 +49,8 @@ module.exports = {
     cy.get('[data-qa="f213"]').contains('Dr Taylor')
     cy.get('[data-qa="prisonerHospitalisation"]').contains('Yes')
     cy.get('[data-qa="prisonerInjuries"]').contains('Yes')
-    cy.get('[data-qa="staffMedicalAttention"]')
-      .contains('Jayne Eyre')
-      .contains('Eddie Thomas')
-    cy.get('[data-qa="staffHospitalisation"]')
-      .contains('Jayne Eyre')
-      .contains('Eddie Thomas')
+    cy.get('[data-qa="staffMedicalAttention"]').contains('Jayne Eyre').contains('Eddie Thomas')
+    cy.get('[data-qa="staffHospitalisation"]').contains('Jayne Eyre').contains('Eddie Thomas')
 
     cy.get('[data-qa="evidenceBaggedTagged"]')
       .contains('Bagged evidence 1')

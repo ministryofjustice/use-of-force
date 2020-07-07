@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const addInvolvedStaff = () =>
   page(`Add another member of staff`, {
@@ -6,6 +6,6 @@ const addInvolvedStaff = () =>
     saveAndContinue: () => cy.get('[data-qa=continue]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: addInvolvedStaff,
 }

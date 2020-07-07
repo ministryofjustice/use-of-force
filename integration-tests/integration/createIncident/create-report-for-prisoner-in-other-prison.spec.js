@@ -57,6 +57,7 @@ context('Creating reports for prisoners in other prisons', () => {
     reportUseOfForcePage.dob().contains('26 December 2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')
     reportUseOfForcePage.offenderImage().should('be.visible')
+    reportUseOfForcePage.logout().click()
   })
 
   it('A user can create a report for a prisoner in another prison using last name', () => {

@@ -1,5 +1,5 @@
-const page = require('../page')
-const SubmitStatementPage = require('../yourStatements/writeYourStatementPage')
+import page from '../page'
+import SubmitStatementPage from '../yourStatements/writeYourStatementPage'
 
 const reportSent = () =>
   page('This report has been sent to the use of force coordinator', {
@@ -16,6 +16,6 @@ const reportSent = () =>
     },
   })
 
-export default {
+module.exports = {
   verifyOnPage: reportSent,
 }

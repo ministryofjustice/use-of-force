@@ -247,11 +247,7 @@ describe('requiredIntegerMsg', () => {
 })
 
 describe('Extending requiredStringMsg', () => {
-  const v = buildValidator(
-    requiredStringMsg('It is required')
-      .pattern(/^abc$/)
-      .message('must be "abc"')
-  )
+  const v = buildValidator(requiredStringMsg('It is required').pattern(/^abc$/).message('must be "abc"'))
 
   it('should be possible to add a pattern to requiredStringMsg', () => {
     expect(v('abc').error).toBeUndefined()

@@ -1,7 +1,7 @@
-const NewIncidentPage = require('./incidentDetailsPage')
-const CheckAnswersPage = require('./checkAnswersPage')
-const UseOfForceDetailsPage = require('./useOfForceDetailsPage')
-const page = require('../page')
+import NewIncidentPage from './incidentDetailsPage'
+import CheckAnswersPage from './checkAnswersPage'
+import UseOfForceDetailsPage from './useOfForceDetailsPage'
+import page from '../page'
 
 const tasklistPage = () =>
   page('Report use of force', {
@@ -47,7 +47,7 @@ const tasklistPage = () =>
     },
   })
 
-export default {
+module.exports = {
   visit: bookingId => {
     cy.visit(`/report/${bookingId}/report-use-of-force`)
     return tasklistPage()

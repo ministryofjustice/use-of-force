@@ -1,5 +1,5 @@
-const page = require('../page')
-const RelocationAndInjuriesPage = require('./relocationAndInjuriesPage')
+import page from '../page'
+import RelocationAndInjuriesPage from './relocationAndInjuriesPage'
 
 const useOfForceDetailsPage = () =>
   page('Use of force details', {
@@ -61,4 +61,4 @@ const useOfForceDetailsPage = () =>
     },
   })
 
-export default { verifyOnPage: useOfForceDetailsPage }
+module.exports = { verifyOnPage: useOfForceDetailsPage }

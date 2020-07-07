@@ -122,9 +122,7 @@ module.exports = {
         await statementsClient.createStatements({
           reportId,
           firstReminder: null,
-          overdueDate: moment(report.submittedDate)
-            .add(3, 'day')
-            .toDate(),
+          overdueDate: moment(report.submittedDate).add(3, 'day').toDate(),
           staff: [
             {
               staffId: foundUser.staffId,

@@ -1,5 +1,5 @@
-const page = require('../page')
-const reportDetails = require('../sections/reportDetails')
+import page from '../page'
+import reportDetails from '../sections/reportDetails'
 
 const viewReportPage = () =>
   page('Use of force report', {
@@ -29,6 +29,6 @@ const viewReportPage = () =>
     returnToIncidentOverview: () => cy.get('[data-qa="return-to-incident-overview"]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: viewReportPage,
 }

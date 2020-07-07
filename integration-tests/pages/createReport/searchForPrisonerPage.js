@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const searchForPrisonerPage = () =>
   page('Search for a prisoner', {
@@ -28,4 +28,4 @@ const searchForPrisonerPage = () =>
         ),
   })
 
-export default { verifyOnPage: searchForPrisonerPage }
+module.exports = { verifyOnPage: searchForPrisonerPage }

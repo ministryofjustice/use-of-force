@@ -24,20 +24,11 @@ context('Submitting details page form', () => {
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .type('AAAA')
+    incidentDetailsPage.staffInvolved(0).name().type('AAAA')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .type('BBBB')
+    incidentDetailsPage.staffInvolved(1).name().type('BBBB')
 
-    incidentDetailsPage
-      .witnesses(0)
-      .name()
-      .type('jimmy-ray')
+    incidentDetailsPage.witnesses(0).name().type('jimmy-ray')
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
@@ -66,22 +57,10 @@ context('Submitting details page form', () => {
     incidentDetailsPage.incidentDateTime.year().should('be.visible')
     incidentDetailsPage.incidentDateTime.readOnlyView().should('not.be.visible')
 
-    incidentDetailsPage.incidentDateTime
-      .day()
-      .clear()
-      .type('1')
-    incidentDetailsPage.incidentDateTime
-      .month()
-      .clear()
-      .type('1')
-    incidentDetailsPage.incidentDateTime
-      .year()
-      .clear()
-      .type('2011')
-    incidentDetailsPage.incidentDateTime
-      .time()
-      .clear()
-      .type('11:11')
+    incidentDetailsPage.incidentDateTime.day().clear().type('1')
+    incidentDetailsPage.incidentDateTime.month().clear().type('1')
+    incidentDetailsPage.incidentDateTime.year().clear().type('2011')
+    incidentDetailsPage.incidentDateTime.time().clear().type('11:11')
     incidentDetailsPage.save()
     cy.go('back')
 
@@ -145,33 +124,15 @@ context('Submitting details page form', () => {
     updatedIncidentDetailsPage.location().contains('Asso A Wing')
     updatedIncidentDetailsPage.forceType.planned().should('be.checked')
 
-    updatedIncidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .should('have.value', 'AAAA')
-    updatedIncidentDetailsPage
-      .staffInvolved(0)
-      .remove()
-      .should('exist')
-    updatedIncidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .should('have.value', 'BBBB')
-    updatedIncidentDetailsPage
-      .staffInvolved(1)
-      .remove()
-      .should('exist')
+    updatedIncidentDetailsPage.staffInvolved(0).name().should('have.value', 'AAAA')
+    updatedIncidentDetailsPage.staffInvolved(0).remove().should('exist')
+    updatedIncidentDetailsPage.staffInvolved(1).name().should('have.value', 'BBBB')
+    updatedIncidentDetailsPage.staffInvolved(1).remove().should('exist')
 
-    updatedIncidentDetailsPage
-      .witnesses(0)
-      .name()
-      .should('have.value', 'jimmy-ray')
+    updatedIncidentDetailsPage.witnesses(0).name().should('have.value', 'jimmy-ray')
 
     // Should't be able to remove sole item
-    updatedIncidentDetailsPage
-      .witnesses(0)
-      .remove()
-      .should('not.exist')
+    updatedIncidentDetailsPage.witnesses(0).remove().should('not.exist')
   })
 
   it('Adding missing involved staff', () => {
@@ -183,25 +144,13 @@ context('Submitting details page form', () => {
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .type('AAAA')
+    incidentDetailsPage.staffInvolved(0).name().type('AAAA')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .type('CCCC')
+    incidentDetailsPage.staffInvolved(1).name().type('CCCC')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(2)
-      .name()
-      .type('BBBB')
+    incidentDetailsPage.staffInvolved(2).name().type('BBBB')
     incidentDetailsPage.addAnotherStaff().click()
-    incidentDetailsPage
-      .staffInvolved(3)
-      .name()
-      .type('DDDD')
+    incidentDetailsPage.staffInvolved(3).name().type('DDDD')
 
     incidentDetailsPage.clickSave()
     let userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
@@ -210,22 +159,10 @@ context('Submitting details page form', () => {
 
     incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
 
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .should('have.value', 'AAAA')
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .should('have.value', 'CCCC')
-    incidentDetailsPage
-      .staffInvolved(2)
-      .name()
-      .should('have.value', 'BBBB')
-    incidentDetailsPage
-      .staffInvolved(3)
-      .name()
-      .should('have.value', 'DDDD')
+    incidentDetailsPage.staffInvolved(0).name().should('have.value', 'AAAA')
+    incidentDetailsPage.staffInvolved(1).name().should('have.value', 'CCCC')
+    incidentDetailsPage.staffInvolved(2).name().should('have.value', 'BBBB')
+    incidentDetailsPage.staffInvolved(3).name().should('have.value', 'DDDD')
 
     incidentDetailsPage.clickSave()
     userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
@@ -234,17 +171,8 @@ context('Submitting details page form', () => {
     cy.go('back')
 
     incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-    incidentDetailsPage
-      .staffInvolved(0)
-      .name()
-      .should('have.value', 'AAAA')
-    incidentDetailsPage
-      .staffInvolved(1)
-      .name()
-      .should('have.value', 'BBBB')
-    incidentDetailsPage
-      .staffInvolved(3)
-      .name()
-      .should('not.exist')
+    incidentDetailsPage.staffInvolved(0).name().should('have.value', 'AAAA')
+    incidentDetailsPage.staffInvolved(1).name().should('have.value', 'BBBB')
+    incidentDetailsPage.staffInvolved(3).name().should('not.exist')
   })
 })

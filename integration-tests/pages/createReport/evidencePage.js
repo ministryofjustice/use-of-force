@@ -1,5 +1,5 @@
-const page = require('../page')
-const CheckAnswersPage = require('./checkAnswersPage')
+import page from '../page'
+import CheckAnswersPage from './checkAnswersPage'
 
 const evidencePage = () =>
   page('Evidence', {
@@ -26,9 +26,7 @@ const evidencePage = () =>
       cy.get('[name="bodyWornCameraNumbers[1][cameraNum]"]').type('456')
       cy.get('[data-qa-add-another-camera = true]').click()
       cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('789')
-      cy.get('.add-another-camera .add-another__remove-button')
-        .eq(1)
-        .click()
+      cy.get('.add-another-camera .add-another__remove-button').eq(1).click()
       cy.get('[data-qa-add-another-camera = true]').click()
       cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('456')
     },
@@ -41,4 +39,4 @@ const evidencePage = () =>
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
 
-export default { verifyOnPage: evidencePage }
+module.exports = { verifyOnPage: evidencePage }

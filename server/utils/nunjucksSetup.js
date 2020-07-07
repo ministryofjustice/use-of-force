@@ -81,12 +81,5 @@ module.exports = (app, path) => {
     return value ? 'Yes' : 'No'
   })
 
-  njkEnv.addFilter('MD5', value =>
-    value
-      ? nodeCrypto
-          .createHash('md5')
-          .update(value)
-          .digest('hex')
-      : value
-  )
+  njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
 }

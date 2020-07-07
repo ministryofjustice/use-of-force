@@ -1,17 +1,8 @@
 exports.up = knex =>
   knex.schema.alterTable('form', table => {
-    table
-      .integer('sequence_no')
-      .notNullable()
-      .defaultTo(1)
-    table
-      .bigInteger('booking_id')
-      .notNullable()
-      .defaultTo(-1)
-    table
-      .timestamp('start_date')
-      .notNullable()
-      .defaultTo(knex.fn.now(6))
+    table.integer('sequence_no').notNullable().defaultTo(1)
+    table.bigInteger('booking_id').notNullable().defaultTo(-1)
+    table.timestamp('start_date').notNullable().defaultTo(knex.fn.now(6))
 
     table.string('user_id', 32).alter()
     table.string('status', 20)

@@ -1,7 +1,6 @@
 import serviceCreator from './locationService'
 
 const elite2ClientBuilder = jest.fn()
-const incidentClient = { updateAgencyId: jest.fn() }
 const token = 'token'
 
 const elite2Client = {
@@ -14,7 +13,7 @@ let locationService
 
 beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
-  locationService = serviceCreator(elite2ClientBuilder, incidentClient)
+  locationService = serviceCreator(elite2ClientBuilder)
 })
 
 afterEach(() => {

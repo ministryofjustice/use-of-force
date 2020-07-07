@@ -1,5 +1,5 @@
-const page = require('../page')
-const EvidencePage = require('./evidencePage')
+import page from '../page'
+import EvidencePage from './evidencePage'
 
 const relocationAndInjuriesPage = () =>
   page('Relocation and injuries', {
@@ -22,9 +22,7 @@ const relocationAndInjuriesPage = () =>
       cy.get('[data-qa-add-another-staff-needing-medical-attention = true]').click()
       cy.get('[name="staffNeedingMedicalAttention[2][name]"]').type('Jayne Eyre')
       cy.get('[name="staffNeedingMedicalAttention[2][hospitalisation]"]').check('true')
-      cy.get('.add-another-staff-needing-medical-attention .add-another__remove-button')
-        .eq(0)
-        .click()
+      cy.get('.add-another-staff-needing-medical-attention .add-another__remove-button').eq(0).click()
     },
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
@@ -34,4 +32,4 @@ const relocationAndInjuriesPage = () =>
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
 
-export default { verifyOnPage: relocationAndInjuriesPage }
+module.exports = { verifyOnPage: relocationAndInjuriesPage }

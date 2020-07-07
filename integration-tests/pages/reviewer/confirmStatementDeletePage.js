@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const confirmStatementDelete = name =>
   page(`Are you sure you want to delete ${name}?`, {
@@ -6,6 +6,6 @@ const confirmStatementDelete = name =>
     confirm: () => cy.get('[name="confirm"]').check('yes'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: confirmStatementDelete,
 }

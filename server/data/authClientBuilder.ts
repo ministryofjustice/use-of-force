@@ -26,10 +26,8 @@ async function getSystemClientToken(username?: string) {
   const clientToken = generateOauthClientToken(config.apis.oauth2.systemClientId, config.apis.oauth2.systemClientSecret)
 
   const oauthRequest = username
-    ? // eslint-disable-next-line @typescript-eslint/camelcase
-      querystring.stringify({ grant_type: 'client_credentials', username })
-    : // eslint-disable-next-line @typescript-eslint/camelcase
-      querystring.stringify({ grant_type: 'client_credentials' })
+    ? querystring.stringify({ grant_type: 'client_credentials', username })
+    : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
     `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`

@@ -199,9 +199,7 @@ context('A use of force reviewer can view all incidents at the current agency', 
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
-      submittedDate: moment()
-        .add(-4, 'days')
-        .toDate(),
+      submittedDate: moment().add(-4, 'days').toDate(),
       involvedStaff: [
         {
           userId: 'TEST_USER',

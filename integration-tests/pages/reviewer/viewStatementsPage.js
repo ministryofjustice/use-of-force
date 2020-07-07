@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const viewStatementsPage = () =>
   page('Use of force incident', {
@@ -26,10 +26,7 @@ const viewStatementsPage = () =>
             const tds = Cypress.$(element).find('td.govuk-table__cell')
             return {
               username: Cypress.$(tds[0]).text(),
-              link: Cypress.$(tds[1])
-                .text()
-                .trim()
-                .replace(/\s\s+/g, ', '),
+              link: Cypress.$(tds[1]).text().trim().replace(/\s\s+/g, ', '),
               isOverdue: Cypress.$(tds[1]).find('[data-qa="overdue"]').length === 1,
               isUnverified: Cypress.$(tds[1]).find('[data-qa="unverified"]').length === 1,
             }
@@ -38,16 +35,11 @@ const viewStatementsPage = () =>
 
     reportLink: () => cy.get('[data-qa="report-link"]'),
 
-    statementLink: index =>
-      cy
-        .get(`[data-qa="statements"]`)
-        .find('.govuk-table__body tr')
-        .eq(index)
-        .find('a'),
+    statementLink: index => cy.get(`[data-qa="statements"]`).find('.govuk-table__body tr').eq(index).find('a'),
 
     return: () => cy.get('[data-qa=return-link]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: viewStatementsPage,
 }

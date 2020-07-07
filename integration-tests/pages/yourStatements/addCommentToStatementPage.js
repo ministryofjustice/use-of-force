@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const addCommentPage = () =>
   page('Add a comment to your statement', {
@@ -13,6 +13,6 @@ const addCommentPage = () =>
     cancel: () => cy.get('[data-qa=cancel]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: addCommentPage,
 }

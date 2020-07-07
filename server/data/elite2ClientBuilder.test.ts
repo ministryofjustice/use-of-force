@@ -33,10 +33,7 @@ describe('elite2Client', () => {
   describe('getUser', () => {
     const userResponse = {}
     it('should return data from api', async () => {
-      fakeElite2Api
-        .get('/api/users/me')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, userResponse)
+      fakeElite2Api.get('/api/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
 
       const output = await elite2Client.getUser()
       expect(output).toEqual(userResponse)
@@ -46,10 +43,7 @@ describe('elite2Client', () => {
   describe('getUserCaseLoads', () => {
     const caseloads = []
     it('should return data from api', async () => {
-      fakeElite2Api
-        .get('/api/users/me/caseLoads')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, caseloads)
+      fakeElite2Api.get('/api/users/me/caseLoads').matchHeader('authorization', `Bearer ${token}`).reply(200, caseloads)
 
       const output = await elite2Client.getUserCaseLoads()
       expect(output).toEqual(caseloads)
@@ -107,10 +101,7 @@ describe('elite2Client', () => {
 
   describe('getPrisoners', () => {
     it('should format query string', async () => {
-      fakeElite2Api
-        .get('/api/prisoners?offenderNo=A123&offenderNo=B123')
-        .matchHeader('page-limit', 5000)
-        .reply(200, [])
+      fakeElite2Api.get('/api/prisoners?offenderNo=A123&offenderNo=B123').matchHeader('page-limit', 5000).reply(200, [])
 
       const output = await elite2Client.getPrisoners(['A123', 'B123'])
       expect(output).toEqual([])

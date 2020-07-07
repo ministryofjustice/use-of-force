@@ -3,7 +3,7 @@ import { isNilOrEmpty, properCaseName } from '../utils/utils'
 import { OffenderService, PrisonerDetail } from '../types/uof'
 
 export default function createOffenderService(elite2ClientBuilder): OffenderService {
-  const getOffenderDetails = async (token, bookingId): Promise<object> => {
+  const getOffenderDetails = async (token, bookingId): Promise<any> => {
     try {
       const elite2Client = elite2ClientBuilder(token)
       const result = await elite2Client.getOffenderDetails(bookingId)

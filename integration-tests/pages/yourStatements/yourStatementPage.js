@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const viewStatementPage = () =>
   page('Your use of force statement', {
@@ -12,6 +12,6 @@ const viewStatementPage = () =>
     continue: () => cy.get('[data-qa=continue]'),
   })
 
-export default {
+module.exports = {
   verifyOnPage: viewStatementPage,
 }

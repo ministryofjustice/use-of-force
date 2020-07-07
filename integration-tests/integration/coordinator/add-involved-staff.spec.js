@@ -57,10 +57,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo()
-      .getCompleteRow(0)
-      .viewStatementsButton()
-      .click()
+    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage
@@ -72,10 +69,7 @@ context('A use of force coordinator can add involved staff', () => {
       )
     viewStatementsPage.reportLink().click()
 
-    ViewReportPage.verifyOnPage()
-      .addInvolvedStaff()
-      .should('be.visible')
-      .click()
+    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
 
     const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
     addInvolvedStaffPage.username().type('MRS_JONES')
@@ -91,10 +85,7 @@ context('A use of force coordinator can add involved staff', () => {
     const allIncidentsPage = AllIncidentsPage.verifyOnPage()
     allIncidentsPage.getTodoRows().should('have.length', 1)
     allIncidentsPage.getNoCompleteRows().should('exist')
-    allIncidentsPage
-      .getTodoRow(0)
-      .viewStatementsButton()
-      .click()
+    allIncidentsPage.getTodoRow(0).viewStatementsButton().click()
 
     ViewStatementsPage.verifyOnPage()
       .statements()
@@ -112,19 +103,11 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo()
-      .getCompleteRow(0)
-      .viewStatementsButton()
-      .click()
+    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
-    ViewStatementsPage.verifyOnPage()
-      .reportLink()
-      .click()
+    ViewStatementsPage.verifyOnPage().reportLink().click()
 
-    ViewReportPage.verifyOnPage()
-      .addInvolvedStaff()
-      .should('be.visible')
-      .click()
+    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
 
     const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
     addInvolvedStaffPage.username().type('JOHNNY')
@@ -142,19 +125,11 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo()
-      .getCompleteRow(0)
-      .viewStatementsButton()
-      .click()
+    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
-    ViewStatementsPage.verifyOnPage()
-      .reportLink()
-      .click()
+    ViewStatementsPage.verifyOnPage().reportLink().click()
 
-    ViewReportPage.verifyOnPage()
-      .addInvolvedStaff()
-      .should('be.visible')
-      .click()
+    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
 
     const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
     addInvolvedStaffPage.username().type('TEST_USER')
@@ -172,19 +147,11 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo()
-      .getCompleteRow(0)
-      .viewStatementsButton()
-      .click()
+    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
-    ViewStatementsPage.verifyOnPage()
-      .reportLink()
-      .click()
+    ViewStatementsPage.verifyOnPage().reportLink().click()
 
-    ViewReportPage.verifyOnPage()
-      .addInvolvedStaff()
-      .should('be.visible')
-      .click()
+    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
 
     const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
     addInvolvedStaffPage.username().type('UNVERIFIED_USER')

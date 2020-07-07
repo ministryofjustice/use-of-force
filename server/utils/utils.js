@@ -31,13 +31,7 @@ const parseDate = (val, format) => {
  * @param name name to be converted.
  * @returns name converted to proper case.
  */
-const properCaseName = name =>
-  isBlank(name)
-    ? ''
-    : name
-        .split('-')
-        .map(properCase)
-        .join('-')
+const properCaseName = name => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
 
 const properCaseFullName = name =>
   isBlank(name)

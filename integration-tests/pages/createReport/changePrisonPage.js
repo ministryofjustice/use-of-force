@@ -1,4 +1,4 @@
-const page = require('../page')
+import page from '../page'
 
 const changePrison = () =>
   page('What prison did the use of force take place in?', {
@@ -7,4 +7,4 @@ const changePrison = () =>
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
 
-export default { verifyOnPage: changePrison }
+module.exports = { verifyOnPage: changePrison }

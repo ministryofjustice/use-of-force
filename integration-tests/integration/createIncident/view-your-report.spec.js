@@ -48,10 +48,7 @@ context('A reporter views their own report', () => {
     const yourReportsPage = YourReportsPage.verifyOnPage()
     yourReportsPage.selectedTab().contains('Your reports')
 
-    yourReportsPage
-      .getCompleteRow(0)
-      .viewButton()
-      .click()
+    yourReportsPage.getCompleteRow(0).viewButton().click()
 
     const yourReportPage = YourReportPage.verifyOnPage()
     yourReportPage.reporterName().contains('James Stuart')
