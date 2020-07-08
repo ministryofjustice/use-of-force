@@ -154,12 +154,10 @@ describe('reviewService', () => {
 
       incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
       incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
-      offenderService.getOffenderNames.mockResolvedValue(
-        Promise.resolve({
-          'offender-1': 'Prisoner prisoner-1',
-          'offender-2': 'Prisoner prisoner-2',
-        })
-      )
+      offenderService.getOffenderNames.mockResolvedValue({
+        'offender-1': 'Prisoner prisoner-1',
+        'offender-2': 'Prisoner prisoner-2',
+      })
 
       const result = await service.getReports('userName', 'agency-1', query)
       expect(result).toEqual({ awaitingReports: [], completedReports: [incidentSummary(2)] })
