@@ -11,11 +11,13 @@ const incidentsPage = () =>
   page('Use of force incidents', {
     ...tabs,
     filter: {
+      prisonerName: () => cy.get('[name="prisonerName"]'),
       prisonNumber: () => cy.get('[name="prisonNumber"]'),
       reporter: () => cy.get('[name="reporter"]'),
       dateFrom: () => cy.get('[name="dateFrom"]'),
       dateTo: () => cy.get('[name="dateTo"]'),
       apply: () => cy.get('[data-qa="apply"]'),
+      clear: () => cy.get('[data-qa="clear"]'),
     },
     getTodoRows: () => cy.get('[data-qa=incidents-todo]').find('tbody').find('tr'),
     getNoTodoRows: () => cy.get('[data-qa=no-incidents-todo]'),

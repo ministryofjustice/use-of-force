@@ -49,16 +49,19 @@ describe('GET /all-incidents', () => {
     userSupplier.mockReturnValue(reviewerUser)
 
     return request(app)
-      .get('/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020')
+      .get(
+        '/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
+      )
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getReports).toHaveBeenCalledWith('LEI', {
+        expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
           dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
           dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
           prisonNumber: 'A1234AA',
           reporter: 'Bob',
+          prisonerName: 'Jimmy Choo',
         })
       })
   })
@@ -72,7 +75,7 @@ describe('GET /all-incidents', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getReports).toHaveBeenCalledWith('LEI', {
+        expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
           prisonNumber: 'A1234AA',
           reporter: 'Bob',
         })

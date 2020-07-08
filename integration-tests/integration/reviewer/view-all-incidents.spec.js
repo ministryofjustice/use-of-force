@@ -191,6 +191,16 @@ context('A use of force reviewer can view all incidents at the current agency', 
       prisonNumber().contains('A1234AC')
       reporter().contains('James Stuart')
     }
+
+    allIncidentsPage.filter.clear().click()
+    allIncidentsPage.filter.prisonerName().type('ONE')
+    allIncidentsPage.filter.apply().click()
+    allIncidentsPage.getTodoRows().should('have.length', 1)
+    allIncidentsPage.getNoCompleteRows().should('exist')
+    {
+      const { prisoner } = allIncidentsPage.getTodoRow(0)
+      prisoner().contains('Jones, June')
+    }
   })
 
   it('A reviewer can view overdue incidents', () => {

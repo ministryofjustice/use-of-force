@@ -13,43 +13,20 @@ interface Params {
 }
 
 export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, reviewService, systemToken }: Params) {
-  const getOffenderNames = (token, incidents): Promise<{ [offenderNo: string]: string }> => {
-    const offenderNos = incidents.map(incident => incident.offenderNo)
-    return offenderService.getOffenderNames(token, offenderNos)
-  }
-
-  const toReport = namesByOffenderNumber => incident => ({
-    id: incident.id,
-    bookingId: incident.bookingId,
-    incidentdate: incident.incidentDate,
-    staffMemberName: incident.reporterName,
-    isOverdue: incident.isOverdue,
-    offenderName: namesByOffenderNumber[incident.offenderNo],
-    offenderNo: incident.offenderNo,
-  })
-
   return {
     viewAllIncidents: async (req: Request, res: Response): Promise<void> => {
-      const { prisonNumber, reporter, dateFrom, dateTo } = req.query
+      const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
       const query = removeKeysWithEmptyValues({
+        prisonerName,
         prisonNumber,
         reporter,
         dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
         dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
       })
 
-      const { awaiting, completed } = await reviewService.getReports(res.locals.user.activeCaseLoadId, query)
-
-      const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
-        ...awaiting,
-        ...completed,
-      ])
-      const awaitingReports = awaiting.map(toReport(namesByOffenderNumber))
-      const completedReports = completed.map(toReport(namesByOffenderNumber))
-
+      const reports = await reviewService.getReports(res.locals.user.username, res.locals.user.activeCaseLoadId, query)
       return res.render('pages/all-incidents', {
-        awaitingReports,
-        completedReports,
+        ...reports,
         query,
         selectedTab: 'all-incidents',
       })
