@@ -10,7 +10,7 @@ image:
 
 ingress:
   enabled: true
-  enable_whitelist: false
+  enable_allow_list: false
   host: dev.use-of-force.service.justice.gov.uk
   cert_secret: use-of-force-cert
   path: /
