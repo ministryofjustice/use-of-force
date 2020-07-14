@@ -21,11 +21,22 @@
         {% set name1 = question.name %}
         {% for option in question.options %}
         <div class="govuk-radios__item">
-          <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name1}} {% else %}
-            id="id-{{name1}}-{{loop.index}}" {% endif %} name="{{name1}}" type="radio" value="{{option.value}}"
+          <input class="govuk-radios__input"
+                  {% if loop.index === 1 %}
+                    id={{name1}}
+                  {% else %}
+                    id="id-{{name1}}-{{loop.index}}"
+                  {% endif %}
+                 name="{{name1}}"
+                 type="radio"
+                 value="{{option.value}}"
             {% if option.value === question.value %} checked {% endif %}>
-          <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name1}} {% else %}
-            for="id-{{name1}}-{{loop.index}}" {% endif %}>
+          <label class="govuk-label govuk-radios__label"
+                  {% if loop.index === 1 %}
+                    for={{name1}}
+                  {% else %}
+                    for="id-{{name1}}-{{loop.index}}"
+                  {% endif %}>
             {{option.label}}
           </label>
         </div>
@@ -67,12 +78,23 @@
         {% set name1 = question.primaryQuestion.name %}
         {% for option in question.primaryQuestion.options %}
         <div class="govuk-radios__item">
-          <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name1}} {% else %}
-            id="id-{{name1}}-{{loop.index}}" {% endif %} name="{{name1}}" type="radio" value="{{option.value}}"
-            {% if option.value === question.primaryQuestion.value %} checked {% endif %}
-            {% if option.value === question.followUpQuestionTriggeredOn %} data-aria-controls="conditional-{{name1}}" {% endif %}>
-          <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name1}} {% else %}
-            for="id-{{name1}}-{{loop.index}}" {% endif %}>
+          <input class="govuk-radios__input"
+                  {% if loop.index === 1 %}
+                    id={{name1}}
+                  {% else %}
+                    id="id-{{name1}}-{{loop.index}}"
+                  {% endif %}
+                 name="{{name1}}"
+                 type="radio"
+                 value="{{option.value}}"
+                  {% if option.value === question.primaryQuestion.value %} checked {% endif %}
+                  {% if option.value === question.followUpQuestionTriggeredOn %} data-aria-controls="conditional-{{name1}}" {% endif %}>
+          <label class="govuk-label govuk-radios__label"
+                  {% if loop.index === 1 %}
+                    for={{name1}}
+                  {% else %}
+                    for="id-{{name1}}-{{loop.index}}"
+                  {% endif %}>
             {{option.label}}
           </label>
         </div>
@@ -80,32 +102,43 @@
 
         <!-- followup-->
         {% if question.followUpQuestion %}
-        <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-{{name1}}">
-          <div class="{{govukFormGroupErrorInner}}">
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                {{question.followUpQuestion.text}}
-              </legend>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both"
+                 id="conditional-{{ name1 }}">
+              <div class="{{ govukFormGroupErrorInner }}">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend">{{ question.followUpQuestion.text }}</legend>
 
-              <span class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ followUpErrorMessageText}}
-              </span>
-              {% set name2 = question.followUpQuestion.name %}
-              {% for option in question.followUpQuestion.options %}
-              <div class="govuk-radios__item">
-                <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name2}} {% else %}
-                  id="id-{{name2}}-{{loop.index}}" {% endif %} name="{{name2}}" type="radio" value="{{option.value}}"
-                  {% if option.value === question.followUpQuestion.value %} checked {% endif %}>
-                <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name2}} {% else %}
-                  for="id-{{name2}}-{{loop.index}}" {% endif %}>
-                  {{option.label}}
-                </label>
+                   {% if followUpErrorMessageText %}
+                    <span class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+                  {% endif %}
+
+                  {% set name2 = question.followUpQuestion.name %}
+                  {% for option in question.followUpQuestion.options %}
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input"
+                              {% if loop.index === 1 %}
+                                id={{ name2 }}
+                              {% else %}
+                                id="id-{{ name2 }}-{{ loop.index }}"
+                              {% endif %}
+                             name="{{ name2 }}"
+                             type="radio"
+                             value="{{ option.value }}"
+                              {% if option.value === question.followUpQuestion.value %} checked {% endif %}>
+                      <label class="govuk-label govuk-radios__label"
+                              {% if loop.index === 1 %}
+                                for={{ name2 }}
+                              {% else %}
+                                for="id-{{ name2 }}-{{ loop.index }}"
+                              {% endif %}>
+                        {{ option.label }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                </fieldset>
               </div>
-              {% endfor %}
-            </fieldset>
-          </div>
-        </div>
+            </div>
         {% endif %}
         <!-- end of followup -->
       </div>
@@ -140,45 +173,68 @@
       <div class="govuk-radios--inline" data-module="govuk-radios">
         {% set name = question.primaryQuestion.name %}
         {% for option in question.primaryQuestion.options %}
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name}} {% else %}
-            id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}" type="radio" value="{{option.value}}"
-            {% if option.value === true %} data-aria-controls="conditional-{{name}}" {% endif %}
-            {% if option.value === question.primaryQuestion.value %} checked {% endif %}>
-          <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name}} {% else %}
-            for="id-{{name}}-{{loop.index}}" {% endif %}>
-            {{option.label}}
-          </label>
-        </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input"
+                    {% if loop.index === 1 %}
+                      id={{ name }}
+                    {% else %}
+                      id="id-{{ name }}-{{ loop.index }}"
+                    {% endif %}
+                   name="{{ name }}"
+                   type="radio"
+                   value="{{ option.value }}"
+                   {% if option.value === true %} data-aria-controls="conditional-{{ name }}" {% endif %}
+                   {% if option.value === question.primaryQuestion.value %} checked {% endif %}>
+            <label class="govuk-label govuk-radios__label"
+                    {% if loop.index === 1 %}
+                      for={{ name }}
+                    {% else %}
+                      for="id-{{ name }}-{{ loop.index }}"
+                    {% endif %}>
+              {{ option.label }}
+            </label>
+          </div>
         {% endfor %}
 
         <!-- followup -->
-        <div class="govuk-radios__conditional clear-both" data-module="govuk-checkboxes" id="conditional-{{name}}">
-          <div class="{{govukFormGroupErrorInner}}">
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend">
-                {{question.followUpQuestion.text}}
-              </legend>
-              <span class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ followUpErrorMessageText}}
-              </span>
-              {% set name = question.followUpQuestion.name %}
-              {% for option in question.followUpQuestion.options %}
+        <div class="govuk-radios__conditional  clear-both" data-module="govuk-checkboxes" id="conditional-{{ name }}">
+            <div class="{{ govukFormGroupErrorInner }}">
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                  {{ question.followUpQuestion.text }}
+                </legend>
 
-              <div class="govuk-checkboxes__item ">
-                <input class="govuk-checkboxes__input" {% if loop.index === 1 %} id={{name}} {% else %}
-                  id="id-{{name}}-{{loop.index}}" {% endif %} name="{{name}}[{{loop.index}}]" type="checkbox"
-                  value="{{option.value}}" {% if option.value in question.followUpQuestion.value %} checked {% endif %}>
-                <label class="govuk-label govuk-checkboxes__label" {% if loop.index === 1 %} for={{name}} {% else %}
-                  for="id-{{name}}-{{loop.index}}" {% endif %}>
-                  {{option.label}}
-                </label>
-              </div>
-              {% endfor %}
-            </fieldset>
+                {% if followUpErrorMessageText %}
+                  <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+                {% endif %}
+
+                {% set name = question.followUpQuestion.name %}
+                {% for option in question.followUpQuestion.options %}
+
+                  <div class="govuk-checkboxes__item ">
+                    <input class="govuk-checkboxes__input"
+                            {% if loop.index === 1 %}
+                              id={{ name }}
+                            {% else %}
+                              id="id-{{ name }}-{{ loop.index }}"
+                            {% endif %}
+                           name="{{ name }}[{{ loop.index }}]"
+                           type="checkbox"
+                           value="{{ option.value }}"
+                            {% if option.value in question.followUpQuestion.value %} checked {% endif %}>
+                    <label class="govuk-label govuk-checkboxes__label"
+                            {% if loop.index === 1 %}
+                              for={{ name }}
+                            {% else %}
+                              for="id-{{ name }}-{{ loop.index }}"
+                            {% endif %}>
+                      {{ option.label }}
+                    </label>
+                  </div>
+                {% endfor %}
+              </fieldset>
+            </div>
           </div>
-        </div>
       </div>
     </div>
   </fieldset>
@@ -212,42 +268,58 @@
     <div class="govuk-radios--inline" data-module="govuk-radios">
       {% set name = question.primaryQuestion.name %}
       {% for option in question.primaryQuestion.options %}
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" {% if loop.index === 1 %} id={{name}} {% else %} id="{{name}}-{{loop.index}}"
-          {% endif %} name="{{name}}" type="radio" value="{{option.value}}" {% if option.value === true %}
-          data-aria-controls="conditional-{{name}}" {% endif %} {% if option.value === question.primaryQuestion.value %}
-          checked="checked" {% endif %}>
-        <label class="govuk-label govuk-radios__label" {% if loop.index === 1 %} for={{name}} {% else %}
-          for="{{name}}-{{loop.index}}" {% endif %}>
-          {{option.label}}
-        </label>
-      </div>
+        <div class="govuk-radios__item">
+          <input class="govuk-radios__input"
+                  {% if loop.index === 1 %}
+                    id={{ name }}
+                  {% else %}
+                    id="{{ name }}-{{ loop.index }}"
+                  {% endif %}
+                 name="{{ name }}"
+                 type="radio"
+                 value="{{ option.value }}"
+                  {% if option.value === true %}
+                    data-aria-controls="conditional-{{ name }}"
+                  {% endif %}
+                  {% if option.value === question.primaryQuestion.value %}checked="checked" {% endif %}>
+          <label class="govuk-label govuk-radios__label"
+                  {% if loop.index === 1 %}
+                    for={{ name }}
+                  {% else %}
+                    for="{{ name }}-{{ loop.index }}"
+                  {% endif %}>
+            {{ option.label }}
+          </label>
+        </div>
       {% endfor %}
 
       <!-- followup -->
-      <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{name}}">
-        <div class="{{govukFormGroupErrorInner}}">
-          <fieldset class="govuk-fieldset">
-            <legend
-              class="govuk-fieldset__legend govuk-fieldset__legend {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden {% endif %}">
-              {{question.followUpQuestion.legend}}
-            </legend>
-            <span class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ followUpErrorMessageText}}
-            </span>
+        <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{ name }}">
+          <div class="{{ govukFormGroupErrorInner }}">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend
+                      {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden {% endif %}">
+                {{ question.followUpQuestion.legend }}
+              </legend>
 
-            {% set followUpQuestion = question.followUpQuestion %}
-            <div class="govuk-textboxes__item">
-              <label class="govuk-label" for="{{followUpQuestion.name}}">
-                {{followUpQuestion.label}}
-              </label>
-              <input class="govuk-input govuk-!-width-one-third" id="{{followUpQuestion.name}}"
-                name="{{followUpQuestion.name}}" type="text" value="{{followUpQuestion.value}}">
-            </div>
-          </fieldset>
+              {% if followUpErrorMessageText %}
+                <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+              {% endif %}
+
+              {% set followUpQuestion = question.followUpQuestion %}
+              <div class="govuk-textboxes__item">
+                <label class="govuk-label" for="{{ followUpQuestion.name }}">
+                  {{ followUpQuestion.label }}
+                </label>
+                <input class="govuk-input govuk-!-width-one-third"
+                       id="{{ followUpQuestion.name }}"
+                       name="{{ followUpQuestion.name }}"
+                       type="text"
+                       value="{{ followUpQuestion.value }}">
+              </div>
+            </fieldset>
+          </div>
         </div>
-      </div>
     </div>
   </fieldset>
 </div>
