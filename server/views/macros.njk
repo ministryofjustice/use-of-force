@@ -4,3 +4,9 @@
         {{props.label | safe }}
     </a>
 {% endmacro %}
+
+
+{% macro overdueBadge(props) %}
+<span data-qa="{{props.qa}}" class="moj-badge moj-badge--red">{{props.text}}</span>
+{% endmacro %}
+
