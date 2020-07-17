@@ -1,6 +1,7 @@
 {% extends "../partials/incidentPage.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %} 
+{% from  "../macros.njk" import overdueBadge %}    
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
@@ -33,7 +34,7 @@
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderName}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.offenderNo}}</td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell govuk-!-padding-top-3">
+          <td class="govuk-table__cell vertical-align-middle">
             <a
               href="/{{ report.id }}/view-statements"
               draggable="false"
@@ -43,21 +44,18 @@
             </a>
           </td>
           {% if user.isCoordinator %}
-          <td class="govuk-table__cell">
-              {{
-                govukButton({
-                  text: 'Delete',
-                  name: 'delete',
-                  href: '/coordinator/report/' + report.id + '/confirm-delete',
-                  classes: 'govuk-button govuk-button--secondary',
-                  attributes: { 'data-qa': 'continue' }
-                })
-              }}
+          <td class="govuk-table__cell vertical-align-middle">
+              <a href="/coordinator/report/{{ report.id }}/confirm-delete" class="govuk-link" data-qa='delete' name='delete'> Delete incident </a>
           </td>
           {% endif %}  
-          <td class="govuk-table__cell">
+          <td class="govuk-table__cell vertical-align-middle text-align-right">
             {% if report.isOverdue %}
-              <span data-qa="overdue" class="govuk-tag moj-tag--red govuk-!-margin-top-1">OVERDUE</span>
+              {{ 
+                overdueBadge({
+                  text: 'OVERDUE', 
+                  qa: 'overdue' 
+                }) 
+              }}
             {% endif %}
           </td>
       </tr>  
