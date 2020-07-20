@@ -1,6 +1,7 @@
 {% extends "../partials/incidentPage.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %} 
+{% from  "../macros.njk" import overdueBadge %}  
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
@@ -12,11 +13,12 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Incident date</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prisoner</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prison number</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Reporter</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Incident date</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prisoner</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prison number</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Reporter</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
     </tr>
   </thead>
 
@@ -34,8 +36,18 @@
               draggable="false"
               class="govuk-button govuk-button govuk-!-width-three-quarters"
             >
-              {{ 'Continue statement' if statement.inProgress else 'Start statement' }}
+              {{ 'Continue' if statement.inProgress else 'Start' }}
             </a>
+          </td>
+          <td class="govuk-table__cell">
+            {% if statement.isOverdue %}
+            {{ 
+              overdueBadge({
+                text: 'OVERDUE', 
+                qa: 'overdue' 
+              }) 
+            }}                  
+            {% endif %}
           </td>
       </tr>  
       {% endfor %}
@@ -54,11 +66,12 @@
 
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Incident date</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prisoner</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Prison number</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col">Reporter</th>
-      <th class="govuk-table__header app-!-width-one-fifth" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Incident date</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prisoner</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prison number</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Reporter</th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
+      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
     </tr>
   </thead>
 
@@ -77,6 +90,8 @@
             >
             View statement
             </a>
+          </td>
+          <td class="govuk-table__cell">          
           </td>
       </tr>  
       {% endfor %}
