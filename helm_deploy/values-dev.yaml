@@ -16,9 +16,9 @@ ingress:
   path: /
 
 env:
-  NOMIS_AUTH_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/auth
+  NOMIS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   NOMIS_OAUTH_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBemN4N1lidzJCQVd2N1NzRUlVR1ANCml5SlNJRGd0cUJ4MTlUd203dUkzVFg1elJjclpsVXhjRW1QSkdVZ3krRDJKSWhWbHFtZXF3R1YyQ05PcVpCZ0cNCmo4ZUpHQTU5aUlUemU4ZG1SSk5JYzdsNmxESmc5RE5KVk9pTHFVbFpGRENJcXplSTYzb3E2dWhjY2c1RFBpVE4NCnFPR1pjOHVwTit3NWRack52KzJHTGd4SzJwZXRNVS9CaFllV2YzS3ZZSU8xNnYxdXZuRk9HTzEzSG9XdTVCdGQNClN0L1RnY2xGaFZMRWRHdzdYYmlZSG5OWklkaHdhTlFpWWdtWG1qWlZkTXlDUERNbzEwTGtWMXAzVXkxNXBNTXgNClVwc2xKYU8wNlZIYXJtY3ZWYzNleHg5NlpHTjE2T2U4ZWZoeG5Rdmhzd0ZrbXlYT25sSForNDI1MnJHcHlKTG8NCmx3SURBUUFCDQotLS0tLUVORCBQVUJMSUMgS0VZLS0tLS0=
-  ELITE2_API_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/elite2api
+  ELITE2_API_URL: https://api-dev.prison.service.justice.gov.uk
   PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
   EXIT_LOCATION_URL: https://digital-dev.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://dev.use-of-force.service.justice.gov.uk
