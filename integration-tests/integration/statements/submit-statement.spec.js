@@ -59,7 +59,7 @@ context('Submit statement', () => {
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-      startButton().should('contain.text', 'Continue statement')
+      startButton().should('contain.text', 'Continue')
       startButton().click()
     }
 
