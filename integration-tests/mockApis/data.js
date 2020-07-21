@@ -7,4 +7,12 @@ module.exports = {
     agencyId: 'MDI',
     dateOfBirth: '2000-12-26',
   },
+  offender2: {
+    bookingId: 1002,
+    offenderNo: 'A1234AD',
+    firstName: 'JUNE',
+    lastName: 'JONES',
+    agencyId: 'MDI',
+    dateOfBirth: '2000-12-26',
+  },
 }

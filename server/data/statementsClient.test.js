@@ -15,11 +15,12 @@ test('getStatements', () => {
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
-            , r.reporter_name "reporterName"
-            , r.offender_no   "offenderNo"
-            , r.incident_date "incidentDate"
+            , r.reporter_name          "reporterName"
+            , r.offender_no            "offenderNo"
+            , r.incident_date          "incidentDate"
             , s."name"
-            , s.in_progress   "inProgress"
+            , s.in_progress            "inProgress"
+            , s.overdue_date <= now()  "isOverdue"
             from statement s 
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
@@ -35,11 +36,12 @@ test('getStatements order by date desc', () => {
 
   expect(db.query).toBeCalledWith({
     text: `select r.id
-            , r.reporter_name "reporterName"
-            , r.offender_no   "offenderNo"
-            , r.incident_date "incidentDate"
+            , r.reporter_name          "reporterName"
+            , r.offender_no            "offenderNo"
+            , r.incident_date          "incidentDate"
             , s."name"
-            , s.in_progress   "inProgress"
+            , s.in_progress            "inProgress"
+            , s.overdue_date <= now()  "isOverdue"
             from statement s 
             inner join report r on s.report_id = r.id   
           where s.user_id = $1

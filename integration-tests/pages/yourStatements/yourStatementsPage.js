@@ -16,6 +16,7 @@ const yourStatementsPage = () =>
       prisonNumber: () => todoCol(i, 2),
       reporter: () => todoCol(i, 3),
       startButton: () => todoCol(i, 4).find('a'),
+      overdue: () => todoCol(i, 5).find('[data-qa=overdue]'),
     }),
     getCompleteRow: i => ({
       date: () => completeCol(i, 0),
