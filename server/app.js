@@ -5,6 +5,7 @@ const loggingSerialiser = require('./loggingSerialiser') // eslint-disable-line
 const log = require('bunyan-request-logger')({ name: 'Use of force http', serializers: loggingSerialiser })
 const addRequestId = require('express-request-id')()
 const helmet = require('helmet')
+const noCache = require('nocache')
 const csurf = require('csurf')
 const path = require('path')
 const moment = require('moment')
@@ -158,7 +159,7 @@ export default function createApp({
   app.use(addTemplateVariables)
 
   // Don't cache dynamic resources
-  app.use(helmet.noCache())
+  app.use(noCache())
 
   // CSRF protection
   if (!testMode) {
