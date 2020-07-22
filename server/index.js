@@ -1,13 +1,14 @@
 import { buildAppInsightsClient } from './utils/azure-appinsights'
 import PrisonerSearchClient from './data/prisonerSearchClient'
-import incidentClient from './data/incidentClient'
-
+import IncidentClient from './data/incidentClient'
+import StatementsClient from './data/statementsClient'
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 import createLocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
+import StatementService from './services/statementService'
 
 import createApp from './app'
 
@@ -17,15 +18,16 @@ import { authClientBuilder, systemToken } from './data/authClientBuilder'
 
 const db = require('./data/dataAccess/db')
 
-const statementsClient = require('./data/statementsClient')
 const reportingClient = require('./data/reportingClient')
+
+const incidentClient = new IncidentClient(db.query, db.inTransaction)
+const statementsClient = new StatementsClient(db.query)
 
 const createSignInService = require('./authentication/signInService')
 
 const createHeatmapBuilder = require('./services/heatmapBuilder').default
 const { createInvolvedStaffService } = require('./services/involvedStaffService')
 const createReportService = require('./services/reportService')
-const createStatementService = require('./services/statementService')
 const createUserService = require('./services/userService')
 
 const { notificationServiceFactory } = require('./services/notificationService')
@@ -47,7 +49,7 @@ const reportService = createReportService({
   systemToken,
 })
 
-const statementService = createStatementService({ statementsClient, incidentClient, db })
+const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 const reviewService = new ReviewService(
   statementsClient,
   incidentClient,

@@ -43,7 +43,7 @@ export default function Index({
     systemToken,
   })
 
-  const statements = CreateStatementRoutes({ statementService, offenderService, systemToken })
+  const statements = CreateStatementRoutes(statementService, offenderService, systemToken)
 
   const createReport = CreateReportRoutes({
     reportService,

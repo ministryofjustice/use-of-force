@@ -3,8 +3,8 @@ import { OffenderService } from '../types/uof'
 
 jest.mock('../data/incidentClient')
 
-import { IncidentClient } from '../data/incidentClient'
-import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
+import IncidentClient from '../data/incidentClient'
+import ReviewService, { IncidentSummary } from './reviewService'
 import { ReportSummary } from '../data/incidentClientTypes'
 
 let incidentClient: jest.Mocked<IncidentClient>
@@ -35,7 +35,7 @@ let service: ReviewService
 
 describe('reviewService', () => {
   beforeEach(() => {
-    incidentClient = new IncidentClient() as jest.Mocked<IncidentClient>
+    incidentClient = new IncidentClient(jest.fn(), jest.fn()) as jest.Mocked<IncidentClient>
     service = new ReviewService(statementsClient, incidentClient, authClientBuilder, offenderService, username =>
       Promise.resolve(`${username}-system-token`)
     )

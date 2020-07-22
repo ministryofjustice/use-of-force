@@ -37,12 +37,12 @@ context('Submit statement', () => {
 
     {
       const yourStatementsPage = YourStatementsPage.goTo()
-      const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
+      const { date, prisoner, reporter, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-      startButton().should('contain.text', 'Start')
-      startButton().click()
+      action().should('contain.text', 'Start')
+      action().click()
     }
 
     let writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
@@ -55,12 +55,12 @@ context('Submit statement', () => {
 
     {
       const yourStatementsPage = YourStatementsPage.goTo()
-      const { date, prisoner, reporter, startButton } = yourStatementsPage.getTodoRow(0)
+      const { date, prisoner, reporter, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-      startButton().should('contain.text', 'Continue')
-      startButton().click()
+      action().should('contain.text', 'Continue')
+      action().click()
     }
 
     writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
@@ -75,9 +75,10 @@ context('Submit statement', () => {
 
     {
       const incidentsPage = statementSubmittedPage.finish()
-      const { date, prisoner, reporter } = incidentsPage.getCompleteRow(0)
+      const { date, prisoner, reporter, action } = incidentsPage.statements(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
+      action().should('contain.text', 'View statement')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
   })
@@ -109,11 +110,11 @@ context('Submit statement', () => {
 
     const incidentsPage = statementSubmittedPage.finish()
 
-    const { date, prisoner, reporter, reportId } = incidentsPage.getCompleteRow(0)
+    const { date, prisoner, reporter, reportId, action } = incidentsPage.statements(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
     date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-
+    action().should('contain.text', 'View statement')
     reportId().then(id =>
       cy.task('getStatementForUser', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {
         const { id: _, incidentDate, submittedDate, ...vals } = statement
@@ -144,7 +145,7 @@ context('Submit statement', () => {
     })
 
     let yourStatementsPage = YourStatementsPage.goTo()
-    yourStatementsPage.getTodoRow(0).startButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
     writeYourStatementPage.lastTrainingMonth().select('March')
@@ -162,7 +163,7 @@ context('Submit statement', () => {
 
     yourStatementsPage = statementSubmittedPage.finish()
 
-    yourStatementsPage.getCompleteRow(0).viewButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     const yourStatementPage = YourStatementPage.verifyOnPage()
     yourStatementPage.offenderName().contains('Norman Smith')
@@ -187,8 +188,8 @@ context('Submit statement', () => {
 
     {
       const yourStatementsPage = YourStatementsPage.goTo()
-      const { startButton } = yourStatementsPage.getTodoRow(0)
-      startButton().click()
+      const { action } = yourStatementsPage.statements(0)
+      action().click()
     }
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
     writeYourStatementPage.offenderName().contains('Norman Smith')

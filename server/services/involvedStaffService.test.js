@@ -394,7 +394,7 @@ describe('save', () => {
 
       expect(statementsClient.deleteStatement).toBeCalledWith({
         statementId: 2,
-        client,
+        query: client,
       })
 
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
@@ -407,7 +407,7 @@ describe('save', () => {
 
       expect(statementsClient.deleteStatement).toBeCalledWith({
         statementId: 2,
-        client,
+        query: client,
       })
 
       expect(incidentClient.changeStatus).toHaveBeenCalledWith(1, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
@@ -420,7 +420,7 @@ describe('save', () => {
 
       expect(statementsClient.deleteStatement).toBeCalledWith({
         statementId: 2,
-        client,
+        query: client,
       })
 
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()

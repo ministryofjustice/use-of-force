@@ -1,18 +1,18 @@
 import format from 'pg-format'
-import * as nonTransactionalClient from './dataAccess/db'
+import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { ReportStatus, StatementStatus } from '../config/types'
 import { IncidentSearchQuery, ReportSummary, IncompleteReportSummary } from './incidentClientTypes'
 
-const db = nonTransactionalClient
-
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
-export class IncidentClient {
+export default class IncidentClient {
+  constructor(private readonly query: QueryPerformer, private readonly inTransaction: InTransaction) {}
+
   async createDraftReport({ userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse }) {
     const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2)`
-    const result = await nonTransactionalClient.query({
+    const result = await this.query({
       text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
               values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, ${nextSequence}, CURRENT_TIMESTAMP)
               returning id`,
@@ -31,7 +31,7 @@ export class IncidentClient {
   }
 
   updateDraftReport(reportId, incidentDate, formResponse) {
-    return nonTransactionalClient.query({
+    return this.query({
       text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
@@ -41,8 +41,8 @@ export class IncidentClient {
     })
   }
 
-  submitReport(userId, bookingId, submittedDate, client = nonTransactionalClient) {
-    return client.query({
+  submitReport(userId, bookingId, submittedDate, query = this.query) {
+    return query({
       text: `update v_report r
             set status = $1
             ,   submitted_date = $2
@@ -55,8 +55,8 @@ export class IncidentClient {
     })
   }
 
-  changeStatus(reportId, startState, endState, client = nonTransactionalClient) {
-    return client.query({
+  changeStatus(reportId, startState, endState, query = this.query) {
+    return query({
       text: `update v_report r
             set status = $1
             ,   updated_date = now()
@@ -67,7 +67,7 @@ export class IncidentClient {
   }
 
   async getCurrentDraftReport(userId, bookingId) {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
@@ -79,7 +79,7 @@ export class IncidentClient {
   }
 
   async getReport(userId, reportId) {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select id
           , incident_date "incidentDate"
           , agency_id "agencyId"
@@ -95,7 +95,7 @@ export class IncidentClient {
   }
 
   async getReportForReviewer(reportId) {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select id
           , incident_date "incidentDate"
           , agency_id "agencyId"
@@ -120,7 +120,7 @@ export class IncidentClient {
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -149,7 +149,7 @@ export class IncidentClient {
   }
 
   async getCompletedReportsForReviewer(agencyId: AgencyId, query: IncidentSearchQuery): Promise<ReportSummary[]> {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -177,7 +177,7 @@ export class IncidentClient {
 
   async getReports(userId, statuses, opts = { orderByDescDate: false }): Promise<ReportSummary[]> {
     const statusValues = statuses.map(status => status.value)
-    const reports = await nonTransactionalClient.query<ReportSummary>({
+    const reports = await this.query<ReportSummary>({
       text: format(
         `select r.id
             , r.booking_id    "bookingId"
@@ -196,7 +196,7 @@ export class IncidentClient {
   }
 
   async getDraftInvolvedStaff(reportId) {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: 'select form_response "form" from v_report where id = $1',
       values: [reportId],
     })
@@ -209,7 +209,7 @@ export class IncidentClient {
   }
 
   async getInvolvedStaff(reportId) {
-    const results = await nonTransactionalClient.query({
+    const results = await this.query({
       text: `select s.id     "statementId"
     ,      s.user_id       "userId"
     ,      s.name          "name"
@@ -222,16 +222,16 @@ export class IncidentClient {
   }
 
   async deleteReport(reportId, now = new Date()) {
-    return db.inTransaction(async client => {
-      await client.query({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
+    return this.inTransaction(async query => {
+      await query({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
 
       const statementQuery = `(select id from statement where report_id = $2)`
 
-      await client.query({
+      await query({
         text: `update statement set deleted = $1 where id in ${statementQuery}`,
         values: [now, reportId],
       })
-      await client.query({
+      await query({
         text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
         values: [now, reportId],
       })
@@ -240,7 +240,7 @@ export class IncidentClient {
 
   // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
   async getNextNotificationReminder(transactionalClient) {
-    const result = await transactionalClient.query({
+    const result = await transactionalClient({
       text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
           ,       s.user_id                "userId"
@@ -269,15 +269,15 @@ export class IncidentClient {
     return reminder
   }
 
-  async setNextReminderDate(statementId, nextDate, client = nonTransactionalClient): Promise<void> {
-    await client.query({
+  async setNextReminderDate(statementId, nextDate, query = this.query): Promise<void> {
+    await query({
       text: 'update v_statement set next_reminder_date = $1, updated_date = now() where id = $2',
       values: [nextDate, statementId],
     })
   }
 
   async updateAgencyId(agencyId: AgencyId, username, bookingId): Promise<void> {
-    await nonTransactionalClient.query({
+    await this.query({
       text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
                   ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
@@ -288,5 +288,3 @@ export class IncidentClient {
     })
   }
 }
-
-export default new IncidentClient()

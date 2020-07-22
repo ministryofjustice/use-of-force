@@ -1,7 +1,7 @@
 import R from 'ramda'
-import { IncidentClient } from '../data/incidentClient'
-import { AgencyId, OffenderService, SystemToken } from '../types/uof'
-import { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from '../data/incidentClientTypes'
+import type IncidentClient from '../data/incidentClient'
+import type { AgencyId, OffenderService, SystemToken } from '../types/uof'
+import type { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from '../data/incidentClientTypes'
 
 export interface IncidentSummary {
   id: number
