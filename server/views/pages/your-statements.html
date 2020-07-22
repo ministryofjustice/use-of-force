@@ -5,12 +5,8 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
-{% if awaitingStatements.length %}
-<table class="govuk-table incidents" data-qa="statements-todo">
-  <caption class="govuk-table__caption govuk-heading-m">
-    Not completed
-  </caption>
-
+{% if statements.length %}
+<table class="govuk-table incidents" data-qa="statements">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header app-!-width-one-sixth" scope="col">Incident date</th>
@@ -23,21 +19,30 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for statement in awaitingStatements %}
+      {% for statement in statements %}
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
           <td class="govuk-table__cell">{{statement.offenderName}}</td>
           <td class="govuk-table__cell">{{statement.offenderNo}}</td>
           <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
-          <td class="govuk-table__cell govuk-!-padding-top-1">
-            <a
-              href="/{{ statement.id }}/write-your-statement"
-              role="button"
-              draggable="false"
-              class="govuk-button govuk-button govuk-!-width-three-quarters"
-            >
-              {{ 'Continue' if statement.inProgress else 'Start' }}
-            </a>
+          <td class="govuk-table__cell govuk-!-padding-top-{{ 1 if statement.status == 'PENDING' else 3 }}">
+            {% switch statement.status %}
+              {% case 'PENDING' %}
+                <a
+                  href="/{{ statement.id }}/write-your-statement"
+                  role="button"
+                  draggable="false"
+                  class="govuk-button govuk-button govuk-!-width-three-quarters">
+                  {{ 'Continue' if statement.inProgress else 'Start' }}
+                </a>
+              {% case 'SUBMITTED' %}
+                <a
+                  href="/{{ statement.id }}/your-statement"
+                  draggable="false"
+                  class="govuk-link">
+                  View statement
+                </a>
+            {% endswitch %}
           </td>
           <td class="govuk-table__cell">
             {% if statement.isOverdue %}
@@ -54,53 +59,8 @@
   </tbody>
 </table>
 {% else %}
-<h3 class="govuk-heading-m">Not completed</h3>
-<p class="govuk-body">You have no statements to complete</p>
+<p class="govuk-body">You have no statements</p>
 {% endif %}
 
-{% if completedStatements.length %}
-<table class="govuk-table incidents" data-qa="statements-complete">
-  <caption class="govuk-table__caption govuk-heading-m">
-    Completed
-  </caption>
-
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Incident date</th>
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prisoner</th>
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Prison number</th>
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col">Reporter</th>
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
-      <th class="govuk-table__header app-!-width-one-sixth" scope="col"></th>
-    </tr>
-  </thead>
-
-  <tbody class="govuk-table__body">
-      {% for statement in completedStatements %}
-      <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{statement.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{statement.offenderName}}</td>
-          <td class="govuk-table__cell">{{statement.offenderNo}}</td>
-          <td class="govuk-table__cell">{{statement.staffMemberName}}</td>
-          <td class="govuk-table__cell govuk-!-padding-top-3">
-            <a
-              href="/{{ statement.id }}/your-statement"
-              draggable="false"
-              class="govuk-!-margin-left-3 govuk-link"
-            >
-            View statement
-            </a>
-          </td>
-          <td class="govuk-table__cell">          
-          </td>
-      </tr>  
-      {% endfor %}
-
-  </tbody>
-</table>
-{% else %}
-<h3 class="govuk-heading-m">Completed</h3>
-<p class="govuk-body">You have not completed any statements</p>
-{% endif %}
 </section>
 {% endblock %}

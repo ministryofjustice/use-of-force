@@ -48,7 +48,7 @@ context('Marking a report as complete', () => {
     allIncidentsPage.yourStatementsTab().click()
 
     let yourStatementsPage = YourStatementsPage.verifyOnPage()
-    yourStatementsPage.getTodoRow(0).startButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
     writeYourStatementPage.lastTrainingMonth().select('March')

@@ -1,31 +1,27 @@
 import moment from 'moment'
-import incidentClient from './incidentClient'
+import IncidentClient from './incidentClient'
 import { ReportStatus, StatementStatus } from '../config/types'
 
-jest.mock('./dataAccess/db')
-// eslint-disable-next-line import/first
-import * as original from './dataAccess/db'
-
-const db: any = original
-
-afterEach(() => {
-  db.query.mockReset()
-})
+let incidentClient: IncidentClient
+const query = jest.fn()
+const inTransaction = jest.fn()
 
 beforeEach(() => {
-  db.query.mockResolvedValue({ rows: [] })
+  jest.resetAllMocks()
+  incidentClient = new IncidentClient(query, inTransaction)
+  query.mockResolvedValue({ rows: [] })
 })
 
 describe('getCurrentDraftReport', () => {
   test('it should call query on db', () => {
     incidentClient.getCurrentDraftReport('user1', 1)
-    expect(db.query).toBeCalledTimes(1)
+    expect(query).toBeCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
     incidentClient.getCurrentDraftReport('user1', -1)
 
-    expect(db.query).toBeCalledWith({
+    expect(query).toBeCalledWith({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
@@ -39,7 +35,7 @@ describe('getCurrentDraftReport', () => {
 test('getReports', () => {
   incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED])
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select r.id
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
@@ -55,7 +51,7 @@ test('getReports', () => {
 test('getReports order by date desc', () => {
   incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED], { orderByDescDate: true })
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select r.id
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
@@ -71,7 +67,7 @@ test('getReports order by date desc', () => {
 test('getReportForReviewer', () => {
   incidentClient.getReportForReviewer('report1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select id
           , incident_date "incidentDate"
           , agency_id "agencyId"
@@ -99,7 +95,7 @@ test('getIncompleteReportsForReviewer', () => {
     dateTo: moment('2020-01-30'),
   })
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -134,7 +130,7 @@ test('getCompletedReportsForReviewer', () => {
     dateTo: moment('2020-01-30'),
   })
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -162,7 +158,7 @@ test('getCompletedReportsForReviewer', () => {
 test('getReport', () => {
   incidentClient.getReport('user1', 'report1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select id
           , incident_date "incidentDate"
           , agency_id "agencyId"
@@ -177,7 +173,7 @@ test('getReport', () => {
 })
 
 test('createDraftReport', async () => {
-  db.query.mockReturnValue({ rows: [{ id: 1 }] })
+  query.mockReturnValue({ rows: [{ id: 1 }] })
 
   const id = await incidentClient.createDraftReport({
     userId: 'user1',
@@ -190,7 +186,7 @@ test('createDraftReport', async () => {
   })
 
   expect(id).toEqual(id)
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
               values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
               returning id`,
@@ -210,7 +206,7 @@ test('createDraftReport', async () => {
 test('updateDraftReport', () => {
   incidentClient.updateDraftReport('formId', 'date-1', {})
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
@@ -223,7 +219,7 @@ test('updateDraftReport', () => {
 test('updateAgencyId', () => {
   incidentClient.updateAgencyId('agencyId', 'username', 'bookingId')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
                   ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
@@ -237,7 +233,7 @@ test('updateAgencyId', () => {
 test('submitReport', () => {
   incidentClient.submitReport('user1', 'booking1', 'date1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_report r
             set status = $1
             ,   submitted_date = $2
@@ -253,7 +249,7 @@ test('submitReport', () => {
 test('changeStatus', () => {
   incidentClient.changeStatus('report1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE)
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_report r
             set status = $1
             ,   updated_date = now()
@@ -280,12 +276,12 @@ test('getDraftInvolvedStaff', async () => {
       },
     },
   ]
-  db.query.mockReturnValue({ rows: expected })
+  query.mockReturnValue({ rows: expected })
 
   const result = await incidentClient.getDraftInvolvedStaff('incident-1')
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select form_response "form" from v_report where id = $1`,
     values: ['incident-1'],
   })
@@ -293,12 +289,12 @@ test('getDraftInvolvedStaff', async () => {
 
 test('getInvolvedStaff', async () => {
   const expected = [{ name: 'AAA User' }, { name: 'BBB User' }]
-  db.query.mockReturnValue({ rows: expected })
+  query.mockReturnValue({ rows: expected })
 
   const result = await incidentClient.getInvolvedStaff('incident-1')
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select s.id     "statementId"
     ,      s.user_id       "userId"
     ,      s.name          "name"
@@ -310,9 +306,8 @@ test('getInvolvedStaff', async () => {
 })
 
 test('getNextNotificationReminder', () => {
-  const client = { query: jest.fn().mockResolvedValue({ rows: [] }) }
-  incidentClient.getNextNotificationReminder(client)
-  expect(client.query).toBeCalledWith({
+  incidentClient.getNextNotificationReminder(query)
+  expect(query).toBeCalledWith({
     text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
           ,       s.user_id                "userId"
@@ -340,27 +335,27 @@ test('getNextNotificationReminder', () => {
 test('setNextReminderDate', () => {
   incidentClient.setNextReminderDate(-1, '2019-09-03 11:20:36')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: 'update v_statement set next_reminder_date = $1, updated_date = now() where id = $2',
     values: ['2019-09-03 11:20:36', -1],
   })
 })
 
 test('deleteReport', async () => {
-  db.inTransaction.mockImplementation(callback => callback(db))
+  inTransaction.mockImplementation(callback => callback(query))
 
   const date = new Date()
   await incidentClient.deleteReport(-1, date)
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: 'update report set deleted = $1 where id = $2',
     values: [date, -1],
   })
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: 'update statement set deleted = $1 where id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text:
       'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
     values: [date, -1],

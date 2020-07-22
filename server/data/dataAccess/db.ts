@@ -1,4 +1,4 @@
-import { Pool, QueryConfig, QueryResult, QueryResultRow } from 'pg'
+import { Pool, QueryConfig, QueryResult, QueryResultRow, PoolClient } from 'pg'
 import fs from 'fs'
 import logger from '../../../log'
 import config from '../../config'
@@ -22,17 +22,20 @@ pool.on('error', error => {
   logger.error('Unexpected error on idle client', error)
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const query = <R extends QueryResultRow = any, I extends any[] = any[]>(
+export type QueryPerformer = <R extends QueryResultRow = any, I extends any[] = any[]>(
   queryTextOrConfig: string | QueryConfig<I>,
   values?: I
-): Promise<QueryResult<R>> => pool.query(queryTextOrConfig, values)
+) => Promise<QueryResult<R>>
 
-export const inTransaction = async callback => {
+export const query: QueryPerformer = (queryTextOrConfig, values?) => pool.query(queryTextOrConfig, values)
+
+export type InTransaction = <R>(callback: (query: QueryPerformer) => Promise<R>) => Promise<R>
+
+export const inTransaction: InTransaction = async callback => {
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
-    const result = await callback(client)
+    const result = await callback((queryTextOrConfig: string | QueryConfig) => client.query(queryTextOrConfig))
     await client.query('COMMIT')
     return result
   } catch (error) {

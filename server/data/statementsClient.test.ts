@@ -1,19 +1,18 @@
-jest.mock('../../server/data/dataAccess/db')
+import StatementsClient from './statementsClient'
+import { StatementStatus } from '../config/types'
 
-const statementsClient = require('./statementsClient')
-/** @type {any} */
-const db = require('./dataAccess/db')
-const { StatementStatus } = require('../config/types')
+let statementsClient: StatementsClient
+const query = jest.fn()
 
 beforeEach(() => {
   jest.resetAllMocks()
-  db.query.mockResolvedValue({ rows: [] })
+  statementsClient = new StatementsClient(query)
 })
 
 test('getStatements', () => {
-  statementsClient.getStatements('user1', StatementStatus.PENDING)
+  statementsClient.getStatements('user1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select r.id
             , r.reporter_name          "reporterName"
             , r.offender_no            "offenderNo"
@@ -21,40 +20,20 @@ test('getStatements', () => {
             , s."name"
             , s.in_progress            "inProgress"
             , s.overdue_date <= now()  "isOverdue"
+            , s.statement_status       "status"
             from statement s 
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
-          and s.statement_status = $2
           and s.deleted is null
-          order by r.incident_date`,
-    values: ['user1', StatementStatus.PENDING.value],
+          order by status, r.incident_date desc`,
+    values: ['user1'],
   })
 })
 
-test('getStatements order by date desc', () => {
-  statementsClient.getStatements('user1', StatementStatus.PENDING, { orderByDescDate: true })
-
-  expect(db.query).toBeCalledWith({
-    text: `select r.id
-            , r.reporter_name          "reporterName"
-            , r.offender_no            "offenderNo"
-            , r.incident_date          "incidentDate"
-            , s."name"
-            , s.in_progress            "inProgress"
-            , s.overdue_date <= now()  "isOverdue"
-            from statement s 
-            inner join report r on s.report_id = r.id   
-          where s.user_id = $1
-          and s.statement_status = $2
-          and s.deleted is null
-          order by r.incident_date desc`,
-    values: ['user1', StatementStatus.PENDING.value],
-  })
-})
 test('getStatementForUser', () => {
   statementsClient.getStatementForUser('user-1', 'incident-1', StatementStatus.PENDING)
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select s.id
     ,      r.booking_id             "bookingId"
     ,      r.incident_date          "incidentDate"
@@ -77,7 +56,7 @@ test('getStatementForUser', () => {
 test('getAdditionalComments', () => {
   statementsClient.getAdditionalComments(48)
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select  
     s.additional_comment "additionalComment",
     s.date_submitted     "dateSubmitted" 
@@ -89,7 +68,7 @@ test('getAdditionalComments', () => {
 
 test('saveAdditionalComment', () => {
   statementsClient.saveAdditionalComment(50, 'Another comment made')
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
     values: [50, 'Another comment made'],
@@ -97,7 +76,7 @@ test('saveAdditionalComment', () => {
 })
 
 test('createStatements', async () => {
-  db.query.mockReturnValue({
+  query.mockReturnValue({
     rows: [
       { id: 1, userId: 'a' },
       { id: 2, userId: 'b' },
@@ -115,7 +94,7 @@ test('createStatements', async () => {
   })
 
   expect(ids).toEqual({ a: 1, b: 2 })
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text:
       `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
       `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
@@ -124,16 +103,16 @@ test('createStatements', async () => {
 })
 
 test('deleteStatement', async () => {
-  db.query.mockReturnValue({ rows: [] })
+  query.mockReturnValue({ rows: [] })
 
   const date = new Date()
-  await statementsClient.deleteStatement({ statementId: -1, client: db, now: date })
+  await statementsClient.deleteStatement({ statementId: -1, query, now: date })
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: 'update statement set deleted = $1 where id = $2',
     values: [date, -1],
   })
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: 'update statement_amendments set deleted = $1 where statement_id = $2',
     values: [date, -1],
   })
@@ -147,7 +126,7 @@ test('saveStatement', () => {
     statement: 'A long time ago...',
   })
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_statement 
     set last_training_month = $1
     ,   last_training_year = $2
@@ -165,7 +144,7 @@ test('saveStatement', () => {
 test('submitStatement', () => {
   statementsClient.submitStatement('user1', 'incident1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
@@ -180,7 +159,7 @@ test('submitStatement', () => {
 test('setEmail', () => {
   statementsClient.setEmail('user1', 'incident1', 'user@gov.uk')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `update v_statement 
     set email = $3
     ,   updated_date = CURRENT_TIMESTAMP
@@ -191,11 +170,11 @@ test('setEmail', () => {
 })
 
 test('getNumberOfPendingStatements', async () => {
-  db.query.mockResolvedValue({ rows: [{ count: 10 }] })
+  query.mockResolvedValue({ rows: [{ count: 10 }] })
   const count = await statementsClient.getNumberOfPendingStatements('report1')
 
   expect(count).toBe(10)
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
     values: ['report1', StatementStatus.PENDING.value],
   })
@@ -204,7 +183,7 @@ test('getNumberOfPendingStatements', async () => {
 test('getStatementsForReviewer', () => {
   statementsClient.getStatementsForReviewer('report1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select id
             ,      name
             ,      user_id                  "userId"
@@ -219,7 +198,7 @@ test('getStatementsForReviewer', () => {
 test('getStatementForReviewer', () => {
   statementsClient.getStatementForReviewer('statement1')
 
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select s.id
     ,      r.id                     "reportId"
     ,      s.name
@@ -239,12 +218,12 @@ test('getStatementForReviewer', () => {
 })
 
 test('isStatementPresentForUser', async () => {
-  db.query.mockReturnValue({ rows: [{ count: 1 }] })
+  query.mockReturnValue({ rows: [{ count: 1 }] })
 
   const result = await statementsClient.isStatementPresentForUser('report-1', 'user-1')
 
   expect(result).toEqual(true)
-  expect(db.query).toBeCalledWith({
+  expect(query).toBeCalledWith({
     text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
     values: ['report-1', 'user-1'],
   })

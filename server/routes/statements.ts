@@ -1,42 +1,41 @@
-const moment = require('moment')
-const { isNilOrEmpty } = require('../utils/utils')
-const { complete } = require('../config/forms/statementForm')
-const { processInput } = require('../services/validation')
-const { StatementStatus } = require('../config/types')
+import moment from 'moment'
+import { isNilOrEmpty } from '../utils/utils'
+import { complete } from '../config/forms/statementForm'
+import { processInput } from '../services/validation'
+import { StatementStatus } from '../config/types'
+import StatementService from '../services/statementService'
+import { OffenderService, SystemToken } from '../types/uof'
 
-module.exports = function CreateReportRoutes({ statementService, offenderService, systemToken }) {
+export default function CreateReportRoutes(
+  statementService: StatementService,
+  offenderService: OffenderService,
+  systemToken: SystemToken
+) {
   const getOffenderNames = (token, incidents) => {
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return offenderService.getOffenderNames(token, offenderNos)
   }
 
-  const toStatement = namesByOffenderNumber => incident => ({
+  const toStatement = namesByOffenderNumber => (incident: StatementSummary) => ({
     id: incident.id,
     incidentdate: incident.incidentDate,
     staffMemberName: incident.reporterName,
     inProgress: incident.inProgress,
     offenderName: namesByOffenderNumber[incident.offenderNo],
     offenderNo: incident.offenderNo,
+    status: incident.status,
     isOverdue: incident.isOverdue,
   })
 
   return {
     viewYourStatements: async (req, res) => {
-      const awaiting = await statementService.getStatements(req.user.username, StatementStatus.PENDING)
-      const completed = await statementService.getStatements(req.user.username, StatementStatus.SUBMITTED, {
-        orderByDescDate: true,
-      })
+      const results = await statementService.getStatements(req.user.username)
 
-      const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), [
-        ...awaiting,
-        ...completed,
-      ])
-      const awaitingStatements = awaiting.map(toStatement(namesByOffenderNumber))
-      const completedStatements = completed.map(toStatement(namesByOffenderNumber))
+      const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), results)
+      const statements = results.map(toStatement(namesByOffenderNumber))
 
       res.render('pages/your-statements', {
-        awaitingStatements,
-        completedStatements,
+        statements,
         selectedTab: 'your-statements',
       })
     },

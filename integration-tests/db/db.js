@@ -4,14 +4,15 @@ const moment = require('moment')
 
 const { expectedPayload } = require('../integration/seedData')
 const db = require('../../dist/server/data/dataAccess/db')
-const { IncidentClient } = require('../../dist/server/data/incidentClient')
-const statementsClient = require('../../dist/server/data/statementsClient')
-const createStatementService = require('../../dist/server/services/statementService')
+const IncidentClient = require('../../dist/server/data/incidentClient').default
+const StatementsClient = require('../../dist/server/data/statementsClient').default
+const StatementService = require('../../dist/server/services/statementService').default
 const { ReportStatus } = require('../../dist/server/config/types')
 const { equals } = require('../../dist/server/utils/utils')
 
-const incidentClient = new IncidentClient()
-const statementService = createStatementService({ statementsClient, incidentClient, db })
+const incidentClient = new IncidentClient(db.query, db.inTransaction)
+const statementsClient = new StatementsClient(db.query)
+const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 
 const getCurrentDraft = bookingId => incidentClient.getCurrentDraftReport('TEST_USER', bookingId)
 

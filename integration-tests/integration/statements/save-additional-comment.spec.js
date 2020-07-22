@@ -32,7 +32,7 @@ context('Add comments to statement', () => {
 
     let yourStatementsPage = YourStatementsPage.goTo()
 
-    yourStatementsPage.getTodoRow(0).startButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
     writeYourStatementPage.lastTrainingMonth().select('March')
@@ -43,7 +43,7 @@ context('Add comments to statement', () => {
     const checkYourStatementPage = writeYourStatementPage.submit()
     const statementSubmittedPage = checkYourStatementPage.submit()
     yourStatementsPage = statementSubmittedPage.finish()
-    yourStatementsPage.getCompleteRow(0).viewButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     let yourStatementPage = YourStatementPage.verifyOnPage()
     yourStatementPage.addComment().click()
@@ -54,7 +54,7 @@ context('Add comments to statement', () => {
     addCommentToStatementPage.save().click()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()
-    yourStatementsPage.getCompleteRow(0).viewButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     yourStatementPage = YourStatementPage.verifyOnPage()
     yourStatementPage.addComment().click()
@@ -66,7 +66,7 @@ context('Add comments to statement', () => {
     addCommentToStatementPage.save().click()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()
-    yourStatementsPage.getCompleteRow(0).viewButton().click()
+    yourStatementsPage.statements(0).action().click()
 
     yourStatementPage = YourStatementPage.verifyOnPage()
     yourStatementPage.viewAdditionalComment(1).contains('Some new comment 1')

@@ -49,17 +49,19 @@ context('A user views their statements list', () => {
     yourStatementsPage.selectedTab().contains('Your statements')
 
     {
-      const { date, prisoner, overdue } = yourStatementsPage.getTodoRow(0)
+      const { date, prisoner, overdue, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('exist')
+      action().should('contain.text', 'Start')
     }
 
     {
-      const { date, prisoner, overdue } = yourStatementsPage.getTodoRow(1)
+      const { date, prisoner, overdue, action } = yourStatementsPage.statements(1)
       prisoner().contains('Jones, June')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('not.exist')
+      action().should('contain.text', 'Start')
     }
   })
 })

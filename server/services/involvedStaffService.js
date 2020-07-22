@@ -150,7 +150,7 @@ module.exports = {
 
         await statementsClient.deleteStatement({
           statementId,
-          client,
+          query: client,
         })
 
         if (pendingStatementBeforeDeletion !== 0) {
