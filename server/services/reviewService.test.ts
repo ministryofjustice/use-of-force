@@ -129,40 +129,17 @@ describe('reviewService', () => {
       offenderNo: `offender-${id}`,
     })
 
-    test('it should call query on db', async () => {
-      const query = { prisonNumber: 'AA' }
-
-      incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
-      incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
-      offenderService.getOffenderNames.mockResolvedValue(
-        Promise.resolve({
-          'offender-1': 'Prisoner prisoner-1',
-          'offender-2': 'Prisoner prisoner-2',
-        })
-      )
-
-      const result = await service.getReports('userName', 'agency-1', query)
-      expect(result).toEqual({ awaitingReports: [incidentSummary(1)], completedReports: [incidentSummary(2)] })
-
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1', query)
-      expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
-    })
-
     test('it should filter on prisoner name', async () => {
       const query = { prisonerName: 'OnER-2' }
 
-      incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1)])
-      incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(2)])
+      incidentClient.getCompletedReportsForReviewer.mockResolvedValue([reportSummary(1), reportSummary(2)])
       offenderService.getOffenderNames.mockResolvedValue({
         'offender-1': 'Prisoner prisoner-1',
         'offender-2': 'Prisoner prisoner-2',
       })
 
-      const result = await service.getReports('userName', 'agency-1', query)
-      expect(result).toEqual({ awaitingReports: [], completedReports: [incidentSummary(2)] })
-
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1', query)
+      const result = await service.getCompletedReports('userName', 'agency-1', query)
+      expect(result).toEqual([incidentSummary(2)])
       expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
       expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
     })

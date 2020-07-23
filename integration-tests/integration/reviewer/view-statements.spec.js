@@ -1,11 +1,8 @@
 const moment = require('moment')
-
 const { offender } = require('../../mockApis/data')
-
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
-
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('view statements page', () => {
@@ -45,11 +42,11 @@ context('view statements page', () => {
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()
@@ -67,8 +64,7 @@ context('view statements page', () => {
       )
 
       viewStatementsPage.return().click()
-
-      AllIncidentsPage.verifyOnPage()
+      NotCompletedIncidentsPage.verifyOnPage()
     }
   })
 
@@ -98,10 +94,10 @@ context('view statements page', () => {
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+    const { viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
     viewStatementsButton().click()
 
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
@@ -118,7 +114,7 @@ context('view statements page', () => {
 
     viewStatementsPage.return().click()
 
-    AllIncidentsPage.verifyOnPage()
+    NotCompletedIncidentsPage.verifyOnPage()
   })
 
   it('A reviewer can view associated report', () => {
@@ -142,11 +138,11 @@ context('view statements page', () => {
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()

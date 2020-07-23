@@ -1,9 +1,10 @@
 const moment = require('moment')
 const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
 const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatementDeletePage')
+const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -44,12 +45,12 @@ context('A use of force coordinator can remove involved staff', () => {
 
     seedReport()
 
-    let allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
+    let notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+    notCompletedIncidentsPage.getNoCompleteRows().should('not.exist')
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()
@@ -85,17 +86,18 @@ context('A use of force coordinator can remove involved staff', () => {
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.return().click()
 
-    allIncidentsPage = AllIncidentsPage.verifyOnPage()
-    allIncidentsPage.getNoTodoRows().should('exist')
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
+    notCompletedIncidentsPage = NotCompletedIncidentsPage.verifyOnPage()
+    notCompletedIncidentsPage.getNoTodoRows().should('not.exist')
 
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
     {
-      const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getCompleteRow(0)
+      const { prisoner, reporter, prisonNumber, viewStatementsButton } = completedIncidentsPage.getCompleteRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
       viewStatementsButton().click()
     }
+    completedIncidentsPage.getNoCompleteRows().should('not.exist')
 
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
 
@@ -114,10 +116,10 @@ context('A use of force coordinator can remove involved staff', () => {
 
     seedReport()
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+    const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
     prisonNumber().contains('A1234AC')

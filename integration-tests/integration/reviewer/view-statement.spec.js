@@ -1,11 +1,8 @@
 const moment = require('moment')
-
 const { offender } = require('../../mockApis/data')
-
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 const ViewStatementPage = require('../../pages/reviewer/viewStatementPage')
-
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('view statement page', () => {
@@ -41,11 +38,11 @@ context('view statement page', () => {
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()

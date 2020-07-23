@@ -1,8 +1,8 @@
 const { offender } = require('../../mockApis/data')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
-
+const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Marking a report as complete', () => {
@@ -32,20 +32,20 @@ context('Marking a report as complete', () => {
     })
 
     cy.visit('/')
-    let allIncidentsPage = AllIncidentsPage.verifyOnPage()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.verifyOnPage()
 
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+    notCompletedIncidentsPage.getNoTodoRows().should('not.exist')
 
     {
-      const { date, prisoner, prisonNumber, reporter } = allIncidentsPage.getTodoRow(0)
+      const { date, prisoner, prisonNumber, reporter } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
     }
 
-    allIncidentsPage.yourStatementsTab().click()
+    notCompletedIncidentsPage.yourStatementsTab().click()
 
     let yourStatementsPage = YourStatementsPage.verifyOnPage()
     yourStatementsPage.statements(0).action().click()
@@ -61,15 +61,16 @@ context('Marking a report as complete', () => {
     statementSubmittedPage.finish()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()
-    yourStatementsPage.allIncidentsTab().click()
 
-    allIncidentsPage = AllIncidentsPage.verifyOnPage()
+    yourStatementsPage.completedIncidentsTab().click()
 
-    allIncidentsPage.getNoTodoRows().should('exist')
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
+    const completedIncidentsPage = CompletedIncidentsPage.verifyOnPage()
+
+    completedIncidentsPage.getNoCompleteRows().should('not.exist')
+    completedIncidentsPage.getCompleteRows().should('have.length', 1)
 
     {
-      const { date, prisoner, prisonNumber, reporter } = allIncidentsPage.getCompleteRow(0)
+      const { date, prisoner, prisonNumber, reporter } = completedIncidentsPage.getCompleteRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')

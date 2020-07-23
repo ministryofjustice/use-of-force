@@ -11,8 +11,9 @@ const offenderService = {
 
 const reviewService = {
   getStatements: jest.fn(),
-  getReports: jest.fn(),
   getReport: jest.fn(),
+  getIncompleteReports: jest.fn(),
+  getCompletedReports: jest.fn(),
 }
 
 const reportDetailBuilder = {
@@ -24,8 +25,9 @@ let app
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
   reviewService.getReport.mockResolvedValue({})
-  reviewService.getReports.mockResolvedValue({ awaiting: [], completed: [] })
   app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
+  reviewService.getIncompleteReports.mockResolvedValue({ awaiting: [] })
+  reviewService.getCompletedReports.mockResolvedValue([{}])
 })
 
 afterEach(() => {
@@ -34,64 +36,84 @@ afterEach(() => {
 
 const incidentStatus = ['/completed-incidents', '/not-completed-incidents']
 
-incidentStatus.forEach(incident => {
-  describe(`GET ${incident}`, () => {
-    it('should render page for reviewer', () => {
-      userSupplier.mockReturnValue(reviewerUser)
+describe(`GET /completed-incidents`, () => {
+  it('should render page for reviewer', () => {
+    userSupplier.mockReturnValue(reviewerUser)
 
-      return request(app)
-        .get(`${incident}`)
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          expect(res.text).toContain('Use of force incidents')
+    return request(app)
+      .get(`/completed-incidents`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+      })
+  })
+
+  it('should pass search query params through', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+
+    return request(app)
+      .get(
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
+      )
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+        expect(reviewService.getCompletedReports).toHaveBeenCalledWith('user1', 'LEI', {
+          dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
+          dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
+          prisonNumber: 'A1234AA',
+          reporter: 'Bob',
+          prisonerName: 'Jimmy Choo',
         })
-    })
+      })
+  })
 
-    it('should pass search query params through', () => {
-      userSupplier.mockReturnValue(reviewerUser)
+  it('should pass handle invalid dates', () => {
+    userSupplier.mockReturnValue(reviewerUser)
 
-      return request(app)
-        .get(
-          `${incident}?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo`
-        )
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          expect(res.text).toContain('Use of force incidents')
-          expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
-            dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
-            dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
-            prisonNumber: 'A1234AA',
-            reporter: 'Bob',
-            prisonerName: 'Jimmy Choo',
-          })
+    return request(app)
+      .get('/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=&dateTo=blarh')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+        expect(reviewService.getCompletedReports).toHaveBeenCalledWith('user1', 'LEI', {
+          prisonNumber: 'A1234AA',
+          reporter: 'Bob',
         })
-    })
+      })
+  })
 
-    it('should pass handle invalid dates', () => {
-      userSupplier.mockReturnValue(reviewerUser)
+  it('should not allow if not reviewer', () => {
+    userSupplier.mockReturnValue(user)
+    return request(app)
+      .get('/completed-incidents')
+      .expect(401)
+      .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
+  })
+})
 
-      return request(app)
-        .get(`${incident}?prisonNumber=A1234AA&reporter=Bob&dateFrom=&dateTo=blarh`)
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          expect(res.text).toContain('Use of force incidents')
-          expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
-            prisonNumber: 'A1234AA',
-            reporter: 'Bob',
-          })
-        })
-    })
+describe(`GET /not-completed-incidents`, () => {
+  it('should render page for reviewer', () => {
+    userSupplier.mockReturnValue(reviewerUser)
 
-    it('should not allow if not reviewer', () => {
-      userSupplier.mockReturnValue(user)
-      return request(app)
-        .get(`${incident}`)
-        .expect(401)
-        .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
-    })
+    return request(app)
+      .get(`/not-completed-incidents`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incidents')
+      })
+  })
+
+  it('should not allow if not reviewer', () => {
+    userSupplier.mockReturnValue(user)
+    return request(app)
+      .get('/not-completed-incidents')
+      .expect(401)
+      .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
   })
 })
 

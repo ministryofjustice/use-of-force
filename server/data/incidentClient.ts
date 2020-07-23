@@ -111,10 +111,7 @@ export default class IncidentClient {
     return results.rows[0]
   }
 
-  async getIncompleteReportsForReviewer(
-    agencyId: AgencyId,
-    query: IncidentSearchQuery
-  ): Promise<IncompleteReportSummary[]> {
+  async getIncompleteReportsForReviewer(agencyId: AgencyId): Promise<IncompleteReportSummary[]> {
     const isOverdue = `(select count(*) from "v_statement" s
                       where r.id = s.report_id 
                       and s.statement_status = $3
@@ -130,20 +127,8 @@ export default class IncidentClient {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
-          and   r.offender_no = coalesce($4, r.offender_no)
-          and   r.reporter_name Ilike coalesce($5, r.reporter_name)
-          and   date_trunc('day', r.incident_date) >= coalesce($6, date_trunc('day', r.incident_date))
-          and   date_trunc('day', r.incident_date) <= coalesce($7, date_trunc('day', r.incident_date))
           order by r.incident_date`,
-      values: [
-        ReportStatus.SUBMITTED.value,
-        agencyId,
-        StatementStatus.PENDING.value,
-        query.prisonNumber,
-        query.reporter ? `%${query.reporter}%` : null,
-        query.dateFrom ? query.dateFrom.toDate() : null,
-        query.dateTo ? query.dateTo.toDate() : null,
-      ],
+      values: [ReportStatus.SUBMITTED.value, agencyId, StatementStatus.PENDING.value],
     })
     return results.rows
   }

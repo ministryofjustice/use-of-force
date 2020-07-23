@@ -14,9 +14,38 @@ interface Params {
 
 export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, reviewService, systemToken }: Params) {
   return {
-    viewNotCompletedIncidents: viewIncidents('not-completed-incidents', 'not-completed', reviewService),
+    viewNotCompletedIncidents: async (req: Request, res: Response): Promise<void> => {
+      const reports = await reviewService.getIncompleteReports(
+        res.locals.user.username,
+        res.locals.user.activeCaseLoadId
+      )
+      return res.render('pages/not-completed-incidents', {
+        reports,
+        selectedTab: 'not-completed',
+      })
+    },
 
-    viewCompletedIncidents: viewIncidents('completed-incidents', 'completed', reviewService),
+    viewCompletedIncidents: async (req: Request, res: Response): Promise<void> => {
+      const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
+      const query = removeKeysWithEmptyValues({
+        prisonerName,
+        prisonNumber,
+        reporter,
+        dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
+        dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
+      })
+
+      const reports = await reviewService.getCompletedReports(
+        res.locals.user.username,
+        res.locals.user.activeCaseLoadId,
+        query
+      )
+      return res.render('pages/completed-incidents', {
+        reports,
+        query,
+        selectedTab: 'completed',
+      })
+    },
 
     reviewReport: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
@@ -65,25 +94,5 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
         },
       })
     },
-  }
-}
-
-function viewIncidents(page, tab, reviewService) {
-  return async (req: Request, res: Response): Promise<void> => {
-    const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
-    const query = removeKeysWithEmptyValues({
-      prisonerName,
-      prisonNumber,
-      reporter,
-      dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
-      dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
-    })
-
-    const reports = await reviewService.getReports(res.locals.user.username, res.locals.user.activeCaseLoadId, query)
-    return res.render(`pages/${page}`, {
-      ...reports,
-      query,
-      selectedTab: tab,
-    })
   }
 }

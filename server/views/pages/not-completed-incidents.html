@@ -6,7 +6,7 @@
 {% block tabContent %}
 <section class="govuk-tabs__panel">
   
-  {% if awaitingReports.length %}
+  {% if reports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
 
   <thead class="govuk-table__head">
@@ -24,7 +24,7 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for report in awaitingReports %}
+      {% for report in reports %}
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMM YYYY')}}</td>
           <td class="govuk-table__cell">{{report.offenderName}}</td>

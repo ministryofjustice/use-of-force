@@ -1,10 +1,7 @@
 const moment = require('moment')
-
 const { offender } = require('../../mockApis/data')
-
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
-
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
 const offender2 = {
@@ -25,7 +22,7 @@ const offender3 = {
   dateOfBirth: '2000-12-26',
 }
 
-context('A use of force reviewer can view all incidents at the current agency', () => {
+context('A use of force reviewer can view incidents at the current agency', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubOffenderDetails', offender)
@@ -38,11 +35,11 @@ context('A use of force reviewer can view all incidents at the current agency', 
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('A reviewer can view all incidents', () => {
+  it('A reviewer can view the un-completed incidents', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 
-    // A report which on the current reviewers caseload, which is displayed
+    // A report which on the current reviewers caseload, and which is displayed
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
@@ -73,18 +70,18 @@ context('A use of force reviewer can view all incidents at the current agency', 
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
 
-    allIncidentsPage
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+
+    notCompletedIncidentsPage
       .allTabs()
-      .then(allTabs => expect(allTabs).to.deep.equal(['All incidents', 'Your statements', 'Your reports']))
+      .then(allTabs => expect(allTabs).to.deep.equal(['Not completed', 'Completed', 'Your statements', 'Your reports']))
 
-    allIncidentsPage.selectedTab().contains('All incidents')
+    notCompletedIncidentsPage.selectedTab().contains('Not completed')
 
     {
-      const { date, prisoner, prisonNumber, reporter, overdue } = allIncidentsPage.getTodoRow(0)
+      const { date, prisoner, prisonNumber, reporter, overdue } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       prisonNumber().contains('A1234AC')
       reporter().contains('James Stuart')
@@ -98,22 +95,6 @@ context('A use of force reviewer can view all incidents at the current agency', 
     cy.login()
 
     cy.task('stubOffenders', [offender, offender2, offender3])
-
-    cy.task('seedReport', {
-      status: ReportStatus.COMPLETE,
-      submittedDate: moment().toDate(),
-      incidentDate: moment('2019-01-22 09:57:40.000'),
-      agencyId: offender.agencyId,
-      bookingId: offender.bookingId,
-      sequenceNumber: 1,
-      involvedStaff: [
-        {
-          userId: 'TEST_USER',
-          name: 'TEST_USER name',
-          email: 'TEST_USER@gov.uk',
-        },
-      ],
-    })
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
@@ -162,44 +143,16 @@ context('A use of force reviewer can view all incidents at the current agency', 
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 3)
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
-
-    allIncidentsPage.filter.prisonNumber().type('A1234AC')
-    allIncidentsPage.filter.reporter().type('James')
-    allIncidentsPage.filter.dateFrom().type('22 Jan 2019')
-    allIncidentsPage.filter.dateTo().type('25 Jan 2019')
-    allIncidentsPage.filter.apply().click()
-
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 3)
 
     {
-      const { date, prisoner, prisonNumber, reporter, overdue } = allIncidentsPage.getTodoRow(0)
+      const { date, prisoner, prisonNumber, reporter, overdue } = notCompletedIncidentsPage.getTodoRow(0)
       date().contains('25 Jan 2019')
       prisoner().contains('Smith, Norman')
       prisonNumber().contains('A1234AC')
       reporter().contains('Robert James')
       overdue().should('not.exist')
-    }
-
-    {
-      const { date, prisoner, prisonNumber, reporter } = allIncidentsPage.getCompleteRow(0)
-      date().contains('22 Jan 2019')
-      prisoner().contains('Smith, Norman')
-      prisonNumber().contains('A1234AC')
-      reporter().contains('James Stuart')
-    }
-
-    allIncidentsPage.filter.clear().click()
-    allIncidentsPage.filter.prisonerName().type('ONE')
-    allIncidentsPage.filter.apply().click()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
-    {
-      const { prisoner } = allIncidentsPage.getTodoRow(0)
-      prisoner().contains('Jones, June')
     }
   })
 
@@ -219,17 +172,17 @@ context('A use of force reviewer can view all incidents at the current agency', 
       ],
     })
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
 
-    allIncidentsPage
+    notCompletedIncidentsPage
       .allTabs()
-      .then(allTabs => expect(allTabs).to.deep.equal(['All incidents', 'Your statements', 'Your reports']))
+      .then(allTabs => expect(allTabs).to.deep.equal(['Not completed', 'Completed', 'Your statements', 'Your reports']))
 
-    allIncidentsPage.selectedTab().contains('All incidents')
-    allIncidentsPage.exitLink().then(location => expect(location).to.equal('/'))
+    notCompletedIncidentsPage.selectedTab().contains('Not completed')
+    notCompletedIncidentsPage.exitLink().then(location => expect(location).to.equal('/'))
 
     {
-      const { date, prisoner, prisonNumber, reporter, overdue } = allIncidentsPage.getTodoRow(0)
+      const { date, prisoner, prisonNumber, reporter, overdue } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
@@ -238,7 +191,7 @@ context('A use of force reviewer can view all incidents at the current agency', 
     }
   })
 
-  it('A normal user cannot view all incidents', () => {
+  it('A normal user cannot view any incidents', () => {
     cy.task('stubLogin')
     cy.login()
 

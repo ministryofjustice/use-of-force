@@ -7,7 +7,7 @@
 <section class="govuk-tabs__panel">
   {% include "../partials/incidentSearchPanel.html" %}
   
-{% if completedReports.length %}
+{% if reports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-complete">
 
   <thead class="govuk-table__head">
@@ -25,7 +25,7 @@
   </thead>
 
   <tbody class="govuk-table__body">
-      {% for report in completedReports %}
+      {% for report in reports %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMM YYYY')}}</td>
         <td class="govuk-table__cell">{{report.offenderName}}</td>
