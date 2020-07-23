@@ -57,6 +57,9 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
 
     confirmDeleteReport: async (req, res) => {
       const { reportId } = req.params
+      const referringPage = req.header('Referer') || 'confirm-delete'
+      const refererUrlSegments = referringPage.split('/')
+      const referingPageTab = refererUrlSegments[refererUrlSegments.length - 1]
 
       const errors = req.flash('errors')
       const report = await reviewService.getReport(reportId)
@@ -66,14 +69,14 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
         await systemToken(res.locals.user.username),
         bookingId
       )
-      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
+      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, referingPageTab }
 
       res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
     },
 
     deleteReport: async (req, res) => {
       const { reportId } = req.params
-      const { confirm } = req.body
+      const { confirm, referingPageTab = '' } = req.body
 
       if (!confirm) {
         req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this report' }])
@@ -84,7 +87,7 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
         await reportService.deleteReport(res.locals.user.username, reportId)
       }
 
-      return res.redirect('/')
+      return res.redirect(`/${referingPageTab}`)
     },
 
     confirmDeleteStatement: async (req, res) => {

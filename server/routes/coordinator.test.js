@@ -206,9 +206,9 @@ describe('coordinator', () => {
 
       await request(app)
         .post('/coordinator/report/123/delete')
-        .send({ confirm: 'yes' })
+        .send({ confirm: 'yes', referingPageTab: 'not-completed-incidents' })
         .expect(302)
-        .expect('Location', '/')
+        .expect('Location', '/not-completed-incidents')
         .expect(() => {
           expect(reportService.deleteReport).toHaveBeenCalledWith('user1', '123')
         })
@@ -219,9 +219,9 @@ describe('coordinator', () => {
 
       await request(app)
         .post('/coordinator/report/123/delete')
-        .send({ confirm: 'no' })
+        .send({ confirm: 'no', referingPageTab: 'not-completed-incidents' })
         .expect(302)
-        .expect('Location', '/')
+        .expect('Location', '/not-completed-incidents')
         .expect(() => {
           expect(reportService.deleteReport).not.toHaveBeenCalled()
         })

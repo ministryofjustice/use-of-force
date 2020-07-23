@@ -24,9 +24,14 @@
         </h2>
         <ul class="govuk-tabs__list">
             {% if user.isReviewer %}
-            <li class="govuk-tabs__list-item {% if selectedTab === 'all-incidents' %} govuk-tabs__list-item--selected {% endif %}">
-                <a class="govuk-tabs__tab" data-qa="all-incidents-link" href="/all-incidents">
-                    All incidents
+            <li class="govuk-tabs__list-item {% if selectedTab === 'not-completed' %} govuk-tabs__list-item--selected {% endif %}">
+                <a class="govuk-tabs__tab" data-qa="not-completed-link" href="/not-completed-incidents">
+                   Not completed
+                </a>
+            </li>
+            <li class="govuk-tabs__list-item {% if selectedTab === 'completed' %} govuk-tabs__list-item--selected {% endif %}">
+                <a class="govuk-tabs__tab" data-qa="completed-link" href="/completed-incidents">
+                    Completed
                 </a>
             </li>
             {% endif %}

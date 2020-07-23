@@ -139,7 +139,8 @@ export default function Index({
   const reviewerRoutes = () => {
     const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
 
-    get('/all-incidents', reviewer.viewAllIncidents)
+    get('/completed-incidents', reviewer.viewCompletedIncidents)
+    get('/not-completed-incidents', reviewer.viewNotCompletedIncidents)
     get('/:reportId/view-report', reviewer.reviewReport)
     get('/:reportId/view-statements', reviewer.reviewStatements)
     get('/:statementId/view-statement', reviewer.reviewStatement)

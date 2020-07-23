@@ -14,23 +14,9 @@ interface Params {
 
 export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, reviewService, systemToken }: Params) {
   return {
-    viewAllIncidents: async (req: Request, res: Response): Promise<void> => {
-      const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
-      const query = removeKeysWithEmptyValues({
-        prisonerName,
-        prisonNumber,
-        reporter,
-        dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
-        dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
-      })
+    viewNotCompletedIncidents: viewIncidents('not-completed-incidents', 'not-completed', reviewService),
 
-      const reports = await reviewService.getReports(res.locals.user.username, res.locals.user.activeCaseLoadId, query)
-      return res.render('pages/all-incidents', {
-        ...reports,
-        query,
-        selectedTab: 'all-incidents',
-      })
-    },
+    viewCompletedIncidents: viewIncidents('completed-incidents', 'completed', reviewService),
 
     reviewReport: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
@@ -44,7 +30,6 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
 
     reviewStatements: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
-
       const report = await reviewService.getReport(reportId)
 
       const { bookingId, reporterName, submittedDate } = report
@@ -54,8 +39,9 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
       )
 
       const statements = await reviewService.getStatements(await systemToken(res.locals.user.username), reportId)
+      const tab = report.status === 'COMPLETE' ? '/completed-incidents' : '/not-completed-incidents'
 
-      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements }
+      const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab }
       return res.render('pages/reviewer/view-statements', { data })
     },
 
@@ -79,5 +65,25 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
         },
       })
     },
+  }
+}
+
+function viewIncidents(page, tab, reviewService) {
+  return async (req: Request, res: Response): Promise<void> => {
+    const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
+    const query = removeKeysWithEmptyValues({
+      prisonerName,
+      prisonNumber,
+      reporter,
+      dateFrom: dateFrom ? parseDate(dateFrom, 'D MMM YYYY') : null,
+      dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
+    })
+
+    const reports = await reviewService.getReports(res.locals.user.username, res.locals.user.activeCaseLoadId, query)
+    return res.render(`pages/${page}`, {
+      ...reports,
+      query,
+      selectedTab: tab,
+    })
   }
 }

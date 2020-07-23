@@ -32,62 +32,66 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /all-incidents', () => {
-  it('should render page for reviewer', () => {
-    userSupplier.mockReturnValue(reviewerUser)
+const incidentStatus = ['/completed-incidents', '/not-completed-incidents']
 
-    return request(app)
-      .get('/all-incidents')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force incidents')
-      })
-  })
+incidentStatus.forEach(incident => {
+  describe(`GET ${incident}`, () => {
+    it('should render page for reviewer', () => {
+      userSupplier.mockReturnValue(reviewerUser)
 
-  it('should pass search query params through', () => {
-    userSupplier.mockReturnValue(reviewerUser)
-
-    return request(app)
-      .get(
-        '/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
-      )
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
-          dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
-          dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
-          prisonNumber: 'A1234AA',
-          reporter: 'Bob',
-          prisonerName: 'Jimmy Choo',
+      return request(app)
+        .get(`${incident}`)
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Use of force incidents')
         })
-      })
-  })
+    })
 
-  it('should pass handle invalid dates', () => {
-    userSupplier.mockReturnValue(reviewerUser)
+    it('should pass search query params through', () => {
+      userSupplier.mockReturnValue(reviewerUser)
 
-    return request(app)
-      .get('/all-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=&dateTo=blarh')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
-          prisonNumber: 'A1234AA',
-          reporter: 'Bob',
+      return request(app)
+        .get(
+          `${incident}?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo`
+        )
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Use of force incidents')
+          expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
+            dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
+            dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
+            prisonNumber: 'A1234AA',
+            reporter: 'Bob',
+            prisonerName: 'Jimmy Choo',
+          })
         })
-      })
-  })
+    })
 
-  it('should not allow if not reviewer', () => {
-    userSupplier.mockReturnValue(user)
-    return request(app)
-      .get('/all-incidents')
-      .expect(401)
-      .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
+    it('should pass handle invalid dates', () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
+      return request(app)
+        .get(`${incident}?prisonNumber=A1234AA&reporter=Bob&dateFrom=&dateTo=blarh`)
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Use of force incidents')
+          expect(reviewService.getReports).toHaveBeenCalledWith('user1', 'LEI', {
+            prisonNumber: 'A1234AA',
+            reporter: 'Bob',
+          })
+        })
+    })
+
+    it('should not allow if not reviewer', () => {
+      userSupplier.mockReturnValue(user)
+      return request(app)
+        .get(`${incident}`)
+        .expect(401)
+        .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
+    })
   })
 })
 
