@@ -69,6 +69,7 @@ context('A reporter views their report list', () => {
         relocationAndInjuries: 'NOT_STARTED',
         evidence: 'NOT_STARTED',
       })
+      inProgressReport.logout().click()
     }
   })
 
