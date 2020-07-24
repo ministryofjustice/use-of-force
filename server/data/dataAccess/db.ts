@@ -1,4 +1,4 @@
-import { Pool, QueryConfig, QueryResult, QueryResultRow, PoolClient } from 'pg'
+import { Pool, QueryConfig, QueryResult, QueryResultRow } from 'pg'
 import fs from 'fs'
 import logger from '../../../log'
 import config from '../../config'

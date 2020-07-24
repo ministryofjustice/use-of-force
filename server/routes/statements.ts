@@ -29,13 +29,15 @@ export default function CreateReportRoutes(
 
   return {
     viewYourStatements: async (req, res) => {
-      const results = await statementService.getStatements(req.user.username)
+      const page = parseInt(req.query.page, 10) || 1
+      const { items: results, metaData: pageData } = await statementService.getStatements(req.user.username, page)
 
       const namesByOffenderNumber = await getOffenderNames(await systemToken(res.locals.user.username), results)
       const statements = results.map(toStatement(namesByOffenderNumber))
 
       res.render('pages/your-statements', {
         statements,
+        pageData,
         selectedTab: 'your-statements',
       })
     },

@@ -6,6 +6,7 @@ import { processInput } from './validation'
 import type { InTransaction } from '../data/dataAccess/db'
 import type StatementsClient from '../data/statementsClient'
 import type IncidentClient from '../data/incidentClient'
+import { PageResponse } from '../utils/page'
 
 export default class StatementService {
   constructor(
@@ -14,8 +15,8 @@ export default class StatementService {
     private readonly inTransaction: InTransaction
   ) {}
 
-  getStatements(userId: string): Promise<StatementSummary[]> {
-    return this.statementsClient.getStatements(userId)
+  getStatements(userId: string, page: number): Promise<PageResponse<StatementSummary>> {
+    return this.statementsClient.getStatements(userId, page)
   }
 
   async getStatementForUser(userId: string, reportId: number, status) {

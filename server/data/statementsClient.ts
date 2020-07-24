@@ -2,13 +2,15 @@
 import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
 import { StatementStatus } from '../config/types'
+import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 
 export default class StatementsClient {
   constructor(private readonly query: QueryPerformer) {}
 
-  async getStatements(userId: string): Promise<StatementSummary[]> {
-    const result = await this.query<StatementSummary>({
-      text: `select r.id
+  async getStatements(userId: string, page: number): Promise<PageResponse<StatementSummary>> {
+    const [offset, limit] = offsetAndLimitForPage(page)
+    const result = await this.query<HasTotalCount<StatementSummary>>({
+      text: `select r.id, count(*) OVER() AS "totalCount"
             , r.reporter_name          "reporterName"
             , r.offender_no            "offenderNo"
             , r.incident_date          "incidentDate"
@@ -20,10 +22,13 @@ export default class StatementsClient {
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
           and s.deleted is null
-          order by status, r.incident_date desc`,
-      values: [userId],
+          order by status, r.incident_date desc
+          offset $2
+          limit $3`,
+      values: [userId, offset, limit],
     })
-    return result.rows
+
+    return buildPageResponse(result.rows, page)
   }
 
   async getStatementForUser(userId, reportId, status) {

@@ -36,6 +36,7 @@ const getPayload = reportId => {
     })
     .then(result => result.rows[0].form)
 }
+const seedReports = async reports => Promise.all(reports.map(report => seedReport(report)))
 
 const seedReport = ({
   status,
@@ -123,5 +124,6 @@ module.exports = {
   getAllStatementsForReport,
   getPayload,
   seedReport,
+  seedReports,
   submitStatement,
 }

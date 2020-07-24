@@ -43,12 +43,17 @@ describe('statmentService', () => {
         offenderNo: 'AA1234A',
       }
 
-      statementsClient.getStatements.mockResolvedValue([statement])
+      const pageResponse = {
+        metaData: { min: 0, max: 1, totalCount: 1, totalPages: 1, page: 1 },
+        items: [statement],
+      }
 
-      const output = await service.getStatements('user1')
+      statementsClient.getStatements.mockResolvedValue(pageResponse)
 
-      expect(output).toEqual([statement])
-      expect(statementsClient.getStatements).toBeCalledWith('user1')
+      const output = await service.getStatements('user1', 1)
+
+      expect(output).toEqual(pageResponse)
+      expect(statementsClient.getStatements).toBeCalledWith('user1', 1)
     })
   })
 

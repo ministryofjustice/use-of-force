@@ -1,4 +1,5 @@
 import createRouter from './routes'
+import nunjucksSetup from './utils/nunjucksSetup'
 
 const express = require('express')
 const loggingSerialiser = require('./loggingSerialiser') // eslint-disable-line
@@ -21,7 +22,6 @@ const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
 
 const logger = require('../log.js')
-const nunjucksSetup = require('./utils/nunjucksSetup')
 const auth = require('./authentication/auth')
 const populateCurrentUser = require('./middleware/populateCurrentUser')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')

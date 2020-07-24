@@ -1,5 +1,6 @@
 import page from '../page'
 import tabs from '../sections/incidentTabs'
+import pagination from '../sections/pagination'
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 
@@ -7,6 +8,7 @@ const col = (i, j) => row('statements', i).find('td').eq(j)
 
 const yourStatementsPage = () =>
   page('Use of force incidents', {
+    ...pagination,
     ...tabs,
     statements: i => ({
       date: () => col(i, 0),
