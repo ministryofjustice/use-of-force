@@ -2,6 +2,7 @@ import StatementService from './statementService'
 import { StatementStatus, ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
+import { PageResponse } from '../utils/page'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
@@ -43,10 +44,7 @@ describe('statmentService', () => {
         offenderNo: 'AA1234A',
       }
 
-      const pageResponse = {
-        metaData: { min: 0, max: 1, totalCount: 1, totalPages: 1, page: 1 },
-        items: [statement],
-      }
+      const pageResponse = new PageResponse({ min: 0, max: 1, totalCount: 1, totalPages: 1, page: 1 }, [statement])
 
       statementsClient.getStatements.mockResolvedValue(pageResponse)
 

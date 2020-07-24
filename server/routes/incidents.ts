@@ -13,10 +13,12 @@ export default function CreateIncidentRoutes(reportService: ReportService, repor
     },
 
     viewYourReports: async (req, res) => {
-      const reports = await reportService.getReports(req.user.username)
+      const page = parseInt(req.query.page, 10) || 1
+      const { items: reports, metaData: pageData } = await reportService.getReports(req.user.username, page)
 
       res.render('pages/your-reports', {
         reports,
+        pageData,
         selectedTab: 'your-reports',
       })
     },

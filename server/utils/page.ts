@@ -16,9 +16,12 @@ export type HasTotalCount<T> = T & {
   totalCount: number
 }
 
-export type PageResponse<T> = {
-  metaData: PageMetaData
-  items: T[]
+export class PageResponse<T> {
+  constructor(public readonly metaData: PageMetaData, public readonly items: T[]) {}
+
+  map<R>(f: (T) => R): PageResponse<R> {
+    return new PageResponse(this.metaData, this.items.map(f))
+  }
 }
 
 export type OffsetAndLimit = [number, number]
@@ -37,10 +40,7 @@ export function buildPageResponse<T>(
   const items = results.map(({ totalCount, ...rest }) => (rest as any) as T)
   const totalCount = (results[0] && results[0].totalCount) || 0
   const metaData = metaDataForPage(page, totalCount, pageSize)
-  return {
-    items,
-    metaData,
-  }
+  return new PageResponse(metaData, items)
 }
 
 export function metaDataForPage(page: number, totalCount: number, pageSize: number = PAGE_SIZE): PageMetaData {

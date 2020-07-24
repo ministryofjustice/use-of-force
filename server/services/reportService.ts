@@ -8,6 +8,7 @@ import logger from '../../log'
 import { isNilOrEmpty } from '../utils/utils'
 import { check as getReportStatus } from './reportStatusChecker'
 import { InTransaction } from '../data/dataAccess/db'
+import { PageResponse } from '../utils/page'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -46,7 +47,7 @@ export default class ReportService {
     private readonly systemToken: SystemToken
   ) {}
 
-  private async getOffenderNames(username, incidents): Promise<NamesByOffenderNumber> {
+  private async getOffenderNames(username, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
     const token = await this.systemToken(username)
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return this.offenderService.getOffenderNames(token, offenderNos)
@@ -69,9 +70,9 @@ export default class ReportService {
     return report
   }
 
-  async getReports(userId: string): Promise<IncidentSummary[]> {
-    const reports = await this.incidentClient.getReports(userId)
-    const offenderNosToNames = await this.getOffenderNames(userId, reports)
+  async getReports(userId: string, page: number): Promise<PageResponse<IncidentSummary>> {
+    const reports = await this.incidentClient.getReports(userId, page)
+    const offenderNosToNames = await this.getOffenderNames(userId, reports.items)
     return reports.map(toReport(offenderNosToNames))
   }
 

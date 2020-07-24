@@ -1,8 +1,8 @@
-import format from 'pg-format'
 import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { ReportStatus, StatementStatus } from '../config/types'
 import { IncidentSearchQuery, ReportSummary, IncompleteReportSummary } from './incidentClientTypes'
+import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
@@ -175,9 +175,10 @@ export default class IncidentClient {
     return results.rows
   }
 
-  async getReports(userId: string): Promise<ReportSummary[]> {
-    const reports = await this.query<ReportSummary>({
-      text: `select r.id
+  async getReports(userId: string, page: number): Promise<PageResponse<ReportSummary>> {
+    const [offset, limit] = offsetAndLimitForPage(page)
+    const result = await this.query<HasTotalCount<ReportSummary>>({
+      text: `select r.id, count(*) OVER() AS "totalCount"
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
@@ -188,10 +189,12 @@ export default class IncidentClient {
           order by (case status 
             when 'IN_PROGRESS' then 1
             else 2
-            end), r.incident_date desc`,
-      values: [userId],
+            end), r.incident_date desc
+          offset $2
+          limit $3`,
+      values: [userId, offset, limit],
     })
-    return reports.rows
+    return buildPageResponse(result.rows, page)
   }
 
   async getDraftInvolvedStaff(reportId) {
