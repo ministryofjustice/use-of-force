@@ -1,16 +1,26 @@
-const nunjucks = require('nunjucks')
-const moment = require('moment')
-const nodeCrypto = require('crypto')
+import nunjucks from 'nunjucks'
+import moment from 'moment'
+import nodeCrypto from 'crypto'
+import config from '../config'
+import { PageMetaData } from './page'
+
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
   links,
-} = require('../config')
+} = config
 
-module.exports = (app, path) => {
-  const njkEnv = nunjucks.configure([path.join(__dirname, '../../server/views'), 'node_modules/govuk-frontend/'], {
-    autoescape: true,
-    express: app,
-  })
+export default function (app, path) {
+  const njkEnv = nunjucks.configure(
+    [
+      path.join(__dirname, '../../server/views'),
+      'node_modules/govuk-frontend/',
+      'node_modules/@ministryofjustice/frontend',
+    ],
+    {
+      autoescape: true,
+      express: app,
+    }
+  )
 
   njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
   njkEnv.addGlobal('googleTagManagerEnvironment', tagManagerEnvironment)
@@ -72,6 +82,31 @@ module.exports = (app, path) => {
       value: item[valueKey],
       label: item[textKey],
     }))
+  })
+
+  njkEnv.addFilter('toPagination', (pageData: PageMetaData) => {
+    const urlForPage = n => `?page=${n}`
+    const items = [...Array(pageData.totalPages).keys()].map(n => ({
+      text: n + 1,
+      href: urlForPage(n + 1),
+      selected: n + 1 === pageData.page,
+    }))
+    return {
+      results: {
+        from: pageData.min,
+        to: pageData.max,
+        count: pageData.totalCount,
+      },
+      previous: pageData.previousPage && {
+        text: 'Previous',
+        href: urlForPage(pageData.previousPage),
+      },
+      next: pageData.nextPage && {
+        text: 'Next',
+        href: urlForPage(pageData.nextPage),
+      },
+      items,
+    }
   })
 
   njkEnv.addFilter('toYesNo', value => {

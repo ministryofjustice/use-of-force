@@ -1,20 +1,12 @@
-const request = require('supertest')
-const { appWithAllRoutes } = require('./testutils/appSetup')
+import request from 'supertest'
+import { appWithAllRoutes } from './testutils/appSetup'
+import StatementService from '../services/statementService'
 
-const statementService = {
-  getStatements: () => [{ id: 1, booking_id: 2, created_date: '12/12/2018', user_id: 'ITAG_USER' }],
-  getStatementForUser: () => ({
-    id: 1,
-    booking_id: 2,
-    created_date: '12/12/2018',
-    user_id: 'ITAG_USER',
-    statement: 'Some initial statement',
-  }),
-  submitStatement: jest.fn(),
-  save: jest.fn(),
-  validateSavedStatement: jest.fn(),
-  saveAdditionalComment: jest.fn(),
-}
+jest.mock('../services/statementService')
+
+const statementService = new StatementService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
+  StatementService
+>
 
 const offenderService = {
   getOffenderNames: () => [],
@@ -24,7 +16,18 @@ const offenderService = {
 let app
 
 beforeEach(() => {
-  statementService.validateSavedStatement.mockReturnValue([])
+  statementService.validateSavedStatement.mockResolvedValue([])
+  statementService.getStatements.mockResolvedValue({
+    items: [],
+    metaData: { min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 },
+  })
+  statementService.getStatementForUser.mockResolvedValue({
+    id: 1,
+    booking_id: 2,
+    created_date: '12/12/2018',
+    user_id: 'ITAG_USER',
+    statement: 'Some initial statement',
+  })
   app = appWithAllRoutes({ statementService, offenderService })
 })
 
@@ -82,7 +85,7 @@ describe('POST /:reportId/check-your-statement', () => {
       .expect('Location', '/-1/statement-submitted'))
 
   it('submit redirects due to form not being complete', () => {
-    statementService.validateSavedStatement.mockReturnValue([{ href: '#field', text: 'An error' }])
+    statementService.validateSavedStatement.mockResolvedValue([{ href: '#field', text: 'An error' }])
     return request(app).post('/-1/check-your-statement').expect(302).expect('Location', '/-1/write-your-statement')
   })
 })

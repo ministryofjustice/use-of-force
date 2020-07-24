@@ -6,14 +6,19 @@ const query = jest.fn()
 
 beforeEach(() => {
   jest.resetAllMocks()
+  query.mockResolvedValue({ rows: [] })
   statementsClient = new StatementsClient(query)
 })
 
-test('getStatements', () => {
-  statementsClient.getStatements('user1')
+test('getStatements', async () => {
+  const results = await statementsClient.getStatements('user1', 1)
 
+  expect(results).toStrictEqual({
+    items: [],
+    metaData: { max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 },
+  })
   expect(query).toBeCalledWith({
-    text: `select r.id
+    text: `select r.id, count(*) OVER() AS "totalCount"
             , r.reporter_name          "reporterName"
             , r.offender_no            "offenderNo"
             , r.incident_date          "incidentDate"
@@ -25,8 +30,10 @@ test('getStatements', () => {
             inner join report r on s.report_id = r.id   
           where s.user_id = $1
           and s.deleted is null
-          order by status, r.incident_date desc`,
-    values: ['user1'],
+          order by status, r.incident_date desc
+          offset $2
+          limit $3`,
+    values: ['user1', 0, 20],
   })
 })
 
