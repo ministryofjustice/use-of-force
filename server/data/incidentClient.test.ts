@@ -33,7 +33,7 @@ describe('getCurrentDraftReport', () => {
 })
 
 test('getReports', () => {
-  incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED])
+  incidentClient.getReports('user1')
 
   expect(query).toBeCalledWith({
     text: `select r.id
@@ -41,26 +41,14 @@ test('getReports', () => {
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
+            , r.status        "status"
             from v_report r
-          where r.status in ('IN_PROGRESS','SUBMITTED')
-          and r.user_id = 'user1'
-          order by r.incident_date`,
-  })
-})
-
-test('getReports order by date desc', () => {
-  incidentClient.getReports('user1', [ReportStatus.IN_PROGRESS, ReportStatus.SUBMITTED], { orderByDescDate: true })
-
-  expect(query).toBeCalledWith({
-    text: `select r.id
-            , r.booking_id    "bookingId"
-            , r.reporter_name "reporterName"
-            , r.offender_no   "offenderNo"
-            , r.incident_date "incidentDate"
-            from v_report r
-          where r.status in ('IN_PROGRESS','SUBMITTED')
-          and r.user_id = 'user1'
-          order by r.incident_date desc`,
+          where r.user_id = $1
+          order by (case status 
+            when 'IN_PROGRESS' then 1
+            else 2
+            end), r.incident_date desc`,
+    values: ['user1'],
   })
 })
 

@@ -5,6 +5,7 @@ import StatementsClient from './data/statementsClient'
 import createOffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
+import ReportService from './services/reportService'
 import createLocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
@@ -27,7 +28,6 @@ const createSignInService = require('./authentication/signInService')
 
 const createHeatmapBuilder = require('./services/heatmapBuilder').default
 const { createInvolvedStaffService } = require('./services/involvedStaffService')
-const createReportService = require('./services/reportService')
 const createUserService = require('./services/userService')
 
 const { notificationServiceFactory } = require('./services/notificationService')
@@ -40,14 +40,15 @@ const userService = createUserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = createOffenderService(elite2ClientBuilder)
-const reportService = createReportService({
-  elite2ClientBuilder,
+const reportService = new ReportService(
   incidentClient,
+  elite2ClientBuilder,
   involvedStaffService,
   notificationService,
-  db,
-  systemToken,
-})
+  offenderService,
+  db.inTransaction,
+  systemToken
+)
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 const reviewService = new ReviewService(

@@ -29,12 +29,7 @@ export default function Index({
 }) {
   const router = express.Router()
 
-  const incidents = CreateIncidentRoutes({
-    reportService,
-    offenderService,
-    reportDetailBuilder,
-    systemToken,
-  })
+  const incidents = CreateIncidentRoutes(reportService, reportDetailBuilder)
 
   const reviewer = CreateReviewRoutes({
     reviewService,

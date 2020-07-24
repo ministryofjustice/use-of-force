@@ -4,12 +4,8 @@
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
-  {% if awaitingReports.length %}
-  <table class="govuk-table incidents" data-qa="statements-todo">
-    <caption class="govuk-table__caption govuk-heading-m">
-      Not completed
-    </caption>
-
+  {% if reports.length %}
+  <table class="govuk-table incidents" data-qa="reports">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
@@ -20,20 +16,28 @@
     </thead>
 
     <tbody class="govuk-table__body">
-        {% for report in awaitingReports %}
+        {% for report in reports %}
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
             <td class="govuk-table__cell">{{report.offenderName}}</td>
             <td class="govuk-table__cell">{{report.offenderNo}}</td>
-            <td class="govuk-table__cell govuk-!-padding-top-1">
-              <a
-                href="/report/{{ report.bookingId }}/report-use-of-force"
-                role="button"
-                draggable="false"
-                class="govuk-button govuk-button govuk-!-width-one-half"
-              >
-                Continue report
-              </a>
+            <td class="govuk-table__cell govuk-!-padding-top-{{ 1 if report.status == 'IN_PROGRESS' else 3 }}">
+              {% if report.status == 'IN_PROGRESS' %}
+                <a
+                  href="/report/{{ report.bookingId }}/report-use-of-force"
+                  role="button"
+                  draggable="false"
+                  class="govuk-button govuk-!-width-one-third">
+                  Continue
+                </a>
+              {% else %}
+                <a
+                  href="/{{ report.id }}/your-report"
+                  draggable="false"
+                  class="govuk-link govuk-!-padding-left-2">
+                  View report
+                </a>
+              {% endif %}
             </td>
         </tr>  
         {% endfor %}
@@ -41,45 +45,7 @@
     </tbody>
   </table>
   {% else %}
-    <h3 class="govuk-heading-m">Not completed</h3>
-    <p class="govuk-body">You have not started any reports</p>
+    <p data-qa=no-reports class="govuk-body">You have no reports</p>
   {% endif %}
-  {% if completedReports.length %}
-<table class="govuk-table incidents" data-qa="statements-complete">
-  <caption class="govuk-table__caption govuk-heading-m">
-    Completed
-  </caption>
-    <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
-      <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Prisoner</th>
-      <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Prison number</th>
-      <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
-    </tr>
-  </thead>
-
-  <tbody class="govuk-table__body">
-      {% for report in completedReports %}
-      <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
-          <td class="govuk-table__cell">{{report.offenderName}}</td>
-          <td class="govuk-table__cell">{{report.offenderNo}}</td>
-          <td class="govuk-table__cell">
-            <a
-              href="/{{ report.id }}/your-report"
-              draggable="false"
-              class="govuk-!-margin-left-7 govuk-link"
-            >
-            View report
-            </a>
-          </td>
-      </tr>  
-      {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<h3 class="govuk-heading-m">Completed</h3>
-<p class="govuk-body">You have not completed any reports</p>
-{% endif %}
 </section>
 {% endblock %}
