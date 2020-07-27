@@ -2,6 +2,7 @@ import moment from 'moment'
 import IncidentClient from '../data/incidentClient'
 import ReportService from './reportService'
 import { OffenderService } from '../types/uof'
+import { PageResponse } from '../utils/page'
 
 jest.mock('../data/incidentClient')
 
@@ -150,29 +151,34 @@ describe('getReport', () => {
 describe('getReports', () => {
   test('it should call query on db', async () => {
     offenderService.getOffenderNames.mockResolvedValue({ AA1234A: 'James Stuart' })
-    incidentClient.getReports.mockResolvedValue([
-      {
-        id: 1,
-        bookingId: 2,
-        incidentDate: new Date(1),
-        offenderNo: 'AA1234A',
-        reporterName: 'BOB',
-        status: 'IN_PROGRESS',
-      },
-    ])
-    const result = await service.getReports('user1')
-    expect(result).toEqual([
-      {
-        bookingId: 2,
-        id: 1,
-        incidentdate: new Date(1),
-        offenderName: 'James Stuart',
-        offenderNo: 'AA1234A',
-        staffMemberName: 'BOB',
-        status: 'IN_PROGRESS',
-      },
-    ])
-    expect(incidentClient.getReports).toBeCalledWith('user1')
+    const metaData = { min: 1, max: 1, page: 1, totalCount: 1, totalPages: 1 }
+    incidentClient.getReports.mockResolvedValue(
+      new PageResponse(metaData, [
+        {
+          id: 1,
+          bookingId: 2,
+          incidentDate: new Date(1),
+          offenderNo: 'AA1234A',
+          reporterName: 'BOB',
+          status: 'IN_PROGRESS',
+        },
+      ])
+    )
+    const result = await service.getReports('user1', 1)
+    expect(result).toEqual(
+      new PageResponse(metaData, [
+        {
+          bookingId: 2,
+          id: 1,
+          incidentdate: new Date(1),
+          offenderName: 'James Stuart',
+          offenderNo: 'AA1234A',
+          staffMemberName: 'BOB',
+          status: 'IN_PROGRESS',
+        },
+      ])
+    )
+    expect(incidentClient.getReports).toBeCalledWith('user1', 1)
   })
 })
 

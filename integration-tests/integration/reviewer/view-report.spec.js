@@ -29,6 +29,7 @@ context('view review page', () => {
       submittedDate: moment().toDate(),
       userId: 'TEST_USER',
       reporterName: 'James Stuart',
+      incidentDate: moment('2019-09-10 09:57:40.000').toDate(),
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
@@ -42,6 +43,7 @@ context('view review page', () => {
       cy.task('seedReport', {
         status: ReportStatus.SUBMITTED,
         submittedDate: moment().toDate(),
+        incidentDate: moment('2019-09-11 09:57:40.000').toDate(),
         userId: 'ANOTHER_USER',
         reporterName: 'Anne OtherUser',
         agencyId: 'MDI',

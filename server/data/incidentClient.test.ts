@@ -1,6 +1,7 @@
 import moment from 'moment'
 import IncidentClient from './incidentClient'
 import { ReportStatus, StatementStatus } from '../config/types'
+import { PageResponse } from '../utils/page'
 
 let incidentClient: IncidentClient
 const query = jest.fn()
@@ -32,11 +33,13 @@ describe('getCurrentDraftReport', () => {
   })
 })
 
-test('getReports', () => {
-  incidentClient.getReports('user1')
+test('getReports', async () => {
+  const results = await incidentClient.getReports('user1', 1)
+
+  expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
 
   expect(query).toBeCalledWith({
-    text: `select r.id
+    text: `select r.id, count(*) OVER() AS "totalCount"
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
@@ -47,8 +50,10 @@ test('getReports', () => {
           order by (case status 
             when 'IN_PROGRESS' then 1
             else 2
-            end), r.incident_date desc`,
-    values: ['user1'],
+            end), r.incident_date desc
+          offset $2
+          limit $3`,
+    values: ['user1', 0, 20],
   })
 })
 

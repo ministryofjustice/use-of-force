@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { appWithAllRoutes } from './testutils/appSetup'
 import StatementService from '../services/statementService'
+import { PageResponse } from '../utils/page'
 
 jest.mock('../services/statementService')
 
@@ -17,10 +18,9 @@ let app
 
 beforeEach(() => {
   statementService.validateSavedStatement.mockResolvedValue([])
-  statementService.getStatements.mockResolvedValue({
-    items: [],
-    metaData: { min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 },
-  })
+  statementService.getStatements.mockResolvedValue(
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 }, [])
+  )
   statementService.getStatementForUser.mockResolvedValue({
     id: 1,
     booking_id: 2,

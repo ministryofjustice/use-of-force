@@ -1,5 +1,6 @@
 import StatementsClient from './statementsClient'
 import { StatementStatus } from '../config/types'
+import { PageResponse } from '../utils/page'
 
 let statementsClient: StatementsClient
 const query = jest.fn()
@@ -13,10 +14,7 @@ beforeEach(() => {
 test('getStatements', async () => {
   const results = await statementsClient.getStatements('user1', 1)
 
-  expect(results).toStrictEqual({
-    items: [],
-    metaData: { max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 },
-  })
+  expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
   expect(query).toBeCalledWith({
     text: `select r.id, count(*) OVER() AS "totalCount"
             , r.reporter_name          "reporterName"
