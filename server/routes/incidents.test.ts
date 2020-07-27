@@ -1,5 +1,5 @@
-const request = require('supertest')
-const { appWithAllRoutes, user } = require('./testutils/appSetup')
+import request from 'supertest'
+import { appWithAllRoutes, user } from './testutils/appSetup'
 
 const userSupplier = jest.fn()
 

@@ -48,17 +48,18 @@ context('A reporter views their report list', () => {
     yourReportsPage.exitLink().then(location => expect(location).to.equal('/'))
 
     {
-      const { date, prisoner } = yourReportsPage.getCompleteRow(0)
+      const { action, date, prisoner } = yourReportsPage.reports(1)
       prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      action().contains('View report')
     }
 
     {
-      const { startButton, date, prisoner } = yourReportsPage.getTodoRow(0)
+      const { action, date, prisoner } = yourReportsPage.reports(0)
       prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-
-      startButton().click()
+      action().contains('Continue')
+      action().click()
 
       const inProgressReport = ReportUseOfForcePage.verifyOnPage()
 

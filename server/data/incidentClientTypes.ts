@@ -13,6 +13,7 @@ export interface ReportSummary {
   reporterName: string
   offenderNo: string
   incidentDate: Date
+  status?: string
 }
 
 export interface IncompleteReportSummary extends ReportSummary {

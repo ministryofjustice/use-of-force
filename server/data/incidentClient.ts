@@ -41,7 +41,7 @@ export default class IncidentClient {
     })
   }
 
-  submitReport(userId, bookingId, submittedDate, query = this.query) {
+  submitReport(userId, bookingId, submittedDate, query: QueryPerformer = this.query) {
     return query({
       text: `update v_report r
             set status = $1
@@ -55,7 +55,7 @@ export default class IncidentClient {
     })
   }
 
-  changeStatus(reportId, startState, endState, query = this.query) {
+  changeStatus(reportId, startState, endState, query: QueryPerformer = this.query) {
     return query({
       text: `update v_report r
             set status = $1
@@ -175,22 +175,21 @@ export default class IncidentClient {
     return results.rows
   }
 
-  async getReports(userId, statuses, opts = { orderByDescDate: false }): Promise<ReportSummary[]> {
-    const statusValues = statuses.map(status => status.value)
+  async getReports(userId: string): Promise<ReportSummary[]> {
     const reports = await this.query<ReportSummary>({
-      text: format(
-        `select r.id
+      text: `select r.id
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
             , r.offender_no   "offenderNo"
             , r.incident_date "incidentDate"
+            , r.status        "status"
             from v_report r
-          where r.status in (%L)
-          and r.user_id = %L
-          order by r.incident_date${opts.orderByDescDate ? ' desc' : ''}`,
-        statusValues,
-        userId
-      ),
+          where r.user_id = $1
+          order by (case status 
+            when 'IN_PROGRESS' then 1
+            else 2
+            end), r.incident_date desc`,
+      values: [userId],
     })
     return reports.rows
   }
@@ -239,7 +238,7 @@ export default class IncidentClient {
   }
 
   // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
-  async getNextNotificationReminder(transactionalClient) {
+  async getNextNotificationReminder(transactionalClient: QueryPerformer) {
     const result = await transactionalClient({
       text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
