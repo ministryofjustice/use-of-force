@@ -58,7 +58,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    let completedIncidentsPage = CompletedIncidentsPage.goTo()
     completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
@@ -96,6 +96,9 @@ context('A use of force coordinator can add involved staff', () => {
           { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
+
+    completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.getNoCompleteRows().should('exist')
   })
 
   it('Attempting to add a missing staff member', () => {

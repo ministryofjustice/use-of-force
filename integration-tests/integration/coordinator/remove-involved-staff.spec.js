@@ -39,15 +39,15 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('A coordinator can remove staff on otherwise complete report and it will complete the report', () => {
+  it(`A coordinator can remove staff on an otherwise complete report and it will complete the report. 
+  And the report will not display in the Not completed incidents page`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    let notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-    notCompletedIncidentsPage.getNoCompleteRows().should('not.exist')
 
     {
       const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
@@ -86,10 +86,7 @@ context('A use of force coordinator can remove involved staff', () => {
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.return().click()
 
-    notCompletedIncidentsPage = NotCompletedIncidentsPage.verifyOnPage()
-    notCompletedIncidentsPage.getNoTodoRows().should('not.exist')
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    const completedIncidentsPage = CompletedIncidentsPage.verifyOnPage()
     {
       const { prisoner, reporter, prisonNumber, viewStatementsButton } = completedIncidentsPage.getCompleteRow(0)
       prisoner().contains('Smith, Norman')
@@ -108,6 +105,10 @@ context('A use of force coordinator can remove involved staff', () => {
           { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
+
+    notCompletedIncidentsPage.getCountOfNotCompleteReports().then(count => {
+      expect(parseInt(count.rows[0].report_count, 10)).to.equal(0)
+    })
   })
 
   it('A reviewer user should not be able to remove staff', () => {

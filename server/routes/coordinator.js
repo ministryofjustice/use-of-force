@@ -1,5 +1,6 @@
 const { AddStaffResult } = require('../services/involvedStaffService')
 const { firstItem } = require('../utils/utils')
+const { ReportStatus } = require('../config/types')
 
 module.exports = function Index({ reportService, involvedStaffService, reviewService, offenderService, systemToken }) {
   return {
@@ -80,7 +81,8 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
       }
 
       const report = await reviewService.getReport(reportId)
-      const referringPage = report.status === 'SUBMITTED' ? '/not-completed-incidents' : '/completed-incidents'
+      const referringPage =
+        report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
       if (confirm === 'yes') {
         await reportService.deleteReport(res.locals.user.username, reportId)

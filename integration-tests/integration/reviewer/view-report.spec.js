@@ -57,8 +57,6 @@ context('view review page', () => {
 
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 2)
-    notCompletedIncidentsPage.getNoCompleteRows().should('not.exist')
-
     notCompletedIncidentsPage.selectedTab().contains('Not completed')
 
     {

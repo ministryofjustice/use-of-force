@@ -4,6 +4,7 @@ import { removeKeysWithEmptyValues, parseDate } from '../utils/utils'
 import { OffenderService, SystemToken } from '../types/uof'
 import ReportDataBuilder from '../services/reportDetailBuilder'
 import ReviewService from '../services/reviewService'
+import { ReportStatus } from '../config/types'
 
 interface Params {
   offenderService: OffenderService
@@ -68,7 +69,7 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
       )
 
       const statements = await reviewService.getStatements(await systemToken(res.locals.user.username), reportId)
-      const tab = report.status === 'COMPLETE' ? '/completed-incidents' : '/not-completed-incidents'
+      const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
       const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab }
       return res.render('pages/reviewer/view-statements', { data })

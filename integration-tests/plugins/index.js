@@ -12,6 +12,7 @@ const {
   seedReports,
   getPayload,
   submitStatement,
+  getCountOfNotCompleteReports,
 } = require('../db/db')
 
 module.exports = on => {
@@ -59,5 +60,7 @@ module.exports = on => {
     stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
 
     submitStatement,
+
+    getCountOfNotCompleteReports,
   })
 }

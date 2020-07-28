@@ -34,8 +34,6 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-const incidentStatus = ['/completed-incidents', '/not-completed-incidents']
-
 describe(`GET /completed-incidents`, () => {
   it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
@@ -105,6 +103,7 @@ describe(`GET /not-completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
+        expect(reviewService.getIncompleteReports).toHaveBeenCalledWith('user1', 'LEI')
       })
   })
 

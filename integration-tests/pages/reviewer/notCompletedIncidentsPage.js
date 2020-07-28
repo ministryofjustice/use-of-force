@@ -18,7 +18,6 @@ const incidentsPage = () =>
     },
     getTodoRows: () => cy.get('[data-qa=incidents-todo]').find('tbody').find('tr'),
     getNoTodoRows: () => cy.get('[data-qa=no-incidents-todo]'),
-    getNoCompleteRows: () => cy.get('[data-qa=no-incidents-complete]'),
     getTodoRow: i => ({
       row: () => cy.get('[data-qa=incidents-todo]'),
       date: () => todoCol(i, 0),
@@ -33,6 +32,10 @@ const incidentsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/view-statements/)[1]),
     }),
+
+    getCountOfNotCompleteReports: () => {
+      return cy.task('getCountOfNotCompleteReports', 'COMPLETE')
+    },
   })
 
 module.exports = {
