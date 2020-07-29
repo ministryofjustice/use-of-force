@@ -12,7 +12,7 @@
   
 
   {% if reports.length %}
-  <table class="govuk-table incidents" data-qa="reports">
+  <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="reports">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Incident date</th>
@@ -53,6 +53,10 @@
   </table>
   {% else %}
     <p data-qa=no-reports class="govuk-body">You have no reports</p>
+  {% endif %}
+
+  {% if pageData.totalPages > 1 %}
+    {{ mojPagination( pageData | toPagination ) }}
   {% endif %}
 </section>
 {% endblock %}
