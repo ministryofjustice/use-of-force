@@ -107,11 +107,13 @@ const clearAllTables = async () => {
   await deleteRows('report')
 }
 
-const getCountOfNotCompleteReports = reportStatus => {
-  return db.query({
-    text: `SELECT COUNT(r.status) as report_count FROM report r WHERE r.status != $1`,
-    values: [reportStatus],
-  })
+const getReportCount = reportStatus => {
+  return db
+    .query({
+      text: `SELECT COUNT(r.status) as count FROM report r WHERE r.status IN ($1, $2)`,
+      values: [reportStatus[0], reportStatus[1]],
+    })
+    .then(result => parseInt(result.rows[0].count, 10))
 }
 
 module.exports = {
@@ -133,5 +135,5 @@ module.exports = {
   seedReport,
   seedReports,
   submitStatement,
-  getCountOfNotCompleteReports,
+  getReportCount,
 }

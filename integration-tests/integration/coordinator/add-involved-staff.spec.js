@@ -58,7 +58,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    let completedIncidentsPage = CompletedIncidentsPage.goTo()
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
     completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
@@ -97,8 +97,7 @@ context('A use of force coordinator can add involved staff', () => {
         ])
       )
 
-    completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getNoCompleteRows().should('exist')
+    cy.task('getReportCount', [ReportStatus.COMPLETE.value]).then(count => expect(count).to.equal(0))
   })
 
   it('Attempting to add a missing staff member', () => {

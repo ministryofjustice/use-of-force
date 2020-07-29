@@ -32,10 +32,6 @@ const incidentsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/view-statements/)[1]),
     }),
-
-    getCountOfNotCompleteReports: () => {
-      return cy.task('getCountOfNotCompleteReports', 'COMPLETE')
-    },
   })
 
 module.exports = {

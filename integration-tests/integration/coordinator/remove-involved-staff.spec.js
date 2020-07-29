@@ -106,9 +106,9 @@ context('A use of force coordinator can remove involved staff', () => {
         ])
       )
 
-    notCompletedIncidentsPage.getCountOfNotCompleteReports().then(count => {
-      expect(parseInt(count.rows[0].report_count, 10)).to.equal(0)
-    })
+    cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
+      expect(count).to.equal(0)
+    )
   })
 
   it('A reviewer user should not be able to remove staff', () => {

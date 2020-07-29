@@ -12,7 +12,7 @@ const {
   seedReports,
   getPayload,
   submitStatement,
-  getCountOfNotCompleteReports,
+  getReportCount,
 } = require('../db/db')
 
 module.exports = on => {
@@ -61,6 +61,6 @@ module.exports = on => {
 
     submitStatement,
 
-    getCountOfNotCompleteReports,
+    getReportCount: status => getReportCount(status),
   })
 }
