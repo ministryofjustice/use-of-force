@@ -107,11 +107,10 @@ const clearAllTables = async () => {
   await deleteRows('report')
 }
 
-const getReportCount = reportStatus => {
+const getReportCount = statuses => {
   return db
     .query({
-      text: `SELECT COUNT(r.status) as count FROM report r WHERE r.status IN ($1, $2)`,
-      values: [reportStatus[0], reportStatus[1]],
+      text: format(`SELECT COUNT(r.status) as count FROM report r WHERE r.status IN (%L)`, statuses),
     })
     .then(result => parseInt(result.rows[0].count, 10))
 }

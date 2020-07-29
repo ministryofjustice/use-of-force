@@ -61,6 +61,6 @@ module.exports = on => {
 
     submitStatement,
 
-    getReportCount: status => getReportCount(status),
+    getReportCount: statuses => getReportCount(statuses),
   })
 }
