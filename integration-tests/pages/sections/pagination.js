@@ -1,9 +1,9 @@
+const firstPagination = () => cy.get('.moj-pagination').first()
+
 module.exports = {
   pagination: () => cy.get('.moj-pagination'),
   pageLinks: () =>
-    cy
-      .get('.moj-pagination')
-      .first()
+    firstPagination()
       .find(`.moj-pagination__item`)
       .spread((...rest) =>
         rest.map(element => ({
@@ -12,6 +12,6 @@ module.exports = {
           selected: Cypress.$(element).find('a').attr('href') === undefined,
         }))
       ),
-  pageResults: () => cy.get('.moj-pagination__results').first(),
-  clickLinkWithText: text => cy.get(`.moj-pagination__item`).first().contains(text).click(),
+  pageResults: () => firstPagination().find('.moj-pagination__results'),
+  clickLinkWithText: text => firstPagination().get(`.moj-pagination__item`).contains(text).click(),
 }
