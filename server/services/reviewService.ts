@@ -16,7 +16,6 @@ export interface IncidentSummary {
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
 }
-
 const toIncidentSummary = (namesByOffenderNumber: NamesByOffenderNumber) => (
   reportSummary: ReportSummary | IncompleteReportSummary
 ): IncidentSummary => ({
@@ -43,8 +42,7 @@ const offenderNameFilter = (nameToMatch?: string): Predicate<IncidentSummary> =>
 
 const toIncidentSummaries = (namesByOffenderNumber: NamesByOffenderNumber, nameToMatch?: string) => (
   reports: Array<IncompleteReportSummary | ReportSummary>
-): Array<IncidentSummary> =>
-  reports.map(toIncidentSummary(namesByOffenderNumber)).filter(offenderNameFilter(nameToMatch))
+): IncidentSummary[] => reports.map(toIncidentSummary(namesByOffenderNumber)).filter(offenderNameFilter(nameToMatch))
 
 export interface ReportQuery extends IncidentSearchQuery {
   prisonerName?: string
@@ -97,20 +95,16 @@ export default class ReviewService {
     return this.offenderService.getOffenderNames(token, offenderNos)
   }
 
-  async getReports(
-    username: string,
-    agencyId: AgencyId,
-    query: ReportQuery = {}
-  ): Promise<{ awaitingReports: IncidentSummary[]; completedReports: IncidentSummary[] }> {
-    const awaiting = await this.incidentClient.getIncompleteReportsForReviewer(agencyId, query)
+  async getCompletedReports(username: string, agencyId: AgencyId, query: ReportQuery = {}): Promise<IncidentSummary[]> {
     const completed = await this.incidentClient.getCompletedReportsForReviewer(agencyId, query)
+    const namesByOffenderNumber = await this.getOffenderNames(username, completed)
+    return toIncidentSummaries(namesByOffenderNumber, query.prisonerName)(completed)
+  }
 
-    const namesByOffenderNumber = await this.getOffenderNames(username, [...awaiting, ...completed])
-
-    return R.map(toIncidentSummaries(namesByOffenderNumber, query.prisonerName), {
-      awaitingReports: awaiting,
-      completedReports: completed,
-    })
+  async getIncompleteReports(username: string, agencyId: AgencyId): Promise<IncidentSummary[]> {
+    const incomplete = await this.incidentClient.getIncompleteReportsForReviewer(agencyId)
+    const namesByOffenderNumber = await this.getOffenderNames(username, incomplete)
+    return toIncidentSummaries(namesByOffenderNumber)(incomplete)
   }
 
   async getStatements(token, reportId) {

@@ -1,12 +1,11 @@
 const moment = require('moment')
 const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
+const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const AddInvolvedStaffPage = require('../../pages/reviewer/addInvolvedStaffPage')
 const AddInvolvedStaffResultPage = require('../../pages/reviewer/addInvolvedStaffResultPage')
-
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
-
 const { ReportStatus } = require('../../../server/config/types')
 
 context('A use of force coordinator can add involved staff', () => {
@@ -40,24 +39,27 @@ context('A use of force coordinator can add involved staff', () => {
   const seedAndCompleteReport = () => {
     seedReport()
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
+    let notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { reportId } = allIncidentsPage.getTodoRow(0)
+    const { reportId } = notCompletedIncidentsPage.getTodoRow(0)
     reportId().then(id => cy.task('submitStatement', { userId: 'TEST_USER', reportId: id }).then(() => cy.reload()))
 
-    allIncidentsPage.getNoTodoRows().should('exist')
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.getCompleteRows().should('have.length', 1)
+
+    notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getNoTodoRows().should('exist')
   }
 
-  it('A coordinator can add staff on a complete report and it will complete the report', () => {
+  it('A coordinator can add staff on a complete report and it will move the report to incomplete', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage
@@ -82,10 +84,9 @@ context('A use of force coordinator can add involved staff', () => {
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.return().click()
 
-    const allIncidentsPage = AllIncidentsPage.verifyOnPage()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
-    allIncidentsPage.getTodoRow(0).viewStatementsButton().click()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.verifyOnPage()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+    notCompletedIncidentsPage.getTodoRow(0).viewStatementsButton().click()
 
     ViewStatementsPage.verifyOnPage()
       .statements()
@@ -95,6 +96,8 @@ context('A use of force coordinator can add involved staff', () => {
           { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
+
+    cy.task('getReportCount', [ReportStatus.COMPLETE.value]).then(count => expect(count).to.equal(0))
   })
 
   it('Attempting to add a missing staff member', () => {
@@ -103,7 +106,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
+    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
     ViewStatementsPage.verifyOnPage().reportLink().click()
 
@@ -125,7 +128,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
+    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
     ViewStatementsPage.verifyOnPage().reportLink().click()
 
@@ -147,7 +150,7 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedAndCompleteReport()
 
-    AllIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
+    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
 
     ViewStatementsPage.verifyOnPage().reportLink().click()
 
@@ -171,10 +174,10 @@ context('A use of force coordinator can add involved staff', () => {
 
     seedReport()
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+    const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
     viewStatementsButton().click()

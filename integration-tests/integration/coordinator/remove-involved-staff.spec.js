@@ -1,9 +1,10 @@
 const moment = require('moment')
 const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
 const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatementDeletePage')
+const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -38,18 +39,18 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('A coordinator can remove staff on otherwise complete report and it will complete the report', () => {
+  it(`A coordinator can remove staff on an otherwise complete report and it will complete the report. 
+  And the report will not display in the Not completed incidents page`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    let allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
-    allIncidentsPage.getNoCompleteRows().should('exist')
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()
@@ -85,17 +86,15 @@ context('A use of force coordinator can remove involved staff', () => {
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.return().click()
 
-    allIncidentsPage = AllIncidentsPage.verifyOnPage()
-    allIncidentsPage.getNoTodoRows().should('exist')
-    allIncidentsPage.getCompleteRows().should('have.length', 1)
-
+    const completedIncidentsPage = CompletedIncidentsPage.verifyOnPage()
     {
-      const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getCompleteRow(0)
+      const { prisoner, reporter, prisonNumber, viewStatementsButton } = completedIncidentsPage.getCompleteRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
       viewStatementsButton().click()
     }
+    completedIncidentsPage.getNoCompleteRows().should('not.exist')
 
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
 
@@ -106,6 +105,10 @@ context('A use of force coordinator can remove involved staff', () => {
           { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
+
+    cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
+      expect(count).to.equal(0)
+    )
   })
 
   it('A reviewer user should not be able to remove staff', () => {
@@ -114,10 +117,10 @@ context('A use of force coordinator can remove involved staff', () => {
 
     seedReport()
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 1)
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+    const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
     prisonNumber().contains('A1234AC')

@@ -1,5 +1,4 @@
 const { offender } = require('../../mockApis/data')
-
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
