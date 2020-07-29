@@ -60,7 +60,7 @@ module.exports = {
       request: {
         method: 'POST',
         urlPattern: `/api/bookings/offenders\\?activeOnly=false`,
-        bodyPatterns: [{ equalToJson: offenders.map(o => o.offenderNo) }],
+        bodyPatterns: [{ equalToJson: offenders.map(o => o.offenderNo), ignoreArrayOrder: true }],
       },
       response: {
         status: 200,

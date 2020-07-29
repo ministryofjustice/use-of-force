@@ -4,7 +4,7 @@ import ReportDataBuilder from '../services/reportDetailBuilder'
 export default function CreateIncidentRoutes(reportService: ReportService, reportDetailBuilder: ReportDataBuilder) {
   return {
     redirectToHomePage: async (req, res) => {
-      const location = res.locals.user.isReviewer ? '/all-incidents' : '/your-statements'
+      const location = res.locals.user.isReviewer ? '/not-completed-incidents' : '/your-statements'
       res.redirect(location)
     },
 

@@ -201,27 +201,57 @@ describe('coordinator', () => {
         })
     })
 
-    it('when confirming to delete', async () => {
+    it('when report status is SUBMITTED and confirming to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
+      reviewService.getReport.mockReturnValue({ status: 'SUBMITTED' })
 
       await request(app)
         .post('/coordinator/report/123/delete')
         .send({ confirm: 'yes' })
         .expect(302)
-        .expect('Location', '/')
+        .expect('Location', '/not-completed-incidents')
         .expect(() => {
           expect(reportService.deleteReport).toHaveBeenCalledWith('user1', '123')
         })
     })
 
-    it('when confirming not to delete', async () => {
+    it('when report status is SUBMITTED and confirming not to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
+      reviewService.getReport.mockReturnValue({ status: 'SUBMITTED' })
 
       await request(app)
         .post('/coordinator/report/123/delete')
         .send({ confirm: 'no' })
         .expect(302)
-        .expect('Location', '/')
+        .expect('Location', '/not-completed-incidents')
+        .expect(() => {
+          expect(reportService.deleteReport).not.toHaveBeenCalled()
+        })
+    })
+
+    it('when report status is COMPLETE and confirming to delete', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      reviewService.getReport.mockReturnValue({ status: 'COMPLETE' })
+
+      await request(app)
+        .post('/coordinator/report/123/delete')
+        .send({ confirm: 'yes' })
+        .expect(302)
+        .expect('Location', '/completed-incidents')
+        .expect(() => {
+          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', '123')
+        })
+    })
+
+    it('when report status is COMPLETE and confirming not to delete', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      reviewService.getReport.mockReturnValue({ status: 'COMPLETE' })
+
+      await request(app)
+        .post('/coordinator/report/123/delete')
+        .send({ confirm: 'no' })
+        .expect(302)
+        .expect('Location', '/completed-incidents')
         .expect(() => {
           expect(reportService.deleteReport).not.toHaveBeenCalled()
         })
@@ -253,6 +283,7 @@ describe('coordinator', () => {
       expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
     })
   })
+
   describe('Confirm delete statement', () => {
     it('should resolve for reviewer', async () => {
       userSupplier.mockReturnValue(coordinatorUser)

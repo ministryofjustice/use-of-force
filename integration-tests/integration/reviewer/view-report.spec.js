@@ -1,11 +1,8 @@
 const moment = require('moment')
-
 const { offender } = require('../../mockApis/data')
-
-const AllIncidentsPage = require('../../pages/reviewer/allIncidentsPage')
+const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-
 const { ReportStatus } = require('../../../server/config/types')
 
 context('view review page', () => {
@@ -58,14 +55,12 @@ context('view review page', () => {
       })
     )
 
-    const allIncidentsPage = AllIncidentsPage.goTo()
-    allIncidentsPage.getTodoRows().should('have.length', 2)
-    allIncidentsPage.getNoCompleteRows().should('exist')
-
-    allIncidentsPage.selectedTab().contains('All incidents')
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 2)
+    notCompletedIncidentsPage.selectedTab().contains('Not completed')
 
     {
-      const { prisoner, reporter, viewStatementsButton } = allIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       viewStatementsButton().click()
@@ -86,7 +81,7 @@ context('view review page', () => {
     }
 
     {
-      const { prisoner, reporter, prisonNumber, viewStatementsButton } = allIncidentsPage.getTodoRow(1)
+      const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(1)
       prisoner().contains('Smith, Norman')
       reporter().contains('Anne OtherUser')
       prisonNumber().contains('A1234AC')

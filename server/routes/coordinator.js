@@ -1,5 +1,6 @@
 const { AddStaffResult } = require('../services/involvedStaffService')
 const { firstItem } = require('../utils/utils')
+const { ReportStatus } = require('../config/types')
 
 module.exports = function Index({ reportService, involvedStaffService, reviewService, offenderService, systemToken }) {
   return {
@@ -57,7 +58,6 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
 
     confirmDeleteReport: async (req, res) => {
       const { reportId } = req.params
-
       const errors = req.flash('errors')
       const report = await reviewService.getReport(reportId)
 
@@ -80,11 +80,15 @@ module.exports = function Index({ reportService, involvedStaffService, reviewSer
         return res.redirect(`/coordinator/report/${reportId}/confirm-delete`)
       }
 
+      const report = await reviewService.getReport(reportId)
+      const referringPage =
+        report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
+
       if (confirm === 'yes') {
         await reportService.deleteReport(res.locals.user.username, reportId)
       }
 
-      return res.redirect('/')
+      return res.redirect(referringPage)
     },
 
     confirmDeleteStatement: async (req, res) => {

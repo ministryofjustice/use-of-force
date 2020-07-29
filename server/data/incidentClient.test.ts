@@ -81,12 +81,7 @@ test('getIncompleteReportsForReviewer', () => {
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
-  incidentClient.getIncompleteReportsForReviewer('agency-1', {
-    prisonNumber: 'A1234AB',
-    reporter: 'reporter',
-    dateFrom: moment('2020-01-29'),
-    dateTo: moment('2020-01-30'),
-  })
+  incidentClient.getIncompleteReportsForReviewer('agency-1')
 
   expect(query).toBeCalledWith({
     text: `select r.id
@@ -98,20 +93,8 @@ test('getIncompleteReportsForReviewer', () => {
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
-          and   r.offender_no = coalesce($4, r.offender_no)
-          and   r.reporter_name Ilike coalesce($5, r.reporter_name)
-          and   date_trunc('day', r.incident_date) >= coalesce($6, date_trunc('day', r.incident_date))
-          and   date_trunc('day', r.incident_date) <= coalesce($7, date_trunc('day', r.incident_date))
           order by r.incident_date`,
-    values: [
-      ReportStatus.SUBMITTED.value,
-      'agency-1',
-      StatementStatus.PENDING.value,
-      'A1234AB',
-      '%reporter%',
-      moment('2020-01-29').toDate(),
-      moment('2020-01-30').toDate(),
-    ],
+    values: [ReportStatus.SUBMITTED.value, 'agency-1', StatementStatus.PENDING.value],
   })
 })
 
