@@ -13,7 +13,7 @@
   
 
 {% if statements.length %}
-<table class="govuk-table incidents" data-qa="statements">
+<table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="statements">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header app-!-width-one-sixth" scope="col">Incident date</th>
@@ -65,8 +65,14 @@
       {% endfor %}
   </tbody>
 </table>
+
+
 {% else %}
 <p class="govuk-body">You have no statements</p>
+{% endif %}
+
+{% if pageData.totalPages > 1 %}
+  {{ mojPagination( pageData | toPagination ) }}
 {% endif %}
 
 </section>
