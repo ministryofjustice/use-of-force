@@ -24,8 +24,7 @@
         <th class="govuk-table__header report" scope="col"></th>
         {% if user.isCoordinator %}      
         <th class="govuk-table__header delete" scope="col"></th>
-        {% endif %}      
-        <th class="govuk-table__header overdue" scope="col"></th>
+        {% endif %}
       </tr>
   </thead>
 
@@ -50,8 +49,6 @@
             <a href="/coordinator/report/{{ report.id }}/confirm-delete" class="govuk-link" data-qa='delete'> Delete incident </a>
         </td>
         {% endif %}  
-        <td class="govuk-table__cell">
-        </td>
       </tr>  
       {% endfor %}
 
