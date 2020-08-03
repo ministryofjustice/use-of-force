@@ -28,6 +28,8 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
 
     viewCompletedIncidents: async (req: Request, res: Response): Promise<void> => {
       const { prisonerName, prisonNumber, reporter, dateFrom, dateTo } = req.query
+      const page = parseInt(req.query.page as string, 10) || 1
+
       const query = removeKeysWithEmptyValues({
         prisonerName,
         prisonNumber,
@@ -36,13 +38,15 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
         dateTo: dateTo ? parseDate(dateTo, 'D MMM YYYY') : null,
       })
 
-      const reports = await reviewService.getCompletedReports(
+      const { items: reports, metaData: pageData } = await reviewService.getCompletedReports(
         res.locals.user.username,
         res.locals.user.activeCaseLoadId,
-        query
+        query,
+        page
       )
       return res.render('pages/completed-incidents', {
         reports,
+        pageData,
         query,
         selectedTab: 'completed',
       })
@@ -51,7 +55,7 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
     reviewReport: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
 
-      const report = await reviewService.getReport(reportId)
+      const report = await reviewService.getReport(parseInt(reportId, 10))
 
       const data = await reportDetailBuilder.build(res.locals.user.username, report)
 
@@ -60,7 +64,7 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
 
     reviewStatements: async (req: Request, res: Response): Promise<void> => {
       const { reportId } = req.params
-      const report = await reviewService.getReport(reportId)
+      const report = await reviewService.getReport(parseInt(reportId, 10))
 
       const { bookingId, reporterName, submittedDate } = report
       const offenderDetail = await offenderService.getOffenderDetails(
@@ -68,7 +72,10 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
         bookingId
       )
 
-      const statements = await reviewService.getStatements(await systemToken(res.locals.user.username), reportId)
+      const statements = await reviewService.getStatements(
+        await systemToken(res.locals.user.username),
+        parseInt(reportId, 10)
+      )
       const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
       const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab }
@@ -78,7 +85,7 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
     reviewStatement: async (req: Request, res: Response): Promise<void> => {
       const { statementId } = req.params
 
-      const statement = await reviewService.getStatement(statementId)
+      const statement = await reviewService.getStatement(parseInt(statementId, 10))
 
       const offenderDetail = await offenderService.getOffenderDetails(
         await systemToken(res.locals.user.username),

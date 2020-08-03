@@ -1,5 +1,6 @@
 import page from '../page'
 import tabs from '../sections/incidentTabs'
+import pagination from '../sections/pagination'
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 const completeCol = (i, j) => row('incidents-complete', i).find('td').eq(j)
@@ -7,6 +8,7 @@ const completeCol = (i, j) => row('incidents-complete', i).find('td').eq(j)
 const incidentsPage = () =>
   page('Use of force incidents', {
     ...tabs,
+    ...pagination,
     filter: {
       prisonerName: () => cy.get('[name="prisonerName"]'),
       prisonNumber: () => cy.get('[name="prisonNumber"]'),

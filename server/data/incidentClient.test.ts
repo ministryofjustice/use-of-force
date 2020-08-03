@@ -98,8 +98,8 @@ test('getIncompleteReportsForReviewer', () => {
   })
 })
 
-test('getCompletedReportsForReviewer', () => {
-  incidentClient.getCompletedReportsForReviewer('agency-1', {
+test('getAllCompletedReportsForReviewer', () => {
+  incidentClient.getAllCompletedReportsForReviewer('agency-1', {
     prisonNumber: 'A1234AB',
     reporter: 'reporter',
     dateFrom: moment('2020-01-29'),
@@ -127,6 +127,47 @@ test('getCompletedReportsForReviewer', () => {
       '%reporter%',
       moment('2020-01-29').toDate(),
       moment('2020-01-30').toDate(),
+    ],
+  })
+})
+
+test('getCompletedReportsForReviewer', async () => {
+  const results = await incidentClient.getCompletedReportsForReviewer(
+    'agency-1',
+    {
+      prisonNumber: 'A1234AB',
+      reporter: 'reporter',
+      dateFrom: moment('2020-01-29'),
+      dateTo: moment('2020-01-30'),
+    },
+    1
+  )
+
+  expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
+
+  expect(query).toBeCalledWith({
+    text: `select r.id, count(*) OVER() AS "totalCount"
+            , r.booking_id     "bookingId"
+            , r.reporter_name  "reporterName"
+            , r.offender_no    "offenderNo"
+            , r.incident_date  "incidentDate"
+            from v_report r
+          where r.status = $1
+          and   r.agency_id = $2
+          and   r.offender_no = coalesce($3, r.offender_no)
+          and   r.reporter_name Ilike coalesce($4, r.reporter_name)
+          and   date_trunc('day', r.incident_date) >= coalesce($5, date_trunc('day', r.incident_date))
+          and   date_trunc('day', r.incident_date) <= coalesce($6, date_trunc('day', r.incident_date))
+          order by r.incident_date desc offset $7 limit $8`,
+    values: [
+      ReportStatus.COMPLETE.value,
+      'agency-1',
+      'A1234AB',
+      '%reporter%',
+      moment('2020-01-29').toDate(),
+      moment('2020-01-30').toDate(),
+      0,
+      20,
     ],
   })
 })

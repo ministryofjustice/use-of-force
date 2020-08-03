@@ -133,9 +133,8 @@ export default class IncidentClient {
     return results.rows
   }
 
-  async getCompletedReportsForReviewer(agencyId: AgencyId, query: IncidentSearchQuery): Promise<ReportSummary[]> {
-    const results = await this.query({
-      text: `select r.id
+  private getCompleteReportQuery(paged: boolean): string {
+    return `select r.id${paged ? ', count(*) OVER() AS "totalCount"' : ''}
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
             , r.offender_no    "offenderNo"
@@ -147,7 +146,12 @@ export default class IncidentClient {
           and   r.reporter_name Ilike coalesce($4, r.reporter_name)
           and   date_trunc('day', r.incident_date) >= coalesce($5, date_trunc('day', r.incident_date))
           and   date_trunc('day', r.incident_date) <= coalesce($6, date_trunc('day', r.incident_date))
-          order by r.incident_date desc`,
+          order by r.incident_date desc${paged ? ' offset $7 limit $8' : ''}`
+  }
+
+  async getAllCompletedReportsForReviewer(agencyId: AgencyId, query: IncidentSearchQuery): Promise<ReportSummary[]> {
+    const results = await this.query({
+      text: this.getCompleteReportQuery(false),
       values: [
         ReportStatus.COMPLETE.value,
         agencyId,
@@ -158,6 +162,29 @@ export default class IncidentClient {
       ],
     })
     return results.rows
+  }
+
+  async getCompletedReportsForReviewer(
+    agencyId: AgencyId,
+    query: IncidentSearchQuery,
+    page: number
+  ): Promise<PageResponse<ReportSummary>> {
+    const [offset, limit] = offsetAndLimitForPage(page)
+    const results = await this.query<HasTotalCount<ReportSummary>>({
+      text: this.getCompleteReportQuery(true),
+      values: [
+        ReportStatus.COMPLETE.value,
+        agencyId,
+        query.prisonNumber,
+        query.reporter ? `%${query.reporter}%` : null,
+        query.dateFrom && query.dateFrom.toDate(),
+        query.dateTo && query.dateTo.toDate(),
+        offset,
+        limit,
+      ],
+    })
+
+    return buildPageResponse(results.rows, page)
   }
 
   async getReports(userId: string, page: number): Promise<PageResponse<ReportSummary>> {
