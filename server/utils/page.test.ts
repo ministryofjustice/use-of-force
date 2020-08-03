@@ -1,4 +1,4 @@
-import { offsetAndLimitForPage, metaDataForPage, buildPageResponse } from './page'
+import { offsetAndLimitForPage, metaDataForPage, buildPageResponse, toPage } from './page'
 
 describe('limitAndOffsetForPage', () => {
   it('check values', () => {
@@ -129,6 +129,126 @@ describe('buildPageResponse', () => {
         totalPages: 1,
         nextPage: null,
         previousPage: null,
+      },
+    })
+  })
+})
+
+describe('toPage', () => {
+  it('empty response', () => {
+    expect(toPage(1, [])).toEqual({
+      items: [],
+      metaData: {
+        max: 0,
+        min: 0,
+        page: 1,
+        totalCount: 0,
+        totalPages: 0,
+      },
+    })
+  })
+
+  it('less than 1 page', () => {
+    expect(toPage(1, [1, 2], 3)).toEqual({
+      items: [1, 2],
+      metaData: {
+        min: 1,
+        max: 2,
+        page: 1,
+        totalCount: 2,
+        totalPages: 1,
+        nextPage: null,
+        previousPage: null,
+      },
+    })
+  })
+
+  it('full page', () => {
+    expect(toPage(1, [1, 2, 3], 3)).toEqual({
+      items: [1, 2, 3],
+      metaData: {
+        min: 1,
+        max: 3,
+        page: 1,
+        totalCount: 3,
+        totalPages: 1,
+        nextPage: null,
+        previousPage: null,
+      },
+    })
+  })
+
+  it('more than full page', () => {
+    expect(toPage(1, [1, 2, 3, 4], 3)).toEqual({
+      items: [1, 2, 3],
+      metaData: {
+        min: 1,
+        max: 3,
+        page: 1,
+        totalCount: 4,
+        totalPages: 2,
+        nextPage: 2,
+        previousPage: null,
+      },
+    })
+  })
+
+  it('second page', () => {
+    expect(toPage(2, [1, 2, 3, 4, 5], 3)).toEqual({
+      items: [4, 5],
+      metaData: {
+        min: 4,
+        max: 5,
+        page: 2,
+        totalCount: 5,
+        totalPages: 2,
+        nextPage: null,
+        previousPage: 1,
+      },
+    })
+  })
+
+  it('middle page', () => {
+    expect(toPage(2, [1, 2, 3, 4, 5, 6, 7, 8], 3)).toEqual({
+      items: [4, 5, 6],
+      metaData: {
+        min: 4,
+        max: 6,
+        page: 2,
+        totalCount: 8,
+        totalPages: 3,
+        nextPage: 3,
+        previousPage: 1,
+      },
+    })
+  })
+
+  it('last page', () => {
+    expect(toPage(3, [1, 2, 3, 4, 5, 6, 7, 8], 3)).toEqual({
+      items: [7, 8],
+      metaData: {
+        min: 7,
+        max: 8,
+        page: 3,
+        totalCount: 8,
+        totalPages: 3,
+        nextPage: null,
+        previousPage: 2,
+      },
+    })
+  })
+
+  it('last page full', () => {
+    expect(toPage(3, [1, 2, 3, 4, 5, 6, 7, 8, 9], 3)).toEqual({
+      items: [7, 8, 9],
+      metaData: {
+        min: 7,
+        max: 9,
+        page: 3,
+        totalCount: 9,
+        totalPages: 3,
+        nextPage: null,
+        previousPage: 2,
       },
     })
   })

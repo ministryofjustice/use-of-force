@@ -167,4 +167,77 @@ context('A use of force reviewer can view completed incidents at the current age
 
     yourStatementsPage.selectedTab().contains('Your statements')
   })
+
+  it('A user can view pagination', () => {
+    cy.task('stubReviewerLogin')
+    cy.task('stubOffenders', [offender])
+    cy.login()
+
+    cy.task(
+      'seedReports',
+      Array.from(Array(62)).map((_, i) => ({
+        status: ReportStatus.COMPLETE,
+        bookingId: i,
+        involvedStaff: [
+          {
+            userId: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      }))
+    )
+
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.selectedTab().contains('Completed')
+    completedIncidentsPage.pagination().should('be.visible')
+
+    completedIncidentsPage
+      .pageResults()
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 62 results'))
+
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: undefined, text: '1', selected: true },
+        { href: '?page=2', text: '2', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=4', text: '4', selected: false },
+        { href: '?page=2', text: 'Next set of pages', selected: false },
+      ])
+    )
+    completedIncidentsPage.clickLinkWithText('Next set of pages')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous set of pages', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=4', text: '4', selected: false },
+        { href: '?page=3', text: 'Next set of pages', selected: false },
+      ])
+    )
+
+    completedIncidentsPage.clickLinkWithText('4')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=3', text: 'Previous set of pages', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: '?page=2', text: '2', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '4', selected: true },
+      ])
+    )
+
+    completedIncidentsPage.clickLinkWithText('Previous set of pages')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=2', text: 'Previous set of pages', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: '?page=2', text: '2', selected: false },
+        { href: undefined, text: '3', selected: true },
+        { href: '?page=4', text: '4', selected: false },
+        { href: '?page=4', text: 'Next set of pages', selected: false },
+      ])
+    )
+  })
 })

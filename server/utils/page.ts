@@ -24,6 +24,11 @@ export class PageResponse<T> {
   }
 }
 
+export function toPage<T>(page: number, items: T[], pageSize: number = PAGE_SIZE): PageResponse<T> {
+  const metaData = metaDataForPage(page, items.length, pageSize)
+  return new PageResponse(metaData, items.slice(metaData.min - 1, metaData.max))
+}
+
 export type OffsetAndLimit = [number, number]
 
 export function offsetAndLimitForPage(page: number, pageSize: number = PAGE_SIZE): OffsetAndLimit {

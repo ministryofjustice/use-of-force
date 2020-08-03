@@ -1,7 +1,8 @@
-import R from 'ramda'
 import type IncidentClient from '../data/incidentClient'
 import type { AgencyId, OffenderService, SystemToken } from '../types/uof'
 import type { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from '../data/incidentClientTypes'
+import { PageResponse, toPage } from '../utils/page'
+import StatementsClient from '../data/statementsClient'
 
 export interface IncidentSummary {
   id: number
@@ -34,15 +35,9 @@ interface Predicate<T> {
 }
 
 const offenderNameFilter = (nameToMatch?: string): Predicate<IncidentSummary> => {
-  if (!nameToMatch) return () => true
-
   const regexp = new RegExp(`^.*${nameToMatch}.*$`, 'i')
   return incidentSummary => regexp.test(incidentSummary.offenderName)
 }
-
-const toIncidentSummaries = (namesByOffenderNumber: NamesByOffenderNumber, nameToMatch?: string) => (
-  reports: Array<IncompleteReportSummary | ReportSummary>
-): IncidentSummary[] => reports.map(toIncidentSummary(namesByOffenderNumber)).filter(offenderNameFilter(nameToMatch))
 
 export interface ReportQuery extends IncidentSearchQuery {
   prisonerName?: string
@@ -60,7 +55,7 @@ export default class ReviewService {
   private readonly systemToken: SystemToken
 
   constructor(
-    statementsClient,
+    statementsClient: StatementsClient,
     incidentClient: IncidentClient,
     authClientBuilder,
     offenderService: OffenderService,
@@ -81,7 +76,7 @@ export default class ReviewService {
     return Promise.all(results)
   }
 
-  async getReport(reportId) {
+  async getReport(reportId: number) {
     const report = await this.incidentClient.getReportForReviewer(reportId)
     if (!report) {
       throw new Error(`Report: '${reportId}' does not exist`)
@@ -89,30 +84,44 @@ export default class ReviewService {
     return report
   }
 
-  getOffenderNames = async (username, incidents): Promise<NamesByOffenderNumber> => {
+  async getOffenderNames(username: string, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
     const token = await this.systemToken(username)
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return this.offenderService.getOffenderNames(token, offenderNos)
   }
 
-  async getCompletedReports(username: string, agencyId: AgencyId, query: ReportQuery = {}): Promise<IncidentSummary[]> {
-    const completed = await this.incidentClient.getCompletedReportsForReviewer(agencyId, query)
-    const namesByOffenderNumber = await this.getOffenderNames(username, completed)
-    return toIncidentSummaries(namesByOffenderNumber, query.prisonerName)(completed)
+  async getCompletedReports(
+    username: string,
+    agencyId: AgencyId,
+    query: ReportQuery = {},
+    page: number
+  ): Promise<PageResponse<IncidentSummary>> {
+    if (query.prisonerName) {
+      // when searching by prisoner name, we can't filter paged results as we would end up with odd/empty shaped pages. So have to load all and page in memory
+      const reports = await this.incidentClient.getAllCompletedReportsForReviewer(agencyId, query)
+      const namesByOffenderNumber = await this.getOffenderNames(username, reports)
+      const filtered = reports
+        .map(toIncidentSummary(namesByOffenderNumber))
+        .filter(offenderNameFilter(query.prisonerName))
+      return toPage(page, filtered)
+    }
+    const reports = await this.incidentClient.getCompletedReportsForReviewer(agencyId, query, page)
+    const namesByOffenderNumber = await this.getOffenderNames(username, reports.items)
+    return reports.map(toIncidentSummary(namesByOffenderNumber))
   }
 
   async getIncompleteReports(username: string, agencyId: AgencyId): Promise<IncidentSummary[]> {
     const incomplete = await this.incidentClient.getIncompleteReportsForReviewer(agencyId)
     const namesByOffenderNumber = await this.getOffenderNames(username, incomplete)
-    return toIncidentSummaries(namesByOffenderNumber)(incomplete)
+    return incomplete.map(toIncidentSummary(namesByOffenderNumber))
   }
 
-  async getStatements(token, reportId) {
+  async getStatements(token: string, reportId: number) {
     const statements = await this.statementsClient.getStatementsForReviewer(reportId)
     return this.statementsWithVerifiedInfo(token, statements)
   }
 
-  async getStatement(statementId) {
+  async getStatement(statementId: number) {
     const statement = await this.statementsClient.getStatementForReviewer(statementId)
     if (!statement) {
       throw new Error(`Statement: '${statementId}' does not exist`)

@@ -1,19 +1,18 @@
-const request = require('supertest')
-const { appWithAllRoutes, user, reviewerUser } = require('./testutils/appSetup')
-const { parseDate } = require('../utils/utils')
+import request from 'supertest'
+import { appWithAllRoutes, user, reviewerUser } from './testutils/appSetup'
+import { parseDate } from '../utils/utils'
+import ReviewService from '../services/reviewService'
+import { PageResponse } from '../utils/page'
 
 const userSupplier = jest.fn()
+
+jest.mock('../services/reviewService')
+
+let reviewService: jest.Mocked<ReviewService>
 
 const offenderService = {
   getOffenderNames: () => [],
   getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
-}
-
-const reviewService = {
-  getStatements: jest.fn(),
-  getReport: jest.fn(),
-  getIncompleteReports: jest.fn(),
-  getCompletedReports: jest.fn(),
 }
 
 const reportDetailBuilder = {
@@ -23,11 +22,20 @@ const reportDetailBuilder = {
 let app
 
 beforeEach(() => {
+  reviewService = new ReviewService(
+    jest.fn() as any,
+    jest.fn() as any,
+    jest.fn() as any,
+    jest.fn() as any,
+    jest.fn() as any
+  ) as jest.Mocked<ReviewService>
   userSupplier.mockReturnValue(user)
   reviewService.getReport.mockResolvedValue({})
   app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
-  reviewService.getIncompleteReports.mockResolvedValue({ awaiting: [] })
-  reviewService.getCompletedReports.mockResolvedValue([{}])
+  reviewService.getIncompleteReports.mockResolvedValue([])
+  reviewService.getCompletedReports.mockResolvedValue(
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, [])
+  )
 })
 
 afterEach(() => {
@@ -58,13 +66,18 @@ describe(`GET /completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getCompletedReports).toHaveBeenCalledWith('user1', 'LEI', {
-          dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
-          dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
-          prisonNumber: 'A1234AA',
-          reporter: 'Bob',
-          prisonerName: 'Jimmy Choo',
-        })
+        expect(reviewService.getCompletedReports).toHaveBeenCalledWith(
+          'user1',
+          'LEI',
+          {
+            dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
+            dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
+            prisonNumber: 'A1234AA',
+            reporter: 'Bob',
+            prisonerName: 'Jimmy Choo',
+          },
+          1
+        )
       })
   })
 
@@ -77,10 +90,15 @@ describe(`GET /completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getCompletedReports).toHaveBeenCalledWith('user1', 'LEI', {
-          prisonNumber: 'A1234AA',
-          reporter: 'Bob',
-        })
+        expect(reviewService.getCompletedReports).toHaveBeenCalledWith(
+          'user1',
+          'LEI',
+          {
+            prisonNumber: 'A1234AA',
+            reporter: 'Bob',
+          },
+          1
+        )
       })
   })
 
@@ -119,7 +137,7 @@ describe(`GET /not-completed-incidents`, () => {
 describe('GET /view-report', () => {
   it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
     return request(app)
       .get('/1/view-report')
       .expect(200)
@@ -134,8 +152,8 @@ describe('GET /view-report', () => {
 describe('GET /view-statements', () => {
   it('should render page if reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
-    reviewService.getStatements.mockReturnValue([])
+    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getStatements.mockResolvedValue([])
     return request(app)
       .get('/1/view-statements')
       .expect(200)
@@ -147,8 +165,8 @@ describe('GET /view-statements', () => {
 
   it('should not allow if not reviewer', () => {
     userSupplier.mockReturnValue(user)
-    reviewService.getReport.mockReturnValue({ id: 1, form: { incidentDetails: {} } })
-    reviewService.getStatements.mockReturnValue([])
+    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getStatements.mockResolvedValue([])
     return request(app)
       .get('/1/view-statements')
       .expect(401)
@@ -158,7 +176,7 @@ describe('GET /view-statements', () => {
   it('should error if report doesnt exist', () => {
     userSupplier.mockReturnValue(reviewerUser)
     reviewService.getReport.mockReturnValue(null)
-    reviewService.getStatements.mockReturnValue([])
+    reviewService.getStatements.mockResolvedValue([])
     return request(app).get('/1/view-statements').expect(500)
   })
 })
