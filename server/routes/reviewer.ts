@@ -48,6 +48,7 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
         reports,
         pageData,
         query,
+        rawQuery: req.query,
         selectedTab: 'completed',
       })
     },
