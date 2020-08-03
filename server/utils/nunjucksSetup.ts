@@ -1,6 +1,7 @@
 import nunjucks from 'nunjucks'
 import moment from 'moment'
 import nodeCrypto from 'crypto'
+import querystring from 'querystring'
 import config from '../config'
 import { PageMetaData } from './page'
 
@@ -84,8 +85,8 @@ export default function (app, path) {
     }))
   })
 
-  njkEnv.addFilter('toPagination', (pageData: PageMetaData) => {
-    const urlForPage = n => `?page=${n}`
+  njkEnv.addFilter('toPagination', (pageData: PageMetaData, query: any = {}) => {
+    const urlForPage = n => `?${querystring.stringify({ ...query, page: n })}`
     const items = [...Array(pageData.totalPages).keys()].map(n => ({
       text: n + 1,
       href: urlForPage(n + 1),

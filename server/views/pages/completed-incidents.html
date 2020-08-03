@@ -9,7 +9,7 @@
   {% include "../partials/incidentSearchPanel.html" %}
 
   {% if pageData.totalPages > 1 %}
-    {{ mojPagination( pageData | toPagination ) }}
+    {{ mojPagination( pageData | toPagination(rawQuery) ) }}
   {% endif %} 
 
 {% if reports.length %}
@@ -59,7 +59,7 @@
 {% endif %}
 
 {% if pageData.totalPages > 1 %}
-{{ mojPagination( pageData | toPagination ) }}
+{{ mojPagination( pageData | toPagination(rawQuery) ) }}
 {% endif %} 
 
 </section>
