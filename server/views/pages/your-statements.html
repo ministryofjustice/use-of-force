@@ -52,7 +52,7 @@
             {% endswitch %}
           </td>
           <td class="govuk-table__cell">
-            {% if statement.isOverdue %}
+            {% if statement.status === 'PENDING' and statement.isOverdue %}
             {{ 
               overdueBadge({
                 text: 'OVERDUE', 
