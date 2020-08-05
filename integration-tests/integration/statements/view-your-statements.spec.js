@@ -19,31 +19,36 @@ context('A user views their statements list', () => {
   it('A user can view all of their statements', () => {
     cy.login()
 
-    cy.task('seedReport', {
-      status: ReportStatus.SUBMITTED,
-      involvedStaff: [
-        {
-          userId: 'TEST_USER',
-          name: 'TEST_USER name',
-          email: 'TEST_USER@gov.uk',
-        },
-      ],
-    })
-
-    cy.task('seedReport', {
-      status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      agencyId: offender.agencyId,
-      offenderNumber: offender2.offenderNo,
-      bookingId: offender2.bookingId,
-      involvedStaff: [
-        {
-          userId: 'TEST_USER',
-          name: 'TEST_USER name',
-          email: 'TEST_USER@gov.uk',
-        },
-      ],
-    })
+    cy.task('seedReports', [
+      {
+        status: ReportStatus.SUBMITTED,
+        submittedDate: moment().toDate(),
+        incidentDate: moment('2019-09-10 09:57:40.000').toDate(),
+        involvedStaff: [
+          {
+            userId: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      },
+      {
+        status: ReportStatus.SUBMITTED,
+        submittedDate: moment().toDate(),
+        agencyId: offender.agencyId,
+        offenderNumber: offender2.offenderNo,
+        bookingId: offender2.bookingId,
+        incidentDate: moment('2019-09-09 09:57:40.000').toDate(),
+        overdueDate: moment().subtract(4, 'd').toDate(),
+        involvedStaff: [
+          {
+            userId: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      },
+    ])
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
@@ -53,7 +58,7 @@ context('A user views their statements list', () => {
       const { date, prisoner, overdue, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-      overdue().should('exist')
+      overdue().should('not.exist')
       action().should('contain.text', 'Start')
     }
 
@@ -61,7 +66,7 @@ context('A user views their statements list', () => {
       const { date, prisoner, overdue, action } = yourStatementsPage.statements(1)
       prisoner().contains('Jones, June')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
-      overdue().should('not.exist')
+      overdue().should('exist')
       action().should('contain.text', 'Start')
     }
   })

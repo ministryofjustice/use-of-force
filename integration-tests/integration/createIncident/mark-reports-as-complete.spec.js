@@ -1,3 +1,4 @@
+const moment = require('moment')
 const { offender } = require('../../mockApis/data')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const WriteYourStatementPage = require('../../pages/yourStatements/writeYourStatementPage')
@@ -22,6 +23,7 @@ context('Marking a report as complete', () => {
 
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
+      overdueDate: moment().subtract(1, 'd').toDate(),
       involvedStaff: [
         {
           userId: 'TEST_USER',
@@ -48,6 +50,7 @@ context('Marking a report as complete', () => {
     notCompletedIncidentsPage.yourStatementsTab().click()
 
     let yourStatementsPage = YourStatementsPage.verifyOnPage()
+    yourStatementsPage.statements(0).overdue().should('exist')
     yourStatementsPage.statements(0).action().click()
 
     const writeYourStatementPage = WriteYourStatementPage.verifyOnPage()
@@ -61,6 +64,7 @@ context('Marking a report as complete', () => {
     statementSubmittedPage.finish()
 
     yourStatementsPage = YourStatementsPage.verifyOnPage()
+    yourStatementsPage.statements(0).overdue().should('not.exist')
 
     yourStatementsPage.completedIncidentsTab().click()
 
