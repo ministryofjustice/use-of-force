@@ -77,7 +77,6 @@
         }) }}
         </div>
       </div>
-      <hr />
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-top-3">
@@ -98,9 +97,10 @@
           attributes: { 'data-qa': 'incident-date-time' }
         })
       }}
+      <hr />
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-row govuk-!-padding-bottom-3 govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-label--s">Prison:&nbsp;</span>
       <span data-qa="prison" id='prison'>
@@ -113,7 +113,6 @@
           }) 
         }}
       </span>
-      <hr />
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -122,10 +121,10 @@
         govukSelect({
           id: 'locationId',
           name: 'locationId',
-          classes: 'govuk-!-width-one-third',
+          classes: 'govuk-!-width-one-third  govuk-!-margin-bottom-3',
           errorMessage: errors | findError('locationId'),
           label: {
-            text: 'Location of incident:',
+            text: 'Where in '+ data.prison.description + ' did the incident happen?',
             isPageHeading: false,
             classes: 'govuk-label--xs govuk-!-margin-bottom-2'
           },
@@ -136,7 +135,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
       {{ govukRadios({
         classes: "govuk-radios--inline",
