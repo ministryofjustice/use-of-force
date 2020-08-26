@@ -134,7 +134,11 @@ export default function createApp({
     app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
 
-  const healthcheck = healthcheckFactory(config.apis.oauth2.url, config.apis.elite2.url)
+  const healthcheck = healthcheckFactory(
+    config.apis.oauth2.url,
+    config.apis.elite2.url,
+    config.apis.tokenVerification.url
+  )
 
   // Express Routing Configuration
   app.get('/health', (req, res, next) => {

@@ -13,8 +13,13 @@ const service = (name, url) => {
       .catch(err => ({ name, status: 'ERROR', message: err }))
 }
 
-module.exports = function healthcheckFactory(authUrl, elite2Url) {
-  const checks = [db, service('auth', `${authUrl}/ping`), service('elite2', `${elite2Url}/ping`)]
+module.exports = function healthcheckFactory(authUrl, elite2Url, tokenVerificationUrl) {
+  const checks = [
+    db,
+    service('auth', `${authUrl}/ping`),
+    service('elite2', `${elite2Url}/ping`),
+    service('tokenverification', `${tokenVerificationUrl}/health/ping`),
+  ]
 
   return callback =>
     Promise.all(checks.map(fn => fn())).then(checkResults => {

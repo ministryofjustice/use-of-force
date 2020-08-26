@@ -11,7 +11,46 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      SPRING_PROFILES_ACTIVE: dev,token-verification
+      TOKENVERIFICATION_ENDPOINT_URL: "http://token-verification-api:8080"
+      DELIUS_ENABLED: "false"
+
+  token-verification-api:
+    image: quay.io/hmpps/token-verification-api:latest
+    networks:
+      - hmpps
+      - token-backend
+    container_name: token-verification-api
+    depends_on:
+      - token-verification-api-db
+      - auth-server
+    ports:
+      - "8100:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      SPRING_PROFILES_ACTIVE: local-redis
+      SPRING_REDIS_HOST: token-verification-api-db
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://auth-server:8080/auth/.well-known/jwks.json"
+
+  token-verification-api-db:
+    image: redis
+    networks:
+      - token-backend
+    container_name: token-verification-api-db
+    restart: always
+    ports:
+      - '6379:6379'
+
+  use-of-force-redis:
+    image: 'bitnami/redis:5.0'
+    networks:
+      - hmpps
+    container_name: use-of-force-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
 
   prison-api:
     image: quay.io/hmpps/prison-api:latest
@@ -40,24 +79,17 @@ services:
       - POSTGRES_USER=use-of-force
       - POSTGRES_DB=use-of-force
 
-  use-of-force-redis:
-    image: 'bitnami/redis:5.0'
-    networks:
-      - hmpps
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - '6379:6379'
-
   use-of-force:
     image: quay.io/hmpps/use-of-force:latest
     networks:
       - hmpps
+    container_name: use-of-force
     depends_on:
       - use-of-force-db
       - use-of-force-redis
       - auth-server
       - prison-api
+      - token-verification-api
     ports:
       - "3000:3000"
     healthcheck:
@@ -72,7 +104,12 @@ services:
       - NOMIS_AUTH_URL=http://auth-server:8080/auth
       - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
       - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
+      - TOKENVERIFICATION_API_URL=http://token-verification-api:8080
+      - TOKENVERIFICATION_API_ENABLED=true
       - NODE_ENV=development
+      - REDIS_HOST=use-of-force-redis
 
 networks:
   hmpps:
+  token-backend:
+    internal: true
