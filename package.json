@@ -108,6 +108,7 @@
     "csv-stringify": "^5.5.0",
     "debug": "^4.1.1",
     "dotenv": "^8.2.0",
+    "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "express-request-id": "^1.4.1",
     "express-session": "^1.17.1",
