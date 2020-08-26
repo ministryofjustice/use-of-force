@@ -1,16 +1,18 @@
 const passport = require('passport')
 const { Strategy } = require('passport-oauth2')
+const querystring = require('querystring')
 const config = require('../config')
 const { generateOauthClientToken } = require('./clientCredentials')
 
-function authenticationMiddleware() {
-  return (req, res, next) => {
-    if (req.isAuthenticated()) {
+function authenticationMiddlewareFactory(tokenVerifier) {
+  return async (req, res, next) => {
+    if (req.isAuthenticated() && (await tokenVerifier.verify(res.locals.user.token))) {
       return next()
     }
-
-    req.session.returnTo = req.originalUrl
-    return res.redirect('/login')
+    req.logout()
+    const query = querystring.stringify({ returnTo: req.originalUrl })
+    res.redirect(`/login?${query}`)
+    return undefined // because typescript insists on a return value
   }
 }
 
@@ -24,7 +26,7 @@ passport.deserializeUser((user, done) => {
   done(null, user)
 })
 
-function init(signInService) {
+function initialisePassportStrategy(signInService) {
   const strategy = new Strategy(
     {
       authorizationURL: `${config.apis.oauth2.externalUrl}/oauth/authorize`,
@@ -45,5 +47,7 @@ function init(signInService) {
   passport.use(strategy)
 }
 
-module.exports.init = init
-module.exports.authenticationMiddleware = authenticationMiddleware
+module.exports = {
+  initialisePassportStrategy,
+  authenticationMiddlewareFactory,
+}

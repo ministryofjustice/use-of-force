@@ -21,6 +21,8 @@ env:
   PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search.prison.service.justice.gov.uk
   EXIT_LOCATION_URL: https://digital.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://use-of-force.service.justice.gov.uk
+  TOKENVERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
+  TOKENVERIFICATION_API_ENABLED: true
 
 allow_list:
   office: '217.33.148.210/32'

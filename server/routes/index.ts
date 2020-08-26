@@ -161,7 +161,7 @@ export default function Index({
     post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
   }
 
-  router.use(authenticationMiddleware())
+  router.use(authenticationMiddleware)
   router.use(bodyParser.urlencoded({ extended: false }))
   router.use(flash())
 

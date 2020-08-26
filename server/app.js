@@ -18,18 +18,20 @@ const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 
+const tokenVerifierFactory = require('./authentication/tokenverifier/tokenVerifierFactory')
 const healthcheckFactory = require('./services/healthcheck')
 const createApiRouter = require('./routes/api')
 
 const logger = require('../log.js')
-const auth = require('./authentication/auth')
+const { authenticationMiddlewareFactory, initialisePassportStrategy } = require('./authentication/auth')
 const populateCurrentUser = require('./middleware/populateCurrentUser')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const errorHandler = require('./errorHandler')
 
 const config = require('./config')
 
-const { authenticationMiddleware } = auth
+const authenticationMiddleware = authenticationMiddlewareFactory(tokenVerifierFactory(config.apis.tokenVerification))
+
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
@@ -50,7 +52,7 @@ export default function createApp({
 }) {
   const app = express()
 
-  auth.init(signInService)
+  initialisePassportStrategy(signInService)
 
   app.set('json spaces', 2)
 

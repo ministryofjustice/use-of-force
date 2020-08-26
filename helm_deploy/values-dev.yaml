@@ -21,3 +21,6 @@ env:
   PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
   EXIT_LOCATION_URL: https://digital-dev.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://dev.use-of-force.service.justice.gov.uk
+  TOKENVERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
+  TOKENVERIFICATION_API_ENABLED: true
+
