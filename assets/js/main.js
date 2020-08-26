@@ -17,8 +17,10 @@ $(document).ready(function() {
     const disablePastDates = Boolean($(element).attr('disable-past-dates'))
     const maxDate = disableFutureDates ? '0' : undefined
     const minDate = disablePastDates ? '0' : undefined
-    $(element).datepicker({
-      dateFormat: 'd M yy',
+    const dateFormat = $(element).attr('date-format') || 'd M yy'
+
+      $(element).datepicker({
+      dateFormat,
       showOtherMonths: true,
       selectOtherMonths: true,
       maxDate: maxDate,

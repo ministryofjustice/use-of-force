@@ -6,100 +6,118 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
-
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% from "../../partials/datePicker.njk" import datePicker %}
+{% from "../timeMacro.njk"  import  timeInput %}
 {% set pageTitle = 'Incident details' %}
 {% set showCancelEditButton = data.locationId %}
 
 {% block formItems %}
 <div class="govuk-body">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds"> 
       <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
       <div class="govuk-!-margin-bottom-6">
         <p class="govuk-!-margin-bottom-1">
-          <span class="govuk-label--s">Prisoner:&nbsp;</span>
+          <span class="govuk-label--m">Prisoner:&nbsp;</span>
           <span data-qa="offender-name"> {{ data.displayName }}</span>
         </p>
-        {% set formattedDate = data.incidentDate.value | formatDate('D MMMM YYYY') %}
-        {% set editDate = not formattedDate or errors | hasErrorWithPrefix(['incidentDate[value]','incidentDate[date]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']) %}
-        <p id="read-date" class="{{'hidden' if editDate }}">
-          <span class="govuk-label--s">Date of incident:&nbsp;</span>
-          <span data-qa="date-and-time">
-            {{ formattedDate }} &nbsp;<a id="change-date" href="" class="govuk-link govuk-link--no-visited-state">Change</a>
-          </span>
-        </p>
-        <div id="edit-date" class="edit-incident-date {{'hidden' if not editDate }}">
-          {% macro errorClass(field) -%}
-          {{ ' govuk-input--error' if errors | hasErrorWithPrefix([field, 'incidentDate[value]', 'incidentDate[isFutureDate]']) else '' }}
-          {%- endmacro %}
-          {{ govukDateInput({
-          id: "incident-date",
-          fieldset: {
-            legend: {
-              text: "Date of incident:",
-              isPageHeading: false,
-              classes: "govuk-label--s"
-            }
-          },
-          errorMessage: errors | findErrors(
-            ['incidentDate[date][day]', 'incidentDate[date][month]', 'incidentDate[date][year]',
-            'incidentDate[isInvalidDate]', 'incidentDate[isFutureDate]', 'incidentDate[isFutureDateTime]']),
-          hint: {
-            text: "For example, 27 3 2007"
-          },
-          items: [
-          {
-            id: "incidentDate[date][day]",
-            classes: "govuk-input--width-2" + errorClass('incidentDate[date][day]'),
-            name: "incidentDate[date][day]",
-            label: "Day",
-            value: data.incidentDate.day,
-            attributes: { 'data-qa': 'incident-date-day' }
-          },
-          {
-            id: "incidentDate[date][month]",
-            classes: "govuk-input--width-2" + errorClass('incidentDate[date][month]'),
-            name: "incidentDate[date][month] ",
-            label: "Month",
-            value: data.incidentDate.month,
-            attributes: { 'data-qa': 'incident-date-month' }
-          },
+      </div>
 
-          {
-            id: "incidentDate[date][year]",
-            classes: "govuk-input--width-4" + errorClass('incidentDate[date][year]'),
-            name: "incidentDate[date][year]",
-            label: "Year",
-            value: data.incidentDate.year,
-            attributes: { 'data-qa': 'incident-date-year' }
+      <!-- new date start -->
+      <h3>When did the incident happen?</h3>
+      <div>
+        {{ datePicker({
+          id: 'incidentDate[date]',
+          label: 'Date',
+          name: 'incidentDate[date]',
+          date: data.incidentDate.date,
+          classes: 'text-align-center',
+          attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy'},
+          errorMessage: errors | findErrors(['incidentDate[date]'])
+          }) 
+        }}
+      </div>
+      <!-- 
+        TO DO
+        replace timeInput with govuk dateInput
+        extract out custom validation functions and constant from incidentDetailsForm
+        TESTS!!
+        make date field a bit bigger - when errored it appears squashed
+       -->
+       {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
+       {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
+       
+      {{ timeInput({
+        id: "incidentDate[time]",
+        fieldset: {
+          legend: {
+            text: "Time",
+            isPageHeading: false
           }
-        ]
-        }) }}
-        </div>
+        }, 
+        errorMessage: errors | concatErrors(["incidentDate[time][hour]", "incidentDate[time][minute]", "incidentDate[time]"]),
+        items: [
+            {
+            label: 'Hours',
+            value: data.incidentDate.hour,
+            name: "incidentDate[time][hour]",
+            classes: "text-align-center govuk-input--width-2 " + ('govuk-input--error' if isHourError),
+            attributes: { 'data-qa': 'incident-date-hour' },
+            id: "incidentDate[time][hour]"
+          },
+            {
+            label: 'Minutes',
+            value: data.incidentDate.minute,
+            name: "incidentDate[time][minute]",
+            classes: "text-align-center govuk-input--width-2 " + ('govuk-input--error' if isMinuteError), 
+            attributes: { 'data-qa': 'incident-date-minute' },
+            id: "incidentDate[time][minute]"
+            }
+        ],
+        hint: {
+          text: "Use the 24 hour clock. For example, 09 08 or 17 32"
+        }
+      }) }}
+
+      <!-- new time start -->
+ 
+  
+        <!-- {{ govukErrorMessage({
+          id: 'errorId',
+          text: 'Everything is wrong' 
+        })}} -->
+
+        <!-- <div class="flex-container">
+          {{ govukInput({
+            label: {
+              html: 'Hours'
+            },
+            id: 'incidentDate[time][hour]',
+            name: 'incidentDate[time][hour]',
+            classes: "text-align-center govuk-input--width-2",
+            value: data.incidentDate.hour,
+            attributes: { 'data-qa': 'incident-date-hour' },
+            errorMessage: errors | findErrors(['incidentDate[time][hour]', 'incidentDate[time]'])
+          }) }}
+
+          {{ govukInput({
+            label: {
+              html: 'Minutes',
+              classes: "govuk-!-margin-left-4"
+            },
+            id: 'incidentDate[time][minute]',
+            name: 'incidentDate[time][minute]',
+            classes: "text-align-center govuk-input--width-2 govuk-!-margin-left-4",
+            value: data.incidentDate.minute,
+            attributes: { 'data-qa': 'incident-date-minute' },
+            errorMessage: errors | findErrors(['incidentDate[time][minute]', 'incidentDate[time]'])
+          }) }}
+        </div> -->
+        <hr>
       </div>
     </div>
-  </div>
-  <div class="govuk-grid-row govuk-!-margin-top-3">
-    <div class="govuk-grid-column-two-thirds">
-      {{
-        govukInput({
-          label: {
-            text: 'Time of incident:'
-          },
-          id: 'incidentDate[time]',
-          name: 'incidentDate[time]',
-          classes: "govuk-input--width-4",
-          hint: {
-            text: "Use the 24 hour clock. For example, 14:30"
-          },
-          value: data.incidentDate.time,
-          errorMessage: errors | findErrors(['incidentDate[time]', 'incidentDate[isFutureDateTime]']),
-          attributes: { 'data-qa': 'incident-date-time' }
-        })
-      }}
-      <hr />
-    </div>
-  </div>
+
   <div class="govuk-grid-row govuk-!-padding-bottom-3 govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-label--s">Prison:&nbsp;</span>

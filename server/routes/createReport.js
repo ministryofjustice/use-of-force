@@ -96,32 +96,22 @@ module.exports = function NewIncidentRoutes({
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
-  const getIncidentDate = (savedValue, formValue) => {
-    if (formValue) {
-      const {
-        raw: { day, month, year, time },
-      } = formValue
-
-      const value = moment({
-        years: year,
-        months: month - 1,
-        date: day,
-      })
-      return { day, month, year, time, value: value.isValid() ? value.toDate() : null }
+  const getIncidentDate = (savedValue, userProvidedValue) => {
+    if (userProvidedValue) {
+      const { date, time: { hour, minute } } = userProvidedValue
+      return { date, hour, minute }
+    } else if (savedValue) {
+      const date = moment(savedValue)
+      return { date: date.format('DD/MM/YYYY'), hour: date.format('HH'), minute: date.format('mm') }
+    } else {
+      return null
     }
-
-    const date = savedValue ? moment(savedValue) : moment()
-    const day = date.format('D')
-    const month = date.format('M')
-    const year = date.format('YYYY')
-    const time = date.format('HH:mm')
-
-    return { day, month, year, time, value: date.toDate() }
   }
+
 
   const viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const { formId, form, incidentDate = moment(), agencyId: persistedAgencyId } = await loadForm(req)
+    const { formId, form, incidentDate, agencyId: persistedAgencyId } = await loadForm(req)
 
     const token = await systemToken(res.locals.user.username)
     const offenderDetail = await offenderService.getOffenderDetails(token, bookingId)
