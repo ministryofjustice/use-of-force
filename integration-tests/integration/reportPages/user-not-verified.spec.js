@@ -26,6 +26,9 @@ context('Submitting details page form', () => {
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.hour().type('09')
+    incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 
@@ -48,6 +51,9 @@ context('Submitting details page form', () => {
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.hour().type('09')
+    incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
 

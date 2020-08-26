@@ -4,11 +4,8 @@ describe('statusCheck', () => {
   const validReport = {
     incidentDetails: {
       incidentDate: {
-        date: { day: 1, month: 1, year: 2019 },
-        time: '12:00',
-        isInvalidDate: false,
-        isFutureDate: false,
-        isFutureDateTime: false,
+        date: '01/01/2019',
+        time: { hour: '12', minute: '30' },
       },
       witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
       locationId: -25,

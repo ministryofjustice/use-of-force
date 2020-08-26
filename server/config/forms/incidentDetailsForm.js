@@ -2,7 +2,13 @@ const { joi, asMeta, validations, usernamePattern, namePattern, caseInsensitiveC
 const { EXTRACTED } = require('../fieldType')
 const { toDate, removeEmptyObjects, toBoolean } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
-const {ValidationError, hourValidation, minuteValidation, dateValidation, timeValidation } = require('./incidentDateValidation')
+const {
+  ValidationError,
+  hourValidation,
+  minuteValidation,
+  dateValidation,
+  timeValidation,
+} = require('./incidentDateValidation')
 
 const {
   optionalForPartialValidation,
@@ -20,41 +26,40 @@ const requiredIncidentDate = joi
     date: joi
       .any()
       .custom(dateValidation)
-      .messages({ 
-        [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020', 
+      .messages({
+        [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020',
         [ValidationError.isFuture]: 'Enter a date that is not in the future',
-    }),
+      }),
 
-    time: joi.object({
-      hour: joi
-        .any()
-        .custom(hourValidation)
-        .messages({
-          [ValidationError.missing]: 'Enter missing hours',
-          [ValidationError.isNotNumber]: 'Enter hours using numbers only',
-          [ValidationError.isTooLarge]: 'Enter an hour which is 23 or less',
-          [ValidationError.isNot2Digits]: 'Enter the hours using 2 digits',
-        }),
+    time: joi
+      .object({
+        hour: joi
+          .any()
+          .custom(hourValidation)
+          .messages({
+            [ValidationError.missing]: 'Enter missing hours',
+            [ValidationError.isNotNumber]: 'Enter hours using numbers only',
+            [ValidationError.isTooLarge]: 'Enter an hour which is 23 or less',
+            [ValidationError.isNot2Digits]: 'Enter the hours using 2 digits',
+          }),
 
-      minute: joi
-        .any()
-        .custom(minuteValidation)
-        .messages({
-          [ValidationError.missing]: 'Enter missing minutes',
-          [ValidationError.isNotNumber]: 'Enter minutes using numbers only',
-          [ValidationError.isTooLarge]: 'Enter the minutes using 59 or less',
-          [ValidationError.isNot2Digits]: 'Enter the minutes using 2 digits',
-        }),
-    }).custom(timeValidation).messages({
-      [ValidationError.isFuture]: 'Enter a time which is not in the future'
-    }),
+        minute: joi
+          .any()
+          .custom(minuteValidation)
+          .messages({
+            [ValidationError.missing]: 'Enter missing minutes',
+            [ValidationError.isNotNumber]: 'Enter minutes using numbers only',
+            [ValidationError.isTooLarge]: 'Enter the minutes using 59 or less',
+            [ValidationError.isNot2Digits]: 'Enter the minutes using 2 digits',
+          }),
+      })
+      .custom(timeValidation)
+      .messages({
+        [ValidationError.isFuture]: 'Enter a time which is not in the future',
+      }),
 
     value: joi.date().allow(null),
   })
-  /*
-   * 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
-   * These pre-defined Joi schemas include the sanitisers 'toInteger' and 'trimmedString' respectively.
-   */
   .meta({ sanitiser: toDate })
 
 const optionalInvolvedStaff = joi

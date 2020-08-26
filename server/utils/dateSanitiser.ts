@@ -20,14 +20,14 @@ const toDateTime = (date: moment.Moment, hours?: number, minutes?: number): mome
 }
 
 type DateParameter = {
-  date: string,
+  date: string
   time: {
-    hour: string,
+    hour: string
     minute: string
   }
 }
 
-export = function ({ date: dateVal = '', time: { hour = '', minute = '' }}: DateParameter )  {
+export = function ({ date: dateVal = '', time: { hour = '', minute = '' } }: DateParameter) {
   const parsedDate = moment(dateVal.trim(), 'DD/MM/YYYY', true)
   const parsedHours = toInteger(hour)
   const parsedMinutes = toInteger(minute)
@@ -35,8 +35,8 @@ export = function ({ date: dateVal = '', time: { hour = '', minute = '' }}: Date
   const fullDate = toDateTime(parsedDate, parsedHours, parsedMinutes)
 
   return {
-    date: dateVal, 
-    time: {hour, minute},
+    date: dateVal,
+    time: { hour, minute },
     value: fullDate ? fullDate.toDate() : null,
   }
 }

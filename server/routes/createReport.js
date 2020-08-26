@@ -98,16 +98,19 @@ module.exports = function NewIncidentRoutes({
 
   const getIncidentDate = (savedValue, userProvidedValue) => {
     if (userProvidedValue) {
-      const { date, time: { hour, minute } } = userProvidedValue
+      const {
+        date,
+        time: { hour, minute },
+      } = userProvidedValue
       return { date, hour, minute }
-    } else if (savedValue) {
+    }
+    if (savedValue) {
       const date = moment(savedValue)
       return { date: date.format('DD/MM/YYYY'), hour: date.format('HH'), minute: date.format('mm') }
-    } else {
-      return null
     }
-  }
 
+    return null
+  }
 
   const viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
