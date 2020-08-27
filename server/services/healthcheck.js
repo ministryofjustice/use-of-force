@@ -16,8 +16,8 @@ const service = (name, url) => {
 module.exports = function healthcheckFactory(authUrl, elite2Url, tokenVerificationUrl) {
   const checks = [
     db,
-    service('auth', `${authUrl}/ping`),
-    service('elite2', `${elite2Url}/ping`),
+    service('auth', `${authUrl}/health/ping`),
+    service('elite2', `${elite2Url}/health/ping`),
     service('tokenverification', `${tokenVerificationUrl}/health/ping`),
   ]
 

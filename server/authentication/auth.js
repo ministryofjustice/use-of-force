@@ -11,8 +11,7 @@ function authenticationMiddlewareFactory(tokenVerifier) {
     }
     req.logout()
     const query = querystring.stringify({ returnTo: req.originalUrl })
-    res.redirect(`/login?${query}`)
-    return undefined // because typescript insists on a return value
+    return res.redirect(`/login?${query}`)
   }
 }
 
@@ -39,7 +38,6 @@ function initialisePassportStrategy(signInService) {
     },
     (accessToken, refreshToken, params, profile, done) => {
       const user = signInService.getUser(accessToken, refreshToken, params.expires_in, params.user_name)
-
       return done(null, user)
     }
   )
