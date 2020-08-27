@@ -6,7 +6,7 @@ orbs:
 executors:
   integration-tests:
     docker:
-      - image: circleci/11.0.7-jdk-buster-node-browsers
+      - image: circleci/openjdk:11-jdk-node-browsers
       - image: circleci/postgres:10.6-alpine-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
@@ -74,6 +74,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/app
+      - run:
+          name: Install missing OS dependency
+          command: sudo apt-get install libxss1
       - run:
           name: Run wiremock
           command: java -jar .circleci/wiremock-standalone-2.23.2.jar --port 9091
