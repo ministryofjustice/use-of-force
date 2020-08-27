@@ -6,7 +6,7 @@ orbs:
 executors:
   integration-tests:
     docker:
-      - image: circleci/11.0.8-jdk-buster-node-browsers
+      - image: circleci/11.0.7-jdk-buster-node-browsers
       - image: circleci/postgres:10.6-alpine-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
