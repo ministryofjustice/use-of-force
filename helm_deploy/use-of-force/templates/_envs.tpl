@@ -109,7 +109,7 @@ env:
   - name: TOKENVERIFICATION_API_ENABLED
     value: {{ .Values.env.TOKENVERIFICATION_API_ENABLED | quote }}
 
-  - name: NODE_ENV	  - name: REDIS_HOST
+- name: REDIS_HOST
     valueFrom:
       secretKeyRef:
         name: uof-elasticache-redis
