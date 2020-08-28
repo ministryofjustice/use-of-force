@@ -2,49 +2,64 @@ const { joi, asMeta, validations, usernamePattern, namePattern, caseInsensitiveC
 const { EXTRACTED } = require('../fieldType')
 const { toDate, removeEmptyObjects, toBoolean } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
+const {
+  ValidationError,
+  hourValidation,
+  minuteValidation,
+  dateValidation,
+  timeValidation,
+} = require('./incidentDateValidation')
 
 const {
   optionalForPartialValidation,
   requiredNumber,
   requiredIntegerMsg,
   requiredString,
-  requiredStringMsg,
   optionalString,
   requiredPatternMsg,
-  requiredBoolean,
   requiredBooleanMsg,
-  any,
   arrayOfObjects,
 } = validations
-
-const timePattern = /^(0[0-9]|1[0-9]|2[0-3]|[0-9])[:.][0-5][0-9]$/
 
 const requiredIncidentDate = joi
   .object({
     date: joi
+      .any()
+      .custom(dateValidation)
+      .messages({
+        [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020',
+        [ValidationError.isFuture]: 'Enter a date that is not in the future',
+      }),
+
+    time: joi
       .object({
-        day: requiredIntegerMsg('Enter the date'),
-        month: requiredIntegerMsg('Enter the month'),
-        year: requiredIntegerMsg('Enter the year'),
+        hour: joi
+          .any()
+          .custom(hourValidation)
+          .messages({
+            [ValidationError.missing]: 'Enter missing hours',
+            [ValidationError.isNotNumber]: 'Enter hours using numbers only',
+            [ValidationError.isTooLarge]: 'Enter an hour which is 23 or less',
+            [ValidationError.isNot2Digits]: 'Enter the hours using 2 digits',
+          }),
+
+        minute: joi
+          .any()
+          .custom(minuteValidation)
+          .messages({
+            [ValidationError.missing]: 'Enter missing minutes',
+            [ValidationError.isNotNumber]: 'Enter minutes using numbers only',
+            [ValidationError.isTooLarge]: 'Enter the minutes using 59 or less',
+            [ValidationError.isNot2Digits]: 'Enter the minutes using 2 digits',
+          }),
       })
-      .required(),
-    time: requiredStringMsg('Enter the time of the incident')
-      .pattern(timePattern)
-      .message('Enter a time in the correct format - for example, 23:59'),
-    raw: any,
+      .custom(timeValidation)
+      .messages({
+        [ValidationError.isFuture]: 'Enter a time which is not in the future',
+      }),
+
     value: joi.date().allow(null),
-    isInvalidDate: requiredBoolean
-      .invalid(true)
-      .messages({ 'any.invalid': 'Enter a date in the correct format - for example, 27 3 2007' }),
-    isFutureDate: requiredBoolean.invalid(true).messages({ 'any.invalid': 'Enter a date that is not in the future' }),
-    isFutureDateTime: requiredBoolean
-      .invalid(true)
-      .messages({ 'any.invalid': 'Enter a time which is not in the future' }),
   })
-  /*
-   * 'The toDate' sanitiser below runs on pre-sanitised fields thanks to requiredIntegerMsg, requiredString above.
-   * These pre-defined Joi schemas include the sanitisers 'toInteger' and 'trimmedString' respectively.
-   */
   .meta({ sanitiser: toDate })
 
 const optionalInvolvedStaff = joi

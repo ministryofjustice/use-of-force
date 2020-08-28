@@ -7,7 +7,11 @@ const incidentDetailsPage = () =>
     location: () => cy.get('#locationId'),
     prison: () => cy.get('[data-qa=prison]'),
     clickChangePrison: () => cy.get('[data-qa=change-prison-link]').click(),
-
+    incidentDate: {
+      date: () => cy.get('#incidentDate\\[date\\]'),
+      hour: () => cy.get('#incidentDate\\[time\\]\\[hour\\]'),
+      minute: () => cy.get('#incidentDate\\[time\\]\\[minute\\]'),
+    },
     forceType: {
       check: value => cy.get('[name="plannedUseOfForce"]').check(value),
       planned: () => cy.get("[name='plannedUseOfForce'][value='true']"),
@@ -15,6 +19,9 @@ const incidentDetailsPage = () =>
     },
 
     fillForm() {
+      this.incidentDate.date().type('12/01/2020{esc}')
+      this.incidentDate.hour().type('09')
+      this.incidentDate.minute().type('32')
       this.location().select('Asso A Wing')
       this.forceType.check('true')
       this.staffInvolved(0).name().type('Dr Smith')

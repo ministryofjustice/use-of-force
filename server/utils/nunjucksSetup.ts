@@ -2,6 +2,7 @@ import nunjucks from 'nunjucks'
 import moment from 'moment'
 import nodeCrypto from 'crypto'
 import querystring from 'querystring'
+import escapeHtml from 'escape-html'
 import config from '../config'
 import { PageMetaData } from './page'
 
@@ -9,6 +10,11 @@ const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
   links,
 } = config
+
+type Error = {
+  href: string
+  text: string
+}
 
 export default function (app, path) {
   const njkEnv = nunjucks.configure(
@@ -27,7 +33,7 @@ export default function (app, path) {
   njkEnv.addGlobal('googleTagManagerEnvironment', tagManagerEnvironment)
   njkEnv.addGlobal('links', links)
 
-  njkEnv.addFilter('findError', (array, formFieldId) => {
+  njkEnv.addFilter('findError', (array: Error[], formFieldId: string) => {
     const item = array.find(error => error.href === `#${formFieldId}`)
     if (item) {
       return {
@@ -37,7 +43,7 @@ export default function (app, path) {
     return null
   })
 
-  njkEnv.addFilter('findErrors', (errors, formFieldIds) => {
+  njkEnv.addFilter('findErrors', (errors: Error[], formFieldIds: string[]) => {
     const fieldIds = formFieldIds.map(field => `#${field}`)
     const errorIds = errors.map(error => error.href)
     const firstPresentFieldError = fieldIds.find(fieldId => errorIds.includes(fieldId))
@@ -45,6 +51,23 @@ export default function (app, path) {
       return { text: errors.find(error => error.href === firstPresentFieldError).text }
     }
     return null
+  })
+
+  njkEnv.addFilter('concatErrors', (errors: Error[], formFieldIds: string[]) => {
+    const fieldIds = formFieldIds.map(field => `#${field}`)
+    const foundErrors = errors.filter(error => fieldIds.includes(error.href))
+    if (foundErrors.length === 0) {
+      return null
+    }
+
+    const errorMessages = foundErrors.map(error => escapeHtml(error.text)).join('<br/>')
+    return { html: errorMessages }
+  })
+
+  njkEnv.addFilter('isErrorPresent', (errors: Error[], formFieldIds: string[]) => {
+    const fieldIds = formFieldIds.map(field => `#${field}`)
+    const foundErrors = errors.filter(error => fieldIds.includes(error.href))
+    return foundErrors.length !== 0
   })
 
   njkEnv.addFilter('hasErrorWithPrefix', (errorsArray, prefixes) => {

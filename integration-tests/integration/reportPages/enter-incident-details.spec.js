@@ -19,6 +19,10 @@ context('Submitting details page form', () => {
   const fillFormAndSave = () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+
+    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.hour().type('09')
+    incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.prison().contains('Moorland')
     incidentDetailsPage.location().select('Asso A Wing')
@@ -36,43 +40,6 @@ context('Submitting details page form', () => {
     return detailsPage
   }
 
-  it('Can edit date', () => {
-    cy.login()
-
-    fillFormAndSave()
-
-    cy.go('back')
-
-    let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-
-    incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
-    incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
-    incidentDetailsPage.incidentDateTime.year().should('not.be.visible')
-    incidentDetailsPage.incidentDateTime.readOnlyView().should('be.visible')
-
-    incidentDetailsPage.incidentDateTime.change().click()
-
-    incidentDetailsPage.incidentDateTime.day().should('be.visible')
-    incidentDetailsPage.incidentDateTime.month().should('be.visible')
-    incidentDetailsPage.incidentDateTime.year().should('be.visible')
-    incidentDetailsPage.incidentDateTime.readOnlyView().should('not.be.visible')
-
-    incidentDetailsPage.incidentDateTime.day().clear().type('1')
-    incidentDetailsPage.incidentDateTime.month().clear().type('1')
-    incidentDetailsPage.incidentDateTime.year().clear().type('2011')
-    incidentDetailsPage.incidentDateTime.time().clear().type('11:11')
-    incidentDetailsPage.save()
-    cy.go('back')
-
-    incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-    incidentDetailsPage.incidentDateTime.day().should('not.be.visible')
-    incidentDetailsPage.incidentDateTime.month().should('not.be.visible')
-    incidentDetailsPage.incidentDateTime.year().should('not.be.visible')
-
-    incidentDetailsPage.incidentDateTime.readOnlyView().contains('1 January 2011')
-    incidentDetailsPage.incidentDateTime.time().should('have.value', '11:11')
-  })
-
   it('Can login and create a new report', () => {
     cy.login()
 
@@ -80,11 +47,7 @@ context('Submitting details page form', () => {
 
     cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(
       ({ payload, incidentDate }) => {
-        const incidentDateInMillis = moment(incidentDate).valueOf()
-        const nowInMillis = moment().valueOf()
-
-        const millisBetweenSavedDateAndNow = nowInMillis - incidentDateInMillis
-        expect(millisBetweenSavedDateAndNow).to.be.above(0)
+        expect(moment(incidentDate).valueOf()).to.equal(moment('2020-01-12T09:32:00.000').valueOf())
 
         expect(payload).to.deep.equal({
           locationId: 357591,
@@ -140,6 +103,10 @@ context('Submitting details page form', () => {
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     let incidentDetailsPage = reportUseOfForcePage.startNewForm()
+
+    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.hour().type('09')
+    incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')

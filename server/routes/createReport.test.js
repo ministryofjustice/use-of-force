@@ -98,8 +98,8 @@ describe('POST save and continue /section/form', () => {
       .send({
         submitType: 'save-and-continue',
         incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
         },
         locationId: -1,
         plannedUseOfForce: 'true',
@@ -114,7 +114,7 @@ describe('POST save and continue /section/form', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -133,8 +133,8 @@ describe('POST save and continue /section/form', () => {
       .send({
         submitType: 'save-and-continue',
         incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
         },
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
@@ -154,10 +154,7 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-return',
-        incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
-        },
+        incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
         locationId: -1,
         plannedUseOfForce: 'true',
         involvedStaff: [{ username: 'User_bob' }, { username: '' }],
@@ -171,7 +168,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -192,8 +189,8 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-change-prison',
         incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
         },
         locationId: -1,
         plannedUseOfForce: 'true',
@@ -208,7 +205,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -229,8 +226,8 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-return',
         incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
         },
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
@@ -243,7 +240,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               involvedStaff: [{ username: 'USER_BOB' }],
@@ -261,8 +258,8 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-return',
         incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
         },
         involvedStaff: [{ username: '!@£$' }], // not a valid username
         witnesses: [{ name: 'User bob' }, { name: '' }],
@@ -279,10 +276,7 @@ describe('POST save and return to check-your-answers', () => {
       .post(`/report/1/edit-incident-details`)
       .send({
         submitType: 'save-and-continue',
-        incidentDate: {
-          date: { day: '21', month: '01', year: '2019' },
-          time: '12:45',
-        },
+        incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
         locationId: -1,
         plannedUseOfForce: 'true',
         involvedStaff: [{ username: 'User_bob' }, { username: '' }],
@@ -296,7 +290,7 @@ describe('POST save and return to check-your-answers', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: { day: 21, month: 1, year: 2019 }, time: '12:45' }),
+          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
