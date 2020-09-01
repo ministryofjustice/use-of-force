@@ -729,6 +729,40 @@ describe("'complete' validation", () => {
         })
       })
     })
+
+    it('time is last minute of current day', () => {
+      const endOfToday = moment({ hour: 23, minute: 59, seconds: 0, milliseconds: 0 })
+
+      const input = {
+        ...validInput,
+        incidentDate: {
+          date: endOfToday.format('DD/MM/YYYY'),
+          time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
+        },
+      }
+      const { errors, formResponse, extractedFields } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#incidentDate[time]',
+          text: 'Enter a time which is not in the future',
+        },
+      ])
+
+      expect(extractedFields).toEqual({
+        incidentDate: {
+          date: endOfToday.format('DD/MM/YYYY'),
+          value: endOfToday.toDate(),
+          time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
+        },
+      })
+      expect(formResponse).toEqual({
+        locationId: -1,
+        plannedUseOfForce: true,
+        involvedStaff: [{ username: 'ITAG_USER' }],
+        witnesses: [{ name: 'User bob' }],
+      })
+    })
   })
 
   describe('check optional staff role', () => {
