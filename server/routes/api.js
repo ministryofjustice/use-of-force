@@ -6,7 +6,7 @@ const { coordinatorOnly } = require('../middleware/roleCheck')
 module.exports = function Index({ authenticationMiddleware, offenderService, reportingService, systemToken }) {
   const router = express.Router()
 
-  router.use(authenticationMiddleware())
+  router.use(authenticationMiddleware)
 
   const placeHolder = path.join(process.cwd(), '/assets/images/image-missing.png')
 

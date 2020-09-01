@@ -4,7 +4,7 @@ const passport = require('passport')
 const auth = require('../../authentication/auth')
 
 const setupMockAuthentication = (app, signInService) => {
-  auth.init(signInService)
+  auth.initialisePassportStrategy(signInService)
   app.use(
     session({
       secret: 'test',
@@ -16,6 +16,6 @@ const setupMockAuthentication = (app, signInService) => {
   app.use(passport.session())
 }
 
-module.exports.authenticationMiddleware = () => (req, res, next) => next()
+module.exports.authenticationMiddleware = (req, res, next) => next()
 
 module.exports.setupMockAuthentication = setupMockAuthentication

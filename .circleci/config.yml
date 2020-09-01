@@ -75,6 +75,9 @@ jobs:
       - attach_workspace:
           at: ~/app
       - run:
+          name: Install missing OS dependency
+          command: sudo apt-get install libxss1
+      - run:
           name: Run wiremock
           command: java -jar .circleci/wiremock-standalone-2.23.2.jar --port 9091
           background: true

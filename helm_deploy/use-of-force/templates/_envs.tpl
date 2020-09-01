@@ -103,6 +103,12 @@ env:
   - name: EMAIL_LOCATION_URL
     value: {{ .Values.env.EMAIL_LOCATION_URL | quote }}
     
+  - name: TOKENVERIFICATION_API_URL
+    value: {{ .Values.env.TOKENVERIFICATION_API_URL | quote }}
+
+  - name: TOKENVERIFICATION_API_ENABLED
+    value: {{ .Values.env.TOKENVERIFICATION_API_ENABLED | quote }}
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:

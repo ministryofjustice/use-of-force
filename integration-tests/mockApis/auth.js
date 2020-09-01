@@ -20,8 +20,7 @@ const createToken = (isReviewer, isCoordinator) => {
     client_id: 'use-of-force-client',
   }
 
-  const token = jwt.sign(payload, 'secret', { expiresIn: '1h' })
-  return token
+  return jwt.sign(payload, 'secret', { expiresIn: '1h' })
 }
 
 const getLoginUrl = () =>
@@ -98,6 +97,22 @@ const token = ({ isReviewer = false, isCoordinator = false }) =>
     },
   })
 
+const stubVerifyToken = () =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: '/token-verification-api/token/verify',
+    },
+    response: {
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        active: true,
+      },
+    },
+  })
+
 const stubUser = username =>
   stubFor({
     request: {
@@ -156,7 +171,7 @@ const stubUnverifiedEmail = username =>
 
 module.exports = {
   getLoginUrl,
-  stubLogin: options => Promise.all([favicon(), redirect(), logout(), token(options)]),
+  stubLogin: options => Promise.all([favicon(), redirect(), logout(), token(options), stubVerifyToken()]),
   stubUserDetailsRetrieval: usernames =>
     Promise.all(usernames.flatMap(username => [stubUser(username), stubEmail(username)])),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),

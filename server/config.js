@@ -90,6 +90,19 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    tokenVerification: {
+      url: get('TOKENVERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
+      timeout: {
+        response: get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000),
+        deadline: get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+      enabled: process.env.TOKENVERIFICATION_API_ENABLED === 'true',
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {
