@@ -115,10 +115,10 @@ describe('sanitiser', () => {
         value: null,
       }))
 
-    test('minutes greater than 24', () =>
-      check({ date: '21/01/2019', time: { hour: '24', minute: '0' } }).toEqual({
+    test('minutes greater than 59', () =>
+      check({ date: '21/01/2019', time: { hour: '12', minute: '60' } }).toEqual({
         date: '21/01/2019',
-        time: { hour: '24', minute: '0' },
+        time: { hour: '12', minute: '60' },
         value: null,
       }))
 
