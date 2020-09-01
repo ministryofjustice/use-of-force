@@ -8,8 +8,8 @@ const toInteger = (val?: string): number | null => {
 }
 
 const toDateTime = (date: moment.Moment, hours?: number, minutes?: number): moment.Moment | null => {
-  const validHours = hours != null && hours < 24
-  const validMinutes = minutes != null && minutes < 60
+  const validHours = hours != null && hours >= 0 && hours < 24
+  const validMinutes = minutes != null && minutes >= 0 && minutes < 60
 
   if (!date.isValid() || !validHours || !validMinutes) {
     return null

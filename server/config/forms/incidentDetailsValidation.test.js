@@ -499,6 +499,37 @@ describe("'complete' validation", () => {
           witnesses: [{ name: 'User bob' }],
         })
       })
+      it('hours are a negative number', () => {
+        const input = {
+          ...validInput,
+          incidentDate: {
+            date: '15/01/2019',
+            time: { hour: '-11', minute: '45' },
+          },
+        }
+        const { errors, formResponse, extractedFields } = check(input)
+
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[time][hour]',
+            text: 'Enter the hours using positive values only',
+          },
+        ])
+
+        expect(extractedFields).toEqual({
+          incidentDate: {
+            date: '15/01/2019',
+            value: null,
+            time: { hour: '-11', minute: '45' },
+          },
+        })
+        expect(formResponse).toEqual({
+          locationId: -1,
+          plannedUseOfForce: true,
+          involvedStaff: [{ username: 'ITAG_USER' }],
+          witnesses: [{ name: 'User bob' }],
+        })
+      })
     })
 
     describe('minutes', () => {
@@ -620,6 +651,38 @@ describe("'complete' validation", () => {
             date: '15/01/2019',
             value: moment('2019-01-15T12:04:00.000Z').toDate(),
             time: { hour: '12', minute: '4' },
+          },
+        })
+        expect(formResponse).toEqual({
+          locationId: -1,
+          plannedUseOfForce: true,
+          involvedStaff: [{ username: 'ITAG_USER' }],
+          witnesses: [{ name: 'User bob' }],
+        })
+      })
+
+      it('minutes are a negative number', () => {
+        const input = {
+          ...validInput,
+          incidentDate: {
+            date: '15/01/2019',
+            time: { hour: '12', minute: '-04' },
+          },
+        }
+        const { errors, formResponse, extractedFields } = check(input)
+
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[time][minute]',
+            text: 'Enter the minutes using positive values only',
+          },
+        ])
+
+        expect(extractedFields).toEqual({
+          incidentDate: {
+            date: '15/01/2019',
+            value: null,
+            time: { hour: '12', minute: '-04' },
           },
         })
         expect(formResponse).toEqual({
