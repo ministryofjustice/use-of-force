@@ -499,7 +499,7 @@ describe("'complete' validation", () => {
           witnesses: [{ name: 'User bob' }],
         })
       })
-      it('hours are a negative number', () => {
+     it('hours are a negative number', () => {
         const input = {
           ...validInput,
           incidentDate: {

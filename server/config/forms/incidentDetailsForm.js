@@ -42,6 +42,7 @@ const requiredIncidentDate = joi
             [ValidationError.isTooLarge]: 'Enter an hour which is 23 or less',
             [ValidationError.isNot2Digits]: 'Enter the hours using 2 digits',
             [ValidationError.isNotPositiveNumber]: 'Enter the hours using positive values only',
+
           }),
 
         minute: joi
