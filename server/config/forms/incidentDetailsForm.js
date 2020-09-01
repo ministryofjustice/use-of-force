@@ -41,7 +41,7 @@ const requiredIncidentDate = joi
             [ValidationError.isNotNumber]: 'Enter hours using numbers only',
             [ValidationError.isTooLarge]: 'Enter an hour which is 23 or less',
             [ValidationError.isNot2Digits]: 'Enter the hours using 2 digits',
-            [ValidationError.isNotPositiveNumber]: 'Enter the hours using positive values only',
+            [ValidationError.isNotPositiveNumber]: 'Enter an hour which is 00 or more',
           }),
 
         minute: joi
@@ -52,7 +52,7 @@ const requiredIncidentDate = joi
             [ValidationError.isNotNumber]: 'Enter minutes using numbers only',
             [ValidationError.isTooLarge]: 'Enter the minutes using 59 or less',
             [ValidationError.isNot2Digits]: 'Enter the minutes using 2 digits',
-            [ValidationError.isNotPositiveNumber]: 'Enter the minutes using positive values only',
+            [ValidationError.isNotPositiveNumber]: 'Enter the minutes using 00 or more',
           }),
       })
       .custom(timeValidation)

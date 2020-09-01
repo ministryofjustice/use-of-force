@@ -512,7 +512,7 @@ describe("'complete' validation", () => {
         expect(errors).toEqual([
           {
             href: '#incidentDate[time][hour]',
-            text: 'Enter the hours using positive values only',
+            text: 'Enter an hour which is 00 or more',
           },
         ])
 
@@ -674,7 +674,7 @@ describe("'complete' validation", () => {
         expect(errors).toEqual([
           {
             href: '#incidentDate[time][minute]',
-            text: 'Enter the minutes using positive values only',
+            text: 'Enter the minutes using 00 or more',
           },
         ])
 
