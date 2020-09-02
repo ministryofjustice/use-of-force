@@ -2,7 +2,7 @@ import { buildAppInsightsClient } from './utils/azure-appinsights'
 import PrisonerSearchClient from './data/prisonerSearchClient'
 import IncidentClient from './data/incidentClient'
 import StatementsClient from './data/statementsClient'
-import createOffenderService from './services/offenderService'
+import OffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 import ReportService from './services/reportService'
@@ -39,7 +39,7 @@ const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
 const notificationService = notificationServiceFactory(eventPublisher)
-const offenderService = createOffenderService(elite2ClientBuilder)
+const offenderService = new OffenderService(elite2ClientBuilder)
 const reportService = new ReportService(
   incidentClient,
   elite2ClientBuilder,

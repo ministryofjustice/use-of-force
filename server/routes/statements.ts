@@ -4,7 +4,8 @@ import { complete } from '../config/forms/statementForm'
 import { processInput } from '../services/validation'
 import { StatementStatus } from '../config/types'
 import StatementService from '../services/statementService'
-import { OffenderService, SystemToken } from '../types/uof'
+import { SystemToken } from '../types/uof'
+import OffenderService from '../services/offenderService'
 
 export default function CreateReportRoutes(
   statementService: StatementService,

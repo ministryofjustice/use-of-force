@@ -1,8 +1,9 @@
 import type IncidentClient from '../data/incidentClient'
-import type { AgencyId, OffenderService, SystemToken } from '../types/uof'
+import type { AgencyId, SystemToken } from '../types/uof'
 import type { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
 import StatementsClient from '../data/statementsClient'
+import OffenderService from './offenderService'
 
 export interface IncidentSummary {
   id: number
@@ -44,29 +45,13 @@ export interface ReportQuery extends IncidentSearchQuery {
 }
 
 export default class ReviewService {
-  private readonly statementsClient
-
-  private readonly incidentClient: IncidentClient
-
-  private readonly authClientBuilder
-
-  private readonly offenderService: OffenderService
-
-  private readonly systemToken: SystemToken
-
   constructor(
-    statementsClient: StatementsClient,
-    incidentClient: IncidentClient,
-    authClientBuilder,
-    offenderService: OffenderService,
-    systemToken: SystemToken
-  ) {
-    this.statementsClient = statementsClient
-    this.incidentClient = incidentClient
-    this.authClientBuilder = authClientBuilder
-    this.offenderService = offenderService
-    this.systemToken = systemToken
-  }
+    private readonly statementsClient: StatementsClient,
+    private readonly incidentClient: IncidentClient,
+    private readonly authClientBuilder,
+    private readonly offenderService: OffenderService,
+    private readonly systemToken: SystemToken
+  ) {}
 
   private async statementsWithVerifiedInfo(token: string, statements: any[]): Promise<any[]> {
     const authClient = this.authClientBuilder(token)

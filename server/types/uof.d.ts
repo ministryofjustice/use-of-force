@@ -63,13 +63,6 @@ export interface UserService {
   getUsers: (token: string, usernames: string[]) => Promise<GetUsersResults[]>
 }
 
-export interface OffenderService {
-  getOffenderDetails: (token: string, bookingId: string) => Promise<any>
-  getPrisonersDetails: (token: string, offenderNumbers: string[]) => Promise<PrisonerDetail[]>
-  getOffenderImage: (token: string, bookingId: string) => Promise<ReadableStream>
-  getOffenderNames: (token: string, offenderNos: string[]) => Promise<{ [offenderNo: string]: string }>
-}
-
 export interface ReportingClient {
   getMostOftenInvolvedStaff: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
   getMostOftenInvolvedPrisoners: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>

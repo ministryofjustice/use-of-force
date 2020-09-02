@@ -1,14 +1,13 @@
-/* eslint-disable import/first */
-import { OffenderService } from '../types/uof'
-
-jest.mock('../data/incidentClient')
-jest.mock('../data/statementsClient')
-
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
+import OffenderService from './offenderService'
+
+jest.mock('../data/incidentClient')
+jest.mock('../data/statementsClient')
+jest.mock('./offenderService')
 
 let incidentClient: jest.Mocked<IncidentClient>
 let statementsClient: jest.Mocked<StatementsClient>
@@ -19,16 +18,7 @@ const authClient = {
 
 const authClientBuilder = jest.fn().mockReturnValue(authClient)
 
-interface MockOS extends OffenderService {
-  getOffenderNames: jest.Mock<Promise<{ [offenderNo: string]: string }>, [string, string[]]>
-}
-
-const offenderService: MockOS = {
-  getOffenderDetails: undefined,
-  getOffenderNames: jest.fn(),
-  getPrisonersDetails: undefined,
-  getOffenderImage: undefined,
-}
+const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
 
 let service: ReviewService
 

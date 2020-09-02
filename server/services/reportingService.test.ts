@@ -1,6 +1,9 @@
 import moment from 'moment'
 import serviceCreator from './reportingService'
 import { ReportStatus } from '../config/types'
+import OffenderService from './offenderService'
+
+jest.mock('./offenderService')
 
 const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),
@@ -11,12 +14,7 @@ const reportingClient = {
   getIncidentsForAgencyAndDateRange: jest.fn(),
 }
 
-const offenderService = {
-  getOffenderNames: jest.fn(),
-  getPrisonersDetails: jest.fn(),
-  getOffenderDetails: jest.fn(),
-  getOffenderImage: jest.fn(),
-}
+const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
 
 const heatmapBuilder = {
   build: jest.fn(),
@@ -56,7 +54,7 @@ Charlotte,5
   })
 
   it('getMostOftenInvolvedPrisoners', async () => {
-    offenderService.getOffenderNames.mockReturnValue({
+    offenderService.getOffenderNames.mockResolvedValue({
       AAAA: 'Arthur',
       BBBB: 'Bella',
       CCCC: 'Charlotte',

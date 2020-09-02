@@ -7,7 +7,8 @@ import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import { ReportStatus } from '../config/types'
-import { DateRange, OffenderService, ReportingClient } from '../types/uof'
+import { DateRange, ReportingClient } from '../types/uof'
+import OffenderService from './offenderService'
 
 const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
