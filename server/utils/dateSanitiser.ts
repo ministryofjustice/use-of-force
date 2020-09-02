@@ -3,7 +3,7 @@ import moment from 'moment'
 const validOrNull = val => (Number.isNaN(val) ? null : val)
 
 export const toInteger = (val?: string): number | null => {
-  return /[0-9]$/.test(val) ? validOrNull(parseInt(val, 10)) : null
+  return /^-*[0-9]*$/.test(val) ? validOrNull(parseInt(val, 10)) : null
 }
 
 const toDateTime = (date: moment.Moment, hours?: number, minutes?: number): moment.Moment | null => {
