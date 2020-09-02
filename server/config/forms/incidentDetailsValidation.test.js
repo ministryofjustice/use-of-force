@@ -436,6 +436,38 @@ describe("'complete' validation", () => {
         })
       })
 
+      it('hour contains number and non-number', () => {
+        const input = {
+          ...validInput,
+          incidentDate: {
+            date: '15/01/2019',
+            time: { hour: '1a', minute: '45' },
+          },
+        }
+        const { errors, formResponse, extractedFields } = check(input)
+
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[time][hour]',
+            text: 'Enter hours using numbers only',
+          },
+        ])
+
+        expect(extractedFields).toEqual({
+          incidentDate: {
+            date: '15/01/2019',
+            value: null,
+            time: { hour: '1a', minute: '45' },
+          },
+        })
+        expect(formResponse).toEqual({
+          locationId: -1,
+          plannedUseOfForce: true,
+          involvedStaff: [{ username: 'ITAG_USER' }],
+          witnesses: [{ name: 'User bob' }],
+        })
+      })
+
       it('hours is too large', () => {
         const input = {
           ...validInput,
@@ -587,6 +619,38 @@ describe("'complete' validation", () => {
             date: '15/01/2019',
             value: null,
             time: { hour: '12', minute: 'aa' },
+          },
+        })
+        expect(formResponse).toEqual({
+          locationId: -1,
+          plannedUseOfForce: true,
+          involvedStaff: [{ username: 'ITAG_USER' }],
+          witnesses: [{ name: 'User bob' }],
+        })
+      })
+
+      it('minutes contains number and non-number', () => {
+        const input = {
+          ...validInput,
+          incidentDate: {
+            date: '15/01/2019',
+            time: { hour: '03', minute: '4y' },
+          },
+        }
+        const { errors, formResponse, extractedFields } = check(input)
+
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[time][minute]',
+            text: 'Enter minutes using numbers only',
+          },
+        ])
+
+        expect(extractedFields).toEqual({
+          incidentDate: {
+            date: '15/01/2019',
+            value: null,
+            time: { hour: '03', minute: '4y' },
           },
         })
         expect(formResponse).toEqual({

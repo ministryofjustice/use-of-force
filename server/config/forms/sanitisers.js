@@ -1,4 +1,4 @@
-const toDate = require('../../utils/dateSanitiser')
+const { toInteger, toDate } = require('../../utils/dateSanitiser')
 const { isNilOrEmpty } = require('../../utils/utils')
 
 const isBlankObject = o => (isNilOrEmpty(o) ? true : Object.values(o).every(isNilOrEmpty))
@@ -23,10 +23,7 @@ module.exports = {
 
   trimmedString: val => (val ? val.trim() : null),
 
-  toInteger: val => {
-    const number = parseInt(val, 10)
-    return Number.isNaN(number) ? null : number
-  },
+  toInteger,
 
   toSmallInt: val => {
     const number = parseInt(val, 10)

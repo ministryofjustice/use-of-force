@@ -2,9 +2,8 @@ import moment from 'moment'
 
 const validOrNull = val => (Number.isNaN(val) ? null : val)
 
-const toInteger = (val?: string): number | null => {
-  const number = parseInt(val, 10)
-  return validOrNull(number)
+export const toInteger = (val?: string): number | null => {
+  return /[0-9]$/.test(val) ? validOrNull(parseInt(val, 10)) : null
 }
 
 const toDateTime = (date: moment.Moment, hours?: number, minutes?: number): moment.Moment | null => {
@@ -27,7 +26,7 @@ type DateParameter = {
   }
 }
 
-export = function ({ date: dateVal = '', time: { hour = '', minute = '' } }: DateParameter) {
+export const toDate = ({ date: dateVal = '', time: { hour = '', minute = '' } }: DateParameter) => {
   const parsedDate = moment(dateVal.trim(), 'DD/MM/YYYY', true)
   const parsedHours = toInteger(hour)
   const parsedMinutes = toInteger(minute)
