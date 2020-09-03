@@ -60,10 +60,3 @@ export interface ReportingClient {
     range: DateRange
   ) => Promise<Array<OffenderNoWithIncidentDate>>
 }
-
-export interface LocationService {
-  getPrisons: (token: string) => Promise<Prison[]>
-  getPrisonById: (token: string, prisonId: string) => Promise<Prison>
-  getLocation: (token: string, locationId: number) => Promise<PrisonLocation | Record<string, unknown>>
-  getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
-}
