@@ -1,4 +1,5 @@
 import aggregator from './index'
+import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
 
 describe('Ethnic Grouping', () => {
   describe('aggregator', () => {
@@ -10,7 +11,11 @@ describe('Ethnic Grouping', () => {
             X: 2,
             Y: 3,
           },
-          [{ offenderNo: 'W', ethnicityCode: 'X' }, { offenderNo: 'X', ethnicityCode: 'Y' }, { offenderNo: 'Y' }]
+          [
+            { offenderNo: 'W', ethnicityCode: 'X' },
+            { offenderNo: 'X', ethnicityCode: 'Y' },
+            { offenderNo: 'Y' },
+          ] as PrisonerDetail[]
         )
       ).toEqual({
         WHITE: 0,
@@ -80,7 +85,7 @@ describe('Ethnic Grouping', () => {
             { offenderNo: 'G01', ethnicityCode: 'NS' },
             { offenderNo: 'G02', ethnicityCode: 'X1' },
             { offenderNo: 'G03' },
-          ]
+          ] as PrisonerDetail[]
         )
       ).toEqual({
         WHITE: 4,

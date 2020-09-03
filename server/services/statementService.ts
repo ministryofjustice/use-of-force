@@ -28,7 +28,7 @@ export default class StatementService {
     return { additionalComments, ...statement }
   }
 
-  async validateSavedStatement(username, reportId) {
+  async validateSavedStatement(username: string, reportId: number) {
     const statement = await this.getStatementForUser(username, reportId, StatementStatus.PENDING)
 
     const result = processInput({ validationSpec: statementConfig.complete, input: statement })
@@ -40,7 +40,7 @@ export default class StatementService {
     return this.statementsClient.saveStatement(userId, reportId, statement)
   }
 
-  async submitStatement(userId, reportId) {
+  async submitStatement(userId: string, reportId: number): Promise<void> {
     logger.info(`Submitting statement for user: ${userId} and report: ${reportId}`)
 
     await this.inTransaction(async client => {
@@ -55,8 +55,8 @@ export default class StatementService {
     })
   }
 
-  saveAdditionalComment(statementId, additionalComment) {
+  async saveAdditionalComment(statementId: number, additionalComment: string): Promise<void> {
     logger.info(`Saving additional comment for statement with id: ${statementId}`)
-    return this.statementsClient.saveAdditionalComment(statementId, additionalComment)
+    await this.statementsClient.saveAdditionalComment(statementId, additionalComment)
   }
 }

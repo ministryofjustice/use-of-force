@@ -1,4 +1,5 @@
 import { invertGroupings, aggregatorFactory } from './aggregatorFunctions'
+import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
 
 describe('Aggregator Functions', () => {
   describe('invertGroupings', () => {
@@ -87,7 +88,7 @@ describe('Aggregator Functions', () => {
 
     it('aggregates incidents for one offender', () => {
       const aggregator = aggregatorFactory(ONE_GROUP, 'X', 'religionCode')
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'X' }])).toEqual({ A: 1 })
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'X' }] as PrisonerDetail[])).toEqual({ A: 1 })
     })
 
     it('aggregates incidents for several offenders', () => {
@@ -97,18 +98,21 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O1', religionCode: 'X' },
           { offenderNo: 'O2', religionCode: 'X' },
           { offenderNo: 'O3', religionCode: 'X' },
-        ])
+        ] as PrisonerDetail[])
       ).toEqual({ A: 6 })
     })
 
     it('aggregates incidents for missing code', () => {
       const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1' }])).toEqual({ ...DEFAULT_COUNTS, [DEFAULT_GROUP_NAME]: 1 })
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1' }] as PrisonerDetail[])).toEqual({
+        ...DEFAULT_COUNTS,
+        [DEFAULT_GROUP_NAME]: 1,
+      })
     })
 
     it('aggregates incidents for unknown code', () => {
       const aggregator = aggregatorFactory(THREE_GROUPS_AND_DEFAULT, DEFAULT_GROUP_NAME, 'religionCode')
-      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'XXX' }])).toEqual({
+      expect(aggregator({ O1: 1 }, [{ offenderNo: 'O1', religionCode: 'XXX' }] as PrisonerDetail[])).toEqual({
         ...DEFAULT_COUNTS,
         [DEFAULT_GROUP_NAME]: 1,
       })
@@ -121,7 +125,7 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O1', religionCode: 'X' },
           { offenderNo: 'O2', religionCode: 'P' },
           { offenderNo: 'O3', religionCode: 'L' },
-        ])
+        ] as PrisonerDetail[])
       ).toEqual({ ...DEFAULT_COUNTS, A: 1, B: 2, C: 3 })
     })
 
@@ -137,7 +141,7 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O6', religionCode: 'M' },
           { offenderNo: 'O7', religionCode: '-' },
           { offenderNo: 'O8', religionCode: null },
-        ])
+        ] as PrisonerDetail[])
       ).toEqual({ A: 11, B: 22, C: 33, [DEFAULT_GROUP_NAME]: 90 })
     })
   })

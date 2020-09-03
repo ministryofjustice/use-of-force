@@ -1,12 +1,12 @@
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import { PrisonerDetail } from '../types/uof'
 import type { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
 
 export default class OffenderService {
   constructor(private readonly elite2ClientBuilder: Elite2ClientBuilder) {}
 
-  async getOffenderDetails(token: string, bookingId: string): Promise<any> {
+  async getOffenderDetails(token: string, bookingId: number): Promise<any> {
     try {
       const elite2Client = this.elite2ClientBuilder(token)
       const result = await elite2Client.getOffenderDetails(bookingId)
@@ -46,7 +46,7 @@ export default class OffenderService {
     }
   }
 
-  async getOffenderImage(token: string, bookingId: string): Promise<ReadableStream<any>> {
+  async getOffenderImage(token: string, bookingId: number): Promise<ReadableStream<any>> {
     const elite2Client = this.elite2ClientBuilder(token)
     return elite2Client.getOffenderImage(bookingId)
   }

@@ -42,20 +42,6 @@ type GetUsersResults = {
 
 export type SystemToken = (string?) => Promise<string>
 
-export interface PrisonLocation {
-  agencyId?: string
-  currentOccupancy?: number
-  description?: string
-  internalLocationCode?: string
-  locationId?: number
-  locationPrefix?: string
-  locationType?: string
-  locationUsage?: string
-  operationalCapacity?: number
-  parentLocationId?: number
-  userDescription?: string
-}
-
 export interface UserService {
   /** get current user */
   getUser: (token: string) => Promise<User>
@@ -75,43 +61,9 @@ export interface ReportingClient {
   ) => Promise<Array<OffenderNoWithIncidentDate>>
 }
 
-export interface PrisonerDetail {
-  offenderNo: string
-  firstName?: string
-  lastName?: string
-  dateOfBirth?: string // ISO 8601 date format eg 1984-02-24
-  gender?: string
-  sexCode?: 'M' | 'F'
-  nationalities?: string
-  currentlyInPrison?: 'Y' | 'N'
-  latestBookingId?: number
-  latestLocationId?: string
-  latestLocation?: string
-  internalLocation?: string
-  pncNumber?: string
-  croNumber?: string
-  ethnicity?: string
-  ethnicityCode?: string
-  birthCountry?: string
-  religion?: string
-  religionCode?: string
-  convictedStatus?: string
-  imprisonmentStatus?: string
-  imprisonmentStatusDesc?: string
-  receptionDate?: string // ISO-8601 date format
-  maritalStatus?: string
-}
-
-export interface Prison {
-  active?: boolean
-  agencyId?: string
-  agencyType?: string
-  description?: string
-}
-
 export interface LocationService {
   getPrisons: (token: string) => Promise<Prison[]>
   getPrisonById: (token: string, prisonId: string) => Promise<Prison>
-  getLocation: (token: string, locationId: string) => Promise<PrisonLocation>
+  getLocation: (token: string, locationId: number) => Promise<PrisonLocation | Record<string, unknown>>
   getIncidentLocations: (token: string, agencyId: string) => Promise<PrisonLocation[]>
 }

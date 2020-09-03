@@ -2,64 +2,73 @@ import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
 import config from '../config'
 import createRestClientBuilder from './restClient'
+import {
+  InmateDetail,
+  InmateBasicDetails,
+  UserDetail,
+  PrisonerDetail,
+  CaseLoad,
+  Prison,
+  PrisonLocation,
+} from './elite2ClientBuilderTypes'
 
 const restClientBuilder = createRestClientBuilder('elite2api', config.apis.elite2)
 
 export class Elite2Client {
   constructor(private restClient) {}
 
-  async getOffenderDetails(bookingId) {
+  async getOffenderDetails(bookingId: number): Promise<InmateDetail> {
     return this.restClient.get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
   }
 
-  async getOffenders(offenderNos) {
+  async getOffenders(offenderNos: string[]): Promise<InmateBasicDetails[]> {
     return this.restClient.post({ path: '/api/bookings/offenders?activeOnly=false', data: offenderNos })
   }
 
-  async getPrisoners(offenderNos) {
+  async getPrisoners(offenderNos: string[]): Promise<PrisonerDetail[]> {
     const query = { offenderNo: offenderNos }
     const headers = { 'Page-Limit': 5000 }
     return this.restClient.get({ path: '/api/prisoners', query, headers })
   }
 
-  async getUser() {
+  async getUser(): Promise<UserDetail> {
     return this.restClient.get({ path: '/api/users/me' })
   }
 
-  getUserCaseLoads() {
+  getUserCaseLoads(): Promise<CaseLoad> {
     return this.restClient.get({ path: '/api/users/me/caseLoads' })
   }
 
-  getPrisons() {
+  getPrisons(): Promise<Prison[]> {
     return this.restClient.get({
       path: `/api/agencies/type/INST?active=true`,
     })
   }
 
-  getLocations(agencyId, occurrenceLocationsOnly = true) {
+  getPrisonById(prisonId: string): Promise<Prison> {
+    return this.restClient.get({
+      path: `/api/agencies/${prisonId}?activeOnly=false`,
+    })
+  }
+
+  getLocations(agencyId: string, occurrenceLocationsOnly = true): Promise<PrisonLocation[]> {
     return this.restClient.get({
       path: `/api/agencies/${agencyId}/locations${occurrenceLocationsOnly ? '?eventType=OCCUR' : ''}`,
       headers: { 'Sort-Fields': 'userDescription' },
     })
   }
 
-  getLocation(locationId) {
+  getLocation(locationId: number): Promise<PrisonLocation> {
     return this.restClient.get({ path: `/api/locations/${locationId}` })
   }
 
-  getOffenderImage(bookingId) {
+  getOffenderImage(bookingId: number) {
     return this.restClient.stream({
       path: `/api/bookings/${bookingId}/image/data`,
       errorLogger: error =>
         error.status === 404
           ? logger.info(`No offender image available for: ${bookingId}`)
           : logger.warn(sanitiseError(error), `Error calling elite2`),
-    })
-  }
-
-  getPrisonById(prisonId) {
-    return this.restClient.get({
-      path: `/api/agencies/${prisonId}?activeOnly=false`,
     })
   }
 }
