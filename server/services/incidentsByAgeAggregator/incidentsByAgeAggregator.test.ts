@@ -1,6 +1,7 @@
 import moment from 'moment'
 import * as R from 'ramda'
 import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
+import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
 
 describe('incidentsByAgeAggregator', () => {
   const defaultValues = {
@@ -25,22 +26,26 @@ describe('incidentsByAgeAggregator', () => {
     })
 
     it('Returns undefined when PrisonerDetails do not match', () => {
-      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'Y' }])
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'Y' }] as PrisonerDetail[])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
     })
 
     it('Returns undefined when PrisonerDetail has no dateOfBirth', () => {
-      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X' }])
+      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X' }] as PrisonerDetail[])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBeUndefined()
     })
 
     it('Returns age in years when offenderNo matches', () => {
-      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X', dateOfBirth: '2010-02-02' }])
+      const incidentToOffenderAge = buildIncidentToOffenderAge([
+        { offenderNo: 'X', dateOfBirth: '2010-02-02' },
+      ] as PrisonerDetail[])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(10)
     })
 
     it('Returns age in years when off by one day', () => {
-      const incidentToOffenderAge = buildIncidentToOffenderAge([{ offenderNo: 'X', dateOfBirth: '2010-02-03' }])
+      const incidentToOffenderAge = buildIncidentToOffenderAge([
+        { offenderNo: 'X', dateOfBirth: '2010-02-03' },
+      ] as PrisonerDetail[])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
     })
 
@@ -49,7 +54,7 @@ describe('incidentsByAgeAggregator', () => {
         { offenderNo: 'X', dateOfBirth: '2010-02-03' },
         { offenderNo: 'Y', dateOfBirth: '2010-02-02' },
         { offenderNo: 'Z', dateOfBirth: '2011-01-01' },
-      ])
+      ] as PrisonerDetail[])
       expect(incidentToOffenderAge({ offenderNo: 'X', incidentDate: incidentDate1 })).toBe(9)
       expect(incidentToOffenderAge({ offenderNo: 'Y', incidentDate: incidentDate1 })).toBe(10)
     })
@@ -113,7 +118,7 @@ describe('incidentsByAgeAggregator', () => {
               incidentDate: new Date('April 17, 2019 03:24:00'),
             },
           ],
-          [{ offenderNo: 'ABC', dateOfBirth: '1981-03-24' }]
+          [{ offenderNo: 'ABC', dateOfBirth: '1981-03-24' }] as PrisonerDetail[]
         )
       ).toEqual({ ...defaultValues, '30-39': 1 })
     })
@@ -127,7 +132,7 @@ describe('incidentsByAgeAggregator', () => {
               incidentDate: new Date('April 17, 2019 03:24:00'),
             },
           ],
-          [{ offenderNo: 'ABC' }]
+          [{ offenderNo: 'ABC' }] as PrisonerDetail[]
         )
       ).toEqual({ ...defaultValues, UNKNOWN: 1 })
     })

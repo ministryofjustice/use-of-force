@@ -1,6 +1,10 @@
 import moment from 'moment'
 import serviceCreator from './reportingService'
 import { ReportStatus } from '../config/types'
+import OffenderService from './offenderService'
+import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
+
+jest.mock('./offenderService')
 
 const reportingClient = {
   getMostOftenInvolvedStaff: jest.fn(),
@@ -11,12 +15,7 @@ const reportingClient = {
   getIncidentsForAgencyAndDateRange: jest.fn(),
 }
 
-const offenderService = {
-  getOffenderNames: jest.fn(),
-  getPrisonersDetails: jest.fn(),
-  getOffenderDetails: jest.fn(),
-  getOffenderImage: jest.fn(),
-}
+const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
 
 const heatmapBuilder = {
   build: jest.fn(),
@@ -56,7 +55,7 @@ Charlotte,5
   })
 
   it('getMostOftenInvolvedPrisoners', async () => {
-    offenderService.getOffenderNames.mockReturnValue({
+    offenderService.getOffenderNames.mockResolvedValue({
       AAAA: 'Arthur',
       BBBB: 'Bella',
       CCCC: 'Charlotte',
@@ -213,7 +212,7 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
         { offenderNo: 'A1', religionCode: 'CE' },
         { offenderNo: 'A2', religionCode: 'SHIA' },
         { offenderNo: 'A3', religionCode: 'CE' },
-      ])
+      ] as PrisonerDetail[])
     )
 
     const result = await service.getIncidentsByReligiousGroup('token-1', 'LEI', 2, 2019)
@@ -236,7 +235,7 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
       { offenderNo: 'A1', ethnicityCode: 'W1' },
       { offenderNo: 'A2', ethnicityCode: 'A2' },
       { offenderNo: 'A3', ethnicityCode: 'NS' },
-    ])
+    ] as PrisonerDetail[])
 
     const result = await service.getIncidentsByEthnicGroup('token-1', 'LEI', 2, 2019)
 
@@ -258,7 +257,7 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
       { offenderNo: 'A1', dateOfBirth: '1980-02-25' },
       { offenderNo: 'A2', dateOfBirth: '1981-02-25' },
       { offenderNo: 'A3', dateOfBirth: '1970-02-25' },
-    ])
+    ] as PrisonerDetail[])
 
     const result = await service.getIncidentsByAgeGroup('token-1', 'LEI', 2, 2019)
 

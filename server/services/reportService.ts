@@ -2,13 +2,14 @@ import moment from 'moment'
 
 import type IncidentClient from '../data/incidentClient'
 import type { ReportSummary, IncompleteReportSummary } from '../data/incidentClientTypes'
-import type { SystemToken, OffenderService } from '../types/uof'
+import type { SystemToken } from '../types/uof'
 
 import logger from '../../log'
 import { isNilOrEmpty } from '../utils/utils'
 import { check as getReportStatus } from './reportStatusChecker'
 import { InTransaction } from '../data/dataAccess/db'
 import { PageResponse } from '../utils/page'
+import OffenderService from './offenderService'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string

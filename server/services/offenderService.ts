@@ -1,11 +1,14 @@
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import { OffenderService, PrisonerDetail } from '../types/uof'
+import type { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
 
-export default function createOffenderService(elite2ClientBuilder): OffenderService {
-  const getOffenderDetails = async (token, bookingId): Promise<any> => {
+export default class OffenderService {
+  constructor(private readonly elite2ClientBuilder: Elite2ClientBuilder) {}
+
+  async getOffenderDetails(token: string, bookingId: number): Promise<any> {
     try {
-      const elite2Client = elite2ClientBuilder(token)
+      const elite2Client = this.elite2ClientBuilder(token)
       const result = await elite2Client.getOffenderDetails(bookingId)
 
       if (isNilOrEmpty(result)) {
@@ -27,9 +30,9 @@ export default function createOffenderService(elite2ClientBuilder): OffenderServ
     }
   }
 
-  const getPrisonersDetails = async (token: string, offenderNumbers: string[]): Promise<Array<PrisonerDetail>> => {
+  async getPrisonersDetails(token: string, offenderNumbers: string[]): Promise<PrisonerDetail[]> {
     try {
-      const elite2Client = elite2ClientBuilder(token)
+      const elite2Client = this.elite2ClientBuilder(token)
       const result = await elite2Client.getPrisoners(offenderNumbers)
 
       if (isNilOrEmpty(result)) {
@@ -43,27 +46,22 @@ export default function createOffenderService(elite2ClientBuilder): OffenderServ
     }
   }
 
-  const getOffenderImage = (token, bookingId): Promise<ReadableStream> => {
-    const elite2Client = elite2ClientBuilder(token)
+  async getOffenderImage(token: string, bookingId: number): Promise<ReadableStream<any>> {
+    const elite2Client = this.elite2ClientBuilder(token)
     return elite2Client.getOffenderImage(bookingId)
   }
 
-  const fullName = ({ firstName, lastName }): string => `${properCaseName(lastName)}, ${properCaseName(firstName)}`
+  private fullName({ firstName, lastName }): string {
+    return `${properCaseName(lastName)}, ${properCaseName(firstName)}`
+  }
 
-  const getOffenderNames = async (token, offenderNos): Promise<{ [offenderNo: string]: string }> => {
+  async getOffenderNames(token: string, offenderNos: string[]): Promise<{ [offenderNo: string]: string }> {
     if (offenderNos.length === 0) {
       return {}
     }
     const uniqueNos = [...new Set(offenderNos)]
-    const offenders = await elite2ClientBuilder(token).getOffenders(uniqueNos)
+    const offenders = await this.elite2ClientBuilder(token).getOffenders(uniqueNos)
 
-    return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: fullName(offender) }), {})
-  }
-
-  return {
-    getOffenderDetails,
-    getPrisonersDetails,
-    getOffenderImage,
-    getOffenderNames,
+    return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: this.fullName(offender) }), {})
   }
 }

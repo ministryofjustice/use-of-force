@@ -1,19 +1,15 @@
 import moment from 'moment'
 import IncidentClient from '../data/incidentClient'
 import ReportService from './reportService'
-import { OffenderService } from '../types/uof'
+import OffenderService from './offenderService'
 import { PageResponse } from '../utils/page'
 
 jest.mock('../data/incidentClient')
+jest.mock('./offenderService')
 
 const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
 
-const offenderService = {
-  getOffenderNames: jest.fn(),
-  getOffenderImage: jest.fn(),
-  getOffenderDetails: jest.fn(),
-  getPrisonersDetails: jest.fn(),
-} as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
 
 const client = 'client-1'
 const inTransaction = fn => fn(client)

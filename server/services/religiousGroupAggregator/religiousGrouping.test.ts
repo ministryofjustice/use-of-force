@@ -1,4 +1,5 @@
 import aggregator from './index'
+import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
 
 describe('Religious Grouping', () => {
   describe('aggregator', () => {
@@ -16,7 +17,7 @@ describe('Religious Grouping', () => {
             { offenderNo: 'X', religionCode: 'AGNO' },
             { offenderNo: 'Y', religionCode: 'ATHE' },
             { offenderNo: 'Z', religionCode: 'NIL' },
-          ]
+          ] as PrisonerDetail[]
         )
       ).toEqual({
         BUDDHIST: 0,
@@ -45,7 +46,7 @@ describe('Religious Grouping', () => {
             { offenderNo: 'X', religionCode: 'XXXXXXX' },
             { offenderNo: 'Y', religionCode: 'NONP' },
             { offenderNo: 'Z', religionCode: 'OTH' },
-          ]
+          ] as PrisonerDetail[]
         )
       ).toEqual({
         BUDDHIST: 0,
@@ -227,7 +228,7 @@ describe('Religious Grouping', () => {
             { offenderNo: 'J02', religionCode: 'OTH' },
             { offenderNo: 'J03' },
             { offenderNo: 'J04', religionCode: 'XXX' },
-          ]
+          ] as PrisonerDetail[]
         )
       ).toEqual({
         BUDDHIST: 1,

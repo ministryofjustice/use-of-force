@@ -1,10 +1,11 @@
 import moment from 'moment'
 import { Request, Response } from 'express'
 import { removeKeysWithEmptyValues, parseDate } from '../utils/utils'
-import { OffenderService, SystemToken } from '../types/uof'
+import { SystemToken } from '../types/uof'
 import ReportDataBuilder from '../services/reportDetailBuilder'
 import ReviewService from '../services/reviewService'
 import { ReportStatus } from '../config/types'
+import OffenderService from '../services/offenderService'
 
 interface Params {
   offenderService: OffenderService

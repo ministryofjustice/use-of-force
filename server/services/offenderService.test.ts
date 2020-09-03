@@ -1,4 +1,4 @@
-import serviceCreator from './offenderService'
+import OffenderService from './offenderService'
 
 const token = 'token-1'
 
@@ -15,7 +15,7 @@ let service
 
 beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
-  service = serviceCreator(elite2ClientBuilder)
+  service = new OffenderService(elite2ClientBuilder)
 })
 
 afterEach(() => {
