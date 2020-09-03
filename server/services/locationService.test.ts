@@ -1,4 +1,4 @@
-import serviceCreator from './locationService'
+import LocationService from './locationService'
 
 const elite2ClientBuilder = jest.fn()
 const token = 'token'
@@ -13,7 +13,7 @@ let locationService
 
 beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
-  locationService = serviceCreator(elite2ClientBuilder)
+  locationService = new LocationService(elite2ClientBuilder)
 })
 
 afterEach(() => {

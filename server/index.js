@@ -6,7 +6,7 @@ import OffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 import ReportService from './services/reportService'
-import createLocationService from './services/locationService'
+import LocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
 import StatementService from './services/statementService'
@@ -60,7 +60,7 @@ const reviewService = new ReviewService(
 )
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
-const locationService = createLocationService(elite2ClientBuilder)
+const locationService = new LocationService(elite2ClientBuilder)
 const reportDetailBuilder = new ReportDetailBuilder({
   involvedStaffService,
   locationService,
