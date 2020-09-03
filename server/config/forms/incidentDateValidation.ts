@@ -9,6 +9,7 @@ export enum ValidationError {
   isNot2Digits = 'isNot2Digits',
   isFuture = 'isFuture',
   invalid = 'invalid',
+  isNotPositiveNumber = 'isNotPositiveNumber',
 }
 
 export function dateValidation(date: string, helpers: joi.CustomHelpers) {
@@ -29,7 +30,7 @@ export function dateValidation(date: string, helpers: joi.CustomHelpers) {
 export function timeValidation(time: string, helpers: joi.CustomHelpers) {
   const fullDate = helpers.state.ancestors[0].value
 
-  if (fullDate && moment(fullDate).isBetween(moment.now(), moment().endOf('day'), 'minutes')) {
+  if (fullDate && moment(fullDate).isBetween(moment.now(), moment().endOf('day'), 'seconds')) {
     return helpers.error(ValidationError.isFuture)
   }
 
@@ -45,6 +46,10 @@ export function minuteValidation(minute: string, helpers: joi.CustomHelpers) {
 
   if (parsedMinutes === null) {
     return helpers.error(ValidationError.isNotNumber)
+  }
+
+  if (parsedMinutes < 0) {
+    return helpers.error(ValidationError.isNotPositiveNumber)
   }
 
   if (parsedMinutes >= 60) {
@@ -66,6 +71,10 @@ export function hourValidation(hour: string, helpers: joi.CustomHelpers) {
 
   if (parsedHours === null) {
     return helpers.error(ValidationError.isNotNumber)
+  }
+
+  if (parsedHours < 0) {
+    return helpers.error(ValidationError.isNotPositiveNumber)
   }
 
   if (parsedHours >= 24) {

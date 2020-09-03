@@ -1,7 +1,7 @@
 const request = require('supertest')
 const { appWithAllRoutes, user } = require('./testutils/appSetup')
 const types = require('../config/types')
-const incidentDateSanitiser = require('../utils/dateSanitiser')
+const { toDate } = require('../utils/dateSanitiser')
 
 const reportService = {
   getCurrentDraft: jest.fn(),
@@ -114,7 +114,7 @@ describe('POST save and continue /section/form', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
+          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -168,7 +168,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
+          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -205,7 +205,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
+          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
@@ -240,7 +240,7 @@ describe('POST save and return to tasklist', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
+          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               involvedStaff: [{ username: 'USER_BOB' }],
@@ -290,7 +290,7 @@ describe('POST save and return to check-your-answers', () => {
           currentUser: user,
           bookingId: 1,
           formId: undefined,
-          incidentDate: incidentDateSanitiser({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
+          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
           formObject: {
             incidentDetails: {
               locationId: -1,
