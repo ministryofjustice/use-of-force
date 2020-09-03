@@ -1,7 +1,7 @@
 const moment = require('moment')
-const sanitiser = require('./dateSanitiser')
+const { toDate: sanitiser } = require('./dateSanitiser')
 
-describe('sanitiser', () => {
+describe('toDate', () => {
   const check = date => expect(sanitiser(date))
   const toDate = val => moment(val).toDate()
 
@@ -99,6 +99,48 @@ describe('sanitiser', () => {
         date: '21/01/2019',
         time: { hour: '0', minute: '0' },
         value: toDate('2019-01-21T00:00:00.000Z'),
+      }))
+
+    test('hour is greater then 23', () =>
+      check({ date: '21/01/2019', time: { hour: '24', minute: '0' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '24', minute: '0' },
+        value: null,
+      }))
+
+    test('hour is less then 0', () =>
+      check({ date: '21/01/2019', time: { hour: '-1', minute: '0' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '-1', minute: '0' },
+        value: null,
+      }))
+
+    test('hour is not a number', () =>
+      check({ date: '21/01/2019', time: { hour: '0x', minute: '45' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '0x', minute: '45' },
+        value: null,
+      }))
+
+    test('minutes greater than 59', () =>
+      check({ date: '21/01/2019', time: { hour: '12', minute: '60' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '12', minute: '60' },
+        value: null,
+      }))
+
+    test('minutes less than 0', () =>
+      check({ date: '21/01/2019', time: { hour: '12', minute: '-10' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '12', minute: '-10' },
+        value: null,
+      }))
+
+    test('minute is not a number', () =>
+      check({ date: '21/01/2019', time: { hour: '01', minute: '4y' } }).toEqual({
+        date: '21/01/2019',
+        time: { hour: '01', minute: '4y' },
+        value: null,
       }))
   })
   test('date is zero', () =>
