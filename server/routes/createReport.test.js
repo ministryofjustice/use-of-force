@@ -366,10 +366,7 @@ describe('Submitting evidence page', () => {
 
 describe('User name does not exists', () => {
   test('view when no missing users', () =>
-    request(app)
-      .get(`/report/1/username-does-not-exist`)
-      .expect(302)
-      .expect('Location', '/report/1/email-not-verified'))
+    request(app).get(`/report/1/username-does-not-exist`).expect(302).expect('Location', '/report/1/incident-details'))
 
   test('view when missing users', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
@@ -383,7 +380,7 @@ describe('User name does not exists', () => {
       })
   })
 
-  test('submit and back to task list goes via email-not-verified', () => {
+  test('submit and back to task list goes to report-use-of-force', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -392,14 +389,14 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.TASKLIST,
       })
       .expect(302)
-      .expect('Location', '/report/1/email-not-verified')
+      .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 
-  test('submit and continue on goes via email-not-verified', () => {
+  test('submit and continue on goes to use-of-force-details', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -408,14 +405,14 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.CONTINUE,
       })
       .expect(302)
-      .expect('Location', '/report/1/email-not-verified')
+      .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 
-  test('submit and return to check-your-answers goes via email-not-verified', () => {
+  test('submit and return to check-your-answers goes back to check-your-answers', () => {
     reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
@@ -424,43 +421,10 @@ describe('User name does not exists', () => {
         nextDestination: types.Destinations.CHECK_YOUR_ANSWERS,
       })
       .expect(302)
-      .expect('Location', '/report/1/email-not-verified')
+      .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledTimes(1)
         expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
-      })
-  })
-})
-
-describe('User does not have verified email address', () => {
-  test('view when no users have unverified addresses', () =>
-    request(app).get(`/report/1/email-not-verified`).expect(302).expect('Location', '/report/1/incident-details'))
-
-  test('view when single unverified user', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
-    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ name: 'BOB', verified: false }])
-    return request(app)
-      .get(`/report/1/email-not-verified`)
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('BOB has not verified their email address')
-      })
-  })
-
-  test('view when multiple unverified users', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
-    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([
-      { name: 'BOB', verified: false },
-      { name: 'AOB', verified: false },
-      { name: 'COB', verified: true },
-    ])
-    return request(app)
-      .get(`/report/1/email-not-verified`)
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Some staff members have not verified their email address')
       })
   })
 })
