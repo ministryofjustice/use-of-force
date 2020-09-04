@@ -4,7 +4,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 
-{% macro timeInput(params) %}
+{% macro incidentTime(params) %}
 
 <div class="govuk-form-group {%- if params.errorMessage %} govuk-form-group--error {% endif %}">
     {% call govukFieldset({
@@ -38,9 +38,9 @@
                 {{
                 govukInput({
                     label: { text: 'Hours', classes: 'govuk-date-input__label' },
-                    id: 'incidentDate[time][hour]',
+                    id: params.hour.id,
                     classes: 'govuk-date-input__input text-align-center govuk-input--width-2 ' + params.hour.classes,
-                    name: 'incidentDate[time][hour]',
+                    name: params.hour.name,
                     value: params.hour.value,
                     attributes: { 'data-qa': 'incident-date-hour' }
                 })
@@ -50,9 +50,9 @@
                 {{
                 govukInput({
                     label: { text: 'Minutes', classes: 'govuk-date-input__label' },
-                    id: 'incidentDate[time][minute]',
+                    id: params.minutes.id,
                     classes: 'govuk-date-input__input text-align-center govuk-input--width-2 ' + params.minutes.classes,
-                    name: 'incidentDate[time][minute]',
+                    name: params.minutes.name,
                     value: params.minutes.value,
                     attributes: { 'data-qa': 'incident-date-minute' }
                 })

@@ -8,7 +8,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
 {% from "../../partials/datePicker.njk" import datePicker %}
-{% from "../timeMacro.njk"  import  timeInput %}
+{% from "../incidentTimeMacro.njk"  import incidentTime %}
 {% set pageTitle = 'Incident details' %}
 {% set showCancelEditButton = data.locationId %}
 
@@ -42,13 +42,17 @@
         }}
       </div>
 
-        {{ timeInput({
+        {{ incidentTime({
           errorMessage: errors | concatErrors(["incidentDate[time][hour]", "incidentDate[time][minute]", "incidentDate[time]"]),
           hour:  {
+              name: 'incidentDate[time][hour]',
+              id: 'incidentDate[time][hour]',
               value: data.incidentDate.hour,
               classes: ('govuk-input--error' if isHourError)
             },
           minutes:  {
+              name: 'incidentDate[time][minute]',
+              id: 'incidentDate[time][minute]',
               value: data.incidentDate.minute,
               classes: ('govuk-input--error' if isMinuteError)
               }
