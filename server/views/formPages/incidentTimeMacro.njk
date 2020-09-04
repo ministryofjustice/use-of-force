@@ -1,0 +1,66 @@
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/hint/macro.njk" import govukHint %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+
+{% macro incidentTime(params) %}
+
+<div class="govuk-form-group {%- if params.errorMessage %} govuk-form-group--error {% endif %}">
+    {% call govukFieldset({
+            role: 'group',
+            legend: {
+                text: "Time",
+                isPageHeading: false
+            }
+        }) 
+    %}
+
+    {{
+    govukHint({
+        id: 'incidentDate[time]-hint',
+        text: 'Use the 24 hour clock. For example, 09 08 or 17 32'
+        })
+    }}
+
+    {% if params.errorMessage %}
+        {{
+        govukErrorMessage({
+        html: params.errorMessage.html,
+        text: params.errorMessage.text
+        })
+        }}
+    {% endif %}
+
+    <div class="govuk-date-input">
+        <div class="govuk-date-input__item flex-container">
+            <div class="govuk-!-margin-right-4">
+                {{
+                govukInput({
+                    label: { text: 'Hours', classes: 'govuk-date-input__label' },
+                    id: params.hour.id,
+                    classes: 'govuk-date-input__input text-align-center govuk-input--width-2 ' + params.hour.classes,
+                    name: params.hour.name,
+                    value: params.hour.value,
+                    attributes: { 'data-qa': 'incident-date-hour' }
+                })
+                }}
+            </div>
+            <div>
+                {{
+                govukInput({
+                    label: { text: 'Minutes', classes: 'govuk-date-input__label' },
+                    id: params.minutes.id,
+                    classes: 'govuk-date-input__input text-align-center govuk-input--width-2 ' + params.minutes.classes,
+                    name: params.minutes.name,
+                    value: params.minutes.value,
+                    attributes: { 'data-qa': 'incident-date-minute' }
+                })
+                }}
+            </div>
+        </div>
+    </div>
+    {% endcall %}
+</div>
+
+{% endmacro %}
