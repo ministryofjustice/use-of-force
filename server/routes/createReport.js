@@ -208,6 +208,22 @@ module.exports = function NewIncidentRoutes({
     return res.redirect(location)
   }
 
+  const getLocationForDestination = (bookingId, nextDestination) => {
+    switch (nextDestination) {
+      case types.Destinations.TASKLIST: {
+        return `/report/${bookingId}/report-use-of-force`
+      }
+      case types.Destinations.CONTINUE: {
+        return `/report/${bookingId}/use-of-force-details`
+      }
+      case types.Destinations.CHECK_YOUR_ANSWERS: {
+        return `/report/${bookingId}/check-your-answers`
+      }
+      default:
+        return `/report/${bookingId}/incident-details`
+    }
+  }
+
   return {
     viewIncidentDetails: ({ edit }) => viewIncidentDetails(edit),
 
@@ -216,43 +232,14 @@ module.exports = function NewIncidentRoutes({
       const { formId } = await loadForm(req)
       const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
       const missingUsers = involvedStaff.filter(staff => staff.missing).map(staff => staff.username)
+      const nextDestination = getFromFlash(req, 'nextDestination')
+
       if (!missingUsers.length) {
-        return res.redirect(`/report/${bookingId}/email-not-verified`)
-      }
-      const nextDestination = getFromFlash(req, 'nextDestination')
-      return res.render(`formPages/incident/username-does-not-exist`, {
-        data: { bookingId, missingUsers, nextDestination },
-      })
-    },
-
-    viewUnverifiedEmails: async (req, res) => {
-      const getLocationForDestination = (bookingId, nextDestination) => {
-        switch (nextDestination) {
-          case types.Destinations.TASKLIST: {
-            return `/report/${bookingId}/report-use-of-force`
-          }
-          case types.Destinations.CONTINUE: {
-            return `/report/${bookingId}/use-of-force-details`
-          }
-          case types.Destinations.CHECK_YOUR_ANSWERS: {
-            return `/report/${bookingId}/check-your-answers`
-          }
-          default:
-            return `/report/${bookingId}/incident-details`
-        }
-      }
-
-      const { bookingId } = req.params
-      const { formId } = await loadForm(req)
-      const involvedStaff = (formId && (await involvedStaffService.getDraftInvolvedStaff(formId))) || []
-      const unverifiedUsers = involvedStaff.filter(staff => staff.verified === false).map(staff => staff.name)
-      const nextDestination = getFromFlash(req, 'nextDestination')
-      const nextLocation = getLocationForDestination(bookingId, nextDestination)
-      if (!unverifiedUsers.length) {
+        const nextLocation = getLocationForDestination(bookingId, nextDestination)
         return res.redirect(nextLocation)
       }
-      return res.render(`formPages/incident/email-not-verified`, {
-        data: { bookingId, unverifiedUsers, nextLocation },
+      return res.render(`formPages/incident/username-does-not-exist`, {
+        data: { bookingId, missingUsers, nextDestination },
       })
     },
 
@@ -264,8 +251,8 @@ module.exports = function NewIncidentRoutes({
       if (formId) {
         await involvedStaffService.removeMissingDraftInvolvedStaff(req.user.username, parseInt(bookingId, 10))
       }
-      req.flash('nextDestination', nextDestination)
-      return res.redirect(`/report/${bookingId}/email-not-verified`)
+      const nextLocation = getLocationForDestination(bookingId, nextDestination)
+      return res.redirect(nextLocation)
     },
 
     view: formName => view(formName, false),
