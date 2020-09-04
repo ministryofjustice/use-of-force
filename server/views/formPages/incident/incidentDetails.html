@@ -15,7 +15,7 @@
 {% block formItems %}
 <div class="govuk-body">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds"> 
+    <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
       <div class="govuk-!-margin-bottom-6">
         <p class="govuk-!-margin-bottom-1">
@@ -24,7 +24,10 @@
         </p>
       </div>
 
-      <!-- new date start -->
+      {% set isDateError = errors | isErrorPresent(['incidentDate[date]'])  %}
+      {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
+      {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
+
       <h3>When did the incident happen?</h3>
       <div>
         {{ datePicker({
@@ -32,46 +35,23 @@
           label: 'Date',
           name: 'incidentDate[date]',
           date: data.incidentDate.date,
-          classes: 'text-align-center',
+          classes: 'text-align-center ' + ('date-picker-input-wide' if isDateError ) ,
           attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy'},
           errorMessage: errors | findErrors(['incidentDate[date]'])
-          }) 
+          })
         }}
       </div>
 
-        {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
-        {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
-        
         {{ timeInput({
-          id: "incidentDate[time]",
-          fieldset: {
-            legend: {
-              text: "Time",
-              isPageHeading: false
-            }
-          }, 
           errorMessage: errors | concatErrors(["incidentDate[time][hour]", "incidentDate[time][minute]", "incidentDate[time]"]),
-          items: [
-              {
-              label: 'Hours',
+          hour:  {
               value: data.incidentDate.hour,
-              name: "incidentDate[time][hour]",
-              classes: "text-align-center govuk-input--width-2 " + ('govuk-input--error' if isHourError),
-              attributes: { 'data-qa': 'incident-date-hour' },
-              id: "incidentDate[time][hour]"
+              classes: ('govuk-input--error' if isHourError)
             },
-              {
-              label: 'Minutes',
+          minutes:  {
               value: data.incidentDate.minute,
-              name: "incidentDate[time][minute]",
-              classes: "text-align-center govuk-input--width-2 " + ('govuk-input--error' if isMinuteError), 
-              attributes: { 'data-qa': 'incident-date-minute' },
-              id: "incidentDate[time][minute]"
+              classes: ('govuk-input--error' if isMinuteError)
               }
-          ],
-          hint: {
-            text: "Use the 24 hour clock. For example, 09 08 or 17 32"
-          }
         }) }}
         <hr>
     </div>
@@ -82,12 +62,12 @@
       <span class="govuk-label--s">Prison:&nbsp;</span>
       <span data-qa="prison" id='prison'>
         {{ data.prison.description }} &nbsp;
-        {{ 
+        {{
           submitLink({
-            label: 'Change<span class="govuk-visually-hidden"> prison </span>', 
-            qa: 'change-prison-link', 
+            label: 'Change<span class="govuk-visually-hidden"> prison </span>',
+            qa: 'change-prison-link',
             value: 'save-and-change-prison'
-          }) 
+          })
         }}
       </span>
     </div>
