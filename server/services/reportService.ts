@@ -10,6 +10,7 @@ import { check as getReportStatus } from './reportStatusChecker'
 import { InTransaction } from '../data/dataAccess/db'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
+import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -37,10 +38,12 @@ const toReport = (namesByOffenderNumber: NamesByOffenderNumber) => (
   status: reportSummary.status,
 })
 
+type UpdateParams = { currentUser; formId; bookingId; formObject; incidentDate? }
+
 export default class ReportService {
   constructor(
     private readonly incidentClient: IncidentClient,
-    private readonly elite2ClientBuilder,
+    private readonly elite2ClientBuilder: Elite2ClientBuilder,
     private readonly involvedStaffService,
     private readonly notificationService,
     private readonly offenderService: OffenderService,
@@ -83,7 +86,7 @@ export default class ReportService {
     return complete
   }
 
-  async update({ currentUser, formId, bookingId, formObject, incidentDate }) {
+  async update({ currentUser, formId, bookingId, formObject, incidentDate }: UpdateParams) {
     const incidentDateValue = incidentDate ? incidentDate.value : null
     const formValue = !isNilOrEmpty(formObject) ? formObject : null
 
