@@ -173,7 +173,7 @@ test('getCompletedReportsForReviewer', async () => {
 })
 
 test('getReport', () => {
-  incidentClient.getReport('user1', 'report1')
+  incidentClient.getReport('user1', 1)
 
   expect(query).toBeCalledWith({
     text: `select id
@@ -185,7 +185,7 @@ test('getReport', () => {
           , booking_id "bookingId"
           from v_report r
           where r.user_id = $1 and r.id = $2`,
-    values: ['user1', 'report1'],
+    values: ['user1', 1],
   })
 })
 
@@ -308,7 +308,7 @@ test('getInvolvedStaff', async () => {
   const expected = [{ name: 'AAA User' }, { name: 'BBB User' }]
   query.mockReturnValue({ rows: expected })
 
-  const result = await incidentClient.getInvolvedStaff('incident-1')
+  const result = await incidentClient.getInvolvedStaff(1)
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(query).toBeCalledWith({
@@ -318,7 +318,7 @@ test('getInvolvedStaff', async () => {
     ,      s.email         "email"
     from v_statement s 
     where s.report_id = $1`,
-    values: ['incident-1'],
+    values: [1],
   })
 })
 

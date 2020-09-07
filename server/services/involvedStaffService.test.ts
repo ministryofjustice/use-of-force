@@ -1,62 +1,71 @@
-const moment = require('moment')
-const { createInvolvedStaffService, AddStaffResult } = require('./involvedStaffService')
-const { ReportStatus } = require('../config/types')
+import moment from 'moment'
+import { InvolvedStaffService, AddStaffResult } from './involvedStaffService'
+import { ReportStatus } from '../config/types'
+import IncidentClient from '../data/incidentClient'
+import StatementsClient from '../data/statementsClient'
+import { User } from '../types/uof'
+
+jest.mock('../data/incidentClient')
+jest.mock('../data/statementsClient')
+
+const incidentClient = new IncidentClient(jest.fn as any, jest.fn as any) as jest.Mocked<IncidentClient>
+const statementsClient = new StatementsClient(jest.fn as any) as jest.Mocked<StatementsClient>
 
 const userService = {
   getUser: jest.fn(),
   getUsers: jest.fn(),
 }
 
+const client = jest.fn()
+
 const db = {
+  queryPerformer: jest.fn(),
   inTransaction: fn => fn(client),
 }
 
-const incidentClient = {
-  getCurrentDraftReport: jest.fn(),
-  getDraftInvolvedStaff: jest.fn(),
-  getInvolvedStaff: jest.fn(),
-  deleteInvolvedStaff: jest.fn(),
-  updateDraftReport: jest.fn(),
-  getReportForReviewer: jest.fn(),
-  changeStatus: jest.fn(),
-}
-
-const statementsClient = {
-  createStatements: jest.fn(),
-  isStatementPresentForUser: jest.fn(),
-  deleteStatement: jest.fn(),
-  getNumberOfPendingStatements: jest.fn(),
-}
-
-const client = jest.fn()
-
-let service
+let service: InvolvedStaffService
 
 beforeEach(() => {
-  service = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
+  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction, db.queryPerformer)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
+const user: User = {
+  staffId: 3,
+  username: 'Jo',
+  firstName: 'Jo',
+  lastName: 'Smith',
+  activeCaseLoadId: 'LEI',
+  accountStatus: 'ACTIVE',
+  active: true,
+  caseLoadId: 'LEI',
+  description: 'Leeds',
+  type: '',
+  caseloadFunction: '',
+  currentlyActive: true,
+  displayname: 'Jo Smith',
+}
+
 describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
-    await service.getDraftInvolvedStaff('incident-1')
+    await service.getDraftInvolvedStaff(1)
     expect(incidentClient.getDraftInvolvedStaff).toBeCalledTimes(1)
   })
 })
 
 describe('removeMissingDraftInvolvedStaff', () => {
   test('should not blow up with missing data', async () => {
-    incidentClient.getCurrentDraftReport.mockReturnValue({ id: 1 })
-    await service.removeMissingDraftInvolvedStaff('incident-1')
+    incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1 })
+    await service.removeMissingDraftInvolvedStaff('user-1', 1)
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, { incidentDetails: { involvedStaff: [] } })
   })
 
   test('should remove missing staff', async () => {
-    incidentClient.getCurrentDraftReport.mockReturnValue({
+    incidentClient.getCurrentDraftReport.mockResolvedValue({
       id: 1,
       form: {
         evidence: {
@@ -73,7 +82,7 @@ describe('removeMissingDraftInvolvedStaff', () => {
         },
       },
     })
-    await service.removeMissingDraftInvolvedStaff('incident-1')
+    await service.removeMissingDraftInvolvedStaff('user-1', 1)
     expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
     expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, {
       evidence: {
@@ -92,7 +101,7 @@ describe('removeMissingDraftInvolvedStaff', () => {
 
 describe('getInvolvedStaff', () => {
   test('it should call query on db', async () => {
-    await service.getInvolvedStaff('incident-1')
+    await service.getInvolvedStaff(1)
     expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
   })
 })
@@ -140,9 +149,9 @@ describe('save', () => {
   })
 
   test('when user has already added themselves', async () => {
-    statementsClient.createStatements.mockReturnValue({ June: 11, Jenny: 22, Bob: 33 })
-
-    incidentClient.getDraftInvolvedStaff.mockReturnValue([
+    statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Jo: 33 })
+    userService.getUsers.mockResolvedValue([])
+    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -158,31 +167,21 @@ describe('save', () => {
       {
         staffId: 3,
         email: 'an@email',
-        username: 'Bob',
-        name: 'Bob Smith',
+        username: 'Jo',
+        name: 'Jo Smith',
       },
     ])
 
-    const result = await service.save(
-      'form1',
-      reportSubmittedDate,
-      overdueDate,
-      {
-        name: 'Bob Smith',
-        staffId: 3,
-        username: 'Bob',
-      },
-      client
-    )
+    const result = await service.save(1, reportSubmittedDate, overdueDate, user, client)
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
       { email: 'cn@email', name: 'Jenny Walker', staffId: 2, statementId: 22, userId: 'Jenny' },
-      { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
+      { email: 'an@email', name: 'Jo Smith', staffId: 3, statementId: 33, userId: 'Jo' },
     ])
 
     expect(statementsClient.createStatements).toBeCalledWith({
-      reportId: 'form1',
+      reportId: 1,
       firstReminder: expectedFirstReminderDate.toDate(),
       overdueDate: overdueDate.toDate(),
       staff: [
@@ -195,19 +194,19 @@ describe('save', () => {
         },
         {
           email: 'an@email',
-          name: 'Bob Smith',
+          name: 'Jo Smith',
           staffId: 3,
-          userId: 'Bob',
+          userId: 'Jo',
         },
       ],
-      client,
+      query: db.queryPerformer,
     })
   })
 
   test('when user is not already added', async () => {
-    statementsClient.createStatements.mockReturnValue({ June: 11, Jenny: 22, Bob: 33 })
+    statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Bob: 33 })
 
-    incidentClient.getDraftInvolvedStaff.mockReturnValue([
+    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -222,7 +221,7 @@ describe('save', () => {
       },
     ])
 
-    userService.getUsers.mockReturnValue([
+    userService.getUsers.mockResolvedValue([
       {
         staffId: 3,
         email: 'an@email',
@@ -231,17 +230,7 @@ describe('save', () => {
       },
     ])
 
-    const result = await service.save(
-      'form1',
-      reportSubmittedDate,
-      overdueDate,
-      {
-        name: 'Bob Smith',
-        staffId: 3,
-        username: 'Bob',
-      },
-      client
-    )
+    const result = await service.save(1, reportSubmittedDate, overdueDate, user, db.queryPerformer)
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -250,7 +239,7 @@ describe('save', () => {
     ])
 
     expect(statementsClient.createStatements).toBeCalledWith({
-      reportId: 'form1',
+      reportId: 1,
       firstReminder: expectedFirstReminderDate.toDate(),
       overdueDate: overdueDate.toDate(),
       staff: [
@@ -268,7 +257,7 @@ describe('save', () => {
           userId: 'Bob',
         },
       ],
-      client,
+      query: db.queryPerformer,
     })
   })
 
@@ -295,7 +284,7 @@ describe('save', () => {
     })
 
     test('to complete report', async () => {
-      incidentClient.getReportForReviewer.mockReturnValue({
+      incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.COMPLETE.value,
       })
@@ -307,14 +296,14 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        client,
+        query: db.queryPerformer,
       })
 
       expect(incidentClient.changeStatus).toBeCalledWith('form1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
     })
 
     test('to report which is not yet complete', async () => {
-      incidentClient.getReportForReviewer.mockReturnValue({
+      incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.SUBMITTED.value,
       })
@@ -326,7 +315,7 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        client,
+        query: db.queryPerformer,
       })
 
       expect(incidentClient.changeStatus).not.toBeCalled()
@@ -342,12 +331,12 @@ describe('save', () => {
     })
 
     test('when user already has a statement', async () => {
-      incidentClient.getReportForReviewer.mockReturnValue({
+      incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.COMPLETE.value,
       })
 
-      statementsClient.isStatementPresentForUser.mockReturnValue(true)
+      statementsClient.isStatementPresentForUser.mockResolvedValue(true)
 
       await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.ALREADY_EXISTS)
 
@@ -356,7 +345,7 @@ describe('save', () => {
     })
 
     test('when user is unverified', async () => {
-      incidentClient.getReportForReviewer.mockReturnValue({
+      incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.IN_PROGRESS.value,
       })
@@ -371,7 +360,7 @@ describe('save', () => {
         },
       ])
 
-      statementsClient.isStatementPresentForUser.mockReturnValue(false)
+      statementsClient.isStatementPresentForUser.mockResolvedValue(false)
 
       await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
@@ -380,7 +369,7 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        client,
+        query: db.queryPerformer,
       })
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
@@ -428,7 +417,7 @@ describe('save', () => {
   })
 
   test('fail to find current user', async () => {
-    incidentClient.getDraftInvolvedStaff.mockReturnValue([
+    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -445,8 +434,8 @@ describe('save', () => {
 
     userService.getUsers.mockReturnValue([{ missing: true }])
 
-    await expect(
-      service.save('form1', reportSubmittedDate, overdueDate, { name: 'Bob Smith', staffId: 3, username: 'Bob' })
-    ).rejects.toThrow(`Could not retrieve user details for current user: 'Bob'`)
+    await expect(service.save(1, reportSubmittedDate, overdueDate, user, db.queryPerformer)).rejects.toThrow(
+      `Could not retrieve user details for current user: 'Jo'`
+    )
   })
 })

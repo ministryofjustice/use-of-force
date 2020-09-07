@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 
 import type IncidentClient from '../data/incidentClient'
 import type { ReportSummary, IncompleteReportSummary } from '../data/incidentClientTypes'
@@ -11,6 +11,7 @@ import { InTransaction } from '../data/dataAccess/db'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import { InvolvedStaffService } from './involvedStaffService'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -44,7 +45,7 @@ export default class ReportService {
   constructor(
     private readonly incidentClient: IncidentClient,
     private readonly elite2ClientBuilder: Elite2ClientBuilder,
-    private readonly involvedStaffService,
+    private readonly involvedStaffService: InvolvedStaffService,
     private readonly notificationService,
     private readonly offenderService: OffenderService,
     private readonly inTransaction: InTransaction,
@@ -57,7 +58,7 @@ export default class ReportService {
     return this.offenderService.getOffenderNames(token, offenderNos)
   }
 
-  getCurrentDraft(userId, bookingId) {
+  getCurrentDraft(userId: string, bookingId: number) {
     return this.incidentClient.getCurrentDraftReport(userId, bookingId)
   }
 
@@ -65,7 +66,7 @@ export default class ReportService {
     return getReportStatus(report)
   }
 
-  async getReport(userId, reportId) {
+  async getReport(userId: string, reportId: number) {
     const report = this.incidentClient.getReport(userId, reportId)
 
     if (!report) {
@@ -80,7 +81,7 @@ export default class ReportService {
     return reports.map(toReport(offenderNosToNames))
   }
 
-  async isDraftComplete(username: string, bookingId: number) {
+  async isDraftComplete(username: string, bookingId: number): Promise<boolean> {
     const { form = {} } = await this.getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)
     return complete
@@ -95,12 +96,12 @@ export default class ReportService {
       : this.startNewReport(bookingId, currentUser, incidentDateValue, formObject)
   }
 
-  async updateAgencyId(agencyId, username, bookingId) {
+  async updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {
     logger.info('updating agencyId')
     await this.incidentClient.updateAgencyId(agencyId, username, bookingId)
   }
 
-  private async updateReport(formId, bookingId, currentUser, incidentDateValue, formValue) {
+  private async updateReport(formId: number, bookingId: number, currentUser, incidentDateValue, formValue) {
     const { username: userId } = currentUser
     if (incidentDateValue || formValue) {
       logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
@@ -109,7 +110,7 @@ export default class ReportService {
     return formId
   }
 
-  private async startNewReport(bookingId, currentUser, incidentDateValue, formObject) {
+  private async startNewReport(bookingId: number, currentUser, incidentDateValue, formObject) {
     const { username: userId, displayName: reporterName } = currentUser
 
     const token = await this.systemToken(userId)
@@ -147,7 +148,7 @@ export default class ReportService {
     return Promise.all(notifications)
   }
 
-  async submit(currentUser, bookingId, now = () => moment()) {
+  async submit(currentUser, bookingId: number, now: () => Moment = () => moment()) {
     const { id, incidentDate } = await this.getCurrentDraft(currentUser.username, bookingId)
     if (id) {
       const reportSubmittedDate = now()
@@ -180,7 +181,7 @@ export default class ReportService {
     return false
   }
 
-  async deleteReport(username, reportId) {
+  async deleteReport(username: string, reportId: number): Promise<void> {
     logger.info(`User: ${username} is deleting report: '${reportId}'`)
 
     const report = await this.incidentClient.getReportForReviewer(reportId)

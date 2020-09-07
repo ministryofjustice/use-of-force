@@ -3,23 +3,29 @@ import IncidentClient from '../data/incidentClient'
 import ReportService from './reportService'
 import OffenderService from './offenderService'
 import { PageResponse } from '../utils/page'
+import { InvolvedStaffService } from './involvedStaffService'
 
 jest.mock('../data/incidentClient')
 jest.mock('./offenderService')
+jest.mock('./involvedStaffService')
 
 const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
 
 const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+
+const involvedStaffService = new InvolvedStaffService(
+  jest.fn as any,
+  jest.fn as any,
+  jest.fn as any,
+  jest.fn as any,
+  jest.fn as any
+) as jest.Mocked<InvolvedStaffService>
 
 const client = 'client-1'
 const inTransaction = fn => fn(client)
 
 const notificationService = {
   sendStatementRequest: jest.fn(),
-}
-
-const involvedStaffService = {
-  save: jest.fn(),
 }
 
 const elite2Client = {
@@ -44,7 +50,7 @@ beforeEach(() => {
     inTransaction,
     systemToken
   )
-  incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 'form-1', a: 'b', incidentDate: 'today' })
+  incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
@@ -54,28 +60,28 @@ afterEach(() => {
 
 describe('updateAgencyId', () => {
   it('incidentClient.updateAgencyId should be called', async () => {
-    await service.updateAgencyId('BXI', 'CA user', '1')
-    expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', '1')
+    await service.updateAgencyId('BXI', 'CA user', 1)
+    expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', 1)
   })
 })
 describe('submit', () => {
   test('it should save statements and submit the report', async () => {
-    involvedStaffService.save.mockReturnValue([])
+    involvedStaffService.save.mockResolvedValue([])
 
     const now = moment('2019-09-06 21:26:18')
     const deadline = moment(now).add(3, 'days')
-    const result = await service.submit(currentUser, 'booking-1', () => now)
+    const result = await service.submit(currentUser, 1, () => now)
 
-    expect(result).toEqual('form-1')
+    expect(result).toEqual(1)
     expect(involvedStaffService.save).toBeCalledTimes(1)
-    expect(involvedStaffService.save).toBeCalledWith('form-1', now, deadline, currentUser, client)
+    expect(involvedStaffService.save).toBeCalledWith(1, now, deadline, currentUser, client)
 
     expect(incidentClient.submitReport).toBeCalledTimes(1)
-    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 'booking-1', now.toDate(), client)
+    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 1, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {
-    involvedStaffService.save.mockReturnValue([
+    involvedStaffService.save.mockResolvedValue([
       { userId: 'USER_1', name: 'June', email: 'user1@example.com', statementId: 1 },
       { userId: currentUser.username, name: 'Tracy', email: 'user2@example.com', statementId: 2 },
       { userId: 'USER_3', name: 'Alice', email: 'user3@example.com', statementId: 3 },
@@ -83,7 +89,7 @@ describe('submit', () => {
 
     const now = moment('2019-09-06 21:26:18')
     const deadline = moment(now).add(3, 'days')
-    await service.submit(currentUser, 'booking-1', () => now)
+    await service.submit(currentUser, 1, () => now)
 
     expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
@@ -97,7 +103,7 @@ describe('submit', () => {
           submittedDate: now,
         },
         {
-          reportId: 'form-1',
+          reportId: 1,
           statementId: 1,
         },
       ],
@@ -111,7 +117,7 @@ describe('submit', () => {
           submittedDate: now,
         },
         {
-          reportId: 'form-1',
+          reportId: 1,
           statementId: 3,
         },
       ],
@@ -127,20 +133,20 @@ describe('getCurrentDraft', () => {
 
   test('it should return the first row', async () => {
     const output = await service.getCurrentDraft('user1', 1)
-    expect(output).toEqual({ id: 'form-1', a: 'b', incidentDate: 'today' })
+    expect(output).toEqual({ id: 1, a: 'b', incidentDate: 'today' })
   })
 })
 
 describe('getReport', () => {
   test('it should call query on db', async () => {
     incidentClient.getReport.mockResolvedValue({})
-    await service.getReport('user1', 'report1')
+    await service.getReport('user1', 1)
     expect(incidentClient.getReport).toBeCalledTimes(1)
-    expect(incidentClient.getReport).toBeCalledWith('user1', 'report1')
+    expect(incidentClient.getReport).toBeCalledWith('user1', 1)
   })
 
   test('it should throw an error if report doesnt exist', async () => {
-    await expect(service.getReport('user1', 'report1')).rejects.toThrow('Report does not exist: report1')
+    await expect(service.getReport('user1', 1)).rejects.toThrow('Report does not exist: 1')
   })
 })
 
