@@ -4,16 +4,17 @@ import bodyParser from 'body-parser'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../middleware/roleCheck'
 
-import CreateIncidentRoutes from './incidents'
-import CreateReviewRoutes from './reviewer'
-import CreateStatementRoutes from './statements'
+import IncidentRoutes from './incidents'
+import ReviewRoutes from './reviewer'
+import StatementRoutes from './statements'
 import CreateReportRoutes from './createReport'
+import IncidentDetailsRoutes from './incidentDetails'
 
-import CreateSearchForPrisonerRoutes from './searchForPrisoner'
-import CreateCheckYourAnswerRoutes from './checkYourAnswers'
-import CreateReportUseOfForceRoutes from './reportUseOfForce'
-import CreateCoordinatorRoutes from './coordinator'
-import CreateChangePrisonRoutes from './changePrison'
+import SearchForPrisonerRoutes from './searchForPrisoner'
+import CheckYourAnswerRoutes from './checkYourAnswers'
+import ReportUseOfForceRoutes from './reportUseOfForce'
+import CoordinatorRoutes from './coordinator'
+import ChangePrisonRoutes from './changePrison'
 
 export default function Index({
   authenticationMiddleware,
@@ -29,18 +30,28 @@ export default function Index({
 }) {
   const router = express.Router()
 
-  const incidents = CreateIncidentRoutes(reportService, reportDetailBuilder)
+  const incidents = IncidentRoutes(reportService, reportDetailBuilder)
 
-  const reviewer = CreateReviewRoutes({
+  const reviewer = ReviewRoutes({
     reviewService,
     offenderService,
     reportDetailBuilder,
     systemToken,
   })
 
-  const statements = CreateStatementRoutes(statementService, offenderService, systemToken)
+  const statements = StatementRoutes(statementService, offenderService, systemToken)
 
-  const createReport = CreateReportRoutes({
+  const createReport = new CreateReportRoutes(reportService)
+
+  const incidentDetails = new IncidentDetailsRoutes(
+    reportService,
+    offenderService,
+    involvedStaffService,
+    systemToken,
+    locationService
+  )
+
+  const checkYourAnswers = CheckYourAnswerRoutes({
     reportService,
     offenderService,
     involvedStaffService,
@@ -48,17 +59,9 @@ export default function Index({
     locationService,
   })
 
-  const checkYourAnswers = CreateCheckYourAnswerRoutes({
-    reportService,
-    offenderService,
-    involvedStaffService,
-    systemToken,
-    locationService,
-  })
+  const reportUseOfForce = ReportUseOfForceRoutes({ reportService, offenderService, systemToken })
 
-  const reportUseOfForce = CreateReportUseOfForceRoutes({ reportService, offenderService, systemToken })
-
-  const coordinator = CreateCoordinatorRoutes({
+  const coordinator = CoordinatorRoutes({
     reportService,
     involvedStaffService,
     systemToken,
@@ -66,8 +69,8 @@ export default function Index({
     reviewService,
   })
 
-  const searchForPrisoner = CreateSearchForPrisonerRoutes({ prisonerSearchService })
-  const changePrison = CreateChangePrisonRoutes({
+  const searchForPrisoner = SearchForPrisonerRoutes({ prisonerSearchService })
+  const changePrison = ChangePrisonRoutes({
     locationService,
     reportService,
     systemToken,
@@ -81,33 +84,34 @@ export default function Index({
 
     get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-    get(reportPath('incident-details'), createReport.viewIncidentDetails({ edit: false }))
-    post(reportPath('incident-details'), createReport.submit('incidentDetails'))
-    get(reportPath('edit-incident-details'), createReport.viewIncidentDetails({ edit: true }))
-    post(reportPath('edit-incident-details'), createReport.submitEdit('incidentDetails'))
+    get(reportPath('incident-details'), incidentDetails.viewIncidentDetailsForm)
+    post(reportPath('incident-details'), incidentDetails.submitForm)
+    get(reportPath('edit-incident-details'), incidentDetails.viewEditIncidentDetailsForm)
+    post(reportPath('edit-incident-details'), incidentDetails.submitEditForm)
+    get(`${reportPath('cancel-edit')}/incidentDetails`, incidentDetails.cancelEdit)
 
     get(reportPath('change-prison'), changePrison.viewPrisons({ edit: false }))
     post(reportPath('change-prison'), changePrison.submit)
     get(reportPath('edit-change-prison'), changePrison.viewPrisons({ edit: true }))
     post(reportPath('edit-change-prison'), changePrison.submitEdit)
 
-    get(reportPath('username-does-not-exist'), createReport.viewUsernameDoesNotExist)
-    post(reportPath('username-does-not-exist'), createReport.submitUsernameDoesNotExist)
+    get(reportPath('username-does-not-exist'), incidentDetails.viewUsernameDoesNotExist)
+    post(reportPath('username-does-not-exist'), incidentDetails.submitUsernameDoesNotExist)
 
-    get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
-    post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
-    get(reportPath('edit-use-of-force-details'), createReport.viewEdit('useOfForceDetails'))
-    post(reportPath('edit-use-of-force-details'), createReport.submitEdit('useOfForceDetails'))
+    get(reportPath('use-of-force-details'), createReport.viewForm('useOfForceDetails'))
+    post(reportPath('use-of-force-details'), createReport.submitForm('useOfForceDetails'))
+    get(reportPath('edit-use-of-force-details'), createReport.viewEditForm('useOfForceDetails'))
+    post(reportPath('edit-use-of-force-details'), createReport.submitEditForm('useOfForceDetails'))
 
-    get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
-    post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
-    get(reportPath('edit-relocation-and-injuries'), createReport.viewEdit('relocationAndInjuries'))
-    post(reportPath('edit-relocation-and-injuries'), createReport.submitEdit('relocationAndInjuries'))
+    get(reportPath('relocation-and-injuries'), createReport.viewForm('relocationAndInjuries'))
+    post(reportPath('relocation-and-injuries'), createReport.submitForm('relocationAndInjuries'))
+    get(reportPath('edit-relocation-and-injuries'), createReport.viewEditForm('relocationAndInjuries'))
+    post(reportPath('edit-relocation-and-injuries'), createReport.submitEditForm('relocationAndInjuries'))
 
-    get(reportPath('evidence'), createReport.view('evidence'))
-    post(reportPath('evidence'), createReport.submit('evidence'))
-    get(reportPath('edit-evidence'), createReport.viewEdit('evidence'))
-    post(reportPath('edit-evidence'), createReport.submitEdit('evidence'))
+    get(reportPath('evidence'), createReport.viewForm('evidence'))
+    post(reportPath('evidence'), createReport.submitForm('evidence'))
+    get(reportPath('edit-evidence'), createReport.viewEditForm('evidence'))
+    post(reportPath('edit-evidence'), createReport.submitEditForm('evidence'))
 
     get(reportPath('check-your-answers'), checkYourAnswers.view)
     post(reportPath('check-your-answers'), checkYourAnswers.submit)
