@@ -35,7 +35,7 @@ export class Elite2Client {
     return this.restClient.get({ path: '/api/users/me' })
   }
 
-  getUserCaseLoads(): Promise<CaseLoad> {
+  getUserCaseLoads(): Promise<CaseLoad[]> {
     return this.restClient.get({ path: '/api/users/me/caseLoads' })
   }
 

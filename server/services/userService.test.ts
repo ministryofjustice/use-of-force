@@ -1,11 +1,12 @@
-const serviceCreator = require('./userService')
+import UserService from './userService'
+import { Elite2Client } from '../data/elite2ClientBuilder'
+import { UserDetail, CaseLoad } from '../data/elite2ClientBuilderTypes'
 
 const token = 'token-1'
 
-const elite2Client = {
-  getUser: jest.fn(),
-  getUserCaseLoads: jest.fn(),
-}
+jest.mock('../data/elite2ClientBuilder')
+
+const elite2Client = new Elite2Client(jest.fn as any) as jest.Mocked<Elite2Client>
 
 const authClient = {
   getEmail: jest.fn(),
@@ -21,7 +22,7 @@ beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
   authClientBuilder.mockReturnValue(authClient)
 
-  service = serviceCreator(elite2ClientBuilder, authClientBuilder)
+  service = new UserService(elite2ClientBuilder, authClientBuilder)
 })
 
 afterEach(() => {
@@ -29,20 +30,36 @@ afterEach(() => {
 })
 
 describe('getUser', () => {
+  const user = {
+    staffId: 3,
+    username: 'jouser',
+    firstName: 'Jo',
+    lastName: 'Smith',
+    activeCaseLoadId: '2',
+  } as UserDetail
+
   it('should retrieve user details', async () => {
-    const user = { firstName: 'SAM', lastName: 'SMITH', activeCaseLoadId: 2 }
-    elite2Client.getUser.mockReturnValue(user)
-    elite2Client.getUserCaseLoads.mockReturnValue([{ caseLoadId: 1 }, { caseLoadId: 2, name: 'Leeds' }])
+    elite2Client.getUser.mockResolvedValue(user)
+    elite2Client.getUserCaseLoads.mockResolvedValue([
+      { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
+      { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
+    ])
 
     const result = await service.getUser(token)
 
-    expect(result).toEqual({ ...user, displayName: 'Sam Smith', activeCaseLoad: { caseLoadId: 2, name: 'Leeds' } })
+    expect(result).toEqual({
+      ...user,
+      displayName: 'Jo Smith',
+      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' },
+    })
   })
 
   it('should use the user token', async () => {
-    const user = { firstName: 'SAM', lastName: 'SMITH', activeCaseLoadId: 2 }
-    elite2Client.getUser.mockReturnValue(user)
-    elite2Client.getUserCaseLoads.mockReturnValue([{ caseLoadId: 1 }, { caseLoadId: 2, name: 'Leeds' }])
+    elite2Client.getUser.mockResolvedValue(user)
+    elite2Client.getUserCaseLoads.mockResolvedValue([
+      { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
+      { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
+    ])
 
     await service.getUser(token, -5)
 

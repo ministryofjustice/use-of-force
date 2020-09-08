@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { CaseLoad } from '../data/elite2ClientBuilderTypes'
 
 export type DateRange = [moment.Moment, moment.Moment]
 
@@ -19,15 +20,8 @@ export type User = {
   username: string
   firstName: string
   lastName: string
-  activeCaseLoadId: string
-  accountStatus: string
-  active: boolean
-  caseLoadId: string
-  description: string
-  type: string
-  caseloadFunction: string
-  currentlyActive: boolean
-  displayname: string
+  activeCaseLoad: CaseLoad
+  displayName: string
 }
 
 export type GetUsersResults = {
@@ -41,13 +35,6 @@ export type GetUsersResults = {
 }
 
 export type SystemToken = (string?) => Promise<string>
-
-export interface UserService {
-  /** get current user */
-  getUser: (token: string) => Promise<User>
-  /** Get details for users along with email address */
-  getUsers: (token: string, usernames: string[]) => Promise<GetUsersResults[]>
-}
 
 export interface ReportingClient {
   getMostOftenInvolvedStaff: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>

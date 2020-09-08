@@ -12,7 +12,7 @@ interface GetRequest {
   raw?: boolean
 }
 
-export default function builder(name, config) {
+export default function builder(name: string, config) {
   const timeoutSpec = {
     response: config.timeout.response,
     deadline: config.timeout.deadline,

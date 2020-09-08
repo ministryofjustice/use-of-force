@@ -104,7 +104,6 @@ export interface UserDetail {
   lastName: string
   thumbnailId: number
   activeCaseLoadId: string
-  accountStatus: string
   lockDate: Date
   expiryDate: Date
   lockedFlag: boolean
@@ -116,7 +115,6 @@ export interface CaseLoad {
   caseLoadId: string
   description: string
   type: string
-  caseloadFunction: string
   currentlyActive: boolean
 }
 

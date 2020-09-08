@@ -3,8 +3,9 @@ import logger from '../../log'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
-import { UserService, User, GetUsersResults } from '../types/uof'
+import { User, GetUsersResults } from '../types/uof'
 import { InTransaction, QueryPerformer } from '../data/dataAccess/db'
+import UserService from './userService'
 
 export enum AddStaffResult {
   SUCCESS = 'success',

@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
 
 type Incident = {
   incidentDate: Date
@@ -33,7 +34,7 @@ export type HeatmapBuilder = {
   build: (token: string, agencyId: string, incidents: Incident[]) => Promise<Heatmap>
 }
 
-export default function createHeatmapBuilder(elite2ClientBuilder: any): HeatmapBuilder {
+export default function createHeatmapBuilder(elite2ClientBuilder: Elite2ClientBuilder): HeatmapBuilder {
   const createLocationFinder = async (token: string, agencyId: string): Promise<LocationFinder> => {
     const elite2Client = elite2ClientBuilder(token)
 
