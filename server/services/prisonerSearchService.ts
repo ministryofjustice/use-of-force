@@ -1,26 +1,29 @@
 import { SearchForm, PrisonerSearchClientBuilder } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
+import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import { SystemToken } from '../types/uof'
 
 export type Prison = {
   agencyId: string
   description: string
 }
 
+export type SearchResult = {
+  name: string
+  prisonNumber: string
+  prison: string
+  bookingNumber: number
+}
+
 const isFormComplete = (form: SearchForm): boolean =>
   Boolean(form.prisonNumber || form.firstName || form.lastName || form.agencyId)
 
 export default class PrisonSearchService {
-  PrisonerSearchClient: PrisonerSearchClientBuilder
-
-  elite2ClientBuilder: any
-
-  systemToken: any
-
-  constructor(PrisonerSearchClient: PrisonerSearchClientBuilder, elite2ClientBuilder, systemToken) {
-    this.PrisonerSearchClient = PrisonerSearchClient
-    this.elite2ClientBuilder = elite2ClientBuilder
-    this.systemToken = systemToken
-  }
+  constructor(
+    private readonly PrisonerSearchClient: PrisonerSearchClientBuilder,
+    private readonly elite2ClientBuilder: Elite2ClientBuilder,
+    private readonly systemToken: SystemToken
+  ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
     const client = this.elite2ClientBuilder(token)
@@ -36,7 +39,7 @@ export default class PrisonSearchService {
     }
   }
 
-  async search(searchingUserName: string, form: SearchForm): Promise<any[]> {
+  async search(searchingUserName: string, form: SearchForm): Promise<SearchResult[]> {
     if (!isFormComplete(form)) {
       return []
     }

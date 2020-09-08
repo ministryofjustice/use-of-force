@@ -10,6 +10,7 @@ import LocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
 import StatementService from './services/statementService'
+import { InvolvedStaffService } from './services/involvedStaffService'
 
 import createApp from './app'
 
@@ -27,7 +28,6 @@ const statementsClient = new StatementsClient(db.query)
 const createSignInService = require('./authentication/signInService')
 
 const createHeatmapBuilder = require('./services/heatmapBuilder').default
-const { createInvolvedStaffService } = require('./services/involvedStaffService')
 const createUserService = require('./services/userService')
 
 const { notificationServiceFactory } = require('./services/notificationService')
@@ -37,7 +37,13 @@ const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClie
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = createUserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = createInvolvedStaffService({ incidentClient, statementsClient, userService, db })
+const involvedStaffService = new InvolvedStaffService(
+  incidentClient,
+  statementsClient,
+  userService,
+  db.inTransaction,
+  db.query
+)
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = new OffenderService(elite2ClientBuilder)
 const reportService = new ReportService(

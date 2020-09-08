@@ -66,7 +66,7 @@ export default class IncidentClient {
     })
   }
 
-  async getCurrentDraftReport(userId, bookingId) {
+  async getCurrentDraftReport(userId: string, bookingId: number) {
     const results = await this.query({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
@@ -78,7 +78,7 @@ export default class IncidentClient {
     return results.rows[0] || {}
   }
 
-  async getReport(userId, reportId) {
+  async getReport(userId: string, reportId: number) {
     const results = await this.query({
       text: `select id
           , incident_date "incidentDate"
@@ -222,7 +222,7 @@ export default class IncidentClient {
     return []
   }
 
-  async getInvolvedStaff(reportId) {
+  async getInvolvedStaff(reportId: number) {
     const results = await this.query({
       text: `select s.id     "statementId"
     ,      s.user_id       "userId"
@@ -235,7 +235,7 @@ export default class IncidentClient {
     return results.rows
   }
 
-  async deleteReport(reportId, now = new Date()) {
+  async deleteReport(reportId: number, now: Date = new Date()): Promise<void> {
     return this.inTransaction(async query => {
       await query({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
 

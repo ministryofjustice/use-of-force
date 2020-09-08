@@ -14,7 +14,7 @@ export interface OffenderNoWithIncidentCount {
   incidentCount: number
 }
 
-type User = {
+export type User = {
   staffId: number
   username: string
   firstName: string
@@ -30,7 +30,7 @@ type User = {
   displayname: string
 }
 
-type GetUsersResults = {
+export type GetUsersResults = {
   username: string
   missing: boolean
   verified: boolean
