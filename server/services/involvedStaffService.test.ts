@@ -3,18 +3,16 @@ import { InvolvedStaffService, AddStaffResult } from './involvedStaffService'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
-import { User } from '../types/uof'
+import { User, GetUsersResults } from '../types/uof'
+import UserService from './userService'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
+jest.mock('./userService')
 
 const incidentClient = new IncidentClient(jest.fn as any, jest.fn as any) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(jest.fn as any) as jest.Mocked<StatementsClient>
-
-const userService = {
-  getUser: jest.fn(),
-  getUsers: jest.fn(),
-}
+const userService = new UserService(jest.fn as any, jest.fn as any) as jest.Mocked<UserService>
 
 const client = jest.fn()
 
@@ -38,15 +36,8 @@ const user: User = {
   username: 'Jo',
   firstName: 'Jo',
   lastName: 'Smith',
-  activeCaseLoadId: 'LEI',
-  accountStatus: 'ACTIVE',
-  active: true,
-  caseLoadId: 'LEI',
-  description: 'Leeds',
-  type: '',
-  caseloadFunction: '',
-  currentlyActive: true,
-  displayname: 'Jo Smith',
+  activeCaseLoad: { caseLoadId: 'LEI', description: 'Leeds', type: 'Agency', currentlyActive: true },
+  displayName: 'Jo Smith',
 }
 
 describe('getDraftInvolvedStaff', () => {
@@ -128,7 +119,7 @@ describe('lookup', () => {
       },
     ]
 
-    userService.getUsers.mockReturnValue(results)
+    userService.getUsers.mockResolvedValue(results)
 
     const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
 
@@ -227,6 +218,8 @@ describe('save', () => {
         email: 'an@email',
         username: 'Bob',
         name: 'Bob Smith',
+        missing: false,
+        verified: false,
       },
     ])
 
@@ -272,13 +265,14 @@ describe('save', () => {
     ]
 
     beforeEach(() => {
-      userService.getUsers.mockReturnValue([
+      userService.getUsers.mockResolvedValue([
         {
           email: 'an@email',
           name: 'Bob Smith',
           staffId: 3,
           username: 'Bob',
           verified: true,
+          missing: false,
         },
       ])
     })
@@ -350,13 +344,14 @@ describe('save', () => {
         status: ReportStatus.IN_PROGRESS.value,
       })
 
-      userService.getUsers.mockReturnValue([
+      userService.getUsers.mockResolvedValue([
         {
           staffId: 3,
           email: 'an@email',
           username: 'Bob',
           name: 'Bob Smith',
           verified: false,
+          missing: false,
         },
       ])
 
@@ -432,7 +427,7 @@ describe('save', () => {
       },
     ])
 
-    userService.getUsers.mockReturnValue([{ missing: true }])
+    userService.getUsers.mockResolvedValue([{ missing: true }] as GetUsersResults[])
 
     await expect(service.save(1, reportSubmittedDate, overdueDate, user, db.queryPerformer)).rejects.toThrow(
       `Could not retrieve user details for current user: 'Jo'`

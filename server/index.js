@@ -11,12 +11,15 @@ import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
 import StatementService from './services/statementService'
 import { InvolvedStaffService } from './services/involvedStaffService'
+import UserService from './services/userService'
 
 import createApp from './app'
 
 import elite2ClientBuilder from './data/elite2ClientBuilder'
 
 import { authClientBuilder, systemToken } from './data/authClientBuilder'
+
+import createHeatmapBuilder from './services/heatmapBuilder'
 
 const db = require('./data/dataAccess/db')
 
@@ -27,16 +30,13 @@ const statementsClient = new StatementsClient(db.query)
 
 const createSignInService = require('./authentication/signInService')
 
-const createHeatmapBuilder = require('./services/heatmapBuilder').default
-const createUserService = require('./services/userService')
-
 const { notificationServiceFactory } = require('./services/notificationService')
 const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
 
 // inject service dependencies
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
-const userService = createUserService(elite2ClientBuilder, authClientBuilder)
+const userService = new UserService(elite2ClientBuilder, authClientBuilder)
 const involvedStaffService = new InvolvedStaffService(
   incidentClient,
   statementsClient,
