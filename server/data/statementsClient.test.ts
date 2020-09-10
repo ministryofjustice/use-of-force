@@ -47,6 +47,8 @@ test('getStatementForUser', () => {
     ,      s.job_start_year         "jobStartYear"
     ,      s.statement
     ,      s.submitted_date         "submittedDate"
+    ,      s.name                   "name"
+    ,      r.reporter_name          "reporterName"
     from report r
     left join statement s on r.id = s.report_id
     where r.id = $1

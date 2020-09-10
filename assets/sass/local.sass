@@ -344,3 +344,31 @@ dt.summary-list__key__wider
 
 .text-align-center
   text-align: center !important
+
+.margin-top-bottom-0
+  margin-top: 0
+  margin-bottom: 0
+
+.print-link 
+    display: inline-block
+    margin: 0 0 15px -10px
+    position: relative
+    top: 10px
+    padding: 0.5em 0.5em 0.5em 38px
+    background: url(/assets/images/Printer_icon.png) no-repeat 5px 50%
+    background-size: 22px 24px
+
+.print
+  display: none !important
+
+@media print
+  .no-print, .govuk-header, .govuk-footer
+     display: none !important
+  
+  .print
+    display: block !important
+
+@page
+  size: A4
+  margin: 10% 5%
+  
