@@ -1,14 +1,14 @@
 import moment from 'moment'
 import { RequestHandler } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
-import { getPathFor } from '../utils/routes'
 import types from '../config/types'
 import { processInput, mergeIntoPayload } from '../services/validation'
-import { paths, full, partial } from '../config/incident'
+import { nextPaths, full, partial } from '../config/incident'
 import ReportService from '../services/reportService'
 import OffenderService from '../services/offenderService'
 import { SystemToken } from '../types/uof'
 import LocationService from '../services/locationService'
+import { InvolvedStaffService } from '../services/involvedStaffService'
 
 const formName = 'incidentDetails'
 
@@ -46,7 +46,7 @@ export default class IncidentDetailsRoutes {
   constructor(
     private readonly reportService: ReportService,
     private readonly offenderService: OffenderService,
-    private readonly involvedStaffService,
+    private readonly involvedStaffService: InvolvedStaffService,
     private readonly systemToken: SystemToken,
     private readonly locationService: LocationService
   ) {}
@@ -88,7 +88,7 @@ export default class IncidentDetailsRoutes {
       return `/report/${bookingId}/check-your-answers`
     }
 
-    const nextPath = getPathFor({ data: payloadFields, config: paths[form] })(bookingId)
+    const nextPath = nextPaths.incidentDetails(bookingId)
 
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }

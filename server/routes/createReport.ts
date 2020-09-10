@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
-import { getPathFor } from '../utils/routes'
 import types from '../config/types'
 import { processInput, mergeIntoPayload } from '../services/validation'
-import { paths, full, partial } from '../config/incident'
+import { nextPaths, full, partial } from '../config/incident'
 import ReportService from '../services/reportService'
 
 const SubmitType = {
@@ -34,7 +33,7 @@ export default class NewIncidentRoutes {
       return `/report/${bookingId}/report-use-of-force`
     }
 
-    const nextPath = getPathFor({ data: payloadFields, config: paths[form] })(bookingId)
+    const nextPath = nextPaths[form](bookingId)
 
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
