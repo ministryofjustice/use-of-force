@@ -4,6 +4,7 @@
     metadata:
       labels:
         app: dps-db-refresh-job
+        prometheus: cloud-platform
       name: dps-prometheus-rules-db-refresh
     spec:
       groups:

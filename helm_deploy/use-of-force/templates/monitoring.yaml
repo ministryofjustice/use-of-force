@@ -2,6 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "app.name" . }}
+    prometheus: cloud-platform
 spec:
   groups:
   - name: use-of-force
