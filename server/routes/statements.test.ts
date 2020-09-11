@@ -110,6 +110,14 @@ describe('GET /:reportId/your-statement', () => {
       .expect(res => {
         expect(res.text).toContain('Your use of force statement')
       }))
+  it('should contain print link', () =>
+    request(app)
+      .get('/-1/your-statement')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Print statement')
+      }))
 })
 
 describe('POST /:reportId/add-comment-to-statement', () => {
