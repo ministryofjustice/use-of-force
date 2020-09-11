@@ -125,6 +125,8 @@ context('Submit statement', () => {
           lastTrainingYear: 2010,
           jobStartYear: 1999,
           statement: 'This is my statement',
+          name: 'TEST_USER name',
+          reporterName: 'James Stuart',
         })
       })
     )
