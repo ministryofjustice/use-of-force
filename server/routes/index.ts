@@ -71,11 +71,7 @@ export default function Index({
   })
 
   const searchForPrisoner = SearchForPrisonerRoutes({ prisonerSearchService })
-  const changePrison = ChangePrisonRoutes({
-    locationService,
-    reportService,
-    systemToken,
-  })
+  const changePrison = new ChangePrisonRoutes(locationService, draftReportService, systemToken)
 
   const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
@@ -91,9 +87,9 @@ export default function Index({
     post(reportPath('edit-incident-details'), incidentDetails.submitEditForm)
     get(`${reportPath('cancel-edit')}/incidentDetails`, incidentDetails.cancelEdit)
 
-    get(reportPath('change-prison'), changePrison.viewPrisons({ edit: false }))
+    get(reportPath('change-prison'), changePrison.viewPrisons)
     post(reportPath('change-prison'), changePrison.submit)
-    get(reportPath('edit-change-prison'), changePrison.viewPrisons({ edit: true }))
+    get(reportPath('edit-change-prison'), changePrison.viewPrisonsEdit)
     post(reportPath('edit-change-prison'), changePrison.submitEdit)
 
     get(reportPath('username-does-not-exist'), incidentDetails.viewUsernameDoesNotExist)
