@@ -248,7 +248,8 @@ test('updateAgencyId', () => {
 })
 
 test('submitReport', () => {
-  incidentClient.submitReport('user1', 'booking1', 'date1')
+  const date = new Date()
+  incidentClient.submitReport('user1', 1, date)
 
   expect(query).toBeCalledWith({
     text: `update v_report r
@@ -259,7 +260,7 @@ test('submitReport', () => {
           and r.booking_id = $4
           and r.status = $5
           and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
-    values: [ReportStatus.SUBMITTED.value, 'date1', 'user1', 'booking1', ReportStatus.IN_PROGRESS.value],
+    values: [ReportStatus.SUBMITTED.value, date, 'user1', 1, ReportStatus.IN_PROGRESS.value],
   })
 })
 
@@ -295,12 +296,12 @@ test('getDraftInvolvedStaff', async () => {
   ]
   query.mockReturnValue({ rows: expected })
 
-  const result = await incidentClient.getDraftInvolvedStaff('incident-1')
+  const result = await incidentClient.getDraftInvolvedStaff(1)
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(query).toBeCalledWith({
     text: `select form_response "form" from v_report where id = $1`,
-    values: ['incident-1'],
+    values: [1],
   })
 })
 

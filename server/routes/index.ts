@@ -22,6 +22,7 @@ export default function Index({
   offenderService,
   prisonerSearchService,
   reportService,
+  draftReportService,
   involvedStaffService,
   reviewService,
   systemToken,
@@ -41,10 +42,10 @@ export default function Index({
 
   const statements = StatementRoutes(statementService, offenderService, systemToken)
 
-  const createReport = new CreateReportRoutes(reportService)
+  const createReport = new CreateReportRoutes(draftReportService)
 
   const incidentDetails = new IncidentDetailsRoutes(
-    reportService,
+    draftReportService,
     offenderService,
     involvedStaffService,
     systemToken,
@@ -52,14 +53,14 @@ export default function Index({
   )
 
   const checkYourAnswers = CheckYourAnswerRoutes({
-    reportService,
+    draftReportService,
     offenderService,
     involvedStaffService,
     systemToken,
     locationService,
   })
 
-  const reportUseOfForce = ReportUseOfForceRoutes({ reportService, offenderService, systemToken })
+  const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
 
   const coordinator = CoordinatorRoutes({
     reportService,

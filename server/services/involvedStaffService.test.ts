@@ -190,7 +190,7 @@ describe('save', () => {
           userId: 'Jo',
         },
       ],
-      query: db.queryPerformer,
+      query: client,
     })
   })
 
@@ -223,7 +223,7 @@ describe('save', () => {
       },
     ])
 
-    const result = await service.save(1, reportSubmittedDate, overdueDate, user, db.queryPerformer)
+    const result = await service.save(1, reportSubmittedDate, overdueDate, user, client)
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -250,7 +250,7 @@ describe('save', () => {
           userId: 'Bob',
         },
       ],
-      query: db.queryPerformer,
+      query: client,
     })
   })
 
@@ -290,7 +290,7 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        query: db.queryPerformer,
+        query: client,
       })
 
       expect(incidentClient.changeStatus).toBeCalledWith('form1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
@@ -309,7 +309,7 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        query: db.queryPerformer,
+        query: client,
       })
 
       expect(incidentClient.changeStatus).not.toBeCalled()
@@ -364,7 +364,7 @@ describe('save', () => {
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
-        query: db.queryPerformer,
+        query: client,
       })
       expect(incidentClient.changeStatus).not.toBeCalled()
     })

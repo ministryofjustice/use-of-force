@@ -3,7 +3,7 @@ import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput, mergeIntoPayload } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
-import ReportService from '../services/reportService'
+import type DraftReportService from '../services/report/draftReportService'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -11,25 +11,25 @@ const SubmitType = {
 }
 
 export default class NewIncidentRoutes {
-  constructor(private readonly reportService: ReportService) {}
+  constructor(private readonly draftReportService: DraftReportService) {}
 
   private async loadForm(req) {
     const { bookingId } = req.params
-    const { id: formId, incidentDate, form = {}, agencyId } = await this.reportService.getCurrentDraft(
+    const { id: formId, incidentDate, form = {}, agencyId } = await this.draftReportService.getCurrentDraft(
       req.user.username,
       bookingId
     )
     return { formId, incidentDate, form, agencyId }
   }
 
-  private async getSubmitRedirectLocation(req, payloadFields, form, bookingId, editMode, submitType) {
+  private async getSubmitRedirectLocation(req, form, bookingId, editMode, submitType) {
     const { username } = req.user
 
     if (editMode) {
       return `/report/${bookingId}/check-your-answers`
     }
 
-    if (form === 'evidence' && !(await this.reportService.isDraftComplete(username, bookingId))) {
+    if (form === 'evidence' && !(await this.draftReportService.isDraftComplete(username, bookingId))) {
       return `/report/${bookingId}/report-use-of-force`
     }
 
@@ -83,7 +83,7 @@ export default class NewIncidentRoutes {
       })
 
       if (updatedPayload) {
-        await this.reportService.update({
+        await this.draftReportService.update({
           currentUser: res.locals.user,
           formId,
           bookingId: parseInt(bookingId, 10),
@@ -91,7 +91,7 @@ export default class NewIncidentRoutes {
         })
       }
 
-      const location = await this.getSubmitRedirectLocation(req, formPayload, formName, bookingId, editMode, submitType)
+      const location = await this.getSubmitRedirectLocation(req, formName, bookingId, editMode, submitType)
       return res.redirect(location)
     }
   }

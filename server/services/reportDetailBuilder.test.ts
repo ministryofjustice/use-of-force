@@ -1,23 +1,34 @@
+import { Prison } from '../data/elite2ClientBuilderTypes'
+import { InvolvedStaffService } from './involvedStaffService'
+import LocationService from './locationService'
+import OffenderService from './offenderService'
 import ReportDetailBuilder from './reportDetailBuilder'
 
-const locationService = {
-  getPrisonById: jest.fn().mockResolvedValue({ agencyId: 'MDI', description: 'HMP Moorland' }),
-  getLocation: jest.fn(),
-}
+jest.mock('./involvedStaffService')
+jest.mock('./locationService')
+jest.mock('./offenderService')
 
-const involvedStaffService = {
-  getInvolvedStaff: jest.fn(),
-}
+const involvedStaffService = new InvolvedStaffService(
+  jest.fn() as any,
+  jest.fn() as any,
+  jest.fn() as any,
+  jest.fn() as any,
+  jest.fn() as any
+) as jest.Mocked<InvolvedStaffService>
 
-const offenderService = {
-  getOffenderDetails: jest.fn(),
-}
+const locationService = new LocationService(jest.fn() as any) as jest.Mocked<LocationService>
+
+const offenderService = new OffenderService(jest.fn() as any) as jest.Mocked<OffenderService>
 
 let reportDetailBuilder
 
 beforeEach(() => {
   const systemToken = async username => `system-token-for-${username}`
-  reportDetailBuilder = new ReportDetailBuilder({ involvedStaffService, locationService, systemToken, offenderService })
+  locationService.getPrisonById.mockResolvedValue({
+    agencyId: 'MDI',
+    description: 'HMP Moorland',
+  } as Prison)
+  reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 })
 
 afterEach(() => {

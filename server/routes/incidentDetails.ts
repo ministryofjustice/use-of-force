@@ -4,11 +4,11 @@ import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput, mergeIntoPayload } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
-import ReportService from '../services/reportService'
 import OffenderService from '../services/offenderService'
 import { SystemToken } from '../types/uof'
 import LocationService from '../services/locationService'
 import { InvolvedStaffService } from '../services/involvedStaffService'
+import type DraftReportService from '../services/report/draftReportService'
 
 const formName = 'incidentDetails'
 
@@ -44,7 +44,7 @@ const getDestination = ({ editMode, saveAndContinue }) => {
 
 export default class IncidentDetailsRoutes {
   constructor(
-    private readonly reportService: ReportService,
+    private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly systemToken: SystemToken,
@@ -53,7 +53,7 @@ export default class IncidentDetailsRoutes {
 
   private loadForm = async req => {
     const { bookingId } = req.params
-    const { id: formId, incidentDate, form = {}, agencyId } = await this.reportService.getCurrentDraft(
+    const { id: formId, incidentDate, form = {}, agencyId } = await this.draftReportService.getCurrentDraft(
       req.user.username,
       bookingId
     )
@@ -180,7 +180,7 @@ export default class IncidentDetailsRoutes {
     })
 
     if (updatedPayload || incidentDate) {
-      await this.reportService.update({
+      await this.draftReportService.update({
         currentUser: res.locals.user,
         formId,
         bookingId: parseInt(bookingId, 10),

@@ -5,7 +5,12 @@ import StatementsClient from './data/statementsClient'
 import OffenderService from './services/offenderService'
 import createReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
-import ReportService from './services/reportService'
+
+import ReportService from './services/report/reportService'
+import UpdateDraftReportService from './services/report/updateDraftReportService'
+import SubmitDraftReportService from './services/report/submitDraftReportService'
+import DraftReportService from './services/report/draftReportService'
+
 import LocationService from './services/locationService'
 import ReportDetailBuilder from './services/reportDetailBuilder'
 import ReviewService from './services/reviewService'
@@ -46,15 +51,18 @@ const involvedStaffService = new InvolvedStaffService(
 )
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = new OffenderService(elite2ClientBuilder)
-const reportService = new ReportService(
+const reportService = new ReportService(incidentClient, offenderService, systemToken)
+
+const submitDraftReportService = new SubmitDraftReportService(
   incidentClient,
-  elite2ClientBuilder,
   involvedStaffService,
   notificationService,
-  offenderService,
-  db.inTransaction,
-  systemToken
+  db.inTransaction
 )
+
+const updateDraftReportService = new UpdateDraftReportService(incidentClient, elite2ClientBuilder, systemToken)
+
+const draftReportService = new DraftReportService(incidentClient, updateDraftReportService, submitDraftReportService)
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 const reviewService = new ReviewService(
@@ -67,12 +75,7 @@ const reviewService = new ReviewService(
 const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 const locationService = new LocationService(elite2ClientBuilder)
-const reportDetailBuilder = new ReportDetailBuilder({
-  involvedStaffService,
-  locationService,
-  offenderService,
-  systemToken,
-})
+const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
 const app = createApp({
   involvedStaffService,
@@ -87,6 +90,7 @@ const app = createApp({
   systemToken,
   locationService,
   reportDetailBuilder,
+  draftReportService,
 })
 
 module.exports = app

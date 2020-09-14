@@ -38,6 +38,7 @@ const testMode = process.env.NODE_ENV === 'test'
 
 export default function createApp({
   reportService,
+  draftReportService,
   involvedStaffService,
   offenderService,
   signInService,
@@ -248,6 +249,7 @@ export default function createApp({
       systemToken,
       locationService,
       reportDetailBuilder,
+      draftReportService,
     })
   )
 

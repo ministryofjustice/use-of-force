@@ -1,15 +1,14 @@
-const request = require('supertest')
-const { appWithAllRoutes, user } = require('./testutils/appSetup')
-const types = require('../config/types')
-const { toDate } = require('../utils/dateSanitiser')
+import request from 'supertest'
+import { appWithAllRoutes, user } from './testutils/appSetup'
+import types from '../config/types'
+import { toDate } from '../utils/dateSanitiser'
+import DraftReportService from '../services/report/draftReportService'
 
-const reportService = {
-  getCurrentDraft: jest.fn(),
-  update: jest.fn(),
-  getValidationErrors: jest.fn().mockReturnValue([]),
-  getUpdatedFormObject: jest.fn(),
-  isDraftComplete: jest.fn(),
-}
+jest.mock('../services/report/draftReportService')
+
+const draftReportService = new DraftReportService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
+  DraftReportService
+>
 
 const offenderService = {
   getOffenderDetails: jest.fn(),
@@ -29,9 +28,8 @@ const involvedStaffService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService, locationService })
-  reportService.getCurrentDraft.mockResolvedValue({})
-  reportService.getUpdatedFormObject.mockResolvedValue({})
+  app = appWithAllRoutes({ draftReportService, offenderService, involvedStaffService, locationService })
+  draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockReturnValue({
     displayName: 'Bob Smith',
     offenderNo: '1234',
@@ -58,7 +56,7 @@ describe('GET /section/form', () => {
   })
 
   test('should render incident-details for existing report using system creds', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
@@ -68,7 +66,7 @@ describe('GET /section/form', () => {
       })
   })
   test('should render incident-details using locations for current agency if new report', () => {
-    reportService.getCurrentDraft.mockResolvedValue({})
+    draftReportService.getCurrentDraft.mockResolvedValue({})
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
@@ -78,7 +76,7 @@ describe('GET /section/form', () => {
       })
   })
   test('should render incident-details using locations for persisted agency if existing report', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
@@ -109,8 +107,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -142,7 +140,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/incident-details')
       .expect(() => {
-        expect(reportService.update).not.toBeCalled()
+        expect(draftReportService.update).not.toBeCalled()
       }))
 })
 
@@ -163,8 +161,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -200,8 +198,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/change-prison')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -235,8 +233,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -285,8 +283,8 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -314,7 +312,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/edit-incident-details')
       .expect(() => {
-        expect(reportService.update).not.toBeCalled()
+        expect(draftReportService.update).not.toBeCalled()
       }))
 })
 
@@ -323,7 +321,7 @@ describe('User name does not exists', () => {
     request(app).get(`/report/1/username-does-not-exist`).expect(302).expect('Location', '/report/1/incident-details'))
 
   test('view when missing users', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
     involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ userId: 1, missing: true }])
     return request(app)
       .get(`/report/1/username-does-not-exist`)
@@ -335,7 +333,7 @@ describe('User name does not exists', () => {
   })
 
   test('submit and back to task list goes to report-use-of-force', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
       .post(`/report/1/username-does-not-exist`)
@@ -351,7 +349,7 @@ describe('User name does not exists', () => {
   })
 
   test('submit and continue on goes to use-of-force-details', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
       .post(`/report/1/username-does-not-exist`)
@@ -367,7 +365,7 @@ describe('User name does not exists', () => {
   })
 
   test('submit and return to check-your-answers goes back to check-your-answers', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
 
     return request(app)
       .post(`/report/1/username-does-not-exist`)
@@ -385,7 +383,7 @@ describe('User name does not exists', () => {
 
 describe('Cancelling from edit', () => {
   test('Incident details - has no missing staff', () => {
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getCurrentDraft.mockResolvedValue({
       id: 'form-1',
       form: { incidentDetails: { involvedStaff: [{ userId: 1, missing: false }] } },
     })
@@ -397,7 +395,7 @@ describe('Cancelling from edit', () => {
 })
 
 test('Incident details - has missing staff', () => {
-  reportService.getCurrentDraft.mockResolvedValue({
+  draftReportService.getCurrentDraft.mockResolvedValue({
     id: 'form-1',
     form: { incidentDetails: { involvedStaff: [{ userId: 1, missing: true }] } },
   })
