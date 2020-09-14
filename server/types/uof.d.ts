@@ -22,7 +22,6 @@ export type User = {
   lastName: string
   activeCaseLoad: CaseLoad
   displayName: string
-  token: string
 }
 
 export type GetUsersResults = {
@@ -47,4 +46,18 @@ export interface ReportingClient {
     agencyId: AgencyId,
     range: DateRange
   ) => Promise<Array<OffenderNoWithIncidentDate>>
+}
+
+export type LoggedInUser = {
+  username: string
+  token: string
+  refreshToken: string
+  refreshTime: any
+  firstName: string
+  lastName: string
+  userId: string
+  displayName: string
+  isReviewer: boolean
+  isCoordinator: boolean
+  activeCaseLoadId: string
 }

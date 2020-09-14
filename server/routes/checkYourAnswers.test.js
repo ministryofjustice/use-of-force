@@ -14,6 +14,7 @@ const offenderService = {
 
 const involvedStaffService = {
   getDraftInvolvedStaff: () => [],
+  removeMissingDraftInvolvedStaff: jest.fn(),
 }
 
 const locationService = {
@@ -25,7 +26,7 @@ let app
 
 beforeEach(() => {
   app = appWithAllRoutes({ draftReportService, offenderService, involvedStaffService, locationService })
-  draftReportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
+  draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue({})
@@ -43,6 +44,7 @@ describe('GET /check-your-answers', () => {
       .expect(res => {
         expect(res.text).toContain('Check your answers')
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', -35)
+        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 

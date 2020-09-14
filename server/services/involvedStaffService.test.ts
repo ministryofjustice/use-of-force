@@ -3,7 +3,7 @@ import { InvolvedStaffService, AddStaffResult } from './involvedStaffService'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
-import { User, GetUsersResults } from '../types/uof'
+import { GetUsersResults, LoggedInUser } from '../types/uof'
 import UserService from './userService'
 
 jest.mock('../data/incidentClient')
@@ -17,28 +17,26 @@ const userService = new UserService(jest.fn as any, jest.fn as any) as jest.Mock
 const client = jest.fn()
 
 const db = {
-  queryPerformer: jest.fn(),
   inTransaction: fn => fn(client),
 }
 
 let service: InvolvedStaffService
 
 beforeEach(() => {
-  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction, db.queryPerformer)
+  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
-const user: User = {
-  staffId: 3,
+const user = {
   username: 'Jo',
   firstName: 'Jo',
   lastName: 'Smith',
-  activeCaseLoad: { caseLoadId: 'LEI', description: 'Leeds', type: 'Agency', currentlyActive: true },
   displayName: 'Jo Smith',
-}
+  token: 'token1',
+} as LoggedInUser
 
 describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
@@ -283,17 +281,17 @@ describe('save', () => {
         status: ReportStatus.COMPLETE.value,
       })
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
+      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
       expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 'form1',
+        reportId: 1,
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
         query: client,
       })
 
-      expect(incidentClient.changeStatus).toBeCalledWith('form1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
+      expect(incidentClient.changeStatus).toBeCalledWith(1, ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
     })
 
     test('to report which is not yet complete', async () => {
@@ -302,10 +300,10 @@ describe('save', () => {
         status: ReportStatus.SUBMITTED.value,
       })
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
+      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
       expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 'form1',
+        reportId: 1,
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
@@ -318,7 +316,7 @@ describe('save', () => {
     test('to non existent report', async () => {
       incidentClient.getReportForReviewer.mockReturnValue(null)
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).rejects.toThrow("Report: 'form1' does not exist")
+      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).rejects.toThrow("Report: '1' does not exist")
 
       expect(statementsClient.createStatements).not.toBeCalled()
       expect(incidentClient.changeStatus).not.toBeCalled()
@@ -332,7 +330,7 @@ describe('save', () => {
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(true)
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.ALREADY_EXISTS)
+      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.ALREADY_EXISTS)
 
       expect(statementsClient.createStatements).not.toBeCalled()
       expect(incidentClient.changeStatus).not.toBeCalled()
@@ -357,10 +355,10 @@ describe('save', () => {
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(false)
 
-      await expect(service.addInvolvedStaff('token1', 'form1', 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
+      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
       expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 'form1',
+        reportId: 1,
         firstReminder: null,
         overdueDate: overdueDate.toDate(),
         staff,
@@ -429,7 +427,7 @@ describe('save', () => {
 
     userService.getUsers.mockResolvedValue([{ missing: true }] as GetUsersResults[])
 
-    await expect(service.save(1, reportSubmittedDate, overdueDate, user, db.queryPerformer)).rejects.toThrow(
+    await expect(service.save(1, reportSubmittedDate, overdueDate, user, client)).rejects.toThrow(
       `Could not retrieve user details for current user: 'Jo'`
     )
   })

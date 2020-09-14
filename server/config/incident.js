@@ -16,12 +16,6 @@ module.exports = {
     relocationAndInjuries: relocationAndInjuriesForm.complete,
     evidence: evidenceForm.complete,
   },
-  persistent: {
-    incidentDetails: incidentDetails.persistent,
-    useOfForceDetails: useOfForceDetailsForm.complete,
-    relocationAndInjuries: relocationAndInjuriesForm.complete,
-    evidence: evidenceForm.complete,
-  },
   partial: {
     incidentDetails: incidentDetails.partial,
     useOfForceDetails: useOfForceDetailsForm.partial,

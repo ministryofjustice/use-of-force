@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { RequestHandler } from 'express'
+import { Request, RequestHandler } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput, mergeIntoPayload } from '../services/validation'

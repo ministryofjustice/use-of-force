@@ -3,7 +3,7 @@ import logger from '../../log'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
-import { User, GetUsersResults } from '../types/uof'
+import { GetUsersResults, LoggedInUser } from '../types/uof'
 import { InTransaction, QueryPerformer } from '../data/dataAccess/db'
 import UserService from './userService'
 
@@ -66,7 +66,7 @@ export class InvolvedStaffService {
     return this.userService.getUsers(token, usernames)
   }
 
-  private getStaffRequiringStatements = async (currentUser: User, addedStaff) => {
+  private getStaffRequiringStatements = async (currentUser: LoggedInUser, addedStaff) => {
     const userAlreadyAdded = addedStaff.find(user => currentUser.username === user.username)
     if (userAlreadyAdded) {
       return addedStaff
@@ -86,7 +86,7 @@ export class InvolvedStaffService {
     reportId: number,
     reportSubmittedDate: Moment,
     overdueDate: Moment,
-    currentUser: User,
+    currentUser: LoggedInUser,
     client: QueryPerformer
   ) {
     const involvedStaff = await this.getDraftInvolvedStaff(reportId)

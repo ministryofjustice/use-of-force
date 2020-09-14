@@ -9,10 +9,6 @@ describe('statusCheck', () => {
       },
       witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
       locationId: -25,
-      involvedStaff: [
-        { name: 'Itag User', email: 'itag_user@digital.justice.gov.uk', staffId: 1, username: 'ITAG_USER' },
-        { name: 'Licence Case Admin', email: 'ca_user@digital.justice.gov.uk', staffId: 3, username: 'CA_USER' },
-      ],
       plannedUseOfForce: true,
     },
     useOfForceDetails: {
@@ -109,28 +105,6 @@ describe('statusCheck', () => {
       complete: false,
       incidentDetails: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.INCOMPLETE,
-      relocationAndInjuries: SectionStatus.COMPLETE,
-      evidence: SectionStatus.COMPLETE,
-    })
-  })
-
-  test('invalid incident details', async () => {
-    const invalidReport = {
-      ...validReport,
-      incidentDetails: {
-        witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
-        locationId: -25,
-        involvedStaff: [{ username: 'ITAG_USER' }, { username: 'CA_USER' }],
-        plannedUseOfForce: true,
-      },
-    }
-
-    const output = check(invalidReport)
-
-    expect(output).toEqual({
-      complete: false,
-      incidentDetails: SectionStatus.INCOMPLETE,
-      useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,
     })

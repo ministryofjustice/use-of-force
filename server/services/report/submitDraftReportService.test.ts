@@ -2,7 +2,7 @@ import moment from 'moment'
 import IncidentClient from '../../data/incidentClient'
 import SubmitDraftReportService from './submitDraftReportService'
 import { InvolvedStaffService } from '../involvedStaffService'
-import { User } from '../../types/uof'
+import { LoggedInUser, User } from '../../types/uof'
 
 jest.mock('../../data/incidentClient')
 jest.mock('../offenderService')
@@ -11,7 +11,6 @@ jest.mock('../involvedStaffService')
 const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
 
 const involvedStaffService = new InvolvedStaffService(
-  jest.fn as any,
   jest.fn as any,
   jest.fn as any,
   jest.fn as any,
@@ -29,7 +28,7 @@ const elite2Client = {
   getOffenderDetails: jest.fn(),
 }
 
-const currentUser = { username: 'user1', displayName: 'Bob Smith' } as User
+const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
 
 let service: SubmitDraftReportService
 let elite2ClientBuilder

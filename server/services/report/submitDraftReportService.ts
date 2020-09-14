@@ -4,7 +4,7 @@ import type IncidentClient from '../../data/incidentClient'
 import logger from '../../../log'
 import { InTransaction } from '../../data/dataAccess/db'
 import { InvolvedStaffService } from '../involvedStaffService'
-import { User } from '../../types/uof'
+import { LoggedInUser } from '../../types/uof'
 
 export default class SubmitDraftReportService {
   constructor(
@@ -34,7 +34,7 @@ export default class SubmitDraftReportService {
   }
 
   public async submit(
-    currentUser: User,
+    currentUser: LoggedInUser,
     bookingId: number,
     now: () => Moment = () => moment()
   ): Promise<number | false> {

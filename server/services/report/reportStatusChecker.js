@@ -1,4 +1,4 @@
-const { persistent } = require('../../config/incident')
+const { full } = require('../../config/incident')
 const { isValid } = require('../validation')
 
 const SectionStatus = Object.freeze({
@@ -18,8 +18,8 @@ const getStatus = (validationSpec, sectionValues) => {
 module.exports = {
   SectionStatus,
   check: report => {
-    const result = Object.keys(persistent).reduce(
-      (previous, key) => ({ ...previous, [key]: getStatus(persistent[key], report[key]) }),
+    const result = Object.keys(full).reduce(
+      (previous, key) => ({ ...previous, [key]: getStatus(full[key], report[key]) }),
       {}
     )
 

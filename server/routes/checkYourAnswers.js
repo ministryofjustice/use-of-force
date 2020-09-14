@@ -37,6 +37,9 @@ module.exports = function CheckAnswerRoutes({
         form.incidentDetails.locationId
       )
 
+      // TODO remove once all missing users are removed and add to list pattern has been implemented
+      await involvedStaffService.removeMissingDraftInvolvedStaff(res.locals.user.username, id)
+
       const draftInvolvedStaff = await involvedStaffService.getDraftInvolvedStaff(id)
 
       const involvedStaff = [

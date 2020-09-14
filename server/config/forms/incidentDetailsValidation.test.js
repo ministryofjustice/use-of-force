@@ -1,11 +1,5 @@
 const moment = require('moment')
-const {
-  complete,
-  partial,
-  persistent,
-  optionalInvolvedStaff,
-  optionalInvolvedStaffWhenPersisted,
-} = require('./incidentDetailsForm')
+const { complete, partial, optionalInvolvedStaff } = require('./incidentDetailsForm')
 const { processInput } = require('../../services/validation')
 const { isValid } = require('../../services/validation/fieldValidation')
 
@@ -842,25 +836,8 @@ describe("'complete' validation", () => {
       expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
       expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
     })
-
-    test('Check valid (optionalInvolvedStaffWhenPersisted)', () => {
-      expect(
-        isValid(optionalInvolvedStaffWhenPersisted, [
-          { username: 'VQO24O', name: 'Bob', email: 'a@bcom', staffId: 123 },
-        ])
-      ).toEqual(true)
-      expect(isValid(optionalInvolvedStaffWhenPersisted, [])).toEqual(true)
-    })
-
-    test('invalid (optionalInvolvedStaffWhenPersisted)', () => {
-      expect(isValid(optionalInvolvedStaffWhenPersisted, [{ username: 'Bob', age: 29 }])).toEqual(false)
-      expect(isValid(optionalInvolvedStaffWhenPersisted, true)).toEqual(false)
-      expect(isValid(optionalInvolvedStaffWhenPersisted, [{ username: '' }])).toEqual(false)
-      expect(isValid(optionalInvolvedStaffWhenPersisted, [{ bob: 'Bob' }])).toEqual(false)
-    })
   })
 })
-
 describe("'partial' validation", () => {
   const check = buildCheck(partial)
   describe('Incident details page - overall', () => {
@@ -945,78 +922,6 @@ describe("'partial' validation", () => {
 
       expect(errors).toEqual([])
       expect(formResponse).toEqual({})
-    })
-  })
-})
-
-describe("'persistent' validation", () => {
-  const check = buildCheck(persistent)
-
-  beforeEach(() => {
-    validInput = {
-      incidentDate: {
-        date: '15/01/2019',
-        time: { hour: '12', minute: '45' },
-      },
-      locationId: -1,
-      plannedUseOfForce: 'true',
-      involvedStaff: [
-        {
-          name: 'Licence Batchloader',
-          missing: 'false',
-          staffId: 6,
-          username: 'NOMIS_BATCHLOAD',
-          verified: 'true',
-        },
-      ],
-      witnesses: [{ name: 'User bob' }, { name: '' }],
-    }
-  })
-
-  describe('Incident details page - persistent', () => {
-    it('Should return no validation error messages if no invalid data', () => {
-      const { errors } = check(validInput)
-
-      expect(errors).toEqual([])
-    })
-
-    it('unverified users are valid', () => {
-      const { errors } = check({
-        ...validInput,
-        involvedStaff: [
-          {
-            name: 'Licence Batchloader',
-            missing: 'false',
-            staffId: 6,
-            username: 'NOMIS_BATCHLOAD',
-            verified: 'false',
-          },
-        ],
-      })
-
-      expect(errors).toEqual([])
-    })
-
-    it('missing users are invalid', () => {
-      const { errors } = check({
-        ...validInput,
-        involvedStaff: [
-          {
-            name: 'Licence Batchloader',
-            missing: 'true',
-            staffId: 6,
-            username: 'NOMIS_BATCHLOAD',
-            verified: 'false',
-          },
-        ],
-      })
-
-      expect(errors).toEqual([
-        {
-          href: '#involvedStaff[0][missing]',
-          text: '"involvedStaff[0].missing" must be [false]',
-        },
-      ])
     })
   })
 })
