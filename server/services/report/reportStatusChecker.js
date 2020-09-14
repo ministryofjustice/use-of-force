@@ -1,5 +1,5 @@
-const { persistent } = require('../config/incident')
-const { isValid } = require('./validation')
+const { persistent } = require('../../config/incident')
+const { isValid } = require('../validation')
 
 const SectionStatus = Object.freeze({
   NOT_STARTED: 'NOT_STARTED',

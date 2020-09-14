@@ -19,3 +19,12 @@ export interface ReportSummary {
 export interface IncompleteReportSummary extends ReportSummary {
   isOverdue?: boolean
 }
+
+export type NoDraftReport = Record<string, any>
+
+export interface DraftReport {
+  id: number
+  incidentDate: Date
+  form: unknown
+  agencyId: string
+}

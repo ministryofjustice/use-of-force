@@ -1,9 +1,9 @@
-module.exports = function ReportUseOfForceRoutes({ reportService, offenderService, systemToken }) {
+module.exports = function ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken }) {
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-      const { form = {} } = await reportService.getCurrentDraft(req.user.username, bookingId)
-      const status = reportService.getReportStatus(form)
+      const { form = {} } = await draftReportService.getCurrentDraft(req.user.username, bookingId)
+      const status = draftReportService.getReportStatus(form)
       const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
         await systemToken(res.locals.user.username),
         bookingId

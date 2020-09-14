@@ -82,6 +82,7 @@ export const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
     systemToken: username => `${username}-system-token`,
     locationService: {},
     reportDetailBuilder: {},
+    draftReportService: {},
     ...overrides,
   })
   return appSetup(route, userSupplier)

@@ -1,8 +1,7 @@
 const request = require('supertest')
 const { appWithAllRoutes, user } = require('./testutils/appSetup')
-const { toDate } = require('../utils/dateSanitiser')
 
-const reportService = {
+const draftReportService = {
   getCurrentDraft: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
@@ -13,9 +12,9 @@ const reportService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService })
-  reportService.getCurrentDraft.mockResolvedValue({})
-  reportService.getUpdatedFormObject.mockResolvedValue({})
+  app = appWithAllRoutes({ draftReportService })
+  draftReportService.getCurrentDraft.mockResolvedValue({})
+  draftReportService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -24,7 +23,7 @@ afterEach(() => {
 
 describe('GET /section/form', () => {
   test('should render use-of-force-details using locations for persisted agency if existing report', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
     return request(app)
       .get(`/report/1/use-of-force-details`)
       .expect('Content-Type', /html/)
@@ -72,8 +71,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/relocation-and-injuries')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
       })
   })
 
@@ -84,7 +83,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(reportService.update).not.toBeCalled()
+        expect(draftReportService.update).not.toBeCalled()
       }))
 })
 
@@ -96,8 +95,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
       })
   })
 
@@ -108,8 +107,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith({
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith({
           currentUser: user,
           bookingId: 1,
           formId: undefined,
@@ -149,8 +148,8 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(reportService.update).toBeCalledTimes(1)
-        expect(reportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.update).toBeCalledTimes(1)
+        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
       })
   })
 
@@ -166,7 +165,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/edit-use-of-force-details')
       .expect(() => {
-        expect(reportService.update).not.toBeCalled()
+        expect(draftReportService.update).not.toBeCalled()
       }))
 })
 
@@ -180,7 +179,7 @@ describe('Submitting evidence page', () => {
   `(
     'should redirect to $nextPath for when submit type is $submitType and form is complete: $formComplete',
     ({ submitType, formComplete, nextPath }) => {
-      reportService.isDraftComplete.mockReturnValue(formComplete)
+      draftReportService.isDraftComplete.mockReturnValue(formComplete)
       return request(app)
         .post(`/report/1/evidence`)
         .send({
@@ -195,8 +194,8 @@ describe('Submitting evidence page', () => {
         .expect(302)
         .expect('Location', nextPath)
         .expect(() => {
-          expect(reportService.update).toBeCalledTimes(1)
-          expect(reportService.update).toBeCalledWith({
+          expect(draftReportService.update).toBeCalledTimes(1)
+          expect(draftReportService.update).toBeCalledWith({
             currentUser: user,
             bookingId: 1,
             formId: undefined,

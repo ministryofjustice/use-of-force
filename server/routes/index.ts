@@ -22,6 +22,7 @@ export default function Index({
   offenderService,
   prisonerSearchService,
   reportService,
+  draftReportService,
   involvedStaffService,
   reviewService,
   systemToken,
@@ -41,10 +42,10 @@ export default function Index({
 
   const statements = StatementRoutes(statementService, offenderService, systemToken)
 
-  const createReport = new CreateReportRoutes(reportService)
+  const createReport = new CreateReportRoutes(draftReportService)
 
   const incidentDetails = new IncidentDetailsRoutes(
-    reportService,
+    draftReportService,
     offenderService,
     involvedStaffService,
     systemToken,
@@ -52,14 +53,14 @@ export default function Index({
   )
 
   const checkYourAnswers = CheckYourAnswerRoutes({
-    reportService,
+    draftReportService,
     offenderService,
     involvedStaffService,
     systemToken,
     locationService,
   })
 
-  const reportUseOfForce = ReportUseOfForceRoutes({ reportService, offenderService, systemToken })
+  const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
 
   const coordinator = CoordinatorRoutes({
     reportService,
@@ -70,11 +71,7 @@ export default function Index({
   })
 
   const searchForPrisoner = SearchForPrisonerRoutes({ prisonerSearchService })
-  const changePrison = ChangePrisonRoutes({
-    locationService,
-    reportService,
-    systemToken,
-  })
+  const changePrison = new ChangePrisonRoutes(locationService, draftReportService, systemToken)
 
   const userRoutes = () => {
     const get = (path, handler) => router.get(path, asyncMiddleware(handler))
@@ -90,9 +87,9 @@ export default function Index({
     post(reportPath('edit-incident-details'), incidentDetails.submitEditForm)
     get(`${reportPath('cancel-edit')}/incidentDetails`, incidentDetails.cancelEdit)
 
-    get(reportPath('change-prison'), changePrison.viewPrisons({ edit: false }))
+    get(reportPath('change-prison'), changePrison.viewPrisons)
     post(reportPath('change-prison'), changePrison.submit)
-    get(reportPath('edit-change-prison'), changePrison.viewPrisons({ edit: true }))
+    get(reportPath('edit-change-prison'), changePrison.viewPrisonsEdit)
     post(reportPath('edit-change-prison'), changePrison.submitEdit)
 
     get(reportPath('username-does-not-exist'), incidentDetails.viewUsernameDoesNotExist)

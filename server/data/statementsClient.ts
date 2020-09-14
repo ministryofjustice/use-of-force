@@ -31,7 +31,7 @@ export default class StatementsClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getStatementForUser(userId, reportId, status) {
+  async getStatementForUser(userId: string, reportId: number, status) {
     const results = await this.query({
       text: `select s.id
     ,      r.booking_id             "bookingId"
@@ -53,7 +53,7 @@ export default class StatementsClient {
     return results.rows[0]
   }
 
-  async getStatementForReviewer(statementId) {
+  async getStatementForReviewer(statementId: number) {
     const results = await this.query({
       text: `select s.id
     ,      r.id                     "reportId"
@@ -74,7 +74,7 @@ export default class StatementsClient {
     return results.rows[0]
   }
 
-  async getStatementsForReviewer(reportId) {
+  async getStatementsForReviewer(reportId: number) {
     const results = await this.query({
       text: `select id
             ,      name
@@ -88,7 +88,7 @@ export default class StatementsClient {
     return results.rows
   }
 
-  async getAdditionalComments(statementId) {
+  async getAdditionalComments(statementId: number) {
     const results = await this.query({
       text: `select  
     s.additional_comment "additionalComment",
@@ -100,7 +100,7 @@ export default class StatementsClient {
     return results.rows
   }
 
-  saveAdditionalComment(statementId, additionalComment, query = this.query) {
+  saveAdditionalComment(statementId: number, additionalComment: string, query: QueryPerformer = this.query) {
     return query({
       text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
@@ -109,10 +109,10 @@ export default class StatementsClient {
   }
 
   saveStatement(
-    userId,
-    reportId,
+    userId: string,
+    reportId: number,
     { lastTrainingMonth, lastTrainingYear, jobStartYear, statement },
-    query = this.query
+    query: QueryPerformer = this.query
   ) {
     return query({
       text: `update v_statement 
@@ -137,7 +137,7 @@ export default class StatementsClient {
     })
   }
 
-  submitStatement(userId, reportId, query: QueryPerformer = this.query) {
+  submitStatement(userId: string, reportId: number, query: QueryPerformer = this.query) {
     return query({
       text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
@@ -150,7 +150,7 @@ export default class StatementsClient {
     })
   }
 
-  setEmail = (userId, reportId, emailAddress, query: QueryPerformer = this.query) => {
+  setEmail = (userId: string, reportId: number, emailAddress: string, query: QueryPerformer = this.query) => {
     return query({
       text: `update v_statement 
     set email = $3
@@ -161,7 +161,7 @@ export default class StatementsClient {
     })
   }
 
-  async getNumberOfPendingStatements(reportId, query: QueryPerformer = this.query) {
+  async getNumberOfPendingStatements(reportId: number, query: QueryPerformer = this.query) {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
       values: [reportId, StatementStatus.PENDING.value],
@@ -200,7 +200,7 @@ export default class StatementsClient {
     })
   }
 
-  async isStatementPresentForUser(reportId, username, query: QueryPerformer = this.query) {
+  async isStatementPresentForUser(reportId: number, username: string, query: QueryPerformer = this.query) {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
       values: [reportId, username],

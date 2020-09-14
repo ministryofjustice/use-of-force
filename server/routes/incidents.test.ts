@@ -1,29 +1,23 @@
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import { PageResponse } from '../utils/page'
-import ReportService from '../services/reportService'
+import ReportService from '../services/report/reportService'
+import OffenderService from '../services/offenderService'
+import ReportDataBuilder, { ReportDetail } from '../services/reportDetailBuilder'
 
-jest.mock('../services/reportService')
+jest.mock('../services/report/reportService')
+jest.mock('../services/offenderService')
 
 const userSupplier = jest.fn()
 
-const reportService = new ReportService(
-  jest.fn as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any
-) as jest.Mocked<ReportService>
+const reportService = new ReportService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
+  ReportService
+>
 
-const offenderService = {
-  getOffenderNames: () => [],
-  getOffenderDetails: () => ({ displayName: 'Jimmy Choo', offenderNo: '123456' }),
-}
+const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
 
 const reportDetailBuilder = {
-  build: async () => ({}),
+  build: jest.fn().mockResolvedValue({ id: 1, form: { incidentDetails: {} } }),
 }
 
 let app

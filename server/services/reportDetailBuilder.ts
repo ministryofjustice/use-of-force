@@ -1,8 +1,12 @@
 import { Moment } from 'moment'
 import { properCaseFullName } from '../utils/utils'
 import reportSummary from '../routes/model/reportSummary'
+import type { InvolvedStaffService } from './involvedStaffService'
+import type LocationService from './locationService'
+import type OffenderService from './offenderService'
+import type { SystemToken } from '../types/uof'
 
-interface ReportDetail {
+export interface ReportDetail {
   incidentId: number
   reporterName: string
   submittedDate: Moment
@@ -11,20 +15,12 @@ interface ReportDetail {
 }
 
 export default class ReportDataBuilder {
-  involvedStaffService
-
-  locationService
-
-  offenderService
-
-  systemToken
-
-  constructor({ involvedStaffService, locationService, offenderService, systemToken }) {
-    this.involvedStaffService = involvedStaffService
-    this.locationService = locationService
-    this.offenderService = offenderService
-    this.systemToken = systemToken
-  }
+  constructor(
+    private readonly involvedStaffService: InvolvedStaffService,
+    private readonly locationService: LocationService,
+    private readonly offenderService: OffenderService,
+    private readonly systemToken: SystemToken
+  ) {}
 
   private format(reportId) {
     return staff => ({

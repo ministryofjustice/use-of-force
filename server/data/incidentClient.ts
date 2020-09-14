@@ -1,7 +1,13 @@
 import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { ReportStatus, StatementStatus } from '../config/types'
-import { IncidentSearchQuery, ReportSummary, IncompleteReportSummary } from './incidentClientTypes'
+import {
+  IncidentSearchQuery,
+  ReportSummary,
+  IncompleteReportSummary,
+  DraftReport,
+  NoDraftReport,
+} from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 
 const maxSequenceForBooking =
@@ -41,8 +47,13 @@ export default class IncidentClient {
     })
   }
 
-  submitReport(userId, bookingId, submittedDate, query: QueryPerformer = this.query) {
-    return query({
+  async submitReport(
+    userId: string,
+    bookingId: number,
+    submittedDate: Date,
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    await query({
       text: `update v_report r
             set status = $1
             ,   submitted_date = $2
@@ -66,7 +77,7 @@ export default class IncidentClient {
     })
   }
 
-  async getCurrentDraftReport(userId: string, bookingId: number) {
+  async getCurrentDraftReport(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
     const results = await this.query({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
@@ -209,7 +220,7 @@ export default class IncidentClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getDraftInvolvedStaff(reportId) {
+  async getDraftInvolvedStaff(reportId: number) {
     const results = await this.query({
       text: 'select form_response "form" from v_report where id = $1',
       values: [reportId],

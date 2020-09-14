@@ -36,7 +36,7 @@ test('getStatements', async () => {
 })
 
 test('getStatementForUser', () => {
-  statementsClient.getStatementForUser('user-1', 'incident-1', StatementStatus.PENDING)
+  statementsClient.getStatementForUser('user-1', 1, StatementStatus.PENDING)
 
   expect(query).toBeCalledWith({
     text: `select s.id
@@ -54,7 +54,7 @@ test('getStatementForUser', () => {
       and s.user_id = $2
       and s.statement_status = $3
       and s.deleted is null`,
-    values: ['incident-1', 'user-1', StatementStatus.PENDING.value],
+    values: [1, 'user-1', StatementStatus.PENDING.value],
   })
 })
 
@@ -89,7 +89,7 @@ test('createStatements', async () => {
   })
 
   const ids = await statementsClient.createStatements({
-    reportId: 'incident-1',
+    reportId: 1,
     firstReminder: 'date1',
     overdueDate: 'date2',
     staff: [
@@ -102,8 +102,8 @@ test('createStatements', async () => {
   expect(query).toBeCalledWith({
     text:
       `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
-      `('incident-1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
-      `('incident-1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
+      `('1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
+      `('1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
   })
 })
 
@@ -124,7 +124,7 @@ test('deleteStatement', async () => {
 })
 
 test('saveStatement', () => {
-  statementsClient.saveStatement('user1', 'incident1', {
+  statementsClient.saveStatement('user1', 1, {
     lastTrainingMonth: 1,
     lastTrainingYear: 2,
     jobStartYear: 3,
@@ -142,12 +142,12 @@ test('saveStatement', () => {
     where user_id = $5
     and report_id = $6
     and statement_status = $7`,
-    values: [1, 2, 3, 'A long time ago...', 'user1', 'incident1', StatementStatus.PENDING.value],
+    values: [1, 2, 3, 'A long time ago...', 'user1', 1, StatementStatus.PENDING.value],
   })
 })
 
 test('submitStatement', () => {
-  statementsClient.submitStatement('user1', 'incident1')
+  statementsClient.submitStatement('user1', 1)
 
   expect(query).toBeCalledWith({
     text: `update v_statement 
@@ -157,12 +157,12 @@ test('submitStatement', () => {
     where user_id = $2
     and report_id = $3
     and statement_status = $4`,
-    values: [StatementStatus.SUBMITTED.value, 'user1', 'incident1', StatementStatus.PENDING.value],
+    values: [StatementStatus.SUBMITTED.value, 'user1', 1, StatementStatus.PENDING.value],
   })
 })
 
 test('setEmail', () => {
-  statementsClient.setEmail('user1', 'incident1', 'user@gov.uk')
+  statementsClient.setEmail('user1', 1, 'user@gov.uk')
 
   expect(query).toBeCalledWith({
     text: `update v_statement 
@@ -170,23 +170,23 @@ test('setEmail', () => {
     ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $1
     and report_id = $2`,
-    values: ['user1', 'incident1', 'user@gov.uk'],
+    values: ['user1', 1, 'user@gov.uk'],
   })
 })
 
 test('getNumberOfPendingStatements', async () => {
   query.mockResolvedValue({ rows: [{ count: 10 }] })
-  const count = await statementsClient.getNumberOfPendingStatements('report1')
+  const count = await statementsClient.getNumberOfPendingStatements(1)
 
   expect(count).toBe(10)
   expect(query).toBeCalledWith({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
-    values: ['report1', StatementStatus.PENDING.value],
+    values: [1, StatementStatus.PENDING.value],
   })
 })
 
 test('getStatementsForReviewer', () => {
-  statementsClient.getStatementsForReviewer('report1')
+  statementsClient.getStatementsForReviewer(1)
 
   expect(query).toBeCalledWith({
     text: `select id
@@ -196,12 +196,12 @@ test('getStatementsForReviewer', () => {
             ,      statement_status = $1    "isSubmitted"
             from v_statement where report_id = $2
             order by name`,
-    values: [StatementStatus.SUBMITTED.value, 'report1'],
+    values: [StatementStatus.SUBMITTED.value, 1],
   })
 })
 
 test('getStatementForReviewer', () => {
-  statementsClient.getStatementForReviewer('statement1')
+  statementsClient.getStatementForReviewer(1)
 
   expect(query).toBeCalledWith({
     text: `select s.id
@@ -218,18 +218,18 @@ test('getStatementForReviewer', () => {
     left join statement s on r.id = s.report_id
     where s.id = $1
     and s.deleted is null`,
-    values: ['statement1'],
+    values: [1],
   })
 })
 
 test('isStatementPresentForUser', async () => {
   query.mockReturnValue({ rows: [{ count: 1 }] })
 
-  const result = await statementsClient.isStatementPresentForUser('report-1', 'user-1')
+  const result = await statementsClient.isStatementPresentForUser(1, 'user-1')
 
   expect(result).toEqual(true)
   expect(query).toBeCalledWith({
     text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
-    values: ['report-1', 'user-1'],
+    values: [1, 'user-1'],
   })
 })

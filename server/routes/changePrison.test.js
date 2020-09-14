@@ -4,14 +4,14 @@ const { appWithAllRoutes } = require('./testutils/appSetup')
 const locationService = {
   getPrisons: jest.fn(),
 }
-const reportService = {
+const draftReportService = {
   updateAgencyId: jest.fn(),
 }
 
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ locationService, reportService })
+  app = appWithAllRoutes({ locationService, draftReportService })
   locationService.getPrisons.mockResolvedValue([
     {
       agencyId: 'BXI',
@@ -66,7 +66,7 @@ describe('POST /change-prison', () => {
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect(() => {
-        expect(reportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', '-19')
+        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', '-19')
       })
   })
 
@@ -76,7 +76,7 @@ describe('POST /change-prison', () => {
       .send({ agencyId: 'MDI', submit: 'cancel' })
       .expect(302)
       .expect(() => {
-        expect(reportService.updateAgencyId).not.toHaveBeenCalled()
+        expect(draftReportService.updateAgencyId).not.toHaveBeenCalled()
       })
   })
 })

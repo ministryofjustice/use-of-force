@@ -2,7 +2,7 @@ const { properCaseFullName } = require('../utils/utils')
 const reportSummary = require('./model/reportSummary')
 
 module.exports = function CheckAnswerRoutes({
-  reportService,
+  draftReportService,
   offenderService,
   involvedStaffService,
   systemToken,
@@ -16,11 +16,11 @@ module.exports = function CheckAnswerRoutes({
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
-      const { id, form = {}, incidentDate, agencyId: prisonId } = await reportService.getCurrentDraft(
+      const { id, form = {}, incidentDate, agencyId: prisonId } = await draftReportService.getCurrentDraft(
         req.user.username,
         bookingId
       )
-      const { complete } = reportService.getReportStatus(form)
+      const { complete } = draftReportService.getReportStatus(form)
 
       if (!complete) {
         // User should not be on this page if form is not complete.
@@ -54,11 +54,11 @@ module.exports = function CheckAnswerRoutes({
     submit: async (req, res) => {
       const { bookingId } = req.params
 
-      if (!reportService.isDraftComplete(req.user.username, bookingId)) {
+      if (!draftReportService.isDraftComplete(req.user.username, bookingId)) {
         throw new Error('Report is not complete')
       }
 
-      const reportId = await reportService.submit(res.locals.user, bookingId)
+      const reportId = await draftReportService.submit(res.locals.user, bookingId)
       const location = reportId ? `/${reportId}/report-sent` : `/`
       return res.redirect(location)
     },

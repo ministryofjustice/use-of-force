@@ -1,7 +1,7 @@
 const request = require('supertest')
 const { appWithAllRoutes } = require('./testutils/appSetup')
 
-const reportService = {
+const draftReportService = {
   getCurrentDraft: jest.fn(),
   getReportStatus: jest.fn(),
 }
@@ -13,8 +13,8 @@ const offenderService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService })
-  reportService.getCurrentDraft.mockResolvedValue({})
+  app = appWithAllRoutes({ draftReportService, offenderService })
+  draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
 })
 
@@ -24,7 +24,7 @@ afterEach(() => {
 
 describe('GET /task-list', () => {
   it('should render page content for new report', () => {
-    reportService.getCurrentDraft.mockResolvedValue({})
+    draftReportService.getCurrentDraft.mockResolvedValue({})
     return request(app)
       .get('/report/-35/report-use-of-force')
       .expect('Content-Type', /html/)
@@ -35,7 +35,7 @@ describe('GET /task-list', () => {
   })
 
   it('should render page content for existing report', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)
       .get('/report/-35/report-use-of-force')
       .expect('Content-Type', /html/)
@@ -46,7 +46,7 @@ describe('GET /task-list', () => {
   })
 
   it('shows the exit link', () => {
-    reportService.getCurrentDraft.mockResolvedValue({ id: '1' })
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1' })
     return request(app)
       .get('/report/-35/report-use-of-force')
       .expect('Content-Type', /html/)

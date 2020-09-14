@@ -1,7 +1,7 @@
 const request = require('supertest')
 const { appWithAllRoutes, user } = require('./testutils/appSetup')
 
-const reportService = {
+const draftReportService = {
   getCurrentDraft: jest.fn(),
   isDraftComplete: jest.fn(),
   submit: jest.fn(),
@@ -24,8 +24,8 @@ const locationService = {
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, offenderService, involvedStaffService, locationService })
-  reportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
+  app = appWithAllRoutes({ draftReportService, offenderService, involvedStaffService, locationService })
+  draftReportService.getCurrentDraft.mockResolvedValue({ form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue({})
@@ -34,7 +34,7 @@ beforeEach(() => {
 
 describe('GET /check-your-answers', () => {
   it('Allow render if report is complete', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
 
     return request(app)
       .get('/report/-35/check-your-answers')
@@ -47,8 +47,8 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Should not contain the pain inducing techniques question [pain inducing techniques = undefined]', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         useOfForceDetails: {
@@ -73,8 +73,8 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Should contain the pain inducing techniques question [pain inducing techniques = true]', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         useOfForceDetails: {
@@ -100,8 +100,8 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Should contain the pain inducing techniques question [pain inducing techniques = false]', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         useOfForceDetails: {
@@ -127,8 +127,8 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Should contain prisoner compliant', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         useOfForceDetails: {},
@@ -149,8 +149,8 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Should contain vehicle', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
-    reportService.getCurrentDraft.mockResolvedValue({
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         relocationAndInjuries: {
@@ -170,13 +170,13 @@ describe('GET /check-your-answers', () => {
   })
 
   it('Redirect if report is not complete', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: false })
+    draftReportService.getReportStatus.mockReturnValue({ complete: false })
 
     return request(app).get('/report/-35/check-your-answers').expect(302).expect('Location', '/')
   })
 
   it('Should contain the prison where the incident took place', () => {
-    reportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
     locationService.getPrisonById.mockResolvedValue({ description: 'Sheffield' })
     return request(app)
       .get('/report/-35/check-your-answers')
@@ -193,18 +193,18 @@ describe('GET /check-your-answers', () => {
 
 describe('POST /check-your-answers', () => {
   it('Allow submit if report is complete', async () => {
-    reportService.isDraftComplete.mockReturnValue(true)
-    reportService.submit.mockReturnValue(2)
+    draftReportService.isDraftComplete.mockReturnValue(true)
+    draftReportService.submit.mockReturnValue(2)
 
     await request(app).post('/report/-35/check-your-answers').expect(302).expect('Location', '/2/report-sent')
-    expect(reportService.submit).toBeCalledWith(user, '-35')
+    expect(draftReportService.submit).toBeCalledWith(user, '-35')
   })
 
   it('An error is throw if the report is not complete', async () => {
-    reportService.isDraftComplete.mockReturnValue(false)
+    draftReportService.isDraftComplete.mockReturnValue(false)
 
     await request(app).post('/report/-35/check-your-answers').expect(500)
 
-    expect(reportService.submit).not.toBeCalledWith()
+    expect(draftReportService.submit).not.toBeCalledWith()
   })
 })

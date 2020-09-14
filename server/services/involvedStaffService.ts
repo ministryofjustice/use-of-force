@@ -107,7 +107,7 @@ export class InvolvedStaffService {
       firstReminder: firstReminderDate.toDate(),
       overdueDate: overdueDate.toDate(),
       staff,
-      query: this.queryPerformer,
+      query: client,
     })
     return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
   }
@@ -145,7 +145,7 @@ export class InvolvedStaffService {
             email: foundUser.email,
           },
         ],
-        query: this.queryPerformer,
+        query: client,
       })
 
       if (report.status === ReportStatus.COMPLETE.value) {
