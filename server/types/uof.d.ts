@@ -22,6 +22,7 @@ export type User = {
   lastName: string
   activeCaseLoad: CaseLoad
   displayName: string
+  token: string
 }
 
 export type GetUsersResults = {
