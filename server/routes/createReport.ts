@@ -109,3 +109,4 @@ export default class CreateReport {
     return res.redirect(`/report/${bookingId}/check-your-answers`)
   }
 }
+
