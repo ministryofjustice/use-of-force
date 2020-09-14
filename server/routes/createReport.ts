@@ -10,7 +10,7 @@ const SubmitType = {
   SAVE_AND_RETURN: 'save-and-return',
 }
 
-export default class NewIncidentRoutes {
+export default class CreateReport {
   constructor(private readonly draftReportService: DraftReportService) {}
 
   private async loadForm(req) {
