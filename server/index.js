@@ -42,13 +42,7 @@ const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClie
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = new UserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = new InvolvedStaffService(
-  incidentClient,
-  statementsClient,
-  userService,
-  db.inTransaction,
-  db.query
-)
+const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = new OffenderService(elite2ClientBuilder)
 const reportService = new ReportService(incidentClient, offenderService, systemToken)

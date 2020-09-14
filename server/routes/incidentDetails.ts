@@ -68,7 +68,7 @@ export default class IncidentDetailsRoutes {
     return verifiedInvolvedStaff
   }
 
-  private getSubmitRedirectLocation = (req, payloadFields, form, bookingId, editMode, submitType) => {
+  private getSubmitRedirectLocation = (req, payloadFields, bookingId, editMode, submitType) => {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
       return editMode ? `/report/${bookingId}/edit-change-prison` : `/report/${bookingId}/change-prison`
     }
@@ -189,7 +189,7 @@ export default class IncidentDetailsRoutes {
       })
     }
 
-    const location = this.getSubmitRedirectLocation(req, formPayload, formName, bookingId, editMode, submitType)
+    const location = this.getSubmitRedirectLocation(req, formPayload, bookingId, editMode, submitType)
     return res.redirect(location)
   }
 
