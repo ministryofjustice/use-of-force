@@ -50,14 +50,13 @@ describe('reviewService', () => {
 
   describe('getStatement', () => {
     test('success', async () => {
+      const date = new Date('2019-03-05 01:03:28')
       statementsClient.getStatementForReviewer.mockResolvedValue({ id: 2 })
 
       statementsClient.getAdditionalComments.mockResolvedValue([
         {
-          id: 1,
-          statementId: 1,
           additionalComment: 'comment1',
-          dataSubmitted: '2019-03-05 01:03:28',
+          dateSubmitted: date,
         },
       ])
 
@@ -67,10 +66,8 @@ describe('reviewService', () => {
         id: 2,
         additionalComments: [
           {
-            id: 1,
-            statementId: 1,
             additionalComment: 'comment1',
-            dataSubmitted: '2019-03-05 01:03:28',
+            dateSubmitted: date,
           },
         ],
       })

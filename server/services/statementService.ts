@@ -19,7 +19,7 @@ export default class StatementService {
     return this.statementsClient.getStatements(userId, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status) {
+  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<UserStatement> {
     const statement = await this.statementsClient.getStatementForUser(userId, reportId, status)
     if (!statement) {
       throw new Error(`Report: '${reportId}' does not exist`)

@@ -31,7 +31,7 @@ export default class StatementsClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status) {
+  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<Statement> {
     const results = await this.query({
       text: `select s.id
     ,      r.booking_id             "bookingId"
@@ -90,7 +90,7 @@ export default class StatementsClient {
     return results.rows
   }
 
-  async getAdditionalComments(statementId: number) {
+  async getAdditionalComments(statementId: number): Promise<AdditionalComments> {
     const results = await this.query({
       text: `select  
     s.additional_comment "additionalComment",

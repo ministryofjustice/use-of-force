@@ -8,3 +8,18 @@ type StatementSummary = {
   isOverdue: boolean
   status: string
 }
+
+type Statement = {
+  id?: number
+  bookingId?: number
+  incidentDate?: Date
+  lastTrainingMonth?: number
+  lastTrainingYear?: number
+  jobStartYear?: number
+  statement?: string
+  submittedDate?: Date
+  name?: string
+  reporterName?: string
+}
+
+type AdditionalComments = Array<{ additionalComment: string; dateSubmitted: Date }>
