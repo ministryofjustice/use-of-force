@@ -1,5 +1,5 @@
 import type IncidentClient from '../../data/incidentClient'
-import type { SystemToken } from '../../types/uof'
+import type { SystemToken, User } from '../../types/uof'
 
 import logger from '../../../log'
 import { isNilOrEmpty } from '../../utils/utils'
@@ -23,7 +23,7 @@ export default class UpdateDraftReportService {
       : this.startNewReport(bookingId, currentUser, incidentDateValue, formObject)
   }
 
-  private async updateReport(formId: number, bookingId: number, currentUser, incidentDateValue, formValue) {
+  private async updateReport(formId: number, bookingId: number, currentUser: User, incidentDateValue, formValue) {
     const { username: userId } = currentUser
     if (incidentDateValue || formValue) {
       logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)

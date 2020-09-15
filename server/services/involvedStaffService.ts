@@ -3,7 +3,7 @@ import logger from '../../log'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
-import { User, GetUsersResults } from '../types/uof'
+import { GetUsersResults, LoggedInUser } from '../types/uof'
 import { InTransaction, QueryPerformer } from '../data/dataAccess/db'
 import UserService from './userService'
 
@@ -19,8 +19,7 @@ export class InvolvedStaffService {
     private readonly incidentClient: IncidentClient,
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
-    private readonly inTransaction: InTransaction,
-    private readonly queryPerformer: QueryPerformer
+    private readonly inTransaction: InTransaction
   ) {}
 
   public getInvolvedStaff(reportId: number): Promise<any[]> {
@@ -31,7 +30,7 @@ export class InvolvedStaffService {
     return this.incidentClient.getDraftInvolvedStaff(reportId)
   }
 
-  public removeMissingDraftInvolvedStaff = async (userId: string, bookingId: number) => {
+  public async removeMissingDraftInvolvedStaff(userId: string, bookingId: number) {
     const { id, form = {} } = await this.incidentClient.getCurrentDraftReport(userId, bookingId)
 
     const { incidentDetails = {} } = form
@@ -45,7 +44,7 @@ export class InvolvedStaffService {
     await this.incidentClient.updateDraftReport(id, null, updatedFormObject)
   }
 
-  public loadInvolvedStaff = async (reportId: number, statementId: number) => {
+  public async loadInvolvedStaff(reportId: number, statementId: number) {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.statementId === statementId)
     if (!found) {
@@ -54,7 +53,7 @@ export class InvolvedStaffService {
     return found
   }
 
-  public loadInvolvedStaffByUsername = async (reportId: number, username: string) => {
+  public async loadInvolvedStaffByUsername(reportId: number, username: string) {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.userId === username)
     if (!found) {
@@ -67,7 +66,7 @@ export class InvolvedStaffService {
     return this.userService.getUsers(token, usernames)
   }
 
-  private getStaffRequiringStatements = async (currentUser, addedStaff) => {
+  private getStaffRequiringStatements = async (currentUser: LoggedInUser, addedStaff) => {
     const userAlreadyAdded = addedStaff.find(user => currentUser.username === user.username)
     if (userAlreadyAdded) {
       return addedStaff
@@ -87,7 +86,7 @@ export class InvolvedStaffService {
     reportId: number,
     reportSubmittedDate: Moment,
     overdueDate: Moment,
-    currentUser: User,
+    currentUser: LoggedInUser,
     client: QueryPerformer
   ) {
     const involvedStaff = await this.getDraftInvolvedStaff(reportId)
@@ -112,7 +111,7 @@ export class InvolvedStaffService {
     return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
   }
 
-  addInvolvedStaff = async (token, reportId, username) => {
+  public async addInvolvedStaff(token: string, reportId: number, username: string): Promise<AddStaffResult> {
     logger.info(`Adding involved staff with username: ${username} to report: '${reportId}'`)
 
     const [foundUser] = await this.userService.getUsers(token, [username])
@@ -156,7 +155,7 @@ export class InvolvedStaffService {
     })
   }
 
-  public removeInvolvedStaff = async (reportId, statementId) => {
+  public removeInvolvedStaff = async (reportId: number, statementId: number): Promise<void> => {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
     await this.inTransaction(async client => {

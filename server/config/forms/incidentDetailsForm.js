@@ -1,6 +1,6 @@
-const { joi, asMeta, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
+const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
-const { toDate, removeEmptyObjects, toBoolean } = require('./sanitisers')
+const { toDate, removeEmptyObjects } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
 const {
   ValidationError,
@@ -12,10 +12,7 @@ const {
 
 const {
   optionalForPartialValidation,
-  requiredNumber,
   requiredIntegerMsg,
-  requiredString,
-  optionalString,
   requiredPatternMsg,
   requiredBooleanMsg,
   arrayOfObjects,
@@ -73,6 +70,7 @@ const optionalInvolvedStaff = joi
           .uppercase()
           .alter(optionalForPartialValidation),
       })
+      .unknown(true)
       .id('username')
   )
   .ruleset.unique(caseInsensitiveComparator('username'))
@@ -99,20 +97,8 @@ const transientSchema = joi.object({
     .message("Witness '{#value.name}' has already been added - remove this witness"),
 })
 
-const persistentSchema = transientSchema.fork('involvedStaff.username', schema =>
-  schema.append({
-    name: requiredString,
-    email: optionalString,
-    staffId: requiredNumber,
-    missing: joi.boolean().valid(false).meta(asMeta(toBoolean)),
-    verified: joi.boolean().meta(asMeta(toBoolean)),
-  })
-)
 module.exports = {
   optionalInvolvedStaff: transientSchema.extract('involvedStaff'),
-  optionalInvolvedStaffWhenPersisted: persistentSchema.extract('involvedStaff'),
-
   complete: buildValidationSpec(transientSchema),
-  persistent: buildValidationSpec(persistentSchema),
   partial: buildValidationSpec(transientSchema.tailor('partial')),
 }

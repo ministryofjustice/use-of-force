@@ -12,7 +12,6 @@ const involvedStaffService = new InvolvedStaffService(
   jest.fn() as any,
   jest.fn() as any,
   jest.fn() as any,
-  jest.fn() as any,
   jest.fn() as any
 ) as jest.Mocked<InvolvedStaffService>
 

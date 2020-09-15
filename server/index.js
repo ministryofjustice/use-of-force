@@ -3,7 +3,7 @@ import PrisonerSearchClient from './data/prisonerSearchClient'
 import IncidentClient from './data/incidentClient'
 import StatementsClient from './data/statementsClient'
 import OffenderService from './services/offenderService'
-import createReportingService from './services/reportingService'
+import ReportingService from './services/reportingService'
 import PrisonSearchService from './services/prisonerSearchService'
 
 import ReportService from './services/report/reportService'
@@ -42,13 +42,7 @@ const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClie
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = new UserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = new InvolvedStaffService(
-  incidentClient,
-  statementsClient,
-  userService,
-  db.inTransaction,
-  db.query
-)
+const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = new OffenderService(elite2ClientBuilder)
 const reportService = new ReportService(incidentClient, offenderService, systemToken)
@@ -72,7 +66,7 @@ const reviewService = new ReviewService(
   offenderService,
   systemToken
 )
-const reportingService = createReportingService(reportingClient, offenderService, heatmapBuilder)
+const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 const locationService = new LocationService(elite2ClientBuilder)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)

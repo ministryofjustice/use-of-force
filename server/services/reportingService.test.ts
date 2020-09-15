@@ -1,8 +1,8 @@
 import moment from 'moment'
-import serviceCreator from './reportingService'
 import { ReportStatus } from '../config/types'
 import OffenderService from './offenderService'
 import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
+import ReportingService from './reportingService'
 
 jest.mock('./offenderService')
 
@@ -24,7 +24,7 @@ const heatmapBuilder = {
 let service
 
 beforeEach(() => {
-  service = serviceCreator(reportingClient, offenderService, heatmapBuilder)
+  service = new ReportingService(reportingClient, offenderService, heatmapBuilder)
 })
 
 afterEach(() => {

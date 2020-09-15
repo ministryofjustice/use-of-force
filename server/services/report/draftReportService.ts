@@ -1,7 +1,7 @@
 import moment from 'moment'
 import type IncidentClient from '../../data/incidentClient'
 import type SubmitDraftReportService from './submitDraftReportService'
-import type { User } from '../../types/uof'
+import type { LoggedInUser, User } from '../../types/uof'
 import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService, { UpdateParams } from './updateDraftReportService'
 import { DraftReport, NoDraftReport } from '../../data/incidentClientTypes'
@@ -36,7 +36,7 @@ export default class DraftReportService {
   }
 
   public submit(
-    currentUser: User,
+    currentUser: LoggedInUser,
     bookingId: number,
     now: () => moment.Moment = () => moment()
   ): Promise<number | false> {
