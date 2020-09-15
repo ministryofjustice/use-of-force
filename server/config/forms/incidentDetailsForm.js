@@ -70,6 +70,7 @@ const optionalInvolvedStaff = joi
           .uppercase()
           .alter(optionalForPartialValidation),
       })
+      .unknown(true)
       .id('username')
   )
   .ruleset.unique(caseInsensitiveComparator('username'))

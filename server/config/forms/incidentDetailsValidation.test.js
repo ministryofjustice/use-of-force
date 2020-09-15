@@ -828,10 +828,11 @@ describe("'complete' validation", () => {
       expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
       expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
       expect(isValid(optionalInvolvedStaff, [])).toEqual(true)
+      expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', staffId: 1234 }])).toEqual(true)
     })
 
     test('invalid (optionalInvolvedStaff)', () => {
-      expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', age: 29 }])).toEqual(false)
+      expect(isValid(optionalInvolvedStaff, [{ username: 1 }])).toEqual(false)
       expect(isValid(optionalInvolvedStaff, true)).toEqual(false)
       expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
       expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
