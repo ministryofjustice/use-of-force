@@ -1,17 +1,17 @@
-import IncidentClient from '../../data/incidentClient'
+import DraftReportClient from '../../data/draftReportClient'
 import DraftReportService from './draftReportService'
 
-jest.mock('../../data/incidentClient')
+jest.mock('../../data/draftReportClient')
 jest.mock('../offenderService')
 jest.mock('../involvedStaffService')
 
-const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn() as any) as jest.Mocked<DraftReportClient>
 
 let service: DraftReportService
 
 beforeEach(() => {
-  service = new DraftReportService(incidentClient, null, null)
-  incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
+  service = new DraftReportService(draftReportClient, null, null)
+  draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
 })
 
 afterEach(() => {
@@ -21,7 +21,7 @@ afterEach(() => {
 describe('getCurrentDraft', () => {
   test('it should call query on db', async () => {
     await service.getCurrentDraft('user1', 1)
-    expect(incidentClient.getCurrentDraftReport).toBeCalledTimes(1)
+    expect(draftReportClient.get).toBeCalledTimes(1)
   })
 
   test('it should return the first row', async () => {

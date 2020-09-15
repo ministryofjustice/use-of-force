@@ -1,10 +1,10 @@
 import moment from 'moment'
-import type IncidentClient from '../../data/incidentClient'
+import type IncidentClient from '../../data/draftReportClient'
 import type SubmitDraftReportService from './submitDraftReportService'
-import type { LoggedInUser, User } from '../../types/uof'
+import type { LoggedInUser } from '../../types/uof'
 import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService, { UpdateParams } from './updateDraftReportService'
-import { DraftReport, NoDraftReport } from '../../data/incidentClientTypes'
+import { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
 
 export default class DraftReportService {
   constructor(
@@ -14,7 +14,7 @@ export default class DraftReportService {
   ) {}
 
   public getCurrentDraft(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
-    return this.incidentClient.getCurrentDraftReport(userId, bookingId)
+    return this.incidentClient.get(userId, bookingId)
   }
 
   public async isDraftComplete(username: string, bookingId: number): Promise<boolean> {
