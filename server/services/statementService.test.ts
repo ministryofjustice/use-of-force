@@ -3,6 +3,7 @@ import { StatementStatus, ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import { PageResponse } from '../utils/page'
+import { Statement } from '../data/statementsClientTypes'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
@@ -159,7 +160,7 @@ describe('statmentService', () => {
     })
 
     test('invalid statement', async () => {
-      statementsClient.getStatementForUser.mockResolvedValue({})
+      statementsClient.getStatementForUser.mockResolvedValue({} as Statement)
 
       const errors = await service.validateSavedStatement('user-1', 1)
       expect(errors.map(error => error.href)).toEqual(

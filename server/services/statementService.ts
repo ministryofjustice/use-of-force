@@ -7,6 +7,7 @@ import type { InTransaction } from '../data/dataAccess/db'
 import type StatementsClient from '../data/statementsClient'
 import type IncidentClient from '../data/incidentClient'
 import { PageResponse } from '../utils/page'
+import { StatementWithComments, Status, StatementSummary } from './statementServiceTypes'
 
 export default class StatementService {
   constructor(
@@ -19,7 +20,7 @@ export default class StatementService {
     return this.statementsClient.getStatements(userId, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<UserStatement> {
+  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<StatementWithComments> {
     const statement = await this.statementsClient.getStatementForUser(userId, reportId, status)
     if (!statement) {
       throw new Error(`Report: '${reportId}' does not exist`)

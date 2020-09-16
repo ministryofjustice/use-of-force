@@ -1,18 +1,10 @@
-type UserStatement = {
-  additionalComments?: Array<{ additionalComment: string; dateSubmitted: Date }>
-  id?: number
-  bookingId?: number
-  incidentDate?: Date
-  lastTrainingMonth?: number
-  lastTrainingYear?: number
-  jobStartYear?: number
-  statement?: string
-  submittedDate?: Date
-  name?: string
-  reporterName?: string
-}
+import type { AdditionalComment, Statement, StatementSummary } from '../data/statementsClientTypes'
 
-type Status = {
+export type StatementWithComments = Statement & { additionalComments: AdditionalComment[] }
+
+export type Status = {
   value: string
   label: string
 }
+
+export { StatementSummary }

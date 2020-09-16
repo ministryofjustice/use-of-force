@@ -3,6 +3,8 @@ import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
 import { StatementStatus } from '../config/types'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
+import { StatementSummary, Statement, AdditionalComment } from './statementsClientTypes'
+import { Status } from '../services/statementServiceTypes'
 
 export default class StatementsClient {
   constructor(private readonly query: QueryPerformer) {}
@@ -90,7 +92,7 @@ export default class StatementsClient {
     return results.rows
   }
 
-  async getAdditionalComments(statementId: number): Promise<AdditionalComments> {
+  async getAdditionalComments(statementId: number): Promise<AdditionalComment[]> {
     const results = await this.query({
       text: `select  
     s.additional_comment "additionalComment",

@@ -1,4 +1,4 @@
-type StatementSummary = {
+export type StatementSummary = {
   id: number
   reporterName: string
   offenderNo: string
@@ -9,17 +9,17 @@ type StatementSummary = {
   status: string
 }
 
-type Statement = {
-  id?: number
-  bookingId?: number
-  incidentDate?: Date
+export type Statement = {
+  id: number
+  bookingId: number
+  incidentDate: Date
   lastTrainingMonth?: number
   lastTrainingYear?: number
   jobStartYear?: number
   statement?: string
   submittedDate?: Date
-  name?: string
-  reporterName?: string
+  name: string
+  reporterName: string
 }
 
-type AdditionalComments = Array<{ additionalComment: string; dateSubmitted: Date }>
+export type AdditionalComment = { additionalComment: string; dateSubmitted: Date }
