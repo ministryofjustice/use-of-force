@@ -5,7 +5,7 @@ jest.mock('../../data/draftReportClient')
 jest.mock('../offenderService')
 jest.mock('../involvedStaffService')
 
-const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn() as any) as jest.Mocked<DraftReportClient>
+const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 
 let service: DraftReportService
 

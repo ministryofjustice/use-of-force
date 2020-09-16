@@ -29,22 +29,16 @@ export class InvolvedStaffService {
     return this.incidentClient.getInvolvedStaff(reportId)
   }
 
-  public getDraftInvolvedStaff(reportId: number): Promise<StaffDetails[]> {
-    return this.draftReportClient.getInvolvedStaff(reportId)
+  public getDraftInvolvedStaff(username: string, bookingId: number): Promise<StaffDetails[]> {
+    return this.draftReportClient.getInvolvedStaff(username, bookingId)
   }
 
-  public async removeMissingDraftInvolvedStaff(userId: string, bookingId: number) {
-    const { id, form = {} } = await this.draftReportClient.get(userId, bookingId)
+  public removeMissingDraftInvolvedStaff(userId: string, bookingId: number): Promise<void> {
+    return this.draftReportClient.removeMissingInvolvedStaff(userId, bookingId)
+  }
 
-    const { incidentDetails = {} } = form
-    const { involvedStaff = [] } = incidentDetails
-    const updatedInvolvedStaff = involvedStaff.filter(staff => !staff.missing)
-
-    const updatedFormObject = {
-      ...form,
-      incidentDetails: { ...incidentDetails, involvedStaff: updatedInvolvedStaff },
-    }
-    await this.draftReportClient.update(id, null, updatedFormObject)
+  public hasMissingDraftInvolvedStaff(userId: string, bookingId: number): Promise<boolean> {
+    return this.draftReportClient.hasMissingInvolvedStaff(userId, bookingId)
   }
 
   public async loadInvolvedStaff(reportId: number, statementId: number): Promise<StaffDetails> {
@@ -86,13 +80,14 @@ export class InvolvedStaffService {
   }
 
   public async save(
+    bookingId: number,
     reportId: number,
     reportSubmittedDate: Moment,
     overdueDate: Moment,
     currentUser: LoggedInUser,
     client: QueryPerformer
   ) {
-    const involvedStaff = await this.getDraftInvolvedStaff(reportId)
+    const involvedStaff = await this.getDraftInvolvedStaff(currentUser.username, bookingId)
 
     const staffToCreateStatmentsFor = await this.getStaffRequiringStatements(currentUser, involvedStaff)
 

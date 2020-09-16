@@ -68,15 +68,13 @@ export default class IncidentDetailsRoutes {
     return verifiedInvolvedStaff
   }
 
-  private getSubmitRedirectLocation = (req, payloadFields, bookingId, editMode, submitType) => {
+  private async getSubmitRedirectLocation(req: Request, bookingId: number, editMode: true, submitType) {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
       return editMode ? `/report/${bookingId}/edit-change-prison` : `/report/${bookingId}/change-prison`
     }
 
-    if (
-      payloadFields.involvedStaff &&
-      payloadFields.involvedStaff.some(staff => staff.missing || staff.verified === false)
-    ) {
+    const hasMissingStaff = await this.involvedStaffService.hasMissingDraftInvolvedStaff(req.user.username, bookingId)
+    if (hasMissingStaff) {
       req.flash(
         'nextDestination',
         getDestination({ editMode, saveAndContinue: submitType === SubmitType.SAVE_AND_CONTINUE })
@@ -126,8 +124,7 @@ export default class IncidentDetailsRoutes {
 
     const involvedStaff =
       (input && input.involvedStaff) ||
-      (formId && (await this.involvedStaffService.getDraftInvolvedStaff(formId))) ||
-      []
+      (await this.involvedStaffService.getDraftInvolvedStaff(req.user.username, bookingId))
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
@@ -189,7 +186,7 @@ export default class IncidentDetailsRoutes {
       })
     }
 
-    const location = this.getSubmitRedirectLocation(req, formPayload, bookingId, editMode, submitType)
+    const location = await this.getSubmitRedirectLocation(req, bookingId, editMode, submitType)
     return res.redirect(location)
   }
 
@@ -219,11 +216,11 @@ export default class IncidentDetailsRoutes {
 
   public cancelEdit: RequestHandler = async (req, res) => {
     const { bookingId } = req.params
-    const {
-      form: { incidentDetails: { involvedStaff = [] } = {} },
-    } = await this.loadForm(req)
 
-    const hasMissingStaff = involvedStaff && involvedStaff.some(staff => staff.missing || staff.verified === false)
+    const hasMissingStaff = await this.involvedStaffService.hasMissingDraftInvolvedStaff(
+      req.user.username,
+      parseInt(bookingId, 10)
+    )
 
     req.flash('nextDestination', getDestination({ editMode: true, saveAndContinue: false }))
 
@@ -235,8 +232,10 @@ export default class IncidentDetailsRoutes {
 
   public viewUsernameDoesNotExist: RequestHandler = async (req, res) => {
     const { bookingId } = req.params
-    const { formId } = await this.loadForm(req)
-    const involvedStaff = (formId && (await this.involvedStaffService.getDraftInvolvedStaff(formId))) || []
+    const involvedStaff = await this.involvedStaffService.getDraftInvolvedStaff(
+      req.user.username,
+      parseInt(bookingId, 10)
+    )
     const missingUsers = involvedStaff.filter(staff => staff.missing).map(staff => staff.username)
     const nextDestination = getFromFlash(req, 'nextDestination')
 
