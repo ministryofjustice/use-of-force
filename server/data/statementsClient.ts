@@ -3,6 +3,8 @@ import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
 import { StatementStatus } from '../config/types'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
+import { StatementSummary, Statement, AdditionalComment } from './statementsClientTypes'
+import { Status } from '../services/statementServiceTypes'
 
 export default class StatementsClient {
   constructor(private readonly query: QueryPerformer) {}
@@ -31,7 +33,7 @@ export default class StatementsClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status) {
+  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<Statement> {
     const results = await this.query({
       text: `select s.id
     ,      r.booking_id             "bookingId"
@@ -41,6 +43,8 @@ export default class StatementsClient {
     ,      s.job_start_year         "jobStartYear"
     ,      s.statement
     ,      s.submitted_date         "submittedDate"
+    ,      s.name                   "name"
+    ,      r.reporter_name          "reporterName"
     from report r
     left join statement s on r.id = s.report_id
     where r.id = $1
@@ -88,7 +92,7 @@ export default class StatementsClient {
     return results.rows
   }
 
-  async getAdditionalComments(statementId: number) {
+  async getAdditionalComments(statementId: number): Promise<AdditionalComment[]> {
     const results = await this.query({
       text: `select  
     s.additional_comment "additionalComment",

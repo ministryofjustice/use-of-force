@@ -21,11 +21,18 @@ beforeEach(() => {
   statementService.getStatements.mockResolvedValue(
     new PageResponse({ min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 }, [])
   )
+  const date = new Date('2019-03-05 01:03:28.000')
   statementService.getStatementForUser.mockResolvedValue({
+    additionalComments: [{ additionalComment: 'An additional text', dateSubmitted: date }],
+    bookingId: 2,
+    incidentDate: new Date(),
+    lastTrainingMonth: 1,
+    lastTrainingYear: 1,
+    jobStartYear: 1,
+    submittedDate: date,
+    name: '',
+    reporterName: '',
     id: 1,
-    booking_id: 2,
-    created_date: '12/12/2018',
-    user_id: 'ITAG_USER',
     statement: 'Some initial statement',
   })
   app = appWithAllRoutes({ statementService, offenderService })
@@ -109,6 +116,14 @@ describe('GET /:reportId/your-statement', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Your use of force statement')
+      }))
+  it('should contain print link', () =>
+    request(app)
+      .get('/-1/your-statement')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Print statement')
       }))
 })
 

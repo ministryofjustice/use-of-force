@@ -36,7 +36,7 @@ test('getStatements', async () => {
 })
 
 test('getStatementForUser', () => {
-  statementsClient.getStatementForUser('user-1', 1, StatementStatus.PENDING)
+  statementsClient.getStatementForUser('user-1', 19, StatementStatus.PENDING)
 
   expect(query).toBeCalledWith({
     text: `select s.id
@@ -47,6 +47,8 @@ test('getStatementForUser', () => {
     ,      s.job_start_year         "jobStartYear"
     ,      s.statement
     ,      s.submitted_date         "submittedDate"
+    ,      s.name                   "name"
+    ,      r.reporter_name          "reporterName"
     from report r
     left join statement s on r.id = s.report_id
     where r.id = $1
@@ -54,7 +56,7 @@ test('getStatementForUser', () => {
       and s.user_id = $2
       and s.statement_status = $3
       and s.deleted is null`,
-    values: [1, 'user-1', StatementStatus.PENDING.value],
+    values: [19, 'user-1', StatementStatus.PENDING.value],
   })
 })
 

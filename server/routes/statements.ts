@@ -6,6 +6,7 @@ import { StatementStatus } from '../config/types'
 import StatementService from '../services/statementService'
 import { SystemToken } from '../types/uof'
 import OffenderService from '../services/offenderService'
+import { StatementSummary } from '../data/statementsClientTypes'
 
 export default function CreateReportRoutes(
   statementService: StatementService,
