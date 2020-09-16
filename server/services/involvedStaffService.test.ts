@@ -12,10 +12,10 @@ jest.mock('../data/draftReportClient')
 jest.mock('../data/statementsClient')
 jest.mock('./userService')
 
-const incidentClient = new IncidentClient(jest.fn as any, jest.fn as any) as jest.Mocked<IncidentClient>
-const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn as any) as jest.Mocked<DraftReportClient>
-const statementsClient = new StatementsClient(jest.fn as any) as jest.Mocked<StatementsClient>
-const userService = new UserService(jest.fn as any, jest.fn as any) as jest.Mocked<UserService>
+const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
+const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
+const userService = new UserService(null, null) as jest.Mocked<UserService>
 
 const client = jest.fn()
 
@@ -43,51 +43,15 @@ const user = {
 
 describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
-    await service.getDraftInvolvedStaff(1)
+    await service.getDraftInvolvedStaff('user-1', 1)
     expect(draftReportClient.getInvolvedStaff).toBeCalledTimes(1)
   })
 })
 
 describe('removeMissingDraftInvolvedStaff', () => {
-  test('should not blow up with missing data', async () => {
-    draftReportClient.get.mockResolvedValue({ id: 1 })
-    await service.removeMissingDraftInvolvedStaff('user-1', 1)
-    expect(draftReportClient.update).toBeCalledTimes(1)
-    expect(draftReportClient.update).toBeCalledWith(1, null, { incidentDetails: { involvedStaff: [] } })
-  })
-
   test('should remove missing staff', async () => {
-    draftReportClient.get.mockResolvedValue({
-      id: 1,
-      form: {
-        evidence: {
-          baggedEvidence: true,
-        },
-        incidentDetails: {
-          locationId: -1,
-          involvedStaff: [
-            { name: 'user1', missing: false },
-            { name: 'user2', missing: true },
-            { name: 'user3', missing: false },
-            { name: 'user4', missing: true },
-          ],
-        },
-      },
-    })
     await service.removeMissingDraftInvolvedStaff('user-1', 1)
-    expect(draftReportClient.update).toBeCalledTimes(1)
-    expect(draftReportClient.update).toBeCalledWith(1, null, {
-      evidence: {
-        baggedEvidence: true,
-      },
-      incidentDetails: {
-        locationId: -1,
-        involvedStaff: [
-          { name: 'user1', missing: false },
-          { name: 'user3', missing: false },
-        ],
-      },
-    })
+    expect(draftReportClient.removeMissingInvolvedStaff).toBeCalledWith('user-1', 1)
   })
 })
 
@@ -164,7 +128,7 @@ describe('save', () => {
       },
     ])
 
-    const result = await service.save(1, reportSubmittedDate, overdueDate, user, client)
+    const result = await service.save(2, 1, reportSubmittedDate, overdueDate, user, client)
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -224,7 +188,7 @@ describe('save', () => {
       },
     ])
 
-    const result = await service.save(1, reportSubmittedDate, overdueDate, user, client)
+    const result = await service.save(2, 1, reportSubmittedDate, overdueDate, user, client)
 
     expect(result).toEqual([
       { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
@@ -430,7 +394,7 @@ describe('save', () => {
 
     userService.getUsers.mockResolvedValue([{ missing: true }] as GetUsersResults[])
 
-    await expect(service.save(1, reportSubmittedDate, overdueDate, user, client)).rejects.toThrow(
+    await expect(service.save(1, 2, reportSubmittedDate, overdueDate, user, client)).rejects.toThrow(
       `Could not retrieve user details for current user: 'Jo'`
     )
   })

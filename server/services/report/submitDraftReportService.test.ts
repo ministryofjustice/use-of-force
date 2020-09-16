@@ -8,15 +8,9 @@ jest.mock('../../data/draftReportClient')
 jest.mock('../offenderService')
 jest.mock('../involvedStaffService')
 
-const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn() as any) as jest.Mocked<DraftReportClient>
+const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 
-const involvedStaffService = new InvolvedStaffService(
-  jest.fn as any,
-  jest.fn as any,
-  jest.fn as any,
-  jest.fn as any,
-  jest.fn as any
-) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
 const client = jest.fn()
 const inTransaction = fn => fn(client)
@@ -52,14 +46,14 @@ describe('submit', () => {
 
     const now = moment('2019-09-06 21:26:18')
     const deadline = moment(now).add(3, 'days')
-    const result = await service.submit(currentUser, 1, () => now)
+    const result = await service.submit(currentUser, 2, () => now)
 
     expect(result).toEqual(1)
     expect(involvedStaffService.save).toBeCalledTimes(1)
-    expect(involvedStaffService.save).toBeCalledWith(1, now, deadline, currentUser, client)
+    expect(involvedStaffService.save).toBeCalledWith(2, 1, now, deadline, currentUser, client)
 
     expect(draftReportClient.submit).toBeCalledTimes(1)
-    expect(draftReportClient.submit).toBeCalledWith(currentUser.username, 1, now.toDate(), client)
+    expect(draftReportClient.submit).toBeCalledWith(currentUser.username, 2, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {

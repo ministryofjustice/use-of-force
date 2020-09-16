@@ -1,7 +1,5 @@
-import moment from 'moment'
 import DraftReportClient from './draftReportClient'
-import { ReportStatus, StatementStatus } from '../config/types'
-import { PageResponse } from '../utils/page'
+import { ReportStatus } from '../config/types'
 
 let draftReportClient: DraftReportClient
 const query = jest.fn()
@@ -65,7 +63,9 @@ test('create', async () => {
 })
 
 test('update', () => {
-  draftReportClient.update('formId', 'date-1', {})
+  const date = new Date()
+
+  draftReportClient.update(1, date, {})
 
   expect(query).toBeCalledWith({
     text: `update v_report r
@@ -73,7 +73,7 @@ test('update', () => {
             ,   incident_date = COALESCE($2,   r.incident_date)
             ,   updated_date = now()
             where r.id = $3`,
-    values: [{}, 'date-1', 'formId'],
+    values: [{}, date, 1],
   })
 })
 
@@ -127,11 +127,114 @@ test('getInvolvedStaff', async () => {
   ]
   query.mockReturnValue({ rows: expected })
 
-  const result = await draftReportClient.getInvolvedStaff(1)
+  const result = await draftReportClient.getInvolvedStaff('user-1', 1)
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(query).toBeCalledWith({
-    text: `select form_response "form" from v_report where id = $1`,
-    values: [1],
+    text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2`,
+    values: [1, 'user-1'],
+  })
+})
+
+describe('removeMissingInvolvedStaff', () => {
+  test('', async () => {
+    inTransaction.mockImplementation(callback => callback(query))
+
+    const expected = [
+      {
+        id: 1,
+        form: {
+          incidentDetails: {
+            plannedUseOfForce: false,
+            involvedStaff: [
+              {
+                name: 'AAA User',
+                missing: true,
+              },
+              {
+                name: 'BBB User',
+              },
+            ],
+          },
+        },
+      },
+    ]
+    query.mockReturnValue({ rows: expected })
+
+    await draftReportClient.removeMissingInvolvedStaff('user-1', 1)
+
+    expect(query).toBeCalledWith({
+      text: `update v_report r
+            set form_response = COALESCE($1,   r.form_response)
+            ,   incident_date = COALESCE($2,   r.incident_date)
+            ,   updated_date = now()
+            where r.id = $3`,
+      values: [
+        {
+          incidentDetails: {
+            plannedUseOfForce: false,
+            involvedStaff: [
+              {
+                name: 'BBB User',
+              },
+            ],
+          },
+        },
+        null,
+        1,
+      ],
+    })
+  })
+})
+describe('hasMissingInvolvedStaff', () => {
+  test('true', async () => {
+    const expected = [
+      {
+        id: 1,
+        form: {
+          incidentDetails: {
+            plannedUseOfForce: false,
+            involvedStaff: [
+              {
+                name: 'AAA User',
+                missing: true,
+              },
+              {
+                name: 'BBB User',
+              },
+            ],
+          },
+        },
+      },
+    ]
+    query.mockReturnValue({ rows: expected })
+
+    const result = await draftReportClient.hasMissingInvolvedStaff('user-1', 1)
+    expect(result).toBe(true)
+  })
+  test('false', async () => {
+    const expected = [
+      {
+        id: 1,
+        form: {
+          incidentDetails: {
+            plannedUseOfForce: false,
+            involvedStaff: [
+              {
+                name: 'AAA User',
+                missing: false,
+              },
+              {
+                name: 'BBB User',
+              },
+            ],
+          },
+        },
+      },
+    ]
+    query.mockReturnValue({ rows: expected })
+
+    const result = await draftReportClient.hasMissingInvolvedStaff('user-1', 1)
+    expect(result).toBe(false)
   })
 })

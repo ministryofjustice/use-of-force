@@ -2,7 +2,7 @@ export type NoDraftReport = Record<string, any>
 
 export interface DraftReport {
   id: number
-  incidentDate: Date
+  incidentDate?: Date
   form: unknown
   agencyId: string
 }

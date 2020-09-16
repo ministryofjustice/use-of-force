@@ -40,7 +40,7 @@ module.exports = function CheckAnswerRoutes({
       // TODO remove once all missing users are removed and add to list pattern has been implemented
       await involvedStaffService.removeMissingDraftInvolvedStaff(res.locals.user.username, id)
 
-      const draftInvolvedStaff = await involvedStaffService.getDraftInvolvedStaff(id)
+      const draftInvolvedStaff = await involvedStaffService.getDraftInvolvedStaff(req.user.username, bookingId)
 
       const involvedStaff = [
         ...currentUserIfNotPresent(draftInvolvedStaff, res.locals.user),
