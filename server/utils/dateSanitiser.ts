@@ -26,7 +26,16 @@ type DateParameter = {
   }
 }
 
-export const toDate = ({ date: dateVal = '', time: { hour = '', minute = '' } }: DateParameter) => {
+export type ParsedDate = {
+  date: string
+  time: {
+    hour: string
+    minute: string
+  }
+  value: Date | null
+}
+
+export const toDate = ({ date: dateVal = '', time: { hour = '', minute = '' } }: DateParameter): ParsedDate => {
   const parsedDate = moment(dateVal.trim(), 'DD/MM/YYYY', true)
   const parsedHours = toInteger(hour)
   const parsedMinutes = toInteger(minute)

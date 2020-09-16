@@ -1,4 +1,5 @@
 import DraftReportClient from '../../data/draftReportClient'
+import { LoggedInUser } from '../../types/uof'
 import UpdateDraftReportService from './updateDraftReportService'
 
 jest.mock('../../data/draftReportClient')
@@ -9,7 +10,8 @@ const elite2Client = {
   getOffenderDetails: jest.fn(),
 }
 
-const currentUser = { username: 'user1', displayName: 'Bob Smith' }
+const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
+const incidentDate = new Date()
 
 let service: UpdateDraftReportService
 let elite2ClientBuilder
@@ -38,26 +40,16 @@ describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject,
-      incidentDate: { value: '21/12/2010' },
-    })
+    await service.process(currentUser, 1, 'form', formObject, incidentDate)
 
     expect(draftReportClient.update).toBeCalledTimes(1)
-    expect(draftReportClient.update).toBeCalledWith('form1', '21/12/2010', formObject)
+    expect(draftReportClient.update).toBeCalledWith(1, incidentDate, { form: formObject })
   })
 
   test('doesnt call update if neither form or incident present', async () => {
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject: null,
-      incidentDate: { value: null },
-    })
+    draftReportClient.get.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+
+    await service.process(currentUser, 1, 'incidentDetails', {})
 
     expect(draftReportClient.update).not.toBeCalled()
   })
@@ -65,43 +57,36 @@ describe('update', () => {
   test('Still call update if form is present but incident date isnt', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject,
-      incidentDate: { value: null },
-    })
+    await service.process(currentUser, 1, 'form', formObject)
 
     expect(draftReportClient.update).toBeCalledTimes(1)
-    expect(draftReportClient.update).toBeCalledWith('form1', null, formObject)
+    expect(draftReportClient.update).toBeCalledWith(1, undefined, { form: formObject })
   })
 
   test('Still call update if incident date is present but form object isnt', async () => {
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formId: 'form1',
-      formObject: {},
-      incidentDate: { value: '09/08/2019' },
-    })
+    draftReportClient.get.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
-    expect(draftReportClient.update).toBeCalledTimes(1)
-    expect(draftReportClient.update).toBeCalledWith('form1', '09/08/2019', null)
+    await service.process(currentUser, 1, 'incidentDetails', {}, incidentDate)
+
+    expect(draftReportClient.update).toBeCalledWith(1, incidentDate, null)
+  })
+
+  test('Still call update if incident date is present when form object isnt', async () => {
+    draftReportClient.get.mockResolvedValue({ id: 1, form: {} })
+
+    await service.process(currentUser, 1, 'incidentDetails', {}, incidentDate)
+
+    expect(draftReportClient.update).toBeCalledWith(1, incidentDate, { incidentDetails: {} })
   })
 })
 
 describe('create', () => {
   test('should call create when form id not present', async () => {
+    draftReportClient.get.mockResolvedValue({ id: null, form: {} })
+
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
-    await service.update({
-      currentUser,
-      bookingId: 1,
-      formObject,
-      formId: null,
-      incidentDate: { value: '2/2/2019' },
-    })
+    await service.process(currentUser, 1, 'form', formObject, incidentDate)
 
     expect(draftReportClient.create).toBeCalledTimes(1)
     expect(draftReportClient.create).toBeCalledWith({
@@ -110,8 +95,8 @@ describe('create', () => {
       agencyId: 'MDI',
       offenderNo: 'AA123ABC',
       reporterName: 'Bob Smith',
-      formResponse: formObject,
-      incidentDate: '2/2/2019',
+      formResponse: { form: formObject },
+      incidentDate,
     })
     expect(elite2ClientBuilder).toHaveBeenCalledWith('system-token-1')
   })

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
-import { processInput, mergeIntoPayload } from '../services/validation'
+import { processInput } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
 import type DraftReportService from '../services/report/draftReportService'
 
@@ -66,30 +66,15 @@ export default class CreateReport {
         input: req.body,
       })
 
-      const formPayload = { ...payloadFields }
+      const updatedSection = { ...payloadFields }
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
-        req.flash('userInput', formPayload)
+        req.flash('userInput', updatedSection)
         return res.redirect(req.originalUrl)
       }
 
-      const { formId, form } = await this.loadForm(req)
-
-      const updatedPayload = mergeIntoPayload({
-        formObject: form,
-        formPayload,
-        formName,
-      })
-
-      if (updatedPayload) {
-        await this.draftReportService.update({
-          currentUser: res.locals.user,
-          formId,
-          bookingId: parseInt(bookingId, 10),
-          formObject: updatedPayload || {},
-        })
-      }
+      await this.draftReportService.process(res.locals.user, parseInt(bookingId, 10), formName, updatedSection)
 
       const location = await this.getSubmitRedirectLocation(req, formName, bookingId, editMode, submitType)
       return res.redirect(location)

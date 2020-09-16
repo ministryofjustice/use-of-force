@@ -1,89 +1,9 @@
 const Joi = require('@hapi/joi')
 const R = require('ramda')
-const { mergeIntoPayload, processInput } = require('./formProcessing')
+const { processInput } = require('./formProcessing')
 const { EXTRACTED } = require('../../config/fieldType')
 const { validations, joi } = require('../../config/forms/validations')
 const { buildValidationSpec } = require('./index')
-
-describe('mergeIntoPayload', () => {
-  const baseForm = {
-    form1: {},
-    form2: { answer: 'answer' },
-  }
-
-  const form = {
-    ...baseForm,
-    form3: {
-      decision: '',
-      followUp1: '',
-      followUp2: '',
-    },
-  }
-
-  test('should build updated object correctly', async () => {
-    const formPayload = {
-      decision: 'Yes',
-      followUp1: 'County',
-      followUp2: 'Town',
-    }
-
-    const output = await mergeIntoPayload({
-      formObject: baseForm,
-      formPayload,
-      formName: 'form3',
-    })
-
-    expect(output).toEqual({
-      ...form,
-      form3: {
-        decision: 'Yes',
-        followUp1: 'County',
-        followUp2: 'Town',
-      },
-    })
-  })
-
-  test('should not return updated form object when there has been no change', async () => {
-    const formPayload = { answer: 'answer' }
-
-    const existingForm = {
-      form1: {},
-      form2: { answer: 'answer' },
-    }
-
-    const output = await mergeIntoPayload({
-      formObject: existingForm,
-      formPayload,
-      formName: 'form2',
-    })
-
-    expect(output).toEqual(false)
-  })
-
-  it('should add new forms to the form if they dont exist', async () => {
-    const formPayload = {
-      decision: 'Yes',
-      followUp1: 'County',
-      followUp2: 'Town',
-    }
-
-    const output = await mergeIntoPayload({
-      formObject: baseForm,
-      formPayload,
-      formName: 'form1',
-    })
-
-    const expectedForm = {
-      ...baseForm,
-      form1: {
-        decision: 'Yes',
-        followUp1: 'County',
-        followUp2: 'Town',
-      },
-    }
-    expect(output).toEqual(expectedForm)
-  })
-})
 
 describe('processInput', () => {
   describe('checking dependentFields functionality', () => {

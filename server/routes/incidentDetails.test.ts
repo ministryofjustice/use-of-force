@@ -104,21 +104,19 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
-          formObject: {
-            incidentDetails: {
-              locationId: -1,
-              plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER_BOB' }],
-              witnesses: [{ name: 'User bob' }],
-            },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            locationId: -1,
+            plannedUseOfForce: true,
+            involvedStaff: [{ username: 'USER_BOB' }],
+            witnesses: [{ name: 'User bob' }],
           },
-        })
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+        )
       })
   })
 
@@ -137,7 +135,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/incident-details')
       .expect(() => {
-        expect(draftReportService.update).not.toBeCalled()
+        expect(draftReportService.process).not.toBeCalled()
       }))
 })
 
@@ -158,21 +156,19 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
-          formObject: {
-            incidentDetails: {
-              locationId: -1,
-              plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER_BOB' }],
-              witnesses: [{ name: 'User bob' }],
-            },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            locationId: -1,
+            plannedUseOfForce: true,
+            involvedStaff: [{ username: 'USER_BOB' }],
+            witnesses: [{ name: 'User bob' }],
           },
-        })
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+        )
       })
   })
 
@@ -195,25 +191,23 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/change-prison')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
-          formObject: {
-            incidentDetails: {
-              locationId: -1,
-              plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER_BOB' }],
-              witnesses: [{ name: 'User bob' }],
-            },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            locationId: -1,
+            plannedUseOfForce: true,
+            involvedStaff: [{ username: 'USER_BOB' }],
+            witnesses: [{ name: 'User bob' }],
           },
-        })
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+        )
       })
   })
 
-  test('Submitting invalid update is allowed', () => {
+  test('Submitting partial update is allowed', () => {
     involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
@@ -230,20 +224,46 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
-          formObject: {
-            incidentDetails: {
-              involvedStaff: [{ username: 'USER_BOB' }],
-              locationId: -1,
-              witnesses: [{ name: 'User bob' }],
-            },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            involvedStaff: [{ username: 'USER_BOB' }],
+            locationId: -1,
+            witnesses: [{ name: 'User bob' }],
           },
-        })
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+        )
+      })
+  })
+
+  test('Submitting without incident date is allowed', () => {
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
+
+    return request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submitType: 'save-and-return',
+        locationId: -1,
+        witnesses: [{ name: 'User bob' }, { name: '' }],
+      })
+      .expect(302)
+      .expect('Location', '/report/1/report-use-of-force')
+      .expect(() => {
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            involvedStaff: [{ username: 'USER_BOB' }],
+            locationId: -1,
+            witnesses: [{ name: 'User bob' }],
+          },
+          null
+        )
       })
   })
 
@@ -280,21 +300,19 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          incidentDate: toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }),
-          formObject: {
-            incidentDetails: {
-              locationId: -1,
-              plannedUseOfForce: true,
-              involvedStaff: [{ username: 'USER_BOB' }],
-              witnesses: [{ name: 'User bob' }],
-            },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(
+          user,
+          1,
+          'incidentDetails',
+          {
+            locationId: -1,
+            plannedUseOfForce: true,
+            involvedStaff: [{ username: 'USER_BOB' }],
+            witnesses: [{ name: 'User bob' }],
           },
-        })
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+        )
       })
   })
 
@@ -309,7 +327,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/edit-incident-details')
       .expect(() => {
-        expect(draftReportService.update).not.toBeCalled()
+        expect(draftReportService.process).not.toBeCalled()
       }))
 })
 

@@ -3,7 +3,7 @@ import type IncidentClient from '../../data/draftReportClient'
 import type SubmitDraftReportService from './submitDraftReportService'
 import type { LoggedInUser } from '../../types/uof'
 import { check as getReportStatus } from './reportStatusChecker'
-import UpdateDraftReportService, { UpdateParams } from './updateDraftReportService'
+import UpdateDraftReportService from './updateDraftReportService'
 import { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
 
 export default class DraftReportService {
@@ -27,8 +27,14 @@ export default class DraftReportService {
     return getReportStatus(report)
   }
 
-  public update(params: UpdateParams): Promise<number> {
-    return this.updateDraftReport.update(params)
+  public process(
+    currentUser: LoggedInUser,
+    bookingId: number,
+    formName: string,
+    updatedSection: unknown,
+    incidentDate?: Date | null
+  ): Promise<void> {
+    return this.updateDraftReport.process(currentUser, bookingId, formName, updatedSection, incidentDate)
   }
 
   public updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {

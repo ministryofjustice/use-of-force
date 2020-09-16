@@ -1,5 +1,5 @@
 const { isValid, validate } = require('./fieldValidation')
-const { processInput, mergeIntoPayload } = require('./formProcessing')
+const { processInput } = require('./formProcessing')
 const { buildSanitiser } = require('./sanitiser')
 const { buildFieldTypeSplitter } = require('./fieldTypeSplitter')
 const { buildErrorDetailAdapter } = require('./errorDetailAdapter')
@@ -21,5 +21,4 @@ module.exports = {
   isValid, // TODO: Only used by reportStatusChecker.  Move checker into this package? Hmm.
   validate, // TODO: This could probably be removed (with edits elsewhere)
   processInput,
-  mergeIntoPayload, // TODO: This should go somewhere else
 }
