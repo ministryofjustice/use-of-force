@@ -1,9 +1,9 @@
-import IncidentClient from '../../data/incidentClient'
+import DraftReportClient from '../../data/draftReportClient'
 import UpdateDraftReportService from './updateDraftReportService'
 
-jest.mock('../../data/incidentClient')
+jest.mock('../../data/draftReportClient')
 
-const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 
 const elite2Client = {
   getOffenderDetails: jest.fn(),
@@ -18,8 +18,8 @@ beforeEach(() => {
   elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
-  service = new UpdateDraftReportService(incidentClient, elite2ClientBuilder, systemToken)
-  incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
+  service = new UpdateDraftReportService(draftReportClient, elite2ClientBuilder, systemToken)
+  draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
@@ -28,9 +28,9 @@ afterEach(() => {
 })
 
 describe('updateAgencyId', () => {
-  it('incidentClient.updateAgencyId should be called', async () => {
+  it('draftReportClient.updateAgencyId should be called', async () => {
     await service.updateAgencyId('BXI', 'CA user', 1)
-    expect(incidentClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', 1)
+    expect(draftReportClient.updateAgencyId).toBeCalledWith('BXI', 'CA user', 1)
   })
 })
 
@@ -46,8 +46,8 @@ describe('update', () => {
       incidentDate: { value: '21/12/2010' },
     })
 
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '21/12/2010', formObject)
+    expect(draftReportClient.update).toBeCalledTimes(1)
+    expect(draftReportClient.update).toBeCalledWith('form1', '21/12/2010', formObject)
   })
 
   test('doesnt call update if neither form or incident present', async () => {
@@ -59,7 +59,7 @@ describe('update', () => {
       incidentDate: { value: null },
     })
 
-    expect(incidentClient.updateDraftReport).not.toBeCalled()
+    expect(draftReportClient.update).not.toBeCalled()
   })
 
   test('Still call update if form is present but incident date isnt', async () => {
@@ -73,8 +73,8 @@ describe('update', () => {
       incidentDate: { value: null },
     })
 
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith('form1', null, formObject)
+    expect(draftReportClient.update).toBeCalledTimes(1)
+    expect(draftReportClient.update).toBeCalledWith('form1', null, formObject)
   })
 
   test('Still call update if incident date is present but form object isnt', async () => {
@@ -86,13 +86,13 @@ describe('update', () => {
       incidentDate: { value: '09/08/2019' },
     })
 
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith('form1', '09/08/2019', null)
+    expect(draftReportClient.update).toBeCalledTimes(1)
+    expect(draftReportClient.update).toBeCalledWith('form1', '09/08/2019', null)
   })
 })
 
 describe('create', () => {
-  test('should call createDraftReport when form id not present', async () => {
+  test('should call create when form id not present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }
 
     await service.update({
@@ -103,8 +103,8 @@ describe('create', () => {
       incidentDate: { value: '2/2/2019' },
     })
 
-    expect(incidentClient.createDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.createDraftReport).toBeCalledWith({
+    expect(draftReportClient.create).toBeCalledTimes(1)
+    expect(draftReportClient.create).toBeCalledWith({
       userId: 'user1',
       bookingId: 1,
       agencyId: 'MDI',

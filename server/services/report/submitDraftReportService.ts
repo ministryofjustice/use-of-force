@@ -1,6 +1,6 @@
 import moment, { Moment } from 'moment'
 
-import type IncidentClient from '../../data/incidentClient'
+import type DraftReportClient from '../../data/draftReportClient'
 import logger from '../../../log'
 import { InTransaction } from '../../data/dataAccess/db'
 import { InvolvedStaffService } from '../involvedStaffService'
@@ -8,7 +8,7 @@ import { LoggedInUser } from '../../types/uof'
 
 export default class SubmitDraftReportService {
   constructor(
-    private readonly incidentClient: IncidentClient,
+    private readonly draftReportClient: DraftReportClient,
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly notificationService,
     private readonly inTransaction: InTransaction
@@ -38,7 +38,7 @@ export default class SubmitDraftReportService {
     bookingId: number,
     now: () => Moment = () => moment()
   ): Promise<number | false> {
-    const { id, incidentDate } = await this.incidentClient.getCurrentDraftReport(currentUser.username, bookingId)
+    const { id, incidentDate } = await this.draftReportClient.get(currentUser.username, bookingId)
     if (id) {
       const reportSubmittedDate = now()
       const overdueDate = moment(reportSubmittedDate).add(3, 'days')
@@ -52,7 +52,7 @@ export default class SubmitDraftReportService {
           client
         )
         logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
-        await this.incidentClient.submitReport(currentUser.username, bookingId, reportSubmittedDate.toDate(), client)
+        await this.draftReportClient.submit(currentUser.username, bookingId, reportSubmittedDate.toDate(), client)
         return savedStaff
       })
 

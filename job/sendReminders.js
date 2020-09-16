@@ -4,7 +4,7 @@
  */
 import { initialiseAppInsights, buildAppInsightsClient } from '../server/utils/azure-appinsights'
 import StatementsClient from '../server/data/statementsClient'
-import IncidentClient from '../server/data/incidentClient'
+import IncidentClient from '../server/data/draftReportClient'
 
 initialiseAppInsights()
 
