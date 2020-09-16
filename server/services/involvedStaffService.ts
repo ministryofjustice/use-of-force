@@ -1,11 +1,13 @@
 import moment, { Moment } from 'moment'
 import logger from '../../log'
 import { ReportStatus } from '../config/types'
-import IncidentClient from '../data/incidentClient'
-import StatementsClient from '../data/statementsClient'
-import { GetUsersResults, LoggedInUser } from '../types/uof'
-import { InTransaction, QueryPerformer } from '../data/dataAccess/db'
-import UserService from './userService'
+import type IncidentClient from '../data/incidentClient'
+import type StatementsClient from '../data/statementsClient'
+import type DraftReportClient from '../data/draftReportClient'
+import type { GetUsersResults, LoggedInUser } from '../types/uof'
+import type { InTransaction, QueryPerformer } from '../data/dataAccess/db'
+import type UserService from './userService'
+import type { StaffDetails } from '../data/draftReportClientTypes'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -16,6 +18,7 @@ export enum AddStaffResult {
 
 export class InvolvedStaffService {
   constructor(
+    private readonly draftReportClient: DraftReportClient,
     private readonly incidentClient: IncidentClient,
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
@@ -26,12 +29,12 @@ export class InvolvedStaffService {
     return this.incidentClient.getInvolvedStaff(reportId)
   }
 
-  public getDraftInvolvedStaff(reportId: number): Promise<any[]> {
-    return this.incidentClient.getDraftInvolvedStaff(reportId)
+  public getDraftInvolvedStaff(reportId: number): Promise<StaffDetails[]> {
+    return this.draftReportClient.getInvolvedStaff(reportId)
   }
 
   public async removeMissingDraftInvolvedStaff(userId: string, bookingId: number) {
-    const { id, form = {} } = await this.incidentClient.getCurrentDraftReport(userId, bookingId)
+    const { id, form = {} } = await this.draftReportClient.get(userId, bookingId)
 
     const { incidentDetails = {} } = form
     const { involvedStaff = [] } = incidentDetails
@@ -41,10 +44,10 @@ export class InvolvedStaffService {
       ...form,
       incidentDetails: { ...incidentDetails, involvedStaff: updatedInvolvedStaff },
     }
-    await this.incidentClient.updateDraftReport(id, null, updatedFormObject)
+    await this.draftReportClient.update(id, null, updatedFormObject)
   }
 
-  public async loadInvolvedStaff(reportId: number, statementId: number) {
+  public async loadInvolvedStaff(reportId: number, statementId: number): Promise<StaffDetails> {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.statementId === statementId)
     if (!found) {
@@ -53,7 +56,7 @@ export class InvolvedStaffService {
     return found
   }
 
-  public async loadInvolvedStaffByUsername(reportId: number, username: string) {
+  public async loadInvolvedStaffByUsername(reportId: number, username: string): Promise<StaffDetails> {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.userId === username)
     if (!found) {

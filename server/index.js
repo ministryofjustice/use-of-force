@@ -1,6 +1,7 @@
 import { buildAppInsightsClient } from './utils/azure-appinsights'
 import PrisonerSearchClient from './data/prisonerSearchClient'
 import IncidentClient from './data/incidentClient'
+import DraftReportClient from './data/draftReportClient'
 import StatementsClient from './data/statementsClient'
 import OffenderService from './services/offenderService'
 import ReportingService from './services/reportingService'
@@ -31,6 +32,7 @@ const db = require('./data/dataAccess/db')
 const reportingClient = require('./data/reportingClient')
 
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
+const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
 const statementsClient = new StatementsClient(db.query)
 
 const createSignInService = require('./authentication/signInService')
@@ -42,21 +44,27 @@ const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClie
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
 const userService = new UserService(elite2ClientBuilder, authClientBuilder)
-const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
+const involvedStaffService = new InvolvedStaffService(
+  draftReportClient,
+  incidentClient,
+  statementsClient,
+  userService,
+  db.inTransaction
+)
 const notificationService = notificationServiceFactory(eventPublisher)
 const offenderService = new OffenderService(elite2ClientBuilder)
 const reportService = new ReportService(incidentClient, offenderService, systemToken)
 
 const submitDraftReportService = new SubmitDraftReportService(
-  incidentClient,
+  draftReportClient,
   involvedStaffService,
   notificationService,
   db.inTransaction
 )
 
-const updateDraftReportService = new UpdateDraftReportService(incidentClient, elite2ClientBuilder, systemToken)
+const updateDraftReportService = new UpdateDraftReportService(draftReportClient, elite2ClientBuilder, systemToken)
 
-const draftReportService = new DraftReportService(incidentClient, updateDraftReportService, submitDraftReportService)
+const draftReportService = new DraftReportService(draftReportClient, updateDraftReportService, submitDraftReportService)
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 const reviewService = new ReviewService(

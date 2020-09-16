@@ -1,4 +1,4 @@
-import type IncidentClient from '../../data/incidentClient'
+import type DraftReportClient from '../../data/draftReportClient'
 import type { SystemToken, User } from '../../types/uof'
 
 import logger from '../../../log'
@@ -9,7 +9,7 @@ export type UpdateParams = { currentUser; formId; bookingId; formObject; inciden
 
 export default class UpdateDraftReportService {
   constructor(
-    private readonly incidentClient: IncidentClient,
+    private readonly draftReportClient: DraftReportClient,
     private readonly elite2ClientBuilder: Elite2ClientBuilder,
     private readonly systemToken: SystemToken
   ) {}
@@ -27,7 +27,7 @@ export default class UpdateDraftReportService {
     const { username: userId } = currentUser
     if (incidentDateValue || formValue) {
       logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
-      await this.incidentClient.updateDraftReport(formId, incidentDateValue, formValue)
+      await this.draftReportClient.update(formId, incidentDateValue, formValue)
     }
     return formId
   }
@@ -38,7 +38,7 @@ export default class UpdateDraftReportService {
     const token = await this.systemToken(userId)
     const elite2Client = this.elite2ClientBuilder(token)
     const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
-    const id = await this.incidentClient.createDraftReport({
+    const id = await this.draftReportClient.create({
       userId,
       reporterName,
       bookingId,
@@ -53,6 +53,6 @@ export default class UpdateDraftReportService {
 
   public async updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {
     logger.info(`username: ${username} updating agencyId for booking: ${bookingId} to ${agencyId}`)
-    await this.incidentClient.updateAgencyId(agencyId, username, bookingId)
+    await this.draftReportClient.updateAgencyId(agencyId, username, bookingId)
   }
 }

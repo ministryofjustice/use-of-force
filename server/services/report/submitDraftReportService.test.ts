@@ -1,16 +1,17 @@
 import moment from 'moment'
-import IncidentClient from '../../data/incidentClient'
+import DraftReportClient from '../../data/draftReportClient'
 import SubmitDraftReportService from './submitDraftReportService'
 import { InvolvedStaffService } from '../involvedStaffService'
-import { LoggedInUser, User } from '../../types/uof'
+import { LoggedInUser } from '../../types/uof'
 
-jest.mock('../../data/incidentClient')
+jest.mock('../../data/draftReportClient')
 jest.mock('../offenderService')
 jest.mock('../involvedStaffService')
 
-const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn() as any) as jest.Mocked<DraftReportClient>
 
 const involvedStaffService = new InvolvedStaffService(
+  jest.fn as any,
   jest.fn as any,
   jest.fn as any,
   jest.fn as any,
@@ -36,8 +37,8 @@ let elite2ClientBuilder
 beforeEach(() => {
   elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
-  service = new SubmitDraftReportService(incidentClient, involvedStaffService, notificationService, inTransaction)
-  incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
+  service = new SubmitDraftReportService(draftReportClient, involvedStaffService, notificationService, inTransaction)
+  draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
@@ -57,8 +58,8 @@ describe('submit', () => {
     expect(involvedStaffService.save).toBeCalledTimes(1)
     expect(involvedStaffService.save).toBeCalledWith(1, now, deadline, currentUser, client)
 
-    expect(incidentClient.submitReport).toBeCalledTimes(1)
-    expect(incidentClient.submitReport).toBeCalledWith(currentUser.username, 1, now.toDate(), client)
+    expect(draftReportClient.submit).toBeCalledTimes(1)
+    expect(draftReportClient.submit).toBeCalledWith(currentUser.username, 1, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {

@@ -2,15 +2,18 @@ import moment from 'moment'
 import { InvolvedStaffService, AddStaffResult } from './involvedStaffService'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
+import DraftReportClient from '../data/draftReportClient'
 import StatementsClient from '../data/statementsClient'
 import { GetUsersResults, LoggedInUser } from '../types/uof'
 import UserService from './userService'
 
 jest.mock('../data/incidentClient')
+jest.mock('../data/draftReportClient')
 jest.mock('../data/statementsClient')
 jest.mock('./userService')
 
 const incidentClient = new IncidentClient(jest.fn as any, jest.fn as any) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(jest.fn as any, jest.fn as any) as jest.Mocked<DraftReportClient>
 const statementsClient = new StatementsClient(jest.fn as any) as jest.Mocked<StatementsClient>
 const userService = new UserService(jest.fn as any, jest.fn as any) as jest.Mocked<UserService>
 
@@ -23,7 +26,7 @@ const db = {
 let service: InvolvedStaffService
 
 beforeEach(() => {
-  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
+  service = new InvolvedStaffService(draftReportClient, incidentClient, statementsClient, userService, db.inTransaction)
 })
 
 afterEach(() => {
@@ -41,20 +44,20 @@ const user = {
 describe('getDraftInvolvedStaff', () => {
   test('it should call query on db', async () => {
     await service.getDraftInvolvedStaff(1)
-    expect(incidentClient.getDraftInvolvedStaff).toBeCalledTimes(1)
+    expect(draftReportClient.getInvolvedStaff).toBeCalledTimes(1)
   })
 })
 
 describe('removeMissingDraftInvolvedStaff', () => {
   test('should not blow up with missing data', async () => {
-    incidentClient.getCurrentDraftReport.mockResolvedValue({ id: 1 })
+    draftReportClient.get.mockResolvedValue({ id: 1 })
     await service.removeMissingDraftInvolvedStaff('user-1', 1)
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, { incidentDetails: { involvedStaff: [] } })
+    expect(draftReportClient.update).toBeCalledTimes(1)
+    expect(draftReportClient.update).toBeCalledWith(1, null, { incidentDetails: { involvedStaff: [] } })
   })
 
   test('should remove missing staff', async () => {
-    incidentClient.getCurrentDraftReport.mockResolvedValue({
+    draftReportClient.get.mockResolvedValue({
       id: 1,
       form: {
         evidence: {
@@ -72,8 +75,8 @@ describe('removeMissingDraftInvolvedStaff', () => {
       },
     })
     await service.removeMissingDraftInvolvedStaff('user-1', 1)
-    expect(incidentClient.updateDraftReport).toBeCalledTimes(1)
-    expect(incidentClient.updateDraftReport).toBeCalledWith(1, null, {
+    expect(draftReportClient.update).toBeCalledTimes(1)
+    expect(draftReportClient.update).toBeCalledWith(1, null, {
       evidence: {
         baggedEvidence: true,
       },
@@ -140,7 +143,7 @@ describe('save', () => {
   test('when user has already added themselves', async () => {
     statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Jo: 33 })
     userService.getUsers.mockResolvedValue([])
-    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
+    draftReportClient.getInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -195,7 +198,7 @@ describe('save', () => {
   test('when user is not already added', async () => {
     statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Bob: 33 })
 
-    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
+    draftReportClient.getInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
@@ -410,7 +413,7 @@ describe('save', () => {
   })
 
   test('fail to find current user', async () => {
-    incidentClient.getDraftInvolvedStaff.mockResolvedValue([
+    draftReportClient.getInvolvedStaff.mockResolvedValue([
       {
         staffId: 1,
         email: 'bn@email',
