@@ -33,7 +33,7 @@ context('Submitting details page form', () => {
     cy.go('back')
   }
 
-  it.only('Can edit prison prior to reaching check-your-answers page', () => {
+  it('Can edit prison prior to reaching check-your-answers page', () => {
     completeIncidentDetails()
 
     let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
