@@ -3,21 +3,13 @@ const { resetStubs } = require('../mockApis/wiremock')
 const elite2api = require('../mockApis/elite2api')
 const search = require('../mockApis/search')
 
-const {
-  clearDb,
-  getCurrentDraft,
-  getStatementForUser,
-  getAllStatementsForReport,
-  seedReport,
-  seedReports,
-  getPayload,
-  submitStatement,
-  getReportCount,
-} = require('../db/db')
+const db = require('../db/db')
 
 module.exports = on => {
   on('task', {
-    reset: () => Promise.all([clearDb(), resetStubs()]),
+    ...db,
+
+    reset: () => Promise.all([db.clearDb(), resetStubs()]),
 
     getLoginUrl: auth.getLoginUrl,
 
@@ -41,26 +33,10 @@ module.exports = on => {
 
     stubPrison: elite2api.stubPrison,
 
-    getCurrentDraft: (userId, bookingId, formName) => getCurrentDraft(userId, bookingId, formName),
-
     stubLocation: elite2api.stubLocation,
-
-    getStatementForUser,
-
-    getAllStatementsForReport,
-
-    getPayload,
-
-    seedReport,
-
-    seedReports,
 
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 
     stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
-
-    submitStatement,
-
-    getReportCount: statuses => getReportCount(statuses),
   })
 }
