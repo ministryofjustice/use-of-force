@@ -45,6 +45,7 @@ export default class SubmitDraftReportService {
 
       const staff = await this.inTransaction(async client => {
         const savedStaff = await this.involvedStaffService.save(
+          bookingId,
           id,
           reportSubmittedDate,
           overdueDate,

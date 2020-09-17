@@ -2,6 +2,7 @@ import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { ReportStatus } from '../config/types'
 import { DraftReport, NoDraftReport, StaffDetails } from './draftReportClientTypes'
 import { AgencyId } from '../types/uof'
+import { user } from '../routes/testutils/appSetup'
 
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
@@ -9,9 +10,12 @@ const maxSequenceForBooking =
 export default class DraftReportClient {
   constructor(private readonly query: QueryPerformer, private readonly inTransaction: InTransaction) {}
 
-  async create({ userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse }): Promise<number> {
+  async create(
+    { userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse },
+    query: QueryPerformer = this.query
+  ): Promise<number> {
     const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2)`
-    const result = await this.query({
+    const result = await query({
       text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
               values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, ${nextSequence}, CURRENT_TIMESTAMP)
               returning id`,
@@ -29,8 +33,13 @@ export default class DraftReportClient {
     return result.rows[0].id
   }
 
-  update(reportId, incidentDate, formResponse) {
-    return this.query({
+  async update(
+    reportId: number,
+    incidentDate: Date | null,
+    formResponse: unknown | null,
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    await query({
       text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
@@ -59,8 +68,12 @@ export default class DraftReportClient {
     })
   }
 
-  async get(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
-    const results = await this.query({
+  async get(
+    userId: string,
+    bookingId: number,
+    query: QueryPerformer = this.query
+  ): Promise<DraftReport | NoDraftReport> {
+    const results = await query({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
@@ -71,10 +84,14 @@ export default class DraftReportClient {
     return results.rows[0] || {}
   }
 
-  async getInvolvedStaff(reportId: number): Promise<StaffDetails[]> {
-    const results = await this.query({
-      text: 'select form_response "form" from v_report where id = $1',
-      values: [reportId],
+  async getInvolvedStaff(
+    username: string,
+    bookingId: number,
+    query: QueryPerformer = this.query
+  ): Promise<StaffDetails[]> {
+    const results = await query({
+      text: 'select form_response "form" from v_report where booking_id = $1 and user_id = $2',
+      values: [bookingId, username],
     })
 
     if (results.rows.length) {
@@ -94,5 +111,30 @@ export default class DraftReportClient {
                   and r.sequence_no = ${maxSequenceForBooking}`,
       values: [agencyId, username, bookingId],
     })
+  }
+
+  async removeMissingInvolvedStaff(userId: string, bookingId: number): Promise<void> {
+    await this.inTransaction(async client => {
+      const { id, form = {} } = await this.get(userId, bookingId, client)
+      const involvedStaff = await this.getInvolvedStaff(userId, bookingId, client)
+
+      const { incidentDetails = {} } = form
+      const updatedInvolvedStaff = involvedStaff.filter(staff => !staff.missing)
+
+      await this.update(
+        id,
+        null,
+        {
+          ...form,
+          incidentDetails: { ...incidentDetails, involvedStaff: updatedInvolvedStaff },
+        },
+        client
+      )
+    })
+  }
+
+  async hasMissingInvolvedStaff(userId: string, bookingId: number): Promise<boolean> {
+    const involvedStaff = await this.getInvolvedStaff(userId, bookingId)
+    return involvedStaff.some(staff => staff.missing)
   }
 }

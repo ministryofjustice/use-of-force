@@ -3,12 +3,14 @@ import { appWithAllRoutes, user } from './testutils/appSetup'
 import types from '../config/types'
 import { toDate } from '../utils/dateSanitiser'
 import DraftReportService from '../services/report/draftReportService'
+import { InvolvedStaffService } from '../services/involvedStaffService'
+import { GetUsersResults } from '../types/uof'
 
 jest.mock('../services/report/draftReportService')
+jest.mock('../services/involvedStaffService')
 
-const draftReportService = new DraftReportService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
-  DraftReportService
->
+const draftReportService = new DraftReportService(null, null, null) as jest.Mocked<DraftReportService>
+const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
 const offenderService = {
   getOffenderDetails: jest.fn(),
@@ -17,12 +19,6 @@ const offenderService = {
 const locationService = {
   getPrisonById: jest.fn(),
   getIncidentLocations: jest.fn().mockReturnValue([]),
-}
-
-const involvedStaffService = {
-  lookup: async () => [],
-  removeMissingDraftInvolvedStaff: jest.fn(),
-  getDraftInvolvedStaff: jest.fn(),
 }
 
 let app
@@ -34,7 +30,8 @@ beforeEach(() => {
     displayName: 'Bob Smith',
     offenderNo: '1234',
     agencyId: 'current-agency-id',
-  })((involvedStaffService.lookup = async () => []))
+  })
+  involvedStaffService.lookup.mockResolvedValue([])
   locationService.getIncidentLocations.mockResolvedValue([])
 })
 
@@ -89,7 +86,7 @@ describe('GET /section/form', () => {
 
 describe('POST save and continue /section/form', () => {
   test('should redirect to next page', () => {
-    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
       .post(`/report/1/incident-details`)
@@ -146,7 +143,7 @@ describe('POST save and continue /section/form', () => {
 
 describe('POST save and return to tasklist', () => {
   test('successfully submit valid update', () => {
-    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
       .post(`/report/1/incident-details`)
@@ -180,7 +177,7 @@ describe('POST save and return to tasklist', () => {
   })
 
   test('successfully submit change prison', () => {
-    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
       .post(`/report/1/incident-details`)
@@ -217,7 +214,7 @@ describe('POST save and return to tasklist', () => {
   })
 
   test('Submitting invalid update is allowed', () => {
-    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
       .post(`/report/1/incident-details`)
@@ -268,7 +265,7 @@ describe('POST save and return to tasklist', () => {
 
 describe('POST save and return to check-your-answers', () => {
   test('successfully submit valid update', () => {
-    involvedStaffService.lookup = async () => [{ username: 'USER_BOB' }]
+    involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
       .post(`/report/1/edit-incident-details`)
@@ -317,12 +314,17 @@ describe('POST save and return to check-your-answers', () => {
 })
 
 describe('User name does not exists', () => {
-  test('view when no missing users', () =>
-    request(app).get(`/report/1/username-does-not-exist`).expect(302).expect('Location', '/report/1/incident-details'))
+  test('view when no missing users', () => {
+    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([])
+    return request(app)
+      .get(`/report/1/username-does-not-exist`)
+      .expect(302)
+      .expect('Location', '/report/1/incident-details')
+  })
 
   test('view when missing users', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({ id: 'form-1' })
-    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ userId: 1, missing: true }])
+    involvedStaffService.getDraftInvolvedStaff.mockResolvedValue([{ username: 'user-1', missing: true }])
     return request(app)
       .get(`/report/1/username-does-not-exist`)
       .expect(200)
@@ -395,12 +397,13 @@ describe('Cancelling from edit', () => {
 })
 
 test('Incident details - has missing staff', () => {
-  draftReportService.getCurrentDraft.mockResolvedValue({
-    id: 'form-1',
-    form: { incidentDetails: { involvedStaff: [{ userId: 1, missing: true }] } },
-  })
+  involvedStaffService.hasMissingDraftInvolvedStaff.mockResolvedValue(true)
+
   return request(app)
-    .get(`/report/1/cancel-edit/incidentDetails`)
+    .get(`/report/2/cancel-edit/incidentDetails`)
     .expect(302)
-    .expect('Location', '/report/1/username-does-not-exist')
+    .expect('Location', '/report/2/username-does-not-exist')
+    .expect(() => {
+      expect(involvedStaffService.hasMissingDraftInvolvedStaff).toHaveBeenCalledWith('user1', 2)
+    })
 })
