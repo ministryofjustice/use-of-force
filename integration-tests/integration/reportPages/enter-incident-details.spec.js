@@ -45,34 +45,36 @@ context('Submitting details page form', () => {
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(
-      ({ payload, incidentDate }) => {
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(
+      ({ section, incidentDate }) => {
         expect(moment(incidentDate).valueOf()).to.equal(moment('2020-01-12T09:32:00.000').valueOf())
 
-        expect(payload).to.deep.equal({
+        expect(section).to.deep.equal({
           locationId: 357591,
           plannedUseOfForce: true,
           witnesses: [{ name: 'jimmy-ray' }],
-          involvedStaff: [
-            {
-              email: 'AAAA@gov.uk',
-              name: 'AAAA name',
-              staffId: 231232,
-              username: 'AAAA',
-              missing: false,
-              verified: true,
-            },
-            {
-              email: 'BBBB@gov.uk',
-              name: 'BBBB name',
-              staffId: 231232,
-              username: 'BBBB',
-              missing: false,
-              verified: true,
-            },
-          ],
         })
       }
+    )
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'involvedStaff' }).then(({ section }) =>
+      expect(section).to.deep.equal([
+        {
+          email: 'AAAA@gov.uk',
+          name: 'AAAA name',
+          staffId: 231232,
+          username: 'AAAA',
+          missing: false,
+          verified: true,
+        },
+        {
+          email: 'BBBB@gov.uk',
+          name: 'BBBB name',
+          staffId: 231232,
+          username: 'BBBB',
+          missing: false,
+          verified: true,
+        },
+      ])
     )
   })
 

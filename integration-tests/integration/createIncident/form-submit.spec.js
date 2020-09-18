@@ -61,7 +61,7 @@ context('Submit the incident report', () => {
 
     reportSentPage
       .getReportId()
-      .then(reportId => cy.task('getPayload', reportId).then(payload => expect(payload).to.deep.equal(expectedPayload)))
+      .then(reportId => cy.task('getReport', reportId).then(report => expect(report).to.deep.equal(expectedPayload)))
   })
 
   it('After submitting, can not resubmit', () => {

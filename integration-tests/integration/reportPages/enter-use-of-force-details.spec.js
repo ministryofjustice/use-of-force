@@ -39,8 +39,8 @@ context('Submitting use of force details page', () => {
 
     fillFormAndSave()
 
-    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
-      expect(payload).to.deep.equal({
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
+      expect(section).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,
@@ -62,8 +62,8 @@ context('Submitting use of force details page', () => {
 
     fillFormAndSave({ restraintPositions: ['STANDING'] })
 
-    cy.task('getCurrentDraft', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ payload }) => {
-      expect(payload).to.deep.equal({
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
+      expect(section).to.deep.equal({
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,

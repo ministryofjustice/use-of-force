@@ -30,14 +30,21 @@ const getAllStatementsForReport = reportId => {
     .then(result => result.rows || [])
 }
 
-const getPayload = reportId => {
-  return db
-    .query({
-      text: `select form_response "form" from report r where r.id = $1`,
-      values: [reportId],
-    })
-    .then(result => result.rows[0].form)
+const transformForm = form => {
+  // Moving involved staff to top level of form in preparation for DB changes
+  const { incidentDetails = {}, ...otherForms } = form
+  const { involvedStaff = [], ...otherIncidentDetails } = incidentDetails
+  return { ...otherForms, incidentDetails: { ...otherIncidentDetails }, involvedStaff }
 }
+
+const getReport = async reportId => {
+  const form = await db.query({
+    text: `select form_response "form" from report r where r.id = $1`,
+    values: [reportId],
+  })
+  return form.rows[0]
+}
+
 const seedReports = async reports => Promise.all(reports.map(report => seedReport(report)))
 
 const seedReport = ({
@@ -118,23 +125,27 @@ const getReportCount = statuses => {
 }
 
 module.exports = {
-  clearDb() {
-    return clearAllTables()
-  },
-
-  getCurrentDraft({ bookingId, formName }) {
-    return getCurrentDraft(bookingId).then(report => ({
-      id: report.id,
-      incidentDate: report.incidentDate,
-      payload: { ...report.form[formName] },
-    }))
-  },
-
   getStatementForUser,
   getAllStatementsForReport,
-  getPayload,
   seedReport,
   seedReports,
   submitStatement,
   getReportCount,
+
+  clearDb() {
+    return clearAllTables()
+  },
+
+  getFormSection({ bookingId, formName }) {
+    return getCurrentDraft(bookingId).then(report => ({
+      id: report.id,
+      incidentDate: report.incidentDate,
+      section: transformForm(report.form)[formName],
+    }))
+  },
+
+  getReport: async bookingId => {
+    const report = await getReport(bookingId)
+    return transformForm(report.form)
+  },
 }

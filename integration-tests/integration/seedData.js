@@ -14,26 +14,26 @@ const expectedPayload = {
   incidentDetails: {
     witnesses: [{ name: 'Witness A' }, { name: 'Tom Jones' }],
     locationId: 357591,
-    involvedStaff: [
-      {
-        name: 'MR_ZAGATO name',
-        email: 'MR_ZAGATO@gov.uk',
-        staffId: 231232,
-        username: 'MR_ZAGATO',
-        missing: false,
-        verified: true,
-      },
-      {
-        name: 'MRS_JONES name',
-        email: 'MRS_JONES@gov.uk',
-        staffId: 231232,
-        username: 'MRS_JONES',
-        missing: false,
-        verified: true,
-      },
-    ],
     plannedUseOfForce: true,
   },
+  involvedStaff: [
+    {
+      name: 'MR_ZAGATO name',
+      email: 'MR_ZAGATO@gov.uk',
+      staffId: 231232,
+      username: 'MR_ZAGATO',
+      missing: false,
+      verified: true,
+    },
+    {
+      name: 'MRS_JONES name',
+      email: 'MRS_JONES@gov.uk',
+      staffId: 231232,
+      username: 'MRS_JONES',
+      missing: false,
+      verified: true,
+    },
+  ],
   useOfForceDetails: {
     pavaUsed: true,
     batonUsed: true,
