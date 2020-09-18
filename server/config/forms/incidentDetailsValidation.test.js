@@ -37,11 +37,11 @@ describe("'complete' validation", () => {
           time: { hour: '12', minute: '45' },
           value: moment('2019-01-15T12:45:00.000Z').toDate(),
         },
+        involvedStaff: [{ username: 'ITAG_USER' }],
       })
       expect(formResponse).toEqual({
         locationId: -1,
         plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -101,7 +101,6 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -121,7 +120,6 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
-        involvedStaff: [{ username: 'ITAG_USER' }],
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -130,43 +128,29 @@ describe("'complete' validation", () => {
   describe('Involved staff', () => {
     it('None present', () => {
       const input = { ...validInput, involvedStaff: [] }
-      const { errors, formResponse } = check(input)
+      const { errors, extractedFields } = check(input)
 
       expect(errors).toEqual([])
 
-      expect(formResponse).toEqual({
-        locationId: -1,
-        plannedUseOfForce: true,
-        witnesses: [{ name: 'User bob' }],
-      })
+      expect(extractedFields.involvedStaff).toEqual(undefined)
     })
 
     it('Invalid keys are stripped out', () => {
       const input = { ...validInput, involvedStaff: [{ username: 'ITAG_USER', age: 21 }] }
-      const { errors, formResponse } = check(input)
+      const { errors, extractedFields } = check(input)
 
       expect(errors).toEqual([])
 
-      expect(formResponse).toEqual({
-        locationId: -1,
-        plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
-        witnesses: [{ name: 'User bob' }],
-      })
+      expect(extractedFields.involvedStaff).toEqual([{ username: 'ITAG_USER' }])
     })
 
     it('Usernames are trimmed and uppercased', () => {
       const input = { ...validInput, involvedStaff: [{ username: '  bob    ' }] }
-      const { errors, formResponse } = check(input)
+      const { errors, extractedFields } = check(input)
 
       expect(errors).toEqual([])
 
-      expect(formResponse).toEqual({
-        locationId: -1,
-        plannedUseOfForce: true,
-        involvedStaff: [{ username: 'BOB' }],
-        witnesses: [{ name: 'User bob' }],
-      })
+      expect(extractedFields.involvedStaff).toEqual([{ username: 'BOB' }])
     })
 
     it('Username throws error when format incorrect', () => {
@@ -213,7 +197,6 @@ describe("'complete' validation", () => {
       expect(formResponse).toEqual({
         locationId: -1,
         plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
     })
 
@@ -227,7 +210,6 @@ describe("'complete' validation", () => {
         locationId: -1,
         plannedUseOfForce: true,
         witnesses: [{ name: 'bob' }],
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
     })
 
@@ -241,7 +223,6 @@ describe("'complete' validation", () => {
         locationId: -1,
         plannedUseOfForce: true,
         witnesses: [{ name: 'bob' }],
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
     })
 
@@ -260,7 +241,6 @@ describe("'complete' validation", () => {
         locationId: -1,
         plannedUseOfForce: true,
         witnesses: [{ name: 'bob' }, { name: 'Bob' }],
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
     })
   })
@@ -275,7 +255,7 @@ describe("'complete' validation", () => {
             time: { hour: '12', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -284,18 +264,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '',
-            value: null,
-            time: { hour: '12', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '',
+          value: null,
+          time: { hour: '12', minute: '45' },
         })
       })
 
@@ -307,7 +279,7 @@ describe("'complete' validation", () => {
             time: { hour: '12', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -316,18 +288,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: 'AA/12/2020',
-            value: null,
-            time: { hour: '12', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: 'AA/12/2020',
+          value: null,
+          time: { hour: '12', minute: '45' },
         })
       })
 
@@ -340,7 +304,7 @@ describe("'complete' validation", () => {
             time: { hour: '12', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -349,18 +313,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: tomorrow.format('DD/MM/YYYY'),
-            value: moment(tomorrow).set({ hours: 12, minutes: 45 }).toDate(),
-            time: { hour: '12', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: tomorrow.format('DD/MM/YYYY'),
+          value: moment(tomorrow).set({ hours: 12, minutes: 45 }).toDate(),
+          time: { hour: '12', minute: '45' },
         })
       })
     })
@@ -374,7 +330,7 @@ describe("'complete' validation", () => {
             time: { hour: '', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -383,18 +339,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: null,
-            time: { hour: '', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: null,
+          time: { hour: '', minute: '45' },
         })
       })
 
@@ -406,7 +354,7 @@ describe("'complete' validation", () => {
             time: { hour: 'aa', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -415,18 +363,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: null,
-            time: { hour: 'aa', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: null,
+          time: { hour: 'aa', minute: '45' },
         })
       })
 
@@ -438,7 +378,7 @@ describe("'complete' validation", () => {
             time: { hour: '1a', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -447,18 +387,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: null,
-            time: { hour: '1a', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: null,
+          time: { hour: '1a', minute: '45' },
         })
       })
 
@@ -470,7 +402,7 @@ describe("'complete' validation", () => {
             time: { hour: '24', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -479,18 +411,10 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: null,
-            time: { hour: '24', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: null,
+          time: { hour: '24', minute: '45' },
         })
       })
 
@@ -502,7 +426,7 @@ describe("'complete' validation", () => {
             time: { hour: '1', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -511,20 +435,13 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: moment('2019-01-15T01:45:00.000Z').toDate(),
-            time: { hour: '1', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: moment('2019-01-15T01:45:00.000Z').toDate(),
+          time: { hour: '1', minute: '45' },
         })
       })
+
       it('hours are a negative number', () => {
         const input = {
           ...validInput,
@@ -533,7 +450,7 @@ describe("'complete' validation", () => {
             time: { hour: '-11', minute: '45' },
           },
         }
-        const { errors, formResponse, extractedFields } = check(input)
+        const { errors, extractedFields } = check(input)
 
         expect(errors).toEqual([
           {
@@ -542,303 +459,231 @@ describe("'complete' validation", () => {
           },
         ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
-            date: '15/01/2019',
-            value: null,
-            time: { hour: '-11', minute: '45' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+        expect(extractedFields.incidentDate).toEqual({
+          date: '15/01/2019',
+          value: null,
+          time: { hour: '-11', minute: '45' },
         })
       })
-    })
 
-    describe('minutes', () => {
-      it('missing minutes', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '12', minute: '' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+      describe('minutes', () => {
+        it('missing minutes', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '12', minute: '' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter missing minutes',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter missing minutes',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: null,
             time: { hour: '12', minute: '' },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
-        })
-      })
 
-      it('minutes is not number', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '12', minute: 'aa' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+        it('minutes is not number', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '12', minute: 'aa' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter minutes using numbers only',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter minutes using numbers only',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: null,
             time: { hour: '12', minute: 'aa' },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
-        })
-      })
 
-      it('minutes contains number and non-number', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '03', minute: '4y' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+        it('minutes contains number and non-number', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '03', minute: '4y' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter minutes using numbers only',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter minutes using numbers only',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: null,
             time: { hour: '03', minute: '4y' },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
-        })
-      })
 
-      it('minutes is too large', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '12', minute: '60' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+        it('minutes is too large', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '12', minute: '60' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter the minutes using 59 or less',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter the minutes using 59 or less',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: null,
             time: { hour: '12', minute: '60' },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
-        })
-      })
 
-      it('minutes not 2 digits', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '12', minute: '4' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+        it('minutes not 2 digits', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '12', minute: '4' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter the minutes using 2 digits',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter the minutes using 2 digits',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: moment('2019-01-15T12:04:00.000Z').toDate(),
             time: { hour: '12', minute: '4' },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
-        })
-      })
 
-      it('minutes are a negative number', () => {
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: '15/01/2019',
-            time: { hour: '12', minute: '-04' },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+        it('minutes are a negative number', () => {
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: '15/01/2019',
+              time: { hour: '12', minute: '-04' },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time][minute]',
-            text: 'Enter the minutes using 00 or more',
-          },
-        ])
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time][minute]',
+              text: 'Enter the minutes using 00 or more',
+            },
+          ])
 
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: '15/01/2019',
             value: null,
             time: { hour: '12', minute: '-04' },
-          },
-        })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+          })
         })
       })
-    })
+      describe('time', () => {
+        it('time is not in the future', () => {
+          const laterToday = moment().add(1, 'hour').seconds(0).milliseconds(0)
 
-    describe('time', () => {
-      it('time is not in the future', () => {
-        const laterToday = moment().add(1, 'hour').seconds(0).milliseconds(0)
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: laterToday.format('DD/MM/YYYY'),
+              time: { hour: laterToday.format('HH'), minute: laterToday.format('mm') },
+            },
+          }
+          const { errors, extractedFields } = check(input)
 
-        const input = {
-          ...validInput,
-          incidentDate: {
-            date: laterToday.format('DD/MM/YYYY'),
-            time: { hour: laterToday.format('HH'), minute: laterToday.format('mm') },
-          },
-        }
-        const { errors, formResponse, extractedFields } = check(input)
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time]',
+              text: 'Enter a time which is not in the future',
+            },
+          ])
 
-        expect(errors).toEqual([
-          {
-            href: '#incidentDate[time]',
-            text: 'Enter a time which is not in the future',
-          },
-        ])
-
-        expect(extractedFields).toEqual({
-          incidentDate: {
+          expect(extractedFields.incidentDate).toEqual({
             date: laterToday.format('DD/MM/YYYY'),
             value: laterToday.toDate(),
             time: { hour: laterToday.format('HH'), minute: laterToday.format('mm') },
-          },
+          })
         })
-        expect(formResponse).toEqual({
-          locationId: -1,
-          plannedUseOfForce: true,
-          involvedStaff: [{ username: 'ITAG_USER' }],
-          witnesses: [{ name: 'User bob' }],
+
+        it('time is last minute of current day', () => {
+          const endOfToday = moment({ hour: 23, minute: 59, seconds: 0, milliseconds: 0 })
+
+          const input = {
+            ...validInput,
+            incidentDate: {
+              date: endOfToday.format('DD/MM/YYYY'),
+              time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
+            },
+          }
+          const { errors, extractedFields } = check(input)
+
+          expect(errors).toEqual([
+            {
+              href: '#incidentDate[time]',
+              text: 'Enter a time which is not in the future',
+            },
+          ])
+
+          expect(extractedFields.incidentDate).toEqual({
+            date: endOfToday.format('DD/MM/YYYY'),
+            value: endOfToday.toDate(),
+            time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
+          })
+        })
+
+        describe('check optional staff role', () => {
+          test('Check optional staff', () => {
+            expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
+            expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
+            expect(isValid(optionalInvolvedStaff, [])).toEqual(true)
+            expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', staffId: 1234 }])).toEqual(true)
+          })
+
+          test('invalid (optionalInvolvedStaff)', () => {
+            expect(isValid(optionalInvolvedStaff, [{ username: 1 }])).toEqual(false)
+            expect(isValid(optionalInvolvedStaff, true)).toEqual(false)
+            expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
+            expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
+          })
         })
       })
-    })
-
-    it('time is last minute of current day', () => {
-      const endOfToday = moment({ hour: 23, minute: 59, seconds: 0, milliseconds: 0 })
-
-      const input = {
-        ...validInput,
-        incidentDate: {
-          date: endOfToday.format('DD/MM/YYYY'),
-          time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
-        },
-      }
-      const { errors, formResponse, extractedFields } = check(input)
-
-      expect(errors).toEqual([
-        {
-          href: '#incidentDate[time]',
-          text: 'Enter a time which is not in the future',
-        },
-      ])
-
-      expect(extractedFields).toEqual({
-        incidentDate: {
-          date: endOfToday.format('DD/MM/YYYY'),
-          value: endOfToday.toDate(),
-          time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
-        },
-      })
-      expect(formResponse).toEqual({
-        locationId: -1,
-        plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
-        witnesses: [{ name: 'User bob' }],
-      })
-    })
-  })
-
-  describe('check optional staff role', () => {
-    test('Check optional staff', () => {
-      expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
-      expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
-      expect(isValid(optionalInvolvedStaff, [])).toEqual(true)
-      expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', staffId: 1234 }])).toEqual(true)
-    })
-
-    test('invalid (optionalInvolvedStaff)', () => {
-      expect(isValid(optionalInvolvedStaff, [{ username: 1 }])).toEqual(false)
-      expect(isValid(optionalInvolvedStaff, true)).toEqual(false)
-      expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
-      expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
     })
   })
 })
+
 describe("'partial' validation", () => {
   const check = buildCheck(partial)
   describe('Incident details page - overall', () => {
@@ -853,11 +698,11 @@ describe("'partial' validation", () => {
           time: { hour: '12', minute: '45' },
           value: moment('2019-01-15T12:45:00.000Z').toDate(),
         },
+        involvedStaff: [{ username: 'ITAG_USER' }],
       })
       expect(formResponse).toEqual({
         locationId: -1,
         plannedUseOfForce: true,
-        involvedStaff: [{ username: 'ITAG_USER' }],
         witnesses: [{ name: 'User bob' }],
       })
     })

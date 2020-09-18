@@ -4,6 +4,7 @@ import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
 import { Elite2ClientBuilder } from '../../data/elite2ClientBuilder'
+import { StaffDetails } from '../../data/draftReportClientTypes'
 
 export default class UpdateDraftReportService {
   constructor(
