@@ -1,20 +1,16 @@
-const request = require('supertest')
-const { appWithAllRoutes, user } = require('./testutils/appSetup')
+import request from 'supertest'
+import DraftReportService from '../services/report/draftReportService'
+import { appWithAllRoutes, user } from './testutils/appSetup'
 
-const draftReportService = {
-  getCurrentDraft: jest.fn(),
-  update: jest.fn(),
-  getValidationErrors: jest.fn().mockReturnValue([]),
-  getUpdatedFormObject: jest.fn(),
-  isDraftComplete: jest.fn(),
-}
+jest.mock('../services/report/draftReportService')
+
+const draftReportService = new DraftReportService(null, null, null) as jest.Mocked<DraftReportService>
 
 let app
 
 beforeEach(() => {
   app = appWithAllRoutes({ draftReportService })
   draftReportService.getCurrentDraft.mockResolvedValue({})
-  draftReportService.getUpdatedFormObject.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -45,23 +41,21 @@ const validUseOfForceDetailsRequest = {
   submitType: 'save-and-continue',
 }
 
-const validUseofForceDetailUpdate = {
-  currentUser: user,
-  bookingId: 1,
-  formId: undefined,
-  formObject: {
-    useOfForceDetails: {
-      batonDrawn: false,
-      guidingHold: false,
-      handcuffsApplied: false,
-      painInducingTechniques: false,
-      pavaDrawn: false,
-      personalProtectionTechniques: false,
-      positiveCommunication: false,
-      restraint: false,
-    },
+const validUseofForceDetailUpdate = [
+  user,
+  1,
+  'useOfForceDetails',
+  {
+    batonDrawn: false,
+    guidingHold: false,
+    handcuffsApplied: false,
+    painInducingTechniques: false,
+    pavaDrawn: false,
+    personalProtectionTechniques: false,
+    positiveCommunication: false,
+    restraint: false,
   },
-}
+]
 
 describe('POST save and continue /section/form', () => {
   test('should redirect to next page', () => {
@@ -71,8 +65,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/relocation-and-injuries')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
       })
   })
 
@@ -83,7 +77,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.update).not.toBeCalled()
+        expect(draftReportService.process).not.toBeCalled()
       }))
 })
 
@@ -95,8 +89,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
       })
   })
 
@@ -107,22 +101,15 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith({
-          currentUser: user,
-          bookingId: 1,
-          formId: undefined,
-          formObject: {
-            useOfForceDetails: {
-              guidingHold: false,
-              handcuffsApplied: false,
-              painInducingTechniques: false,
-              pavaDrawn: false,
-              personalProtectionTechniques: false,
-              positiveCommunication: false,
-              restraint: false,
-            },
-          },
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'useOfForceDetails', {
+          guidingHold: false,
+          handcuffsApplied: false,
+          painInducingTechniques: false,
+          pavaDrawn: false,
+          personalProtectionTechniques: false,
+          positiveCommunication: false,
+          restraint: false,
         })
       })
   })
@@ -148,8 +135,8 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.update).toBeCalledTimes(1)
-        expect(draftReportService.update).toBeCalledWith(validUseofForceDetailUpdate)
+        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
       })
   })
 
@@ -165,7 +152,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/edit-use-of-force-details')
       .expect(() => {
-        expect(draftReportService.update).not.toBeCalled()
+        expect(draftReportService.process).not.toBeCalled()
       }))
 })
 
@@ -194,21 +181,15 @@ describe('Submitting evidence page', () => {
         .expect(302)
         .expect('Location', nextPath)
         .expect(() => {
-          expect(draftReportService.update).toBeCalledTimes(1)
-          expect(draftReportService.update).toBeCalledWith({
-            currentUser: user,
-            bookingId: 1,
-            formId: undefined,
-            formObject: {
-              evidence: {
-                baggedEvidence: true,
-                bodyWornCamera: 'YES',
-                bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
-                cctvRecording: 'YES',
-                evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
-                photographsTaken: true,
-              },
-            },
+          expect(draftReportService.process).toBeCalledTimes(1)
+
+          expect(draftReportService.process).toBeCalledWith(user, 1, 'evidence', {
+            baggedEvidence: true,
+            bodyWornCamera: 'YES',
+            bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
+            cctvRecording: 'YES',
+            evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
+            photographsTaken: true,
           })
         })
     }

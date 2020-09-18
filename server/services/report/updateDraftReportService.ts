@@ -1,11 +1,9 @@
+import * as R from 'ramda'
 import type DraftReportClient from '../../data/draftReportClient'
-import type { SystemToken, User } from '../../types/uof'
+import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
-import { isNilOrEmpty } from '../../utils/utils'
 import { Elite2ClientBuilder } from '../../data/elite2ClientBuilder'
-
-export type UpdateParams = { currentUser; formId; bookingId; formObject; incidentDate? }
 
 export default class UpdateDraftReportService {
   constructor(
@@ -14,25 +12,54 @@ export default class UpdateDraftReportService {
     private readonly systemToken: SystemToken
   ) {}
 
-  public async update({ currentUser, formId, bookingId, formObject, incidentDate }: UpdateParams): Promise<number> {
-    const incidentDateValue = incidentDate ? incidentDate.value : null
-    const formValue = !isNilOrEmpty(formObject) ? formObject : null
+  public async process(
+    currentUser: LoggedInUser,
+    bookingId: number,
+    formName: string,
+    updatedSection: unknown,
+    incidentDate?: Date | null
+  ): Promise<void> {
+    const { id: formId, form: existingReport = {} } = await this.draftReportClient.get(currentUser.username, bookingId)
 
-    return formId
-      ? this.updateReport(formId, bookingId, currentUser, incidentDateValue, formValue)
-      : this.startNewReport(bookingId, currentUser, incidentDateValue, formObject)
+    const updatedPayload = this.getUpdatedReport(existingReport, formName, updatedSection)
+
+    if (updatedPayload || incidentDate) {
+      return formId
+        ? this.updateReport(formId, bookingId, currentUser, incidentDate, updatedPayload || null)
+        : this.startNewReport(bookingId, currentUser, incidentDate, updatedPayload || {})
+    }
+    return null
   }
 
-  private async updateReport(formId: number, bookingId: number, currentUser: User, incidentDateValue, formValue) {
-    const { username: userId } = currentUser
+  private getUpdatedReport(
+    existingReport: Record<string, unknown>,
+    formName: string,
+    updatedSection
+  ): Record<string, unknown> | false {
+    const updatedFormObject = {
+      ...existingReport,
+      [formName]: updatedSection,
+    }
+
+    const payloadChanged = !R.equals(existingReport, updatedFormObject)
+    return payloadChanged ? updatedFormObject : false
+  }
+
+  private async updateReport(
+    formId: number,
+    bookingId: number,
+    currentUser: LoggedInUser,
+    incidentDateValue,
+    formValue
+  ): Promise<void> {
+    const { username } = currentUser
     if (incidentDateValue || formValue) {
-      logger.info(`Updated report with id: ${formId} for user: ${userId} on booking: ${bookingId}`)
+      logger.info(`Updated report with id: ${formId} for user: ${username} on booking: ${bookingId}`)
       await this.draftReportClient.update(formId, incidentDateValue, formValue)
     }
-    return formId
   }
 
-  private async startNewReport(bookingId: number, currentUser, incidentDateValue, formObject) {
+  private async startNewReport(bookingId: number, currentUser, incidentDateValue, formObject): Promise<void> {
     const { username: userId, displayName: reporterName } = currentUser
 
     const token = await this.systemToken(userId)
@@ -48,7 +75,6 @@ export default class UpdateDraftReportService {
       formResponse: formObject,
     })
     logger.info(`Created new report with id: ${id} for user: ${userId} on booking: ${bookingId}`)
-    return id
   }
 
   public async updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {

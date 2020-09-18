@@ -1,14 +1,15 @@
 import moment from 'moment'
-import { Request, RequestHandler } from 'express'
+import { Request, RequestHandler, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
-import { processInput, mergeIntoPayload } from '../services/validation'
+import { processInput } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
 import OffenderService from '../services/offenderService'
 import { SystemToken } from '../types/uof'
 import LocationService from '../services/locationService'
 import { InvolvedStaffService } from '../services/involvedStaffService'
 import type DraftReportService from '../services/report/draftReportService'
+import { ParsedDate } from '../utils/dateSanitiser'
 
 const formName = 'incidentDetails'
 
@@ -109,7 +110,7 @@ export default class IncidentDetailsRoutes {
 
   private viewIncidentDetails = editMode => async (req, res) => {
     const { bookingId } = req.params
-    const { formId, form, incidentDate, agencyId: persistedAgencyId } = await this.loadForm(req)
+    const { form, incidentDate, agencyId: persistedAgencyId } = await this.loadForm(req)
 
     const token = await this.systemToken(res.locals.user.username)
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
@@ -141,7 +142,7 @@ export default class IncidentDetailsRoutes {
     renderForm({ req, res, form, data, editMode })
   }
 
-  private submit = editMode => async (req, res) => {
+  private submit = editMode => async (req, res: Response) => {
     const { bookingId } = req.params
     const { submitType } = req.body
 
@@ -151,11 +152,11 @@ export default class IncidentDetailsRoutes {
       validationSpec: fullValidation ? full[formName] : partial[formName],
       input: req.body,
     })
-    const { incidentDate } = extractedFields
+    const { incidentDate }: { incidentDate: ParsedDate } = extractedFields
 
     const involvedStaff = await this.retrieveInvolvedStaffDetails(res, payloadFields.involvedStaff)
 
-    const formPayload = { ...payloadFields, involvedStaff }
+    const updatedSection = { ...payloadFields, involvedStaff }
     /**
      * Involved staff will now be overriden in the form with retrieved details from auth:
      * { involvedStaff: [{ username }, ...]}  =>
@@ -164,27 +165,17 @@ export default class IncidentDetailsRoutes {
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...formPayload, incidentDate }) // merge all fields back together!
+      req.flash('userInput', { ...updatedSection, incidentDate }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
-    const { formId, form } = await this.loadForm(req)
-
-    const updatedPayload = mergeIntoPayload({
-      formObject: form,
-      formPayload,
+    await this.draftReportService.process(
+      res.locals.user,
+      parseInt(bookingId, 10),
       formName,
-    })
-
-    if (updatedPayload || incidentDate) {
-      await this.draftReportService.update({
-        currentUser: res.locals.user,
-        formId,
-        bookingId: parseInt(bookingId, 10),
-        formObject: updatedPayload || {},
-        incidentDate,
-      })
-    }
+      updatedSection,
+      incidentDate ? incidentDate.value : null
+    )
 
     const location = await this.getSubmitRedirectLocation(req, bookingId, editMode, submitType)
     return res.redirect(location)
