@@ -104,7 +104,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
@@ -112,11 +112,11 @@ describe('POST save and continue /section/form', () => {
           {
             locationId: -1,
             plannedUseOfForce: true,
-            involvedStaff: [{ username: 'USER_BOB' }],
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 
@@ -156,7 +156,7 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
@@ -164,11 +164,11 @@ describe('POST save and return to tasklist', () => {
           {
             locationId: -1,
             plannedUseOfForce: true,
-            involvedStaff: [{ username: 'USER_BOB' }],
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 
@@ -191,7 +191,7 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/change-prison')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
@@ -199,11 +199,11 @@ describe('POST save and return to tasklist', () => {
           {
             locationId: -1,
             plannedUseOfForce: true,
-            involvedStaff: [{ username: 'USER_BOB' }],
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 
@@ -224,18 +224,18 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
           'incidentDetails',
           {
-            involvedStaff: [{ username: 'USER_BOB' }],
             locationId: -1,
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 
@@ -252,18 +252,18 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
           'incidentDetails',
           {
-            involvedStaff: [{ username: 'USER_BOB' }],
             locationId: -1,
             witnesses: [{ name: 'User bob' }],
           },
           null
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 
@@ -284,7 +284,7 @@ describe('POST save and return to tasklist', () => {
 })
 
 describe('POST save and return to check-your-answers', () => {
-  test('successfully submit valid update', () => {
+  test('aa successfully submit valid update', () => {
     involvedStaffService.lookup.mockResolvedValue([{ username: 'USER_BOB' } as GetUsersResults])
 
     return request(app)
@@ -300,7 +300,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
+        expect(draftReportService.process).toBeCalledTimes(2)
         expect(draftReportService.process).toBeCalledWith(
           user,
           1,
@@ -308,11 +308,11 @@ describe('POST save and return to check-your-answers', () => {
           {
             locationId: -1,
             plannedUseOfForce: true,
-            involvedStaff: [{ username: 'USER_BOB' }],
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
+        expect(draftReportService.process).toBeCalledWith(user, 1, 'involvedStaff', [{ username: 'USER_BOB' }])
       })
   })
 

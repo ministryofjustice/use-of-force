@@ -86,7 +86,7 @@ const transientSchema = joi.object({
     optionalForPartialValidation
   ),
 
-  involvedStaff: optionalInvolvedStaff,
+  involvedStaff: optionalInvolvedStaff.meta({ fieldType: EXTRACTED }),
 
   witnesses: arrayOfObjects({
     name: requiredPatternMsg(namePattern)(
