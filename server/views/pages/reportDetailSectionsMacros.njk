@@ -14,9 +14,10 @@
 
 {% macro tableRow(dataItem) %}
  <dl class="govuk-summary-list govuk-!-margin-0">  
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key summary-list__key__wider"> {{dataItem.label}} </dt>
+  <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
+    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} width-half govuk-!-padding-right-2 {% endif %}" > {{dataItem.label}} </dt>
     <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+  
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
         &ndash;
       {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}
@@ -41,8 +42,8 @@
 
 {% macro tableRowWithContent(dataItem) %}
  <dl class="govuk-summary-list govuk-!-margin-0">  
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key summary-list__key__wider"> {{dataItem.label}} </dt>
+  <div class="govuk-summary-list__row {% if dataItem.print == true %} flex-container {% endif %}">
+    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print == true %} width-half govuk-!-padding-right-2 {% endif %}"> {{dataItem.label}} </dt>
       {{ caller() }}
   </div>
 </dl> 

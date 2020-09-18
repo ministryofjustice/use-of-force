@@ -6,18 +6,27 @@
   <span data-qa="{{ dataQa }}"> {{ value }}</span>  
 {% endmacro %}
 
-{% macro reportHeading(data) %}
-  <div class="govuk-!-margin-bottom-1">
-    {{ fieldValue('Created by', data.reporterName, 'reporter-name')  }}
-    <br/>
-    {{ fieldValue('Date and time', data.submittedDate | formatDate('D MMMM YYYY, HH:mm'), 'submitted-date')  }}
-    <br/>
-    {{ fieldValue('Prisoner name', data.offenderDetail.displayName, 'prisoner-name')  }}
-    <br/>
-    {{ fieldValue('Prisoner number', data.offenderDetail.offenderNo, 'prisoner-number')  }}
-    <br/>
-    {{ fieldValue('Incident number', data.incidentId, 'incident-number')  }}
-  </div>    
+{% macro reportHeading(data, print) %}
+  <div class="govuk-grid-row  {% if print %} flex-container {% endif %}">
+      <div class="govuk-grid-column-one-third govuk-!-margin-bottom-4" style="flex-basis: 25%">
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Created by</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Date and time</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Prisoner name</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Prisoner number</p>
+        {% if not print  %}
+          <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Incident number</p>
+        {% endif %}
+      </div>
+      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-4" style="flex-basis: 75%" >
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="reporter-name"> {{ data.reporterName }} </p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm') }} </p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="prisoner-number"> {{ data.offenderDetail.offenderNo }} </p>
+        {% if not print  %}
+          <p class="govuk-!-margin-top-0" data-qa="incident-number"> {{ data.incidentId }} </p>
+        {% endif %}
+      </div>
+  </div>
 {% endmacro %}
 
 {% macro reportHeadingWithSpacing(data) %}
@@ -28,23 +37,23 @@
             {{ fieldValue('Created by', data.reporterName, 'reporter-name')  }}
           </p>
           <p class="govuk-!-margin-bottom-1">
-            {{ fieldValue('Date and time', data.submittedDate | formatDate('D MMMM YYYY, HH:mm'), 'submitted-date')  }}
+            {{ fieldValue('Date and time', data.submittedDate | formatDate('D MMMM YYYY, HH:mm'), 'submitted-date') }}
           </p>
           <p class="govuk-!-margin-bottom-1">
-            {{ fieldValue('Prisoner name', data.offenderDetail.displayName, 'prisoner-name')  }}
+            {{ fieldValue('Prisoner name', data.offenderDetail.displayName, 'prisoner-name') }}
           </p>
           <p class="govuk-!-margin-bottom-1">
-            {{ fieldValue('Prisoner number', data.offenderDetail.offenderNo, 'prisoner-number')  }}
+            {{ fieldValue('Prisoner number', data.offenderDetail.offenderNo, 'prisoner-number') }}
           </p>
           <p class="govuk-!-margin-bottom-1">
-            {{ fieldValue('Incident number', data.incidentId, 'incident-number')  }}
+            {{ fieldValue('Incident number', data.incidentId, 'incident-number') }}
           </p>
       </div>    
     </div>
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId, incidentId, user, prison) %}
+{% macro detail(data, bookingId, incidentId, user, print) %}
     {{
       reportDetailsMacros.sectionHeading({
         id: 'incidentDetails', 
@@ -55,39 +64,45 @@
     {{reportDetailsMacros.tableRow({
               label: 'Date of incident',  
               'data-qa': 'incidentDate',    
-              dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY')
+              dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY'),
+        print: print
       })
     }}
     {{reportDetailsMacros.tableRow({
               label: 'Time of incident',  
               'data-qa': 'incidentTime',    
-              dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm') 
+              dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm'),
+        print: print 
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Prison',
         'data-qa': 'prison',
-        dataValue: data.incidentDetails.prison.description
+        dataValue: data.incidentDetails.prison.description,
+        print: print
       })
     }}  
     {{
       reportDetailsMacros.tableRow({
         label: 'Location',
         'data-qa': 'location',
-        dataValue: data.incidentDetails.location
+        dataValue: data.incidentDetails.location,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was the use of force planned?',
         'data-qa': 'incidentType',
-        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo
+        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo,
+        print: print
       })
     }}
     {% call reportDetailsMacros.tableRowWithContent({
         label: 'Staff involved',
-        'data-qa': 'staffInvolved'
+        'data-qa': 'staffInvolved',
+        print: print
       })
     %}
     <dd class="govuk-summary-list__value" data-qa="staffInvolved">
@@ -113,7 +128,8 @@
         label: 'Witnesses',
         'data-qa': 'witnesses',
         dataValue: data.incidentDetails.witnesses,
-        type: 'itemPerLine'
+        type: 'itemPerLine',
+        print: print
       })
     }}
 
@@ -128,42 +144,48 @@
       reportDetailsMacros.tableRow({
         label: 'Was positive communication used to de-escalate the situation?',
         'data-qa': 'positiveCommunication',
-        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo
+        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Were any personal protection techniques used?',
         'data-qa': 'personalProtection',
-        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo
+        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was a baton drawn?',
         'data-qa': 'batonDrawn',
-        dataValue: data.useOfForceDetails.batonDrawn
+        dataValue: data.useOfForceDetails.batonDrawn,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was PAVA drawn?',
         'data-qa': 'pavaDrawn',
-        dataValue: data.useOfForceDetails.pavaDrawn
+        dataValue: data.useOfForceDetails.pavaDrawn,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was a guiding hold used?',
         'data-qa': 'guidingHold',
-        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize
+        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was control and restraint used?',
         'data-qa': 'restraintUsed',
-        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize,
+        print: print
       })
     }}
     {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
@@ -171,7 +193,8 @@
       reportDetailsMacros.tableRow({
         label: 'Were pain inducing techniques used?',
         'data-qa': 'painInducingTechniques',
-        dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo
+        dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo,
+        print: print
       })
     }}
     {% endif %}
@@ -179,56 +202,64 @@
       reportDetailsMacros.tableRow({
         label: 'Were handcuffs applied?',
         'data-qa': 'handcuffsApplied',
-        dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo
+        dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.sectionHeading({
         id: 'relocationAndInjuries',
         title: 'Relocation and injuries',
-        url:  '/report/' + bookingId + '/edit-relocation-and-injuries' if bookingId
+        url:  '/report/' + bookingId + '/edit-relocation-and-injuries' if bookingId,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Where was the prisoner relocated to?',
         'data-qa': 'prisonerRelocation',
-        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize
+        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was the prisoner compliant?',
         'data-qa': 'compliancy',
-        dataValue: data.relocationAndInjuries.relocationCompliancy
+        dataValue: data.relocationAndInjuries.relocationCompliancy,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Who completed the F213 form?',
         'data-qa': 'f213',
-        dataValue: data.relocationAndInjuries.f213CompletedBy | title
+        dataValue: data.relocationAndInjuries.f213CompletedBy | title,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Healthcare staff present',
         'data-qa': 'healthcareStaffPresent',
-        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title
+        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Did the prisoner sustain any injuries at the time?',
         'data-qa': 'prisonerInjuries',
-        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo
+        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Did the prisoner need outside hospitalisation at the time?',
         'data-qa': 'prisonerHospitalisation',
-        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo
+        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo,
+        print: print
       })
     }}
     {{
@@ -236,7 +267,8 @@
         label: 'Staff who needed medical attention',
         'data-qa': 'staffMedicalAttention',
         dataValue: data.relocationAndInjuries.staffMedicalAttention,
-        type: 'itemPerLine'
+        type: 'itemPerLine',
+        print: print
       })
     }}
     {{
@@ -244,7 +276,8 @@
         label: 'Staff taken to hospital',
         'data-qa': 'staffHospitalisation',
         dataValue: data.relocationAndInjuries.staffHospitalisation,
-        type: 'itemPerLine'
+        type: 'itemPerLine',
+        print: print
       })
     }}
 
@@ -260,28 +293,32 @@
         label: 'Evidence bagged and tagged',
         'data-qa': 'evidenceBaggedTagged',
         dataValue: data.evidence.evidenceBaggedTagged,
-        type: 'itemPerLine'
+        type: 'itemPerLine',
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Were any photographs taken?',
         'data-qa': 'photographs',
-        dataValue: data.evidence.photographs | toYesNo
+        dataValue: data.evidence.photographs | toYesNo,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was any part of the incident captured on CCTV?',
         'data-qa': 'cctv',
-        dataValue: data.evidence.cctv | capitalize
+        dataValue: data.evidence.cctv | capitalize,
+        print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was any part of the incident captured on a body-worn camera?',
         'data-qa': 'bodyCameras',
-        dataValue: data.evidence.bodyCameras | capitalize
+        dataValue: data.evidence.bodyCameras | capitalize,
+        print: print
       })
     }}
 
