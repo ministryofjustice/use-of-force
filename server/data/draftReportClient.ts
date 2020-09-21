@@ -95,7 +95,7 @@ export default class DraftReportClient {
     })
 
     if (results.rows.length) {
-      const { form: { incidentDetails: { involvedStaff = [] } = {} } = {} } = results.rows[0]
+      const { form: { involvedStaff = [] } = {} } = results.rows[0]
       return involvedStaff
     }
     return []
@@ -118,7 +118,6 @@ export default class DraftReportClient {
       const { id, form = {} } = await this.get(userId, bookingId, client)
       const involvedStaff = await this.getInvolvedStaff(userId, bookingId, client)
 
-      const { incidentDetails = {} } = form
       const updatedInvolvedStaff = involvedStaff.filter(staff => !staff.missing)
 
       await this.update(
@@ -126,7 +125,7 @@ export default class DraftReportClient {
         null,
         {
           ...form,
-          incidentDetails: { ...incidentDetails, involvedStaff: updatedInvolvedStaff },
+          involvedStaff: updatedInvolvedStaff,
         },
         client
       )

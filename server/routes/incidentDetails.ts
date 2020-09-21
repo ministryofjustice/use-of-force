@@ -5,11 +5,12 @@ import types from '../config/types'
 import { processInput } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
 import OffenderService from '../services/offenderService'
-import { SystemToken } from '../types/uof'
+import { GetUsersResults, SystemToken } from '../types/uof'
 import LocationService from '../services/locationService'
 import { InvolvedStaffService } from '../services/involvedStaffService'
 import type DraftReportService from '../services/report/draftReportService'
 import { ParsedDate } from '../utils/dateSanitiser'
+import { StaffDetails } from '../data/draftReportClientTypes'
 
 const formName = 'incidentDetails'
 
@@ -24,6 +25,8 @@ const renderForm = ({ req, res, form, data = {}, editMode }) => {
     editMode,
   })
 }
+
+type StaffUsername = { username: string }
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -61,12 +64,14 @@ export default class IncidentDetailsRoutes {
     return { formId, incidentDate, form, agencyId }
   }
 
-  private retrieveInvolvedStaffDetails = async (res, involvedStaff = []) => {
-    const verifiedInvolvedStaff = await this.involvedStaffService.lookup(
+  private async retrieveInvolvedStaffDetails(
+    res: Response,
+    involvedStaff: StaffUsername[] = []
+  ): Promise<GetUsersResults[]> {
+    return this.involvedStaffService.lookup(
       await this.systemToken(res.locals.user.username),
       involvedStaff.map(u => u.username)
     )
-    return verifiedInvolvedStaff
   }
 
   private async getSubmitRedirectLocation(req: Request, bookingId: number, editMode: true, submitType) {
@@ -152,20 +157,19 @@ export default class IncidentDetailsRoutes {
       validationSpec: fullValidation ? full[formName] : partial[formName],
       input: req.body,
     })
-    const { incidentDate }: { incidentDate: ParsedDate } = extractedFields
 
-    const involvedStaff = await this.retrieveInvolvedStaffDetails(res, payloadFields.involvedStaff)
+    const {
+      incidentDate,
+      involvedStaff: staffUsernames,
+    }: { incidentDate: ParsedDate; involvedStaff: StaffUsername[] } = extractedFields
 
-    const updatedSection = { ...payloadFields, involvedStaff }
-    /**
-     * Involved staff will now be overriden in the form with retrieved details from auth:
-     * { involvedStaff: [{ username }, ...]}  =>
-     * { involvedStaff: [{ username, name, email?, staffId?,  missing }, ...] }
-     */
+    const involvedStaff = await this.retrieveInvolvedStaffDetails(res, staffUsernames)
+
+    const updatedSection = payloadFields
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...updatedSection, incidentDate }) // merge all fields back together!
+      req.flash('userInput', { ...payloadFields, incidentDate, staffUsernames }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
@@ -176,6 +180,8 @@ export default class IncidentDetailsRoutes {
       updatedSection,
       incidentDate ? incidentDate.value : null
     )
+    // TODO: This is not in a transaction but should be... this will be refactored out when we move to the new design
+    await this.draftReportService.process(res.locals.user, parseInt(bookingId, 10), 'involvedStaff', involvedStaff)
 
     const location = await this.getSubmitRedirectLocation(req, bookingId, editMode, submitType)
     return res.redirect(location)

@@ -112,16 +112,14 @@ test('getInvolvedStaff', async () => {
   const expected = [
     {
       form: {
-        incidentDetails: {
-          involvedStaff: [
-            {
-              name: 'AAA User',
-            },
-            {
-              name: 'BBB User',
-            },
-          ],
-        },
+        involvedStaff: [
+          {
+            name: 'AAA User',
+          },
+          {
+            name: 'BBB User',
+          },
+        ],
       },
     },
   ]
@@ -144,17 +142,17 @@ describe('removeMissingInvolvedStaff', () => {
       {
         id: 1,
         form: {
+          involvedStaff: [
+            {
+              name: 'AAA User',
+              missing: true,
+            },
+            {
+              name: 'BBB User',
+            },
+          ],
           incidentDetails: {
             plannedUseOfForce: false,
-            involvedStaff: [
-              {
-                name: 'AAA User',
-                missing: true,
-              },
-              {
-                name: 'BBB User',
-              },
-            ],
           },
         },
       },
@@ -171,13 +169,13 @@ describe('removeMissingInvolvedStaff', () => {
             where r.id = $3`,
       values: [
         {
+          involvedStaff: [
+            {
+              name: 'BBB User',
+            },
+          ],
           incidentDetails: {
             plannedUseOfForce: false,
-            involvedStaff: [
-              {
-                name: 'BBB User',
-              },
-            ],
           },
         },
         null,
@@ -192,17 +190,17 @@ describe('hasMissingInvolvedStaff', () => {
       {
         id: 1,
         form: {
+          involvedStaff: [
+            {
+              name: 'AAA User',
+              missing: true,
+            },
+            {
+              name: 'BBB User',
+            },
+          ],
           incidentDetails: {
             plannedUseOfForce: false,
-            involvedStaff: [
-              {
-                name: 'AAA User',
-                missing: true,
-              },
-              {
-                name: 'BBB User',
-              },
-            ],
           },
         },
       },
@@ -217,17 +215,17 @@ describe('hasMissingInvolvedStaff', () => {
       {
         id: 1,
         form: {
+          involvedStaff: [
+            {
+              name: 'AAA User',
+              missing: false,
+            },
+            {
+              name: 'BBB User',
+            },
+          ],
           incidentDetails: {
             plannedUseOfForce: false,
-            involvedStaff: [
-              {
-                name: 'AAA User',
-                missing: false,
-              },
-              {
-                name: 'BBB User',
-              },
-            ],
           },
         },
       },
