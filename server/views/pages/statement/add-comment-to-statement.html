@@ -23,7 +23,7 @@
   {% endif %}
   <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
-  {{ statementDetail.detail(data) }}
+  {{ statementDetail.detail(data, false) }}
 
   <form method="POST">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
