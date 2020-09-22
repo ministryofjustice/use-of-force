@@ -15,8 +15,8 @@
 {% macro tableRow(dataItem) %}
  <dl class="govuk-summary-list govuk-!-margin-0">  
   <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
-    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} width-half govuk-!-padding-right-2 {% endif %}" > {{dataItem.label}} </dt>
-    <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" style="flex-basis: 50%"> {{dataItem.label}} </dt>
+    <dd class="govuk-summary-list__value  {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
   
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
         &ndash;
@@ -42,8 +42,8 @@
 
 {% macro tableRowWithContent(dataItem) %}
  <dl class="govuk-summary-list govuk-!-margin-0">  
-  <div class="govuk-summary-list__row {% if dataItem.print == true %} flex-container {% endif %}">
-    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print == true %} width-half govuk-!-padding-right-2 {% endif %}"> {{dataItem.label}} </dt>
+  <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
+    <dt class="govuk-summary-list__key summary-list__key__wider  {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" style="flex-basis: 50%"> {{dataItem.label}} </dt>
       {{ caller() }}
   </div>
 </dl> 

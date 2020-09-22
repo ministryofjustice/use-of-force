@@ -105,18 +105,18 @@
         print: print
       })
     %}
-    <dd class="govuk-summary-list__value" data-qa="staffInvolved">
+    <dd class="govuk-summary-list__value {% if print %}  width-half govuk-!-padding-left-3 {% endif %}" data-qa="staffInvolved">
         
       {%for item in data.incidentDetails.staffInvolved %}
           {{item.name}} - {{item.username}}
-          {%- if user.isCoordinator and item.statementId -%}      
+          {%- if not print and user.isCoordinator and item.statementId -%}      
             <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
               Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
           {%- endif -%}  
         {% if not loop.last %}<br/>{% endif %}
       {% endfor %} 
 
-      {%- if user.isCoordinator and incidentId -%}
+      {%- if not print and user.isCoordinator and incidentId -%}
         <br/>
         <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
             Add another member of staff</a>

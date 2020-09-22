@@ -16,12 +16,6 @@
         <p class="govuk-!-margin-top-0" data-qa="job-start-year"> {{ data.jobStartYear }} </p>
       </div>
     </div>
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-4">
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="offender-name"> {{ data.displayName }} </p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="date-and-time"> {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm') }} </p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="last-training"> {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }} </p>
-      <p class="govuk-!-margin-top-0" data-qa="job-start-year"> {{ data.jobStartYear }} </p>
-    </div>
     {% if not fullWidthContent %} <hr class="govuk-!-margin-left-3" /> {% endif %}
   </div>
 </div>
@@ -36,13 +30,8 @@
     </p>
   </div>
   <div class="govuk-grid-column-two-thirds">
-<<<<<<< HEAD
     <p class="govuk-!-margin-bottom-0 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
     {% if not fullWidthContent %}  <hr class="govuk-!-margin-top-4" /> {% endif %}
-=======
-    <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
-    {% if not fullWidthContent %}  <hr class="govuk-!-margin-top-6" /> {% endif %}
->>>>>>> DCS-629 User can print report
   </div>
 </div>
 {% if fullWidthContent %} <hr/> {% endif %}
