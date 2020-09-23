@@ -8,11 +8,6 @@ module.exports = function CheckAnswerRoutes({
   systemToken,
   locationService,
 }) {
-  const currentUserIfNotPresent = (involvedStaff, currentUser) =>
-    involvedStaff.find(staff => staff.username === currentUser.username)
-      ? []
-      : [{ name: currentUser.displayName, username: currentUser.username }]
-
   return {
     view: async (req, res) => {
       const { bookingId } = req.params
@@ -42,10 +37,10 @@ module.exports = function CheckAnswerRoutes({
 
       const draftInvolvedStaff = await involvedStaffService.getDraftInvolvedStaff(req.user.username, bookingId)
 
-      const involvedStaff = [
-        ...currentUserIfNotPresent(draftInvolvedStaff, res.locals.user),
-        ...draftInvolvedStaff.map(staff => ({ name: properCaseFullName(staff.name), username: staff.username })),
-      ]
+      const involvedStaff = draftInvolvedStaff.map(staff => ({
+        name: properCaseFullName(staff.name),
+        username: staff.username,
+      }))
 
       const prison = await locationService.getPrisonById(await systemToken(res.locals.user.username), prisonId)
 

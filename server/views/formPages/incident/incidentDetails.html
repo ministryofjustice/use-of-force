@@ -19,7 +19,7 @@
       <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
       <div class="govuk-!-margin-bottom-6">
         <p class="govuk-!-margin-bottom-1">
-          <span class="govuk-label--m">Prisoner:&nbsp;</span>
+          <span class="govuk-label--s">Prisoner:&nbsp;</span>
           <span data-qa="offender-name"> {{ data.displayName }}</span>
         </p>
       </div>
@@ -28,7 +28,7 @@
       {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
       {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
 
-      <h3>When did the incident happen?</h3>
+      <p class="govuk-label--s">When did the incident happen?</p>
       <div>
         {{ datePicker({
           id: 'incidentDate[date]',
@@ -128,65 +128,8 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h3 class="govuk-!-margin-bottom-1">Other staff involved in use of force</h3>
-      <span class="govuk-hint">
-        You do not have to add yourself
-      </span>
-      <div class="add-another-staff-member">
-
-        {% macro addStaffMember(index, value, showRemove) %}
-        {% call govukFieldset({ classes: 'add-another__item' }) %}
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-third" id="involvedStaff[{{index}}]">
-            {{
-          govukInput({
-            label: {
-              html: 'Username'
-            },
-            id: 'involvedStaff[' + index + '][username]',
-            name: 'involvedStaff[' + index + '][username]',
-            value: value,
-            errorMessage: errors | findErrors(['involvedStaff[' + index + ']','involvedStaff[' + index + '][username]']),
-            attributes: {
-              'data-name': 'involvedStaff[%index%][username]',
-              'data-id': 'involvedStaff[%index%][username]'
-            }
-          })
-            }}
-          </div>
-          <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
-            {% if showRemove %}
-            <button type="button"
-              class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
-              Remove
-            </button>
-            {% endif %}
-          </div>
-        </div>
-        {% endcall %}
-        {% endmacro %}
-
-        {% for staffMember in data.involvedStaff %}
-        {{ addStaffMember(index = loop.index0, value = staffMember.username, showRemove = loop.length != 1) }}
-        {% else %}
-        {{ addStaffMember(index = 0, value = null, showRemove = false) }}
-        {% endfor %}
-        <div class="button-action">
-          {{
-            govukButton({
-              text: 'Add another member of staff',
-              classes: 'govuk-button--secondary  add-another__add-button',
-              attributes: { 'data-qa-add-another-staff': true }
-            })
-          }}
-        </div>
-      </div>
-      <hr />
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h3>Witnesses to the incident</h3>
+      <p class="govuk-!-margin-bottom-1 govuk-label--s">Witnesses to the incident</p>
+      <p class="govuk-!-margin-top  -1">These are not other staff members involved in the use of force</p>
       <div class="add-another-witness">
         {% macro addWitness(index, value, showRemove) %}
         {% call govukFieldset({ classes: 'add-another__item' }) %}
@@ -243,7 +186,6 @@
 {% block script %}
 <script>
   $(document).ready(function () {
-    new AddAnother($('.add-another-staff-member'), '.remove-button-container')
     new AddAnother($('.add-another-witness'), '.remove-button-container')
   })
 </script>

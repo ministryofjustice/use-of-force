@@ -23,3 +23,5 @@ export type Statement = {
 }
 
 export type AdditionalComment = { additionalComment: string; dateSubmitted: Date }
+
+export type UsernameToStatementIds = { [username: string]: number }

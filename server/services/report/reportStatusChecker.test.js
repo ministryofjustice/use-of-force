@@ -11,6 +11,7 @@ describe('statusCheck', () => {
       locationId: -25,
       plannedUseOfForce: true,
     },
+    involvedStaff: [],
     useOfForceDetails: {
       pavaDrawn: false,
       restraint: false,
@@ -52,6 +53,7 @@ describe('statusCheck', () => {
     expect(output).toEqual({
       complete: false,
       incidentDetails: SectionStatus.NOT_STARTED,
+      involvedStaff: SectionStatus.NOT_STARTED,
       useOfForceDetails: SectionStatus.NOT_STARTED,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
@@ -66,6 +68,7 @@ describe('statusCheck', () => {
     expect(output).toEqual({
       complete: false,
       incidentDetails: SectionStatus.COMPLETE,
+      involvedStaff: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
@@ -78,6 +81,7 @@ describe('statusCheck', () => {
     expect(output).toEqual({
       complete: true,
       incidentDetails: SectionStatus.COMPLETE,
+      involvedStaff: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,
@@ -104,6 +108,7 @@ describe('statusCheck', () => {
     expect(output).toEqual({
       complete: false,
       incidentDetails: SectionStatus.COMPLETE,
+      involvedStaff: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.INCOMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,

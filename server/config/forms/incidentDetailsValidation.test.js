@@ -1,7 +1,6 @@
 const moment = require('moment')
-const { complete, partial, optionalInvolvedStaff } = require('./incidentDetailsForm')
+const { complete, partial } = require('./incidentDetailsForm')
 const { processInput } = require('../../services/validation')
-const { isValid } = require('../../services/validation/fieldValidation')
 
 const buildCheck = schema => input => {
   const { payloadFields: formResponse, errors, extractedFields } = processInput({
@@ -18,7 +17,6 @@ beforeEach(() => {
     incidentDate: { date: '15/01/2019', time: { hour: '12', minute: '45' } },
     locationId: -1,
     plannedUseOfForce: 'true',
-    involvedStaff: [{ username: 'itag_user' }, { username: '' }],
     witnesses: [{ name: 'User bob' }, { name: '' }],
   }
 })
@@ -37,7 +35,6 @@ describe("'complete' validation", () => {
           time: { hour: '12', minute: '45' },
           value: moment('2019-01-15T12:45:00.000Z').toDate(),
         },
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
       expect(formResponse).toEqual({
         locationId: -1,
@@ -122,57 +119,6 @@ describe("'complete' validation", () => {
         locationId: -1,
         witnesses: [{ name: 'User bob' }],
       })
-    })
-  })
-
-  describe('Involved staff', () => {
-    it('None present', () => {
-      const input = { ...validInput, involvedStaff: [] }
-      const { errors, extractedFields } = check(input)
-
-      expect(errors).toEqual([])
-
-      expect(extractedFields.involvedStaff).toEqual(undefined)
-    })
-
-    it('Invalid keys are stripped out', () => {
-      const input = { ...validInput, involvedStaff: [{ username: 'ITAG_USER', age: 21 }] }
-      const { errors, extractedFields } = check(input)
-
-      expect(errors).toEqual([])
-
-      expect(extractedFields.involvedStaff).toEqual([{ username: 'ITAG_USER' }])
-    })
-
-    it('Usernames are trimmed and uppercased', () => {
-      const input = { ...validInput, involvedStaff: [{ username: '  bob    ' }] }
-      const { errors, extractedFields } = check(input)
-
-      expect(errors).toEqual([])
-
-      expect(extractedFields.involvedStaff).toEqual([{ username: 'BOB' }])
-    })
-
-    it('Username throws error when format incorrect', () => {
-      const input = { ...validInput, involvedStaff: [{ username: 'User bob' }] }
-      const { errors } = check(input)
-      expect(errors).toEqual([
-        {
-          href: '#involvedStaff[0][username]',
-          text: 'Usernames can only contain letters and an underscore',
-        },
-      ])
-    })
-
-    it('Username throws errors when duplicates are found', () => {
-      const input = { ...validInput, involvedStaff: [{ username: 'Bob' }, { username: 'Bob' }] }
-      const { errors } = check(input)
-      expect(errors).toEqual([
-        {
-          href: '#involvedStaff[1]',
-          text: "Username 'BOB' has already been added - remove this user",
-        },
-      ])
     })
   })
 
@@ -663,22 +609,6 @@ describe("'complete' validation", () => {
             time: { hour: endOfToday.format('HH'), minute: endOfToday.format('mm') },
           })
         })
-
-        describe('check optional staff role', () => {
-          test('Check optional staff', () => {
-            expect(isValid(optionalInvolvedStaff, [{ username: 'Bob' }])).toEqual(true)
-            expect(isValid(optionalInvolvedStaff, [{ username: 'VQO24O' }])).toEqual(true)
-            expect(isValid(optionalInvolvedStaff, [])).toEqual(true)
-            expect(isValid(optionalInvolvedStaff, [{ username: 'Bob', staffId: 1234 }])).toEqual(true)
-          })
-
-          test('invalid (optionalInvolvedStaff)', () => {
-            expect(isValid(optionalInvolvedStaff, [{ username: 1 }])).toEqual(false)
-            expect(isValid(optionalInvolvedStaff, true)).toEqual(false)
-            expect(isValid(optionalInvolvedStaff, [{ username: '' }])).toEqual(false)
-            expect(isValid(optionalInvolvedStaff, [{ bob: 'Bob' }])).toEqual(false)
-          })
-        })
       })
     })
   })
@@ -698,7 +628,6 @@ describe("'partial' validation", () => {
           time: { hour: '12', minute: '45' },
           value: moment('2019-01-15T12:45:00.000Z').toDate(),
         },
-        involvedStaff: [{ username: 'ITAG_USER' }],
       })
       expect(formResponse).toEqual({
         locationId: -1,
@@ -748,7 +677,6 @@ describe("'partial' validation", () => {
 
     it('empty arrays are not errors', () => {
       const input = {
-        involvedStaff: [],
         witnesses: [],
       }
 
@@ -760,7 +688,6 @@ describe("'partial' validation", () => {
 
     it('arrays with rubbish in them are not errors', () => {
       const input = {
-        involvedStaff: [{}, { bob: false }, 1, 'abc'],
         witnesses: [{}, { bob: false }, 1, 'abc'],
       }
 

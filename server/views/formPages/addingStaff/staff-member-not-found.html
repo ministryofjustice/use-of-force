@@ -1,0 +1,29 @@
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+
+{% set pageTitle = name + ' not found' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    <p>
+      The username you have entered cannot be found.
+    </p>
+    <p>
+      You should confirm with {{ name }} the username that is on their Digital Prison Services account.
+    </p>
+    <div>
+        {{
+          govukButton({
+            text: 'Continue',
+            name: 'submit',
+            href:  '/report/' + bookingId + '/staff-involved',
+            classes: 'govuk-button',
+            attributes: { 'data-qa': 'return-to-incident-details' }
+          })
+        }}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -85,7 +85,6 @@ describe('getUsers', () => {
         name: 'Bob Smith',
         staffId: 123,
         email: 'an@email.com',
-        missing: false,
         verified: true,
       },
       {
@@ -93,37 +92,7 @@ describe('getUsers', () => {
         name: 'June Jones',
         staffId: 234,
         email: 'bn@email.com',
-        missing: false,
         verified: true,
-      },
-    ])
-  })
-
-  it('One non existent', async () => {
-    const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'June', exists: false, verified: false }
-
-    authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
-
-    const result = await service.getUsers(token, ['Bob', 'June'])
-
-    expect(result).toEqual([
-      {
-        username: 'Bob',
-        name: 'Bob Smith',
-        staffId: 123,
-        email: 'an@email.com',
-        missing: false,
-        verified: true,
-      },
-      {
-        username: 'June',
-        name: undefined,
-        staffId: undefined,
-        email: undefined,
-        missing: true,
-        verified: false,
       },
     ])
   })
@@ -145,7 +114,6 @@ describe('getUsers', () => {
         name: 'Bob Smith',
         staffId: 123,
         email: 'an@email.com',
-        missing: false,
         verified: true,
       },
       {
@@ -153,7 +121,6 @@ describe('getUsers', () => {
         name: 'June Jones',
         staffId: 234,
         email: undefined,
-        missing: false,
         verified: false,
       },
     ])

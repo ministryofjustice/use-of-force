@@ -10,15 +10,9 @@ const userSupplier = jest.fn()
 jest.mock('../services/reviewService')
 jest.mock('../services/offenderService')
 
-const reviewService = new ReviewService(
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any
-) as jest.Mocked<ReviewService>
+const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 
-const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 const reportDetailBuilder = {
   build: jest.fn().mockResolvedValue({ id: 1, form: { incidentDetails: {} } }),

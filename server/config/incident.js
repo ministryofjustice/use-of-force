@@ -1,11 +1,13 @@
 const incidentDetails = require('./forms/incidentDetailsForm')
+const staffInvolved = require('./forms/staffInvolved')
 const useOfForceDetailsForm = require('./forms/useOfForceDetailsForm')
 const relocationAndInjuriesForm = require('./forms/relocationAndInjuriesForm')
 const evidenceForm = require('./forms/evidenceForm')
 
 module.exports = {
   nextPaths: {
-    incidentDetails: bookingId => `/report/${bookingId}/use-of-force-details`,
+    incidentDetails: bookingId => `/report/${bookingId}/staff-involved`,
+    involvedStaff: bookingId => `/report/${bookingId}/use-of-force-details`,
     useOfForceDetails: bookingId => `/report/${bookingId}/relocation-and-injuries`,
     relocationAndInjuries: bookingId => `/report/${bookingId}/evidence`,
     evidence: bookingId => `/report/${bookingId}/check-your-answers`,
@@ -15,6 +17,7 @@ module.exports = {
     useOfForceDetails: useOfForceDetailsForm.complete,
     relocationAndInjuries: relocationAndInjuriesForm.complete,
     evidence: evidenceForm.complete,
+    involvedStaff: staffInvolved.complete,
   },
   partial: {
     incidentDetails: incidentDetails.partial,

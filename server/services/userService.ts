@@ -45,18 +45,15 @@ export default class UserService {
       )
       const responses = await Promise.all(requests)
 
-      const missing = responses.filter(email => !email.exists)
-
       const usernamesForExisting = responses
         .filter(email => email.exists)
         .map(email => client.getUser(email.username).then(user => ({ ...user, ...email })))
       const existing = await Promise.all(usernamesForExisting)
 
-      const results = [...existing, ...missing]
+      const results = [...existing]
         .sort(({ i }, { i: j }) => i - j)
-        .map(({ username, exists, verified, email, name, staffId }) => ({
+        .map(({ username, verified, email, name, staffId }) => ({
           username,
-          missing: !exists,
           verified,
           email,
           name,
