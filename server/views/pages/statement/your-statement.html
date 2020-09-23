@@ -43,22 +43,8 @@
   </div>
 
   <div class="print">
-    <h2 class="govuk-!-margin-top-0"> Use of force incident number {{data.reportId}}</h2>
-    <p class="margin-top-bottom-0"><span class="govuk-label--s">Created by:&nbsp; </span> {{data.reporterName}} </p>
-    <p class="margin-top-bottom-0"> <span class="govuk-label--s">Date and time: &nbsp;</span>{{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm')  }} </p>
-    <p class="margin-top-bottom-0"><span class="govuk-label--s">Prisoner name: &nbsp;</span>{{ data.displayName }}</p>
-    <p class="govuk-!-margin-top-0"><span class="govuk-label--s">Prisoner number: &nbsp; </span> {{ data.offenderNo }}</p>
-    <hr>
-
-    <p><span class="govuk-label--s"> {{data.name}}'s statement: &nbsp; </span>
-      {{ data.submittedDate | formatDate('D MMMM YYYY - HH:mm') }}<br> {{ data.statement }}
-    </p>
-
-    {% for comment in data.additionalComments %}
-    <p><span class="govuk-label--s">Additional comment submitted: &nbsp;</span>
-      {{ comment.dateSubmitted | formatDate('D MMMM YYYY - HH:mm') }} <br> {{comment.additionalComment}}
-    </p>
-    {% endfor %}
+    <h2 class="govuk-!-margin-top-0"> Your use of force statement </h2>
+    {{ statementDetail.detail(data, true) }}
   </div>
 </div>
 

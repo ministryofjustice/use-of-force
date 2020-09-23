@@ -2,49 +2,50 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-4">
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Prisoner</p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Date and time of incident</p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Last control and restraint training</p>
-      <p class="govuk-!-margin-top-0 govuk-label--s">Year joined the prison service</p>
+    <div class="flex-container"> 
+      <div class="govuk-grid-column-one-half govuk-!-margin-bottom-4">
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Prisoner</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Date and time of incident</p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Last control and restraint training</p>
+        <p class="govuk-!-margin-top-0 govuk-label--s">Year joined the prison service</p>
+      </div>
+      <div class="govuk-grid-column-one-half govuk-!-margin-bottom-4">
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="offender-name"> {{ data.displayName }} </p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="date-and-time"> {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm') }} </p>
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="last-training"> {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }} </p>
+        <p class="govuk-!-margin-top-0" data-qa="job-start-year"> {{ data.jobStartYear }} </p>
+      </div>
     </div>
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-4">
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="offender-name"> {{ data.displayName }} </p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="date-and-time"> {{ data.incidentDate | formatDate('D MMMM YYYY - HH:mm') }} </p>
-      <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="last-training"> {{ data.lastTrainingMonth }} {{ data.lastTrainingYear }} </p>
-      <p class="govuk-!-margin-top-0" data-qa="job-start-year"> {{ data.jobStartYear }} </p>
-    </div>
-    {% if fullWidthContent != true %} <hr class="govuk-!-margin-left-3" /> {% endif %}
+    {% if not fullWidthContent %} <hr class="govuk-!-margin-left-3" /> {% endif %}
   </div>
 </div>
 {% if fullWidthContent %} <hr/> {% endif %}
 
 <div class="govuk-grid-row govuk-!-margin-top-4 govuk-!-margin-bottom-6">
   <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-!-margin-bottom-0 govuk-label--s">Statement submitted</p>
-    <p class="govuk-!-margin-top-0">
+    <p class="govuk-!-margin-bottom-0 govuk-label--s">Statement submitted:
       {% if data.submittedDate %}
-      {{ data.submittedDate | formatDate('D MMMM YYYY - HH:mm') }}
+      <span class="govuk-!-margin-bottom-0 govuk-body"> {{ data.submittedDate | formatDate('D MMMM YYYY - HH:mm') }} </span>
+      {% endif %}
     </p>
-    {% endif %}
   </div>
   <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-!-margin-bottom-1 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
-    {% if fullWidthContent != true %}  <hr class="govuk-!-margin-top-6" /> {% endif %}
+    <p class="govuk-!-margin-bottom-0 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
+    {% if not fullWidthContent %}  <hr class="govuk-!-margin-top-4" /> {% endif %}
   </div>
 </div>
 {% if fullWidthContent %} <hr/> {% endif %}
 
-
 {% for comment in data.additionalComments %}
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-two-thirds">
-      <p class="govuk-!-margin-bottom-0 govuk-label--s">Additional comment submitted</p>
-      <p class="govuk-!-margin-top-0"> {{ comment.dateSubmitted | formatDate('D MMMM YYYY - HH:mm') }} </p>
-      <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-0 govuk-label--xs statement" data-loop={{loop.index}}
+      <p class="govuk-!-margin-bottom-4 govuk-label--s">Additional comment submitted:
+        <span class="govuk-body"> {{ comment.dateSubmitted | formatDate('D MMMM YYYY - HH:mm') }} </span>
+      </p>
+      <p class="govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-label--xs statement" data-loop={{loop.index}}
         data-qa="viewAdditionalComment">{{comment.additionalComment}}
       </p>
-      {% if fullWidthContent != true %}  <hr> {% endif %}
+      {% if not fullWidthContent %}  <hr> {% endif %}
     </div>
   </div>
   {% if fullWidthContent %} <hr/> {% endif %}
