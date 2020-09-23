@@ -31,7 +31,7 @@
   </div>
   <div class="govuk-grid-column-two-thirds">
     <p class="govuk-!-margin-bottom-0 govuk-label--xs statement" data-qa="statement">{{ data.statement }}</p>
-    {% if fullWidthContent != true %}  <hr class="govuk-!-margin-top-4" /> {% endif %}
+    {% if not fullWidthContent %}  <hr class="govuk-!-margin-top-4" /> {% endif %}
   </div>
 </div>
 {% if fullWidthContent %} <hr/> {% endif %}
