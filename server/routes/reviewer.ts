@@ -81,7 +81,18 @@ export = function CreateReviewRoutes({ offenderService, reportDetailBuilder, rev
       const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
       const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab }
-      return res.render('pages/reviewer/view-statements', { data })
+
+      const reportDataForPrint = await reportDetailBuilder.build(res.locals.user.username, report)
+
+      const statementsWithNarrative = await Promise.all(
+        statements.map(statement => reviewService.getStatement(statement.id))
+      ).then(stmnts => stmnts.filter(stmnt => stmnt.statement))
+
+      return res.render('pages/reviewer/view-statements', {
+        data,
+        reportDataForPrint,
+        statements: statementsWithNarrative,
+      })
     },
 
     reviewStatement: async (req: Request, res: Response): Promise<void> => {

@@ -76,8 +76,29 @@
       </a>
     </div>
   </div>
+
   <div class="print"> 
-   content to be printed
+    <!-- header -->
+    <h1>Use of force incident number {{ data.incidentId }}</h1>
+    <p>{{ reportDetail.reportHeading(data, true) }}</p>
+
+    <!-- report body  -->
+    <p>  {{ reportDetail.detail(reportDataForPrint, null, report.incidentId, user, true) }}</p>
+  
+    <!-- statement narrative and additional comments --> 
+    <div class="page-break-before">
+      {% for statement in statements %}
+        <h1 class="govuk-heading-l">{{ statement.name }}'s statement</h1>
+        <p> <span class="govuk-label--s"> Submitted </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p> 
+        {{ statement.statement }} 
+        <br>
+        {% for additionalComments in statement.additionalComments %}
+          {{ additionalComments.additionalComment}}
+          <br>
+        {% endfor %}
+      <hr>
+      {% endfor %}
+    </div> 
   </div>
 </div>
 {% endblock %}
