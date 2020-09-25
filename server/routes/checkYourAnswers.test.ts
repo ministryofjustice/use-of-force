@@ -1,36 +1,28 @@
-const request = require('supertest')
-const { appWithAllRoutes, user } = require('./testutils/appSetup')
+import request from 'supertest'
+import { Prison } from '../data/elite2ClientBuilderTypes'
+import LocationService from '../services/locationService'
+import OffenderService from '../services/offenderService'
+import DraftReportService from '../services/report/draftReportService'
+import { appWithAllRoutes, user } from './testutils/appSetup'
 
-const draftReportService = {
-  getCurrentDraft: jest.fn(),
-  isDraftComplete: jest.fn(),
-  submit: jest.fn(),
-  getReportStatus: jest.fn(),
-}
+jest.mock('../services/report/draftReportService')
+jest.mock('../services/offenderService')
+jest.mock('../services/locationService')
 
-const offenderService = {
-  getOffenderDetails: jest.fn(),
-}
-
-const involvedStaffService = {
-  getDraftInvolvedStaff: () => [],
-  removeMissingDraftInvolvedStaff: jest.fn(),
-}
-
-const locationService = {
-  getPrisonById: jest.fn(),
-  getLocation: jest.fn(),
-}
+const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, involvedStaffService, locationService })
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService })
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue({})
-  locationService.getPrisonById.mockResolvedValue({ description: 'prison name' })
+  locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)
+  draftReportService.getInvolvedStaff.mockResolvedValue([])
 })
 
 describe('GET /check-your-answers', () => {
@@ -44,7 +36,6 @@ describe('GET /check-your-answers', () => {
       .expect(res => {
         expect(res.text).toContain('Check your answers')
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', -35)
-        expect(involvedStaffService.removeMissingDraftInvolvedStaff).toBeCalledWith('user1', 1)
       })
   })
 
@@ -179,7 +170,7 @@ describe('GET /check-your-answers', () => {
 
   it('Should contain the prison where the incident took place', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
-    locationService.getPrisonById.mockResolvedValue({ description: 'Sheffield' })
+    locationService.getPrisonById.mockResolvedValue({ description: 'Sheffield' } as Prison)
     return request(app)
       .get('/report/-35/check-your-answers')
       .expect(200)
@@ -195,15 +186,15 @@ describe('GET /check-your-answers', () => {
 
 describe('POST /check-your-answers', () => {
   it('Allow submit if report is complete', async () => {
-    draftReportService.isDraftComplete.mockReturnValue(true)
-    draftReportService.submit.mockReturnValue(2)
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+    draftReportService.submit.mockResolvedValue(2)
 
     await request(app).post('/report/-35/check-your-answers').expect(302).expect('Location', '/2/report-sent')
-    expect(draftReportService.submit).toBeCalledWith(user, '-35')
+    expect(draftReportService.submit).toBeCalledWith(user, -35)
   })
 
   it('An error is throw if the report is not complete', async () => {
-    draftReportService.isDraftComplete.mockReturnValue(false)
+    draftReportService.isDraftComplete.mockResolvedValue(false)
 
     await request(app).post('/report/-35/check-your-answers').expect(500)
 

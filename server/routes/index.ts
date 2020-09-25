@@ -49,13 +49,7 @@ export default function Index({
 
   const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken)
 
-  const checkYourAnswers = CheckYourAnswerRoutes({
-    draftReportService,
-    offenderService,
-    involvedStaffService,
-    systemToken,
-    locationService,
-  })
+  const checkYourAnswers = new CheckYourAnswerRoutes(draftReportService, offenderService, systemToken, locationService)
 
   const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
 

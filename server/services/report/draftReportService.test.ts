@@ -35,7 +35,7 @@ afterEach(() => {
 })
 
 describe('getCurrentDraft', () => {
-  test('it should call query on db', async () => {
+  test('it should call client', async () => {
     const output = await service.getCurrentDraft('user1', 1)
     expect(draftReportClient.get).toBeCalledTimes(1)
     expect(output).toEqual({ id: 1, a: 'b', incidentDate: 'today' })
@@ -204,5 +204,27 @@ describe('deleteInvolvedStaff', () => {
       undefined
     )
     expect(userService.getUsers).toBeCalledWith('user-1-system-token', ['user-1'])
+  })
+})
+
+describe('markInvolvedStaffComplete', () => {
+  const loggedInUser = { username: 'user-1' } as LoggedInUser
+
+  it('Mark complete', async () => {
+    draftReportClient.get.mockResolvedValue({ form: {} })
+
+    await service.markInvolvedStaffComplete(loggedInUser, 1)
+
+    expect(draftReportClient.get).toBeCalledWith('user-1', 1)
+    expect(updateDraftReportService.process).toBeCalledWith(loggedInUser, 1, 'involvedStaff', [], undefined)
+  })
+
+  it('Do not mark complete if staff already added', async () => {
+    draftReportClient.get.mockResolvedValue({ form: { involvedStaff: [] } })
+
+    await service.markInvolvedStaffComplete(loggedInUser, 1)
+
+    expect(draftReportClient.get).toBeCalledWith('user-1', 1)
+    expect(updateDraftReportService.process).not.toBeCalled()
   })
 })

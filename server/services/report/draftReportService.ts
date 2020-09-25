@@ -84,6 +84,21 @@ export default class DraftReportService {
     await this.process(user, bookingId, 'involvedStaff', newInvolvedStaff)
   }
 
+  public async markInvolvedStaffComplete(user: LoggedInUser, bookingId: number): Promise<void> {
+    const { form = {} } = await this.draftReportClient.get(user.username, bookingId)
+
+    if (form.involvedStaff) {
+      return
+    }
+
+    /*
+     * TODO: completeness will need to be tracked as a separate field.
+     * involved staff should only be complete when a user explicitly say so.
+     * At the moment we consider complete once any staff have been added or if they say no once.
+     */
+    await this.process(user, bookingId, 'involvedStaff', [])
+  }
+
   public async isDraftComplete(username: string, bookingId: number): Promise<boolean> {
     const { form = {} } = await this.getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)

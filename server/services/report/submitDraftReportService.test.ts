@@ -34,7 +34,7 @@ beforeEach(() => {
   elite2ClientBuilder = jest.fn()
   elite2ClientBuilder.mockReturnValue(elite2Client)
   service = new SubmitDraftReportService(draftReportClient, statementsClient, notificationService, inTransaction)
-  draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
+  draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: new Date() })
   elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 

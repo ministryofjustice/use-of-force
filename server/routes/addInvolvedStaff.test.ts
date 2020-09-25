@@ -52,6 +52,9 @@ describe('staff involved page', () => {
       .send({ addMore: 'no' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/use-of-force-details')
+      .expect(() => {
+        expect(draftReportService.markInvolvedStaffComplete).toHaveBeenCalledWith(user, -19)
+      })
   })
 
   test('POST more staff to add, triggers redirect', () => {

@@ -1,5 +1,4 @@
 import { Response, Request } from 'express'
-import { properCaseFullName } from '../utils/utils'
 
 import { nextPaths } from '../config/incident'
 import { SystemToken } from '../types/uof'
@@ -24,7 +23,7 @@ export default class AddInvolvedStaffRoutes {
     return res.render('formPages/addingStaff/staff-involved', { staff, bookingId, errors })
   }
 
-  public async submitStaffInvolved(req: Request, res: Response): Promise<void> {
+  public submitStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { addMore } = req.body
 
@@ -41,6 +40,8 @@ export default class AddInvolvedStaffRoutes {
     if (addMore === 'yes') {
       return res.redirect(`/report/${bookingId}/staff-member-name`)
     }
+
+    await this.draftReportService.markInvolvedStaffComplete(res.locals.user, parseInt(bookingId, 10))
     return res.redirect(nextPaths.involvedStaff(bookingId))
   }
 

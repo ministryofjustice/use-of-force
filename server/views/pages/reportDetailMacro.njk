@@ -99,30 +99,6 @@
         print: print
       })
     }}
-    {% call reportDetailsMacros.tableRowWithContent({
-        label: 'Staff involved',
-        'data-qa': 'staffInvolved',
-        print: print
-      })
-    %}
-    <dd class="govuk-summary-list__value {% if print %}  width-half govuk-!-padding-left-3 {% endif %}" data-qa="staffInvolved">
-        
-      {%for item in data.incidentDetails.staffInvolved %}
-          {{item.name}} - {{item.username}}
-          {%- if not print and user.isCoordinator and item.statementId -%}      
-            <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
-              Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
-          {%- endif -%}  
-        {% if not loop.last %}<br/>{% endif %}
-      {% endfor %} 
-
-      {%- if not print and user.isCoordinator and incidentId -%}
-        <br/>
-        <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
-            Add another member of staff</a>
-      {%- endif -%}
-    </dd>
-    {% endcall %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Witnesses',
@@ -133,6 +109,30 @@
       })
     }}
 
+    {{
+      reportDetailsMacros.sectionHeading({
+        id: 'staffInvolved',
+        title: 'Staff involved',
+        url:  '/report/' + bookingId + '/staff-involved' if bookingId
+      })
+    }}
+    <ol class="govuk-!-margin-top-1 involved-staff" style="padding-inline-start: 0;list-style: none;">
+    {%for item in data.incidentDetails.staffInvolved %}
+      <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2" style="border-bottom: 1px solid #b1b4b6">
+      {{item.name}} ({{item.username}})
+      {%- if not print and user.isCoordinator and item.statementId -%}      
+        <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
+          Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
+      {%- endif -%}  
+      </li>
+    {% endfor %} 
+    </ol>
+    {%- if not print and user.isCoordinator and incidentId -%}
+      <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
+        Add another member of staff
+      </a>
+    {%- endif -%}
+    
     {{
       reportDetailsMacros.sectionHeading({
         id: 'useOfForceDetails',
