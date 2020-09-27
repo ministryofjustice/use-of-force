@@ -1,4 +1,4 @@
-{% extends "../../partials/layout.html" %} 
+{% extends "../formTemplate.html" %}
 {% from "../../macros.njk" import submitLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/radios/macro.njk" import govukRadios %} 
@@ -7,25 +7,10 @@
 
 {% set pageTitle = 'Staff involved in use of force' %}
 
-{% block content %}
+{% block formItems %}
 <div class="govuk-grid-row govuk-body">
-  {% if errors.length > 0 %}
-  {{
-    govukErrorSummary({
-      titleText: 'There is a problem',
-      errorList: errors,
-      attributes: { 'data-qa-errors': true }
-    })
-  }}
-  {% endif %}
-  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
-    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-  </div>
+  <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
   <div class="govuk-grid-column-three-quarters">
-      <form method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-        <input type="hidden" name="nextDestination" value="{{ data.nextDestination }}" />
-
         {% set rows = [] %}
 
         {% for item in staff %}
@@ -37,7 +22,7 @@
             text: item.email
             },
             {
-            html: '<a class="govuk-link" href="/report/' + bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
+            html: '<a class="govuk-link" data-qa="delete-'+ item.username +'" href="/report/' + bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
             }
         ]), rows) %}
         {% endfor %}
@@ -80,26 +65,12 @@
                 },
                 {
                     value: "no",
+                    id: "noMoreToAdd",
                     text: "No"
                 }
                 ]
             }) 
         }}
-    
-        {{
-            govukButton({
-            text: 'Save and continue',
-            classes: 'govuk-button',
-            attributes: { 'data-qa': 'continue', 'data-submit': true }
-            })
-        }}
-
-        {% set formName = 'edit-incident-details' if data.nextDestination == 'check-your-answers'  else 'incident-details' %}
-        <br/>
-        <a class="govuk-body govuk-link govuk-link--no-visited-state" data-value="save-and-return" data-qa="save-and-return" href="/report/{{bookingId}}/report-use-of-force">
-          Save and return to report use of force
-      </a>
-      </form>
   </div>
 </div>
 {% endblock %}

@@ -2,6 +2,10 @@ const { offender } = require('../../mockApis/data')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const ReportSentPage = require('../../pages/createReport/reportSentPage')
+const WhatIsStaffMembersNamePage = require('../../pages/createReport/whatIsStaffMembersNamePage')
+const StaffInvolvedPage = require('../../pages/createReport/staffInvolvedPage')
+const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
+
 const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
 
@@ -23,9 +27,46 @@ context('Submit the incident report', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
     incidentDetailsPage.fillForm()
-    const detailsPage = incidentDetailsPage.save()
-    detailsPage.fillForm()
-    const relocationAndInjuriesPage = detailsPage.save()
+
+    let staffInvolvedPage = incidentDetailsPage.save()
+    staffInvolvedPage.presentStaff().then(staff => {
+      expect(staff).to.deep.equal([{ name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false }])
+    })
+    staffInvolvedPage.addAStaffMember().click()
+    staffInvolvedPage.clickSave()
+
+    let whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
+    whatIsStaffMembersNamePage.username().type('MR_ZAGATO')
+    whatIsStaffMembersNamePage.clickContinue()
+
+    staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
+    staffInvolvedPage.presentStaff().then(staff => {
+      expect(staff).to.deep.equal([
+        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'MR_ZAGATO name', emailAddress: 'MR_ZAGATO@gov.uk', canDelete: true },
+      ])
+    })
+    staffInvolvedPage.addAStaffMember().click()
+    staffInvolvedPage.clickSave()
+
+    whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
+    whatIsStaffMembersNamePage.username().type('MRS_JONES')
+    whatIsStaffMembersNamePage.clickContinue()
+
+    staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
+    staffInvolvedPage.presentStaff().then(staff => {
+      expect(staff).to.deep.equal([
+        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'MR_ZAGATO name', emailAddress: 'MR_ZAGATO@gov.uk', canDelete: true },
+        { name: 'MRS_JONES name', emailAddress: 'MRS_JONES@gov.uk', canDelete: true },
+      ])
+    })
+    staffInvolvedPage.noMoreToAdd().click()
+    staffInvolvedPage.clickSave()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.fillForm()
+    const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()
     evidencePage.fillForm()
@@ -38,6 +79,12 @@ context('Submit the incident report', () => {
       cy.task('getAllStatementsForReport', reportId).then(staff =>
         expect(staff).to.deep.equal([
           {
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+            userid: 'TEST_USER',
+            status: 'PENDING',
+          },
+          {
             name: 'MR_ZAGATO name',
             email: 'MR_ZAGATO@gov.uk',
             userid: 'MR_ZAGATO',
@@ -47,12 +94,6 @@ context('Submit the incident report', () => {
             name: 'MRS_JONES name',
             email: 'MRS_JONES@gov.uk',
             userid: 'MRS_JONES',
-            status: 'PENDING',
-          },
-          {
-            name: 'TEST_USER name',
-            email: 'TEST_USER@gov.uk',
-            userid: 'TEST_USER',
             status: 'PENDING',
           },
         ])

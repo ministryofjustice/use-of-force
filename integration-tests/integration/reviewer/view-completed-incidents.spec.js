@@ -47,7 +47,7 @@ context('A use of force reviewer can view completed incidents at the current age
       bookingId: offender.bookingId,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -78,7 +78,7 @@ context('A use of force reviewer can view completed incidents at the current age
       sequenceNumber: 1,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -92,7 +92,7 @@ context('A use of force reviewer can view completed incidents at the current age
       agencyId: offender.agencyId,
       bookingId: offender.bookingId,
       offenderNumber: offender.offenderNo,
-      userId: 'R_SMITH',
+      username: 'R_SMITH',
       reporterName: 'Robert James',
       sequenceNumber: 2,
     })
@@ -104,12 +104,12 @@ context('A use of force reviewer can view completed incidents at the current age
       agencyId: offender2.agencyId,
       bookingId: offender2.bookingId,
       offenderNumber: offender2.offenderNo,
-      userId: 'R_JAMES',
+      username: 'R_JAMES',
       reporterName: 'Robert James',
       sequenceNumber: 3,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -125,7 +125,7 @@ context('A use of force reviewer can view completed incidents at the current age
       offenderNumber: offender3.offenderNo,
       involvedStaff: [
         {
-          userId: 'MRS_JONES',
+          username: 'MRS_JONES',
           name: 'MRS_JONES name',
           email: 'MRS_JONES@gov.uk',
         },
@@ -180,7 +180,7 @@ context('A use of force reviewer can view completed incidents at the current age
         bookingId: i,
         involvedStaff: [
           {
-            userId: 'TEST_USER',
+            username: 'TEST_USER',
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },

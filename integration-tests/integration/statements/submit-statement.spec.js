@@ -19,16 +19,15 @@ context('Submit statement', () => {
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['TEST_USER'])
+    cy.login()
   })
 
   it('A user can submit their statement from incidents page', () => {
-    cy.login()
-
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -84,8 +83,6 @@ context('Submit statement', () => {
   })
 
   it('A user can submit their own statement after submitting report', () => {
-    cy.login()
-
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
@@ -133,13 +130,11 @@ context('Submit statement', () => {
   })
 
   it('Can view a submitted statement', () => {
-    cy.login()
-
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -175,13 +170,11 @@ context('Submit statement', () => {
   })
 
   it('A user can leave the submission for another time', () => {
-    cy.login()
-
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },

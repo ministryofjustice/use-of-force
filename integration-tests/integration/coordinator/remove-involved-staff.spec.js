@@ -27,12 +27,12 @@ context('A use of force coordinator can remove involved staff', () => {
       bookingId: 1001,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
         {
-          userId: 'MRS_JONES',
+          username: 'MRS_JONES',
           name: 'MRS_JONES name',
           email: 'MRS_JONES@gov.uk',
         },

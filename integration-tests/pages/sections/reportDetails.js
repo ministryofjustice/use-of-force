@@ -15,7 +15,9 @@ module.exports = {
   painInducingTechniques,
   prison,
 
-  verifyInputs({ involvedStaff = ['MR_ZAGATO', 'MRS_JONES'] } = {}) {
+  verifyInputs({
+    involvedStaff = ['Mr_zagato Name (MR_ZAGATO)', 'Mrs_jones Name (MRS_JONES)', 'Test_user Name (TEST_USER)'],
+  } = {}) {
     cy.get('[data-qa="incidentDate"]')
       .invoke('text')
       .invoke('trim')
@@ -29,9 +31,17 @@ module.exports = {
 
     cy.get('[data-qa="location"]').contains('ASSO A Wing')
     useOfForcePlanned().contains('Yes')
-    involvedStaff.forEach(staff => {
-      cy.get('[data-qa="staffInvolved"]').contains(staff)
-    })
+
+    cy.get(`[data-qa="staffInvolved"]`)
+      .first()
+      .find('li')
+      .spread((...rest) => rest.map(element => Cypress.$(element).text().trim()))
+      .then(staffPresent => {
+        involvedStaff.forEach(staff => {
+          expect(staffPresent).contain(staff)
+        })
+      })
+
     cy.get('[data-qa="witnesses"]').contains('Witness A').contains('Tom Jones')
 
     positiveCommunicationUsed().contains('Yes')

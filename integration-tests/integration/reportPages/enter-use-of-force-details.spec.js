@@ -10,14 +10,12 @@ context('Submitting use of force details page', () => {
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES'])
+    cy.task('stubUserDetailsRetrieval', ['TEST_USER', 'MR_ZAGATO', 'MRS_JONES'])
   })
 
   const fillFormAndSave = ({ restraintPositions = ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'] } = {}) => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
-    incidentDetailsPage.fillForm()
-    const useOfForceDetailsPage = incidentDetailsPage.save()
+    const useOfForceDetailsPage = reportUseOfForcePage.goToUseOfForceDetailsPage()
     useOfForceDetailsPage.postiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
@@ -108,9 +106,7 @@ context('Submitting use of force details page', () => {
     cy.login()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
-    incidentDetailsPage.fillForm()
-    const useOfForceDetailsPage = incidentDetailsPage.save()
+    const useOfForceDetailsPage = reportUseOfForcePage.goToUseOfForceDetailsPage()
     useOfForceDetailsPage.postiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')

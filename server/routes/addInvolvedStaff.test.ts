@@ -57,6 +57,20 @@ describe('staff involved page', () => {
       })
   })
 
+  test('POST no more staff to add when save and returning marks complete', () => {
+    draftReportService.getInvolvedStaff.mockResolvedValue([
+      { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
+    ])
+    return request(app)
+      .post(`/report/-19/staff-involved`)
+      .send({ addMore: 'no', submitType: 'save-and-return' })
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/report-use-of-force')
+      .expect(() => {
+        expect(draftReportService.markInvolvedStaffComplete).toHaveBeenCalledWith(user, -19)
+      })
+  })
+
   test('POST more staff to add, triggers redirect', () => {
     draftReportService.getInvolvedStaff.mockResolvedValue([
       { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,

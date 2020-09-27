@@ -1,17 +1,22 @@
 import NewIncidentPage from './incidentDetailsPage'
 import CheckAnswersPage from './checkAnswersPage'
 import UseOfForceDetailsPage from './useOfForceDetailsPage'
+import StaffInvolvedPage from './staffInvolvedPage'
 import page from '../page'
 
 const tasklistPage = () =>
   page('Report use of force', {
     startNewForm: () => {
-      cy.get('[data-qa-new-incident-link]').click()
+      cy.get('[data-qa-incident-details-link]').click()
       return NewIncidentPage.verifyOnPage()
     },
     goToUseOfForceDetailsPage: () => {
-      cy.get('[data-qa-details-link]').click()
+      cy.get('[data-qa-use-of-force-details-link]').click()
       return UseOfForceDetailsPage.verifyOnPage()
+    },
+    goToInvolvedStaffPage: () => {
+      cy.get('[data-qa-staff-involved-link]').click()
+      return StaffInvolvedPage.verifyOnPage()
     },
     checkYourAnswersLink: () => cy.get('[data-qa-check-answers-link]'),
     goToAnswerPage() {
@@ -24,23 +29,26 @@ const tasklistPage = () =>
     offenderImage: () => cy.get('[data-qa="offender-image"]'),
 
     checkParts: state => {
-      cy.get(`[data-qa-new-incident=${state.newIncident}]`).should('exist')
-      cy.get(`[data-qa-details=${state.details}]`).should('exist')
+      cy.get(`[data-qa-incident-details=${state.incidentDetails}]`).should('exist')
+      cy.get(`[data-qa-staff-involved=${state.staffInvolved}]`).should('exist')
+      cy.get(`[data-qa-use-of-force-details=${state.useOfForceDetails}]`).should('exist')
       cy.get(`[data-qa-relocation-and-injuries=${state.relocationAndInjuries}]`).should('exist')
       cy.get(`[data-qa-evidence=${state.evidence}]`).should('exist')
     },
     checkAllPartsComplete() {
       this.checkParts({
-        newIncident: 'COMPLETE',
-        details: 'COMPLETE',
+        incidentDetails: 'COMPLETE',
+        staffInvolved: 'COMPLETE',
+        useOfForceDetails: 'COMPLETE',
         relocationAndInjuries: 'COMPLETE',
         evidence: 'COMPLETE',
       })
     },
     checkNoPartsComplete() {
       this.checkParts({
-        newIncident: 'NOT_STARTED',
-        details: 'NOT_STARTED',
+        incidentDetails: 'NOT_STARTED',
+        staffInvolved: 'NOT_STARTED',
+        useOfForceDetails: 'NOT_STARTED',
         relocationAndInjuries: 'NOT_STARTED',
         evidence: 'NOT_STARTED',
       })

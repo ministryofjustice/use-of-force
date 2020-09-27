@@ -4,6 +4,11 @@ import { nextPaths } from '../config/incident'
 import { SystemToken } from '../types/uof'
 import DraftReportService, { AddStaffResult } from '../services/report/draftReportService'
 
+const SubmitType = {
+  SAVE_AND_CONTINUE: 'save-and-continue',
+  SAVE_AND_RETURN: 'save-and-return',
+}
+
 const getFromFlash = (req, name) => {
   const result = req.flash(name)
   return result.length !== 0 ? result[0] : null
@@ -25,7 +30,15 @@ export default class AddInvolvedStaffRoutes {
 
   public submitStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { addMore } = req.body
+    const { addMore, submitType } = req.body
+
+    if (addMore === 'no') {
+      await this.draftReportService.markInvolvedStaffComplete(res.locals.user, parseInt(bookingId, 10))
+    }
+
+    if (submitType === SubmitType.SAVE_AND_RETURN) {
+      return res.redirect(`/report/${bookingId}/report-use-of-force`)
+    }
 
     if (!addMore) {
       req.flash('errors', [
@@ -37,12 +50,9 @@ export default class AddInvolvedStaffRoutes {
       return res.redirect(`/report/${bookingId}/staff-involved`)
     }
 
-    if (addMore === 'yes') {
-      return res.redirect(`/report/${bookingId}/staff-member-name`)
-    }
-
-    await this.draftReportService.markInvolvedStaffComplete(res.locals.user, parseInt(bookingId, 10))
-    return res.redirect(nextPaths.involvedStaff(bookingId))
+    return addMore === 'yes'
+      ? res.redirect(`/report/${bookingId}/staff-member-name`)
+      : res.redirect(nextPaths.involvedStaff(bookingId))
   }
 
   public async viewDeleteStaffMember(req: Request, res: Response): Promise<void> {
@@ -73,8 +83,9 @@ export default class AddInvolvedStaffRoutes {
   }
 
   public async viewStaffMemberName(req: Request, res: Response): Promise<void> {
+    const { bookingId } = req.params
     const errors = req.flash('errors')
-    return res.render('formPages/addingStaff/staff-member-name', { errors })
+    return res.render('formPages/addingStaff/staff-member-name', { errors, bookingId })
   }
 
   public submitStaffMemberName = async (req: Request, res: Response): Promise<void> => {

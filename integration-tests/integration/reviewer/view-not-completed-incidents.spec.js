@@ -47,7 +47,7 @@ context('A use of force reviewer can view incidents at the current agency', () =
       bookingId: offender.bookingId,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -63,7 +63,7 @@ context('A use of force reviewer can view incidents at the current agency', () =
       bookingId: 1002,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -99,7 +99,7 @@ context('A use of force reviewer can view incidents at the current agency', () =
       submittedDate: moment().add(-4, 'days').toDate(),
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },

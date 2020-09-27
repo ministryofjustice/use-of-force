@@ -1,5 +1,5 @@
 import page from '../page'
-import UseOfForceDetailsPage from './useOfForceDetailsPage'
+import StaffInvolvedPage from './staffInvolvedPage'
 
 const incidentDetailsPage = () =>
   page('Incident details', {
@@ -55,7 +55,7 @@ const incidentDetailsPage = () =>
 
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
-      return UseOfForceDetailsPage.verifyOnPage()
+      return StaffInvolvedPage.verifyOnPage()
     },
     clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),

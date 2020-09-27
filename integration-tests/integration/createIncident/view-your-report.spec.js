@@ -24,17 +24,17 @@ context('A reporter views their own report', () => {
       submittedDate: '2019-09-04 11:27:52',
       involvedStaff: [
         {
-          userId: 'MR_ZAGATO',
+          username: 'MR_ZAGATO',
           name: 'MR_ZAGATO name',
           email: 'MR_ZAGATO@gov.uk',
         },
         {
-          userId: 'MRS_JONES',
+          username: 'MRS_JONES',
           name: 'MRS_JONES name',
           email: 'MR_ZAGATO@gov.uk',
         },
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },

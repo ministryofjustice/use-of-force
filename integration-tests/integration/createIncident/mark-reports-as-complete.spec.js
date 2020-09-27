@@ -26,7 +26,7 @@ context('Marking a report as complete', () => {
       overdueDate: moment().subtract(1, 'd').toDate(),
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },

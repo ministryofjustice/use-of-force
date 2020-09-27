@@ -31,7 +31,7 @@ context('view statement page', () => {
       bookingId,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },

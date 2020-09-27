@@ -116,7 +116,7 @@
         url:  '/report/' + bookingId + '/staff-involved' if bookingId
       })
     }}
-    <ol class="govuk-!-margin-top-1 involved-staff" style="padding-inline-start: 0;list-style: none;">
+    <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff" style="padding-inline-start: 0;list-style: none;">
     {%for item in data.incidentDetails.staffInvolved %}
       <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2" style="border-bottom: 1px solid #b1b4b6">
       {{item.name}} ({{item.username}})

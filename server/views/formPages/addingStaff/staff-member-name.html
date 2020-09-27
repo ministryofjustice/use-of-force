@@ -42,8 +42,7 @@
           }) }}
 
         {% endcall %}
-        {% set formName = 'edit-incident-details' if data.nextDestination == 'check-your-answers'  else 'incident-details' %}
-
+      
         {{
           govukButton({
             text: 'Continue',
@@ -52,15 +51,10 @@
           })
         }}
 
-      {% set formName = 'edit-incident-details' if data.nextDestination == 'check-your-answers'  else 'incident-details' %}
       <br/>
-      {{ 
-        submitLink({
-          label: 'Save and return to report use of force', 
-          qa: 'save-and-return', 
-          value: 'save-and-return'
-        }) 
-      }}
+      <div>
+        <a href="/report/{{ bookingId }}/staff-involved" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-staff-involved">Return to staff involved in use of force</a>
+      </div>
       </form>
     </div>
   </div>

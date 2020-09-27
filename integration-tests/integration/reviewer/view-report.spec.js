@@ -24,14 +24,14 @@ context('view review page', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
-      userId: 'TEST_USER',
+      username: 'TEST_USER',
       reporterName: 'James Stuart',
       incidentDate: moment('2019-09-10 09:57:40.000').toDate(),
       agencyId: 'MDI',
       bookingId,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -41,13 +41,13 @@ context('view review page', () => {
         status: ReportStatus.SUBMITTED,
         submittedDate: moment().toDate(),
         incidentDate: moment('2019-09-11 09:57:40.000').toDate(),
-        userId: 'ANOTHER_USER',
+        username: 'ANOTHER_USER',
         reporterName: 'Anne OtherUser',
         agencyId: 'MDI',
         bookingId,
         involvedStaff: [
           {
-            userId: 'ANOTHER_USER',
+            username: 'ANOTHER_USER',
             name: 'Another user name',
             email: 'TEST_USER@gov.uk',
           },
@@ -70,7 +70,7 @@ context('view review page', () => {
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
-      viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name - TEST_USER'] })
+      viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name (TEST_USER)'] })
       viewReportPage.getReportId().then(reportId => {
         viewReportPage.incidentNumber().contains(reportId)
       })
@@ -92,7 +92,7 @@ context('view review page', () => {
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')
-      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name - ANOTHER_USER'] })
+      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name (ANOTHER_USER)'] })
       viewReportPage.returnToIncidentOverview().click()
     }
   })

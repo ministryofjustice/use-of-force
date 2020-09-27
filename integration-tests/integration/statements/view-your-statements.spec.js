@@ -26,7 +26,7 @@ context('A user views their statements list', () => {
         incidentDate: moment('2019-09-10 09:57:40.000').toDate(),
         involvedStaff: [
           {
-            userId: 'TEST_USER',
+            username: 'TEST_USER',
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },
@@ -42,7 +42,7 @@ context('A user views their statements list', () => {
         overdueDate: moment().subtract(4, 'd').toDate(),
         involvedStaff: [
           {
-            userId: 'TEST_USER',
+            username: 'TEST_USER',
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },
@@ -82,7 +82,7 @@ context('A user views their statements list', () => {
         bookingId: i,
         involvedStaff: [
           {
-            userId: 'TEST_USER',
+            username: 'TEST_USER',
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },

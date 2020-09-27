@@ -14,7 +14,7 @@ context('Add comments to statement', () => {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
