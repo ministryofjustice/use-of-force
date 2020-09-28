@@ -72,11 +72,8 @@ export default function Index({
 
     get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-    get(reportPath('incident-details'), incidentDetails.viewIncidentDetailsForm)
-    post(reportPath('incident-details'), incidentDetails.submitForm)
-    get(reportPath('edit-incident-details'), incidentDetails.viewEditIncidentDetailsForm)
-    post(reportPath('edit-incident-details'), incidentDetails.submitEditForm)
-    get(`${reportPath('cancel-edit')}/incidentDetails`, incidentDetails.cancelEdit)
+    get(reportPath('incident-details'), incidentDetails.view)
+    post(reportPath('incident-details'), incidentDetails.submit)
 
     get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)
     post(reportPath('staff-involved'), addInvolvedStaff.submitStaffInvolved)
@@ -88,27 +85,18 @@ export default function Index({
 
     get(reportPath('change-prison'), changePrison.viewPrisons)
     post(reportPath('change-prison'), changePrison.submit)
-    get(reportPath('edit-change-prison'), changePrison.viewPrisonsEdit)
-    post(reportPath('edit-change-prison'), changePrison.submitEdit)
 
-    get(reportPath('use-of-force-details'), createReport.viewForm('useOfForceDetails'))
-    post(reportPath('use-of-force-details'), createReport.submitForm('useOfForceDetails'))
-    get(reportPath('edit-use-of-force-details'), createReport.viewEditForm('useOfForceDetails'))
-    post(reportPath('edit-use-of-force-details'), createReport.submitEditForm('useOfForceDetails'))
+    get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
+    post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
 
-    get(reportPath('relocation-and-injuries'), createReport.viewForm('relocationAndInjuries'))
-    post(reportPath('relocation-and-injuries'), createReport.submitForm('relocationAndInjuries'))
-    get(reportPath('edit-relocation-and-injuries'), createReport.viewEditForm('relocationAndInjuries'))
-    post(reportPath('edit-relocation-and-injuries'), createReport.submitEditForm('relocationAndInjuries'))
+    get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
+    post(reportPath('relocation-and-injuries'), createReport.submit('relocationAndInjuries'))
 
-    get(reportPath('evidence'), createReport.viewForm('evidence'))
-    post(reportPath('evidence'), createReport.submitForm('evidence'))
-    get(reportPath('edit-evidence'), createReport.viewEditForm('evidence'))
-    post(reportPath('edit-evidence'), createReport.submitEditForm('evidence'))
+    get(reportPath('evidence'), createReport.view('evidence'))
+    post(reportPath('evidence'), createReport.submit('evidence'))
 
     get(reportPath('check-your-answers'), checkYourAnswers.view)
     post(reportPath('check-your-answers'), checkYourAnswers.submit)
-    get(`${reportPath('cancel-edit')}/:formName`, createReport.cancelEdit)
 
     get('/:reportId/report-sent', incidents.viewReportSent)
 

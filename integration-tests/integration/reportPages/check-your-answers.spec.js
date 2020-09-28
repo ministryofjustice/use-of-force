@@ -61,7 +61,7 @@ context('Check your answers page', () => {
     })
   })
 
-  it('Can cancel editing answers from check your answers page ', () => {
+  it.only('Can cancel editing answers from check your answers page ', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 

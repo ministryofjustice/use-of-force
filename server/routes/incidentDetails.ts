@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Request, RequestHandler, Response } from 'express'
+import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput } from '../services/validation'
@@ -9,20 +9,9 @@ import type LocationService from '../services/locationService'
 import type DraftReportService from '../services/report/draftReportService'
 import type { ParsedDate } from '../utils/dateSanitiser'
 import type { SystemToken } from '../types/uof'
+import { isReportComplete } from '../services/report/reportStatusChecker'
 
 const formName = 'incidentDetails'
-
-const renderForm = ({ req, res, form, data = {}, editMode }) => {
-  const { bookingId } = req.params
-  const pageData = firstItem(req.flash('userInput')) || form[formName]
-  const errors = req.flash('errors')
-  res.render(`formPages/incident/${formName}`, {
-    data: { bookingId, ...pageData, ...data, types },
-    formName,
-    errors,
-    editMode,
-  })
-}
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -44,15 +33,15 @@ export default class IncidentDetailsRoutes {
       req.user.username,
       bookingId
     )
-    return { formId, incidentDate, form, agencyId }
+    return { formId, incidentDate, form, persistedAgencyId: agencyId, isComplete: isReportComplete(form) }
   }
 
-  private async getSubmitRedirectLocation(req: Request, bookingId: number, editMode: true, submitType) {
+  private async getSubmitRedirectLocation(req: Request, bookingId: number, submitType) {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
-      return editMode ? `/report/${bookingId}/edit-change-prison` : `/report/${bookingId}/change-prison`
+      return `/report/${bookingId}/change-prison`
     }
 
-    if (editMode) {
+    if (await this.draftReportService.isDraftComplete(req.user.username, bookingId)) {
       return `/report/${bookingId}/check-your-answers`
     }
 
@@ -77,9 +66,9 @@ export default class IncidentDetailsRoutes {
     return null
   }
 
-  private viewIncidentDetails = editMode => async (req, res) => {
+  public view = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { form, incidentDate, agencyId: persistedAgencyId } = await this.loadForm(req)
+    const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
 
     const token = await this.systemToken(res.locals.user.username)
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
@@ -95,18 +84,26 @@ export default class IncidentDetailsRoutes {
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
     const data = {
+      bookingId,
+      ...form[formName],
       ...input,
       displayName,
       offenderNo,
       incidentDate: this.getIncidentDate(incidentDate, input && input.incidentDate),
       locations,
       prison,
+      types,
     }
 
-    renderForm({ req, res, form, data, editMode })
+    return res.render(`formPages/incident/${formName}`, {
+      data,
+      formName,
+      errors: req.flash('errors'),
+      editMode: isComplete,
+    })
   }
 
-  private submit = editMode => async (req, res: Response) => {
+  public submit = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { submitType } = req.body
 
@@ -135,20 +132,7 @@ export default class IncidentDetailsRoutes {
       incidentDate ? incidentDate.value : null
     )
 
-    const location = await this.getSubmitRedirectLocation(req, bookingId, editMode, submitType)
+    const location = await this.getSubmitRedirectLocation(req, bookingId, submitType)
     return res.redirect(location)
-  }
-
-  public viewIncidentDetailsForm: RequestHandler = this.viewIncidentDetails(false)
-
-  public viewEditIncidentDetailsForm: RequestHandler = this.viewIncidentDetails(true)
-
-  public submitForm: RequestHandler = this.submit(false)
-
-  public submitEditForm: RequestHandler = this.submit(true)
-
-  public cancelEdit: RequestHandler = async (req, res) => {
-    const { bookingId } = req.params
-    return res.redirect(`/report/${bookingId}/check-your-answers`)
   }
 }
