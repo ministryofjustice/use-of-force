@@ -18,7 +18,7 @@ const authClient = {
 
 const authClientBuilder = jest.fn().mockReturnValue(authClient)
 
-const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 let service: ReviewService
 

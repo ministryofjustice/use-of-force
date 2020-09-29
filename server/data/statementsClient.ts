@@ -1,11 +1,16 @@
-/* eslint-disable no-useless-constructor */
 import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
-import { StatementStatus } from '../config/types'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
-import type { StatementSummary, Statement, AdditionalComment, UsernameToStatementIds } from './statementsClientTypes'
+import type {
+  StatementSummary,
+  Statement,
+  AdditionalComment,
+  UsernameToStatementIds,
+  StatementUpdate,
+} from './statementsClientTypes'
 import { Status } from '../services/statementServiceTypes'
 import type { DraftInvolvedStaff } from '../services/report/draftReportService'
+import { StatementStatus } from '../config/types'
 
 type StatementCreationResult = { id: number; userId: string }
 
@@ -115,13 +120,13 @@ export default class StatementsClient {
     })
   }
 
-  saveStatement(
+  async saveStatement(
     userId: string,
     reportId: number,
-    { lastTrainingMonth, lastTrainingYear, jobStartYear, statement },
+    { lastTrainingMonth, lastTrainingYear, jobStartYear, statement }: StatementUpdate,
     query: QueryPerformer = this.query
-  ) {
-    return query({
+  ): Promise<void> {
+    await query({
       text: `update v_statement 
     set last_training_month = $1
     ,   last_training_year = $2

@@ -34,6 +34,7 @@
         "plugin:prettier/recommended"
       ],
       "rules": {
+        "@typescript-eslint/no-shadow": ["error", { "ignoreTypeValueShadow": true }],
         "@typescript-eslint/no-use-before-define": 0,
         "class-methods-use-this": 0,
         "no-useless-constructor": 0,
@@ -63,6 +64,7 @@
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
 
   "rules": {
+    "no-shadow": "off",
     "no-unused-vars": [
       1,
       {

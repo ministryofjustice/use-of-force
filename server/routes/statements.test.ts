@@ -5,9 +5,7 @@ import { PageResponse } from '../utils/page'
 
 jest.mock('../services/statementService')
 
-const statementService = new StatementService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
-  StatementService
->
+const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 
 const offenderService = {
   getOffenderNames: () => [],

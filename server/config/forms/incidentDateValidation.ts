@@ -1,5 +1,5 @@
 import moment from 'moment'
-import joi from '@hapi/joi'
+import joi, { ErrorReport } from '@hapi/joi'
 import { toInteger } from './sanitisers'
 
 export enum ValidationError {
@@ -12,7 +12,7 @@ export enum ValidationError {
   isNotPositiveNumber = 'isNotPositiveNumber',
 }
 
-export function dateValidation(date: string, helpers: joi.CustomHelpers) {
+export function dateValidation(date: string, helpers: joi.CustomHelpers): ErrorReport | string {
   const trimmedDate = date.trim()
   const parsedDate = moment(trimmedDate, 'DD/MM/YYYY', true)
 
@@ -27,7 +27,7 @@ export function dateValidation(date: string, helpers: joi.CustomHelpers) {
   return date
 }
 
-export function timeValidation(time: string, helpers: joi.CustomHelpers) {
+export function timeValidation(time: string, helpers: joi.CustomHelpers): ErrorReport | string {
   const fullDate = helpers.state.ancestors[0].value
 
   if (fullDate && moment(fullDate).isBetween(moment.now(), moment().endOf('day'), 'seconds')) {
@@ -37,7 +37,7 @@ export function timeValidation(time: string, helpers: joi.CustomHelpers) {
   return time
 }
 
-export function minuteValidation(minute: string, helpers: joi.CustomHelpers) {
+export function minuteValidation(minute: string, helpers: joi.CustomHelpers): ErrorReport | string {
   const parsedMinutes = toInteger(minute)
 
   if (!minute) {
@@ -62,7 +62,7 @@ export function minuteValidation(minute: string, helpers: joi.CustomHelpers) {
   return minute
 }
 
-export function hourValidation(hour: string, helpers: joi.CustomHelpers) {
+export function hourValidation(hour: string, helpers: joi.CustomHelpers): ErrorReport | string {
   const parsedHours = toInteger(hour)
 
   if (!hour) {

@@ -3,7 +3,7 @@ import { StatementStatus, ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import { PageResponse } from '../utils/page'
-import { Statement } from '../data/statementsClientTypes'
+import { Statement, StatementUpdate } from '../data/statementsClientTypes'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
@@ -109,7 +109,7 @@ describe('statmentService', () => {
   })
 
   test('should call save', async () => {
-    const statement = {}
+    const statement = {} as StatementUpdate
 
     await service.save('user1', 1, statement)
 

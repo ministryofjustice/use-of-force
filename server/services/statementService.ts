@@ -1,4 +1,3 @@
-import R from 'ramda'
 import logger from '../../log'
 import { StatementStatus, ReportStatus } from '../config/types'
 import statementConfig from '../config/forms/statementForm'
@@ -8,6 +7,9 @@ import type StatementsClient from '../data/statementsClient'
 import type IncidentClient from '../data/incidentClient'
 import { PageResponse } from '../utils/page'
 import { StatementWithComments, Status, StatementSummary } from './statementServiceTypes'
+import { StatementUpdate } from '../data/statementsClientTypes'
+
+type Error = { href: string; text: string }
 
 export default class StatementService {
   constructor(
@@ -29,16 +31,16 @@ export default class StatementService {
     return { additionalComments, ...statement }
   }
 
-  async validateSavedStatement(username: string, reportId: number) {
+  async validateSavedStatement(username: string, reportId: number): Promise<Error[]> {
     const statement = await this.getStatementForUser(username, reportId, StatementStatus.PENDING)
 
     const result = processInput({ validationSpec: statementConfig.complete, input: statement })
-    return R.propOr([], 'errors', result)
+    return result.errors || []
   }
 
-  save(userId, reportId, statement) {
+  async save(userId: string, reportId: number, statement: StatementUpdate): Promise<void> {
     logger.info(`Saving statement for user: ${userId} and report: ${reportId}`)
-    return this.statementsClient.saveStatement(userId, reportId, statement)
+    await this.statementsClient.saveStatement(userId, reportId, statement)
   }
 
   async submitStatement(userId: string, reportId: number): Promise<void> {

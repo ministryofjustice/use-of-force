@@ -3,18 +3,15 @@ import { appWithAllRoutes, user } from './testutils/appSetup'
 import { PageResponse } from '../utils/page'
 import ReportService from '../services/report/reportService'
 import OffenderService from '../services/offenderService'
-import ReportDataBuilder, { ReportDetail } from '../services/reportDetailBuilder'
 
 jest.mock('../services/report/reportService')
 jest.mock('../services/offenderService')
 
 const userSupplier = jest.fn()
 
-const reportService = new ReportService(jest.fn() as any, jest.fn() as any, jest.fn() as any) as jest.Mocked<
-  ReportService
->
+const reportService = new ReportService(null, null, null) as jest.Mocked<ReportService>
 
-const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 const reportDetailBuilder = {
   build: jest.fn().mockResolvedValue({ id: 1, form: { incidentDetails: {} } }),

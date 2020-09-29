@@ -15,7 +15,7 @@ const reportingClient = {
   getIncidentsForAgencyAndDateRange: jest.fn(),
 }
 
-const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 const heatmapBuilder = {
   build: jest.fn(),
