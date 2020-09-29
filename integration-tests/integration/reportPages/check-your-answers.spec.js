@@ -1,7 +1,6 @@
 const { offender } = require('../../mockApis/data')
 
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
-const UserDoesNotExistPage = require('../../pages/createReport/userDoesNotExistPage')
 const CheckAnswersPage = require('../../pages/createReport/checkAnswersPage')
 
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')

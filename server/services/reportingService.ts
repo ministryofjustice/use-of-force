@@ -71,7 +71,7 @@ export default class ReportingService {
     }
   }
 
-  public async getMostOftenInvolvedStaff(agencyId, month, year) {
+  public async getMostOftenInvolvedStaff(agencyId: string, month: number, year: number): Promise<string> {
     const range = dateRange(month, year)
     logger.info(`Retrieve most involved staff for agency: ${agencyId}, between '${formatRange(range)}'`)
     const results = await this.reportingClient.getMostOftenInvolvedStaff(agencyId, range)
@@ -85,7 +85,12 @@ export default class ReportingService {
     )
   }
 
-  public async getMostOftenInvolvedPrisoners(token, agencyId, month, year): Promise<string> {
+  public async getMostOftenInvolvedPrisoners(
+    token: string,
+    agencyId: string,
+    month: number,
+    year: number
+  ): Promise<string> {
     const range = dateRange(month, year)
     logger.info(`Retrieve most involved prisoner for agency: ${agencyId}, between '${formatRange(range)}'`)
     const results = await this.reportingClient.getMostOftenInvolvedPrisoners(agencyId, range)
@@ -104,7 +109,7 @@ export default class ReportingService {
     )
   }
 
-  public async getIncidentsOverview(agencyId, month, year) {
+  public async getIncidentsOverview(agencyId: string, month: number, year: number): Promise<string> {
     const range = dateRange(month, year)
     logger.info(`Retrieve incident overview for agency: ${agencyId}, between '${formatRange(range)}'`)
 
@@ -141,7 +146,7 @@ export default class ReportingService {
     )
   }
 
-  public async getIncidentHeatmap(token, agencyId, month, year) {
+  public async getIncidentHeatmap(token: string, agencyId: string, month: number, year: number): Promise<string> {
     const range = dateRange(month, year)
     logger.info(`Retrieve heatmap for agency: ${agencyId}, between '${formatRange(range)}'`)
 

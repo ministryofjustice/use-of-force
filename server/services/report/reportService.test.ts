@@ -7,9 +7,9 @@ jest.mock('../../data/incidentClient')
 jest.mock('../offenderService')
 jest.mock('../involvedStaffService')
 
-const incidentClient = new IncidentClient(jest.fn as any, jest.fn() as any) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
 
-const offenderService = new OffenderService(jest.fn as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 const elite2Client = {
   getOffenderDetails: jest.fn(),

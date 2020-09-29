@@ -6,7 +6,7 @@ const token = 'token-1'
 
 jest.mock('../data/elite2ClientBuilder')
 
-const elite2Client = new Elite2Client(jest.fn as any) as jest.Mocked<Elite2Client>
+const elite2Client = new Elite2Client(null) as jest.Mocked<Elite2Client>
 
 const authClient = {
   getEmail: jest.fn(),

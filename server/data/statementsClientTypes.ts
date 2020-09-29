@@ -22,6 +22,13 @@ export type Statement = {
   reporterName: string
 }
 
+export type StatementUpdate = {
+  lastTrainingMonth: number
+  lastTrainingYear: number
+  jobStartYear: number
+  statement: string
+}
+
 export type AdditionalComment = { additionalComment: string; dateSubmitted: Date }
 
 export type UsernameToStatementIds = { [username: string]: number }
