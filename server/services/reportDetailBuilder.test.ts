@@ -8,17 +8,11 @@ jest.mock('./involvedStaffService')
 jest.mock('./locationService')
 jest.mock('./offenderService')
 
-const involvedStaffService = new InvolvedStaffService(
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any,
-  jest.fn() as any
-) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
-const locationService = new LocationService(jest.fn() as any) as jest.Mocked<LocationService>
+const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
-const offenderService = new OffenderService(jest.fn() as any) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 let reportDetailBuilder
 

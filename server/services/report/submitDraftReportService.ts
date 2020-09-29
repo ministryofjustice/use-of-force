@@ -3,19 +3,29 @@ import moment, { Moment } from 'moment'
 import type DraftReportClient from '../../data/draftReportClient'
 import logger from '../../../log'
 import { InTransaction } from '../../data/dataAccess/db'
-import { InvolvedStaffService } from '../involvedStaffService'
 import { LoggedInUser } from '../../types/uof'
+import { DraftInvolvedStaff } from './draftReportService'
+import StatementsClient from '../../data/statementsClient'
+
+export type PersistedInvolvedStaff = DraftInvolvedStaff & { statementId: number }
 
 export default class SubmitDraftReportService {
   constructor(
     private readonly draftReportClient: DraftReportClient,
-    private readonly involvedStaffService: InvolvedStaffService,
+    private readonly statementsClient: StatementsClient,
     private readonly notificationService,
     private readonly inTransaction: InTransaction
   ) {}
 
-  private async requestStatements({ reportId, currentUser, incidentDate, overdueDate, submittedDate, staffMembers }) {
-    const staffExcludingReporter = staffMembers.filter(staff => staff.userId !== currentUser.username)
+  private async requestStatements(
+    reportId: number,
+    currentUser: LoggedInUser,
+    incidentDate: Moment,
+    overdueDate: Moment,
+    submittedDate: Moment,
+    staffMembers: PersistedInvolvedStaff[]
+  ) {
+    const staffExcludingReporter = staffMembers.filter(staff => !staff.isReporter)
     const staffExcludingUnverified = staffExcludingReporter.filter(staff => staff.email)
     const notifications = staffExcludingUnverified.map(staff =>
       this.notificationService.sendStatementRequest(
@@ -23,9 +33,9 @@ export default class SubmitDraftReportService {
         {
           involvedName: staff.name,
           reporterName: currentUser.displayName,
-          incidentDate,
-          overdueDate,
-          submittedDate,
+          incidentDate: incidentDate.toDate(),
+          overdueDate: overdueDate.toDate(),
+          submittedDate: submittedDate.toDate(),
         },
         { reportId, statementId: staff.statementId }
       )
@@ -36,37 +46,32 @@ export default class SubmitDraftReportService {
   public async submit(
     currentUser: LoggedInUser,
     bookingId: number,
+    involvedStaff: DraftInvolvedStaff[],
     now: () => Moment = () => moment()
   ): Promise<number | false> {
-    const { id, incidentDate } = await this.draftReportClient.get(currentUser.username, bookingId)
-    if (id) {
+    const { id: reportId, incidentDate } = await this.draftReportClient.get(currentUser.username, bookingId)
+    if (reportId) {
       const reportSubmittedDate = now()
       const overdueDate = moment(reportSubmittedDate).add(3, 'days')
 
       const staff = await this.inTransaction(async client => {
-        const savedStaff = await this.involvedStaffService.save(
-          bookingId,
-          id,
-          reportSubmittedDate,
-          overdueDate,
-          currentUser,
+        const userNamesToStatementIds = await this.statementsClient.createStatements(
+          reportId,
+          moment(reportSubmittedDate).add(1, 'day').toDate(),
+          overdueDate.toDate(),
+          involvedStaff,
           client
         )
+        const idFor = user => userNamesToStatementIds[user.username]
+
         logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
         await this.draftReportClient.submit(currentUser.username, bookingId, reportSubmittedDate.toDate(), client)
-        return savedStaff
+        return involvedStaff.map(staffMember => ({ ...staffMember, statementId: idFor(staffMember) }))
       })
 
-      await this.requestStatements({
-        reportId: id,
-        currentUser,
-        incidentDate,
-        overdueDate,
-        submittedDate: reportSubmittedDate,
-        staffMembers: staff,
-      })
+      await this.requestStatements(reportId, currentUser, moment(incidentDate), overdueDate, reportSubmittedDate, staff)
 
-      return id
+      return reportId
     }
     return false
   }

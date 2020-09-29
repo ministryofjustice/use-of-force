@@ -27,13 +27,15 @@ context('Report use of force page', () => {
     const incidentDetailPage = reportUseOfForcePage.startNewForm()
     incidentDetailPage.fillForm()
 
-    const useOfForceDetailsPage = incidentDetailPage.save()
-    useOfForceDetailsPage.saveAndReturnToUseOfForce()
+    const staffInvolvedPage = incidentDetailPage.save()
+    staffInvolvedPage.noMoreToAdd().click()
+    staffInvolvedPage.saveAndReturn()
 
     const reportUseOfForcePageRevisited = ReportUseOfForcePage.verifyOnPage()
     reportUseOfForcePageRevisited.checkParts({
-      newIncident: 'COMPLETE',
-      details: 'INCOMPLETE',
+      incidentDetails: 'COMPLETE',
+      staffInvolved: 'COMPLETE',
+      useOfForceDetails: 'NOT_STARTED',
       relocationAndInjuries: 'NOT_STARTED',
       evidence: 'NOT_STARTED',
     })

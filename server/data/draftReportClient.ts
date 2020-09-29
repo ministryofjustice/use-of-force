@@ -2,7 +2,6 @@ import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { ReportStatus } from '../config/types'
 import { DraftReport, NoDraftReport, StaffDetails } from './draftReportClientTypes'
 import { AgencyId } from '../types/uof'
-import { user } from '../routes/testutils/appSetup'
 
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
@@ -111,29 +110,5 @@ export default class DraftReportClient {
                   and r.sequence_no = ${maxSequenceForBooking}`,
       values: [agencyId, username, bookingId],
     })
-  }
-
-  async removeMissingInvolvedStaff(userId: string, bookingId: number): Promise<void> {
-    await this.inTransaction(async client => {
-      const { id, form = {} } = await this.get(userId, bookingId, client)
-      const involvedStaff = await this.getInvolvedStaff(userId, bookingId, client)
-
-      const updatedInvolvedStaff = involvedStaff.filter(staff => !staff.missing)
-
-      await this.update(
-        id,
-        null,
-        {
-          ...form,
-          involvedStaff: updatedInvolvedStaff,
-        },
-        client
-      )
-    })
-  }
-
-  async hasMissingInvolvedStaff(userId: string, bookingId: number): Promise<boolean> {
-    const involvedStaff = await this.getInvolvedStaff(userId, bookingId)
-    return involvedStaff.some(staff => staff.missing)
   }
 }

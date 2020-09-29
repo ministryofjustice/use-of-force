@@ -1,5 +1,5 @@
 import page from '../page'
-import UseOfForceDetailsPage from './useOfForceDetailsPage'
+import StaffInvolvedPage from './staffInvolvedPage'
 
 const incidentDetailsPage = () =>
   page('Incident details', {
@@ -24,19 +24,12 @@ const incidentDetailsPage = () =>
       this.incidentDate.minute().type('32')
       this.location().select('Asso A Wing')
       this.forceType.check('true')
-      this.staffInvolved(0).name().type('Dr Smith')
-      this.addAnotherStaff().click()
-      this.staffInvolved(1).name().type('MR_ZAGATO')
-      this.addAnotherStaff().click()
-      this.staffInvolved(2).name().type('MRS_JONES')
 
       this.witnesses(0).name().type('Witness A')
       this.addAnotherWitness().click()
       this.witnesses(1).name().type('Witness B')
       this.addAnotherWitness().click()
       this.witnesses(2).name().type('Tom Jones')
-
-      this.staffInvolved(0).remove().click()
 
       this.witnesses(1).remove().click()
     },
@@ -50,16 +43,6 @@ const incidentDetailsPage = () =>
       readOnlyView: () => cy.get('#read-date'),
     },
 
-    staffInvolved: index => ({
-      name: () => cy.get(`#involvedStaff\\[${index}\\]\\[username\\]`),
-      remove: () =>
-        cy
-          .get(`#involvedStaff\\[${index}\\]\\[username\\]`)
-          .parents('.add-another__item')
-          .find('button.add-another__remove-button'),
-    }),
-    addAnotherStaff: () => cy.get('[data-qa-add-another-staff]'),
-
     witnesses: index => ({
       name: () => cy.get(`#witnesses\\[${index}\\]\\[name\\]`),
       remove: () =>
@@ -72,7 +55,7 @@ const incidentDetailsPage = () =>
 
     save: () => {
       cy.get('[data-qa="save-and-continue"]').click()
-      return UseOfForceDetailsPage.verifyOnPage()
+      return StaffInvolvedPage.verifyOnPage()
     },
     clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
     <h1 class="govuk-heading-xl"> {{pageTitle}} </h1>
     {{
@@ -16,7 +16,7 @@
 
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Now send the report</h2>
-    <p class="govuk-body">
+    <p>
       By sending this report you are confirming that, to the best of your knowledge, the details you are providing are
       correct.
     </p>
@@ -30,7 +30,7 @@
         })
       }}
 
-      <div class="govuk-body">
+      <div>
         <a href="/report/{{ bookingId }}/report-use-of-force" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-tasklist">Save and complete later</a>
       </div> 
     </form>

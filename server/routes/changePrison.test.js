@@ -25,20 +25,12 @@ afterEach(() => {
 })
 
 describe('GET /change-prison', () => {
-  test('should display page title', () => {
+  test('should render content', () => {
     return request(app)
       .get(`/report/-19/change-prison`)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('What prison did the use of force take place in?')
-      })
-  })
-
-  test('should contain Brixton as one of the options in the select', () => {
-    return request(app)
-      .get(`/report/-19/change-prison`)
-      .expect('Content-Type', /html/)
-      .expect(res => {
         expect(res.text).toContain('Brixton')
       })
   })

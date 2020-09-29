@@ -27,7 +27,7 @@ export default class LocationService {
     return elite2Client.getLocation(locationId)
   }
 
-  getIncidentLocations = async (token: string, agencyId: AgencyId): Promise<PrisonLocation[]> => {
+  async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {
     try {
       const elite2Client = this.elite2ClientBuilder(token)
       const incidentLocations = await elite2Client.getLocations(agencyId)

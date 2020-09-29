@@ -14,23 +14,21 @@ const { ReportStatus } = require('../../../server/config/types')
 context('Check your answers page', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
-
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
     })
+    cy.login()
   })
 
   it('Can edit answers from check your answers page ', () => {
-    cy.task('stubLogin')
-    cy.login()
-
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
@@ -64,9 +62,6 @@ context('Check your answers page', () => {
   })
 
   it('Can cancel editing answers from check your answers page ', () => {
-    cy.task('stubLogin')
-    cy.login()
-
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
@@ -139,67 +134,4 @@ context('Check your answers page', () => {
     const revisitedAnswersPage = CheckAnswersPage.verifyOnPage()
     revisitedAnswersPage.photosTaken().contains(finalValue)
   }
-
-  describe('Redirect logic around adding invalid staff to incident details whilst editting ', () => {
-    it('Attempt to save invalid staff', () => {
-      cy.task('stubLogin')
-      cy.login()
-
-      const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-      const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
-      checkAnswersPage.editIncidentDetailsLink().click()
-      let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-
-      // attempt to enter invalid user
-      incidentDetailsPage.staffInvolved(0).name().type('AAAA')
-      incidentDetailsPage.clickSave()
-
-      // prevented from leaving without addressing issue
-      let userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
-
-      // return back to incident page, don't do anything and try again
-      userDoesNotExistPage.return().click()
-      incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-      incidentDetailsPage.clickSave()
-
-      // Still prevented from leaving with out fixing issues
-      userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
-      // fix issue
-      userDoesNotExistPage.continue().click()
-
-      // allowed through and correctly redirect to check-your-answers
-      CheckAnswersPage.verifyOnPage()
-    })
-
-    it('Still need to resolve invalid staff, even if cancelling out half way', () => {
-      cy.task('stubLogin')
-      cy.login()
-
-      const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-      const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
-      checkAnswersPage.editIncidentDetailsLink().click()
-      let incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-
-      // attempt to enter invalid user
-      incidentDetailsPage.staffInvolved(0).name().type('AAAA')
-      incidentDetailsPage.clickSave()
-
-      // prevented from leaving without addressing issue
-      let userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
-
-      // return back to incident page, don't do anything and try to cancel
-      userDoesNotExistPage.return().click()
-      incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-      incidentDetailsPage.clickCancel()
-
-      // Still prevented from leaving with out fixing issues
-      userDoesNotExistPage = UserDoesNotExistPage.verifyOnPage()
-
-      // fix issue
-      userDoesNotExistPage.continue().click()
-
-      // allowed through and correctly redirect to check-your-answers
-      CheckAnswersPage.verifyOnPage()
-    })
-  })
 })

@@ -1,11 +1,9 @@
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import logger from '../../log'
 import { ReportStatus } from '../config/types'
 import type IncidentClient from '../data/incidentClient'
 import type StatementsClient from '../data/statementsClient'
-import type DraftReportClient from '../data/draftReportClient'
-import type { GetUsersResults, LoggedInUser } from '../types/uof'
-import type { InTransaction, QueryPerformer } from '../data/dataAccess/db'
+import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
 import type { StaffDetails } from '../data/draftReportClientTypes'
 
@@ -18,7 +16,6 @@ export enum AddStaffResult {
 
 export class InvolvedStaffService {
   constructor(
-    private readonly draftReportClient: DraftReportClient,
     private readonly incidentClient: IncidentClient,
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
@@ -27,18 +24,6 @@ export class InvolvedStaffService {
 
   public getInvolvedStaff(reportId: number): Promise<any[]> {
     return this.incidentClient.getInvolvedStaff(reportId)
-  }
-
-  public getDraftInvolvedStaff(username: string, bookingId: number): Promise<StaffDetails[]> {
-    return this.draftReportClient.getInvolvedStaff(username, bookingId)
-  }
-
-  public removeMissingDraftInvolvedStaff(userId: string, bookingId: number): Promise<void> {
-    return this.draftReportClient.removeMissingInvolvedStaff(userId, bookingId)
-  }
-
-  public hasMissingDraftInvolvedStaff(userId: string, bookingId: number): Promise<boolean> {
-    return this.draftReportClient.hasMissingInvolvedStaff(userId, bookingId)
   }
 
   public async loadInvolvedStaff(reportId: number, statementId: number): Promise<StaffDetails> {
@@ -59,62 +44,12 @@ export class InvolvedStaffService {
     return found
   }
 
-  public async lookup(token: string, usernames: string[]): Promise<GetUsersResults[]> {
-    return this.userService.getUsers(token, usernames)
-  }
-
-  private getStaffRequiringStatements = async (currentUser: LoggedInUser, addedStaff) => {
-    const userAlreadyAdded = addedStaff.find(user => currentUser.username === user.username)
-    if (userAlreadyAdded) {
-      return addedStaff
-    }
-    // Current user hasn't added themselves, so add them to the list.
-    const [foundUser] = await this.userService.getUsers(currentUser.token, [currentUser.username])
-
-    if (!foundUser || foundUser.missing) {
-      throw new Error(`Could not retrieve user details for current user: '${currentUser.username}'`)
-    }
-
-    logger.info('Found user:', foundUser)
-    return [...addedStaff, foundUser]
-  }
-
-  public async save(
-    bookingId: number,
-    reportId: number,
-    reportSubmittedDate: Moment,
-    overdueDate: Moment,
-    currentUser: LoggedInUser,
-    client: QueryPerformer
-  ) {
-    const involvedStaff = await this.getDraftInvolvedStaff(currentUser.username, bookingId)
-
-    const staffToCreateStatmentsFor = await this.getStaffRequiringStatements(currentUser, involvedStaff)
-
-    const staff = staffToCreateStatmentsFor.map(user => ({
-      staffId: user.staffId,
-      userId: user.username,
-      name: user.name,
-      email: user.email,
-    }))
-
-    const firstReminderDate = moment(reportSubmittedDate).add(1, 'day')
-    const userIdsToStatementIds = await this.statementsClient.createStatements({
-      reportId,
-      firstReminder: firstReminderDate.toDate(),
-      overdueDate: overdueDate.toDate(),
-      staff,
-      query: client,
-    })
-    return staff.map(staffMember => ({ ...staffMember, statementId: userIdsToStatementIds[staffMember.userId] }))
-  }
-
   public async addInvolvedStaff(token: string, reportId: number, username: string): Promise<AddStaffResult> {
     logger.info(`Adding involved staff with username: ${username} to report: '${reportId}'`)
 
     const [foundUser] = await this.userService.getUsers(token, [username])
 
-    if (!foundUser || foundUser.missing) {
+    if (!foundUser) {
       return AddStaffResult.MISSING
     }
 
@@ -130,20 +65,13 @@ export class InvolvedStaffService {
     }
 
     return this.inTransaction(async client => {
-      await this.statementsClient.createStatements({
+      await this.statementsClient.createStatements(
         reportId,
-        firstReminder: null,
-        overdueDate: moment(report.submittedDate).add(3, 'day').toDate(),
-        staff: [
-          {
-            staffId: foundUser.staffId,
-            userId: foundUser.username,
-            name: foundUser.name,
-            email: foundUser.email,
-          },
-        ],
-        query: client,
-      })
+        null,
+        moment(report.submittedDate).add(3, 'day').toDate(),
+        [foundUser],
+        client
+      )
 
       if (report.status === ReportStatus.COMPLETE.value) {
         logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)

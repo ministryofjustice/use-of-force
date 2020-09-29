@@ -26,7 +26,6 @@ export type User = {
 
 export type GetUsersResults = {
   username: string
-  missing: boolean
   verified: boolean
 
   email?: string // only if exists and verified

@@ -58,12 +58,17 @@
         <li>
           <ul class="app-task-list__items">
 
-            {{  section(name = "new-incident", 
+            {{  section(name = "incident-details", 
                       label = "Incident details",  
                       url = "/report/" + bookingId + "/incident-details", 
                       value = status.incidentDetails) }}
 
-            {{  section(name = "details", 
+            {{  section(name = "staff-involved", 
+                      label = "Staff involved",  
+                      url = "/report/" + bookingId + "/staff-involved", 
+                      value = status.involvedStaff) }}
+
+            {{  section(name = "use-of-force-details", 
                       label = "Use of force details",  
                       url = "/report/" + bookingId + "/use-of-force-details", 
                       value = status.useOfForceDetails) }}

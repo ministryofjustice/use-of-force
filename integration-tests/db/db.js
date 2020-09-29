@@ -8,7 +8,7 @@ const IncidentClient = require('../../dist/server/data/incidentClient').default
 const DraftReportClient = require('../../dist/server/data/draftReportClient').default
 const StatementsClient = require('../../dist/server/data/statementsClient').default
 const StatementService = require('../../dist/server/services/statementService').default
-const { ReportStatus } = require('../../dist/server/config/types')
+const { ReportStatus, StatementStatus } = require('../../dist/server/config/types')
 const { equals } = require('../../dist/server/utils/utils')
 
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
@@ -42,7 +42,7 @@ const seedReports = async reports => Promise.all(reports.map(report => seedRepor
 
 const seedReport = ({
   status,
-  userId = 'TEST_USER',
+  username = 'TEST_USER',
   reporterName = 'James Stuart',
   bookingId = 1001,
   offenderNumber = 'A1234AC',
@@ -64,7 +64,7 @@ const seedReport = ({
       `,
       values: [
         payload,
-        userId,
+        username,
         bookingId,
         '2019-09-10 09:57:43.122',
         status.value,
@@ -76,16 +76,12 @@ const seedReport = ({
         sequenceNumber,
       ],
     })
-    .then(
-      result =>
-        involvedStaff.length &&
-        statementsClient.createStatements({
-          reportId: result.rows[0].id,
-          firstReminder: new Date(),
-          overdueDate,
-          staff: involvedStaff,
-        })
-    )
+    .then(result => {
+      if (status !== ReportStatus.PENDING && involvedStaff.length) {
+        return statementsClient.createStatements(result.rows[0].id, new Date(), overdueDate, involvedStaff)
+      }
+      return null
+    })
 }
 
 const submitStatement = ({ userId, reportId }) =>

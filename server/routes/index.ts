@@ -9,6 +9,7 @@ import ReviewRoutes from './reviewer'
 import StatementRoutes from './statements'
 import CreateReportRoutes from './createReport'
 import IncidentDetailsRoutes from './incidentDetails'
+import AddInvolvedStaffRoutes from './addInvolvedStaff'
 
 import SearchForPrisonerRoutes from './searchForPrisoner'
 import CheckYourAnswerRoutes from './checkYourAnswers'
@@ -44,21 +45,11 @@ export default function Index({
 
   const createReport = new CreateReportRoutes(draftReportService)
 
-  const incidentDetails = new IncidentDetailsRoutes(
-    draftReportService,
-    offenderService,
-    involvedStaffService,
-    systemToken,
-    locationService
-  )
+  const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, systemToken, locationService)
 
-  const checkYourAnswers = CheckYourAnswerRoutes({
-    draftReportService,
-    offenderService,
-    involvedStaffService,
-    systemToken,
-    locationService,
-  })
+  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken)
+
+  const checkYourAnswers = new CheckYourAnswerRoutes(draftReportService, offenderService, systemToken, locationService)
 
   const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
 
@@ -87,13 +78,18 @@ export default function Index({
     post(reportPath('edit-incident-details'), incidentDetails.submitEditForm)
     get(`${reportPath('cancel-edit')}/incidentDetails`, incidentDetails.cancelEdit)
 
+    get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)
+    post(reportPath('staff-involved'), addInvolvedStaff.submitStaffInvolved)
+    get(reportPath('delete-staff-member/:username'), addInvolvedStaff.viewDeleteStaffMember)
+    post(reportPath('delete-staff-member/:username'), addInvolvedStaff.submitDeleteStaffMember)
+    get(reportPath('staff-member-name'), addInvolvedStaff.viewStaffMemberName)
+    post(reportPath('staff-member-name'), addInvolvedStaff.submitStaffMemberName)
+    get(reportPath('staff-member-not-found'), addInvolvedStaff.viewStaffMemberNotFound)
+
     get(reportPath('change-prison'), changePrison.viewPrisons)
     post(reportPath('change-prison'), changePrison.submit)
     get(reportPath('edit-change-prison'), changePrison.viewPrisonsEdit)
     post(reportPath('edit-change-prison'), changePrison.submitEdit)
-
-    get(reportPath('username-does-not-exist'), incidentDetails.viewUsernameDoesNotExist)
-    post(reportPath('username-does-not-exist'), incidentDetails.submitUsernameDoesNotExist)
 
     get(reportPath('use-of-force-details'), createReport.viewForm('useOfForceDetails'))
     post(reportPath('use-of-force-details'), createReport.submitForm('useOfForceDetails'))

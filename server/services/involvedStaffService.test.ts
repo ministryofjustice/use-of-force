@@ -2,18 +2,14 @@ import moment from 'moment'
 import { InvolvedStaffService, AddStaffResult } from './involvedStaffService'
 import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
-import DraftReportClient from '../data/draftReportClient'
 import StatementsClient from '../data/statementsClient'
-import { GetUsersResults, LoggedInUser } from '../types/uof'
 import UserService from './userService'
 
 jest.mock('../data/incidentClient')
-jest.mock('../data/draftReportClient')
 jest.mock('../data/statementsClient')
 jest.mock('./userService')
 
 const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
-const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 
@@ -26,33 +22,11 @@ const db = {
 let service: InvolvedStaffService
 
 beforeEach(() => {
-  service = new InvolvedStaffService(draftReportClient, incidentClient, statementsClient, userService, db.inTransaction)
+  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
-})
-
-const user = {
-  username: 'Jo',
-  firstName: 'Jo',
-  lastName: 'Smith',
-  displayName: 'Jo Smith',
-  token: 'token1',
-} as LoggedInUser
-
-describe('getDraftInvolvedStaff', () => {
-  test('it should call query on db', async () => {
-    await service.getDraftInvolvedStaff('user-1', 1)
-    expect(draftReportClient.getInvolvedStaff).toBeCalledTimes(1)
-  })
-})
-
-describe('removeMissingDraftInvolvedStaff', () => {
-  test('should remove missing staff', async () => {
-    await service.removeMissingDraftInvolvedStaff('user-1', 1)
-    expect(draftReportClient.removeMissingInvolvedStaff).toBeCalledWith('user-1', 1)
-  })
 })
 
 describe('getInvolvedStaff', () => {
@@ -62,162 +36,9 @@ describe('getInvolvedStaff', () => {
   })
 })
 
-describe('lookup', () => {
-  test('success', async () => {
-    const results = [
-      {
-        staffId: 3,
-        email: 'an@email',
-        missing: true,
-        name: 'Bob Smith',
-        username: 'Bob',
-        verified: true,
-      },
-      { staffId: 1, missing: true, email: 'bn@email', username: 'June', name: 'June Smith', verified: true },
-      {
-        staffId: 2,
-        missing: true,
-        email: 'cn@email',
-        username: 'Jenny',
-        name: 'Jenny Walker',
-        verified: true,
-      },
-    ]
-
-    userService.getUsers.mockResolvedValue(results)
-
-    const result = await service.lookup('token-1', ['Bob', 'June', 'Jenny'])
-
-    expect(result).toEqual(results)
-  })
-})
-
-describe('save', () => {
-  let reportSubmittedDate
-  let overdueDate
-
-  let expectedFirstReminderDate
-
-  beforeEach(() => {
-    reportSubmittedDate = moment('2019-09-06 21:26:18')
-    expectedFirstReminderDate = moment('2019-09-07 21:26:18')
-    overdueDate = moment(reportSubmittedDate).add(3, 'days')
-  })
-
-  test('when user has already added themselves', async () => {
-    statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Jo: 33 })
-    userService.getUsers.mockResolvedValue([])
-    draftReportClient.getInvolvedStaff.mockResolvedValue([
-      {
-        staffId: 1,
-        email: 'bn@email',
-        username: 'June',
-        name: 'June Smith',
-      },
-      {
-        staffId: 2,
-        email: 'cn@email',
-        username: 'Jenny',
-        name: 'Jenny Walker',
-      },
-      {
-        staffId: 3,
-        email: 'an@email',
-        username: 'Jo',
-        name: 'Jo Smith',
-      },
-    ])
-
-    const result = await service.save(2, 1, reportSubmittedDate, overdueDate, user, client)
-
-    expect(result).toEqual([
-      { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
-      { email: 'cn@email', name: 'Jenny Walker', staffId: 2, statementId: 22, userId: 'Jenny' },
-      { email: 'an@email', name: 'Jo Smith', staffId: 3, statementId: 33, userId: 'Jo' },
-    ])
-
-    expect(statementsClient.createStatements).toBeCalledWith({
-      reportId: 1,
-      firstReminder: expectedFirstReminderDate.toDate(),
-      overdueDate: overdueDate.toDate(),
-      staff: [
-        { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
-        {
-          email: 'cn@email',
-          name: 'Jenny Walker',
-          staffId: 2,
-          userId: 'Jenny',
-        },
-        {
-          email: 'an@email',
-          name: 'Jo Smith',
-          staffId: 3,
-          userId: 'Jo',
-        },
-      ],
-      query: client,
-    })
-  })
-
-  test('when user is not already added', async () => {
-    statementsClient.createStatements.mockResolvedValue({ June: 11, Jenny: 22, Bob: 33 })
-
-    draftReportClient.getInvolvedStaff.mockResolvedValue([
-      {
-        staffId: 1,
-        email: 'bn@email',
-        username: 'June',
-        name: 'June Smith',
-      },
-      {
-        staffId: 2,
-        email: 'cn@email',
-        username: 'Jenny',
-        name: 'Jenny Walker',
-      },
-    ])
-
-    userService.getUsers.mockResolvedValue([
-      {
-        staffId: 3,
-        email: 'an@email',
-        username: 'Bob',
-        name: 'Bob Smith',
-        missing: false,
-        verified: false,
-      },
-    ])
-
-    const result = await service.save(2, 1, reportSubmittedDate, overdueDate, user, client)
-
-    expect(result).toEqual([
-      { email: 'bn@email', name: 'June Smith', staffId: 1, statementId: 11, userId: 'June' },
-      { email: 'cn@email', name: 'Jenny Walker', staffId: 2, statementId: 22, userId: 'Jenny' },
-      { email: 'an@email', name: 'Bob Smith', staffId: 3, statementId: 33, userId: 'Bob' },
-    ])
-
-    expect(statementsClient.createStatements).toBeCalledWith({
-      reportId: 1,
-      firstReminder: expectedFirstReminderDate.toDate(),
-      overdueDate: overdueDate.toDate(),
-      staff: [
-        { email: 'bn@email', name: 'June Smith', staffId: 1, userId: 'June' },
-        {
-          email: 'cn@email',
-          name: 'Jenny Walker',
-          staffId: 2,
-          userId: 'Jenny',
-        },
-        {
-          email: 'an@email',
-          name: 'Bob Smith',
-          staffId: 3,
-          userId: 'Bob',
-        },
-      ],
-      query: client,
-    })
-  })
+describe('update', () => {
+  const reportSubmittedDate = moment('2019-09-06 21:26:18')
+  const overdueDate = moment(reportSubmittedDate).add(3, 'days')
 
   describe('addInvolvedStaff', () => {
     const staff = [
@@ -225,21 +46,14 @@ describe('save', () => {
         email: 'an@email',
         name: 'Bob Smith',
         staffId: 3,
-        userId: 'Bob',
+        username: 'Bob',
+        missing: false,
+        verified: true,
       },
     ]
 
     beforeEach(() => {
-      userService.getUsers.mockResolvedValue([
-        {
-          email: 'an@email',
-          name: 'Bob Smith',
-          staffId: 3,
-          username: 'Bob',
-          verified: true,
-          missing: false,
-        },
-      ])
+      userService.getUsers.mockResolvedValue(staff)
     })
 
     test('to complete report', async () => {
@@ -250,13 +64,7 @@ describe('save', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 1,
-        firstReminder: null,
-        overdueDate: overdueDate.toDate(),
-        staff,
-        query: client,
-      })
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), staff, client)
 
       expect(incidentClient.changeStatus).toBeCalledWith(1, ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
     })
@@ -269,13 +77,7 @@ describe('save', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 1,
-        firstReminder: null,
-        overdueDate: overdueDate.toDate(),
-        staff,
-        query: client,
-      })
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), staff, client)
 
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
@@ -309,7 +111,7 @@ describe('save', () => {
         status: ReportStatus.IN_PROGRESS.value,
       })
 
-      userService.getUsers.mockResolvedValue([
+      const unverifiedStaff = [
         {
           staffId: 3,
           email: 'an@email',
@@ -318,19 +120,14 @@ describe('save', () => {
           verified: false,
           missing: false,
         },
-      ])
+      ]
+      userService.getUsers.mockResolvedValue(unverifiedStaff)
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(false)
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
-      expect(statementsClient.createStatements).toBeCalledWith({
-        reportId: 1,
-        firstReminder: null,
-        overdueDate: overdueDate.toDate(),
-        staff,
-        query: client,
-      })
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), unverifiedStaff, client)
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
   })
@@ -374,28 +171,5 @@ describe('save', () => {
 
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
-  })
-
-  test('fail to find current user', async () => {
-    draftReportClient.getInvolvedStaff.mockResolvedValue([
-      {
-        staffId: 1,
-        email: 'bn@email',
-        username: 'June',
-        name: 'June Smith',
-      },
-      {
-        staffId: 2,
-        email: 'cn@email',
-        username: 'Jenny',
-        name: 'Jenny Walker',
-      },
-    ])
-
-    userService.getUsers.mockResolvedValue([{ missing: true }] as GetUsersResults[])
-
-    await expect(service.save(1, 2, reportSubmittedDate, overdueDate, user, client)).rejects.toThrow(
-      `Could not retrieve user details for current user: 'Jo'`
-    )
   })
 })

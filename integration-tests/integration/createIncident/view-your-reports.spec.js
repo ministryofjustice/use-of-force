@@ -23,7 +23,7 @@ context('A reporter views their report list', () => {
       status: ReportStatus.SUBMITTED,
       involvedStaff: [
         {
-          userId: 'TEST_USER',
+          username: 'TEST_USER',
           name: 'TEST_USER name',
           email: 'TEST_USER@gov.uk',
         },
@@ -63,8 +63,9 @@ context('A reporter views their report list', () => {
       const inProgressReport = ReportUseOfForcePage.verifyOnPage()
 
       inProgressReport.checkParts({
-        newIncident: 'COMPLETE',
-        details: 'NOT_STARTED',
+        incidentDetails: 'COMPLETE',
+        staffInvolved: 'NOT_STARTED',
+        useOfForceDetails: 'NOT_STARTED',
         relocationAndInjuries: 'NOT_STARTED',
         evidence: 'NOT_STARTED',
       })
@@ -83,7 +84,7 @@ context('A reporter views their report list', () => {
         bookingId: i,
         involvedStaff: [
           {
-            userId: 'TEST_USER',
+            username: 'TEST_USER',
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },

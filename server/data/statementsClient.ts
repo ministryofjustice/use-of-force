@@ -3,8 +3,11 @@ import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
 import { StatementStatus } from '../config/types'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
-import { StatementSummary, Statement, AdditionalComment } from './statementsClientTypes'
+import type { StatementSummary, Statement, AdditionalComment, UsernameToStatementIds } from './statementsClientTypes'
 import { Status } from '../services/statementServiceTypes'
+import type { DraftInvolvedStaff } from '../services/report/draftReportService'
+
+type StatementCreationResult = { id: number; userId: string }
 
 export default class StatementsClient {
   constructor(private readonly query: QueryPerformer) {}
@@ -173,24 +176,33 @@ export default class StatementsClient {
     return parseInt(rows[0].count, 10)
   }
 
-  async createStatements({ reportId, firstReminder, overdueDate, staff, query = this.query }) {
+  async createStatements(
+    reportId: number,
+    firstReminder: Date,
+    overdueDate: Date,
+    staff: DraftInvolvedStaff[],
+    query = this.query
+  ): Promise<UsernameToStatementIds> {
     const rows = staff.map(s => [
       reportId,
       s.staffId,
-      s.userId,
+      s.username,
       s.name,
       s.email,
       firstReminder,
       overdueDate,
       StatementStatus.PENDING.value,
     ])
-    const results = await query({
+    const results = await query<StatementCreationResult>({
       text: format(
         'insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
         rows
       ),
     })
-    return results.rows.reduce((result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }), {})
+    return results.rows.reduce<UsernameToStatementIds>(
+      (result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }),
+      {}
+    )
   }
 
   async deleteStatement({ statementId, query, now = new Date() }) {

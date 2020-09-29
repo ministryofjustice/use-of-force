@@ -90,22 +90,20 @@ test('createStatements', async () => {
     ],
   })
 
-  const ids = await statementsClient.createStatements({
-    reportId: 1,
-    firstReminder: 'date1',
-    overdueDate: 'date2',
-    staff: [
-      { staffId: 0, userId: 1, name: 'aaaa', email: 'aaaa@gov.uk' },
-      { staffId: 1, userId: 2, name: 'bbbb', email: 'bbbb@gov.uk' },
-    ],
-  })
+  const firstReminder = new Date(1)
+  const overdueDate = new Date(2)
+
+  const ids = await statementsClient.createStatements(1, firstReminder, overdueDate, [
+    { staffId: 0, username: 'user-1', name: 'aaaa', email: 'aaaa@gov.uk' },
+    { staffId: 1, username: 'user-2', name: 'bbbb', email: 'bbbb@gov.uk' },
+  ])
 
   expect(ids).toEqual({ a: 1, b: 2 })
   expect(query).toBeCalledWith({
     text:
       `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
-      `('1', '0', '1', 'aaaa', 'aaaa@gov.uk', 'date1', 'date2', 'PENDING'), ` +
-      `('1', '1', '2', 'bbbb', 'bbbb@gov.uk', 'date1', 'date2', 'PENDING') returning id, user_id "userId"`,
+      `('1', '0', 'user-1', 'aaaa', 'aaaa@gov.uk', '1970-01-01 00:00:00.001+00', '1970-01-01 00:00:00.002+00', 'PENDING'), ` +
+      `('1', '1', 'user-2', 'bbbb', 'bbbb@gov.uk', '1970-01-01 00:00:00.001+00', '1970-01-01 00:00:00.002+00', 'PENDING') returning id, user_id "userId"`,
   })
 })
 

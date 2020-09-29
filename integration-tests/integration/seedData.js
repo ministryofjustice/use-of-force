@@ -22,7 +22,6 @@ const expectedPayload = {
       email: 'MR_ZAGATO@gov.uk',
       staffId: 231232,
       username: 'MR_ZAGATO',
-      missing: false,
       verified: true,
     },
     {
@@ -30,7 +29,6 @@ const expectedPayload = {
       email: 'MRS_JONES@gov.uk',
       staffId: 231232,
       username: 'MRS_JONES',
-      missing: false,
       verified: true,
     },
   ],

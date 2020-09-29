@@ -1,6 +1,6 @@
-const { joi, validations, usernamePattern, namePattern, caseInsensitiveComparator } = require('./validations')
+const { joi, validations, namePattern, caseInsensitiveComparator } = require('./validations')
 const { EXTRACTED } = require('../fieldType')
-const { toDate, removeEmptyObjects } = require('./sanitisers')
+const { toDate } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
 const {
   ValidationError,
@@ -61,22 +61,6 @@ const requiredIncidentDate = joi
   })
   .meta({ sanitiser: toDate })
 
-const optionalInvolvedStaff = joi
-  .array()
-  .items(
-    joi
-      .object({
-        username: requiredPatternMsg(usernamePattern)('Usernames can only contain letters and an underscore')
-          .uppercase()
-          .alter(optionalForPartialValidation),
-      })
-      .unknown(true)
-      .id('username')
-  )
-  .ruleset.unique(caseInsensitiveComparator('username'))
-  .message("Username '{#value.username}' has already been added - remove this user")
-  .meta({ sanitiser: removeEmptyObjects, firstFieldName: 'involvedStaff[0]' })
-
 const transientSchema = joi.object({
   incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }).alter(optionalForPartialValidation),
 
@@ -85,8 +69,6 @@ const transientSchema = joi.object({
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
     optionalForPartialValidation
   ),
-
-  involvedStaff: optionalInvolvedStaff.meta({ fieldType: EXTRACTED }),
 
   witnesses: arrayOfObjects({
     name: requiredPatternMsg(namePattern)(
@@ -98,7 +80,6 @@ const transientSchema = joi.object({
 })
 
 module.exports = {
-  optionalInvolvedStaff: transientSchema.extract('involvedStaff'),
   complete: buildValidationSpec(transientSchema),
   partial: buildValidationSpec(transientSchema.tailor('partial')),
 }
