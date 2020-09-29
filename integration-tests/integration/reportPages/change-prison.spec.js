@@ -29,7 +29,7 @@ context('Submitting details page form', () => {
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
-    incidentDetailsPage.save()
+    incidentDetailsPage.clickSave()
     cy.go('back')
   }
 
@@ -52,11 +52,7 @@ context('Submitting details page form', () => {
 
     incidentDetailsPage.location().select('Asso A Wing')
 
-    incidentDetailsPage.saveAndReturn()
-
-    const reportUseOfForcePage = ReportUseOfForcePage.verifyOnPage()
-
-    reportUseOfForcePage.checkYourAnswersLink().click()
+    incidentDetailsPage.clickSave()
 
     const checkAnswersPage = CheckAnswersPage.verifyOnPage()
 

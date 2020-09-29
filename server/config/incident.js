@@ -10,7 +10,7 @@ module.exports = {
     involvedStaff: bookingId => `/report/${bookingId}/use-of-force-details`,
     useOfForceDetails: bookingId => `/report/${bookingId}/relocation-and-injuries`,
     relocationAndInjuries: bookingId => `/report/${bookingId}/evidence`,
-    evidence: bookingId => `/report/${bookingId}/check-your-answers`,
+    evidence: bookingId => `/report/${bookingId}/report-use-of-force`,
   },
   full: {
     incidentDetails: incidentDetails.complete,

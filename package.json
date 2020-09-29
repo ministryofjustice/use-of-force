@@ -16,7 +16,7 @@
     "build": "npm run css-build && tsc && npm run copy-views",
     "css-build": "./bin/build-css",
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
-    "lint": "eslint . --cache --max-warnings 200",
+    "lint": "eslint . --cache --max-warnings 140",
     "typecheck": "tsc",
     "test": "jest --runInBand",
     "int-test": "DB_NAME=use-of-force-int DB_PORT=5432 cypress run",

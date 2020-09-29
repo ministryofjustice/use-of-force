@@ -259,8 +259,9 @@ describe('POST save and return to tasklist', () => {
 
 describe('POST save and return to check-your-answers', () => {
   test('aa successfully submit valid update', () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
     return request(app)
-      .post(`/report/1/edit-incident-details`)
+      .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-continue',
         incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
@@ -286,24 +287,19 @@ describe('POST save and return to check-your-answers', () => {
       })
   })
 
-  test('Submitting invalid update is not allowed', () =>
-    request(app)
-      .post(`/report/1/edit-incident-details`)
+  test('Submitting invalid update is not allowed', () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+    return request(app)
+      .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-continue',
         locationId: -1,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
-      .expect('Location', '/report/1/edit-incident-details')
+      .expect('Location', '/report/1/incident-details')
       .expect(() => {
         expect(draftReportService.process).not.toBeCalled()
-      }))
-
-  test('Incident details - has no missing staff', () => {
-    return request(app)
-      .get(`/report/1/cancel-edit/incidentDetails`)
-      .expect(302)
-      .expect('Location', '/report/1/check-your-answers')
+      })
   })
 })

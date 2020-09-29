@@ -127,10 +127,11 @@ describe('POST save and return to tasklist', () => {
       .expect('Location', `/report/1/use-of-force-details`))
 })
 
-describe('POST save and return to check-your-answers', () => {
+describe('POST save once complete and return to check-your-answers', () => {
   test('successfully submit valid update', () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
     return request(app)
-      .post(`/report/1/edit-use-of-force-details`)
+      .post(`/report/1/use-of-force-details`)
       .send(validUseOfForceDetailsRequest)
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
@@ -140,9 +141,10 @@ describe('POST save and return to check-your-answers', () => {
       })
   })
 
-  test('Submitting invalid update is not allowed', () =>
-    request(app)
-      .post(`/report/1/edit-use-of-force-details`)
+  test('Submitting invalid update is not allowed', () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+    return request(app)
+      .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
         restraint: 'true',
@@ -150,16 +152,17 @@ describe('POST save and return to check-your-answers', () => {
         submitType: 'save-and-return',
       })
       .expect(302)
-      .expect('Location', '/report/1/edit-use-of-force-details')
+      .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
         expect(draftReportService.process).not.toBeCalled()
-      }))
+      })
+  })
 })
 
 describe('Submitting evidence page', () => {
   test.each`
     submitType             | formComplete | nextPath
-    ${'save-and-return'}   | ${true}      | ${'/report/1/report-use-of-force'}
+    ${'save-and-return'}   | ${true}      | ${'/report/1/check-your-answers'}
     ${'save-and-return'}   | ${false}     | ${'/report/1/report-use-of-force'}
     ${'save-and-continue'} | ${true}      | ${'/report/1/check-your-answers'}
     ${'save-and-continue'} | ${false}     | ${'/report/1/report-use-of-force'}
@@ -194,13 +197,4 @@ describe('Submitting evidence page', () => {
         })
     }
   )
-})
-
-describe('Cancelling from edit', () => {
-  test('standard form', () => {
-    return request(app)
-      .get(`/report/1/cancel-edit/evidence`)
-      .expect(302)
-      .expect('Location', '/report/1/check-your-answers')
-  })
 })

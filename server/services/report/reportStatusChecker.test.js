@@ -1,4 +1,4 @@
-const { SectionStatus, check } = require('./reportStatusChecker')
+const { SectionStatus, check, isReportComplete } = require('./reportStatusChecker')
 
 describe('statusCheck', () => {
   const validReport = {
@@ -58,6 +58,8 @@ describe('statusCheck', () => {
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
     })
+
+    expect(isReportComplete({})).toBe(false)
   })
 
   test('report with unvisited sections', async () => {
@@ -73,6 +75,8 @@ describe('statusCheck', () => {
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
     })
+
+    expect(isReportComplete(partiallyCompleteReport)).toBe(false)
   })
 
   test('valid report', async () => {
@@ -86,6 +90,8 @@ describe('statusCheck', () => {
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,
     })
+
+    expect(isReportComplete(validReport)).toBe(true)
   })
 
   test('invalid report', async () => {
@@ -113,5 +119,7 @@ describe('statusCheck', () => {
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,
     })
+
+    expect(isReportComplete(invalidReport)).toBe(false)
   })
 })
