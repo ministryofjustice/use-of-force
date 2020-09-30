@@ -22,7 +22,7 @@
         </div>
     
         <div class="float-right">
-          <a href="javascript:window.print()" class="govuk-link print-link">  Print report and statements  </a>
+          <a href="#" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
         </div>
       </div> 
     </div>
@@ -93,6 +93,8 @@
         {{ statement.statement }} 
         <br>
         {% for additionalComments in statement.additionalComments %}
+          <hr/>
+          <p> <span class="govuk-label--s"> Submitted </span> {{additionalComments.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p> 
           {{ additionalComments.additionalComment}}
           <br>
         {% endfor %}
