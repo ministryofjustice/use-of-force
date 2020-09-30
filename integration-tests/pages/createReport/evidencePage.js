@@ -35,7 +35,8 @@ const evidencePage = () =>
       cy.get('[data-qa="save-and-continue"]').click()
       return CheckAnswersPage.verifyOnPage()
     },
-    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSave: () => cy.get('[data-qa="save"]').click(),
+    clickSaveAndContinue: () => cy.get('[data-qa="save"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
   })
 

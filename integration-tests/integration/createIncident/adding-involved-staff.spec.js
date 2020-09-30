@@ -27,7 +27,7 @@ context('Adding involved staff', () => {
       expect(staff).to.deep.equal([{ name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false }])
     })
     staffInvolvedPage.addAStaffMember().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     let whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
     whatIsStaffMembersNamePage.username().type('MR_ZAGATO')
@@ -41,7 +41,7 @@ context('Adding involved staff', () => {
       ])
     })
     staffInvolvedPage.addAStaffMember().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
     whatIsStaffMembersNamePage.username().type('MRS_JONES')
@@ -68,7 +68,7 @@ context('Adding involved staff', () => {
     })
 
     staffInvolvedPage.noMoreToAdd().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     UseOfForceDetailsPage.verifyOnPage()
   })
@@ -77,7 +77,7 @@ context('Adding involved staff', () => {
     let reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     let staffInvolvedPage = reportUseOfForcePage.goToInvolvedStaffPage()
 
-    staffInvolvedPage.clickCancel()
+    staffInvolvedPage.clickSaveAndReturn()
 
     reportUseOfForcePage = ReportUseOfForcePage.verifyOnPage(offender.bookingId)
 
@@ -91,7 +91,7 @@ context('Adding involved staff', () => {
 
     staffInvolvedPage = reportUseOfForcePage.goToInvolvedStaffPage()
     staffInvolvedPage.noMoreToAdd().click()
-    staffInvolvedPage.clickCancel()
+    staffInvolvedPage.clickSaveAndReturn()
 
     reportUseOfForcePage.checkParts({
       incidentDetails: 'NOT_STARTED',
@@ -107,7 +107,7 @@ context('Adding involved staff', () => {
     const staffInvolvedPage = reportUseOfForcePage.goToInvolvedStaffPage()
 
     staffInvolvedPage.addAStaffMember().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     const whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
     whatIsStaffMembersNamePage.username().type('Does not exist')

@@ -52,7 +52,7 @@ context('Submitting details page form', () => {
 
     incidentDetailsPage.location().select('Asso A Wing')
 
-    incidentDetailsPage.clickSave()
+    incidentDetailsPage.clickSaveAndContinue()
 
     const checkAnswersPage = CheckAnswersPage.verifyOnPage()
 
@@ -88,7 +88,7 @@ context('Submitting details page form', () => {
 
     incidentDetailsPage.cancelButton().should('not.exist')
 
-    incidentDetailsPage.clickSave()
+    incidentDetailsPage.clickSaveAndContinue()
 
     checkAnswersPage = CheckAnswersPage.verifyOnPage()
 

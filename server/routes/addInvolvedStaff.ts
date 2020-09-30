@@ -25,7 +25,13 @@ export default class AddInvolvedStaffRoutes {
       req.user.username,
       parseInt(bookingId, 10)
     )
-    return res.render('formPages/addingStaff/staff-involved', { staff, bookingId, errors })
+    const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
+    return res.render('formPages/addingStaff/staff-involved', {
+      staff,
+      errors,
+      editMode: complete,
+      data: { staff, bookingId },
+    })
   }
 
   public submitStaffInvolved = async (req: Request, res: Response): Promise<void> => {
