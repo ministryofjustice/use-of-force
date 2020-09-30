@@ -1,22 +1,19 @@
 import request from 'supertest'
 import { appWithAllRoutes, user, reviewerUser } from './testutils/appSetup'
 import { parseDate } from '../utils/utils'
-import ReviewService from '../services/reviewService'
 import { PageResponse } from '../utils/page'
-import OffenderService from '../services/offenderService'
+import type { ReportDetail } from '../services/reportDetailBuilder'
+import { OffenderService, ReviewService, ReportDetailBuilder } from '../services'
 
 const userSupplier = jest.fn()
 
 jest.mock('../services/reviewService')
 jest.mock('../services/offenderService')
+jest.mock('../services/reportDetailBuilder')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-
-const reportDetailBuilder = {
-  build: jest.fn().mockResolvedValue({ id: 1, form: { incidentDetails: {} } }),
-}
+const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 
 let app
 
@@ -29,6 +26,7 @@ beforeEach(() => {
     new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, [])
   )
   offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jimmy Choo', offenderNo: '123456' })
+  reportDetailBuilder.build.mockResolvedValue({} as ReportDetail)
 })
 
 afterEach(() => {

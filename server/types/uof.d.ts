@@ -35,18 +35,6 @@ export type GetUsersResults = {
 
 export type SystemToken = (string?) => Promise<string>
 
-export interface ReportingClient {
-  getMostOftenInvolvedStaff: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
-  getMostOftenInvolvedPrisoners: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
-  getIncidentsOverview: (agencyId: AgencyId, range: DateRange, statuses) => Promise<Array<any>>
-  getIncidentLocationsAndTimes: (agencyId: AgencyId, range: DateRange) => Promise<Array<any>>
-  getIncidentCountByOffenderNo: (agencyId: AgencyId, range: DateRange) => Promise<Array<OffenderNoWithIncidentCount>>
-  getIncidentsForAgencyAndDateRange: (
-    agencyId: AgencyId,
-    range: DateRange
-  ) => Promise<Array<OffenderNoWithIncidentDate>>
-}
-
 export type LoggedInUser = {
   username: string
   token: string

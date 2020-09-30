@@ -1,14 +1,12 @@
-const request = require('supertest')
-const { appWithAllRoutes } = require('./testutils/appSetup')
+import request from 'supertest'
+import { DraftReportService, OffenderService } from '../services'
+import { appWithAllRoutes } from './testutils/appSetup'
 
-const draftReportService = {
-  getCurrentDraft: jest.fn(),
-  getReportStatus: jest.fn(),
-}
+jest.mock('../services/offenderService')
+jest.mock('../services/report/draftReportService')
 
-const offenderService = {
-  getOffenderDetails: jest.fn(),
-}
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
 
 let app
 

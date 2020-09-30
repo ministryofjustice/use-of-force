@@ -18,8 +18,7 @@ const offenderService = {
   getOffenderImage: jest.fn(),
 }
 
-const route = createRouter({
-  authenticationMiddleware,
+const route = createRouter(authenticationMiddleware, {
   offenderService,
   reportingService,
   systemToken: username => `${username}-system-token`,

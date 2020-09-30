@@ -81,7 +81,7 @@ export class InvolvedStaffService {
     })
   }
 
-  public removeInvolvedStaff = async (reportId: number, statementId: number): Promise<void> => {
+  public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
     await this.inTransaction(async client => {

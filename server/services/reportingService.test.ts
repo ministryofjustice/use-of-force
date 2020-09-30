@@ -3,17 +3,13 @@ import { ReportStatus } from '../config/types'
 import OffenderService from './offenderService'
 import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
 import ReportingService from './reportingService'
+import ReportingClient from '../data/reportingClient'
+import { OffenderNoWithIncidentCount } from '../types/uof'
 
 jest.mock('./offenderService')
+jest.mock('../data/reportingClient')
 
-const reportingClient = {
-  getMostOftenInvolvedStaff: jest.fn(),
-  getMostOftenInvolvedPrisoners: jest.fn(),
-  getIncidentsOverview: jest.fn(),
-  getIncidentLocationsAndTimes: jest.fn(),
-  getIncidentCountByOffenderNo: jest.fn(),
-  getIncidentsForAgencyAndDateRange: jest.fn(),
-}
+const reportingClient = new ReportingClient(null) as jest.Mocked<ReportingClient>
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
@@ -33,10 +29,10 @@ afterEach(() => {
 
 describe('reportingService', () => {
   it('getMostOftenInvolvedStaff', async () => {
-    reportingClient.getMostOftenInvolvedStaff.mockReturnValue([
-      { userId: 'AAAA', name: 'Arthur', count: 20 },
-      { userId: 'BBBB', name: 'Bella', count: 10 },
-      { userId: 'CCCC', name: 'Charlotte', count: 5 },
+    reportingClient.getMostOftenInvolvedStaff.mockResolvedValue([
+      { name: 'Arthur', count: 20 },
+      { name: 'Bella', count: 10 },
+      { name: 'Charlotte', count: 5 },
     ])
 
     const date = moment({ years: 2019, months: 1 })
@@ -61,7 +57,7 @@ Charlotte,5
       CCCC: 'Charlotte',
     })
 
-    reportingClient.getMostOftenInvolvedPrisoners.mockReturnValue([
+    reportingClient.getMostOftenInvolvedPrisoners.mockResolvedValue([
       { offenderNo: 'AAAA', count: 20 },
       { offenderNo: 'BBBB', count: 10 },
       { offenderNo: 'CCCC', count: 5 },
@@ -85,7 +81,7 @@ Charlotte,5
 
   it('getIncidentsOverview', async () => {
     reportingClient.getIncidentsOverview
-      .mockReturnValueOnce([
+      .mockResolvedValueOnce([
         {
           total: 1,
           planned: 2,
@@ -101,7 +97,7 @@ Charlotte,5
           bodyWornCameraUnknown: 12,
         },
       ])
-      .mockReturnValueOnce([
+      .mockResolvedValueOnce([
         {
           total: 11,
           planned: 22,
@@ -202,10 +198,10 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 
   test('getIncidentsByReligiousGroup', async () => {
     reportingClient.getIncidentCountByOffenderNo.mockResolvedValue([
-      { offenderNo: 'A1', incidentCount: '2' },
-      { offenderNo: 'A2', incidentCount: '1' },
-      { offenderNo: 'A3', incidentCount: '2' },
-    ])
+      { offenderNo: 'A1', incidentCount: 2 },
+      { offenderNo: 'A2', incidentCount: 1 },
+      { offenderNo: 'A3', incidentCount: 2 },
+    ] as OffenderNoWithIncidentCount[])
 
     offenderService.getPrisonersDetails.mockResolvedValue(
       Promise.resolve([
@@ -226,9 +222,9 @@ The bathroom,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150
 
   test('getIncidentsByEthnicGroup', async () => {
     reportingClient.getIncidentCountByOffenderNo.mockResolvedValue([
-      { offenderNo: 'A1', incidentCount: '2' },
-      { offenderNo: 'A2', incidentCount: '1' },
-      { offenderNo: 'A3', incidentCount: '2' },
+      { offenderNo: 'A1', incidentCount: 2 },
+      { offenderNo: 'A2', incidentCount: 1 },
+      { offenderNo: 'A3', incidentCount: 2 },
     ])
 
     offenderService.getPrisonersDetails.mockResolvedValue([

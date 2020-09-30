@@ -7,8 +7,9 @@ import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import { ReportStatus } from '../config/types'
-import { DateRange, ReportingClient } from '../types/uof'
-import OffenderService from './offenderService'
+import { AgencyId, DateRange } from '../types/uof'
+import type OffenderService from './offenderService'
+import type ReportingClient from '../data/reportingClient'
 
 const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -30,19 +31,6 @@ const dateRange = (month, year): DateRange => {
 
 const formatRange = ([start, end]): string => `${start.format()}' and '${end.format()}`
 
-const getIncidentCountsByOffenderNumber = async (
-  reportingClient,
-  agencyId,
-  range: DateRange
-): Promise<{ [offenderNo: string]: number }> => {
-  const offenderNoWithIncidentCounts = await reportingClient.getIncidentCountByOffenderNo(agencyId, range)
-
-  return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
-    accumulator[offenderNo] = parseInt(incidentCount, 10) || 0
-    return accumulator
-  }, {})
-}
-
 export default class ReportingService {
   constructor(
     private readonly reportingClient: ReportingClient,
@@ -50,15 +38,23 @@ export default class ReportingService {
     private readonly heatmapBuilder: HeatmapBuilder
   ) {}
 
+  private async getIncidentCountsByOffenderNumber(
+    agencyId: AgencyId,
+    range: DateRange
+  ): Promise<{ [offenderNo: string]: number }> {
+    const offenderNoWithIncidentCounts = await this.reportingClient.getIncidentCountByOffenderNo(agencyId, range)
+
+    return offenderNoWithIncidentCounts.reduce((accumulator, { offenderNo, incidentCount }) => {
+      accumulator[offenderNo] = incidentCount || 0
+      return accumulator
+    }, {})
+  }
+
   private async aggregateIncidentsUsing(aggregator: Aggregator) {
     return async (token, agencyId, month, year) => {
       const range = dateRange(month, year)
       logger.info(`${aggregator.title} for agency: ${agencyId}, between '${formatRange(range)}'`)
-      const incidentCountsByOffenderNumber = await getIncidentCountsByOffenderNumber(
-        this.reportingClient,
-        agencyId,
-        range
-      )
+      const incidentCountsByOffenderNumber = await this.getIncidentCountsByOffenderNumber(agencyId, range)
 
       const prisonersDetails = await this.offenderService.getPrisonersDetails(
         token,

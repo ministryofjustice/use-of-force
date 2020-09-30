@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Handler, Router } from 'express'
 import flash from 'connect-flash'
 import bodyParser from 'body-parser'
 import asyncMiddleware from '../middleware/asyncMiddleware'
@@ -16,20 +16,23 @@ import CheckYourAnswerRoutes from './checkYourAnswers'
 import ReportUseOfForceRoutes from './reportUseOfForce'
 import CoordinatorRoutes from './coordinator'
 import ChangePrisonRoutes from './changePrison'
+import { Services } from '../services'
 
-export default function Index({
-  authenticationMiddleware,
-  statementService,
-  offenderService,
-  prisonerSearchService,
-  reportService,
-  draftReportService,
-  involvedStaffService,
-  reviewService,
-  systemToken,
-  locationService,
-  reportDetailBuilder,
-}) {
+export default function Index(
+  authenticationMiddleware: Handler,
+  {
+    statementService,
+    offenderService,
+    prisonerSearchService,
+    reportService,
+    draftReportService,
+    involvedStaffService,
+    reviewService,
+    systemToken,
+    locationService,
+    reportDetailBuilder,
+  }: Services
+): Router {
   const router = express.Router()
 
   const incidents = IncidentRoutes(reportService, reportDetailBuilder)
