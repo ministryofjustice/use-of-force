@@ -1,12 +1,13 @@
-const request = require('supertest')
-const { appWithAllRoutes } = require('./testutils/appSetup')
+import request from 'supertest'
+import { Prison } from '../data/elite2ClientBuilderTypes'
+import { LocationService, DraftReportService } from '../services'
+import { appWithAllRoutes } from './testutils/appSetup'
 
-const locationService = {
-  getPrisons: jest.fn(),
-}
-const draftReportService = {
-  updateAgencyId: jest.fn(),
-}
+jest.mock('../services/locationService')
+jest.mock('../services/report/draftReportService')
+
+const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
 
 let app
 
@@ -16,7 +17,7 @@ beforeEach(() => {
     {
       agencyId: 'BXI',
       description: 'Brixton',
-    },
+    } as Prison,
   ])
 })
 

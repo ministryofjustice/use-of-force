@@ -1,45 +1,43 @@
-import { buildAppInsightsClient } from './utils/azure-appinsights'
-import PrisonerSearchClient from './data/prisonerSearchClient'
-import IncidentClient from './data/incidentClient'
-import ReportingClient from './data/reportingClient'
-import DraftReportClient from './data/draftReportClient'
-import StatementsClient from './data/statementsClient'
-import OffenderService from './services/offenderService'
-import ReportingService from './services/reportingService'
-import PrisonSearchService from './services/prisonerSearchService'
+import { buildAppInsightsClient } from '../utils/azure-appinsights'
+import PrisonerSearchClient from '../data/prisonerSearchClient'
+import IncidentClient from '../data/incidentClient'
+import ReportingClient from '../data/reportingClient'
+import DraftReportClient from '../data/draftReportClient'
+import StatementsClient from '../data/statementsClient'
+import OffenderService from './offenderService'
+import ReportingService from './reportingService'
+import PrisonerSearchService from './prisonerSearchService'
 
-import ReportService from './services/report/reportService'
-import UpdateDraftReportService from './services/report/updateDraftReportService'
-import SubmitDraftReportService from './services/report/submitDraftReportService'
-import DraftReportService from './services/report/draftReportService'
+import ReportService from './report/reportService'
+import UpdateDraftReportService from './report/updateDraftReportService'
+import SubmitDraftReportService from './report/submitDraftReportService'
+import DraftReportService from './report/draftReportService'
 
-import LocationService from './services/locationService'
-import ReportDetailBuilder from './services/reportDetailBuilder'
-import ReviewService from './services/reviewService'
-import StatementService from './services/statementService'
-import { InvolvedStaffService } from './services/involvedStaffService'
-import UserService from './services/userService'
+import LocationService from './locationService'
+import ReportDetailBuilder from './reportDetailBuilder'
+import ReviewService from './reviewService'
+import StatementService from './statementService'
+import { InvolvedStaffService } from './involvedStaffService'
+import UserService from './userService'
 
-import createApp from './app'
+import elite2ClientBuilder from '../data/elite2ClientBuilder'
 
-import elite2ClientBuilder from './data/elite2ClientBuilder'
+import { authClientBuilder, systemToken } from '../data/authClientBuilder'
 
-import { authClientBuilder, systemToken } from './data/authClientBuilder'
+import createHeatmapBuilder from './heatmapBuilder'
+import EventPublisher from './eventPublisher'
 
-import createHeatmapBuilder from './services/heatmapBuilder'
+import * as db from '../data/dataAccess/db'
+import createSignInService from '../authentication/signInService'
 
-const db = require('./data/dataAccess/db')
+import { notificationServiceFactory } from './notificationService'
 
 const reportingClient = new ReportingClient(db.query)
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
 const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
 const statementsClient = new StatementsClient(db.query)
 
-const createSignInService = require('./authentication/signInService')
-
-const { notificationServiceFactory } = require('./services/notificationService')
-const eventPublisher = require('./services/eventPublisher')(buildAppInsightsClient())
-
+const eventPublisher = EventPublisher(buildAppInsightsClient())
 // inject service dependencies
 
 const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
@@ -75,11 +73,11 @@ const reviewService = new ReviewService(
   systemToken
 )
 const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
-const prisonerSearchService = new PrisonSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
+const prisonerSearchService = new PrisonerSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
 const locationService = new LocationService(elite2ClientBuilder)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
-const app = createApp({
+export const services = {
   involvedStaffService,
   offenderService,
   reportService,
@@ -93,6 +91,19 @@ const app = createApp({
   locationService,
   reportDetailBuilder,
   draftReportService,
-})
+}
 
-module.exports = app
+export type Services = typeof services
+
+export {
+  InvolvedStaffService,
+  DraftReportService,
+  ReportService,
+  ReportingService,
+  LocationService,
+  StatementService,
+  ReviewService,
+  OffenderService,
+  PrisonerSearchService,
+  ReportDetailBuilder,
+}

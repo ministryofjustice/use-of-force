@@ -8,8 +8,7 @@ initialiseAppInsights()
 
 const knex = require('knex')
 const knexfile = require('./knexfile')
-/** @type {any} */
-const app = require('./server/index')
+const app = require('./server/index').default
 const log = require('./log')
 
 const selectSql = message => {

@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Express } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
 import path from 'path'
@@ -9,6 +9,20 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 
 import { authenticationMiddleware } from './mockAuthentication'
+import type {
+  Services,
+  StatementService,
+  OffenderService,
+  ReportService,
+  ReportingService,
+  ReportDetailBuilder,
+  ReviewService,
+  InvolvedStaffService,
+  DraftReportService,
+  LocationService,
+  PrisonerSearchService,
+} from '../../services'
+import UserService from '../../services/userService'
 
 export const user = {
   firstName: 'first',
@@ -45,7 +59,7 @@ export const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-export const appSetup = (route, userSupplier = (): any => user) => {
+export const appSetup = (route, userSupplier = (): any => user): Express => {
   const app = express()
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -70,19 +84,21 @@ export const appSetup = (route, userSupplier = (): any => user) => {
   return app
 }
 
-export const appWithAllRoutes = (overrides = {}, userSupplier = () => user) => {
-  const route = allRoutes({
-    authenticationMiddleware,
-    statementService: {},
-    offenderService: {},
-    reportService: {},
-    involvedStaffService: {},
-    reviewService: {},
-    prisonerSearchService: {},
-    systemToken: username => `${username}-system-token`,
-    locationService: {},
-    reportDetailBuilder: {},
-    draftReportService: {},
+export const appWithAllRoutes = (overrides: Partial<Services> = {}, userSupplier = () => user): Express => {
+  const route = allRoutes(authenticationMiddleware, {
+    statementService: {} as StatementService,
+    offenderService: {} as OffenderService,
+    reportService: {} as ReportService,
+    involvedStaffService: {} as InvolvedStaffService,
+    reviewService: {} as ReviewService,
+    prisonerSearchService: {} as PrisonerSearchService,
+    systemToken: async username => `${username}-system-token`,
+    locationService: {} as LocationService,
+    reportDetailBuilder: {} as ReportDetailBuilder,
+    draftReportService: {} as DraftReportService,
+    userService: {} as UserService,
+    reportingService: {} as ReportingService,
+    signInService: {} as any,
     ...overrides,
   })
   return appSetup(route, userSupplier)

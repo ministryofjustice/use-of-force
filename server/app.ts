@@ -1,59 +1,48 @@
+import express, { Express, RequestHandler } from 'express'
+import bunyanRequestLogger from 'bunyan-request-logger'
+import addRequestId from 'express-request-id'
+import helmet from 'helmet'
+import noCache from 'nocache'
+import csurf from 'csurf'
+import path from 'path'
+import moment from 'moment'
+import compression from 'compression'
+import passport from 'passport'
+import bodyParser from 'body-parser'
+
+import redis from 'redis'
+import session from 'express-session'
+import ConnectRedis from 'connect-redis'
+
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
+import { Services } from './services'
+import loggingSerialiser from './loggingSerialiser'
 
-const express = require('express')
-const loggingSerialiser = require('./loggingSerialiser') // eslint-disable-line
-const log = require('bunyan-request-logger')({ name: 'Use of force http', serializers: loggingSerialiser })
-const addRequestId = require('express-request-id')()
-const helmet = require('helmet')
-const noCache = require('nocache')
-const csurf = require('csurf')
-const path = require('path')
-const moment = require('moment')
-const compression = require('compression')
-const passport = require('passport')
-const bodyParser = require('body-parser')
+import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
+import healthcheckFactory from './services/healthcheck'
+import createApiRouter from './routes/api'
 
-const redis = require('redis')
-const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
+import logger from '../log'
+import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
+import populateCurrentUser from './middleware/populateCurrentUser'
+import authorisationMiddleware from './middleware/authorisationMiddleware'
+import errorHandler from './errorHandler'
 
-const tokenVerifierFactory = require('./authentication/tokenverifier/tokenVerifierFactory')
-const healthcheckFactory = require('./services/healthcheck')
-const createApiRouter = require('./routes/api')
+import config from './config'
 
-const logger = require('../log.js')
-const { authenticationMiddlewareFactory, initialisePassportStrategy } = require('./authentication/auth')
-const populateCurrentUser = require('./middleware/populateCurrentUser')
-const authorisationMiddleware = require('./middleware/authorisationMiddleware')
-const errorHandler = require('./errorHandler')
-
-const config = require('./config')
-
-const authenticationMiddleware = authenticationMiddlewareFactory(tokenVerifierFactory(config.apis.tokenVerification))
+const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
+  tokenVerifierFactory(config.apis.tokenVerification)
+)
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-export default function createApp({
-  reportService,
-  draftReportService,
-  involvedStaffService,
-  offenderService,
-  signInService,
-  statementService,
-  userService,
-  prisonerSearchService,
-  reviewService,
-  reportingService,
-  systemToken,
-  locationService,
-  reportDetailBuilder,
-}) {
+export default function createApp(services: Services): Express {
   const app = express()
 
-  initialisePassportStrategy(signInService)
+  initialisePassportStrategy(services.signInService)
 
   app.set('json spaces', 2)
 
@@ -85,8 +74,9 @@ export default function createApp({
     tls: config.redis.tls_enabled === 'true' ? {} : false,
   })
 
-  app.use(addRequestId)
+  app.use(addRequestId())
 
+  const RedisStore = ConnectRedis(session)
   app.use(
     session({
       store: new RedisStore({ client }),
@@ -105,7 +95,7 @@ export default function createApp({
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
 
-  app.use(log.requestLogger())
+  app.use(bunyanRequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }).requestLogger())
 
   // Resource Delivery Configuration
   app.use(compression())
@@ -183,7 +173,7 @@ export default function createApp({
       const timeToRefresh = new Date() > req.user.refreshTime
       if (timeToRefresh) {
         try {
-          const newToken = await signInService.getRefreshedToken(req.user)
+          const newToken = await services.signInService.getRefreshedToken(req.user)
           req.user.token = newToken.token
           req.user.refreshToken = newToken.refreshToken
           logger.info(`existing refreshTime in the past by ${new Date().getTime() - req.user.refreshTime}`)
@@ -235,37 +225,13 @@ export default function createApp({
     res.redirect(authLogoutUrl)
   })
 
-  const currentUserInContext = populateCurrentUser(userService)
+  const currentUserInContext = populateCurrentUser(services.userService)
   app.use(currentUserInContext)
 
   app.use(authorisationMiddleware)
 
-  app.use(
-    '/',
-    createRouter({
-      authenticationMiddleware,
-      statementService,
-      offenderService,
-      reportService,
-      involvedStaffService,
-      prisonerSearchService,
-      reviewService,
-      systemToken,
-      locationService,
-      reportDetailBuilder,
-      draftReportService,
-    })
-  )
-
-  app.use(
-    '/api/',
-    createApiRouter({
-      authenticationMiddleware,
-      offenderService,
-      reportingService,
-      systemToken,
-    })
-  )
+  app.use('/', createRouter(authenticationMiddleware, services))
+  app.use('/api/', createApiRouter(authenticationMiddleware, services))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

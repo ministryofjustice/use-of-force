@@ -18,7 +18,7 @@ export type SearchResult = {
 const isFormComplete = (form: SearchForm): boolean =>
   Boolean(form.prisonNumber || form.firstName || form.lastName || form.agencyId)
 
-export default class PrisonSearchService {
+export default class PrisonerSearchService {
   constructor(
     private readonly PrisonerSearchClient: PrisonerSearchClientBuilder,
     private readonly elite2ClientBuilder: Elite2ClientBuilder,

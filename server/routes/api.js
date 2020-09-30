@@ -3,7 +3,8 @@ const path = require('path')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { coordinatorOnly } = require('../middleware/roleCheck')
 
-module.exports = function Index({ authenticationMiddleware, offenderService, reportingService, systemToken }) {
+module.exports = function Index(authenticationMiddleware, services) {
+  const { offenderService, reportingService, systemToken } = services
   const router = express.Router()
 
   router.use(authenticationMiddleware)
