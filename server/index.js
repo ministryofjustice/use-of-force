@@ -1,6 +1,7 @@
 import { buildAppInsightsClient } from './utils/azure-appinsights'
 import PrisonerSearchClient from './data/prisonerSearchClient'
 import IncidentClient from './data/incidentClient'
+import ReportingClient from './data/reportingClient'
 import DraftReportClient from './data/draftReportClient'
 import StatementsClient from './data/statementsClient'
 import OffenderService from './services/offenderService'
@@ -29,8 +30,7 @@ import createHeatmapBuilder from './services/heatmapBuilder'
 
 const db = require('./data/dataAccess/db')
 
-const reportingClient = require('./data/reportingClient')
-
+const reportingClient = new ReportingClient(db.query)
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
 const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
 const statementsClient = new StatementsClient(db.query)
