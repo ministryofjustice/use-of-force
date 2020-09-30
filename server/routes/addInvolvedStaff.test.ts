@@ -71,6 +71,21 @@ describe('staff involved page', () => {
       })
   })
 
+  test('POST no more staff to add when report is complete', () => {
+    draftReportService.getInvolvedStaff.mockResolvedValue([
+      { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
+    ])
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+    return request(app)
+      .post(`/report/-19/staff-involved`)
+      .send({ addMore: 'no', submitType: 'save-and-continue' })
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/check-your-answers')
+      .expect(() => {
+        expect(draftReportService.markInvolvedStaffComplete).toHaveBeenCalledWith(user, -19)
+      })
+  })
+
   test('POST more staff to add, triggers redirect', () => {
     draftReportService.getInvolvedStaff.mockResolvedValue([
       { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
