@@ -6,6 +6,7 @@ const clickSubmit = () => cy.get('[data-submit]').click()
 const checkAnswersPage = () =>
   page('Check your answers before sending the report', {
     editIncidentDetailsLink: () => cy.get('[data-qa="incidentDetails-link"'),
+    editStaffInvolvedLink: () => cy.get('[data-qa="staffInvolved-link"'),
     editUseOfForceDetailsLink: () => cy.get('[data-qa="useOfForceDetails-link"'),
     editRelocationAndInjuriesLink: () => cy.get('[data-qa="relocationAndInjuries-link"'),
     editEvidenceLink: () => cy.get('[data-qa="evidence-link"'),

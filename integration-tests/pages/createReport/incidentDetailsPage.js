@@ -57,7 +57,8 @@ const incidentDetailsPage = () =>
       cy.get('[data-qa="save-and-continue"]').click()
       return StaffInvolvedPage.verifyOnPage()
     },
-    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSaveAndContinue: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSave: () => cy.get('[data-qa="save"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
     saveAndReturn: () => {
       cy.get('[data-qa="save-and-return"]').click()

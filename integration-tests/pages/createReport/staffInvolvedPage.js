@@ -4,8 +4,8 @@ const staffInvolvedPage = () =>
   page('Staff involved in use of force', {
     noMoreToAdd: () => cy.get('#noMoreToAdd'),
     addAStaffMember: () => cy.get('#confirm'),
-    clickCancel: () => cy.get('[data-qa="save-and-return"]').click(),
-    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSaveAndReturn: () => cy.get('[data-qa="save-and-return"]').click(),
+    clickSaveAndContinue: () => cy.get('[data-qa="save-and-continue"]').click(),
     deleteStaff: username => cy.get(`[data-qa="delete-${username}"]`),
     presentStaff: () =>
       cy
@@ -25,6 +25,7 @@ const staffInvolvedPage = () =>
       cy.get('[data-qa="save-and-return"]').click()
     },
     cancelButton: () => cy.get('[data-qa="cancel"]'),
+    saveButton: () => cy.get('[data-qa="save"]'),
   })
 
 module.exports = { verifyOnPage: staffInvolvedPage }

@@ -13,7 +13,7 @@
   <div class="govuk-grid-column-three-quarters">
         {% set rows = [] %}
 
-        {% for item in staff %}
+        {% for item in data.staff %}
         {% set rows = (rows.push([
             {
             text: item.name
@@ -22,7 +22,7 @@
             text: item.email
             },
             {
-            html: '<a class="govuk-link" data-qa="delete-'+ item.username +'" href="/report/' + bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
+            html: '<a class="govuk-link" data-qa="delete-'+ item.username +'" href="/report/' + data.bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
             }
         ]), rows) %}
         {% endfor %}
