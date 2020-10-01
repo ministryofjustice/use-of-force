@@ -48,11 +48,12 @@ const useOfForceDetailsPage = () =>
       return cy.get('.govuk-error-summary')
     },
 
-    clickSave: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSaveAndContinue: () => cy.get('[data-qa="save-and-continue"]').click(),
+    clickSave: () => cy.get('[data-qa="save"]').click(),
     clickCancel: () => cy.get('[data-qa="cancel"]').click(),
 
     save() {
-      this.clickSave()
+      this.clickSaveAndContinue()
       return RelocationAndInjuriesPage.verifyOnPage()
     },
 

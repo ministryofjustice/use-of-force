@@ -116,7 +116,7 @@ context('Submitting use of force details page', () => {
     useOfForceDetailsPage.restraint().check('false')
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')
-    useOfForceDetailsPage.clickSave()
+    useOfForceDetailsPage.clickSaveAndContinue()
     useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
   })
 })

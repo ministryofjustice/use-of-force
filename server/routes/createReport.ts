@@ -2,7 +2,7 @@ import { Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput } from '../services/validation'
-import { nextPaths, full, partial } from '../config/incident'
+import { nextPaths, paths, full, partial } from '../config/incident'
 import type DraftReportService from '../services/report/draftReportService'
 import { isReportComplete } from '../services/report/reportStatusChecker'
 
@@ -24,12 +24,12 @@ export default class CreateReport {
     const { username } = req.user
 
     if (await this.draftReportService.isDraftComplete(username, bookingId)) {
-      return `/report/${bookingId}/check-your-answers`
+      return paths.checkYourAnswers(bookingId)
     }
 
     const nextPath = nextPaths[form](bookingId)
 
-    return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
+    return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : paths.reportUseOfForce(bookingId)
   }
 
   public view(formName: string) {
@@ -55,12 +55,10 @@ export default class CreateReport {
 
       const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
-      const { payloadFields, errors } = processInput({
+      const { payloadFields: updatedSection, errors } = processInput({
         validationSpec: fullValidation ? full[formName] : partial[formName],
         input: req.body,
       })
-
-      const updatedSection = { ...payloadFields }
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)

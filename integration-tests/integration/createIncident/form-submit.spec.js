@@ -33,7 +33,7 @@ context('Submit the incident report', () => {
       expect(staff).to.deep.equal([{ name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false }])
     })
     staffInvolvedPage.addAStaffMember().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     let whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
     whatIsStaffMembersNamePage.username().type('MR_ZAGATO')
@@ -47,7 +47,7 @@ context('Submit the incident report', () => {
       ])
     })
     staffInvolvedPage.addAStaffMember().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
     whatIsStaffMembersNamePage.username().type('MRS_JONES')
@@ -62,7 +62,7 @@ context('Submit the incident report', () => {
       ])
     })
     staffInvolvedPage.noMoreToAdd().click()
-    staffInvolvedPage.clickSave()
+    staffInvolvedPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.fillForm()

@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 
-import { nextPaths } from '../config/incident'
+import { paths, nextPaths } from '../config/incident'
 import { SystemToken } from '../types/uof'
 import DraftReportService, { AddStaffResult } from '../services/report/draftReportService'
 
@@ -25,7 +25,13 @@ export default class AddInvolvedStaffRoutes {
       req.user.username,
       parseInt(bookingId, 10)
     )
-    return res.render('formPages/addingStaff/staff-involved', { staff, bookingId, errors })
+    const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
+    return res.render('formPages/addingStaff/staff-involved', {
+      staff,
+      errors,
+      editMode: complete,
+      data: { staff, bookingId },
+    })
   }
 
   public submitStaffInvolved = async (req: Request, res: Response): Promise<void> => {
@@ -37,7 +43,7 @@ export default class AddInvolvedStaffRoutes {
     }
 
     if (submitType === SubmitType.SAVE_AND_RETURN) {
-      return res.redirect(`/report/${bookingId}/report-use-of-force`)
+      return res.redirect(paths.reportUseOfForce(bookingId))
     }
 
     if (!addMore) {
@@ -47,12 +53,15 @@ export default class AddInvolvedStaffRoutes {
           href: '#confirm',
         },
       ])
-      return res.redirect(`/report/${bookingId}/staff-involved`)
+      return res.redirect(paths.staffInvolved(bookingId))
     }
 
-    return addMore === 'yes'
-      ? res.redirect(`/report/${bookingId}/staff-member-name`)
-      : res.redirect(nextPaths.involvedStaff(bookingId))
+    if (addMore === 'yes') {
+      return res.redirect(paths.staffMemberName(bookingId))
+    }
+    const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
+    const destination = complete ? paths.checkYourAnswers(bookingId) : nextPaths.involvedStaff(bookingId)
+    return res.redirect(destination)
   }
 
   public async viewDeleteStaffMember(req: Request, res: Response): Promise<void> {
@@ -72,14 +81,14 @@ export default class AddInvolvedStaffRoutes {
           href: '#confirm',
         },
       ])
-      return res.redirect(`/report/${bookingId}/delete-staff-member/${username}`)
+      return res.redirect(paths.deleteStaffMember(bookingId, username))
     }
 
     if (confirm === 'yes') {
       await this.draftReportService.deleteInvolvedStaff(res.locals.user, parseInt(bookingId, 10), username)
     }
 
-    return res.redirect(`/report/${bookingId}/staff-involved`)
+    return res.redirect(paths.staffInvolved(bookingId))
   }
 
   public async viewStaffMemberName(req: Request, res: Response): Promise<void> {
@@ -99,7 +108,7 @@ export default class AddInvolvedStaffRoutes {
           href: '#username',
         },
       ])
-      return res.redirect(`/report/${bookingId}/staff-member-name`)
+      return res.redirect(paths.staffMemberName(bookingId))
     }
 
     const result = await this.draftReportService.addDraftStaff(res.locals.user, parseInt(bookingId, 10), username)
@@ -107,12 +116,12 @@ export default class AddInvolvedStaffRoutes {
     switch (result) {
       case AddStaffResult.MISSING: {
         req.flash('query', { username })
-        return res.redirect(`/report/${bookingId}/staff-member-not-found`)
+        return res.redirect(paths.staffNotFound(bookingId))
       }
       case AddStaffResult.ALREADY_EXISTS:
       case AddStaffResult.SUCCESS:
       case AddStaffResult.SUCCESS_UNVERIFIED: {
-        return res.redirect(`/report/${bookingId}/staff-involved`)
+        return res.redirect(paths.staffInvolved(bookingId))
       }
       default:
         throw new Error(`Unexpected result: ${result}`)
@@ -123,7 +132,7 @@ export default class AddInvolvedStaffRoutes {
     const { bookingId } = req.params
     const query = getFromFlash(req, 'query')
     if (!query) {
-      return res.redirect(`/report/${bookingId}/staff-involved`)
+      return res.redirect(paths.staffInvolved(bookingId))
     }
     const name = query.username
     return res.render('formPages/addingStaff/staff-member-not-found', { name, bookingId })

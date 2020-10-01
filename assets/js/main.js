@@ -9,6 +9,10 @@ $(document).ready(function () {
     form.submit()
   })
 
+  $('.print-link').click(function () {
+    window.print()
+  })
+
   $('.date-input').each(function (index, element) {
     const disableFutureDates = Boolean($(element).attr('disable-future-dates'))
     const disablePastDates = Boolean($(element).attr('disable-past-dates'))

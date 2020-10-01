@@ -7,6 +7,7 @@ const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPag
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 const RelocationAndInjuriesPage = require('../../pages/createReport/relocationAndInjuriesPage')
 const EvidencePage = require('../../pages/createReport/evidencePage')
+const StaffInvolvedPage = require('../../pages/createReport/staffInvolvedPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -58,6 +59,15 @@ context('Check your answers page', () => {
       operation: page => page.clickSave(),
       finalValue: 'No',
     })
+  })
+
+  it('Can edit involved staff from check your answers page ', () => {
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
+    checkAnswersPage.editStaffInvolvedLink().click()
+    const staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
+    staffInvolvedPage.saveButton().should('exist')
+    staffInvolvedPage.cancelButton().should('exist')
   })
 
   it('Can cancel editing answers from check your answers page ', () => {
