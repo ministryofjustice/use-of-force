@@ -17,20 +17,8 @@ const expectedPayload = {
     plannedUseOfForce: true,
   },
   involvedStaff: [
-    {
-      name: 'MR_ZAGATO name',
-      email: 'MR_ZAGATO@gov.uk',
-      staffId: 231232,
-      username: 'MR_ZAGATO',
-      verified: true,
-    },
-    {
-      name: 'MRS_JONES name',
-      email: 'MRS_JONES@gov.uk',
-      staffId: 231232,
-      username: 'MRS_JONES',
-      verified: true,
-    },
+    { name: 'Emily Jones', email: 'Emily@gov.uk', staffId: 5, username: 'EMILY_JONES', verified: true },
+    { name: 'Jo Zagato', email: 'Jo@gov.uk', staffId: 2, username: 'JO_ZAGATO', verified: true },
   ],
   useOfForceDetails: {
     pavaUsed: true,

@@ -42,9 +42,17 @@ async function getSystemClientToken(username?: string) {
   return result.body
 }
 
+type GetParams = {
+  path: string
+  query: string
+  headers: Record<string, string>
+  responseType: string
+  raw: boolean
+}
+
 function getBuilder(token) {
-  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    logger.info(`Get using user credentials: calling elite2api: ${path} ${query}`)
+  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetParams): Promise<any> => {
+    logger.info(`Get using user credentials: calling auth: ${path} ${query}`)
     try {
       const result = await superagent
         .get(path)
@@ -68,26 +76,61 @@ function getBuilder(token) {
   }
 }
 
-export function authClientBuilder(token) {
-  const get = getBuilder(token)
-  return {
-    async getEmail(username) {
-      const path = `${apiUrl}/api/user/${username}/email`
-      const { status, body } = await get({ path, raw: true })
-      return {
-        email: body.email,
-        username: body.username || username,
-        exists: status < 400,
-        verified: status === 200,
-      }
-    },
-    async getUser(username) {
-      const path = `${apiUrl}/api/user/${username}`
-      const body = await get({ path })
-      return body
-    },
+export type EmailResult = {
+  email?: string
+  username: string
+  exists: boolean
+  verified: boolean
+}
+
+type UserResult = {
+  name: string
+  staffId: number
+}
+
+export type FoundUserResult = {
+  username: string
+  verified: boolean
+  email?: string // only if verified
+  name: string
+  staffId: number
+}
+
+export class AuthClient {
+  private get;
+
+  constructor(token: string) {
+    this.get = getBuilder(token)
+  }
+
+  async getEmail(username: string): Promise<EmailResult> {
+    const path = `${apiUrl}/api/user/${username}/email`
+    const { status, body } = await this.get({ path, raw: true })
+    return {
+      email: body.email,
+      username: body.username || username,
+      exists: status < 400,
+      verified: status === 200,
+    }
+  }
+
+  async getUser(username: string): Promise<UserResult> {
+    const path = `${apiUrl}/api/user/${username}`
+    const body = await this.get({ path })
+    return body
+  }
+
+  async findUsers(firstName: string, lastName: string): Promise<FoundUserResult[]> {
+    const path = `${apiUrl}/api/prisonuser`
+    const body = await this.get({ path, query: querystring.stringify({ firstName, lastName }) })
+    return body
   }
 }
+export function authClientBuilder(token: string): AuthClient {
+  return new AuthClient(token)
+}
+
+export type AuthClientBuilder = typeof authClientBuilder
 
 export const systemToken: SystemToken = async (username?: string): Promise<string> => {
   const systemClientToken = await getSystemClientToken(username)

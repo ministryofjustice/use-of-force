@@ -100,13 +100,15 @@ describe('staff involved page', () => {
 
 describe('delete staff page', () => {
   test('GET should display content and staff to delete', () => {
+    draftReportService.getInvolvedStaff.mockResolvedValue([{ username: 'USER-1', name: 'BOB SMITH' }])
     return request(app)
       .get(`/report/-19/delete-staff-member/USER-1`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Are you sure you want to delete USER-1?')
+        expect(res.text).toContain('Are you sure you want to delete Bob Smith?')
       })
   })
+
   test('POST requires confirmation option to be selected', () => {
     return request(app)
       .post(`/report/-19/delete-staff-member/USER-1`)
@@ -143,11 +145,11 @@ describe('submit staff', () => {
       .get(`/report/-19/staff-member-name`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('What is the staff member&#39;s username?')
+        expect(res.text).toContain('What is the staff member&#39;s name?')
       })
   })
 
-  test('POST requires username specifying', () => {
+  test('POST requires name specifying', () => {
     return request(app)
       .post(`/report/-19/staff-member-name`)
       .expect('Content-Type', /text\/plain/)
@@ -155,50 +157,71 @@ describe('submit staff', () => {
   })
 
   test('POST staff added successfully', () => {
-    draftReportService.addDraftStaff.mockResolvedValue(AddStaffResult.SUCCESS)
+    draftReportService.addDraftStaffByName.mockResolvedValue(AddStaffResult.SUCCESS)
     return request(app)
       .post(`/report/-19/staff-member-name`)
-      .send({ username: 'user-1' })
+      .send({ firstName: 'Jo', lastName: 'Jones' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/staff-involved')
       .expect(() => {
-        expect(draftReportService.addDraftStaff).toBeCalledWith(user, -19, 'user-1')
+        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, -19, 'Jo', 'Jones')
       })
   })
 
   test('POST staff added when unverified', () => {
-    draftReportService.addDraftStaff.mockResolvedValue(AddStaffResult.SUCCESS_UNVERIFIED)
+    draftReportService.addDraftStaffByName.mockResolvedValue(AddStaffResult.SUCCESS_UNVERIFIED)
     return request(app)
       .post(`/report/-19/staff-member-name`)
-      .send({ username: 'user-1' })
+      .send({ firstName: 'Jo', lastName: 'Jones' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/staff-involved')
       .expect(() => {
-        expect(draftReportService.addDraftStaff).toBeCalledWith(user, -19, 'user-1')
+        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, -19, 'Jo', 'Jones')
       })
   })
 
   test('POST we do not handle when staff already added to report', () => {
-    draftReportService.addDraftStaff.mockResolvedValue(AddStaffResult.ALREADY_EXISTS)
+    draftReportService.addDraftStaffByName.mockResolvedValue(AddStaffResult.ALREADY_EXISTS)
     return request(app)
       .post(`/report/-19/staff-member-name`)
-      .send({ username: 'user-1' })
+      .send({ firstName: 'Jo', lastName: 'Jones' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/staff-involved')
       .expect(() => {
-        expect(draftReportService.addDraftStaff).toBeCalledWith(user, -19, 'user-1')
+        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, -19, 'Jo', 'Jones')
       })
   })
 
   test('POST staff not added as missing user', () => {
-    draftReportService.addDraftStaff.mockResolvedValue(AddStaffResult.MISSING)
+    draftReportService.addDraftStaffByName.mockResolvedValue(AddStaffResult.MISSING)
     return request(app)
       .post(`/report/-19/staff-member-name`)
-      .send({ username: 'user-1' })
+      .send({ firstName: 'Jo', lastName: 'Jones' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/staff-member-not-found')
       .expect(() => {
-        expect(draftReportService.addDraftStaff).toBeCalledWith(user, -19, 'user-1')
+        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, -19, 'Jo', 'Jones')
+      })
+  })
+})
+
+describe('multiple results', () => {
+  test('POST requires staff member to be selected', () => {
+    return request(app)
+      .post(`/report/-19/select-staff-member`)
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/select-staff-member')
+  })
+
+  test('POST selecting staff member, triggers redirect', () => {
+    draftReportService.addDraftStaffByUsername.mockResolvedValue(AddStaffResult.SUCCESS)
+    return request(app)
+      .post(`/report/-19/select-staff-member`)
+      .send({ selectedStaffUsername: 'USER-2', firstName: 'BOB', lastName: 'Smith' })
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/staff-involved')
+      .expect(() => {
+        expect(draftReportService.addDraftStaffByUsername).toBeCalledWith(user, -19, 'USER-2')
       })
   })
 })

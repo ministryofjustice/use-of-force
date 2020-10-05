@@ -5,7 +5,7 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
-{% set pageTitle = "What is the staff member's username?" %}
+{% set pageTitle = "What is the staff member's name?" %}
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
@@ -26,18 +26,27 @@
     <div>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-        <input type="hidden" name="nextDestination" value="{{ data.nextDestination }}" />
 
 
         {% call govukFieldset({
         }) %}
 
           {{ govukInput({
+              label: {
+                text: 'First name'
+              },
+              id: "firstName",
+              name: "firstName",
+              classes: "govuk-input--width-20"
+          }) }}
+        
+
+          {{ govukInput({
             label: {
-              text: 'Username'
+              text: 'Last name'
             },
-            id: "username",
-            name: "username",
+            id: "lastName",
+            name: "lastName",
             classes: "govuk-input--width-20"
           }) }}
 

@@ -4,6 +4,7 @@ import type { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from
 import { PageResponse, toPage } from '../utils/page'
 import StatementsClient from '../data/statementsClient'
 import OffenderService from './offenderService'
+import { AuthClientBuilder } from '../data/authClientBuilder'
 
 export interface IncidentSummary {
   id: number
@@ -48,7 +49,7 @@ export default class ReviewService {
   constructor(
     private readonly statementsClient: StatementsClient,
     private readonly incidentClient: IncidentClient,
-    private readonly authClientBuilder,
+    private readonly authClientBuilder: AuthClientBuilder,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken
   ) {}
