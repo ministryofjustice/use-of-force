@@ -1,5 +1,6 @@
 import { Response, Request } from 'express'
 
+import { properCaseFullName } from '../utils/utils'
 import { paths, nextPaths } from '../config/incident'
 import { SystemToken } from '../types/uof'
 import DraftReportService, { AddStaffResult } from '../services/report/draftReportService'
@@ -64,10 +65,17 @@ export default class AddInvolvedStaffRoutes {
     return res.redirect(destination)
   }
 
-  public async viewDeleteStaffMember(req: Request, res: Response): Promise<void> {
+  public viewDeleteStaffMember = async (req: Request, res: Response): Promise<void> => {
     const { bookingId, username } = req.params
     const errors = req.flash('errors')
-    return res.render('formPages/addingStaff/delete-staff-member', { bookingId, username, errors })
+    const involvedStaff = await this.draftReportService.getInvolvedStaff(
+      await this.systemToken(req.user.username),
+      req.user.username,
+      parseInt(bookingId, 10)
+    )
+    const staffToDelete = involvedStaff.find(staff => staff.username === username)
+    const name = properCaseFullName(staffToDelete.name)
+    return res.render('formPages/addingStaff/delete-staff-member', { bookingId, username, name, errors })
   }
 
   public submitDeleteStaffMember = async (req: Request, res: Response): Promise<void> => {
@@ -93,30 +101,52 @@ export default class AddInvolvedStaffRoutes {
 
   public async viewStaffMemberName(req: Request, res: Response): Promise<void> {
     const { bookingId } = req.params
+    const { firstName, lastName } = req.flash('userInput') || {}
     const errors = req.flash('errors')
-    return res.render('formPages/addingStaff/staff-member-name', { errors, bookingId })
+    return res.render('formPages/addingStaff/staff-member-name', { errors, firstName, lastName, bookingId })
   }
 
   public submitStaffMemberName = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { username } = req.body
+    const { firstName, lastName } = req.body
 
-    if (!username?.trim()) {
+    const firstNameMissing = !firstName?.trim()
+    const lastNameMissing = !firstName?.trim()
+
+    if (firstNameMissing || lastNameMissing) {
       req.flash('errors', [
-        {
-          text: 'Enter a staff member’s username',
-          href: '#username',
-        },
+        ...(firstNameMissing && [
+          {
+            text: 'Enter a staff member’s first name',
+            href: '#firstname',
+          },
+        ]),
+        ...(lastNameMissing && [
+          {
+            text: 'Enter a staff member’s last name',
+            href: '#firstname',
+          },
+        ]),
       ])
+      req.flash('userInput', { firstName, lastName })
       return res.redirect(paths.staffMemberName(bookingId))
     }
 
-    const result = await this.draftReportService.addDraftStaff(res.locals.user, parseInt(bookingId, 10), username)
+    const result = await this.draftReportService.addDraftStaffByName(
+      res.locals.user,
+      parseInt(bookingId, 10),
+      firstName,
+      lastName
+    )
 
     switch (result) {
       case AddStaffResult.MISSING: {
-        req.flash('query', { username })
+        req.flash('query', { firstName, lastName })
         return res.redirect(paths.staffNotFound(bookingId))
+      }
+      case AddStaffResult.NO_EXACT_MATCH: {
+        req.flash('query', { firstName, lastName })
+        return res.redirect(paths.selectStaffMember(bookingId))
       }
       case AddStaffResult.ALREADY_EXISTS:
       case AddStaffResult.SUCCESS:
@@ -134,7 +164,62 @@ export default class AddInvolvedStaffRoutes {
     if (!query) {
       return res.redirect(paths.staffInvolved(bookingId))
     }
-    const name = query.username
-    return res.render('formPages/addingStaff/staff-member-not-found', { name, bookingId })
+    const { firstName, lastName } = query
+    const name = properCaseFullName(`${firstName} ${lastName}`)
+    return res.render('formPages/addingStaff/staff-member-not-found', { bookingId, name })
+  }
+
+  public viewSelectStaffMember = async (req: Request, res: Response): Promise<void> => {
+    const { bookingId } = req.params
+    const query = getFromFlash(req, 'query')
+    if (!query) {
+      return res.redirect(paths.staffInvolved(bookingId))
+    }
+    const { firstName, lastName } = query
+    const staff = await this.draftReportService.findUsers(
+      await this.systemToken(req.user.username),
+      firstName,
+      lastName
+    )
+    return res.render('formPages/addingStaff/select-staff-member', {
+      bookingId,
+      firstName,
+      lastName,
+      staff,
+      errors: req.flash('errors'),
+    })
+  }
+
+  public submitSelectStaffMember = async (req: Request, res: Response): Promise<void> => {
+    const { bookingId } = req.params
+    const { selectedStaffUsername, firstName, lastName } = req.body
+
+    if (!selectedStaffUsername) {
+      const errors = [
+        {
+          text: 'Select the staff member you want to add',
+          href: '#user-1',
+        },
+      ]
+      req.flash('query', { firstName, lastName })
+      req.flash('errors', errors)
+      return res.redirect(paths.selectStaffMember(bookingId))
+    }
+
+    const result = await this.draftReportService.addDraftStaffByUsername(
+      res.locals.user,
+      parseInt(bookingId, 10),
+      selectedStaffUsername
+    )
+
+    switch (result) {
+      case AddStaffResult.ALREADY_EXISTS:
+      case AddStaffResult.SUCCESS:
+      case AddStaffResult.SUCCESS_UNVERIFIED: {
+        return res.redirect(paths.staffInvolved(bookingId))
+      }
+      default:
+        throw new Error(`Unexpected result: ${result}`)
+    }
   }
 }

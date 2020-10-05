@@ -84,6 +84,8 @@ export default function Index(
     post(reportPath('delete-staff-member/:username'), addInvolvedStaff.submitDeleteStaffMember)
     get(reportPath('staff-member-name'), addInvolvedStaff.viewStaffMemberName)
     post(reportPath('staff-member-name'), addInvolvedStaff.submitStaffMemberName)
+    get(reportPath('select-staff-member'), addInvolvedStaff.viewSelectStaffMember)
+    post(reportPath('select-staff-member'), addInvolvedStaff.submitSelectStaffMember)
     get(reportPath('staff-member-not-found'), addInvolvedStaff.viewStaffMemberNotFound)
 
     get(reportPath('change-prison'), changePrison.viewPrisons)

@@ -4,17 +4,16 @@ import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
+import { AuthClient, EmailResult } from '../data/authClientBuilder'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
+jest.mock('../data/authClientBuilder')
 jest.mock('./offenderService')
 
-let incidentClient: jest.Mocked<IncidentClient>
-let statementsClient: jest.Mocked<StatementsClient>
-
-const authClient = {
-  getEmail: jest.fn(),
-}
+const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
+const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
 
 const authClientBuilder = jest.fn().mockReturnValue(authClient)
 
@@ -24,10 +23,12 @@ let service: ReviewService
 
 describe('reviewService', () => {
   beforeEach(() => {
-    incidentClient = new IncidentClient(jest.fn(), jest.fn()) as jest.Mocked<IncidentClient>
-    statementsClient = new StatementsClient(jest.fn()) as jest.Mocked<StatementsClient>
-    service = new ReviewService(statementsClient, incidentClient, authClientBuilder, offenderService, username =>
-      Promise.resolve(`${username}-system-token`)
+    service = new ReviewService(
+      statementsClient,
+      incidentClient,
+      authClientBuilder,
+      offenderService,
+      async username => `${username}-system-token`
     )
   })
 
@@ -36,7 +37,9 @@ describe('reviewService', () => {
   })
 
   test('getStatements', async () => {
-    authClient.getEmail.mockResolvedValueOnce({ verified: false }).mockResolvedValueOnce({ verified: true })
+    authClient.getEmail
+      .mockResolvedValueOnce({ verified: false } as EmailResult)
+      .mockResolvedValueOnce({ verified: true } as EmailResult)
     statementsClient.getStatementsForReviewer.mockResolvedValue([{ id: 1 }, { id: 2 }])
 
     const statements = await service.getStatements('token-1', 1)

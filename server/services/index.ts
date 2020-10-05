@@ -23,7 +23,6 @@ import UserService from './userService'
 import elite2ClientBuilder from '../data/elite2ClientBuilder'
 
 import { authClientBuilder, systemToken } from '../data/authClientBuilder'
-
 import createHeatmapBuilder from './heatmapBuilder'
 import EventPublisher from './eventPublisher'
 
