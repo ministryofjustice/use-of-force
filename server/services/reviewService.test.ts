@@ -1,7 +1,7 @@
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
-import { ReportSummary } from '../data/incidentClientTypes'
+import { Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 
@@ -84,7 +84,7 @@ describe('reviewService', () => {
 
   describe('getReport', () => {
     test('it should call query on db', async () => {
-      incidentClient.getReportForReviewer.mockResolvedValue({ id: 2 })
+      incidentClient.getReportForReviewer.mockResolvedValue({ id: 2 } as Report)
       await service.getReport(1)
       expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
       expect(incidentClient.getReportForReviewer).toBeCalledWith(1)

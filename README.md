@@ -13,10 +13,10 @@ The easiest way to run the app is to use docker compose to build the local app a
 
 ### Dependencies
 The app requires: 
-* `Nomis Oauth2 Server` for authentication
-* `elite2-api` to retrieve offender and prison information
+* `HMPPs Auth Service` for authentication
+* `prison-api` to retrieve offender and prison information
 * It's own postgres DB to store report information
-* A REDIS instance for storing tokens
+* A REDIS instance for storing sessions
 
 ### Runing the app for development**
 
@@ -40,6 +40,9 @@ username: `CA_USER`,   password: `password123456`
 
 There is a reviewer user who will additionally be able to see all incidents on their current caseload:
 username: `UOF_REVIEWER_USER`, password: `password123456`
+
+You can log in as a use of force coordinator in the sample data with the user who will additionally be able to add or delete staff and remove reports:
+username: `UOF_COORDINATOR_USER` password:`password123456`
 
 Once the use of force app has started, there are multiple ways to access the app.
 

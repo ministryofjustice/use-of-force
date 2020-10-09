@@ -5,7 +5,7 @@ import type IncidentClient from '../data/incidentClient'
 import type StatementsClient from '../data/statementsClient'
 import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
-import type { StaffDetails } from '../data/draftReportClientTypes'
+import { InvolvedStaff } from '../data/incidentClientTypes'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -22,11 +22,11 @@ export class InvolvedStaffService {
     private readonly inTransaction: InTransaction
   ) {}
 
-  public getInvolvedStaff(reportId: number): Promise<any[]> {
+  public getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
     return this.incidentClient.getInvolvedStaff(reportId)
   }
 
-  public async loadInvolvedStaff(reportId: number, statementId: number): Promise<StaffDetails> {
+  public async loadInvolvedStaff(reportId: number, statementId: number): Promise<InvolvedStaff> {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.statementId === statementId)
     if (!found) {
@@ -35,7 +35,7 @@ export class InvolvedStaffService {
     return found
   }
 
-  public async loadInvolvedStaffByUsername(reportId: number, username: string): Promise<StaffDetails> {
+  public async loadInvolvedStaffByUsername(reportId: number, username: string): Promise<InvolvedStaff> {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.userId === username)
     if (!found) {

@@ -4,6 +4,7 @@ import { ReportStatus } from '../config/types'
 import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import UserService from './userService'
+import { Report } from '../data/incidentClientTypes'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
@@ -37,8 +38,8 @@ describe('getInvolvedStaff', () => {
 })
 
 describe('update', () => {
-  const reportSubmittedDate = moment('2019-09-06 21:26:18')
-  const overdueDate = moment(reportSubmittedDate).add(3, 'days')
+  const reportSubmittedDate = moment('2019-09-06 21:26:18').toDate()
+  const overdueDate = moment(reportSubmittedDate).add(3, 'days').toDate()
 
   describe('addInvolvedStaff', () => {
     const staff = [
@@ -60,11 +61,11 @@ describe('update', () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.COMPLETE.value,
-      })
+      } as Report)
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), staff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, staff, client)
 
       expect(incidentClient.changeStatus).toBeCalledWith(1, ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
     })
@@ -73,11 +74,11 @@ describe('update', () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.SUBMITTED.value,
-      })
+      } as Report)
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), staff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, staff, client)
 
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
@@ -95,7 +96,7 @@ describe('update', () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.COMPLETE.value,
-      })
+      } as Report)
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(true)
 
@@ -109,7 +110,7 @@ describe('update', () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
         status: ReportStatus.IN_PROGRESS.value,
-      })
+      } as Report)
 
       const unverifiedStaff = [
         {
@@ -127,7 +128,7 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate.toDate(), unverifiedStaff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, unverifiedStaff, client)
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
   })

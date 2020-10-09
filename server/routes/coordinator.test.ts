@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { StaffDetails } from '../data/draftReportClientTypes'
+import { InvolvedStaff, Report } from '../data/incidentClientTypes'
 import { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../services'
 import { AddStaffResult } from '../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from './testutils/appSetup'
@@ -148,7 +148,7 @@ describe('coordinator', () => {
     it('should resolve for reviewer', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
       offenderService.getOffenderDetails.mockResolvedValue({})
-      reviewService.getReport.mockResolvedValue({})
+      reviewService.getReport.mockResolvedValue({} as Report)
 
       await request(app)
         .get('/coordinator/report/1/confirm-delete')
@@ -201,7 +201,7 @@ describe('coordinator', () => {
 
     it('when report status is SUBMITTED and confirming to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' })
+      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' } as Report)
 
       await request(app)
         .post('/coordinator/report/123/delete')
@@ -215,7 +215,7 @@ describe('coordinator', () => {
 
     it('when report status is SUBMITTED and confirming not to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' })
+      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' } as Report)
 
       await request(app)
         .post('/coordinator/report/123/delete')
@@ -229,7 +229,7 @@ describe('coordinator', () => {
 
     it('when report status is COMPLETE and confirming to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' })
+      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' } as Report)
 
       await request(app)
         .post('/coordinator/report/123/delete')
@@ -243,7 +243,7 @@ describe('coordinator', () => {
 
     it('when report status is COMPLETE and confirming not to delete', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' })
+      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' } as Report)
 
       await request(app)
         .post('/coordinator/report/123/delete')
@@ -286,8 +286,8 @@ describe('coordinator', () => {
     it('should resolve for reviewer', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
       offenderService.getOffenderDetails.mockResolvedValue({})
-      reviewService.getReport.mockResolvedValue({})
-      involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'Bob' } as StaffDetails)
+      reviewService.getReport.mockResolvedValue({} as Report)
+      involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'Bob' } as InvolvedStaff)
 
       await request(app)
         .get('/coordinator/report/1/statement/2/confirm-delete')

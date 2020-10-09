@@ -2,6 +2,7 @@ import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import { PageResponse } from '../utils/page'
 import { ReportDetailBuilder, ReportService, OffenderService } from '../services'
+import { Report } from '../data/incidentClientTypes'
 
 jest.mock('../services/report/reportService')
 jest.mock('../services/offenderService')
@@ -12,6 +13,7 @@ const userSupplier = jest.fn()
 const reportService = new ReportService(null, null, null) as jest.Mocked<ReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null) as jest.Mocked<ReportDetailBuilder>
+const report = ({ id: 1, form: { incidentDetails: {} } } as unknown) as Report
 
 let app
 
@@ -30,7 +32,7 @@ describe('GET /incidents', () => {
 
 describe('GET /your-report', () => {
   it('should render page', () => {
-    reportService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reportService.getReport.mockResolvedValue(report)
     return request(app)
       .get('/1/your-report')
       .expect(200)
