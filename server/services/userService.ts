@@ -80,7 +80,7 @@ export default class UserService {
 
       return users
     } catch (error) {
-      logger.error('Error during getEmails: ', error.stack)
+      logger.error('Error during findUsers: ', error.stack)
       throw error
     }
   }

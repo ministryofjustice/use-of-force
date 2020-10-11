@@ -89,8 +89,8 @@ export default class DraftReportClient {
     query: QueryPerformer = this.query
   ): Promise<StaffDetails[]> {
     const results = await query({
-      text: 'select form_response "form" from v_report where booking_id = $1 and user_id = $2',
-      values: [bookingId, username],
+      text: 'select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3',
+      values: [bookingId, username, ReportStatus.IN_PROGRESS.value],
     })
 
     if (results.rows.length) {

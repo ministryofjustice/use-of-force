@@ -58,17 +58,20 @@ export default class DraftReportService {
     token: string,
     user: LoggedInUser,
     bookingId: number,
-    users: FoundUserResult[]
+    foundUsers: FoundUserResult[]
   ): Promise<AddStaffResult> {
+    const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
+
+    const users = foundUsers.filter(fu => !currentDraftStaff.some(cu => fu.username === cu.username))
+
     if (!users.length) {
-      return AddStaffResult.MISSING
+      // if we have found users but no users after removing current users, then at least one user with that name has previously been added
+      return foundUsers.length ? AddStaffResult.ALREADY_EXISTS : AddStaffResult.MISSING
     }
     if (users.length > 1) {
       return AddStaffResult.NO_EXACT_MATCH
     }
     const [newUser] = users
-
-    const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
 
     const userAlreadyExists = currentDraftStaff.find(staff => staff.username === newUser.username)
     if (userAlreadyExists) {

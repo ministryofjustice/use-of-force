@@ -129,7 +129,7 @@ test('getInvolvedStaff', async () => {
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(query).toBeCalledWith({
-    text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2`,
-    values: [1, 'user-1'],
+    text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3`,
+    values: [1, 'user-1', ReportStatus.IN_PROGRESS.value],
   })
 })

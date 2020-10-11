@@ -122,7 +122,10 @@ export class AuthClient {
 
   async findUsers(firstName: string, lastName: string): Promise<FoundUserResult[]> {
     const path = `${apiUrl}/api/prisonuser`
-    const body = await this.get({ path, query: querystring.stringify({ firstName, lastName }) })
+    const body = await this.get({
+      path,
+      query: querystring.stringify({ firstName: firstName?.trim(), lastName: lastName?.trim() }),
+    })
     return body
   }
 }

@@ -18,6 +18,8 @@ const submitDraftReportService = new SubmitDraftReportService(null, null, null, 
 >
 const updateDraftReportService = new UpdateDraftReportService(null, null, null) as jest.Mocked<UpdateDraftReportService>
 
+const aUser = username => ({ username } as FoundUserResult)
+
 let service: DraftReportService
 
 beforeEach(() => {
@@ -48,7 +50,7 @@ describe('submit', () => {
 
   test('when user exists on report', async () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-1' }, { username: 'user-2' }])
-    userService.getUsers.mockResolvedValue([{ username: 'user-1' } as FoundUserResult])
+    userService.getUsers.mockResolvedValue([aUser('user-1')])
 
     await service.submit(loggedInUser, 1)
 
@@ -60,7 +62,7 @@ describe('submit', () => {
 
   test('when user does not exist on report', async () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
-    userService.getUsers.mockResolvedValue([{ username: 'user-1' } as FoundUserResult])
+    userService.getUsers.mockResolvedValue([aUser('user-1')])
 
     await service.submit(loggedInUser, 1)
 
@@ -74,7 +76,7 @@ describe('submit', () => {
 describe('getInvolvedStaff', () => {
   test('getInvolvedStaff when user exists on report', async () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-1' }, { username: 'user-2' }])
-    userService.getUsers.mockResolvedValue([{ username: 'user-1' } as FoundUserResult])
+    userService.getUsers.mockResolvedValue([aUser('user-1')])
 
     await expect(service.getInvolvedStaff('token-1', 'user-1', 1)).resolves.toStrictEqual([
       { username: 'user-1', isReporter: true },
@@ -86,7 +88,7 @@ describe('getInvolvedStaff', () => {
 
   test('getInvolvedStaff when user does not exist on report', async () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
-    userService.getUsers.mockResolvedValue([{ username: 'user-1' } as FoundUserResult])
+    userService.getUsers.mockResolvedValue([aUser('user-1')])
 
     await expect(service.getInvolvedStaff('token-1', 'user-1', 1)).resolves.toStrictEqual([
       { username: 'user-1', isReporter: true },
@@ -100,6 +102,9 @@ describe('getInvolvedStaff', () => {
     const loggedInUser = { username: 'user-1' } as LoggedInUser
 
     test('no match', async () => {
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      draftReportClient.getInvolvedStaff.mockResolvedValue([])
+
       userService.findUsers.mockResolvedValue([])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
@@ -109,11 +114,11 @@ describe('getInvolvedStaff', () => {
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
-    test('multiple matches', async () => {
-      userService.findUsers.mockResolvedValue([
-        { username: 'user-2' } as FoundUserResult,
-        { username: 'user-2' } as FoundUserResult,
-      ])
+    test('multiple matches when none added', async () => {
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      draftReportClient.getInvolvedStaff.mockResolvedValue([])
+
+      userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
         AddStaffResult.NO_EXACT_MATCH
@@ -122,9 +127,35 @@ describe('getInvolvedStaff', () => {
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
+    test('found multiple matches when all but one added', async () => {
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      draftReportClient.getInvolvedStaff.mockResolvedValue([aUser('user-2')])
+
+      userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
+
+      await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
+        AddStaffResult.SUCCESS
+      )
+
+      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+    })
+
+    test('found multiple matches when all added', async () => {
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      draftReportClient.getInvolvedStaff.mockResolvedValue([aUser('user-2'), aUser('user-3')])
+
+      userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
+
+      await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
+        AddStaffResult.ALREADY_EXISTS
+      )
+
+      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+    })
+
     test('staff already exists', async () => {
-      userService.findUsers.mockResolvedValueOnce([{ username: 'user-2' } as FoundUserResult])
-      userService.getUsers.mockResolvedValueOnce([{ username: 'user-1' } as FoundUserResult])
+      userService.findUsers.mockResolvedValueOnce([aUser('user-2')])
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
 
       draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
 
@@ -134,8 +165,8 @@ describe('getInvolvedStaff', () => {
     })
 
     test('reporter tries to add themselves', async () => {
-      userService.findUsers.mockResolvedValue([{ username: 'user-1' } as FoundUserResult])
-      userService.getUsers.mockResolvedValueOnce([{ username: 'user-1' } as FoundUserResult])
+      userService.findUsers.mockResolvedValue([aUser('user-1')])
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
 
       draftReportClient.getInvolvedStaff.mockResolvedValue([])
 
@@ -145,8 +176,8 @@ describe('getInvolvedStaff', () => {
     })
 
     test('successfully add staff when none other present', async () => {
-      userService.findUsers.mockResolvedValueOnce([{ username: 'user-2' } as FoundUserResult])
-      userService.getUsers.mockResolvedValueOnce([{ username: 'user-1' } as FoundUserResult])
+      userService.findUsers.mockResolvedValueOnce([aUser('user-2')])
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
 
       draftReportClient.getInvolvedStaff.mockResolvedValue([])
 
@@ -164,8 +195,8 @@ describe('getInvolvedStaff', () => {
     })
 
     test('successfully add staff when others are present', async () => {
-      userService.findUsers.mockResolvedValueOnce([{ username: 'user-2' } as FoundUserResult])
-      userService.getUsers.mockResolvedValueOnce([{ username: 'user-1' } as FoundUserResult])
+      userService.findUsers.mockResolvedValueOnce([aUser('user-2')])
+      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
       draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-3' }])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
@@ -186,7 +217,7 @@ describe('deleteInvolvedStaff', () => {
   const loggedInUser = { username: 'user-1' } as LoggedInUser
 
   test('delete staff member when only member', async () => {
-    userService.getUsers.mockResolvedValueOnce([{ username: loggedInUser.username } as FoundUserResult])
+    userService.getUsers.mockResolvedValueOnce([aUser(loggedInUser.username)])
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-2')
@@ -196,7 +227,7 @@ describe('deleteInvolvedStaff', () => {
   })
 
   test('delete staff member when multiple members', async () => {
-    userService.getUsers.mockResolvedValueOnce([{ username: loggedInUser.username } as FoundUserResult])
+    userService.getUsers.mockResolvedValueOnce([aUser(loggedInUser.username)])
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }, { username: 'user-3' }])
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-2')
@@ -212,7 +243,7 @@ describe('deleteInvolvedStaff', () => {
   })
 
   test('attempt to delete the reporter', async () => {
-    userService.getUsers.mockResolvedValueOnce([{ username: loggedInUser.username } as FoundUserResult])
+    userService.getUsers.mockResolvedValueOnce([aUser(loggedInUser.username)])
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }, { username: 'user-3' }])
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-1')

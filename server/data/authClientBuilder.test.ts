@@ -82,6 +82,16 @@ describe('authClient', () => {
       const output = await client.findUsers('bob', 'smith')
       expect(output).toEqual(userResponse)
     })
+
+    it('it trims names', async () => {
+      fakeApi
+        .get(`/api/prisonuser?firstName=bob&lastName=smith`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
+
+      const output = await client.findUsers('  bob    ', '   smith    ')
+      expect(output).toEqual(userResponse)
+    })
   })
 
   describe('systemToken', () => {
