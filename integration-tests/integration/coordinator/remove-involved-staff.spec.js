@@ -2,6 +2,8 @@ const moment = require('moment')
 const { offender } = require('../../mockApis/data')
 const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
 const ViewReportPage = require('../../pages/reviewer/viewReportPage')
+const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
+const YourReportPage = require('../../pages/yourReports/yourReportPage')
 const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatementDeletePage')
 const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
 const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
@@ -21,6 +23,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
   const seedReport = () =>
     cy.task('seedReport', {
+      username: 'TEST_USER',
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
       agencyId: 'MDI',
@@ -71,7 +74,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
     viewStatementsPage.reportLink().click()
     let reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('TEST_USER').should('be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
     reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
 
     const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
@@ -79,7 +82,7 @@ context('A use of force coordinator can remove involved staff', () => {
     confirmStatementDeletePage.continue().click()
 
     reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('TEST_USER').should('be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
     reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
     reportPage.returnToIncidentOverview().click()
 
@@ -105,6 +108,44 @@ context('A use of force coordinator can remove involved staff', () => {
           { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
+
+    cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
+      expect(count).to.equal(0)
+    )
+  })
+
+  it(`When a coordinator views their own report they can remove staff on an otherwise complete report and it will complete the report. 
+  And the report will be shown to be complete`, () => {
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+
+    seedReport()
+
+    const yourReportsPage = YourReportsPage.goTo()
+
+    {
+      const { prisoner, action } = yourReportsPage.reports(0)
+      prisoner().contains('Smith, Norman')
+      action().click()
+    }
+
+    let reportPage = YourReportPage.verifyOnPage()
+
+    reportPage
+      .getReportId()
+      .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
+      .then(() => cy.reload())
+
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
+
+    const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
+    confirmStatementDeletePage.confirm()
+    confirmStatementDeletePage.continue().click()
+
+    reportPage = YourReportPage.verifyOnPage()
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
 
     cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
       expect(count).to.equal(0)

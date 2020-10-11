@@ -1,4 +1,5 @@
 import { Prison } from '../data/elite2ClientBuilderTypes'
+import { InvolvedStaff, Report } from '../data/incidentClientTypes'
 import { InvolvedStaffService } from './involvedStaffService'
 import LocationService from './locationService'
 import OffenderService from './offenderService'
@@ -35,12 +36,15 @@ describe('Build details', () => {
 
     involvedStaffService.getInvolvedStaff.mockResolvedValue([
       { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22 },
-    ])
+      { name: 'MAUREEN TYLER', userId: 'M_TYLER', statementId: 24 },
+    ] as InvolvedStaff[])
 
     offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jim Burgler', offenderNo: 'A1234AA' })
 
-    const report = {
+    const report: Report = {
       id: 1,
+      username: 'J_SMITH',
+      offenderNo: 'A1234AA',
       form: { incidentDetails: { locationId: 2 } },
       incidentDate: new Date('2015-03-26T12:00:00Z'),
       bookingId: 33,
@@ -71,10 +75,18 @@ describe('Build details', () => {
         },
         staffInvolved: [
           {
+            isReporter: true,
             name: 'Janet Smith',
             reportId: 1,
             statementId: 22,
             username: 'J_SMITH',
+          },
+          {
+            isReporter: false,
+            name: 'Maureen Tyler',
+            reportId: 1,
+            statementId: 24,
+            username: 'M_TYLER',
           },
         ],
         witnesses: 'None',

@@ -2,6 +2,7 @@ import IncidentClient from '../../data/incidentClient'
 import ReportService from './reportService'
 import OffenderService from '../offenderService'
 import { PageResponse } from '../../utils/page'
+import { Report } from '../../data/incidentClientTypes'
 
 jest.mock('../../data/incidentClient')
 jest.mock('../offenderService')
@@ -32,7 +33,7 @@ afterEach(() => {
 
 describe('getReport', () => {
   test('it should call query on db', async () => {
-    incidentClient.getReport.mockResolvedValue({})
+    incidentClient.getReport.mockResolvedValue({} as Report)
     await service.getReport('user1', 1)
     expect(incidentClient.getReport).toBeCalledTimes(1)
     expect(incidentClient.getReport).toBeCalledWith('user1', 1)
@@ -79,7 +80,7 @@ describe('getReports', () => {
 
 describe('deleteReport', () => {
   test('when report exists', async () => {
-    incidentClient.getReportForReviewer.mockResolvedValue({})
+    incidentClient.getReportForReviewer.mockResolvedValue({} as Report)
 
     await service.deleteReport('currentUser', 1)
 

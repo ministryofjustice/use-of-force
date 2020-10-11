@@ -38,10 +38,11 @@ test('getReports', async () => {
 })
 
 test('getReportForReviewer', () => {
-  incidentClient.getReportForReviewer('report1')
+  incidentClient.getReportForReviewer(1)
 
   expect(query).toBeCalledWith({
     text: `select id
+          , user_id "username"
           , incident_date "incidentDate"
           , agency_id "agencyId"
           , submitted_date "submittedDate"
@@ -51,7 +52,7 @@ test('getReportForReviewer', () => {
           , status
           from v_report r
           where r.id = $1`,
-    values: ['report1'],
+    values: [1],
   })
 })
 
@@ -157,6 +158,7 @@ test('getReport', () => {
 
   expect(query).toBeCalledWith({
     text: `select id
+          , user_id "username"
           , incident_date "incidentDate"
           , agency_id "agencyId"
           , submitted_date "submittedDate"

@@ -1,5 +1,5 @@
 import type IncidentClient from '../../data/incidentClient'
-import type { ReportSummary, IncompleteReportSummary } from '../../data/incidentClientTypes'
+import type { ReportSummary, IncompleteReportSummary, Report } from '../../data/incidentClientTypes'
 import type { SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
@@ -45,7 +45,7 @@ export default class ReportService {
     return this.offenderService.getOffenderNames(token, offenderNos)
   }
 
-  async getReport(userId: string, reportId: number) {
+  async getReport(userId: string, reportId: number): Promise<Report> {
     const report = this.incidentClient.getReport(userId, reportId)
 
     if (!report) {

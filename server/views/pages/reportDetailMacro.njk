@@ -114,13 +114,15 @@
         id: 'staffInvolved',
         title: 'Staff involved',
         url:  '/report/' + bookingId + '/staff-involved' if bookingId
-      })
+      })  
     }}
     <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff" style="padding-inline-start: 0;list-style: none;">
-    {%for item in data.incidentDetails.staffInvolved %}
+   
+    {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
       <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2" style="border-bottom: 1px solid #b1b4b6">
       {{item.name}} ({{item.username}})
-      {%- if not print and user.isCoordinator and item.statementId -%}      
+
+      {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
         <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
           Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
       {%- endif -%}  

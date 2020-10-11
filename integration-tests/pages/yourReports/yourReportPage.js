@@ -13,6 +13,8 @@ const viewYourReportPage = () =>
 
     incidentNumber: () => cy.get('[data-qa="incident-number"]'),
 
+    deleteInvolvedStaff: username => cy.get(`[data-qa="delete-staff-${username}"]`),
+
     verifyInputs: reportDetails.verifyInputs,
 
     getReportId: () => {

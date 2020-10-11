@@ -4,6 +4,7 @@ import { parseDate } from '../utils/utils'
 import { PageResponse } from '../utils/page'
 import type { ReportDetail } from '../services/reportDetailBuilder'
 import { OffenderService, ReviewService, ReportDetailBuilder } from '../services'
+import { Report } from '../data/incidentClientTypes'
 
 const userSupplier = jest.fn()
 
@@ -14,12 +15,13 @@ jest.mock('../services/reportDetailBuilder')
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null) as jest.Mocked<ReportDetailBuilder>
+const report = ({ id: 1, form: { incidentDetails: {} } } as unknown) as Report
 
 let app
 
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
-  reviewService.getReport.mockResolvedValue({})
+  reviewService.getReport.mockResolvedValue({} as Report)
   app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
   reviewService.getIncompleteReports.mockResolvedValue([])
   reviewService.getCompletedReports.mockResolvedValue(
@@ -149,7 +151,7 @@ describe(`GET /not-completed-incidents`, () => {
 describe('GET /view-report', () => {
   it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockResolvedValue(report)
     return request(app)
       .get('/1/view-report')
       .expect(200)
@@ -164,7 +166,7 @@ describe('GET /view-report', () => {
 describe('GET /view-statements', () => {
   it('should render page if reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
-    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockResolvedValue(report)
     reviewService.getStatements.mockResolvedValue([])
     return request(app)
       .get('/1/view-statements')
@@ -177,7 +179,7 @@ describe('GET /view-statements', () => {
 
   it('should not allow if not reviewer', () => {
     userSupplier.mockReturnValue(user)
-    reviewService.getReport.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
+    reviewService.getReport.mockResolvedValue(report)
     reviewService.getStatements.mockResolvedValue([])
     return request(app)
       .get('/1/view-statements')

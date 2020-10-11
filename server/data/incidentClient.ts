@@ -1,7 +1,13 @@
 import { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { ReportStatus, StatementStatus } from '../config/types'
-import { IncidentSearchQuery, ReportSummary, IncompleteReportSummary } from './incidentClientTypes'
+import {
+  IncidentSearchQuery,
+  ReportSummary,
+  IncompleteReportSummary,
+  InvolvedStaff,
+  Report,
+} from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 
 export default class IncidentClient {
@@ -18,9 +24,10 @@ export default class IncidentClient {
     })
   }
 
-  async getReport(userId: string, reportId: number) {
+  async getReport(userId: string, reportId: number): Promise<Report> {
     const results = await this.query({
       text: `select id
+          , user_id "username"
           , incident_date "incidentDate"
           , agency_id "agencyId"
           , submitted_date "submittedDate"
@@ -34,9 +41,10 @@ export default class IncidentClient {
     return results.rows[0]
   }
 
-  async getReportForReviewer(reportId) {
+  async getReportForReviewer(reportId: number): Promise<Report> {
     const results = await this.query({
       text: `select id
+          , user_id "username"
           , incident_date "incidentDate"
           , agency_id "agencyId"
           , submitted_date "submittedDate"
@@ -149,7 +157,7 @@ export default class IncidentClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getInvolvedStaff(reportId: number) {
+  async getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
     const results = await this.query({
       text: `select s.id     "statementId"
     ,      s.user_id       "userId"

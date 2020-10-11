@@ -1,6 +1,6 @@
 import type IncidentClient from '../data/incidentClient'
 import type { AgencyId, SystemToken } from '../types/uof'
-import type { IncidentSearchQuery, IncompleteReportSummary, ReportSummary } from '../data/incidentClientTypes'
+import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
 import StatementsClient from '../data/statementsClient'
 import OffenderService from './offenderService'
@@ -61,7 +61,7 @@ export default class ReviewService {
     return Promise.all(results)
   }
 
-  async getReport(reportId: number) {
+  async getReport(reportId: number): Promise<Report> {
     const report = await this.incidentClient.getReportForReviewer(reportId)
     if (!report) {
       throw new Error(`Report: '${reportId}' does not exist`)
