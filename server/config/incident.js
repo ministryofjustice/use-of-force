@@ -10,6 +10,7 @@ const paths = {
   staffInvolved: bookingId => `/report/${bookingId}/staff-involved`,
   staffMemberName: bookingId => `/report/${bookingId}/staff-member-name`,
   staffNotFound: bookingId => `/report/${bookingId}/staff-member-not-found`,
+  selectStaffMember: bookingId => `/report/${bookingId}/select-staff-member`,
   deleteStaffMember: (bookingId, username) => `/report/${bookingId}/delete-staff-member/${username}`,
   useOfForceDetails: bookingId => `/report/${bookingId}/use-of-force-details`,
   relocationAndInjuries: bookingId => `/report/${bookingId}/relocation-and-injuries`,

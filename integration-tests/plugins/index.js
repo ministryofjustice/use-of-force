@@ -37,6 +37,8 @@ module.exports = on => {
 
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 
+    stubFindUsers: auth.stubFindUsers,
+
     stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
   })
 }

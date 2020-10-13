@@ -36,29 +36,33 @@ context('Submit the incident report', () => {
     staffInvolvedPage.clickSaveAndContinue()
 
     let whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
-    whatIsStaffMembersNamePage.username().type('MR_ZAGATO')
+    whatIsStaffMembersNamePage.firstName().type('Emily')
+    whatIsStaffMembersNamePage.lastName().type('Jones')
+    cy.task('stubFindUsers', { firstName: 'Emily', lastName: 'Jones' })
     whatIsStaffMembersNamePage.clickContinue()
 
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
         { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'MR_ZAGATO name', emailAddress: 'MR_ZAGATO@gov.uk', canDelete: true },
+        { name: 'Emily Jones', emailAddress: 'Emily@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.addAStaffMember().click()
     staffInvolvedPage.clickSaveAndContinue()
 
     whatIsStaffMembersNamePage = WhatIsStaffMembersNamePage.verifyOnPage()
-    whatIsStaffMembersNamePage.username().type('MRS_JONES')
+    whatIsStaffMembersNamePage.firstName().type('Jo')
+    whatIsStaffMembersNamePage.lastName().type('Zagato')
+    cy.task('stubFindUsers', { firstName: 'Jo', lastName: 'Zagato' })
     whatIsStaffMembersNamePage.clickContinue()
 
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
         { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'MR_ZAGATO name', emailAddress: 'MR_ZAGATO@gov.uk', canDelete: true },
-        { name: 'MRS_JONES name', emailAddress: 'MRS_JONES@gov.uk', canDelete: true },
+        { name: 'Emily Jones', emailAddress: 'Emily@gov.uk', canDelete: true },
+        { name: 'Jo Zagato', emailAddress: 'Jo@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.noMoreToAdd().click()
@@ -78,24 +82,9 @@ context('Submit the incident report', () => {
     reportSentPage.getReportId().then(reportId =>
       cy.task('getAllStatementsForReport', reportId).then(staff =>
         expect(staff).to.deep.equal([
-          {
-            name: 'TEST_USER name',
-            email: 'TEST_USER@gov.uk',
-            userid: 'TEST_USER',
-            status: 'PENDING',
-          },
-          {
-            name: 'MR_ZAGATO name',
-            email: 'MR_ZAGATO@gov.uk',
-            userid: 'MR_ZAGATO',
-            status: 'PENDING',
-          },
-          {
-            name: 'MRS_JONES name',
-            email: 'MRS_JONES@gov.uk',
-            userid: 'MRS_JONES',
-            status: 'PENDING',
-          },
+          { name: 'TEST_USER name', email: 'TEST_USER@gov.uk', userid: 'TEST_USER', status: 'PENDING' },
+          { name: 'Emily Jones', email: 'Emily@gov.uk', userid: 'EMILY_JONES', status: 'PENDING' },
+          { name: 'Jo Zagato', email: 'Jo@gov.uk', userid: 'JO_ZAGATO', status: 'PENDING' },
         ])
       )
     )

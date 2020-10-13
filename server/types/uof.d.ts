@@ -24,15 +24,6 @@ export type User = {
   displayName: string
 }
 
-export type GetUsersResults = {
-  username: string
-  verified: boolean
-
-  email?: string // only if exists and verified
-  name?: string // only if exists
-  staffId?: number // only if exists
-}
-
 export type SystemToken = (string?) => Promise<string>
 
 export type LoggedInUser = {

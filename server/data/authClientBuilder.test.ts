@@ -1,12 +1,12 @@
 import nock from 'nock'
 import config from '../config'
-import { authClientBuilder, systemToken } from './authClientBuilder'
+import { AuthClient, authClientBuilder, systemToken } from './authClientBuilder'
 
 describe('authClient', () => {
   let fakeApi
-  let client
+  let client: AuthClient
 
-  const token = { access_token: 'token-1' }
+  const token = 'token-1'
 
   beforeEach(() => {
     fakeApi = nock(config.apis.oauth2.url)
@@ -70,17 +70,42 @@ describe('authClient', () => {
     })
   })
 
-  describe('getSystemClientToken', () => {
+  describe('findUser', () => {
+    const userResponse = { username: 'Bob', email: 'an@email.com' }
+
+    it('user exists', async () => {
+      fakeApi
+        .get(`/api/prisonuser?firstName=bob&lastName=smith`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
+
+      const output = await client.findUsers('bob', 'smith')
+      expect(output).toEqual(userResponse)
+    })
+
+    it('it trims names', async () => {
+      fakeApi
+        .get(`/api/prisonuser?firstName=bob&lastName=smith`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
+
+      const output = await client.findUsers('  bob    ', '   smith    ')
+      expect(output).toEqual(userResponse)
+    })
+  })
+
+  describe('systemToken', () => {
+    const tokenObject = { access_token: 'token-1' }
     it('with username', async () => {
       const userName = 'Bob'
       fakeApi
         .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
         .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
-        .reply(200, token)
+        .reply(200, tokenObject)
 
       const output = await systemToken(userName)
-      expect(output).toEqual(token.access_token)
+      expect(output).toEqual(tokenObject.access_token)
     })
 
     it('without username', async () => {
@@ -88,10 +113,10 @@ describe('authClient', () => {
         .post(`/oauth/token`, 'grant_type=client_credentials')
         .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
-        .reply(200, token)
+        .reply(200, tokenObject)
 
       const output = await systemToken()
-      expect(output).toEqual(token.access_token)
+      expect(output).toEqual(tokenObject.access_token)
     })
   })
 })

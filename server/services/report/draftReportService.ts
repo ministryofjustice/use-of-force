@@ -5,6 +5,7 @@ import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
 import { DraftReport, NoDraftReport, StaffDetails } from '../../data/draftReportClientTypes'
 import UserService from '../userService'
+import { FoundUserResult } from '../../data/authClientBuilder'
 
 export type DraftInvolvedStaff = StaffDetails & { isReporter?: true }
 
@@ -13,6 +14,7 @@ export enum AddStaffResult {
   SUCCESS_UNVERIFIED = 'unverified',
   MISSING = 'missing',
   ALREADY_EXISTS = 'already-exists',
+  NO_EXACT_MATCH = 'no-exact-match',
 }
 
 export default class DraftReportService {
@@ -48,19 +50,28 @@ export default class DraftReportService {
     return [await this.reporter(token, username), ...staffWithoutReporter]
   }
 
-  public async addDraftStaff(user: LoggedInUser, bookingId: number, userToAdd: string): Promise<AddStaffResult> {
-    const token = await this.systemToken(user.username)
-    if (user.username === userToAdd) {
-      return AddStaffResult.ALREADY_EXISTS
-    }
+  public async findUsers(token: string, firstName: string, lastName: string): Promise<FoundUserResult[]> {
+    return this.userService.findUsers(token, firstName, lastName)
+  }
 
-    const users = await this.userService.getUsers(token, [userToAdd])
+  private async handleAddStaff(
+    token: string,
+    user: LoggedInUser,
+    bookingId: number,
+    foundUsers: FoundUserResult[]
+  ): Promise<AddStaffResult> {
+    const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
+
+    const users = foundUsers.filter(fu => !currentDraftStaff.some(cu => fu.username === cu.username))
+
     if (!users.length) {
-      return AddStaffResult.MISSING
+      // if we have found users but no users after removing current users, then at least one user with that name has previously been added
+      return foundUsers.length ? AddStaffResult.ALREADY_EXISTS : AddStaffResult.MISSING
+    }
+    if (users.length > 1) {
+      return AddStaffResult.NO_EXACT_MATCH
     }
     const [newUser] = users
-
-    const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
 
     const userAlreadyExists = currentDraftStaff.find(staff => staff.username === newUser.username)
     if (userAlreadyExists) {
@@ -72,6 +83,27 @@ export default class DraftReportService {
     await this.process(user, bookingId, 'involvedStaff', newInvolvedStaff)
 
     return AddStaffResult.SUCCESS
+  }
+
+  public async addDraftStaffByName(
+    user: LoggedInUser,
+    bookingId: number,
+    firstName: string,
+    lastName: string
+  ): Promise<AddStaffResult> {
+    const token = await this.systemToken(user.username)
+    const users = await this.findUsers(token, firstName, lastName)
+    return this.handleAddStaff(token, user, bookingId, users)
+  }
+
+  public async addDraftStaffByUsername(
+    user: LoggedInUser,
+    bookingId: number,
+    username: string
+  ): Promise<AddStaffResult> {
+    const token = await this.systemToken(user.username)
+    const users = await this.userService.getUsers(token, [username])
+    return this.handleAddStaff(token, user, bookingId, users)
   }
 
   public async deleteInvolvedStaff(user: LoggedInUser, bookingId: number, userToDelete: string): Promise<void> {

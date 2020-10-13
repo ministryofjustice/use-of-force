@@ -136,6 +136,29 @@ const stubUser = username =>
     },
   })
 
+const stubFindUser = (firstName, lastName, results) =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/auth/api/prisonuser\\?firstName=${encodeURI(firstName)}&lastName=${encodeURI(lastName)}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: results || [
+        {
+          username: `${firstName.toUpperCase()}_${lastName.toUpperCase()}`,
+          verified: true,
+          email: `${firstName}@gov.uk`,
+          name: `${firstName} ${lastName}`,
+          staffId: firstName.length,
+        },
+      ],
+    },
+  })
+
 const stubEmail = username =>
   stubFor({
     request: {
@@ -174,5 +197,6 @@ module.exports = {
   stubLogin: options => Promise.all([favicon(), redirect(), logout(), token(options), stubVerifyToken()]),
   stubUserDetailsRetrieval: usernames =>
     Promise.all(usernames.flatMap(username => [stubUser(username), stubEmail(username)])),
+  stubFindUsers: ({ firstName, lastName, results }) => stubFindUser(firstName, lastName, results),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
 }

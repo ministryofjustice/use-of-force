@@ -1,22 +1,20 @@
 import UserService from './userService'
 import { Elite2Client } from '../data/elite2ClientBuilder'
 import { UserDetail, CaseLoad } from '../data/elite2ClientBuilderTypes'
+import { AuthClient } from '../data/authClientBuilder'
 
 const token = 'token-1'
 
 jest.mock('../data/elite2ClientBuilder')
+jest.mock('../data/authClientBuilder')
 
 const elite2Client = new Elite2Client(null) as jest.Mocked<Elite2Client>
-
-const authClient = {
-  getEmail: jest.fn(),
-  getUser: jest.fn(),
-}
+const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
 
 const elite2ClientBuilder = jest.fn()
 const authClientBuilder = jest.fn()
 
-let service
+let service: UserService
 
 beforeEach(() => {
   elite2ClientBuilder.mockReturnValue(elite2Client)
@@ -61,7 +59,7 @@ describe('getUser', () => {
       { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
     ])
 
-    await service.getUser(token, -5)
+    await service.getUser(token)
 
     expect(elite2ClientBuilder).toBeCalledWith(token)
   })
@@ -132,10 +130,29 @@ describe('getUsers', () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
 
     authClient.getEmail.mockResolvedValueOnce(user1)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith' })
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1 })
 
     await service.getUsers(token, ['Bob'])
 
     expect(authClientBuilder).toBeCalledWith(token)
+  })
+})
+
+describe('findUsers', () => {
+  it('All successfull', async () => {
+    const user1 = {
+      username: 'Bob',
+      name: 'Bob Smith',
+      email: 'an@email.com',
+      exists: true,
+      verified: true,
+      staffId: 1,
+    }
+
+    authClient.findUsers.mockResolvedValue([user1])
+
+    const result = await service.findUsers(token, 'Bob', 'Smith')
+
+    expect(result).toEqual([user1])
   })
 })
