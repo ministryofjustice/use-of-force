@@ -1,7 +1,7 @@
-import { Response, Request } from 'express'
+import { Request, Response } from 'express'
 
 import { properCaseFullName } from '../utils/utils'
-import { paths, nextPaths } from '../config/incident'
+import { nextPaths, paths } from '../config/incident'
 import { SystemToken } from '../types/uof'
 import DraftReportService, { AddStaffResult } from '../services/report/draftReportService'
 
@@ -101,7 +101,7 @@ export default class AddInvolvedStaffRoutes {
 
   public async viewStaffMemberName(req: Request, res: Response): Promise<void> {
     const { bookingId } = req.params
-    const { firstName, lastName } = req.flash('userInput') || {}
+    const { firstName, lastName } = req.flash('userInput')?.[0] ?? {}
     const errors = req.flash('errors')
     return res.render('formPages/addingStaff/staff-member-name', { errors, firstName, lastName, bookingId })
   }
@@ -110,24 +110,23 @@ export default class AddInvolvedStaffRoutes {
     const { bookingId } = req.params
     const { firstName, lastName } = req.body
 
-    const firstNameMissing = !firstName?.trim()
-    const lastNameMissing = !firstName?.trim()
+    const errors = []
+    if (!firstName?.trim()) {
+      errors.push({
+        text: 'Enter a staff member’s first name',
+        href: '#firstname',
+      })
+    }
 
-    if (firstNameMissing || lastNameMissing) {
-      req.flash('errors', [
-        ...(firstNameMissing && [
-          {
-            text: 'Enter a staff member’s first name',
-            href: '#firstname',
-          },
-        ]),
-        ...(lastNameMissing && [
-          {
-            text: 'Enter a staff member’s last name',
-            href: '#firstname',
-          },
-        ]),
-      ])
+    if (!lastName?.trim()) {
+      errors.push({
+        text: 'Enter a staff member’s last name',
+        href: '#lastname',
+      })
+    }
+
+    if (errors.length > 0) {
+      req.flash('errors', errors)
       req.flash('userInput', { firstName, lastName })
       return res.redirect(paths.staffMemberName(bookingId))
     }

@@ -149,9 +149,25 @@ describe('submit staff', () => {
       })
   })
 
-  test('POST requires name specifying', () => {
+  test('POST requires name specifying. First and last names missing', () => {
     return request(app)
       .post(`/report/-19/staff-member-name`)
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/staff-member-name')
+  })
+
+  test('POST requires name specifying. First name missing', () => {
+    return request(app)
+      .post(`/report/-19/staff-member-name`)
+      .send({ lastName: 'Jones' })
+      .expect('Content-Type', /text\/plain/)
+      .expect('Location', '/report/-19/staff-member-name')
+  })
+
+  test('POST requires name specifying. Last name missing', () => {
+    return request(app)
+      .post(`/report/-19/staff-member-name`)
+      .send({ firstName: 'Jo' })
       .expect('Content-Type', /text\/plain/)
       .expect('Location', '/report/-19/staff-member-name')
   })
