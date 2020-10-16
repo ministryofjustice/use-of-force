@@ -1,17 +1,17 @@
 {% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 
-{% set pageTitle = name + ' not found' %}
+{% set pageTitle = name + ' cannot be found' %}
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-three-quarters">
     <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
     <p>
-      The username you have entered cannot be found.
+      The name you have entered cannot be found.
     </p>
     <p>
-      You should confirm with {{ name }} the username that is on their Digital Prison Services account.
+      You should confirm with {{ name }} the name that is on their Digital Prison Services account.
     </p>
     <div>
         {{
