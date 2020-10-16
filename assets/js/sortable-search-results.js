@@ -1,0 +1,1 @@
+new SortableTable('search-results')
