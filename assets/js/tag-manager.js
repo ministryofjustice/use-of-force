@@ -1,4 +1,9 @@
-dataLayer = [{ activeCaseloadId: '{{ user.activeCaseLoadId }}', userId: '{{ user.username | MD5 | upper }}' }]
+var activeCaseloadId = document.getElementById('active-caseload').value
+var userId = document.getElementById('user-id').value
+var googleTagManagerEnvironment = document.getElementById('google-tag-manager-env').value
+var googleTagManagerContainerId = document.getElementById('google-tag-manager-container').value
+
+dataLayer = [{ activeCaseloadId, userId }]
 
 //Google Tag Manager
 ;(function (w, d, s, l, i) {
@@ -8,8 +13,8 @@ dataLayer = [{ activeCaseloadId: '{{ user.activeCaseLoadId }}', userId: '{{ user
     j = d.createElement(s),
     dl = l != 'dataLayer' ? '&l=' + l : ''
   j.async = true
-  j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl + '{{ googleTagManagerEnvironment | safe }}'
+  j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl + googleTagManagerEnvironment
   f.parentNode.insertBefore(j, f)
-})(window, document, 'script', 'dataLayer', '{{googleTagManagerContainerId}}')
+})(window, document, 'script', 'dataLayer', googleTagManagerContainerId)
 
 //End Google Tag Manager

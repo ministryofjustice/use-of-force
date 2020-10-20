@@ -1,3 +1,7 @@
 {% if googleTagManagerContainerId %}
+<input type="hidden" id="active-caseload" value='{{ user.activeCaseLoadId }}'>
+<input type="hidden" id="user-id" value='{{ user.username | MD5 | upper }}'>
+<input type="hidden" id="google-tag-manager-env" value='{{ googleTagManagerEnvironment | safe }}'>
+<input type="hidden" id="google-tag-manager-container" value='{{ googleTagManagerContainerId }}'>
 <script src="/assets/tag-manager.js"></script>
 {% endif %}
