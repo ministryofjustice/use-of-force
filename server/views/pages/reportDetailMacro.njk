@@ -8,7 +8,7 @@
 
 {% macro reportHeading(data, print) %}
   <div class="govuk-grid-row  {% if print %} flex-container {% endif %}">
-      <div class="govuk-grid-column-one-third govuk-!-margin-bottom-4" style="flex-basis: 30%">
+      <div class="govuk-grid-column-one-third govuk-!-margin-bottom-4 flex-basis-30">
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Created by</p>
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Date and time</p>
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Prisoner name</p>
@@ -17,7 +17,7 @@
           <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-label--s">Incident number</p>
         {% endif %}
       </div>
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-4" style="flex-basis: 70%" >
+      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-4 flex-basis-70" >
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="reporter-name"> {{ data.reporterName }} </p>
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="submitted-date"> {{ data.submittedDate | formatDate('D MMMM YYYY, HH:mm') }} </p>
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-0" data-qa="prisoner-name"> {{ data.offenderDetail.displayName }}</p>
@@ -116,10 +116,10 @@
         url:  '/report/' + bookingId + '/staff-involved' if bookingId
       })  
     }}
-    <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff" style="padding-inline-start: 0;list-style: none;">
+    <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
    
     {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-      <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2" style="border-bottom: 1px solid #b1b4b6">
+      <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
       {{item.name}} ({{item.username}})
 
       {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      

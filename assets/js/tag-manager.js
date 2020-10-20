@@ -1,7 +1,7 @@
-var activeCaseloadId = document.getElementById('active-caseload').value
-var userId = document.getElementById('user-id').value
-var googleTagManagerEnvironment = document.getElementById('google-tag-manager-env').value
-var googleTagManagerContainerId = document.getElementById('google-tag-manager-container').value
+var activeCaseloadId = document.head.querySelector('meta[name=active-caseload]').content
+var userId = document.head.querySelector('meta[name=user-id]').content
+var googleTagManagerEnvironment = document.head.querySelector('meta[name=google-tag-manager-env]').content
+var googleTagManagerContainerId = document.head.querySelector('meta[name=google-tag-manager-container]').content
 
 dataLayer = [{ activeCaseloadId, userId }]
 
