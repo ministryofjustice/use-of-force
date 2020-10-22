@@ -1,4 +1,4 @@
-import express, { Express, RequestHandler } from 'express'
+import express, { Express, RequestHandler, Response } from 'express'
 import bunyanRequestLogger from 'bunyan-request-logger'
 import addRequestId from 'express-request-id'
 import helmet from 'helmet'
@@ -9,6 +9,7 @@ import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
 import bodyParser from 'body-parser'
+import crypto from 'crypto'
 
 import redis from 'redis'
 import session from 'express-session'
@@ -61,13 +62,24 @@ export default function createApp(services: Services): Express {
   // Secure code best practice - see:
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
+  app.use((req, res, next) => {
+    res.locals.cspNonce = crypto.randomBytes(16).toString('base64')
+    next()
+  })
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
           // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: ["'self'", 'code.jquery.com', "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='"],
+          scriptSrc: [
+            "'self'",
+            (req, res: Response) => `'nonce-${res.locals.cspNonce}'`,
+            'code.jquery.com',
+            "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+          ],
+          imgSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com'],
+          connectSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com'],
           styleSrc: ["'self'", 'code.jquery.com'],
           fontSrc: ["'self'"],
         },
