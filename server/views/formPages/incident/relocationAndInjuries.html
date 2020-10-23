@@ -19,11 +19,11 @@
 
     {{ govukSelect({
         id: "prisonerRelocation",
+        classes: "min-width-33",
         name: "prisonerRelocation",
         label: {
           text: "Where was the prisoner relocated to?"
         },
-        attributes: {style:'min-width:33%'},
         items: data.types.RelocationLocation | list | extractAttr('value') | toSelect('value', 'label', data.prisonerRelocation),
         errorMessage: errors | findError('prisonerRelocation')
       }) }}
