@@ -2,6 +2,7 @@ import express, { Express } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
 import path from 'path'
+import createError from 'http-errors'
 
 import allRoutes from '../index'
 import * as db from '../../data/dataAccess/db'
@@ -59,7 +60,7 @@ export const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-export const appSetup = (route, userSupplier = (): any => user): Express => {
+export const appSetup = (route, userSupplier = (): any => user, isProduction = false): Express => {
   const app = express()
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -79,12 +80,19 @@ export const appSetup = (route, userSupplier = (): any => user): Express => {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use('/', route)
-  app.use(errorHandler)
+  app.use((req, res, next) => {
+    next(createError(404, 'Not found'))
+  })
+  app.use(errorHandler(isProduction))
 
   return app
 }
 
-export const appWithAllRoutes = (overrides: Partial<Services> = {}, userSupplier = () => user): Express => {
+export const appWithAllRoutes = (
+  overrides: Partial<Services> = {},
+  userSupplier = () => user,
+  isProduction?: boolean
+): Express => {
   const route = allRoutes(authenticationMiddleware, {
     statementService: {} as StatementService,
     offenderService: {} as OffenderService,
@@ -101,5 +109,5 @@ export const appWithAllRoutes = (overrides: Partial<Services> = {}, userSupplier
     signInService: {} as any,
     ...overrides,
   })
-  return appSetup(route, userSupplier)
+  return appSetup(route, userSupplier, isProduction)
 }

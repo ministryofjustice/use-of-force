@@ -4,7 +4,7 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const db = require('./dataAccess/db')
-const logger = require('../../log.js')
+const logger = require('../../log')
 const config = require('../config')
 
 function dbCheck() {
