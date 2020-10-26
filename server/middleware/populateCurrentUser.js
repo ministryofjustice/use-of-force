@@ -1,4 +1,4 @@
-const logger = require('../../log.js')
+const logger = require('../../log')
 
 module.exports = userService => async (req, res, next) => {
   try {

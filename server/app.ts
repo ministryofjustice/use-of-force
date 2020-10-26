@@ -10,7 +10,7 @@ import compression from 'compression'
 import passport from 'passport'
 import bodyParser from 'body-parser'
 import crypto from 'crypto'
-
+import createError from 'http-errors'
 import redis from 'redis'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
@@ -115,8 +115,6 @@ export default function createApp(services: Services): Express {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
 
-  app.use(bunyanRequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }).requestLogger())
-
   // Resource Delivery Configuration
   app.use(compression())
 
@@ -148,6 +146,8 @@ export default function createApp(services: Services): Express {
   ;[`/node_modules/govuk_frontend_toolkit/images`].forEach(dir => {
     app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
+
+  app.use(bunyanRequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }).requestLogger())
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
@@ -254,10 +254,10 @@ export default function createApp(services: Services): Express {
   app.use('/api/', createApiRouter(authenticationMiddleware, services))
 
   app.use((req, res, next) => {
-    next(new Error('Not found'))
+    next(createError(404, 'Not found'))
   })
 
-  app.use(errorHandler)
+  app.use(errorHandler(process.env.NODE_ENV === 'production'))
 
   return app
 }
