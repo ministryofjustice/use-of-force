@@ -162,8 +162,13 @@ export default class StatementsClient {
     })
   }
 
-  setEmail = (userId: string, reportId: number, emailAddress: string, query: QueryPerformer = this.query) => {
-    return query({
+  async setEmail(
+    userId: string,
+    reportId: number,
+    emailAddress: string,
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    await query({
       text: `update v_statement 
     set email = $3
     ,   updated_date = CURRENT_TIMESTAMP

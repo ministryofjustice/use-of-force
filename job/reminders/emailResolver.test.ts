@@ -1,21 +1,21 @@
-const EmailResolver = require('./emailResolver')
+import { AuthClient } from '../../server/data/authClientBuilder'
+import StatementsClient from '../../server/data/statementsClient'
+import EmailResolver from './emailResolver'
 
 const client = { inTransaction: true }
 
+jest.mock('../../server/data/statementsClient')
+jest.mock('../../server/data/authClientBuilder')
+
+const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
+const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
+
 let authClientBuilder
-const authClient = {
-  getEmail: jest.fn(),
-}
-
-const statementsClient = {
-  setEmail: jest.fn(),
-}
-
 let emailResolver
 
 beforeEach(() => {
   authClientBuilder = jest.fn().mockReturnValue(authClient)
-  emailResolver = new EmailResolver(authClientBuilder, () => 'token-1', statementsClient)
+  emailResolver = new EmailResolver(authClientBuilder, async () => 'token-1', statementsClient)
 })
 
 afterEach(() => {
@@ -24,7 +24,7 @@ afterEach(() => {
 
 describe('resolve emails', () => {
   test('not verified', async () => {
-    authClient.getEmail.mockResolvedValue({ verified: false })
+    authClient.getEmail.mockResolvedValue({ username: 'BOB', exists: true, verified: false })
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 
@@ -36,7 +36,7 @@ describe('resolve emails', () => {
   })
 
   test('verified', async () => {
-    authClient.getEmail.mockResolvedValue({ verified: true, email: 'user@gov.uk' })
+    authClient.getEmail.mockResolvedValue({ username: 'BOB', exists: true, verified: true, email: 'user@gov.uk' })
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 

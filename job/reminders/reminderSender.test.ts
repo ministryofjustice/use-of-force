@@ -1,5 +1,5 @@
-const moment = require('moment')
-const reminderSender = require('./reminderSender')
+import moment from 'moment'
+import ReminderSender from './reminderSender'
 
 const notificationService = {
   sendReporterStatementReminder: jest.fn(),
@@ -12,7 +12,7 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-const { send } = reminderSender(notificationService)
+const reminderSender = new ReminderSender(notificationService)
 
 describe('send', () => {
   const recipientEmail = 'smith@prison.org'
@@ -40,7 +40,7 @@ describe('send', () => {
 
   describe('reporter', () => {
     test('sendReporterStatementReminder', async () => {
-      await send({
+      await reminderSender.send({
         ...reminder,
         isReporter: true,
         nextReminderDate: now,
@@ -63,7 +63,7 @@ describe('send', () => {
     })
 
     test('sendReporterStatementOverdue', async () => {
-      await send({
+      await reminderSender.send({
         ...reminder,
         isReporter: true,
         nextReminderDate: now,
@@ -87,7 +87,7 @@ describe('send', () => {
 
   describe('involved staff', () => {
     test('sendInvolvedStaffStatementReminder', async () => {
-      await send({
+      await reminderSender.send({
         ...reminder,
         isReporter: false,
         nextReminderDate: now,
@@ -109,7 +109,7 @@ describe('send', () => {
     })
 
     test('sendInvolvedStaffStatementOverdue', async () => {
-      await send({
+      await reminderSender.send({
         ...reminder,
         isReporter: false,
         nextReminderDate: now,

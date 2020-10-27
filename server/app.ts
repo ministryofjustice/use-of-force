@@ -54,7 +54,7 @@ export default function createApp(services: Services): Express {
   // View Engine Configuration
   app.set('view engine', 'html')
 
-  nunjucksSetup(app, path)
+  nunjucksSetup(app)
 
   // Server Configuration
   app.set('port', process.env.PORT || 3000)

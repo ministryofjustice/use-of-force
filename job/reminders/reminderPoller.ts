@@ -1,8 +1,17 @@
 /* eslint-disable no-await-in-loop */
-const moment = require('moment')
-const logger = require('../../log')
+import moment from 'moment'
+import logger from '../../log'
+import type { InTransaction, QueryPerformer } from '../../server/data/dataAccess/db'
+import type IncidentClient from '../../server/data/incidentClient'
+import type EmailResolver from './emailResolver'
+import type ReminderSender from './reminderSender'
 
-module.exports = (db, incidentClient, reminderSender, emailResolver) => {
+export default function poll(
+  inTransaction: InTransaction,
+  incidentClient: IncidentClient,
+  reminderSender: ReminderSender,
+  emailResolver: EmailResolver
+): () => Promise<number> {
   const Status = { REMINDER_SENT: 0, REMINDER_NOT_SENT: 1, COMPLETE: 2 }
 
   const getNextReminderDate = ({ nextReminderDate }) => {
@@ -10,7 +19,7 @@ module.exports = (db, incidentClient, reminderSender, emailResolver) => {
     return startdate.add(1, 'day').toDate()
   }
 
-  const setNextPollTime = async (client, reminder) => {
+  const setNextPollTime = async (client: QueryPerformer, reminder) => {
     const nextReminderDate = reminder.isOverdue ? null : getNextReminderDate(reminder)
     logger.info(
       `Setting next reminder date of: '${nextReminderDate}' for staff: '${reminder.userId}', statementId: '${reminder.statementId}'`
@@ -18,7 +27,7 @@ module.exports = (db, incidentClient, reminderSender, emailResolver) => {
     await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate, client)
   }
 
-  const processReminder = async client => {
+  const processReminder = async (client: QueryPerformer) => {
     const reminder = await incidentClient.getNextNotificationReminder(client)
 
     if (!reminder) {
@@ -47,7 +56,7 @@ module.exports = (db, incidentClient, reminderSender, emailResolver) => {
     let totalSent = 0
 
     while (currentStatus !== Status.COMPLETE && totalSent < 50) {
-      currentStatus = await db.inTransaction(processReminder)
+      currentStatus = await inTransaction(processReminder)
       totalSent += currentStatus === Status.REMINDER_SENT ? 1 : 0
     }
 

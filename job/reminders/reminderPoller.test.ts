@@ -1,27 +1,21 @@
-const moment = require('moment')
-const reminderPoller = require('./reminderPoller')
+import moment from 'moment'
+import IncidentClient from '../../server/data/incidentClient'
+import reminderPoller from './reminderPoller'
+import ReminderSender from './reminderSender'
+import EmailResolver from './emailResolver'
 
-const reminderSender = { send: jest.fn(), setNextReminderDate: jest.fn() }
+const client = 'client-1'
+const inTransaction = fn => fn(client)
 
-const client = { inTransaction: true }
+jest.mock('../../server/data/incidentClient')
+jest.mock('./reminderSender')
+jest.mock('./emailResolver')
 
-const db = {
-  inTransaction: async callback => {
-    const result = await callback(client)
-    return result
-  },
-}
+const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const reminderSender = new ReminderSender(null) as jest.Mocked<ReminderSender>
+const emailResolver = new EmailResolver(null, null, null) as jest.Mocked<EmailResolver>
 
-const incidentClient = {
-  getNextNotificationReminder: jest.fn(),
-  setNextReminderDate: jest.fn(),
-}
-
-const emailResolver = {
-  resolveEmail: jest.fn(),
-}
-
-const poll = reminderPoller(db, incidentClient, reminderSender, emailResolver)
+const poll = reminderPoller(inTransaction, incidentClient, reminderSender, emailResolver)
 
 afterEach(() => {
   jest.resetAllMocks()
@@ -109,7 +103,7 @@ describe('poll for reminders', () => {
       isOverdue: true,
     })
 
-    emailResolver.resolveEmail.mockResolvedValue('user@gov.uk')
+    emailResolver.resolveEmail.mockResolvedValue(true)
 
     const count = await poll()
 
@@ -122,7 +116,7 @@ describe('poll for reminders', () => {
 
   test('process reminder for recently verified user', async () => {
     incidentClient.getNextNotificationReminder.mockResolvedValueOnce({ reminder: 1, reportId: 2, userId: 'BOB' })
-    emailResolver.resolveEmail.mockResolvedValue('user@gov.uk')
+    emailResolver.resolveEmail.mockResolvedValue(true)
 
     const count = await poll()
 

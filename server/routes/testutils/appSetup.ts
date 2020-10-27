@@ -1,7 +1,6 @@
 import express, { Express } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
-import path from 'path'
 import createError from 'http-errors'
 
 import allRoutes from '../index'
@@ -68,7 +67,7 @@ export const appSetup = (route, userSupplier = (): any => user, isProduction = f
 
   app.set('view engine', 'html')
 
-  nunjucksSetup(app, path)
+  nunjucksSetup(app)
 
   app.use((req, res, next) => {
     req.user = userSupplier()
