@@ -1,4 +1,5 @@
 import nunjucks from 'nunjucks'
+import path from 'path'
 import moment from 'moment'
 import nodeCrypto from 'crypto'
 import querystring from 'querystring'
@@ -16,7 +17,7 @@ type Error = {
   text: string
 }
 
-export default function (app, path) {
+export default function configureNunjucks(app: Express.Application): void {
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),

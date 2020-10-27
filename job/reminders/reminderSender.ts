@@ -1,35 +1,37 @@
-const logger = require('../../log')
+import logger from '../../log'
 
-module.exports = notificationService => {
-  const context = ({ statementId, reportId }) => ({ statementId, reportId })
+export default class ReminderService {
+  constructor(private readonly notificationService: any) {}
 
-  const handleOverdue = async reminder => {
+  private context = ({ statementId, reportId }) => ({ statementId, reportId })
+
+  private async handleOverdue(reminder): Promise<void> {
     if (reminder.isReporter) {
-      await notificationService.sendReporterStatementOverdue(
+      await this.notificationService.sendReporterStatementOverdue(
         reminder.recipientEmail,
         {
           reporterName: reminder.reporterName,
           incidentDate: reminder.incidentDate,
           submittedDate: reminder.submittedDate,
         },
-        context(reminder)
+        this.context(reminder)
       )
     } else {
-      await notificationService.sendInvolvedStaffStatementOverdue(
+      await this.notificationService.sendInvolvedStaffStatementOverdue(
         reminder.recipientEmail,
         {
           involvedName: reminder.recipientName,
           incidentDate: reminder.incidentDate,
           submittedDate: reminder.submittedDate,
         },
-        context(reminder)
+        this.context(reminder)
       )
     }
   }
 
-  const handleReminder = async reminder => {
+  private async handleReminder(reminder) {
     if (reminder.isReporter) {
-      await notificationService.sendReporterStatementReminder(
+      await this.notificationService.sendReporterStatementReminder(
         reminder.recipientEmail,
         {
           reporterName: reminder.reporterName,
@@ -37,10 +39,10 @@ module.exports = notificationService => {
           overdueDate: reminder.overdueDate,
           submittedDate: reminder.submittedDate,
         },
-        context(reminder)
+        this.context(reminder)
       )
     } else {
-      await notificationService.sendInvolvedStaffStatementReminder(
+      await this.notificationService.sendInvolvedStaffStatementReminder(
         reminder.recipientEmail,
         {
           involvedName: reminder.recipientName,
@@ -48,19 +50,17 @@ module.exports = notificationService => {
           overdueDate: reminder.overdueDate,
           submittedDate: reminder.submittedDate,
         },
-        context(reminder)
+        this.context(reminder)
       )
     }
   }
 
-  return {
-    send: async reminder => {
-      logger.info('processing reminder', reminder)
-      if (reminder.isOverdue) {
-        await handleOverdue(reminder)
-      } else {
-        await handleReminder(reminder)
-      }
-    },
+  public async send(reminder): Promise<void> {
+    logger.info('processing reminder', reminder)
+    if (reminder.isOverdue) {
+      await this.handleOverdue(reminder)
+    } else {
+      await this.handleReminder(reminder)
+    }
   }
 }
