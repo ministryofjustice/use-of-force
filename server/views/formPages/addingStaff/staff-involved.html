@@ -9,8 +9,8 @@
 
 {% block formItems %}
 <div class="govuk-grid-row govuk-body">
-  <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
   <div class="govuk-grid-column-three-quarters">
+  <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
         {% set rows = [] %}
 
         {% for item in data.staff %}
@@ -36,7 +36,7 @@
               classes: 'govuk-!-width-one-third'
             },
             {
-              text: "Email Address",
+              text: "Email address",
               classes: 'govuk-!-width-one-third'
             },
             {
