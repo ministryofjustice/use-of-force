@@ -35,7 +35,7 @@
           label: 'Date',
           name: 'incidentDate[date]',
           date: data.incidentDate.date,
-          classes: 'text-align-center ' + ('date-picker-input-wide' if isDateError ) ,
+          classes: 'date-picker-input-wide' if isDateError ,
           attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy'},
           errorMessage: errors | findErrors(['incidentDate[date]'])
           })
