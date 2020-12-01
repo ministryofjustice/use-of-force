@@ -19,14 +19,14 @@
       })
     }}
   {% endif %}
-  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9">
-    <h1 class="govuk-heading-xl">Are you sure you want to delete {{data.displayName}}?</h1>
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to delete {{data.displayName}}?</h1>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
           <p>If you delete this person, they will be removed from this use of force report and any statement that they have completed will also be deleted.</p>
       </div>
     </div>
-    <div class="govuk-grid-row govuk-!-margin-top-9">
+    <div class="govuk-grid-row govuk-!-margin-top-6">
       <div class="govuk-grid-column-full">
         <form method="post" action="/coordinator/report/{{data.reportId}}/statement/{{data.statementId}}/delete">
           <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
@@ -50,7 +50,7 @@
             govukButton({
               text: 'Continue',
               name: 'continue',
-              classes: 'govuk-button  govuk-!-margin-top-5',
+              classes: 'govuk-button  govuk-!-margin-top-3',
               attributes: { 'data-qa': 'continue' }
             })
           }}
