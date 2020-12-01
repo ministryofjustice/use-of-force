@@ -10,6 +10,13 @@
 
 {% set pageTitle = 'Your use of force statement' %}
 
+{% if errors | findError('lastTrainingYear') %}
+{% set lastTrainingYearClass = 'govuk-input--width-4' %}
+{% set lastTrainingMonthClass = 'govuk-!-margin-right-3' %}
+{% else %}
+{% set lastTrainingYearClass = 'govuk-!-margin-left-5 govuk-input--width-4' %}
+{% endif %}
+
 {% block content %}
 <div class="govuk-body">
   {% if errors.length > 0 %}
@@ -46,12 +53,13 @@
           }) 
         %}
 
-        <div class="govuk-grid-row govuk-grid-column-one-half govuk-!-padding-0">
-          <div class="govuk-grid-column-one-half flex-container">
+        <div class="govuk-grid-row govuk-grid-column-three-quarters govuk-!-padding-0">
+          <div class="govuk-grid-column-three-quarters flex-container">
             {{
               govukSelect({
                 id: 'lastTrainingMonth',
                 name: 'lastTrainingMonth',
+                classes: lastTrainingMonthClass,
                 label: {
                   text: 'Month'
                 },
@@ -64,10 +72,10 @@
                 id: 'lastTrainingYear',
                 name: 'lastTrainingYear',
                 value: data.lastTrainingYear,
-                classes: 'govuk-!-margin-left-5 govuk-input--width-4',
+                classes: lastTrainingYearClass,
                 label: {
                   text: 'Year',
-                  classes: 'govuk-!-margin-left-5'
+                  classes: lastTrainingYearClass
                 },
                 errorMessage: errors | findError('lastTrainingYear')
                 })
