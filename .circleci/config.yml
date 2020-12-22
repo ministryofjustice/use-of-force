@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@1.1.2
+  hmpps: ministryofjustice/hmpps@2.1.0
 
 executors:
   integration-tests:
@@ -125,6 +125,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          context:
+            - hmpps-common-vars
           filters:
             branches:
               only:
@@ -141,7 +143,9 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          context: use-of-force-preprod
+          context:
+            - use-of-force-preprod
+            - hmpps-common-vars
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -152,7 +156,9 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          context: use-of-force-prod
+          context:
+            - use-of-force-prod
+            - hmpps-common-vars
           requires:
             - request-prod-approval
 
