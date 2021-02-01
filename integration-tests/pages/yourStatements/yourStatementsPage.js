@@ -23,6 +23,7 @@ const yourStatementsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
+    loggedInName: () => cy.get('.user-block ul:first-child'),
   })
 
 module.exports = {
