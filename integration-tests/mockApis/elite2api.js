@@ -1,7 +1,7 @@
 const { stubFor } = require('./wiremock')
 
 module.exports = {
-  stubUser: () => {
+  stubUser: ({ firstName, lastName } = {}) => {
     return stubFor({
       request: {
         method: 'GET',
@@ -13,8 +13,8 @@ module.exports = {
           'Content-Type': 'application/json;charset=UTF-8',
         },
         jsonBody: {
-          firstName: 'JAMES',
-          lastName: 'STUART',
+          firstName,
+          lastName,
           activeCaseLoadId: 'MDI',
         },
       },

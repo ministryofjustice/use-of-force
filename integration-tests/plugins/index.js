@@ -13,7 +13,8 @@ module.exports = on => {
 
     getLoginUrl: auth.getLoginUrl,
 
-    stubLogin: () => Promise.all([auth.stubLogin({}), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
+    stubLogin: (user = {}) =>
+      Promise.all([auth.stubLogin(user), elite2api.stubUser(user), elite2api.stubUserCaseloads()]),
 
     stubReviewerLogin: () =>
       Promise.all([auth.stubLogin({ isReviewer: true }), elite2api.stubUser(), elite2api.stubUserCaseloads()]),
@@ -40,5 +41,7 @@ module.exports = on => {
     stubFindUsers: auth.stubFindUsers,
 
     stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
+
+    stubVerifyToken: active => auth.stubVerifyToken(active),
   })
 }

@@ -73,7 +73,7 @@ const logout = () =>
     },
   })
 
-const token = ({ isReviewer = false, isCoordinator = false }) =>
+const token = ({ userName = 'TEST_USER', isReviewer = false, isCoordinator = false }) =>
   stubFor({
     request: {
       method: 'POST',
@@ -89,7 +89,7 @@ const token = ({ isReviewer = false, isCoordinator = false }) =>
         access_token: createToken(isReviewer, isCoordinator),
         token_type: 'bearer',
         refresh_token: 'refresh',
-        user_name: 'TEST_USER',
+        user_name: userName,
         expires_in: 600,
         scope: 'read write',
         internalUser: true,
@@ -97,7 +97,7 @@ const token = ({ isReviewer = false, isCoordinator = false }) =>
     },
   })
 
-const stubVerifyToken = () =>
+const stubVerifyToken = (active = true) =>
   stubFor({
     request: {
       method: 'POST',
@@ -108,7 +108,7 @@ const stubVerifyToken = () =>
         'Content-Type': 'application/json;charset=UTF-8',
       },
       jsonBody: {
-        active: true,
+        active,
       },
     },
   })
@@ -199,4 +199,5 @@ module.exports = {
     Promise.all(usernames.flatMap(username => [stubUser(username), stubEmail(username)])),
   stubFindUsers: ({ firstName, lastName, results }) => stubFindUser(firstName, lastName, results),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
+  stubVerifyToken,
 }
