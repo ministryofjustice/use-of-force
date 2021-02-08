@@ -74,7 +74,7 @@ context('A use of force coordinator can remove involved staff', () => {
 
     viewStatementsPage.reportLink().click()
     let reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
     reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
 
     const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
@@ -82,8 +82,8 @@ context('A use of force coordinator can remove involved staff', () => {
     confirmStatementDeletePage.continue().click()
 
     reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
-    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
     reportPage.returnToIncidentOverview().click()
 
     viewStatementsPage = ViewStatementsPage.verifyOnPage()
@@ -136,7 +136,7 @@ context('A use of force coordinator can remove involved staff', () => {
       .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
       .then(() => cy.reload())
 
-    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
     reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
 
     const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
@@ -144,8 +144,8 @@ context('A use of force coordinator can remove involved staff', () => {
     confirmStatementDeletePage.continue().click()
 
     reportPage = YourReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('TEST_USER').should('not.be.visible')
-    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
 
     cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
       expect(count).to.equal(0)
@@ -178,6 +178,6 @@ context('A use of force coordinator can remove involved staff', () => {
 
     viewStatementsPage.reportLink().click()
     const reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.be.visible')
+    reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
   })
 })

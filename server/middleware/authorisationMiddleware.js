@@ -1,3 +1,4 @@
+/** @type {any} */
 const jwtDecode = require('jwt-decode')
 
 const COORDINATOR = 'ROLE_USE_OF_FORCE_COORDINATOR'

@@ -1,13 +1,13 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@2.1.0
+  hmpps: ministryofjustice/hmpps@2.3
 
 executors:
   integration-tests:
     docker:
-      - image: circleci/openjdk:11-jdk-node-browsers
-      - image: circleci/postgres:10.6-alpine-ram
+      - image: cimg/node:14.15.3-browsers
+      - image: circleci/postgres:10.13-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
@@ -19,12 +19,11 @@ executors:
 
 jobs:
   build:
-    executor: hmpps/node
+    executor:
+      name: hmpps/node
+      tag: 14.15.3-browsers
     steps:
       - checkout
-      - run:
-          name: Update npm
-          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
@@ -55,7 +54,9 @@ jobs:
             - .cache/Cypress
 
   unit_test:
-    executor: hmpps/node
+    executor:
+      name: hmpps/node
+      tag: 14.15.3-browsers
     steps:
       - checkout
       - restore_cache:
