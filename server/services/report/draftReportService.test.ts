@@ -13,9 +13,12 @@ jest.mock('./updateDraftReportService')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
-const submitDraftReportService = new SubmitDraftReportService(null, null, null, null) as jest.Mocked<
-  SubmitDraftReportService
->
+const submitDraftReportService = new SubmitDraftReportService(
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<SubmitDraftReportService>
 const updateDraftReportService = new UpdateDraftReportService(null, null, null) as jest.Mocked<UpdateDraftReportService>
 
 const aUser = username => ({ username } as FoundUserResult)
