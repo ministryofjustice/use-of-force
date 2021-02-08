@@ -52,7 +52,7 @@ context('A user views their statements list', () => {
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
-    yourStatementsPage.pagination().should('not.be.visible')
+    yourStatementsPage.pagination().should('not.exist')
 
     {
       const { date, prisoner, overdue, action } = yourStatementsPage.statements(0)

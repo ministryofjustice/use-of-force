@@ -192,6 +192,6 @@ context('A use of force coordinator can add involved staff', () => {
 
     viewStatementsPage.reportLink().click()
     const reportPage = ViewReportPage.verifyOnPage()
-    reportPage.addInvolvedStaff().should('not.be.visible')
+    reportPage.addInvolvedStaff().should('not.exist')
   })
 })
