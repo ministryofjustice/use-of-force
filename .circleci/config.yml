@@ -6,8 +6,8 @@ orbs:
 executors:
   integration-tests:
     docker:
-      - image: cimg/openjdk:11-buster-node-browsers
-      - image: cimg/postgres:10.13-ram
+      - image: cimg/node:14.15.3-browsers
+      - image: circleci/postgres:10.13-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
