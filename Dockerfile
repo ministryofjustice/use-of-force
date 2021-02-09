@@ -1,55 +1,49 @@
-# Build stage 1.
-# Create base image with python (required for node-gyp)
+FROM node:14-buster as builder
+
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-FROM node:14-buster-slim as base
+RUN apt-get update && \
+    apt-get upgrade -y
 
+WORKDIR /app
+
+RUN apt-get install -y curl
+
+RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
+    > /app/root.cert
+
+
+COPY . .
+
+RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
+    npm run build && \
+    export BUILD_NUMBER=${BUILD_NUMBER:-1_0_0} && \
+    export GIT_REF=${GIT_REF:-dummy} && \
+    npm run record-build-info
+
+RUN npm prune --production
+
+FROM node:14-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-ENV TZ=Europe/London
-RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000
 
+ENV TZ=Europe/London
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
+
+# Create app directory
+RUN mkdir /app && chown appuser:appgroup /app
+USER 2000
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y make python
-
-# Build stage 2.
-# This stage builds our assets.
-FROM base as build
-ARG BUILD_NUMBER
-ARG GIT_REF
-
-RUN apt-get install -y curl wget
-
-# Install AWS RDS Root cert
-RUN mkdir /home/appuser/.postgresql \
-  && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
-    > /app/root.cert
-
-COPY . .
-
-ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
-ENV GIT_REF ${GIT_REF:-dummy}
-
-RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && npm run build  && \
-    export BUILD_NUMBER=${BUILD_NUMBER} && \
-    export GIT_REF=${GIT_REF} && \
-    npm run record-build-info
-
-# Build stage 3.
-# This stage builds the final Docker image that we'll use in production.
-FROM base
-
-RUN apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=build --chown=appuser:appgroup \
+COPY --from=builder --chown=appuser:appgroup \
         /app/package.json \
         /app/package-lock.json \
         /app/dist \
@@ -57,13 +51,16 @@ COPY --from=build --chown=appuser:appgroup \
         /app/build-info.json \
         ./
 
-COPY --from=build --chown=appuser:appgroup \
+COPY --from=builder --chown=appuser:appgroup \
         /app/assets ./assets
 
-COPY --from=build --chown=appuser:appgroup \
+COPY --from=builder --chown=appuser:appgroup \
+        /app/node_modules ./node_modules
+
+COPY --from=builder --chown=appuser:appgroup \
         /app/server/views ./server/views
 
-RUN npm ci --only=production
+ENV PORT=3000
 
 EXPOSE 3000
 ENV NODE_ENV='production'
