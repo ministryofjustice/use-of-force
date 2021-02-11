@@ -6,7 +6,7 @@ orbs:
 executors:
   integration-tests:
     docker:
-      - image: cimg/node:14.15.3-browsers
+      - image: cimg/node:14.15-browsers
       - image: circleci/postgres:10.13-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
@@ -21,7 +21,7 @@ jobs:
   build:
     executor:
       name: hmpps/node
-      tag: 14.15.3-browsers
+      tag: 14.15-browsers
     steps:
       - checkout
       - restore_cache:
@@ -56,7 +56,7 @@ jobs:
   unit_test:
     executor:
       name: hmpps/node
-      tag: 14.15.3-browsers
+      tag: 14.15-browsers
     steps:
       - checkout
       - restore_cache:
