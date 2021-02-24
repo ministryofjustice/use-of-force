@@ -16,6 +16,7 @@ context('Submit the incident report', () => {
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubOffenders', [offender])
+    cy.task('stubPrisons')
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
@@ -30,7 +31,9 @@ context('Submit the incident report', () => {
 
     let staffInvolvedPage = incidentDetailsPage.save()
     staffInvolvedPage.presentStaff().then(staff => {
-      expect(staff).to.deep.equal([{ name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false }])
+      expect(staff).to.deep.equal([
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+      ])
     })
     staffInvolvedPage.addAStaffMember().click()
     staffInvolvedPage.clickSaveAndContinue()
@@ -44,8 +47,8 @@ context('Submit the incident report', () => {
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'Emily Jones', emailAddress: 'Emily@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'Emily Jones', prison: 'None', emailAddress: 'Emily@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.addAStaffMember().click()
@@ -60,9 +63,9 @@ context('Submit the incident report', () => {
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'Emily Jones', emailAddress: 'Emily@gov.uk', canDelete: true },
-        { name: 'Jo Zagato', emailAddress: 'Jo@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'Emily Jones', prison: 'None', emailAddress: 'Emily@gov.uk', canDelete: true },
+        { name: 'Jo Zagato', prison: 'None', emailAddress: 'Jo@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.noMoreToAdd().click()

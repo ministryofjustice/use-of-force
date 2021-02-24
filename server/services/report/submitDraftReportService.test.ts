@@ -3,7 +3,7 @@ import DraftReportClient from '../../data/draftReportClient'
 import SubmitDraftReportService from './submitDraftReportService'
 import { LoggedInUser } from '../../types/uof'
 import StatementsClient from '../../data/statementsClient'
-import { DraftInvolvedStaff } from './draftReportService'
+import { DraftInvolvedStaff } from './draftInvolvedStaffService'
 
 jest.mock('../../data/draftReportClient')
 jest.mock('../../data/statementsClient')

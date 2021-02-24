@@ -4,7 +4,7 @@ import { appWithAllRoutes, user } from './testutils/appSetup'
 
 jest.mock('../services/report/draftReportService')
 
-const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
+const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
 
 let app
 

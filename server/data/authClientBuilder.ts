@@ -85,6 +85,7 @@ export type EmailResult = {
 
 type UserResult = {
   name: string
+  activeCaseLoadId?: string
   staffId: number
 }
 
@@ -93,6 +94,7 @@ export type FoundUserResult = {
   verified: boolean
   email?: string // only if verified
   name: string
+  activeCaseLoadId?: string // not present for new users or having active caseload removed
   staffId: number
 }
 
@@ -118,6 +120,10 @@ export class AuthClient {
     const path = `${apiUrl}/api/user/${username}`
     const body = await this.get({ path })
     return body
+  }
+
+  async getUsers(usernames: string[]): Promise<UserResult[]> {
+    return Promise.all(usernames.map(username => this.getUser(username)))
   }
 
   async findUsers(firstName: string, lastName: string): Promise<FoundUserResult[]> {

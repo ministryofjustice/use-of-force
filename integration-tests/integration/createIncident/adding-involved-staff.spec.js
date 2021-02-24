@@ -15,6 +15,7 @@ context('Adding involved staff', () => {
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubPrison', offender.agencyId)
+    cy.task('stubPrisons')
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['JO_JONES', 'TEST_USER'])
     cy.login()
@@ -25,7 +26,9 @@ context('Adding involved staff', () => {
     let staffInvolvedPage = reportUseOfForcePage.goToInvolvedStaffPage()
 
     staffInvolvedPage.presentStaff().then(staff => {
-      expect(staff).to.deep.equal([{ name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false }])
+      expect(staff).to.deep.equal([
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+      ])
     })
     staffInvolvedPage.addAStaffMember().click()
     staffInvolvedPage.clickSaveAndContinue()
@@ -41,8 +44,8 @@ context('Adding involved staff', () => {
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'Bob Smith', emailAddress: 'Bob@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'Bob Smith', prison: 'None', emailAddress: 'Bob@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.addAStaffMember().click()
@@ -59,9 +62,9 @@ context('Adding involved staff', () => {
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'Bob Smith', emailAddress: 'Bob@gov.uk', canDelete: true },
-        { name: 'Emily Jones', emailAddress: 'Emily@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'Bob Smith', prison: 'None', emailAddress: 'Bob@gov.uk', canDelete: true },
+        { name: 'Emily Jones', prison: 'None', emailAddress: 'Emily@gov.uk', canDelete: true },
       ])
     })
     staffInvolvedPage.deleteStaff('EMILY_JONES').click()
@@ -71,8 +74,8 @@ context('Adding involved staff', () => {
 
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'Bob Smith', emailAddress: 'Bob@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'Bob Smith', prison: 'None', emailAddress: 'Bob@gov.uk', canDelete: true },
       ])
     })
 
@@ -152,6 +155,7 @@ context('Adding involved staff', () => {
           email: `joJones2@gov.uk`,
           name: `Jo Jones`,
           staffId: 1,
+          activeCaseLoadId: 'MDI',
         },
         {
           username: `JO_JONES`,
@@ -159,20 +163,34 @@ context('Adding involved staff', () => {
           email: `joJones1@gov.uk`,
           name: `Jo Jones`,
           staffId: 2,
+          activeCaseLoadId: 'RSI',
         },
       ],
     })
     whatIsStaffMembersNamePage.clickContinue()
 
     const selectStaffMemberPage = SelectStaffMemberPage.verifyOnPage()
+    {
+      const { prison, username, email } = selectStaffMemberPage.match(0)
+      prison().should('contain', 'HMP Moorland')
+      username().should('contain', 'USER-1')
+      email().should('contain', 'joJones2@gov.uk')
+    }
+    {
+      const { prison, username, email } = selectStaffMemberPage.match(1)
+      prison().should('contain', 'HMP Risley')
+      username().should('contain', 'JO_JONES')
+      email().should('contain', 'joJones1@gov.uk')
+    }
+
     selectStaffMemberPage.select('JO_JONES').click()
     selectStaffMemberPage.clickContinue()
 
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
-        { name: 'TEST_USER name', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'JO_JONES name', emailAddress: 'JO_JONES@gov.uk', canDelete: true },
+        { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
+        { name: 'JO_JONES name', prison: 'HMP Moorland', emailAddress: 'JO_JONES@gov.uk', canDelete: true },
       ])
     })
   })

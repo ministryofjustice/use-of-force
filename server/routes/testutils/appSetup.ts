@@ -59,7 +59,12 @@ export const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-export const appSetup = (route, userSupplier = (): any => user, isProduction = false): Express => {
+export const appSetup = (
+  route,
+  userSupplier = (): any => user,
+  isProduction = false,
+  flash = jest.fn().mockReturnValue([])
+): Express => {
   const app = express()
 
   const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -71,6 +76,7 @@ export const appSetup = (route, userSupplier = (): any => user, isProduction = f
 
   app.use((req, res, next) => {
     req.user = userSupplier()
+    req.flash = flash
     res.locals = {}
     res.locals.user = req.user
     next()
@@ -90,7 +96,8 @@ export const appSetup = (route, userSupplier = (): any => user, isProduction = f
 export const appWithAllRoutes = (
   overrides: Partial<Services> = {},
   userSupplier = () => user,
-  isProduction?: boolean
+  isProduction?: boolean,
+  flash = jest.fn().mockReturnValue([])
 ): Express => {
   const route = allRoutes(authenticationMiddleware, {
     statementService: {} as StatementService,
@@ -108,5 +115,5 @@ export const appWithAllRoutes = (
     signInService: {} as any,
     ...overrides,
   })
-  return appSetup(route, userSupplier, isProduction)
+  return appSetup(route, userSupplier, isProduction, flash)
 }

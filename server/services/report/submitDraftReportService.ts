@@ -4,7 +4,7 @@ import type DraftReportClient from '../../data/draftReportClient'
 import logger from '../../../log'
 import { InTransaction } from '../../data/dataAccess/db'
 import { LoggedInUser } from '../../types/uof'
-import { DraftInvolvedStaff } from './draftReportService'
+import { DraftInvolvedStaff } from './draftInvolvedStaffService'
 import StatementsClient from '../../data/statementsClient'
 
 export type PersistedInvolvedStaff = DraftInvolvedStaff & { statementId: number }

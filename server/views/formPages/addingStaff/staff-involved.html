@@ -9,7 +9,7 @@
 
 {% block formItems %}
 <div class="govuk-grid-row govuk-body">
-  <div class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
         {% set rows = [] %}
 
@@ -19,10 +19,14 @@
             text: item.name
             },
             {
-            text: item.email
+              text: item.prison | default('None', true)
             },
             {
-            html: '<a class="govuk-link" data-qa="delete-'+ item.username +'" href="/report/' + data.bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
+              text: item.email | default('No email address', true) 
+            },
+            {
+              classes: 'delete-staff',
+              html: '<a class="govuk-link govuk-link--no-visited-state" data-qa="delete-'+ item.username +'" href="/report/' + data.bookingId + '/delete-staff-member/' + item.username + '">Delete staff member</a>' if not item.isReporter
             }
         ]), rows) %}
         {% endfor %}
@@ -33,11 +37,15 @@
           head: [
             {
               text: "Name",
-              classes: 'govuk-!-width-one-third'
+              classes: 'govuk-!-width-one-quarter'
+            },
+            {
+              text: "Prison",
+              classes: 'govuk-!-width-one-quarter'
             },
             {
               text: "Email address",
-              classes: 'govuk-!-width-one-third'
+              classes: 'govuk-!-width-one-quarter'
             },
             {
               text: "",

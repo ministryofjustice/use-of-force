@@ -16,8 +16,9 @@ const staffInvolvedPage = () =>
             const tds = Cypress.$(element).find('td.govuk-table__cell')
             return {
               name: Cypress.$(tds[0]).text().trim(),
-              emailAddress: Cypress.$(tds[1]).text().trim(),
-              canDelete: Cypress.$(tds[2]).find('a').length === 1,
+              prison: Cypress.$(tds[1]).text().trim(),
+              emailAddress: Cypress.$(tds[2]).text().trim(),
+              canDelete: Cypress.$(tds[3]).find('a').length === 1,
             }
           })
         ),

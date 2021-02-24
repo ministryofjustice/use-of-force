@@ -30,6 +30,7 @@ import * as db from '../data/dataAccess/db'
 import createSignInService from '../authentication/signInService'
 
 import { notificationServiceFactory } from './notificationService'
+import { DraftInvolvedStaffService } from './report/draftInvolvedStaffService'
 
 const reportingClient = new ReportingClient(db.query)
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
@@ -54,9 +55,16 @@ const submitDraftReportService = new SubmitDraftReportService(
 )
 
 const updateDraftReportService = new UpdateDraftReportService(draftReportClient, elite2ClientBuilder, systemToken)
+const draftInvolvedStaffService = new DraftInvolvedStaffService(
+  authClientBuilder,
+  elite2ClientBuilder,
+  draftReportClient,
+  userService
+)
 
 const draftReportService = new DraftReportService(
   draftReportClient,
+  draftInvolvedStaffService,
   updateDraftReportService,
   submitDraftReportService,
   userService,

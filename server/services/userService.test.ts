@@ -1,7 +1,8 @@
 import UserService from './userService'
 import { Elite2Client } from '../data/elite2ClientBuilder'
-import { UserDetail, CaseLoad } from '../data/elite2ClientBuilderTypes'
+import { UserDetail, CaseLoad, Prison } from '../data/elite2ClientBuilderTypes'
 import { AuthClient } from '../data/authClientBuilder'
+import { User, UserWithPrison } from '../types/uof'
 
 const token = 'token-1'
 
@@ -72,8 +73,8 @@ describe('getUsers', () => {
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
     authClient.getUser
-      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
-      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234 })
+      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234, activeCaseLoadId: 'MDI' })
 
     const result = await service.getUsers(token, ['Bob', 'June'])
 
@@ -84,6 +85,7 @@ describe('getUsers', () => {
         staffId: 123,
         email: 'an@email.com',
         verified: true,
+        activeCaseLoadId: 'MDI',
       },
       {
         username: 'June',
@@ -91,6 +93,7 @@ describe('getUsers', () => {
         staffId: 234,
         email: 'bn@email.com',
         verified: true,
+        activeCaseLoadId: 'MDI',
       },
     ])
   })
@@ -101,8 +104,8 @@ describe('getUsers', () => {
 
     authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
     authClient.getUser
-      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123 })
-      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234 })
+      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234, activeCaseLoadId: 'MDI' })
 
     const result = await service.getUsers(token, ['Bob', 'June'])
 
@@ -113,6 +116,7 @@ describe('getUsers', () => {
         staffId: 123,
         email: 'an@email.com',
         verified: true,
+        activeCaseLoadId: 'MDI',
       },
       {
         username: 'JUNE',
@@ -120,6 +124,7 @@ describe('getUsers', () => {
         staffId: 234,
         email: undefined,
         verified: false,
+        activeCaseLoadId: 'MDI',
       },
     ])
 
@@ -130,7 +135,7 @@ describe('getUsers', () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
 
     authClient.getEmail.mockResolvedValueOnce(user1)
-    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1 })
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1, activeCaseLoadId: 'MDI' })
 
     await service.getUsers(token, ['Bob'])
 
@@ -147,6 +152,7 @@ describe('findUsers', () => {
       exists: true,
       verified: true,
       staffId: 1,
+      activeCaseLoadId: 'MDI',
     }
 
     authClient.findUsers.mockResolvedValue([user1])
@@ -154,5 +160,67 @@ describe('findUsers', () => {
     const result = await service.findUsers(token, 'Bob', 'Smith')
 
     expect(result).toEqual([user1])
+  })
+})
+
+describe('findUsersWithPrisons', () => {
+  it('All successfull', async () => {
+    const user1 = {
+      username: 'Bob',
+      name: 'Bob Smith',
+      email: 'an@email.com',
+      exists: true,
+      verified: true,
+      staffId: 1,
+      activeCaseLoadId: 'MDI',
+    }
+
+    authClient.findUsers.mockResolvedValue([user1])
+    elite2Client.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
+
+    const result = await service.findUsersWithPrisons(token, 'MDI', 'Bob', 'Smith')
+
+    expect(result).toEqual([{ ...user1, prison: 'Moorland (HMP)' }])
+  })
+})
+
+describe('sortUsers', () => {
+  const user = (username, caseLoad, prison): UserWithPrison => ({
+    username,
+    name: 'Bob Smith',
+    email: 'an@email.com',
+    exists: true,
+    verified: true,
+    staffId: 1,
+    activeCaseLoadId: caseLoad,
+    prison,
+  })
+
+  const results = (agency: string) => (users: User[]) => users.sort(service.sortUsers(agency)).map(u => u.username)
+
+  it('active caseload first', async () => {
+    const user1 = user('USER_1', 'MDI', 'Moorland')
+    const user2 = user('USER_2', 'WWI', 'Whitemoor')
+
+    expect(results('MDI')([user1, user2])).toEqual(['USER_1', 'USER_2'])
+    expect(results('MDI')([user2, user1])).toEqual(['USER_1', 'USER_2'])
+    expect(results('WWI')([user1, user2])).toEqual(['USER_2', 'USER_1'])
+    expect(results('WWI')([user2, user1])).toEqual(['USER_2', 'USER_1'])
+  })
+
+  it('when not specific caseload, alphabetic by prison name ', async () => {
+    const user1 = user('USER_1', 'AAA', 'aaa')
+    const user2 = user('USER_2', 'BBB', 'bbb')
+
+    expect(results('UNK')([user1, user2])).toEqual(['USER_1', 'USER_2'])
+    expect(results('UNK')([user2, user1])).toEqual(['USER_1', 'USER_2'])
+  })
+
+  it('when same caseload, alphabetic by username ', async () => {
+    const user1 = user('USER_1', 'AAA', 'aaa')
+    const user2 = user('USER_2', 'AAA', 'aaa')
+
+    expect(results('UNK')([user1, user2])).toEqual(['USER_1', 'USER_2'])
+    expect(results('UNK')([user2, user1])).toEqual(['USER_1', 'USER_2'])
   })
 })
