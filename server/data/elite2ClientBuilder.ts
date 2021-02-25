@@ -58,8 +58,16 @@ export class Elite2Client {
     })
   }
 
-  getLocation(locationId: number): Promise<PrisonLocation> {
-    return this.restClient.get({ path: `/api/locations/${locationId}` })
+  async getLocation(locationId: number): Promise<PrisonLocation | Record<string, unknown>> {
+    let location = {}
+    try {
+      location = await this.restClient.get({ path: `/api/locations/${locationId}?includeInactive=true` })
+    } catch (error) {
+      if (error?.status !== 404) {
+        throw error
+      }
+    }
+    return location
   }
 
   getOffenderImage(bookingId: number) {

@@ -84,6 +84,41 @@ describe('elite2Client', () => {
     })
   })
 
+  describe('getLocation', () => {
+    it('Should include inactive locations in request', async () => {
+      const location = {
+        agencyId: 'MDI',
+        currentOccupancy: 0,
+        description: 'Location',
+        internalLocationCode: 'ILOC-01-01',
+        locationId: 123,
+        locationPrefix: 'ILOC',
+        locationType: 'Thing',
+        locationUsage: 'For things',
+        operationalCapacity: 1,
+        parentLocationId: 0,
+        userDescription: 'Its a location',
+      }
+      fakeElite2Api
+        .get('/api/locations/123?includeInactive=true')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, location)
+
+      const output = await elite2Client.getLocation(123)
+      expect(output).toEqual(location)
+    })
+
+    it('When location not found should return empty object', async () => {
+      fakeElite2Api
+        .get('/api/locations/123?includeInactive=true')
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(404)
+
+      const output = await elite2Client.getLocation(123)
+      expect(output).toStrictEqual({})
+    })
+  })
+
   describe('getOffenders', () => {
     const offenderNos = ['aaa', 'bbb']
     const offenders = []
