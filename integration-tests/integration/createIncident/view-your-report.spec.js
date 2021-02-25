@@ -12,11 +12,12 @@ context('A reporter views their own report', () => {
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])
-    cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('A user can submit view their own report', () => {
+  it('A user can view their own report', () => {
+    cy.task('stubLocation', '357591')
+
     cy.login()
 
     cy.task('seedReport', {
@@ -63,5 +64,42 @@ context('A reporter views their own report', () => {
     yourReportPage.returnToYourReports().click()
 
     YourReportsPage.verifyOnPage()
+  })
+
+  it('A user can view their own report when location is not found', () => {
+    cy.task('stubLocationNotFound', '357591')
+
+    cy.login()
+
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      submittedDate: '2019-09-04 11:27:52',
+      involvedStaff: [
+        {
+          username: 'MR_ZAGATO',
+          name: 'MR_ZAGATO name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'MRS_JONES',
+          name: 'MRS_JONES name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
+        },
+      ],
+    })
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.yourReportsTab().click()
+
+    const yourReportsPage = YourReportsPage.verifyOnPage()
+    yourReportsPage.reports(0).action().click()
+
+    const yourReportPage = YourReportPage.verifyOnPage()
+    yourReportPage.location().contains('–')
   })
 })

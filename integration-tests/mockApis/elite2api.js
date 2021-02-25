@@ -75,7 +75,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/api/locations/${locationId}`,
+        urlPattern: `/api/locations/${locationId}\\?includeInactive=true`,
       },
       response: {
         status: 200,
@@ -88,6 +88,19 @@ module.exports = {
       },
     })
   },
+
+  stubLocationNotFound: locationId => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/api/locations/${locationId}\\?includeInactive=true`,
+      },
+      response: {
+        status: 404,
+      },
+    })
+  },
+
   stubPrison: prisonId => {
     const descriptions = { LEI: 'Leeds', MDI: 'Moorland' }
 
