@@ -1,6 +1,7 @@
-import { AuthClient, FoundUserResult } from '../../data/authClientBuilder'
+import { AuthClient } from '../../data/authClientBuilder'
 import DraftReportClient from '../../data/draftReportClient'
 import { Elite2Client } from '../../data/elite2ClientBuilder'
+import { FoundUserResult } from '../../types/uof'
 import UserService from '../userService'
 import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
 

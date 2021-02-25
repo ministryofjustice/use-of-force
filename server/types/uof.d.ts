@@ -24,6 +24,15 @@ export type User = {
   displayName: string
 }
 
+export type FoundUserResult = {
+  username: string
+  verified: boolean
+  email?: string // only if verified
+  name: string
+  activeCaseLoadId?: string // not present for new users or having active caseload removed
+  staffId: number
+}
+
 export type UserWithPrison = FoundUserResult & { prison?: string }
 
 export type SystemToken = (string?) => Promise<string>

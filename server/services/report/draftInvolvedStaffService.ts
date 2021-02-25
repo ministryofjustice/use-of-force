@@ -20,8 +20,7 @@ export class DraftInvolvedStaffService {
     if (!users.length) {
       throw new Error(`cannot load reporter user: ${reporterUsername}`)
     }
-    const [user] = users
-    return { ...user, isReporter: true }
+    return users[0]
   }
 
   /**
@@ -32,7 +31,8 @@ export class DraftInvolvedStaffService {
   public async getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
     const retrievedStaff = await this.draftReportClient.getInvolvedStaff(username, bookingId)
     const staffWithoutReporter = retrievedStaff.filter(staff => staff.username !== username)
-    return [await this.reporter(token, username), ...staffWithoutReporter]
+    const user = await this.reporter(token, username)
+    return [{ ...user, isReporter: true }, ...staffWithoutReporter]
   }
 
   public async getInvolvedStaffWithPrisons(
