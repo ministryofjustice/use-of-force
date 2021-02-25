@@ -1,11 +1,11 @@
 import type DraftReportClient from '../../data/draftReportClient'
 import type SubmitDraftReportService from './submitDraftReportService'
-import type { LoggedInUser, SystemToken } from '../../types/uof'
+import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
 import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
 import { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
 import UserService from '../userService'
-import { FoundUserResult } from '../../data/authClientBuilder'
+
 import {
   DraftInvolvedStaffService,
   DraftInvolvedStaff,

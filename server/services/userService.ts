@@ -2,8 +2,8 @@ import logger from '../../log'
 import { properCaseName } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
-import { User, UserWithPrison } from '../types/uof'
-import { AuthClientBuilder, EmailResult, FoundUserResult } from '../data/authClientBuilder'
+import { User, UserWithPrison, FoundUserResult } from '../types/uof'
+import { AuthClientBuilder, EmailResult } from '../data/authClientBuilder'
 
 export default class UserService {
   constructor(
@@ -86,14 +86,14 @@ export default class UserService {
     }
   }
 
-  sortUsers = (agencyId: string) => (user1: UserWithPrison, user2: UserWithPrison): number => {
+  comparesUsers = (agencyId: string) => (user1: UserWithPrison, user2: UserWithPrison): number => {
     if (user1.activeCaseLoadId === user2.activeCaseLoadId) {
       return user1.username.localeCompare(user2.username)
     }
-    if (user1.activeCaseLoadId === agencyId) {
+    if (user1.activeCaseLoadId === agencyId || !user2.activeCaseLoadId) {
       return -1
     }
-    if (user2.activeCaseLoadId === agencyId) {
+    if (user2.activeCaseLoadId === agencyId || !user1.activeCaseLoadId) {
       return 1
     }
     return user1.prison?.localeCompare(user2.prison) || -1
@@ -117,7 +117,7 @@ export default class UserService {
           ...user,
           prison: prisons.find(p => p.agencyId === user.activeCaseLoadId)?.description,
         }))
-        .sort(this.sortUsers(agencyId))
+        .sort(this.comparesUsers(agencyId))
     } catch (error) {
       logger.error('Error during findUsers: ', error.stack)
       throw error

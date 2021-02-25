@@ -184,19 +184,19 @@ describe('findUsersWithPrisons', () => {
   })
 })
 
-describe('sortUsers', () => {
+describe('compareUsers', () => {
   const user = (username, caseLoad, prison): UserWithPrison => ({
     username,
     name: 'Bob Smith',
     email: 'an@email.com',
-    exists: true,
     verified: true,
     staffId: 1,
     activeCaseLoadId: caseLoad,
     prison,
   })
 
-  const results = (agency: string) => (users: User[]) => users.sort(service.sortUsers(agency)).map(u => u.username)
+  const results = (agency: string) => (users: UserWithPrison[]) =>
+    users.sort(service.comparesUsers(agency)).map(u => u.username)
 
   it('active caseload first', async () => {
     const user1 = user('USER_1', 'MDI', 'Moorland')
@@ -214,6 +214,14 @@ describe('sortUsers', () => {
 
     expect(results('UNK')([user1, user2])).toEqual(['USER_1', 'USER_2'])
     expect(results('UNK')([user2, user1])).toEqual(['USER_1', 'USER_2'])
+  })
+
+  it('Missing caseload appear last', async () => {
+    const user1 = user('USER_1', undefined, undefined)
+    const user2 = user('USER_2', 'BBB', 'bbb')
+
+    expect(results('UNK')([user1, user2])).toEqual(['USER_2', 'USER_1'])
+    expect(results('UNK')([user2, user1])).toEqual(['USER_2', 'USER_1'])
   })
 
   it('when same caseload, alphabetic by username ', async () => {

@@ -6,7 +6,7 @@ import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
 import config from '../config'
 import { generateOauthClientToken } from '../authentication/clientCredentials'
-import { SystemToken } from '../types/uof'
+import { SystemToken, FoundUserResult } from '../types/uof'
 
 const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
@@ -86,15 +86,6 @@ export type EmailResult = {
 type UserResult = {
   name: string
   activeCaseLoadId?: string
-  staffId: number
-}
-
-export type FoundUserResult = {
-  username: string
-  verified: boolean
-  email?: string // only if verified
-  name: string
-  activeCaseLoadId?: string // not present for new users or having active caseload removed
   staffId: number
 }
 

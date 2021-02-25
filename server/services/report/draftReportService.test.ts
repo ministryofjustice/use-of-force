@@ -1,6 +1,5 @@
-import { FoundUserResult } from '../../data/authClientBuilder'
 import DraftReportClient from '../../data/draftReportClient'
-import type { LoggedInUser } from '../../types/uof'
+import type { LoggedInUser, FoundUserResult } from '../../types/uof'
 import UserService from '../userService'
 import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
 import DraftReportService, { AddStaffResult } from './draftReportService'
