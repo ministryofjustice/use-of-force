@@ -7,7 +7,7 @@ jest.mock('../services/locationService')
 jest.mock('../services/report/draftReportService')
 
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
-const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
+const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
 
 let app
 

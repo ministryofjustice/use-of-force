@@ -70,6 +70,19 @@ describe('authClient', () => {
     })
   })
 
+  describe('getUsers', () => {
+    const user1 = { username: 'Bob', email: 'an@email.com' }
+    const user2 = { username: 'Jo', email: 'bn@email.com' }
+
+    it('getUsers', async () => {
+      fakeApi.get(`/api/user/${user1.username}`).matchHeader('authorization', `Bearer ${token}`).reply(200, user1)
+      fakeApi.get(`/api/user/${user2.username}`).matchHeader('authorization', `Bearer ${token}`).reply(200, user2)
+
+      const output = await client.getUsers([user1.username, user2.username])
+      expect(output).toEqual(expect.arrayContaining([user1, user2]))
+    })
+  })
+
   describe('findUser', () => {
     const userResponse = { username: 'Bob', email: 'an@email.com' }
 

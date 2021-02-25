@@ -50,6 +50,7 @@ describe('update', () => {
         username: 'Bob',
         missing: false,
         verified: true,
+        activeCaseLoadId: 'MDI',
       },
     ]
 
@@ -120,6 +121,7 @@ describe('update', () => {
           name: 'Bob Smith',
           verified: false,
           missing: false,
+          activeCaseLoadId: 'MDI',
         },
       ]
       userService.getUsers.mockResolvedValue(unverifiedStaff)

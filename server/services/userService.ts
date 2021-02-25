@@ -2,7 +2,7 @@ import logger from '../../log'
 import { properCaseName } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
-import { User } from '../types/uof'
+import { User, UserWithPrison } from '../types/uof'
 import { AuthClientBuilder, EmailResult, FoundUserResult } from '../data/authClientBuilder'
 
 export default class UserService {
@@ -57,12 +57,13 @@ export default class UserService {
 
       const results = [...existing]
         .sort(({ i }, { i: j }) => i - j)
-        .map(({ username, verified, email, name, staffId }) => ({
+        .map(({ username, verified, email, name, staffId, activeCaseLoadId }) => ({
           username,
           verified,
           email,
           name,
           staffId,
+          activeCaseLoadId,
         }))
 
       return results
@@ -79,6 +80,44 @@ export default class UserService {
       const users = await client.findUsers(firstName, lastName)
 
       return users
+    } catch (error) {
+      logger.error('Error during findUsers: ', error.stack)
+      throw error
+    }
+  }
+
+  sortUsers = (agencyId: string) => (user1: UserWithPrison, user2: UserWithPrison): number => {
+    if (user1.activeCaseLoadId === user2.activeCaseLoadId) {
+      return user1.username.localeCompare(user2.username)
+    }
+    if (user1.activeCaseLoadId === agencyId) {
+      return -1
+    }
+    if (user2.activeCaseLoadId === agencyId) {
+      return 1
+    }
+    return user1.prison?.localeCompare(user2.prison) || -1
+  }
+
+  public async findUsersWithPrisons(
+    token: string,
+    agencyId: string,
+    firstName: string,
+    lastName: string
+  ): Promise<UserWithPrison[]> {
+    try {
+      const eliteClient = this.elite2ClientBuilder(token)
+      const authClient = this.authClientBuilder(token)
+      const users = await authClient.findUsers(firstName, lastName)
+
+      const prisons = await eliteClient.getPrisons()
+
+      return users
+        .map(user => ({
+          ...user,
+          prison: prisons.find(p => p.agencyId === user.activeCaseLoadId)?.description,
+        }))
+        .sort(this.sortUsers(agencyId))
     } catch (error) {
       logger.error('Error during findUsers: ', error.stack)
       throw error

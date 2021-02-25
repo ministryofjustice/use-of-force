@@ -3,11 +3,14 @@ import type SubmitDraftReportService from './submitDraftReportService'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
 import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
-import { DraftReport, NoDraftReport, StaffDetails } from '../../data/draftReportClientTypes'
+import { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
 import UserService from '../userService'
 import { FoundUserResult } from '../../data/authClientBuilder'
-
-export type DraftInvolvedStaff = StaffDetails & { isReporter?: true }
+import {
+  DraftInvolvedStaffService,
+  DraftInvolvedStaff,
+  DraftInvolvedStaffWithPrison,
+} from './draftInvolvedStaffService'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -20,6 +23,7 @@ export enum AddStaffResult {
 export default class DraftReportService {
   constructor(
     private readonly draftReportClient: DraftReportClient,
+    private readonly draftInvolvedStaffService: DraftInvolvedStaffService,
     private readonly updateDraftReport: UpdateDraftReportService,
     private readonly submitDraftReport: SubmitDraftReportService,
     private readonly userService: UserService,
@@ -30,28 +34,25 @@ export default class DraftReportService {
     return this.draftReportClient.get(userId, bookingId)
   }
 
-  private async reporter(token: string, reporterUsername: string): Promise<DraftInvolvedStaff> {
-    const users = await this.userService.getUsers(token, [reporterUsername])
-    if (!users.length) {
-      throw new Error(`cannot load reporter user: ${reporterUsername}`)
-    }
-    const [user] = users
-    return { ...user, isReporter: true }
+  public getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
+    return this.draftInvolvedStaffService.getInvolvedStaff(token, username, bookingId)
   }
 
-  /**
-   * With the add to list pattern, a user will no longer be able to explicitly add themselves as involved staff.
-   * So we could just always add the user here. Unfortunately current draft reports could theoretically have added users.
-   * TODO: Add a migration to remove the current user if present on reports? Or check if even necessary?
-   */
-  public async getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
-    const retrievedStaff = await this.draftReportClient.getInvolvedStaff(username, bookingId)
-    const staffWithoutReporter = retrievedStaff.filter(staff => staff.username !== username)
-    return [await this.reporter(token, username), ...staffWithoutReporter]
+  public async getInvolvedStaffWithPrisons(
+    token: string,
+    username: string,
+    bookingId: number
+  ): Promise<DraftInvolvedStaffWithPrison[]> {
+    return this.draftInvolvedStaffService.getInvolvedStaffWithPrisons(token, username, bookingId)
   }
 
-  public async findUsers(token: string, firstName: string, lastName: string): Promise<FoundUserResult[]> {
-    return this.userService.findUsers(token, firstName, lastName)
+  public async findUsers(
+    token: string,
+    agencyId: string,
+    firstName: string,
+    lastName: string
+  ): Promise<FoundUserResult[]> {
+    return this.userService.findUsersWithPrisons(token, agencyId, firstName, lastName)
   }
 
   private async handleAddStaff(
@@ -92,7 +93,7 @@ export default class DraftReportService {
     lastName: string
   ): Promise<AddStaffResult> {
     const token = await this.systemToken(user.username)
-    const users = await this.findUsers(token, firstName, lastName)
+    const users = await this.userService.findUsers(token, firstName, lastName)
     return this.handleAddStaff(token, user, bookingId, users)
   }
 

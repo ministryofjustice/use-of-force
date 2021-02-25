@@ -5,12 +5,13 @@ import { appWithAllRoutes, user } from './testutils/appSetup'
 
 jest.mock('../services/report/draftReportService')
 
-const draftReportService = new DraftReportService(null, null, null, null, null) as jest.Mocked<DraftReportService>
+const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
 
 let app
+const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService })
+  app = appWithAllRoutes({ draftReportService }, undefined, false, flash)
 })
 
 afterEach(() => {
@@ -19,7 +20,7 @@ afterEach(() => {
 
 describe('staff involved page', () => {
   test('GET should display content and current staff', () => {
-    draftReportService.getInvolvedStaff.mockResolvedValue([
+    draftReportService.getInvolvedStaffWithPrisons.mockResolvedValue([
       { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
     ])
     return request(app)
@@ -29,7 +30,7 @@ describe('staff involved page', () => {
         expect(res.text).toContain('Staff involved in use of force')
         expect(res.text).toContain('User bob')
         expect(res.text).toContain('bob@justice.gov.uk')
-        expect(draftReportService.getInvolvedStaff).toHaveBeenCalledWith('user1-system-token', 'user1', -19)
+        expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith('user1-system-token', 'user1', -19)
       })
   })
 
@@ -222,6 +223,18 @@ describe('submit staff', () => {
 })
 
 describe('multiple results', () => {
+  test('GET selecting staff member', () => {
+    flash.mockReturnValue([{ firstName: 'Bob', lastName: 'Smith' }])
+
+    draftReportService.findUsers.mockResolvedValue([])
+    draftReportService.getCurrentDraft.mockResolvedValue({ agencyId: 'MDI' })
+    return request(app)
+      .get(`/report/-19/select-staff-member`)
+      .expect('Content-Type', /html/)
+      .expect(() => {
+        expect(draftReportService.findUsers).toBeCalledWith('user1-system-token', 'MDI', 'Bob', 'Smith')
+      })
+  })
   test('POST requires staff member to be selected', () => {
     return request(app)
       .post(`/report/-19/select-staff-member`)

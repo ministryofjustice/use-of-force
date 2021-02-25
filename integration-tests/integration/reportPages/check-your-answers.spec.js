@@ -18,6 +18,7 @@ context('Check your answers page', () => {
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
+    cy.task('stubPrisons')
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])

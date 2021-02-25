@@ -21,7 +21,7 @@ export default class AddInvolvedStaffRoutes {
   public viewStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const errors = req.flash('errors')
-    const staff = await this.draftReportService.getInvolvedStaff(
+    const staff = await this.draftReportService.getInvolvedStaffWithPrisons(
       await this.systemToken(req.user.username),
       req.user.username,
       parseInt(bookingId, 10)
@@ -175,11 +175,15 @@ export default class AddInvolvedStaffRoutes {
       return res.redirect(paths.staffInvolved(bookingId))
     }
     const { firstName, lastName } = query
+    const { agencyId } = await this.draftReportService.getCurrentDraft(res.locals.user.username, Number(bookingId))
+
     const staff = await this.draftReportService.findUsers(
       await this.systemToken(req.user.username),
+      agencyId,
       firstName,
       lastName
     )
+
     return res.render('formPages/addingStaff/select-staff-member', {
       bookingId,
       firstName,
