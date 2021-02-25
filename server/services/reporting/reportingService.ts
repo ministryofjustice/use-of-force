@@ -1,15 +1,15 @@
 import moment from 'moment'
 import stringify from 'csv-stringify'
-import logger from '../../log'
+import logger from '../../../log'
 import { HeatmapBuilder } from './heatmapBuilder'
 import { Aggregator } from './incidentCountAggregator'
 import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
 import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
-import { ReportStatus } from '../config/types'
-import { AgencyId, DateRange } from '../types/uof'
-import type OffenderService from './offenderService'
-import type ReportingClient from '../data/reportingClient'
+import { ReportStatus } from '../../config/types'
+import { AgencyId, DateRange } from '../../types/uof'
+import type OffenderService from '../offenderService'
+import type ReportingClient from '../../data/reportingClient'
 
 const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {

@@ -3,7 +3,7 @@ import { DraftReportService, OffenderService } from '../services'
 import { appWithAllRoutes } from './testutils/appSetup'
 
 jest.mock('../services/offenderService')
-jest.mock('../services/report/draftReportService')
+jest.mock('../services/drafts/draftReportService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>

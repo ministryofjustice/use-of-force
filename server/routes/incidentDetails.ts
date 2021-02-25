@@ -6,10 +6,10 @@ import { processInput } from '../services/validation'
 import { nextPaths, full, partial } from '../config/incident'
 import type OffenderService from '../services/offenderService'
 import type LocationService from '../services/locationService'
-import type DraftReportService from '../services/report/draftReportService'
+import type DraftReportService from '../services/drafts/draftReportService'
 import type { ParsedDate } from '../utils/dateSanitiser'
 import type { SystemToken } from '../types/uof'
-import { isReportComplete } from '../services/report/reportStatusChecker'
+import { isReportComplete } from '../services/drafts/reportStatusChecker'
 
 const formName = 'incidentDetails'
 

@@ -1,13 +1,13 @@
 import moment from 'moment'
-import { ReportStatus } from '../config/types'
-import OffenderService from './offenderService'
-import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
+import { ReportStatus } from '../../config/types'
+import OffenderService from '../offenderService'
+import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
 import ReportingService from './reportingService'
-import ReportingClient from '../data/reportingClient'
-import { OffenderNoWithIncidentCount } from '../types/uof'
+import ReportingClient from '../../data/reportingClient'
+import { OffenderNoWithIncidentCount } from '../../types/uof'
 
-jest.mock('./offenderService')
-jest.mock('../data/reportingClient')
+jest.mock('../offenderService')
+jest.mock('../../data/reportingClient')
 
 const reportingClient = new ReportingClient(null) as jest.Mocked<ReportingClient>
 

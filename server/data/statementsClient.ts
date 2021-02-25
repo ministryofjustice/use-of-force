@@ -9,7 +9,7 @@ import type {
   StatementUpdate,
 } from './statementsClientTypes'
 import { Status } from '../services/statementServiceTypes'
-import type { DraftInvolvedStaff } from '../services/report/draftInvolvedStaffService'
+import type { DraftInvolvedStaff } from '../services/drafts/draftInvolvedStaffService'
 import { StatementStatus } from '../config/types'
 
 type StatementCreationResult = { id: number; userId: string }

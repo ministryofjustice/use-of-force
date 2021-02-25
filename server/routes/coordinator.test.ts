@@ -5,7 +5,7 @@ import { AddStaffResult } from '../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from './testutils/appSetup'
 
 jest.mock('../services/offenderService')
-jest.mock('../services/report/reportService')
+jest.mock('../services/reportService')
 jest.mock('../services/involvedStaffService')
 jest.mock('../services/reviewService')
 

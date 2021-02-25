@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import LocationService from '../services/locationService'
-import DraftReportService from '../services/report/draftReportService'
+import DraftReportService from '../services/drafts/draftReportService'
 import { SystemToken } from '../types/uof'
 
 export default class ChangePrisonRoutes {

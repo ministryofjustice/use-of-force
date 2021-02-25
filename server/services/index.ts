@@ -5,13 +5,13 @@ import ReportingClient from '../data/reportingClient'
 import DraftReportClient from '../data/draftReportClient'
 import StatementsClient from '../data/statementsClient'
 import OffenderService from './offenderService'
-import ReportingService from './reportingService'
+import ReportingService from './reporting/reportingService'
 import PrisonerSearchService from './prisonerSearchService'
 
-import ReportService from './report/reportService'
-import UpdateDraftReportService from './report/updateDraftReportService'
-import SubmitDraftReportService from './report/submitDraftReportService'
-import DraftReportService from './report/draftReportService'
+import ReportService from './reportService'
+import UpdateDraftReportService from './drafts/updateDraftReportService'
+import SubmitDraftReportService from './drafts/submitDraftReportService'
+import DraftReportService from './drafts/draftReportService'
 
 import LocationService from './locationService'
 import ReportDetailBuilder from './reportDetailBuilder'
@@ -23,14 +23,14 @@ import UserService from './userService'
 import elite2ClientBuilder from '../data/elite2ClientBuilder'
 
 import { authClientBuilder, systemToken } from '../data/authClientBuilder'
-import createHeatmapBuilder from './heatmapBuilder'
+import createHeatmapBuilder from './reporting/heatmapBuilder'
 import EventPublisher from './eventPublisher'
 
 import * as db from '../data/dataAccess/db'
 import createSignInService from '../authentication/signInService'
 
 import { notificationServiceFactory } from './notificationService'
-import { DraftInvolvedStaffService } from './report/draftInvolvedStaffService'
+import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 
 const reportingClient = new ReportingClient(db.query)
 const incidentClient = new IncidentClient(db.query, db.inTransaction)

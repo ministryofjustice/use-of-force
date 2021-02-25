@@ -1,12 +1,12 @@
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import { toDate } from '../utils/dateSanitiser'
-import DraftReportService from '../services/report/draftReportService'
+import DraftReportService from '../services/drafts/draftReportService'
 import OffenderService from '../services/offenderService'
 import LocationService from '../services/locationService'
 import type { Prison } from '../data/elite2ClientBuilderTypes'
 
-jest.mock('../services/report/draftReportService')
+jest.mock('../services/drafts/draftReportService')
 jest.mock('../services/offenderService')
 jest.mock('../services/locationService')
 

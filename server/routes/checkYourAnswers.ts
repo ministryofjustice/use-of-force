@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import LocationService from '../services/locationService'
 import OffenderService from '../services/offenderService'
-import DraftReportService from '../services/report/draftReportService'
+import DraftReportService from '../services/drafts/draftReportService'
 import { SystemToken } from '../types/uof'
 import { properCaseFullName } from '../utils/utils'
 import reportSummary from './model/reportSummary'

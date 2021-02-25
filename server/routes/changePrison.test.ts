@@ -4,7 +4,7 @@ import { LocationService, DraftReportService } from '../services'
 import { appWithAllRoutes } from './testutils/appSetup'
 
 jest.mock('../services/locationService')
-jest.mock('../services/report/draftReportService')
+jest.mock('../services/drafts/draftReportService')
 
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>

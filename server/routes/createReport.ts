@@ -3,8 +3,8 @@ import { isNilOrEmpty, firstItem } from '../utils/utils'
 import types from '../config/types'
 import { processInput } from '../services/validation'
 import { nextPaths, paths, full, partial } from '../config/incident'
-import type DraftReportService from '../services/report/draftReportService'
-import { isReportComplete } from '../services/report/reportStatusChecker'
+import type DraftReportService from '../services/drafts/draftReportService'
+import { isReportComplete } from '../services/drafts/reportStatusChecker'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',

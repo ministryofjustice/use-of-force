@@ -1,10 +1,10 @@
-import type IncidentClient from '../../data/incidentClient'
-import type { ReportSummary, IncompleteReportSummary, Report } from '../../data/incidentClientTypes'
-import type { SystemToken } from '../../types/uof'
+import type IncidentClient from '../data/incidentClient'
+import type { ReportSummary, IncompleteReportSummary, Report } from '../data/incidentClientTypes'
+import type { SystemToken } from '../types/uof'
 
-import logger from '../../../log'
-import { PageResponse } from '../../utils/page'
-import OffenderService from '../offenderService'
+import logger from '../../log'
+import { PageResponse } from '../utils/page'
+import OffenderService from './offenderService'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string

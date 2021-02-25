@@ -1,4 +1,4 @@
-import type ReportService from '../services/report/reportService'
+import type ReportService from '../services/drafts/draftReportService'
 import ReportDataBuilder from '../services/reportDetailBuilder'
 
 export default function CreateIncidentRoutes(reportService: ReportService, reportDetailBuilder: ReportDataBuilder) {

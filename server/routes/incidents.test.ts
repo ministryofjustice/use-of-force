@@ -4,7 +4,7 @@ import { PageResponse } from '../utils/page'
 import { ReportDetailBuilder, ReportService, OffenderService } from '../services'
 import { Report } from '../data/incidentClientTypes'
 
-jest.mock('../services/report/reportService')
+jest.mock('../services/reportService')
 jest.mock('../services/offenderService')
 jest.mock('../services/reportDetailBuilder')
 

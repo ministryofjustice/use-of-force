@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import { Elite2ClientBuilder } from '../../data/elite2ClientBuilder'
 
 type Incident = {
   incidentDate: Date

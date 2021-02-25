@@ -6,8 +6,8 @@ import {
   IncidentCountByGroup,
   invertGroupings,
 } from '../incidentCountAggregator/aggregatorFunctions'
-import { OffenderNoWithIncidentDate } from '../../types/uof'
-import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
+import { OffenderNoWithIncidentDate } from '../../../types/uof'
+import { PrisonerDetail } from '../../../data/elite2ClientBuilderTypes'
 
 /**
  * Given a set of PrisonerDetail return a function that maps an OffenderNoWithDate to the age of the offender, in years,
