@@ -1,10 +1,9 @@
 const request = require('supertest')
-const { appSetup, user, reviewerUser, coordinatorUser } = require('./testutils/appSetup')
-const createRouter = require('./api')
-const { authenticationMiddleware } = require('./testutils/mockAuthentication')
+const { user, reviewerUser, coordinatorUser, appWithAllRoutes } = require('./__test/appSetup')
 
 const userSupplier = jest.fn()
 
+/** @type {any} */
 const reportingService = {
   getMostOftenInvolvedStaff: jest.fn(),
   getMostOftenInvolvedPrisoners: jest.fn(),
@@ -14,35 +13,30 @@ const reportingService = {
   getIncidentsByAgeGroup: jest.fn(),
 }
 
+/** @type {any} */
 const offenderService = {
   getOffenderImage: jest.fn(),
 }
 
-const route = createRouter(authenticationMiddleware, {
-  offenderService,
-  reportingService,
-  systemToken: username => `${username}-system-token`,
-})
-
-let app
-
 describe('api', () => {
+  let app
+
   beforeEach(() => {
     offenderService.getOffenderImage.mockResolvedValue('')
-    app = appSetup(route, userSupplier)
+    app = appWithAllRoutes({ offenderService, reportingService }, userSupplier)
   })
 
   afterEach(() => {
     jest.resetAllMocks()
   })
 
-  describe('GET /offender/:bookingId/image', () => {
+  describe('GET /api/offender/:bookingId/image', () => {
     beforeEach(() => {
       userSupplier.mockReturnValue(user)
     })
     it('should render using system creds for retrieving image', async () => {
       await request(app)
-        .get('/offender/1234/image')
+        .get('/api/offender/1234/image')
         .expect('Content-Type', 'image/jpeg')
         .expect(() => {
           expect(offenderService.getOffenderImage).toBeCalledWith('user1-system-token', '1234')
@@ -59,12 +53,12 @@ describe('api', () => {
       reportingService.getIncidentsByReligiousGroup.mockResolvedValue('A,B,C\n1,2,3\n')
       reportingService.getIncidentsByAgeGroup.mockResolvedValue('X,Y,Z\n3,4,5\n')
     })
-    describe('GET /reports/mostOftenInvolvedStaff/:year/:month', () => {
+    describe('GET /api/reports/mostOftenInvolvedStaff/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedStaff/2019/10')
+          .get('/api/reports/mostOftenInvolvedStaff/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="involved-staff-LEI-10-2019.csv"`)
           .expect(res => {
@@ -78,7 +72,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedStaff/2019/10')
+          .get('/api/reports/mostOftenInvolvedStaff/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -92,7 +86,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedStaff/2019/10')
+          .get('/api/reports/mostOftenInvolvedStaff/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -103,12 +97,12 @@ describe('api', () => {
       })
     })
 
-    describe('GET /reports/mostOftenInvolvedPrisoners/:year/:month', () => {
+    describe('GET /api/reports/mostOftenInvolvedPrisoners/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedPrisoners/2019/10')
+          .get('/api/reports/mostOftenInvolvedPrisoners/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="prisoners-LEI-10-2019.csv"`)
           .expect(res => {
@@ -122,7 +116,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedPrisoners/2019/10')
+          .get('/api/reports/mostOftenInvolvedPrisoners/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -136,7 +130,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/mostOftenInvolvedPrisoners/2019/10')
+          .get('/api/reports/mostOftenInvolvedPrisoners/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -147,12 +141,12 @@ describe('api', () => {
       })
     })
 
-    describe('GET /reports/overview/:year/:month', () => {
+    describe('GET /api/reports/overview/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/overview/2019/10')
+          .get('/api/reports/overview/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="overview-LEI-10-2019.csv"`)
           .expect(res => {
@@ -166,7 +160,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/overview/2019/10')
+          .get('/api/reports/overview/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -180,7 +174,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/overview/2019/10')
+          .get('/api/reports/overview/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -191,12 +185,12 @@ describe('api', () => {
       })
     })
 
-    describe('GET /reports/heatmap/:year/:month', () => {
+    describe('GET /api/reports/heatmap/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/heatmap/2019/10')
+          .get('/api/reports/heatmap/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="heatmap-LEI-10-2019.csv"`)
           .expect(res => {
@@ -210,7 +204,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/heatmap/2019/10')
+          .get('/api/reports/heatmap/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -224,7 +218,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/heatmap/2019/10')
+          .get('/api/reports/heatmap/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -235,12 +229,12 @@ describe('api', () => {
       })
     })
 
-    describe('GET /reports/incidentsByReligion/:year/:month', () => {
+    describe('GET /api/reports/incidentsByReligion/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/incidentsByReligion/2019/10')
+          .get('/api/reports/incidentsByReligion/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="religion-LEI-10-2019.csv"`)
           .expect(res => {
@@ -254,7 +248,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/incidentsByReligion/2019/10')
+          .get('/api/reports/incidentsByReligion/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -268,7 +262,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/incidentsByReligion/2019/10')
+          .get('/api/reports/incidentsByReligion/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -278,12 +272,12 @@ describe('api', () => {
         expect(reportingService.getIncidentsByReligiousGroup).not.toBeCalled()
       })
     })
-    describe('GET /reports/incidentsByAgeGroup/:year/:month', () => {
+    describe('GET /api/reports/incidentsByAgeGroup/:year/:month', () => {
       it('should render for coordinator', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/reports/incidentsByAgeGroup/2019/10')
+          .get('/api/reports/incidentsByAgeGroup/2019/10')
           .expect('Content-Type', /text\/csv/)
           .expect('Content-Disposition', `attachment; filename="age-LEI-10-2019.csv"`)
           .expect(res => {
@@ -297,7 +291,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(reviewerUser)
 
         await request(app)
-          .get('/reports/incidentsByAgeGroup/2019/10')
+          .get('/api/reports/incidentsByAgeGroup/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {
@@ -310,7 +304,7 @@ describe('api', () => {
         userSupplier.mockReturnValue(user)
 
         await request(app)
-          .get('/reports/incidentsByAgeGroup/2019/10')
+          .get('/api/reports/incidentsByAgeGroup/2019/10')
           .expect('Content-Type', /text\/html/)
           .expect(401)
           .expect(res => {

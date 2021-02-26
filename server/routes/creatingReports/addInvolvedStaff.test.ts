@@ -1,9 +1,9 @@
 import request from 'supertest'
-import { StaffDetails } from '../data/draftReportClientTypes'
-import DraftReportService, { AddStaffResult } from '../services/drafts/draftReportService'
-import { appWithAllRoutes, user } from './testutils/appSetup'
+import { StaffDetails } from '../../data/draftReportClientTypes'
+import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
+import { appWithAllRoutes, user } from '../__test/appSetup'
 
-jest.mock('../services/drafts/draftReportService')
+jest.mock('../../services/drafts/draftReportService')
 
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
 

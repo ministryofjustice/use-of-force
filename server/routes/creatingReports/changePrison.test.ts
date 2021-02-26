@@ -1,10 +1,10 @@
 import request from 'supertest'
-import { Prison } from '../data/elite2ClientBuilderTypes'
-import { LocationService, DraftReportService } from '../services'
-import { appWithAllRoutes } from './testutils/appSetup'
+import { Prison } from '../../data/elite2ClientBuilderTypes'
+import { LocationService, DraftReportService } from '../../services'
+import { appWithAllRoutes } from '../__test/appSetup'
 
-jest.mock('../services/locationService')
-jest.mock('../services/drafts/draftReportService')
+jest.mock('../../services/locationService')
+jest.mock('../../services/drafts/draftReportService')
 
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>

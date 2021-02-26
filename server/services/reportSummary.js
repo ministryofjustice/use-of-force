@@ -5,8 +5,8 @@ const {
   ControlAndRestraintPosition,
   RelocationType,
   toLabel,
-} = require('../../config/types')
-const { properCaseFullName } = require('../../utils/utils')
+} = require('../config/types')
+const { properCaseFullName } = require('../utils/utils')
 
 const createIncidentDetails = (
   offenderDetail,

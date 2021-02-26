@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 
-import { properCaseFullName } from '../utils/utils'
-import { nextPaths, paths } from '../config/incident'
-import { SystemToken } from '../types/uof'
-import DraftReportService, { AddStaffResult } from '../services/drafts/draftReportService'
+import { properCaseFullName } from '../../utils/utils'
+import { nextPaths, paths } from '../../config/incident'
+import { SystemToken } from '../../types/uof'
+import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',

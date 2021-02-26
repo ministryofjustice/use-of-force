@@ -1,10 +1,10 @@
 import request from 'supertest'
-import { appWithAllRoutes } from './testutils/appSetup'
-import { PageResponse } from '../utils/page'
-import { StatementService, OffenderService } from '../services'
+import { appWithAllRoutes } from '../__test/appSetup'
+import { PageResponse } from '../../utils/page'
+import { StatementService, OffenderService } from '../../services'
 
-jest.mock('../services/statementService')
-jest.mock('../services/offenderService')
+jest.mock('../../services/statementService')
+jest.mock('../../services/offenderService')
 
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>

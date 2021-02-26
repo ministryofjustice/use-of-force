@@ -1,5 +1,5 @@
 import { properCaseFullName } from '../utils/utils'
-import reportSummary from '../routes/model/reportSummary'
+import reportSummary from './reportSummary'
 import type { InvolvedStaffService } from './involvedStaffService'
 import type LocationService from './locationService'
 import type OffenderService from './offenderService'

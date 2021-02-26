@@ -1,13 +1,13 @@
 import request from 'supertest'
-import { InvolvedStaff, Report } from '../data/incidentClientTypes'
-import { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../services'
-import { AddStaffResult } from '../services/involvedStaffService'
-import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from './testutils/appSetup'
+import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
+import { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../../services'
+import { AddStaffResult } from '../../services/involvedStaffService'
+import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 
-jest.mock('../services/offenderService')
-jest.mock('../services/reportService')
-jest.mock('../services/involvedStaffService')
-jest.mock('../services/reviewService')
+jest.mock('../../services/offenderService')
+jest.mock('../../services/reportService')
+jest.mock('../../services/involvedStaffService')
+jest.mock('../../services/reviewService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null) as jest.Mocked<ReportService>
@@ -81,7 +81,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', '/coordinator/report/1/add-staff/result/success')
 
-      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', '1', 'sally')
+      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', 1, 'sally')
     })
 
     it('should not resolve for reviewer', async () => {
@@ -209,7 +209,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', '/not-completed-incidents')
         .expect(() => {
-          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', '123')
+          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', 123)
         })
     })
 
@@ -237,7 +237,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', '/completed-incidents')
         .expect(() => {
-          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', '123')
+          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', 123)
         })
     })
 
@@ -347,7 +347,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', '/123/view-report')
         .expect(() => {
-          expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith('123', '2')
+          expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(123, 2)
         })
     })
 

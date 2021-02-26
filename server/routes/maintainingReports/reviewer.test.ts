@@ -1,16 +1,16 @@
 import request from 'supertest'
-import { appWithAllRoutes, user, reviewerUser } from './testutils/appSetup'
-import { parseDate } from '../utils/utils'
-import { PageResponse } from '../utils/page'
-import type { ReportDetail } from '../services/reportDetailBuilder'
-import { OffenderService, ReviewService, ReportDetailBuilder } from '../services'
-import { Report } from '../data/incidentClientTypes'
+import { appWithAllRoutes, user, reviewerUser } from '../__test/appSetup'
+import { parseDate } from '../../utils/utils'
+import { PageResponse } from '../../utils/page'
+import type { ReportDetail } from '../../services/reportDetailBuilder'
+import { OffenderService, ReviewService, ReportDetailBuilder } from '../../services'
+import { Report } from '../../data/incidentClientTypes'
 
 const userSupplier = jest.fn()
 
-jest.mock('../services/reviewService')
-jest.mock('../services/offenderService')
-jest.mock('../services/reportDetailBuilder')
+jest.mock('../../services/reviewService')
+jest.mock('../../services/offenderService')
+jest.mock('../../services/reportDetailBuilder')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>

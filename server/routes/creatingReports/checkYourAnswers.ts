@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import LocationService from '../services/locationService'
-import OffenderService from '../services/offenderService'
-import DraftReportService from '../services/drafts/draftReportService'
-import { SystemToken } from '../types/uof'
-import { properCaseFullName } from '../utils/utils'
-import reportSummary from './model/reportSummary'
+import LocationService from '../../services/locationService'
+import OffenderService from '../../services/offenderService'
+import DraftReportService from '../../services/drafts/draftReportService'
+import { SystemToken } from '../../types/uof'
+import { properCaseFullName } from '../../utils/utils'
+import reportSummary from '../../services/reportSummary'
 
 export default class CheckAnswerRoutes {
   constructor(
@@ -64,5 +64,9 @@ export default class CheckAnswerRoutes {
     const reportId = await this.draftReportService.submit(res.locals.user, parseInt(bookingId, 10))
     const location = reportId ? `/${reportId}/report-sent` : `/`
     return res.redirect(location)
+  }
+
+  public viewReportSent = (req: Request, res: Response): void => {
+    return res.render('pages/report-sent', { data: res.locals.formObject, reportId: req.params.reportId })
   }
 }

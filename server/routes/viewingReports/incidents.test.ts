@@ -1,12 +1,12 @@
 import request from 'supertest'
-import { appWithAllRoutes, user } from './testutils/appSetup'
-import { PageResponse } from '../utils/page'
-import { ReportDetailBuilder, ReportService, OffenderService } from '../services'
-import { Report } from '../data/incidentClientTypes'
+import { appWithAllRoutes, user } from '../__test/appSetup'
+import { PageResponse } from '../../utils/page'
+import { ReportDetailBuilder, ReportService, OffenderService } from '../../services'
+import { Report } from '../../data/incidentClientTypes'
 
-jest.mock('../services/reportService')
-jest.mock('../services/offenderService')
-jest.mock('../services/reportDetailBuilder')
+jest.mock('../../services/reportService')
+jest.mock('../../services/offenderService')
+jest.mock('../../services/reportDetailBuilder')
 
 const userSupplier = jest.fn()
 

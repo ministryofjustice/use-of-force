@@ -1,4 +1,4 @@
-import { SearchForm } from '../data/prisonerSearchClient'
+import { SearchForm } from '../../data/prisonerSearchClient'
 
 const prisonNumberPatttern = new RegExp(/^[A-Z][0-9]{4}[A-Z]{2}$/i)
 

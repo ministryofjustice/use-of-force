@@ -22,7 +22,6 @@ import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
-import createApiRouter from './routes/api'
 
 import logger from '../log'
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
@@ -250,8 +249,7 @@ export default function createApp(services: Services): Express {
 
   app.use(authorisationMiddleware)
 
-  app.use('/', createRouter(authenticationMiddleware, services))
-  app.use('/api/', createApiRouter(authenticationMiddleware, services))
+  app.use(createRouter(authenticationMiddleware, services))
 
   app.use((req, res, next) => {
     next(createError(404, 'Not found'))
