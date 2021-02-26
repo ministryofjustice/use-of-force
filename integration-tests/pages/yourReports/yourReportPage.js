@@ -15,6 +15,8 @@ const viewYourReportPage = () =>
 
     deleteInvolvedStaff: username => cy.get(`[data-qa="delete-staff-${username}"]`),
 
+    location: () => cy.get('[data-qa="location"]'),
+
     verifyInputs: reportDetails.verifyInputs,
 
     getReportId: () => {

@@ -36,6 +36,8 @@ module.exports = on => {
 
     stubLocation: elite2api.stubLocation,
 
+    stubLocationNotFound: elite2api.stubLocationNotFound,
+
     stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 
     stubFindUsers: auth.stubFindUsers,
