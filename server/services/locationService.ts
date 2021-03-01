@@ -1,36 +1,34 @@
 import { AgencyId } from '../types/uof'
 import logger from '../../log'
-import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
-import { Prison, PrisonLocation } from '../data/elite2ClientBuilderTypes'
+import { RestClientBuilder, PrisonClient } from '../data'
+import { Prison, PrisonLocation } from '../data/prisonClientTypes'
 
 export default class LocationService {
-  constructor(private readonly elite2ClientBuilder: Elite2ClientBuilder) {}
+  constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
 
   async getPrisons(token: string): Promise<Prison[]> {
-    const elite2Client = this.elite2ClientBuilder(token)
-    const prisons = await elite2Client.getPrisons()
-    logger.info('Retrieving all agencies from elite2')
+    const prisonClient = this.prisonClientBuilder(token)
+    const prisons = await prisonClient.getPrisons()
     return prisons.sort((a, b) => a.description.localeCompare(b.description, 'en', { ignorePunctuation: true }))
   }
 
   async getPrisonById(token: string, prisonId: string): Promise<Prison> {
-    const elite2Client = this.elite2ClientBuilder(token)
-    logger.info('Retrieving single prison from elite2')
-    return elite2Client.getPrisonById(prisonId)
+    const prisonClient = this.prisonClientBuilder(token)
+    return prisonClient.getPrisonById(prisonId)
   }
 
   async getLocation(token: string, locationId: number): Promise<PrisonLocation | Record<string, unknown>> {
     if (!locationId) {
       return Promise.resolve({})
     }
-    const elite2Client = this.elite2ClientBuilder(token)
-    return elite2Client.getLocation(locationId)
+    const prisonClient = this.prisonClientBuilder(token)
+    return prisonClient.getLocation(locationId)
   }
 
   async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {
     try {
-      const elite2Client = this.elite2ClientBuilder(token)
-      const incidentLocations = await elite2Client.getLocations(agencyId)
+      const prisonClient = this.prisonClientBuilder(token)
+      const incidentLocations = await prisonClient.getLocations(agencyId)
 
       const prisonersCell = incidentLocations.find(
         location => location.userDescription.toUpperCase() === "PRISONER'S CELL"

@@ -12,9 +12,9 @@ function dbCheck() {
 }
 
 const agentOptions = {
-  maxSockets: config.apis.elite2.agent.maxSockets,
-  maxFreeSockets: config.apis.elite2.agent.maxFreeSockets,
-  freeSocketTimeout: config.apis.elite2.agent.freeSocketTimeout,
+  maxSockets: config.apis.prison.agent.maxSockets,
+  maxFreeSockets: config.apis.prison.agent.maxFreeSockets,
+  freeSocketTimeout: config.apis.prison.agent.freeSocketTimeout,
 }
 
 function serviceCheckFactory(name, url) {

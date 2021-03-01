@@ -1,10 +1,8 @@
-import type IncidentClient from '../data/incidentClient'
 import type { AgencyId, SystemToken } from '../types/uof'
 import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
-import StatementsClient from '../data/statementsClient'
+import { IncidentClient, StatementsClient, RestClientBuilder, AuthClient } from '../data'
 import OffenderService from './offenderService'
-import { AuthClientBuilder } from '../data/authClientBuilder'
 
 export interface IncidentSummary {
   id: number
@@ -49,7 +47,7 @@ export default class ReviewService {
   constructor(
     private readonly statementsClient: StatementsClient,
     private readonly incidentClient: IncidentClient,
-    private readonly authClientBuilder: AuthClientBuilder,
+    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken
   ) {}

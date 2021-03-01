@@ -1,12 +1,12 @@
 import logger from '../../log'
-import { AuthClientBuilder } from '../../server/data/authClientBuilder'
+import type { AuthClient, RestClientBuilder } from '../../server/data'
 import { QueryPerformer } from '../../server/data/dataAccess/db'
 import StatementsClient from '../../server/data/statementsClient'
 import { SystemToken } from '../../server/types/uof'
 
 export default class EmailResolver {
   constructor(
-    private readonly authClientBuilder: AuthClientBuilder,
+    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
     private readonly systemToken: SystemToken,
     private readonly statementsClient: StatementsClient
   ) {}

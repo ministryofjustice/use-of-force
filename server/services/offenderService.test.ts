@@ -2,31 +2,31 @@ import OffenderService from './offenderService'
 
 const token = 'token-1'
 
-const elite2Client = {
+const prisonClient = {
   getOffenderDetails: jest.fn(),
   getLocations: jest.fn(),
   getOffenderImage: jest.fn(),
   getOffenders: jest.fn(),
 }
 
-const elite2ClientBuilder = jest.fn()
+const prisonClientBuilder = jest.fn()
 
 let service
 
 beforeEach(() => {
-  elite2ClientBuilder.mockReturnValue(elite2Client)
-  service = new OffenderService(elite2ClientBuilder)
+  prisonClientBuilder.mockReturnValue(prisonClient)
+  service = new OffenderService(prisonClientBuilder)
 })
 
 afterEach(() => {
-  elite2Client.getOffenderDetails.mockReset()
-  elite2Client.getOffenderImage.mockReset()
+  prisonClient.getOffenderDetails.mockReset()
+  prisonClient.getOffenderImage.mockReset()
 })
 
 describe('getOffenderDetails', () => {
   it('should format display name', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: '1980-12-31' }
-    elite2Client.getOffenderDetails.mockReturnValue(details)
+    prisonClient.getOffenderDetails.mockReturnValue(details)
     const result = await service.getOffenderDetails(token, -5)
 
     expect(result).toEqual({
@@ -38,22 +38,22 @@ describe('getOffenderDetails', () => {
 
   it('should use the token', async () => {
     const details = { firstName: 'SAM', lastName: 'SMITH' }
-    elite2Client.getOffenderDetails.mockReturnValue(details)
-    elite2Client.getLocations.mockReturnValue([])
+    prisonClient.getOffenderDetails.mockReturnValue(details)
+    prisonClient.getLocations.mockReturnValue([])
     await service.getOffenderDetails(token, -5)
 
-    expect(elite2ClientBuilder).toBeCalledWith(token)
+    expect(prisonClientBuilder).toBeCalledWith(token)
   })
 })
 
 describe('getOffenderImage', () => {
   it('Can retrieve image', () => {
     const image = 'a stream'
-    elite2Client.getOffenderImage.mockReturnValue(image)
+    prisonClient.getOffenderImage.mockReturnValue(image)
     service.getOffenderImage(token, -5)
 
-    expect(elite2ClientBuilder).toBeCalledWith(token)
-    expect(elite2Client.getOffenderImage).toBeCalledWith(-5)
+    expect(prisonClientBuilder).toBeCalledWith(token)
+    expect(prisonClient.getOffenderImage).toBeCalledWith(-5)
   })
 })
 
@@ -63,13 +63,13 @@ describe('getOffenders', () => {
       { offenderNo: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
       { offenderNo: 'BBB', firstName: 'BEN', lastName: 'SMITH' },
     ]
-    elite2Client.getOffenders.mockReturnValue(offenders)
+    prisonClient.getOffenders.mockReturnValue(offenders)
 
     const offenderNos = ['AAA', 'BBB', 'AAA']
     const names = await service.getOffenderNames(token, offenderNos)
 
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
-    expect(elite2ClientBuilder).toBeCalledWith(token)
-    expect(elite2Client.getOffenders).toBeCalledWith(['AAA', 'BBB'])
+    expect(prisonClientBuilder).toBeCalledWith(token)
+    expect(prisonClient.getOffenders).toBeCalledWith(['AAA', 'BBB'])
   })
 })

@@ -1,16 +1,17 @@
 import nock from 'nock'
+import PrisonClient from './prisonClient'
 import config from '../config'
-import elite2ClientBuilder from './elite2ClientBuilder'
+import restClientBuilder from '.'
 
-describe('elite2Client', () => {
-  let fakeElite2Api
-  let elite2Client
+describe('prisonClient', () => {
+  let fakePrisonApi
+  let prisonClient: PrisonClient
 
   const token = 'token-1'
 
   beforeEach(() => {
-    fakeElite2Api = nock(config.apis.elite2.url)
-    elite2Client = elite2ClientBuilder(token)
+    fakePrisonApi = nock(config.apis.prison.url)
+    prisonClient = restClientBuilder('prisonClient', config.apis.prison, PrisonClient)(token)
   })
 
   afterEach(() => {
@@ -20,12 +21,12 @@ describe('elite2Client', () => {
   describe('getOffenderDetails', () => {
     it('should return data from api', async () => {
       const offenderResponse = {}
-      fakeElite2Api
+      fakePrisonApi
         .get(`/api/bookings/12345?basicInfo=false`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenderResponse)
 
-      const output = await elite2Client.getOffenderDetails('12345')
+      const output = await prisonClient.getOffenderDetails(12345)
       expect(output).toEqual(offenderResponse)
     })
   })
@@ -33,9 +34,9 @@ describe('elite2Client', () => {
   describe('getUser', () => {
     const userResponse = {}
     it('should return data from api', async () => {
-      fakeElite2Api.get('/api/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
+      fakePrisonApi.get('/api/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
 
-      const output = await elite2Client.getUser()
+      const output = await prisonClient.getUser()
       expect(output).toEqual(userResponse)
     })
   })
@@ -43,9 +44,9 @@ describe('elite2Client', () => {
   describe('getUserCaseLoads', () => {
     const caseloads = []
     it('should return data from api', async () => {
-      fakeElite2Api.get('/api/users/me/caseLoads').matchHeader('authorization', `Bearer ${token}`).reply(200, caseloads)
+      fakePrisonApi.get('/api/users/me/caseLoads').matchHeader('authorization', `Bearer ${token}`).reply(200, caseloads)
 
-      const output = await elite2Client.getUserCaseLoads()
+      const output = await prisonClient.getUserCaseLoads()
       expect(output).toEqual(caseloads)
     })
   })
@@ -53,33 +54,33 @@ describe('elite2Client', () => {
   describe('getPrisons', () => {
     const locations = []
     it('should return data from api', async () => {
-      fakeElite2Api
+      fakePrisonApi
         .get('/api/agencies/type/INST?active=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
-      const output = await elite2Client.getPrisons()
+      const output = await prisonClient.getPrisons()
       expect(output).toEqual(locations)
     })
   })
   describe('getLocations', () => {
     const locations = []
     it('should return data from api', async () => {
-      fakeElite2Api
-        .get('/api/agencies/123/locations?eventType=OCCUR')
+      fakePrisonApi
+        .get('/api/agencies/MDI/locations?eventType=OCCUR')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
-      const output = await elite2Client.getLocations(123)
+      const output = await prisonClient.getLocations('MDI')
       expect(output).toEqual(locations)
     })
     it('can search without filter', async () => {
-      fakeElite2Api
-        .get('/api/agencies/123/locations')
+      fakePrisonApi
+        .get('/api/agencies/MDI/locations')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
-      const output = await elite2Client.getLocations(123, false)
+      const output = await prisonClient.getLocations('MDI', false)
       expect(output).toEqual(locations)
     })
   })
@@ -99,22 +100,22 @@ describe('elite2Client', () => {
         parentLocationId: 0,
         userDescription: 'Its a location',
       }
-      fakeElite2Api
+      fakePrisonApi
         .get('/api/locations/123?includeInactive=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, location)
 
-      const output = await elite2Client.getLocation(123)
+      const output = await prisonClient.getLocation(123)
       expect(output).toEqual(location)
     })
 
     it('When location not found should return empty object', async () => {
-      fakeElite2Api
+      fakePrisonApi
         .get('/api/locations/123?includeInactive=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(404)
 
-      const output = await elite2Client.getLocation(123)
+      const output = await prisonClient.getLocation(123)
       expect(output).toStrictEqual({})
     })
   })
@@ -124,21 +125,21 @@ describe('elite2Client', () => {
     const offenders = []
 
     it('should return data from api', async () => {
-      fakeElite2Api
+      fakePrisonApi
         .post('/api/bookings/offenders?activeOnly=false', offenderNos)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenders)
 
-      const output = await elite2Client.getOffenders(offenderNos)
+      const output = await prisonClient.getOffenders(offenderNos)
       expect(output).toEqual(offenders)
     })
   })
 
   describe('getPrisoners', () => {
     it('should format query string', async () => {
-      fakeElite2Api.get('/api/prisoners?offenderNo=A123&offenderNo=B123').matchHeader('page-limit', 5000).reply(200, [])
+      fakePrisonApi.get('/api/prisoners?offenderNo=A123&offenderNo=B123').matchHeader('page-limit', 5000).reply(200, [])
 
-      const output = await elite2Client.getPrisoners(['A123', 'B123'])
+      const output = await prisonClient.getPrisoners(['A123', 'B123'])
       expect(output).toEqual([])
     })
   })
@@ -151,9 +152,9 @@ describe('elite2Client', () => {
       description: 'Moorland',
     }
     it('should return prison details from its id', async () => {
-      fakeElite2Api.get('/api/agencies/MDI?activeOnly=false').reply(200, mockPrison)
+      fakePrisonApi.get('/api/agencies/MDI?activeOnly=false').reply(200, mockPrison)
 
-      const output = await elite2Client.getPrisonById('MDI')
+      const output = await prisonClient.getPrisonById('MDI')
       expect(output).toEqual(mockPrison)
     })
   })

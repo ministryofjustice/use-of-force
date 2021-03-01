@@ -1,14 +1,11 @@
-import IncidentClient from '../data/incidentClient'
-import StatementsClient from '../data/statementsClient'
+import { IncidentClient, StatementsClient, AuthClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
-import { AuthClient, EmailResult } from '../data/authClientBuilder'
+import { EmailResult } from '../data/authClient'
 
-jest.mock('../data/incidentClient')
-jest.mock('../data/statementsClient')
-jest.mock('../data/authClientBuilder')
+jest.mock('../data')
 jest.mock('./offenderService')
 
 const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>

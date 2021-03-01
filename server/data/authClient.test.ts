@@ -1,6 +1,6 @@
 import nock from 'nock'
 import config from '../config'
-import { AuthClient, authClientBuilder, systemToken } from './authClientBuilder'
+import { AuthClient, systemToken } from './authClient'
 
 describe('authClient', () => {
   let fakeApi
@@ -10,7 +10,7 @@ describe('authClient', () => {
 
   beforeEach(() => {
     fakeApi = nock(config.apis.oauth2.url)
-    client = authClientBuilder(token)
+    client = new AuthClient(token)
   })
 
   afterEach(() => {

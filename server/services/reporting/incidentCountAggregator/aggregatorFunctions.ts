@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { PrisonerDetail } from '../../../data/elite2ClientBuilderTypes'
+import { PrisonerDetail } from '../../../data/prisonClientTypes'
 
 export interface Groups {
   [group: string]: {

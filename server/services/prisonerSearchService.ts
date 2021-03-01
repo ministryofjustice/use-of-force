@@ -1,6 +1,6 @@
-import { SearchForm, PrisonerSearchClientBuilder } from '../data/prisonerSearchClient'
+import { SearchForm } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
-import { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
+import type { RestClientBuilder, PrisonClient, PrisonerSearchClient } from '../data'
 import { SystemToken } from '../types/uof'
 
 export type Prison = {
@@ -20,13 +20,13 @@ const isFormComplete = (form: SearchForm): boolean =>
 
 export default class PrisonerSearchService {
   constructor(
-    private readonly PrisonerSearchClient: PrisonerSearchClientBuilder,
-    private readonly elite2ClientBuilder: Elite2ClientBuilder,
+    private readonly prisonerSearchClientBuilder: RestClientBuilder<PrisonerSearchClient>,
+    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly systemToken: SystemToken
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
-    const client = this.elite2ClientBuilder(token)
+    const client = this.prisonClientBuilder(token)
     const prisons = await client.getPrisons()
     return prisons.map(({ agencyId, description }) => ({ agencyId, description }))
   }
@@ -44,7 +44,7 @@ export default class PrisonerSearchService {
       return []
     }
     const token = await this.systemToken(searchingUserName)
-    const client = new this.PrisonerSearchClient(token)
+    const client = this.prisonerSearchClientBuilder(token)
     const results = await client.search(form)
     const prisonNameLookup = await this.createPrisonNameLookup(token)
 

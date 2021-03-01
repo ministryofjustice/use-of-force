@@ -1,15 +1,16 @@
+import type { Readable } from 'stream'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import type { Elite2ClientBuilder } from '../data/elite2ClientBuilder'
-import { PrisonerDetail } from '../data/elite2ClientBuilderTypes'
+import type { RestClientBuilder, PrisonClient } from '../data'
+import { PrisonerDetail } from '../data/prisonClientTypes'
 
 export default class OffenderService {
-  constructor(private readonly elite2ClientBuilder: Elite2ClientBuilder) {}
+  constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
 
   async getOffenderDetails(token: string, bookingId: number): Promise<any> {
     try {
-      const elite2Client = this.elite2ClientBuilder(token)
-      const result = await elite2Client.getOffenderDetails(bookingId)
+      const prisonClient = this.prisonClientBuilder(token)
+      const result = await prisonClient.getOffenderDetails(bookingId)
 
       if (isNilOrEmpty(result)) {
         logger.warn(`No details found for bookingId=${bookingId}`)
@@ -32,8 +33,8 @@ export default class OffenderService {
 
   async getPrisonersDetails(token: string, offenderNumbers: string[]): Promise<PrisonerDetail[]> {
     try {
-      const elite2Client = this.elite2ClientBuilder(token)
-      const result = await elite2Client.getPrisoners(offenderNumbers)
+      const prisonClient = this.prisonClientBuilder(token)
+      const result = await prisonClient.getPrisoners(offenderNumbers)
 
       if (isNilOrEmpty(result)) {
         logger.warn(`No details found for offenderNumbers ${offenderNumbers}`)
@@ -46,9 +47,9 @@ export default class OffenderService {
     }
   }
 
-  async getOffenderImage(token: string, bookingId: number): Promise<ReadableStream<any>> {
-    const elite2Client = this.elite2ClientBuilder(token)
-    return elite2Client.getOffenderImage(bookingId)
+  async getOffenderImage(token: string, bookingId: number): Promise<Readable> {
+    const prisonClient = this.prisonClientBuilder(token)
+    return prisonClient.getOffenderImage(bookingId)
   }
 
   private fullName({ firstName, lastName }): string {
@@ -60,7 +61,7 @@ export default class OffenderService {
       return {}
     }
     const uniqueNos = [...new Set(offenderNos)]
-    const offenders = await this.elite2ClientBuilder(token).getOffenders(uniqueNos)
+    const offenders = await this.prisonClientBuilder(token).getOffenders(uniqueNos)
 
     return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: this.fullName(offender) }), {})
   }

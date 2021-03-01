@@ -1,7 +1,4 @@
-import config from '../config'
-import createRestClientBuilder from './restClient'
-
-const restClientBuilder = createRestClientBuilder('prisonerSearch', config.apis.prisonerSearch)
+import { RestClient } from './restClient'
 
 export type SearchForm = {
   prisonNumber?: string
@@ -10,14 +7,8 @@ export type SearchForm = {
   agencyId?: string
 }
 
-export type PrisonerSearchClientBuilder = new (token: string) => PrisonerSearchClient
-
 export default class PrisonerSearchClient {
-  restClient: any
-
-  constructor(token: string) {
-    this.restClient = restClientBuilder(token)
-  }
+  constructor(private readonly restClient: RestClient) {}
 
   async search(form: SearchForm): Promise<any> {
     return this.restClient.post({

@@ -1,5 +1,5 @@
 import aggregator from './index'
-import { PrisonerDetail } from '../../../data/elite2ClientBuilderTypes'
+import { PrisonerDetail } from '../../../data/prisonClientTypes'
 
 describe('Religious Grouping', () => {
   describe('aggregator', () => {

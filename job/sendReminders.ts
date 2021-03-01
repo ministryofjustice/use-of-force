@@ -13,7 +13,7 @@ import logger from '../log'
 import * as db from '../server/data/dataAccess/db'
 
 import { notificationServiceFactory } from '../server/services/notificationService'
-import { authClientBuilder, systemToken } from '../server/data/authClientBuilder'
+import { AuthClient, systemToken } from '../server/data/authClient'
 
 import EmailResolver from './reminders/emailResolver'
 import createReminderPoller from './reminders/reminderPoller'
@@ -25,7 +25,7 @@ const eventPublisher = eventPublisherFactory(buildAppInsightsClient('use-of-forc
 const statementClient = new StatementsClient(db.query)
 const incidentClient = new IncidentClient(db.query, db.inTransaction)
 
-const emailResolver = new EmailResolver(authClientBuilder, systemToken, statementClient)
+const emailResolver = new EmailResolver(token => new AuthClient(token), systemToken, statementClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 
 const reminderSender = new ReminderSender(notificationService)

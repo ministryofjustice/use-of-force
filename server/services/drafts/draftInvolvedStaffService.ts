@@ -1,16 +1,14 @@
-import type DraftReportClient from '../../data/draftReportClient'
-import { StaffDetails } from '../../data/draftReportClientTypes'
-import UserService from '../userService'
-import { Elite2ClientBuilder } from '../../data/elite2ClientBuilder'
-import { AuthClientBuilder } from '../../data/authClientBuilder'
+import type { PrisonClient, AuthClient, RestClientBuilder, DraftReportClient } from '../../data'
+import type { StaffDetails } from '../../data/draftReportClientTypes'
+import type UserService from '../userService'
 
 export type DraftInvolvedStaff = StaffDetails & { isReporter?: true }
 export type DraftInvolvedStaffWithPrison = DraftInvolvedStaff & { prison?: string }
 
 export class DraftInvolvedStaffService {
   constructor(
-    private readonly authClientBuilder: AuthClientBuilder,
-    private readonly elite2ClientBuilder: Elite2ClientBuilder,
+    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
+    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly draftReportClient: DraftReportClient,
     private readonly userService: UserService
   ) {}
@@ -40,12 +38,12 @@ export class DraftInvolvedStaffService {
     username: string,
     bookingId: number
   ): Promise<DraftInvolvedStaffWithPrison[]> {
-    const elite2Client = this.elite2ClientBuilder(token)
+    const prisonClient = this.prisonClientBuilder(token)
     const authClient = this.authClientBuilder(token)
 
     const [involvedStaff, prisons] = await Promise.all([
       this.getInvolvedStaff(token, username, bookingId),
-      elite2Client.getPrisons(),
+      prisonClient.getPrisons(),
     ])
 
     const users = await authClient.getUsers(involvedStaff.map(staff => staff.username))

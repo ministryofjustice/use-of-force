@@ -5,18 +5,18 @@ const location1 = { locationId: 1, userDescription: 'The kitchen' }
 const location2 = { locationId: 2, userDescription: 'The bathroom' }
 const location3 = { locationId: 3, userDescription: 'The garden' }
 
-const elite2Client = {
+const prisonClient = {
   getLocations: jest.fn(),
 }
 
-const elite2ClientBuilder = jest.fn()
+const prisonClientBuilder = jest.fn()
 
 let builder
 
 beforeEach(() => {
-  elite2ClientBuilder.mockReturnValue(elite2Client)
-  elite2Client.getLocations.mockResolvedValue([location1, location2, location3])
-  builder = createHeatmapBuilder(elite2ClientBuilder)
+  prisonClientBuilder.mockReturnValue(prisonClient)
+  prisonClient.getLocations.mockResolvedValue([location1, location2, location3])
+  builder = createHeatmapBuilder(prisonClientBuilder)
 })
 
 afterEach(() => {
@@ -30,8 +30,8 @@ describe('builder', () => {
     test('getLocations called with correct args', async () => {
       await builder.build('token-1', 'agency-1', [])
 
-      expect(elite2ClientBuilder).toBeCalledWith('token-1')
-      expect(elite2Client.getLocations).toBeCalledWith('agency-1', false)
+      expect(prisonClientBuilder).toBeCalledWith('token-1')
+      expect(prisonClient.getLocations).toBeCalledWith('agency-1', false)
     })
 
     test('with no incidents', async () => {

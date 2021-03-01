@@ -1,9 +1,4 @@
-import { buildAppInsightsClient } from '../utils/azure-appinsights'
-import PrisonerSearchClient from '../data/prisonerSearchClient'
-import IncidentClient from '../data/incidentClient'
-import ReportingClient from '../data/reportingClient'
-import DraftReportClient from '../data/draftReportClient'
-import StatementsClient from '../data/statementsClient'
+import { dataAccess } from '../data'
 import OffenderService from './offenderService'
 import ReportingService from './reporting/reportingService'
 import PrisonerSearchService from './prisonerSearchService'
@@ -20,9 +15,6 @@ import StatementService from './statementService'
 import { InvolvedStaffService } from './involvedStaffService'
 import UserService from './userService'
 
-import elite2ClientBuilder from '../data/elite2ClientBuilder'
-
-import { authClientBuilder, systemToken } from '../data/authClientBuilder'
 import createHeatmapBuilder from './reporting/heatmapBuilder'
 import EventPublisher from './eventPublisher'
 
@@ -32,19 +24,24 @@ import createSignInService from '../authentication/signInService'
 import { notificationServiceFactory } from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 
-const reportingClient = new ReportingClient(db.query)
-const incidentClient = new IncidentClient(db.query, db.inTransaction)
-const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
-const statementsClient = new StatementsClient(db.query)
+const {
+  authClientBuilder,
+  draftReportClient,
+  incidentClient,
+  prisonClientBuilder,
+  prisonerSearchClientBuilder,
+  reportingClient,
+  statementsClient,
+  systemToken,
+  telemetryClient,
+} = dataAccess
 
-const eventPublisher = EventPublisher(buildAppInsightsClient())
-// inject service dependencies
-
-const heatmapBuilder = createHeatmapBuilder(elite2ClientBuilder)
-const userService = new UserService(elite2ClientBuilder, authClientBuilder)
+const eventPublisher = EventPublisher(telemetryClient)
+const heatmapBuilder = createHeatmapBuilder(prisonClientBuilder)
+const userService = new UserService(prisonClientBuilder, authClientBuilder)
 const notificationService = notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
-const offenderService = new OffenderService(elite2ClientBuilder)
+const offenderService = new OffenderService(prisonClientBuilder)
 const reportService = new ReportService(incidentClient, offenderService, systemToken)
 
 const submitDraftReportService = new SubmitDraftReportService(
@@ -54,10 +51,10 @@ const submitDraftReportService = new SubmitDraftReportService(
   db.inTransaction
 )
 
-const updateDraftReportService = new UpdateDraftReportService(draftReportClient, elite2ClientBuilder, systemToken)
+const updateDraftReportService = new UpdateDraftReportService(draftReportClient, prisonClientBuilder, systemToken)
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   authClientBuilder,
-  elite2ClientBuilder,
+  prisonClientBuilder,
   draftReportClient,
   userService
 )
@@ -80,8 +77,8 @@ const reviewService = new ReviewService(
   systemToken
 )
 const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
-const prisonerSearchService = new PrisonerSearchService(PrisonerSearchClient, elite2ClientBuilder, systemToken)
-const locationService = new LocationService(elite2ClientBuilder)
+const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
+const locationService = new LocationService(prisonClientBuilder)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
 export const services = {
@@ -113,4 +110,5 @@ export {
   OffenderService,
   PrisonerSearchService,
   ReportDetailBuilder,
+  UserService,
 }

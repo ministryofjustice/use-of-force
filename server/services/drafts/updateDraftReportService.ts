@@ -1,14 +1,13 @@
 import * as R from 'ramda'
-import type DraftReportClient from '../../data/draftReportClient'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
-import { Elite2ClientBuilder } from '../../data/elite2ClientBuilder'
+import type { PrisonClient, RestClientBuilder, DraftReportClient } from '../../data'
 
 export default class UpdateDraftReportService {
   constructor(
     private readonly draftReportClient: DraftReportClient,
-    private readonly elite2ClientBuilder: Elite2ClientBuilder,
+    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -63,8 +62,8 @@ export default class UpdateDraftReportService {
     const { username: userId, displayName: reporterName } = currentUser
 
     const token = await this.systemToken(userId)
-    const elite2Client = this.elite2ClientBuilder(token)
-    const { offenderNo, agencyId } = await elite2Client.getOffenderDetails(bookingId)
+    const prisonClient = this.prisonClientBuilder(token)
+    const { offenderNo, agencyId } = await prisonClient.getOffenderDetails(bookingId)
     const id = await this.draftReportClient.create({
       userId,
       reporterName,
