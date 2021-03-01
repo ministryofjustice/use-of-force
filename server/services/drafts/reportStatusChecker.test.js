@@ -10,6 +10,7 @@ describe('statusCheck', () => {
       witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
       locationId: -25,
       plannedUseOfForce: true,
+      authorisedBy: 'Eric Bloodaxe',
     },
     involvedStaff: [],
     useOfForceDetails: {
