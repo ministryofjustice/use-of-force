@@ -1,8 +1,8 @@
+import type { Readable } from 'stream'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
-import config from '../config'
-import createRestClientBuilder from './restClient'
-import {
+import type { RestClient } from './restClient'
+import type {
   InmateDetail,
   InmateBasicDetails,
   UserDetail,
@@ -10,19 +10,20 @@ import {
   CaseLoad,
   Prison,
   PrisonLocation,
-} from './elite2ClientBuilderTypes'
+} from './prisonClientTypes'
 
-const restClientBuilder = createRestClientBuilder('elite2api', config.apis.elite2)
-
-export class Elite2Client {
-  constructor(private restClient) {}
+export default class PrisonClient {
+  constructor(private restClient: RestClient) {}
 
   async getOffenderDetails(bookingId: number): Promise<InmateDetail> {
     return this.restClient.get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
   }
 
   async getOffenders(offenderNos: string[]): Promise<InmateBasicDetails[]> {
-    return this.restClient.post({ path: '/api/bookings/offenders?activeOnly=false', data: offenderNos })
+    return this.restClient.post({
+      path: '/api/bookings/offenders?activeOnly=false',
+      data: offenderNos,
+    })
   }
 
   async getPrisoners(offenderNos: string[]): Promise<PrisonerDetail[]> {
@@ -70,20 +71,13 @@ export class Elite2Client {
     return location
   }
 
-  getOffenderImage(bookingId: number) {
+  getOffenderImage(bookingId: number): Promise<Readable> {
     return this.restClient.stream({
       path: `/api/bookings/${bookingId}/image/data`,
       errorLogger: error =>
         error.status === 404
           ? logger.info(`No offender image available for: ${bookingId}`)
-          : logger.warn(sanitiseError(error), `Error calling elite2`),
+          : logger.warn(sanitiseError(error), `Error calling prisonApi`),
     })
   }
 }
-
-export default function builder(token: string): Elite2Client {
-  const restClient = restClientBuilder(token)
-  return new Elite2Client(restClient)
-}
-
-export type Elite2ClientBuilder = typeof builder

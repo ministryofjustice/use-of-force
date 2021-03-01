@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { ReportStatus } from '../../config/types'
 import OffenderService from '../offenderService'
-import { PrisonerDetail } from '../../data/elite2ClientBuilderTypes'
+import { PrisonerDetail } from '../../data/prisonClientTypes'
 import ReportingService from './reportingService'
 import ReportingClient from '../../data/reportingClient'
 import { OffenderNoWithIncidentCount } from '../../types/uof'

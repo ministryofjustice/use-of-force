@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { CaseLoad } from '../data/elite2ClientBuilderTypes'
+import { CaseLoad } from '../data/prisonClientTypes'
 
 export type DateRange = [moment.Moment, moment.Moment]
 

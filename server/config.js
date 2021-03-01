@@ -53,8 +53,8 @@ module.exports = {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
       externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
-        response: get('AUTH_ENDPOINT_TIMEOUT_RESPONSE', 10000),
-        deadline: get('AUTH_ENDPOINT_TIMEOUT_DEADLINE', 10000),
+        response: get('AUTH_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('AUTH_API_TIMEOUT_DEADLINE', 10000),
       },
       agent: {
         maxSockets: 100,
@@ -66,11 +66,11 @@ module.exports = {
       systemClientId: get('SYSTEM_CLIENT_ID', get('API_CLIENT_ID', 'use-of-force-system'), requiredInProduction),
       systemClientSecret: get('SYSTEM_CLIENT_SECRET', get('API_CLIENT_SECRET', 'clientsecret'), requiredInProduction),
     },
-    elite2: {
-      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),
+    prison: {
+      url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 10000),
-        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 10000),
+        response: get('PRISON_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('PRISON_API_TIMEOUT_DEADLINE', 10000),
       },
       agent: {
         maxSockets: 100,
@@ -79,10 +79,10 @@ module.exports = {
       },
     },
     prisonerSearch: {
-      url: get('PRISONER_SEARCH_ENDPOINT_URL', 'http://localhost:8080', requiredInProduction),
+      url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('PRISONER_SEARCH_ENDPOINT_TIMEOUT_RESPONSE', 10000),
-        deadline: get('PRISONER_SEARCH_ENDPOINT_TIMEOUT_DEADLINE', 10000),
+        response: get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000),
       },
       agent: {
         maxSockets: 100,

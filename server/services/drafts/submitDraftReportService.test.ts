@@ -1,14 +1,10 @@
 import moment from 'moment'
-import DraftReportClient from '../../data/draftReportClient'
+import { DraftReportClient, StatementsClient } from '../../data'
 import SubmitDraftReportService from './submitDraftReportService'
 import { LoggedInUser } from '../../types/uof'
-import StatementsClient from '../../data/statementsClient'
 import { DraftInvolvedStaff } from './draftInvolvedStaffService'
 
-jest.mock('../../data/draftReportClient')
-jest.mock('../../data/statementsClient')
-jest.mock('../offenderService')
-jest.mock('../involvedStaffService')
+jest.mock('../../data')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 
@@ -21,21 +17,13 @@ const notificationService = {
   sendStatementRequest: jest.fn(),
 }
 
-const elite2Client = {
-  getOffenderDetails: jest.fn(),
-}
-
 const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
 
 let service: SubmitDraftReportService
-let elite2ClientBuilder
 
 beforeEach(() => {
-  elite2ClientBuilder = jest.fn()
-  elite2ClientBuilder.mockReturnValue(elite2Client)
   service = new SubmitDraftReportService(draftReportClient, statementsClient, notificationService, inTransaction)
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: new Date() })
-  elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
 afterEach(() => {

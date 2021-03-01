@@ -93,7 +93,7 @@ services:
       - DB_SSL_ENABLED=no
       - NOMIS_AUTH_URL=http://auth-server:8080/auth
       - NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
-      - ELITE2API_ENDPOINT_URL=http://elite2-api:8080
+      - PRISON_API_URL=http://prison-api:8080
       - TOKENVERIFICATION_API_URL=http://token-verification-api:8080
       - TOKENVERIFICATION_API_ENABLED=true
       - NODE_ENV=development

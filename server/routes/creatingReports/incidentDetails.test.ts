@@ -4,7 +4,7 @@ import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
-import type { Prison } from '../../data/elite2ClientBuilderTypes'
+import type { Prison } from '../../data/prisonClientTypes'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')

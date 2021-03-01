@@ -12,19 +12,11 @@ const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentCli
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
-const elite2Client = {
-  getOffenderDetails: jest.fn(),
-}
-
 let service: ReportService
-let elite2ClientBuilder
 
 beforeEach(() => {
-  elite2ClientBuilder = jest.fn()
-  elite2ClientBuilder.mockReturnValue(elite2Client)
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
   service = new ReportService(incidentClient, offenderService, systemToken)
-  elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
 })
 
 afterEach(() => {

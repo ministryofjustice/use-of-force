@@ -1,5 +1,5 @@
 import { invertGroupings, aggregatorFactory } from './aggregatorFunctions'
-import { PrisonerDetail } from '../../../data/elite2ClientBuilderTypes'
+import { PrisonerDetail } from '../../../data/prisonClientTypes'
 
 describe('Aggregator Functions', () => {
   describe('invertGroupings', () => {

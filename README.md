@@ -23,10 +23,7 @@ The app requires:
 To start the main services excluding the use of force app: 
 `docker-compose up --scale=use-of-force=0`
 
-To start all services including use of force and new-nomis: 
-`docker-compose -f docker-compose.yml -f docker-compose.newnomis.yml up`
-
-Install dependencies using `npm install`, ensuring you are using >= `Node v10.15.3`
+Install dependencies using `npm install`, ensuring you are using >= `Node v14.15`
 
 And then, to build the assets and start the app with nodemon:
 `npm run start:dev`

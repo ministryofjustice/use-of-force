@@ -1,4 +1,4 @@
-import DraftReportClient from '../../data/draftReportClient'
+import { DraftReportClient } from '../../data'
 import type { LoggedInUser, FoundUserResult } from '../../types/uof'
 import UserService from '../userService'
 import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
@@ -6,7 +6,7 @@ import DraftReportService, { AddStaffResult } from './draftReportService'
 import SubmitDraftReportService from './submitDraftReportService'
 import UpdateDraftReportService from './updateDraftReportService'
 
-jest.mock('../../data/draftReportClient')
+jest.mock('../../data')
 jest.mock('../userService')
 jest.mock('./draftInvolvedStaffService')
 jest.mock('./submitDraftReportService')

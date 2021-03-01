@@ -1,27 +1,25 @@
 import UserService from './userService'
-import { Elite2Client } from '../data/elite2ClientBuilder'
-import { UserDetail, CaseLoad, Prison } from '../data/elite2ClientBuilderTypes'
-import { AuthClient } from '../data/authClientBuilder'
-import { User, UserWithPrison } from '../types/uof'
+import { PrisonClient, AuthClient } from '../data'
+import { UserDetail, CaseLoad, Prison } from '../data/prisonClientTypes'
+import { UserWithPrison } from '../types/uof'
 
 const token = 'token-1'
 
-jest.mock('../data/elite2ClientBuilder')
-jest.mock('../data/authClientBuilder')
+jest.mock('../data')
 
-const elite2Client = new Elite2Client(null) as jest.Mocked<Elite2Client>
+const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
 const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
 
-const elite2ClientBuilder = jest.fn()
+const prisonClientBuilder = jest.fn()
 const authClientBuilder = jest.fn()
 
 let service: UserService
 
 beforeEach(() => {
-  elite2ClientBuilder.mockReturnValue(elite2Client)
+  prisonClientBuilder.mockReturnValue(prisonClient)
   authClientBuilder.mockReturnValue(authClient)
 
-  service = new UserService(elite2ClientBuilder, authClientBuilder)
+  service = new UserService(prisonClientBuilder, authClientBuilder)
 })
 
 afterEach(() => {
@@ -38,8 +36,8 @@ describe('getUser', () => {
   } as UserDetail
 
   it('should retrieve user details', async () => {
-    elite2Client.getUser.mockResolvedValue(user)
-    elite2Client.getUserCaseLoads.mockResolvedValue([
+    prisonClient.getUser.mockResolvedValue(user)
+    prisonClient.getUserCaseLoads.mockResolvedValue([
       { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
       { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
     ])
@@ -54,15 +52,15 @@ describe('getUser', () => {
   })
 
   it('should use the user token', async () => {
-    elite2Client.getUser.mockResolvedValue(user)
-    elite2Client.getUserCaseLoads.mockResolvedValue([
+    prisonClient.getUser.mockResolvedValue(user)
+    prisonClient.getUserCaseLoads.mockResolvedValue([
       { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
       { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
     ])
 
     await service.getUser(token)
 
-    expect(elite2ClientBuilder).toBeCalledWith(token)
+    expect(prisonClientBuilder).toBeCalledWith(token)
   })
 })
 
@@ -176,7 +174,7 @@ describe('findUsersWithPrisons', () => {
     }
 
     authClient.findUsers.mockResolvedValue([user1])
-    elite2Client.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
+    prisonClient.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
 
     const result = await service.findUsersWithPrisons(token, 'MDI', 'Bob', 'Smith')
 

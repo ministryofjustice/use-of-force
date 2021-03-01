@@ -126,11 +126,6 @@ export class AuthClient {
     return body
   }
 }
-export function authClientBuilder(token: string): AuthClient {
-  return new AuthClient(token)
-}
-
-export type AuthClientBuilder = typeof authClientBuilder
 
 export const systemToken: SystemToken = async (username?: string): Promise<string> => {
   const systemClientToken = await getSystemClientToken(username)

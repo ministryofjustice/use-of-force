@@ -1,28 +1,25 @@
-import DraftReportClient from '../../data/draftReportClient'
+import { RestClientBuilder, PrisonClient, DraftReportClient } from '../../data'
+import { InmateDetail } from '../../data/prisonClientTypes'
 import { LoggedInUser } from '../../types/uof'
 import UpdateDraftReportService from './updateDraftReportService'
 
-jest.mock('../../data/draftReportClient')
+jest.mock('../../data')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
-
-const elite2Client = {
-  getOffenderDetails: jest.fn(),
-}
+const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
 
 const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
 const incidentDate = new Date()
 
 let service: UpdateDraftReportService
-let elite2ClientBuilder
+let prisonClientBuilder: RestClientBuilder<PrisonClient>
 
 beforeEach(() => {
-  elite2ClientBuilder = jest.fn()
-  elite2ClientBuilder.mockReturnValue(elite2Client)
+  prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
-  service = new UpdateDraftReportService(draftReportClient, elite2ClientBuilder, systemToken)
+  service = new UpdateDraftReportService(draftReportClient, prisonClientBuilder, systemToken)
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
-  elite2Client.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' })
+  prisonClient.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' } as InmateDetail)
 })
 
 afterEach(() => {
@@ -98,6 +95,6 @@ describe('create', () => {
       formResponse: { form: formObject },
       incidentDate,
     })
-    expect(elite2ClientBuilder).toHaveBeenCalledWith('system-token-1')
+    expect(prisonClientBuilder).toHaveBeenCalledWith('system-token-1')
   })
 })

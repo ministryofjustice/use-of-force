@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { Prison } from '../../data/elite2ClientBuilderTypes'
+import { Prison } from '../../data/prisonClientTypes'
 import { LocationService, DraftReportService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
 

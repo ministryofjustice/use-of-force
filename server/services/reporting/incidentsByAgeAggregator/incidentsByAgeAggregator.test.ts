@@ -1,7 +1,7 @@
 import moment from 'moment'
 import * as R from 'ramda'
 import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
-import type { PrisonerDetail } from '../../../data/elite2ClientBuilderTypes'
+import type { PrisonerDetail } from '../../../data/prisonClientTypes'
 
 describe('incidentsByAgeAggregator', () => {
   const defaultValues = {

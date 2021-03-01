@@ -150,7 +150,7 @@ export default function createApp(services: Services): Express {
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
-    config.apis.elite2.url,
+    config.apis.prison.url,
     config.apis.tokenVerification.url
   )
 

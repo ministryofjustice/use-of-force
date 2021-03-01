@@ -1,16 +1,17 @@
 import nock from 'nock'
+import restClientBuilder from '.'
 import config from '../config'
-import PrisonSearchClient from './prisonerSearchClient'
+import PrisonerSearchClient from './prisonerSearchClient'
 
 describe('prisonSearchClientBuilder', () => {
   let fakePrisonerSearchApi
-  let client: PrisonSearchClient
+  let client: PrisonerSearchClient
 
   const token = 'token-1'
 
   beforeEach(() => {
     fakePrisonerSearchApi = nock(config.apis.prisonerSearch.url)
-    client = new PrisonSearchClient(token)
+    client = restClientBuilder('prisonerSearch', config.apis.prisonerSearch, PrisonerSearchClient)(token)
   })
 
   afterEach(() => {

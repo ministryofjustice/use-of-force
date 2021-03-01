@@ -13,11 +13,11 @@ const service = (name, url) => {
       .catch(err => ({ name, status: 'ERROR', message: err }))
 }
 
-module.exports = function healthcheckFactory(authUrl, elite2Url, tokenVerificationUrl) {
+module.exports = function healthcheckFactory(authUrl, prisonUrl, tokenVerificationUrl) {
   const checks = [
     db,
     service('auth', `${authUrl}/health/ping`),
-    service('elite2', `${elite2Url}/health/ping`),
+    service('prison', `${prisonUrl}/health/ping`),
     service('tokenverification', `${tokenVerificationUrl}/health/ping`),
   ]
 

@@ -1,4 +1,4 @@
-import type IncidentClient from '../data/incidentClient'
+import type { IncidentClient } from '../data'
 import type { ReportSummary, IncompleteReportSummary, Report } from '../data/incidentClientTypes'
 import type { SystemToken } from '../types/uof'
 

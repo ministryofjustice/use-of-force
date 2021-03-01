@@ -1,11 +1,11 @@
-import { AuthClient } from '../../server/data/authClientBuilder'
+import { AuthClient } from '../../server/data/authClient'
 import StatementsClient from '../../server/data/statementsClient'
 import EmailResolver from './emailResolver'
 
 const client = { inTransaction: true }
 
 jest.mock('../../server/data/statementsClient')
-jest.mock('../../server/data/authClientBuilder')
+jest.mock('../../server/data/authClient')
 
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const authClient = new AuthClient(null) as jest.Mocked<AuthClient>

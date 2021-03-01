@@ -1,10 +1,10 @@
-import type DraftReportClient from '../../data/draftReportClient'
+import type { DraftReportClient } from '../../data'
 import type SubmitDraftReportService from './submitDraftReportService'
 import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
+import type UserService from '../userService'
+import type { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
 import { check as getReportStatus } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
-import { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
-import UserService from '../userService'
 
 import {
   DraftInvolvedStaffService,

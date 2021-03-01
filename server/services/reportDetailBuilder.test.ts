@@ -1,13 +1,9 @@
-import { Prison } from '../data/elite2ClientBuilderTypes'
+import { Prison } from '../data/prisonClientTypes'
 import { InvolvedStaff, Report } from '../data/incidentClientTypes'
-import { InvolvedStaffService } from './involvedStaffService'
-import LocationService from './locationService'
-import OffenderService from './offenderService'
+import { LocationService, OffenderService, InvolvedStaffService } from '.'
 import ReportDetailBuilder from './reportDetailBuilder'
 
-jest.mock('./involvedStaffService')
-jest.mock('./locationService')
-jest.mock('./offenderService')
+jest.mock('.')
 
 const involvedStaffService = new InvolvedStaffService(null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
