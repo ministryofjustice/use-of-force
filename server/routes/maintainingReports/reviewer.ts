@@ -82,9 +82,11 @@ export default class ReviewerRoutes {
 
     const reportDataForPrint = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
+    const submittedStatements = statements.filter(stmnt => stmnt.isSubmitted)
+
     const statementsWithNarrative = await Promise.all(
-      statements.map(statement => this.reviewService.getStatement(statement.id))
-    ).then(stmnts => stmnts.filter(stmnt => stmnt.statement))
+      submittedStatements.map(statement => this.reviewService.getStatement(statement.id))
+    )
 
     return res.render('pages/reviewer/view-statements', {
       data,
