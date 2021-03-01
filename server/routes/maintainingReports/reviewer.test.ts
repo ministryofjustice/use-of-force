@@ -1,10 +1,12 @@
+import { Request, Response } from 'express'
 import request from 'supertest'
-import { appWithAllRoutes, user, reviewerUser } from '../__test/appSetup'
+import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 import { parseDate } from '../../utils/utils'
 import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
 import { OffenderService, ReviewService, ReportDetailBuilder } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
+import Reviewer from './reviewer'
 
 const userSupplier = jest.fn()
 
@@ -192,5 +194,71 @@ describe('GET /view-statements', () => {
     reviewService.getReport.mockReturnValue(null)
     reviewService.getStatements.mockResolvedValue([])
     return request(app).get('/1/view-statements').expect(500)
+  })
+
+  it('should render page if coordinator', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getReport.mockResolvedValue(report)
+    reviewService.getStatements.mockResolvedValue([])
+    return request(app)
+      .get('/1/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incident')
+      })
+  })
+
+  it('should only render submitted statements', async () => {
+    reviewService.getStatements.mockResolvedValue([
+      {
+        id: 1,
+        isOverdue: false,
+        isSubmitted: true,
+        isVerified: true,
+        name: 'Licence Case Admin',
+        userId: 'CA_USER',
+      },
+      {
+        id: 2,
+        isOverdue: false,
+        isSubmitted: false,
+        isVerified: true,
+        name: 'Itag User',
+        userId: 'ITAG_USER',
+      },
+      {
+        id: 3,
+        isOverdue: false,
+        isSubmitted: true,
+        isVerified: true,
+        name: 'Coordinator',
+        userId: 'COORDINATOR_USER',
+      },
+    ])
+
+    const req = ({
+      params: { reportId: 1 },
+      body: {},
+    } as unknown) as jest.Mocked<Request>
+
+    const res = ({
+      locals: { user: { username: 'UOF_COORDINATOR_USER' } },
+      render: jest.fn(),
+    } as unknown) as jest.Mocked<Response>
+
+    const systemToken = jest.fn().mockResolvedValue('system-token-1')
+
+    reviewService.getStatement = jest.fn()
+
+    const reviewer = new Reviewer(offenderService, reportDetailBuilder, reviewService, systemToken)
+
+    await reviewer.reviewStatements(req, res)
+
+    expect(reviewService.getStatement).toBeCalledTimes(2)
+    expect(reviewService.getStatement.mock.calls).toEqual([[1], [3]])
+    expect(res.render).toBeCalled()
+
+    expect(reviewService.getStatement.mock.calls).toEqual([[1], [3]])
   })
 })
