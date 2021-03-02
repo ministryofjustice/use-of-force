@@ -1,5 +1,6 @@
 const prison = () => cy.get('[data-qa="prison"]')
 const useOfForcePlanned = () => cy.get('[data-qa="incidentType"]')
+const authorisedBy = () => cy.get('[data-qa="authorisedBy"]')
 const positiveCommunicationUsed = () => cy.get('[data-qa="positiveCommunication"]')
 const handcuffsApplied = () => cy.get('[data-qa=handcuffsApplied]')
 const prisonerCompliant = () => cy.get('[data-qa="compliancy"]')
@@ -31,6 +32,7 @@ module.exports = {
 
     cy.get('[data-qa="location"]').contains('ASSO A Wing')
     useOfForcePlanned().contains('Yes')
+    authorisedBy().contains('Eric Bloodaxe')
 
     cy.get(`[data-qa="staffInvolved"]`)
       .first()
