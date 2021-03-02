@@ -16,6 +16,7 @@ const incidentDetailsPage = () =>
       check: value => cy.get('[name="plannedUseOfForce"]').check(value),
       planned: () => cy.get("[name='plannedUseOfForce'][value='true']"),
       spontaneous: () => cy.get("[name='plannedUseOfForce'][value='false']"),
+      authorisedBy: () => cy.get("[name='authorisedBy']"),
     },
 
     fillForm() {
@@ -24,6 +25,7 @@ const incidentDetailsPage = () =>
       this.incidentDate.minute().type('32')
       this.location().select('Asso A Wing')
       this.forceType.check('true')
+      this.forceType.authorisedBy().type('Eric Bloodaxe')
 
       this.witnesses(0).name().type('Witness A')
       this.addAnotherWitness().click()

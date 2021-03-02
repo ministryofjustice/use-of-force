@@ -28,6 +28,7 @@ context('Submitting details page form', () => {
     incidentDetailsPage.prison().contains('Moorland')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
+    incidentDetailsPage.forceType.authorisedBy().type('Eric Bloodaxe')
 
     incidentDetailsPage.witnesses(0).name().type('jimmy-ray')
     incidentDetailsPage.addAnotherWitness().click()
@@ -47,6 +48,7 @@ context('Submitting details page form', () => {
         expect(section).to.deep.equal({
           locationId: 357591,
           plannedUseOfForce: true,
+          authorisedBy: 'Eric Bloodaxe',
           witnesses: [{ name: 'jimmy-ray' }],
         })
       }
@@ -61,6 +63,7 @@ context('Submitting details page form', () => {
     updatedIncidentDetailsPage.offenderName().contains('Norman Smith')
     updatedIncidentDetailsPage.location().contains('Asso A Wing')
     updatedIncidentDetailsPage.forceType.planned().should('be.checked')
+    updatedIncidentDetailsPage.forceType.authorisedBy().should('have.value', 'Eric Bloodaxe')
 
     updatedIncidentDetailsPage.witnesses(0).name().should('have.value', 'jimmy-ray')
 

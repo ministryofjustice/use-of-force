@@ -99,6 +99,16 @@
         print: print
       })
     }}
+    {% if data.incidendentDetails.authorisedBy != null %}
+      {{
+      reportDetailsMacros.tableRow({
+          label: 'Authorised by',
+          'data-qa': 'authorisedBy',
+          dataValue: data.incidentDetails.authorisedBy,
+          print: print
+        })
+      }}
+    {% endif %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Witnesses',

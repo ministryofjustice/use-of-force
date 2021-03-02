@@ -15,6 +15,7 @@ const expectedPayload = {
     witnesses: [{ name: 'Witness A' }, { name: 'Tom Jones' }],
     locationId: 357591,
     plannedUseOfForce: true,
+    authorisedBy: 'Eric Bloodaxe',
   },
   involvedStaff: [
     { name: 'Emily Jones', email: 'Emily@gov.uk', staffId: 5, username: 'EMILY_JONES', verified: true },

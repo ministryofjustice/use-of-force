@@ -22,6 +22,7 @@ const createIncidentDetails = (
     prison,
     location: description,
     plannedUseOfForce: incidentDetails.plannedUseOfForce,
+    authorisedBy: incidentDetails.authorisedBy,
     staffInvolved: involvedStaff,
     witnesses: incidentDetails.witnesses
       ? incidentDetails.witnesses.map(staff => [properCaseFullName(staff.name)])

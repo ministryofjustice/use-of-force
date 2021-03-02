@@ -16,7 +16,7 @@ beforeEach(() => {
   validInput = {
     incidentDate: { date: '15/01/2019', time: { hour: '12', minute: '45' } },
     locationId: -1,
-    plannedUseOfForce: 'true',
+    plannedUseOfForce: 'false',
     witnesses: [{ name: 'User bob' }, { name: '' }],
   }
 })
@@ -38,7 +38,7 @@ describe("'complete' validation", () => {
       })
       expect(formResponse).toEqual({
         locationId: -1,
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -97,13 +97,26 @@ describe("'complete' validation", () => {
       ])
 
       expect(formResponse).toEqual({
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
         witnesses: [{ name: 'User bob' }],
       })
     })
   })
 
   describe('Planned use of force', () => {
+    it('Not planned strips authorisedBy field', () => {
+      const input = { ...validInput, plannedUseOfForce: 'false', authorisedBy: 'Eric Bloodaxe' }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        plannedUseOfForce: false,
+        locationId: -1,
+        witnesses: [{ name: 'User bob' }],
+      })
+    })
+
     it('Not a boolean', () => {
       const input = { ...validInput, plannedUseOfForce: 'not a bool' }
       const { errors, formResponse } = check(input)
@@ -117,6 +130,57 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
+        witnesses: [{ name: 'User bob' }],
+      })
+    })
+
+    it('No authorisedBy field', () => {
+      const input = { ...validInput, plannedUseOfForce: 'true' }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#authorisedBy',
+          text: 'Enter the name of the person who authorised the use of force',
+        },
+      ])
+
+      expect(formResponse).toEqual({
+        locationId: -1,
+        plannedUseOfForce: true,
+        witnesses: [{ name: 'User bob' }],
+      })
+    })
+
+    it('Valid authorisedBy field', () => {
+      const input = { ...validInput, plannedUseOfForce: 'true', authorisedBy: 'Eric Bloodaxe' }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        locationId: -1,
+        authorisedBy: 'Eric Bloodaxe',
+        plannedUseOfForce: true,
+        witnesses: [{ name: 'User bob' }],
+      })
+    })
+
+    it('Illegal characters in authorisedBy field', () => {
+      const input = { ...validInput, plannedUseOfForce: 'true', authorisedBy: '0' }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#authorisedBy',
+          text: 'Names may only contain letters, spaces, full stops, hyphens and apostrophes',
+        },
+      ])
+
+      expect(formResponse).toEqual({
+        locationId: -1,
+        authorisedBy: '0',
+        plannedUseOfForce: true,
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -142,7 +206,7 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
       })
     })
 
@@ -154,7 +218,7 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }],
       })
     })
@@ -167,7 +231,7 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }],
       })
     })
@@ -185,7 +249,7 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         locationId: -1,
-        plannedUseOfForce: true,
+        plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }, { name: 'Bob' }],
       })
     })
@@ -618,7 +682,7 @@ describe("'partial' validation", () => {
   const check = buildCheck(partial)
   describe('Incident details page - overall', () => {
     it('Does not check requiredness during partial validation', () => {
-      const { errors, formResponse, extractedFields } = check(validInput)
+      const { errors, formResponse, extractedFields } = check({ ...validInput, plannedUseOfForce: 'true' })
 
       expect(errors).toEqual([])
 

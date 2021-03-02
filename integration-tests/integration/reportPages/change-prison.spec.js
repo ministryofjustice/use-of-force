@@ -29,6 +29,7 @@ context('Submitting details page form', () => {
     incidentDetailsPage.offenderName().contains('Norman Smith')
     incidentDetailsPage.location().select('Asso A Wing')
     incidentDetailsPage.forceType.check('true')
+    incidentDetailsPage.forceType.authorisedBy('Eric Bloodaxe')
     incidentDetailsPage.clickSave()
     cy.go('back')
   }

@@ -65,6 +65,7 @@ describe('Build details', () => {
         offenderName: 'Jim Burgler',
         offenderNumber: 'A1234AA',
         plannedUseOfForce: undefined,
+        authorisedBy: undefined,
         prison: {
           agencyId: 'MDI',
           description: 'HMP Moorland',

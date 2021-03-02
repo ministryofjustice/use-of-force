@@ -14,6 +14,7 @@ const {
   optionalForPartialValidation,
   requiredIntegerMsg,
   requiredPatternMsg,
+  requiredStringMsg,
   requiredBooleanMsg,
   arrayOfObjects,
 } = validations
@@ -69,6 +70,15 @@ const transientSchema = joi.object({
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
     optionalForPartialValidation
   ),
+
+  authorisedBy: joi.when('plannedUseOfForce', {
+    is: true,
+    then: requiredStringMsg('Enter the name of the person who authorised the use of force')
+      .alter(optionalForPartialValidation)
+      .pattern(namePattern)
+      .message('Names may only contain letters, spaces, full stops, hyphens and apostrophes'),
+    otherwise: joi.any().strip(),
+  }),
 
   witnesses: arrayOfObjects({
     name: requiredPatternMsg(namePattern)(

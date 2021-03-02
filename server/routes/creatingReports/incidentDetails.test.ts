@@ -88,7 +88,7 @@ describe('POST save and continue /section/form', () => {
           time: { hour: '12', minute: '45' },
         },
         locationId: -1,
-        plannedUseOfForce: 'true',
+        plannedUseOfForce: 'false',
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -101,7 +101,7 @@ describe('POST save and continue /section/form', () => {
           'incidentDetails',
           {
             locationId: -1,
-            plannedUseOfForce: true,
+            plannedUseOfForce: false,
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
@@ -267,6 +267,7 @@ describe('POST save and return to check-your-answers', () => {
         incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
         locationId: -1,
         plannedUseOfForce: 'true',
+        authorisedBy: 'Eric Bloodaxe',
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -280,6 +281,7 @@ describe('POST save and return to check-your-answers', () => {
           {
             locationId: -1,
             plannedUseOfForce: true,
+            authorisedBy: 'Eric Bloodaxe',
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value

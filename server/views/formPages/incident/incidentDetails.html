@@ -7,6 +7,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% import "../incidentMacros.njk" as incidentMacro %}
 {% from "../../partials/datePicker.njk" import datePicker %}
 {% from "../incidentTimeMacro.njk"  import incidentTime %}
 {% set pageTitle = 'Incident details' %}
@@ -98,31 +99,31 @@
 
   <div class="govuk-grid-row govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
-      {{ govukRadios({
-        classes: "govuk-radios--inline",
-        idPrefix: "plannedUseOfForce",
-        name: "plannedUseOfForce",
-        errorMessage: errors | findError('plannedUseOfForce'),
-        fieldset: {
-          legend: {
-            text: "Was the use of force planned?",
-            isPageHeading: false,
-            classes: "govuk-label govuk-label--xs"
-          }
+      {{ incidentMacro.radiosWithNestedTextbox({
+        primaryQuestion: {
+          id: "plannedUseOfForce",
+          text: "Was the use of force planned?",
+          name: "plannedUseOfForce",
+          value: data.plannedUseOfForce,
+          errorMessage: errors | findError('plannedUseOfForce'),
+          options: [{
+              value: true,
+              label: "Yes"
+            },
+            {
+              value: false,
+              label: "No"
+          }]
         },
-        items: [
-          {
-            value: true,
-            text: "Yes",
-            checked: data.plannedUseOfForce === true
-          },
-          {
-            value: false,
-            text: "No",
-            checked: data.plannedUseOfForce === false
+        followUpQuestion: {
+          legend: "Who authorised the use of force?",
+          name: "authorisedBy",
+          value: data.authorisedBy,
+          label: "Name",
+          errorMessage: errors | findError('authorisedBy')
           }
-        ]
-      }) }}
+        })
+      }}
       <hr />
     </div>
   </div>
