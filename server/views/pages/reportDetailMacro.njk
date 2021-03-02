@@ -99,7 +99,7 @@
         print: print
       })
     }}
-    {% if data.incidendentDetails.authorisedBy !== null %}
+    {% if data.incidentDetails.authorisedBy %}
       {{
       reportDetailsMacros.tableRow({
           label: 'Authorised by',
