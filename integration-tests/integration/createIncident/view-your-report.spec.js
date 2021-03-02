@@ -3,6 +3,7 @@ const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPag
 const YourReportPage = require('../../pages/yourReports/yourReportPage')
 const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
 const { ReportStatus } = require('../../../server/config/types')
+const { expectedPayload } = require('../seedData')
 
 context('A reporter views their own report', () => {
   beforeEach(() => {
@@ -63,6 +64,38 @@ context('A reporter views their own report', () => {
 
     yourReportPage.returnToYourReports().click()
 
+    YourReportsPage.verifyOnPage()
+  })
+
+  it('A user can view their own report when no authorisedBy field', () => {
+    cy.task('stubLocation', '357591')
+
+    cy.login()
+
+    const payload = { ...expectedPayload }
+    payload.incidentDetails.plannedUseOfForce = true
+    payload.incidentDetails.authorisedBy = undefined
+
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      submittedDate: '2019-09-04 11:27:52',
+      payload,
+    })
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.yourReportsTab().click()
+
+    const yourReportsPage = YourReportsPage.verifyOnPage()
+    yourReportsPage.selectedTab().contains('Your reports')
+
+    yourReportsPage.reports(0).action().click()
+    const yourReportPage = YourReportPage.verifyOnPage()
+
+    yourReportPage.useOfForcePlanned().contains('Yes')
+    yourReportPage.authorisedBy().should('not.exist')
+
+    yourReportPage.returnToYourReports().click()
     YourReportsPage.verifyOnPage()
   })
 

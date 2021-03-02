@@ -9,6 +9,7 @@ const painInducingTechniques = () => cy.get('[data-qa=painInducingTechniques]')
 
 module.exports = {
   useOfForcePlanned,
+  authorisedBy,
   positiveCommunicationUsed,
   handcuffsApplied,
   prisonerCompliant,
