@@ -39,32 +39,6 @@ describe('GET /check-your-answers', () => {
       })
   })
 
-  it('Should not contain the pain inducing techniques question [pain inducing techniques = undefined]', () => {
-    draftReportService.getReportStatus.mockReturnValue({ complete: true })
-    draftReportService.getCurrentDraft.mockResolvedValue({
-      form: {
-        incidentDetails: {},
-        useOfForceDetails: {
-          pavaDrawn: false,
-          restraint: false,
-          batonDrawn: false,
-          guidingHold: false,
-          handcuffsApplied: false,
-          positiveCommunication: false,
-          personalProtectionTechniques: false,
-        },
-      },
-    })
-
-    return request(app)
-      .get('/report/-35/check-your-answers')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Were pain inducing techniques used?')
-      })
-  })
-
   it('Should contain the pain inducing techniques question [pain inducing techniques = true]', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
     draftReportService.getCurrentDraft.mockResolvedValue({
@@ -77,7 +51,7 @@ describe('GET /check-your-answers', () => {
           guidingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,
-          painInducingTechniques: true,
+          painInducingTechniquesUsed: true,
           personalProtectionTechniques: false,
         },
       },
@@ -104,7 +78,7 @@ describe('GET /check-your-answers', () => {
           guidingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,
-          painInducingTechniques: false,
+          painInducingTechniquesUsed: false,
           personalProtectionTechniques: false,
         },
       },

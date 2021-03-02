@@ -6,6 +6,7 @@ const handcuffsApplied = () => cy.get('[data-qa=handcuffsApplied]')
 const prisonerCompliant = () => cy.get('[data-qa="compliancy"]')
 const photosTaken = () => cy.get('[data-qa="photographs"]')
 const painInducingTechniques = () => cy.get('[data-qa=painInducingTechniques]')
+const painInducingTechniquesUsed = () => cy.get('[data-qa=painInducingTechniquesUsed]')
 
 module.exports = {
   useOfForcePlanned,
@@ -15,6 +16,7 @@ module.exports = {
   prisonerCompliant,
   photosTaken,
   painInducingTechniques,
+  painInducingTechniquesUsed,
   prison,
 
   verifyInputs({
@@ -54,7 +56,8 @@ module.exports = {
     cy.get('[data-qa="guidingHold"]').contains('Yes - 2 officers involved')
     cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back, face down, kneeling')
     handcuffsApplied().contains('Yes')
-    painInducingTechniques().contains('Yes')
+    painInducingTechniquesUsed().contains('Yes')
+    cy.get('[data-qa="painInducingTechniquesUsed"]').contains('Yes - final lock flexion, thumb lock')
 
     cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')
     prisonerCompliant().contains('Yes')

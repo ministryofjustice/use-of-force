@@ -133,14 +133,27 @@
   }}
   </div>
 
-    <!-- Q7 -->
-    {{ incidentMacro.radio( {
-      text: "Were pain inducing techniques used?",
-      name: "painInducingTechniques",
-      value: data.painInducingTechniques,
-      options: yesNoOptions,
-      errorMessage: errors | findError('painInducingTechniques')
-    })}}
+
+  <!-- Q7 -->
+    <div id="pain-inducing-techniques">
+      {{ incidentMacro.radiosWithNestedCheckboxes({
+        primaryQuestion: {
+          text: "Were pain inducing techniques used?",
+          name: "painInducingTechniquesUsed",
+          value: data.painInducingTechniquesUsed,
+          options: yesNoOptions,
+          errorMessage: errors | findError('painInducingTechniquesUsed')
+        },
+        followUpQuestion: {
+          text: "What pain inducing techniques  were used?",
+          name: "painInducingTechniques",
+          value: data.painInducingTechniques or [],
+          errorMessage: errors | findError('painInducingTechniques'),
+          options: data.types.PainInducingTechniques | list | extractAttr('value') | toOptions('value', 'label')
+        }
+      }) 
+    }}
+    </div>
 
     <!-- Q8 -->
     {{ incidentMacro.radio( {

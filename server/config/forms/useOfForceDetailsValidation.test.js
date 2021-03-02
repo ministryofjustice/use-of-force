@@ -21,7 +21,8 @@ beforeEach(() => {
     restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
-    painInducingTechniques: 'true',
+    painInducingTechniquesUsed: 'true',
+    painInducingTechniques: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
   }
 })
 
@@ -46,7 +47,8 @@ describe('complete schema', () => {
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
-        painInducingTechniques: true,
+        painInducingTechniquesUsed: true,
+        painInducingTechniques: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
       })
     })
 
@@ -80,7 +82,7 @@ describe('complete schema', () => {
           text: 'Select yes if control and restraint was used',
         },
         {
-          href: '#painInducingTechniques',
+          href: '#painInducingTechniquesUsed',
           text: 'Select yes if pain inducing techniques were used',
         },
         {
@@ -311,9 +313,26 @@ describe('complete schema', () => {
       expect(formResponse.handcuffsAplied).toBe(undefined)
     })
 
-    it("Not selecting an option for 'pain inducing techniques' returns a validation error message", () => {
+    it("Not selecting Yes or No for 'pain inducing techniques used' returns a validation error message", () => {
       const input = {
         ...validInput,
+        painInducingTechniquesUsed: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#painInducingTechniquesUsed',
+          text: 'Select yes if pain inducing techniques were used',
+        },
+      ])
+      expect(formResponse.painInducingTechniquesUsed).toBe(undefined)
+    })
+
+    it("Selecting Yes to 'pain inducing techniques used' but nothing for 'techniques' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        painInducingTechniquesUsed: 'true',
         painInducingTechniques: undefined,
       }
       const { errors, formResponse } = check(input)
@@ -321,10 +340,37 @@ describe('complete schema', () => {
       expect(errors).toEqual([
         {
           href: '#painInducingTechniques',
-          text: 'Select yes if pain inducing techniques were used',
+          text: 'Select the pain inducing techniques used',
         },
       ])
+      expect(formResponse.painInducingTechniquesUsed).toEqual(true)
       expect(formResponse.painInducingTechniques).toBe(undefined)
+    })
+
+    it("Selecting just 1 option for 'pain inducing techniques' returns no errors", () => {
+      const input = {
+        ...validInput,
+        painInducingTechniquesUsed: 'true',
+        painInducingTechniques: ['THUMB_LOCK'],
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+      expect(formResponse.painInducingTechniquesUsed).toBe(true)
+      expect(formResponse.painInducingTechniques).toEqual(['THUMB_LOCK'])
+    })
+
+    it('Selecting more than 1 option for pain inducing techniques returns no errors', () => {
+      const input = {
+        ...validInput,
+        painInducingTechniquesUsed: 'true',
+        painInducingTechniques: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+      expect(formResponse.painInducingTechniquesUsed).toEqual(true)
+      expect(formResponse.painInducingTechniques).toEqual(['FINAL_LOCK_FLEXION', 'THUMB_LOCK'])
     })
   })
 })
@@ -350,7 +396,8 @@ describe('partial schema', () => {
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
-        painInducingTechniques: true,
+        painInducingTechniquesUsed: true,
+        painInducingTechniques: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
       })
     })
 

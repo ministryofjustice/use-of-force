@@ -22,6 +22,16 @@ const ControlAndRestraintPosition = {
   KNEELING: { value: 'KNEELING', label: 'Kneeling' },
 }
 
+const PainInducingTechniques = {
+  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
+  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
+  MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
+  SHOULDER_CONTROL: { value: 'SHOULDER_CONTROL', label: 'Shoulder control' },
+  THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
+  THUMB_LOCK: { value: 'THUMB_LOCK', label: 'Thumb lock' },
+  UPPER_ARM_CONTROL: { value: 'UPPER_ARM_CONTROL', label: 'Upper arm control' },
+}
+
 const RelocationLocation = {
   OWN_CELL: { value: 'OWN_CELL', label: 'Own cell' },
   GATED_CELL: { value: 'GATED_CELL', label: 'Gated cell' },
@@ -57,6 +67,7 @@ module.exports = {
   BodyWornCameras: Object.freeze(BodyWornCameras),
   Cctv: Object.freeze(Cctv),
   ControlAndRestraintPosition: Object.freeze(ControlAndRestraintPosition),
+  PainInducingTechniques: Object.freeze(PainInducingTechniques),
   RelocationLocation: Object.freeze(RelocationLocation),
   ReportStatus: Object.freeze(ReportStatus),
   StatementStatus: Object.freeze(StatementStatus),

@@ -200,16 +200,14 @@
         print: print
       })
     }}
-    {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Were pain inducing techniques used?',
-        'data-qa': 'painInducingTechniques',
-        dataValue: data.useOfForceDetails.painInducingTechniques | toYesNo,
+        'data-qa': 'painInducingTechniquesUsed',
+        dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
         print: print
       })
     }}
-    {% endif %}
       {{
       reportDetailsMacros.tableRow({
         label: 'Were handcuffs applied?',

@@ -3,6 +3,7 @@ const {
   Cctv,
   RelocationLocation,
   ControlAndRestraintPosition,
+  PainInducingTechniques,
   RelocationType,
   toLabel,
 } = require('../config/types')
@@ -43,7 +44,13 @@ const createUseOfForceDetails = (details = {}) => {
     controlAndRestraintUsed: whenPresent(details.restraint, value =>
       value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
     ),
-    painInducingTechniques: details.painInducingTechniques,
+
+    painInducingTechniques: whenPresent(details.painInducingTechniquesUsed, value =>
+      value === true && details.painInducingTechniquesUsed
+        ? getPainInducingTechniques(details.painInducingTechniques)
+        : 'No'
+    ),
+
     handcuffsApplied: details.handcuffsApplied,
   }
 }
@@ -100,6 +107,12 @@ const wasWeaponUsed = weaponUsed => {
 
 const getRestraintPositions = positions => {
   return positions == null ? '' : `Yes - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
+}
+
+const getPainInducingTechniques = painInducingTechniques => {
+  return painInducingTechniques == null
+    ? ''
+    : `Yes - ${painInducingTechniques.map(technique => toLabel(PainInducingTechniques, technique)).join(', ')}`
 }
 
 const staffTakenToHospital = (staffMembers = []) => {

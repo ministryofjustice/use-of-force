@@ -36,7 +36,7 @@ const validUseOfForceDetailsRequest = {
   pavaDrawn: 'false',
   guidingHold: 'false',
   restraint: 'false',
-  painInducingTechniques: 'false',
+  painInducingTechniquesUsed: 'false',
   handcuffsApplied: 'false',
   submitType: 'save-and-continue',
 }
@@ -49,7 +49,7 @@ const validUseofForceDetailUpdate = [
     batonDrawn: false,
     guidingHold: false,
     handcuffsApplied: false,
-    painInducingTechniques: false,
+    painInducingTechniquesUsed: false,
     pavaDrawn: false,
     personalProtectionTechniques: false,
     positiveCommunication: false,
@@ -105,7 +105,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toBeCalledWith(user, 1, 'useOfForceDetails', {
           guidingHold: false,
           handcuffsApplied: false,
-          painInducingTechniques: false,
+          painInducingTechniquesUsed: false,
           pavaDrawn: false,
           personalProtectionTechniques: false,
           positiveCommunication: false,
