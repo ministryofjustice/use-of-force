@@ -19,6 +19,10 @@ const viewYourReportPage = () =>
 
     verifyInputs: reportDetails.verifyInputs,
 
+    useOfForcePlanned: reportDetails.useOfForcePlanned,
+
+    authorisedBy: reportDetails.authorisedBy,
+
     getReportId: () => {
       return cy.url().then(url => {
         const match = url.match(/.*\/(.*)\/your-report/)

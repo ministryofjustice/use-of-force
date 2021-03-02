@@ -38,6 +38,26 @@ context('Submitting details page form', () => {
     return detailsPage
   }
 
+  const fillFormUnplannedAndSave = () => {
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const incidentDetailsPage = reportUseOfForcePage.startNewForm()
+
+    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.hour().type('09')
+    incidentDetailsPage.incidentDate.minute().type('32')
+    incidentDetailsPage.offenderName().contains('Norman Smith')
+    incidentDetailsPage.prison().contains('Moorland')
+    incidentDetailsPage.location().select('Asso A Wing')
+    incidentDetailsPage.forceType.check('false')
+
+    incidentDetailsPage.witnesses(0).name().type('jimmy-ray')
+    incidentDetailsPage.addAnotherWitness().click()
+    incidentDetailsPage.addAnotherWitness().click()
+    incidentDetailsPage.addAnotherWitness().click()
+    const detailsPage = incidentDetailsPage.save()
+    return detailsPage
+  }
+
   it('Can login and create a new report', () => {
     fillFormAndSave()
 
@@ -69,5 +89,17 @@ context('Submitting details page form', () => {
 
     // Should't be able to remove sole item
     updatedIncidentDetailsPage.witnesses(0).remove().should('not.exist')
+  })
+
+  it('Can login and create a new unplanned UoF report', () => {
+    fillFormUnplannedAndSave()
+
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(({ section }) => {
+      expect(section).to.deep.equal({
+        locationId: 357591,
+        plannedUseOfForce: false,
+        witnesses: [{ name: 'jimmy-ray' }],
+      })
+    })
   })
 })
