@@ -3,7 +3,7 @@ const {
   Cctv,
   RelocationLocation,
   ControlAndRestraintPosition,
-  PainInducingTechniques,
+  PainInducingTechniquesUsed,
   RelocationType,
   toLabel,
 } = require('../config/types')
@@ -45,12 +45,7 @@ const createUseOfForceDetails = (details = {}) => {
       value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
     ),
 
-    painInducingTechniques: whenPresent(details.painInducingTechniquesUsed, value =>
-      value === true && details.painInducingTechniquesUsed
-        ? getPainInducingTechniques(details.painInducingTechniques)
-        : 'No'
-    ),
-
+    painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
   }
 }
@@ -109,10 +104,22 @@ const getRestraintPositions = positions => {
   return positions == null ? '' : `Yes - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
 }
 
-const getPainInducingTechniques = painInducingTechniques => {
-  return painInducingTechniques == null
-    ? ''
-    : `Yes - ${painInducingTechniques.map(technique => toLabel(PainInducingTechniques, technique)).join(', ')}`
+const getPainInducingTechniques = details => {
+  if (details.painInducingTechniques === undefined) {
+    return undefined
+  }
+
+  if (details.painInducingTechniques && !details.painInducingTechniquesUsed) {
+    return 'yes'
+  }
+
+  if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
+    return `yes - ${details.painInducingTechniquesUsed
+      .map(technique => toLabel(PainInducingTechniquesUsed, technique))
+      .join(', ')}`
+  }
+
+  return 'no'
 }
 
 const staffTakenToHospital = (staffMembers = []) => {

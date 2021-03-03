@@ -28,8 +28,8 @@ const useOfForceDetailsPage = () =>
     restraint: () => cy.get('[name="restraint"]'),
     handcuffsApplied: () => cy.get('[name="handcuffsApplied"]'),
 
-    painInducingTechniquesUsed: () => cy.get('[name="painInducingTechniquesUsed"]'),
-    painInducingTechniques: {
+    painInducingTechniques: () => cy.get('[name="painInducingTechniques"]'),
+    painInducingTechniquesUsed: {
       check: value => cy.get('#pain-inducing-techniques [type="checkbox"]').check(value),
       thumbLock: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="THUMB_LOCK"]'),
       shoulderControl: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="SHOULDER_CONTROL"]'),
@@ -54,8 +54,8 @@ const useOfForceDetailsPage = () =>
       this.restraint().check('true')
       this.restraintPositions.check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       this.handcuffsApplied().check('true')
-      this.painInducingTechniquesUsed().check('true')
-      this.painInducingTechniques.check(['THUMB_LOCK', 'FINAL_LOCK_FLEXION'])
+      this.painInducingTechniques().check('true')
+      this.painInducingTechniquesUsed.check(['THUMB_LOCK', 'FINAL_LOCK_FLEXION'])
     },
 
     errorSummary() {

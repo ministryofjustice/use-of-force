@@ -30,8 +30,9 @@ const expectedPayload = {
     restraint: true,
     handcuffsApplied: true,
     restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
-    painInducingTechniquesUsed: true,
-    painInducingTechniques: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+    painInducingTechniques: true,
+    painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+
     positiveCommunication: true,
     guidingHoldOfficersInvolved: 2,
     personalProtectionTechniques: true,

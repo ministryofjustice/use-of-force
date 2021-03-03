@@ -22,7 +22,7 @@ const ControlAndRestraintPosition = {
   KNEELING: { value: 'KNEELING', label: 'Kneeling' },
 }
 
-const PainInducingTechniques = {
+const PainInducingTechniquesUsed = {
   FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
   FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
   MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
@@ -67,7 +67,7 @@ module.exports = {
   BodyWornCameras: Object.freeze(BodyWornCameras),
   Cctv: Object.freeze(Cctv),
   ControlAndRestraintPosition: Object.freeze(ControlAndRestraintPosition),
-  PainInducingTechniques: Object.freeze(PainInducingTechniques),
+  PainInducingTechniquesUsed: Object.freeze(PainInducingTechniquesUsed),
   RelocationLocation: Object.freeze(RelocationLocation),
   ReportStatus: Object.freeze(ReportStatus),
   StatementStatus: Object.freeze(StatementStatus),

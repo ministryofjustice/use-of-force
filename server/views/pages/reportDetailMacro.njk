@@ -200,14 +200,18 @@
         print: print
       })
     }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Were pain inducing techniques used?',
-        'data-qa': 'painInducingTechniquesUsed',
-        dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
-        print: print
-      })
-    }}
+    
+    {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
+    {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were pain inducing techniques used?',
+          'data-qa': 'painInducingTechniques',
+          dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
+          print: print
+        })
+      }}
+    {% endif %}
       {{
       reportDetailsMacros.tableRow({
         label: 'Were handcuffs applied?',

@@ -64,11 +64,11 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
-  painInducingTechniquesUsed: requiredBooleanMsg('Select yes if pain inducing techniques were used').alter(
+  painInducingTechniques: requiredBooleanMsg('Select yes if pain inducing techniques were used').alter(
     optionalForPartialValidation
   ),
 
-  painInducingTechniques: joi.when('painInducingTechniquesUsed', {
+  painInducingTechniquesUsed: joi.when('painInducingTechniques', {
     is: true,
     then: joi
       .alternatives()
