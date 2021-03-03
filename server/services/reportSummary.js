@@ -110,16 +110,16 @@ const getPainInducingTechniques = details => {
   }
 
   if (details.painInducingTechniques && !details.painInducingTechniquesUsed) {
-    return 'yes'
+    return 'Yes'
   }
 
   if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
-    return `yes - ${details.painInducingTechniquesUsed
+    return `Yes - ${details.painInducingTechniquesUsed
       .map(technique => toLabel(PainInducingTechniquesUsed, technique))
       .join(', ')}`
   }
 
-  return 'no'
+  return 'No'
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
