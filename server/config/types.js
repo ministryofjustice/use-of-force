@@ -17,8 +17,8 @@ const Cctv = {
 
 const ControlAndRestraintPosition = {
   STANDING: { value: 'STANDING', label: 'Standing' },
-  ON_BACK: { value: 'ON_BACK', label: 'On back' },
-  FACE_DOWN: { value: 'FACE_DOWN', label: 'Face down' },
+  ON_BACK: { value: 'ON_BACK', label: 'On back (supine)' },
+  FACE_DOWN: { value: 'FACE_DOWN', label: 'On front (prone)' },
   KNEELING: { value: 'KNEELING', label: 'Kneeling' },
 }
 
