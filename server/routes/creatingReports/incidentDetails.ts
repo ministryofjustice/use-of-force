@@ -80,16 +80,16 @@ export default class IncidentDetailsRoutes {
     const { displayName, offenderNo } = offenderDetail
 
     const input = firstItem(req.flash('userInput'))
+    const pageData = input || form[formName]
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
     const data = {
       bookingId,
-      ...form[formName],
-      ...input,
+      ...pageData,
       displayName,
       offenderNo,
-      incidentDate: this.getIncidentDate(incidentDate, input && input.incidentDate),
+      incidentDate: this.getIncidentDate(incidentDate, input?.incidentDate),
       locations,
       prison,
       types,

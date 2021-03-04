@@ -15,9 +15,10 @@ const offenderService = new OffenderService(null) as jest.Mocked<OffenderService
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
 let app
+const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService })
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({
     displayName: 'Bob Smith',
@@ -25,6 +26,7 @@ beforeEach(() => {
     agencyId: 'current-agency-id',
   })
   locationService.getIncidentLocations.mockResolvedValue([])
+  flash.mockReturnValue([])
 })
 
 afterEach(() => {
@@ -55,6 +57,7 @@ describe('GET /section/form', () => {
         expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
       })
   })
+
   test('should render incident-details using locations for current agency if new report', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({})
     return request(app)
@@ -62,6 +65,42 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
+        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+      })
+  })
+  test('should render saved data', () => {
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {
+          plannedUseOfForce: true,
+          authorisedBy: 'Eric Bloodaxe',
+        },
+      },
+    })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Eric Bloodaxe')
+        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+      })
+  })
+
+  test('should preference flash state over persisted data', () => {
+    flash.mockReturnValue([{ plannedUseOfForce: true }])
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {
+          plannedUseOfForce: true,
+          authorisedBy: 'Eric Bloodaxe',
+        },
+      },
+    })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Eric Bloodaxe')
         expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
       })
   })
