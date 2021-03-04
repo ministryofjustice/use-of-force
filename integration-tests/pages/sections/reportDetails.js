@@ -54,7 +54,7 @@ module.exports = {
     cy.get('[data-qa="batonDrawn"]').contains('Yes and used')
     cy.get('[data-qa="pavaDrawn"]').contains('Yes and used')
     cy.get('[data-qa="guidingHold"]').contains('Yes - 2 officers involved')
-    cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back, face down, kneeling')
+    cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back (supine), on front (prone), kneeling')
     handcuffsApplied().contains('Yes')
     painInducingTechniques().contains('Yes')
     cy.get('[data-qa="painInducingTechniques"]').contains('Yes - final lock flexion, thumb lock')
