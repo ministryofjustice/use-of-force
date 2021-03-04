@@ -27,7 +27,20 @@ const useOfForceDetailsPage = () =>
 
     restraint: () => cy.get('[name="restraint"]'),
     handcuffsApplied: () => cy.get('[name="handcuffsApplied"]'),
+
     painInducingTechniques: () => cy.get('[name="painInducingTechniques"]'),
+    painInducingTechniquesUsed: {
+      check: value => cy.get('#pain-inducing-techniques [type="checkbox"]').check(value),
+      thumbLock: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="THUMB_LOCK"]'),
+      shoulderControl: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="SHOULDER_CONTROL"]'),
+      upperArmControl: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="UPPER_ARM_CONTROL"]'),
+      mandibularAngleTechnique: () =>
+        cy.get('#pain-inducing-techniques [type="checkbox"][value="MANDIBULAR_ANGLE_TECHNIQUE"]'),
+      finalLockFlexion: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="FINAL_LOCK_FLEXION"]'),
+      finalLockRotation: () => cy.get('#pain-inducing-techniques [type="checkbox"][value="FINAL_LOCK_ROTATION"]'),
+      throughRigidBarCuffs: () =>
+        cy.get('#pain-inducing-techniques [type="checkbox"][value="THROUGH_RIGID_BAR_CUFFS"]'),
+    },
 
     fillForm() {
       this.postiveCommunication().check('true')
@@ -42,6 +55,7 @@ const useOfForceDetailsPage = () =>
       this.restraintPositions.check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       this.handcuffsApplied().check('true')
       this.painInducingTechniques().check('true')
+      this.painInducingTechniquesUsed.check(['THUMB_LOCK', 'FINAL_LOCK_FLEXION'])
     },
 
     errorSummary() {

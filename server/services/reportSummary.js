@@ -3,10 +3,14 @@ const {
   Cctv,
   RelocationLocation,
   ControlAndRestraintPosition,
+  PainInducingTechniquesUsed,
   RelocationType,
   toLabel,
 } = require('../config/types')
 const { properCaseFullName } = require('../utils/utils')
+
+const YES = 'Yes'
+const NO = 'No'
 
 const createIncidentDetails = (
   offenderDetail,
@@ -35,15 +39,16 @@ const createUseOfForceDetails = (details = {}) => {
   return {
     positiveCommunicationUsed: details.positiveCommunication,
     personalProtectionTechniques: details.personalProtectionTechniques,
-    batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : 'No')),
-    pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : 'No')),
+    batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : NO)),
+    pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : NO)),
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
-      value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : 'No'
+      value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
     controlAndRestraintUsed: whenPresent(details.restraint, value =>
-      value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : 'No'
+      value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : NO
     ),
-    painInducingTechniques: details.painInducingTechniques,
+
+    painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
   }
 }
@@ -54,11 +59,11 @@ const createRelocation = (relocationAndInjuries = {}) => {
 
     relocationCompliancy:
       relocationAndInjuries.relocationCompliancy === true
-        ? 'Yes'
-        : `No${getRelocationType(relocationAndInjuries.relocationType)}`,
+        ? YES
+        : `${NO}${getRelocationType(relocationAndInjuries.relocationType)}`,
 
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
-      value ? relocationAndInjuries.healthcarePractionerName || 'Yes' : 'No'
+      value ? relocationAndInjuries.healthcarePractionerName || YES : NO
     ),
     prisonerInjuries: relocationAndInjuries.prisonerInjuries,
     f213CompletedBy: relocationAndInjuries.f213CompletedBy,
@@ -83,7 +88,7 @@ const createEvidence = (evidence = {}) => {
     cctv: toLabel(Cctv, evidence.cctvRecording),
     bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
       value === Cctv.YES.value
-        ? `Yes - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || 'Yes'
+        ? `${YES} - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || YES
         : toLabel(BodyWornCameras, value)
     ),
   }
@@ -99,7 +104,27 @@ const wasWeaponUsed = weaponUsed => {
 }
 
 const getRestraintPositions = positions => {
-  return positions == null ? '' : `Yes - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
+  return positions == null
+    ? ''
+    : `${YES} - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
+}
+
+const getPainInducingTechniques = details => {
+  if (details.painInducingTechniques === undefined) {
+    return undefined
+  }
+
+  if (details.painInducingTechniques && !details.painInducingTechniquesUsed) {
+    return YES
+  }
+
+  if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
+    return `Yes - ${details.painInducingTechniquesUsed
+      .map(technique => toLabel(PainInducingTechniquesUsed, technique))
+      .join(', ')}`
+  }
+
+  return NO
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
@@ -112,7 +137,7 @@ const staffTakenToHospital = (staffMembers = []) => {
 
 const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = false) => {
   if (evidenceYesNo === false) {
-    return 'No'
+    return NO
   }
   return tagsAndEvidence.map(item => {
     return [item.evidenceTagReference, item.description]

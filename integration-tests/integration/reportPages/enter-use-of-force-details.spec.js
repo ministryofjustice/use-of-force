@@ -28,6 +28,7 @@ context('Submitting use of force details page', () => {
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')
+    useOfForceDetailsPage.painInducingTechniquesUsed.check(['THUMB_LOCK', 'THROUGH_RIGID_BAR_CUFFS'])
     const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     return relocationAndInjuriesPage
   }
@@ -51,6 +52,7 @@ context('Submitting use of force details page', () => {
         restraint: true,
         restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
         painInducingTechniques: true,
+        painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
   })
@@ -74,6 +76,7 @@ context('Submitting use of force details page', () => {
         restraint: true,
         restraintPositions: ['STANDING'],
         painInducingTechniques: true,
+        painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
   })

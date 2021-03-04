@@ -106,7 +106,8 @@ describe('statusCheck', () => {
         handcuffsApplied: null,
         positiveCommunication: false,
         personalProtectionTechniques: undefined,
-        painInducingTechniques: null,
+        painInducingTechniques: false,
+        painInducingTechniquesUsed: null,
       },
     }
 
