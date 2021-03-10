@@ -1,11 +1,8 @@
 const YourStatements = require('../pages/yourStatements/yourStatementsPage')
 
 context('Login functionality', () => {
-  before(() => {
-    cy.clearCookies()
-  })
-
   beforeEach(() => {
+    cy.clearCookies()
     cy.task('reset')
   })
 
