@@ -78,6 +78,28 @@ describe('locationService', () => {
       expect(prisonClient.getLocations).toBeCalledWith('WRI')
     })
 
+    it('should assign internalLocationCode as userDescription when userDescription value is absent', async () => {
+      prisonClient.getLocations.mockReturnValue([
+        { id: 2, internalLocationCode: 'P2', userDescription: undefined },
+        { id: 6, internalLocationCode: 'OC', userDescription: 'Other cell' },
+        { id: 3, internalLocationCode: 'P3', userDescription: 'place 3' },
+        { id: 5, internalLocationCode: 'PC', userDescription: "Prisoner's cell" },
+        { id: 1, internalLocationCode: 'P1', userDescription: 'place 1' },
+        { id: 4, internalLocationCode: 'P4', userDescription: undefined },
+      ])
+
+      const result = await locationService.getIncidentLocations(token, 'WRI')
+
+      expect(result).toEqual([
+        { id: 5, internalLocationCode: 'PC', userDescription: "Prisoner's cell" },
+        { id: 6, internalLocationCode: 'OC', userDescription: 'Other cell' },
+        { id: 2, internalLocationCode: 'P2', userDescription: 'P2' },
+        { id: 4, internalLocationCode: 'P4', userDescription: 'P4' },
+        { id: 1, internalLocationCode: 'P1', userDescription: 'place 1' },
+        { id: 3, internalLocationCode: 'P3', userDescription: 'place 3' },
+      ])
+    })
+
     it('should sort retrieved locations with top 2 primary locations at the begining', async () => {
       prisonClient.getLocations.mockReturnValue([
         { id: 2, userDescription: 'place 2' },

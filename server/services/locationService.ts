@@ -29,13 +29,19 @@ export default class LocationService {
     try {
       const prisonClient = this.prisonClientBuilder(token)
       const incidentLocations = await prisonClient.getLocations(agencyId)
+      const formattedIncidentLocations = incidentLocations.map(location => ({
+        ...location,
+        userDescription: location.userDescription ? location.userDescription : location.internalLocationCode,
+      }))
 
-      const prisonersCell = incidentLocations.find(
+      const prisonersCell = formattedIncidentLocations.find(
         location => location.userDescription.toUpperCase() === "PRISONER'S CELL"
       )
-      const otherCell = incidentLocations.find(location => location.userDescription.toUpperCase() === 'OTHER CELL')
+      const otherCell = formattedIncidentLocations.find(
+        location => location.userDescription.toUpperCase() === 'OTHER CELL'
+      )
 
-      const remainingLocations = incidentLocations
+      const remainingLocations = formattedIncidentLocations
         .filter(
           location =>
             location.userDescription.toUpperCase() !== 'OTHER CELL' &&
