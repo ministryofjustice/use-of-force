@@ -31,7 +31,7 @@ export default class LocationService {
       const incidentLocations = await prisonClient.getLocations(agencyId)
       const formattedIncidentLocations = incidentLocations.map(location => ({
         ...location,
-        userDescription: location.userDescription ? location.userDescription : location.internalLocationCode,
+        userDescription: location.userDescription ? location.userDescription : location.locationPrefix,
       }))
 
       const prisonersCell = formattedIncidentLocations.find(
