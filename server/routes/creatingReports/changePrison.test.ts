@@ -58,7 +58,7 @@ describe('POST /change-prison', () => {
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect(() => {
-        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', '-19')
+        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', -19)
       })
   })
 
