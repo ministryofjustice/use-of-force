@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
-import types from '../../config/types'
+import * as types from '../../config/types'
 import { processInput } from '../../services/validation'
 import { nextPaths, full, partial } from '../../config/incident'
 import type OffenderService from '../../services/offenderService'
