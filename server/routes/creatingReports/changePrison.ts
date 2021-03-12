@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Request, RequestHandler, Response } from 'express'
 import LocationService from '../../services/locationService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { SystemToken } from '../../types/uof'
@@ -10,17 +10,17 @@ export default class ChangePrisonRoutes {
     private readonly systemToken: SystemToken
   ) {}
 
-  private view(edit: boolean) {
+  public viewPrisons(): RequestHandler {
     return async (req: Request, res: Response): Promise<void> => {
       const token = await this.systemToken(res.locals.user.username)
       const prisons = await this.locationService.getPrisons(token)
       const errors = req.flash('errors')
-      const data = { prisons, editMode: edit, errors }
+      const data = { prisons, errors }
       res.render('formPages/incident/changePrison', data)
     }
   }
 
-  private submitPrison(editMode: boolean) {
+  public submit(): RequestHandler {
     return async (req, res) => {
       const { bookingId } = req.params
       const { agencyId, submit } = req.body
@@ -40,18 +40,10 @@ export default class ChangePrisonRoutes {
           return res.redirect(req.originalUrl)
         }
 
-        await this.draftReportService.updateAgencyId(agencyId, username, bookingId)
+        await this.draftReportService.updateAgencyId(agencyId, username, Number(bookingId))
       }
 
-      return res.redirect(`/report/${bookingId}/${editMode ? 'edit-' : ''}incident-details`)
+      return res.redirect(`/report/${bookingId}/incident-details`)
     }
   }
-
-  public submit = this.submitPrison(false)
-
-  public submitEdit = this.submitPrison(true)
-
-  public viewPrisons = this.view(false)
-
-  public viewPrisonsEdit = this.view(true)
 }

@@ -3,8 +3,7 @@ import { Prison } from '../../data/prisonClientTypes'
 import { LocationService, DraftReportService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
 
-jest.mock('../../services/locationService')
-jest.mock('../../services/drafts/draftReportService')
+jest.mock('../../services')
 
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
