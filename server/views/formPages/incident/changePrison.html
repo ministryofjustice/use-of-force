@@ -44,14 +44,8 @@
     </div>
   </div>
 
-    {% if editMode %}
-      {% set continueOrSave = 'Save' %}
-    {% else %}
-      {% set continueOrSave = 'Continue' %}
-    {% endif %}
-
     {{ govukButton({
-      text: continueOrSave,
+      text: 'Continue',
       name: "submit",
       value: 'save-and-continue',
       attributes: {'data-qa': 'save-and-continue'}
