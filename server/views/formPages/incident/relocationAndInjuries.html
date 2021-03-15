@@ -28,9 +28,7 @@
         errorMessage: errors | findError('prisonerRelocation')
       }) }}
 
-
-
-    {{ incidentMacro.radiosWithNestedRadios({
+    {{ incidentMacro.radiosWithNestedRadiosWithNestedOtherFieldTextbox({
       primaryQuestion: {
         text: "Was the prisoner compliant?",
         name: "relocationCompliancy",
@@ -43,7 +41,6 @@
           label: "No"
         }],
         errorMessage: errors | findError('relocationCompliancy')
-
       },
       followUpQuestion: {
         text: "What was the type of relocation?",
