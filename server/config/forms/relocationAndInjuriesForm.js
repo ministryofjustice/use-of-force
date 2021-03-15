@@ -29,6 +29,13 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
+  OTHER: joi.when('relocationType', {
+    is: 'OTHER',
+    then: requiredStringMsg('Enter the type of relocation'),
+    // .alter(optionalForPartialValidation),
+    // otherwise: joi.any().strip(),
+  }),
+
   f213CompletedBy,
 
   prisonerInjuries: requiredBooleanMsg('Select yes if the prisoner sustained any injuries').alter(
