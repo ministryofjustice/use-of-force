@@ -4,6 +4,7 @@ import asyncMiddleware from '../../middleware/asyncMiddleware'
 import CreateReportRoutes from './createReport'
 import IncidentDetailsRoutes from './incidentDetails'
 import AddInvolvedStaffRoutes from './addInvolvedStaff'
+import WhyWasUoFAppliedRoutes from './whyWasUoFApplied'
 import SearchForPrisonerRoutes from './searchForPrisoner'
 import CheckYourAnswerRoutes from './checkYourAnswers'
 import ReportUseOfForceRoutes from './reportUseOfForce'
@@ -51,6 +52,12 @@ export default function Index({
   const changePrison = new ChangePrisonRoutes(locationService, draftReportService, systemToken)
   get(reportPath('change-prison'), changePrison.viewPrisons)
   post(reportPath('change-prison'), changePrison.submit)
+
+  const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(draftReportService)
+  get(reportPath('why-was-uof-applied'), whyWasUoFApplied.view())
+  post(reportPath('why-was-uof-applied'), whyWasUoFApplied.submit())
+  get(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.viewPrimarySelection())
+  post(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.submitPrimarySelection())
 
   const createReport = new CreateReportRoutes(draftReportService)
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))

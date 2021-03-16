@@ -55,6 +55,37 @@ describe('getCurrentDraft', () => {
   })
 })
 
+describe('getSelectedReasonsForUoF', () => {
+  test('it should call client', async () => {
+    draftReportClient.get.mockResolvedValue({})
+    await service.getSelectedReasonsForUoF('user1', 1)
+    expect(draftReportClient.get).toHaveBeenCalledWith('user1', 1)
+  })
+
+  test('it should return when present', async () => {
+    const reasonsForUseOfForce = {
+      reasons: [
+        'ASSAULT_ON_ANOTHER_PRISONER',
+        'ASSAULT_ON_A_MEMBER_OF_STAFF',
+        'TO_PREVENT_HARM_ASSAULT_OR_HARM_TO_OTHERS',
+        'TO_ADMINISTER_CARE_OR_DUE_TO_THE_MENTAL_CAPACITY_ACT_2005',
+        'HOSTAGE_NTRG',
+      ],
+      primaryReason: ['HOSTAGE_NTRG'],
+    }
+
+    draftReportClient.get.mockResolvedValue({ form: { reasonsForUseOfForce } })
+    const result = await service.getSelectedReasonsForUoF('user1', 1)
+    expect(result).toStrictEqual(reasonsForUseOfForce)
+  })
+
+  test('it should handle when absent', async () => {
+    draftReportClient.get.mockResolvedValue({ form: {} })
+    const result = await service.getSelectedReasonsForUoF('user1', 1)
+    expect(result).toStrictEqual({ primaryReason: undefined, reasons: [] })
+  })
+})
+
 describe('submit', () => {
   const loggedInUser = { username: 'user-1' } as LoggedInUser
 
