@@ -1,4 +1,4 @@
-const { BodyWornCameras, toLabel } = require('./types')
+import { BodyWornCameras, toLabel } from './types'
 
 describe('toLabel', () => {
   test('Found', () => {
