@@ -57,9 +57,11 @@ export const StatementStatus = toEnum({
 })
 
 export const RelocationType = toEnum({
-  SIDE: { value: 'SIDE', label: 'Side relocation' },
+  PRIMARY: { value: 'PRIMARY', label: 'Primary relocation' },
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
+  NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  OTHER: { value: 'OTHER', label: 'Other' },
 })
 
 export const UofReasons = toEnum({

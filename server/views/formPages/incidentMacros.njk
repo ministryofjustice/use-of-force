@@ -340,6 +340,11 @@
 {% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
 {% endif %}
 
+{% if not question.primaryQuestion.errorMessage and question.followUpQuestionForTypeOfRelocation.errorMessage.text %}
+{% set govukFormGroupErrorInnerTextbox  =  'govuk-form-group--error' %}
+{% set followUpErrorMessageForTypeOfRelocation = question.followUpQuestionForTypeOfRelocation.errorMessage.text %}
+{% set govukFormInputError  =  'govuk-input--error' %}
+{% endif %}
 
 <div class="govuk-form-group {{govukFormGroupErrorOuter}}">
   <fieldset class="govuk-fieldset">
@@ -417,15 +422,14 @@
                     </div>
                   {% endfor %}
                 </fieldset>
-                <div class="{{ govukFormGroupErrorInner }}">
                   <div class="govuk-!-margin-top-2 govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-OTHER">
-                      <div class="govuk-form-group">
-                          <label class="govuk-label" for="type-of-relocation"> Type of relocation  </label>
-                          <input class="govuk-input govuk-!-width-one-third" id="type-of-relocation" name="type-of-relocation">
-                        </div>
+                      <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
+                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageForTypeOfRelocation }}</span>
+                          <label class="govuk-label" for="typeOfRelocation"> Type of relocation  </label>
+                          <input class="govuk-input govuk-!-width-one-third" id="typeOfRelocation" name="typeOfRelocation" value="{{ question.followUpQuestionForTypeOfRelocation.value }}">
+                      </div>
                   </div>
                 </div>
-              </div>
             </div>
         {% endif %}
         <!-- end of followup -->

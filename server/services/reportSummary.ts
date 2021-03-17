@@ -70,14 +70,22 @@ const createUseOfForceDetails = (
   }
 }
 
+const getRelocationType = relocationType => {
+  return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
+}
+
+const checkRelocationType = relocationAndInjuries => {
+  return relocationAndInjuries.relocationType === 'OTHER'
+    ? `${NO} - ${relocationAndInjuries.typeOfRelocation.toLowerCase()}`
+    : `${NO}${getRelocationType(relocationAndInjuries.relocationType)}`
+}
+
 const createRelocation = (relocationAndInjuries: Partial<RelocationAndInjuries> = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
 
     relocationCompliancy:
-      relocationAndInjuries.relocationCompliancy === true
-        ? YES
-        : `${NO}${getRelocationType(relocationAndInjuries.relocationType)}`,
+      relocationAndInjuries.relocationCompliancy === true ? YES : checkRelocationType(relocationAndInjuries),
 
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || YES : NO
@@ -92,10 +100,6 @@ const createRelocation = (relocationAndInjuries: Partial<RelocationAndInjuries> 
       value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
     ),
   }
-}
-
-const getRelocationType = relocationType => {
-  return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
 }
 
 const createEvidence = (evidence: Partial<Evidence> = {}) => {
