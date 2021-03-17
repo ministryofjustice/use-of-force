@@ -1,0 +1,34 @@
+{% extends "../formTemplate.html" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = 'Use of force details' %}
+{% block formItems %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
+    <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+    {% for reason in data.reasons %}
+      <input type="hidden" name="reasons[]" value="{{ reason }}" />
+    {% endfor %}
+      {{ govukRadios({
+        idPrefix: "primaryReason",
+        name: "primaryReason[]",
+        fieldset: {
+          legend: {
+            text: "What was the primary reason use of force was applied?",
+            isPageHeading: false,
+            classes: "govuk-fieldset__legend--l govuk-!-margin-bottom-8"
+          }
+        },
+        items: data.selectedReasons | toChecked('value', 'label', data.primaryReason),
+        errorMessage: errors | findError('primaryReason') 
+      }) }}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/assets/add-another-staff.js"></script>
+{% endblock %}

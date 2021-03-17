@@ -12,6 +12,8 @@ import {
   DraftInvolvedStaffWithPrison,
 } from './draftInvolvedStaffService'
 
+const REASONS_FOR_USE_OF_FORCE_FORM = 'reasonsForUseOfForce'
+
 export enum AddStaffResult {
   SUCCESS = 'success',
   SUCCESS_UNVERIFIED = 'unverified',
@@ -36,6 +38,15 @@ export default class DraftReportService {
 
   public getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
     return this.draftInvolvedStaffService.getInvolvedStaff(token, username, bookingId)
+  }
+
+  public async getSelectedReasonsForUoF(
+    userId: string,
+    bookingId: number
+  ): Promise<{ primaryReason?: string; reasons: string[] }> {
+    const { form } = await this.getCurrentDraft(userId, bookingId)
+    const reasonForm = form?.[REASONS_FOR_USE_OF_FORCE_FORM]
+    return { reasons: reasonForm?.reasons || [], primaryReason: reasonForm?.primaryReason }
   }
 
   public async getInvolvedStaffWithPrisons(

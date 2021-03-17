@@ -17,7 +17,7 @@ type Error = {
   text: string
 }
 
-export default function configureNunjucks(app: Express.Application): void {
+export default function configureNunjucks(app: Express.Application): nunjucks.Environment {
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
@@ -34,7 +34,7 @@ export default function configureNunjucks(app: Express.Application): void {
   njkEnv.addGlobal('googleTagManagerEnvironment', tagManagerEnvironment)
   njkEnv.addGlobal('links', links)
 
-  njkEnv.addFilter('findError', (array: Error[], formFieldId: string) => {
+  njkEnv.addFilter('findError', (array: Error[] = [], formFieldId: string) => {
     const item = array.find(error => error.href === `#${formFieldId}`)
     if (item) {
       return {
@@ -94,6 +94,14 @@ export default function configureNunjucks(app: Express.Application): void {
     return [emptyOption, ...items]
   })
 
+  njkEnv.addFilter('toChecked', <T>(array: T[], valueKey: string, textKey: string, values: T[] = []) => {
+    return array.map(item => ({
+      value: item[valueKey],
+      text: item[textKey],
+      checked: values.includes(item[valueKey]),
+    }))
+  })
+
   njkEnv.addFilter('extractAttr', (array, key) => {
     return array.map(item => item[key])
   })
@@ -142,4 +150,6 @@ export default function configureNunjucks(app: Express.Application): void {
   })
 
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
+
+  return njkEnv
 }
