@@ -15,6 +15,8 @@ beforeEach(() => {
   validInput = {
     prisonerRelocation: 'SEGREGATION_UNIT',
     relocationCompliancy: 'true',
+    relocationType: 'PRIMARY',
+    typeOfRelocation: '',
     healthcareInvolved: 'true',
     healthcarePractionerName: 'Dr. Jones',
     f213CompletedBy: 'Jane Smith',
@@ -137,6 +139,59 @@ describe("'complete' schema", () => {
           text: 'Select yes if the prisoner was compliant',
         },
       ])
+    })
+
+    it('Selecting No for Was the prisoner compliant but not selecting relocationType returns validation error message', () => {
+      const input = {
+        ...validInput,
+        relocationCompliancy: 'false',
+        relocationType: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#relocationType',
+          text: 'Select the type of relocation',
+        },
+      ])
+      expect(formResponse.relocationCompliancy).toEqual(false)
+      expect(formResponse.relocationType).toBe(undefined)
+    })
+
+    it('Selecting Other for What was the type of relocation? but nothing in typeOfRelocation textbox returns validation error message', () => {
+      const input = {
+        ...validInput,
+        relocationCompliancy: 'false',
+        relocationType: 'OTHER',
+        typeOfRelocation: '',
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#typeOfRelocation',
+          text: 'Enter the type of relocation',
+        },
+      ])
+      expect(formResponse.relocationCompliancy).toEqual(false)
+      expect(formResponse.relocationType).toBe('OTHER')
+      expect(formResponse.typeOfRelocation).toBe(undefined)
+    })
+
+    it('Selecting Other for What was the type of relocation? and adding content to typeOfRelocation textbox should not return validation error message', () => {
+      const input = {
+        ...validInput,
+        relocationCompliancy: 'false',
+        relocationType: 'OTHER',
+        typeOfRelocation: 'another kind of relocation',
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+      expect(formResponse.relocationCompliancy).toEqual(false)
+      expect(formResponse.relocationType).toBe('OTHER')
+      expect(formResponse.typeOfRelocation).toBe('another kind of relocation')
     })
 
     it('Not entering anything in the Who completed the F213 form field returns a validation error message', () => {

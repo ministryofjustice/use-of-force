@@ -49,6 +49,12 @@
         errorMessage: errors | findError('relocationType'),
         options: data.types.RelocationType | list | extractAttr('value') | toOptions('value', 'label')
       },
+      followUpQuestionForTypeOfRelocation: {
+        text: "Type of relocation",
+        name: "typeOfRelocation",
+        value: data.typeOfRelocation,
+        errorMessage: errors | findError('typeOfRelocation')
+      },
       followUpQuestionTriggeredOn: false,
       orientation: 'stacked'
     }
