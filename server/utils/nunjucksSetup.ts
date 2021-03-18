@@ -6,6 +6,7 @@ import querystring from 'querystring'
 import escapeHtml from 'escape-html'
 import config from '../config'
 import { PageMetaData } from './page'
+import { LabelledValue } from '../config/types'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -151,15 +152,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
 
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
 
-  njkEnv.addFilter('isActive', types => {
-    const obj = {}
-    Object.keys(types)
-      .filter(key => !types[key].inactive)
-      .forEach(t => {
-        obj[t] = types[t]
-      })
-
-    return obj
+  njkEnv.addFilter('isActive', (types: LabelledValue[]) => {
+    return types.filter(item => !item.inactive)
   })
 
   return njkEnv

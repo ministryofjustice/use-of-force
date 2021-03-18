@@ -47,7 +47,7 @@
         name: "relocationType",
         value: data.relocationType,
         errorMessage: errors | findError('relocationType'),
-        options: data.types.RelocationType | isActive | list | extractAttr('value') | toOptions('value', 'label')
+        options: data.types.RelocationType | list | extractAttr('value') | isActive  | toOptions('value', 'label')
       },
       followUpQuestionForUserSpecifiedRelocationType: {
         text: "Type of relocation",

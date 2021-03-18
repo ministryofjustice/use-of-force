@@ -1,4 +1,4 @@
-type LabelledValue = { readonly value: string; readonly label: string; readonly inactive?: boolean }
+export type LabelledValue = { readonly value: string; readonly label: string; readonly inactive?: boolean }
 type LabelledEnum<K extends string> = Record<K, LabelledValue>
 
 const toEnum = <K extends string>(value: LabelledEnum<K>): Readonly<LabelledEnum<K>> => Object.freeze(value)
