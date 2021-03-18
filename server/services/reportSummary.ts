@@ -1,4 +1,4 @@
-const {
+import {
   BodyWornCameras,
   Cctv,
   RelocationLocation,
@@ -6,19 +6,29 @@ const {
   PainInducingTechniquesUsed,
   RelocationType,
   toLabel,
-} = require('../config/types')
-const { properCaseFullName } = require('../utils/utils')
+  UofReasons,
+} from '../config/types'
+import { Prison } from '../data/prisonClientTypes'
+import {
+  IncidentDetails,
+  UseOfForceDetails,
+  ReasonsForUseOfForce,
+  RelocationAndInjuries,
+  Evidence,
+  UseOfForceDraftReport,
+} from '../data/UseOfForceReport'
+import { properCaseFullName } from '../utils/utils'
 
 const YES = 'Yes'
 const NO = 'No'
 
 const createIncidentDetails = (
   offenderDetail,
-  prison,
+  prison: Prison,
   description,
-  incidentDetails = {},
+  incidentDetails: Partial<IncidentDetails> = {},
   involvedStaff,
-  incidentDate
+  incidentDate: Date
 ) => {
   return {
     offenderName: offenderDetail.displayName,
@@ -35,8 +45,15 @@ const createIncidentDetails = (
   }
 }
 
-const createUseOfForceDetails = (details = {}) => {
+const createUseOfForceDetails = (
+  details: Partial<UseOfForceDetails> = {},
+  reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {}
+) => {
   return {
+    reasonsForUseOfForce: whenPresent(reasonsForUseOfForce.reasons, reasons =>
+      reasons.map(value => toLabel(UofReasons, value)).join(', ')
+    ),
+    primaryReason: whenPresent(reasonsForUseOfForce.primaryReason, value => toLabel(UofReasons, value)),
     positiveCommunicationUsed: details.positiveCommunication,
     personalProtectionTechniques: details.personalProtectionTechniques,
     batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : NO)),
@@ -53,7 +70,7 @@ const createUseOfForceDetails = (details = {}) => {
   }
 }
 
-const createRelocation = (relocationAndInjuries = {}) => {
+const createRelocation = (relocationAndInjuries: Partial<RelocationAndInjuries> = {}) => {
   return {
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
 
@@ -81,7 +98,7 @@ const getRelocationType = relocationType => {
   return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
 }
 
-const createEvidence = (evidence = {}) => {
+const createEvidence = (evidence: Partial<Evidence> = {}) => {
   return {
     evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
     photographs: evidence.photographsTaken,
@@ -100,7 +117,7 @@ const wasWeaponUsed = weaponUsed => {
   if (weaponUsed == null) {
     return undefined
   }
-  return weaponUsed ? 'Yes and used' : 'Yes and not used'
+  return weaponUsed ? `${YES} and used` : `${YES} and not used`
 }
 
 const getRestraintPositions = positions => {
@@ -109,7 +126,7 @@ const getRestraintPositions = positions => {
     : `${YES} - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
 }
 
-const getPainInducingTechniques = details => {
+const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {
   if (details.painInducingTechniques === undefined) {
     return undefined
   }
@@ -119,7 +136,7 @@ const getPainInducingTechniques = details => {
   }
 
   if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
-    return `Yes - ${details.painInducingTechniquesUsed
+    return `${YES} - ${details.painInducingTechniquesUsed
       .map(technique => toLabel(PainInducingTechniquesUsed, technique))
       .join(', ')}`
   }
@@ -145,15 +162,22 @@ const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = false) =>
 }
 
 const howManyOfficersInvolved = guidingHoldOfficersInvolved => {
-  return guidingHoldOfficersInvolved === 1 ? 'Yes - 1 officer involved' : 'Yes - 2 officers involved'
+  return guidingHoldOfficersInvolved === 1 ? `${YES} - 1 officer involved` : `${YES} - 2 officers involved`
 }
 
 const extractCommaSeparatedList = (attr, dataArray = []) => {
   return dataArray.map(element => element[attr]).join(', ')
 }
 
-module.exports = (form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate) => {
-  const { incidentDetails, useOfForceDetails, relocationAndInjuries, evidence } = form
+export = (
+  form: UseOfForceDraftReport,
+  offenderDetail,
+  prison: Prison,
+  locationDescription: string,
+  involvedStaff,
+  incidentDate: Date
+) => {
+  const { incidentDetails, reasonsForUseOfForce, useOfForceDetails, relocationAndInjuries, evidence } = form
   return {
     incidentDetails: createIncidentDetails(
       offenderDetail,
@@ -164,7 +188,7 @@ module.exports = (form, offenderDetail, prison, locationDescription, involvedSta
       incidentDate
     ),
     offenderDetail,
-    useOfForceDetails: createUseOfForceDetails(useOfForceDetails),
+    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce),
     relocationAndInjuries: createRelocation(relocationAndInjuries),
     evidence: createEvidence(evidence),
   }

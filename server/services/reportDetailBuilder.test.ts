@@ -114,6 +114,8 @@ describe('Build details', () => {
         pavaDrawn: undefined,
         personalProtectionTechniques: undefined,
         positiveCommunicationUsed: undefined,
+        primaryReason: undefined,
+        reasonsForUseOfForce: undefined,
       },
     })
   })

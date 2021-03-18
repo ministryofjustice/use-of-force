@@ -49,7 +49,14 @@ export default class CheckAnswerRoutes {
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
-    const data = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+    const data = reportSummary(
+      form,
+      offenderDetail,
+      prison,
+      locationDescription.toString(),
+      involvedStaff,
+      incidentDate
+    )
 
     return res.render('pages/check-your-answers', { data, bookingId })
   }

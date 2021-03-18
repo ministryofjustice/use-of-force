@@ -1,12 +1,12 @@
-export const toLabel = (type, val) => {
-  const match = Object.keys(type).find(value => value === val)
-  return match ? type[match].label : undefined
-}
-
 type LabelledValue = { readonly value: string; readonly label: string }
 type LabelledEnum<K extends string> = Record<K, LabelledValue>
 
 const toEnum = <K extends string>(value: LabelledEnum<K>): Readonly<LabelledEnum<K>> => Object.freeze(value)
+
+export const toLabel = <K extends string>(type: LabelledEnum<K>, val: string): string => {
+  const match = Object.keys(type).find(value => value === val)
+  return match ? type[match].label : undefined
+}
 
 export const BodyWornCameras = toEnum({
   YES: { value: 'YES', label: 'Yes' },

@@ -51,7 +51,14 @@ export default class ReportDataBuilder {
       reporterName,
       submittedDate,
       bookingId,
-      ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
+      ...reportSummary(
+        form,
+        offenderDetail,
+        prison,
+        locationDescription.toString(),
+        involvedStaffNameAndUsernames,
+        incidentDate
+      ),
     }
   }
 }

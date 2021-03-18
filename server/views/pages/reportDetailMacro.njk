@@ -152,6 +152,26 @@
         url:  '/report/' + bookingId + '/use-of-force-details' if bookingId
       })
     }}
+    {% if data.useOfForceDetails.reasonsForUseOfForce %}
+      {{
+      reportDetailsMacros.tableRow({
+          label: 'Why was use of force applied?',
+          'data-qa': 'reasonsForUseOfForce',
+          dataValue: data.useOfForceDetails.reasonsForUseOfForce,
+          print: print
+        })
+      }}
+    {% endif %}
+    {% if data.useOfForceDetails.primaryReason %}
+      {{
+      reportDetailsMacros.tableRow({
+          label: 'What was the primary reason use of force was applied?',
+          'data-qa': 'primaryReason',
+          dataValue: data.useOfForceDetails.primaryReason,
+          print: print
+        })
+      }}
+    {% endif %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was positive communication used to de-escalate the situation?',
