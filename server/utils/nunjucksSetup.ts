@@ -151,5 +151,16 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
 
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
 
+  njkEnv.addFilter('isActive', types => {
+    const obj = {}
+    Object.keys(types)
+      .filter(key => !types[key].inactive)
+      .forEach(t => {
+        obj[t] = types[t]
+      })
+
+    return obj
+  })
+
   return njkEnv
 }
