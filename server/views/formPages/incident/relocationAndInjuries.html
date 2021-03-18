@@ -49,11 +49,11 @@
         errorMessage: errors | findError('relocationType'),
         options: data.types.RelocationType | isActive | list | extractAttr('value') | toOptions('value', 'label')
       },
-      followUpQuestionForTypeOfRelocation: {
+      followUpQuestionForUserSpecifiedRelocationType: {
         text: "Type of relocation",
-        name: "typeOfRelocation",
-        value: data.typeOfRelocation,
-        errorMessage: errors | findError('typeOfRelocation')
+        name: "userSpecifiedRelocationType",
+        value: data.userSpecifiedRelocationType,
+        errorMessage: errors | findError('userSpecifiedRelocationType')
       },
       followUpQuestionTriggeredOn: false,
       orientation: 'stacked'

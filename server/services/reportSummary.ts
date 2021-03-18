@@ -74,9 +74,9 @@ const getRelocationType = relocationType => {
   return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
 }
 
-const checkRelocationType = relocationAndInjuries => {
+const getNonCompliancyType = relocationAndInjuries => {
   return relocationAndInjuries.relocationType === 'OTHER'
-    ? `${NO} - ${relocationAndInjuries.typeOfRelocation.toLowerCase()}`
+    ? `${NO} - ${relocationAndInjuries.userSpecifiedRelocationType.toLowerCase()}`
     : `${NO}${getRelocationType(relocationAndInjuries.relocationType)}`
 }
 
@@ -85,7 +85,7 @@ const createRelocation = (relocationAndInjuries: Partial<RelocationAndInjuries> 
     prisonerRelocation: toLabel(RelocationLocation, relocationAndInjuries.prisonerRelocation),
 
     relocationCompliancy:
-      relocationAndInjuries.relocationCompliancy === true ? YES : checkRelocationType(relocationAndInjuries),
+      relocationAndInjuries.relocationCompliancy === true ? YES : getNonCompliancyType(relocationAndInjuries),
 
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
       value ? relocationAndInjuries.healthcarePractionerName || YES : NO

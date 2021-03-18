@@ -340,9 +340,9 @@
 {% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
 {% endif %}
 
-{% if not question.primaryQuestion.errorMessage and question.followUpQuestionForTypeOfRelocation.errorMessage.text %}
+{% if not question.primaryQuestion.errorMessage and question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
 {% set govukFormGroupErrorInnerTextbox  =  'govuk-form-group--error' %}
-{% set followUpErrorMessageForTypeOfRelocation = question.followUpQuestionForTypeOfRelocation.errorMessage.text %}
+{% set followUpErrorMessageForUserSpecifiedRelocationType = question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
 {% set govukFormInputError  =  'govuk-input--error' %}
 {% endif %}
 
@@ -424,9 +424,9 @@
                 </fieldset>
                   <div class="govuk-!-margin-top-2 govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-OTHER">
                       <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
-                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageForTypeOfRelocation }}</span>
-                          <label class="govuk-label" for="typeOfRelocation"> Type of relocation  </label>
-                          <input class="govuk-input govuk-!-width-one-third" id="typeOfRelocation" name="typeOfRelocation" value="{{ question.followUpQuestionForTypeOfRelocation.value }}">
+                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageForUserSpecifiedRelocationType }}</span>
+                          <label class="govuk-label" for="userSpecifiedRelocationType"> Type of relocation  </label>
+                          <input class="govuk-input govuk-!-width-one-third" id="userSpecifiedRelocationType" name="userSpecifiedRelocationType" value="{{ question.followUpQuestionForUserSpecifiedRelocationType.value }}">
                       </div>
                   </div>
                 </div>

@@ -16,7 +16,7 @@ beforeEach(() => {
     prisonerRelocation: 'SEGREGATION_UNIT',
     relocationCompliancy: 'true',
     relocationType: 'PRIMARY',
-    typeOfRelocation: '',
+    userSpecifiedRelocationType: '',
     healthcareInvolved: 'true',
     healthcarePractionerName: 'Dr. Jones',
     f213CompletedBy: 'Jane Smith',
@@ -159,39 +159,53 @@ describe("'complete' schema", () => {
       expect(formResponse.relocationType).toBe(undefined)
     })
 
-    it('Selecting Other for What was the type of relocation? but nothing in typeOfRelocation textbox returns validation error message', () => {
+    it('When a user selects No for Was the prisoner compliant and a relocationType which is not Other but also adds text to userSpecifiedRelocationType textbox, this userSpecified text should not be saved', () => {
+      const input = {
+        ...validInput,
+        relocationCompliancy: 'false',
+        relocationType: 'VEHICLE',
+        userSpecifiedRelocationType: 'another kind of relocation',
+      }
+      const { formResponse } = check(input)
+
+      expect(formResponse.relocationCompliancy).toEqual(false)
+      expect(formResponse.relocationType).toBe('VEHICLE')
+      expect(formResponse.userSpecifiedRelocationType).toBe(undefined)
+    })
+
+    it('Selecting Other for What was the type of relocation? but nothing in userSpecifiedRelocationType textbox returns validation error message', () => {
       const input = {
         ...validInput,
         relocationCompliancy: 'false',
         relocationType: 'OTHER',
-        typeOfRelocation: '',
+        userSpecifiedRelocationType: '',
       }
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([
         {
-          href: '#typeOfRelocation',
+          href: '#userSpecifiedRelocationType',
           text: 'Enter the type of relocation',
         },
       ])
       expect(formResponse.relocationCompliancy).toEqual(false)
       expect(formResponse.relocationType).toBe('OTHER')
-      expect(formResponse.typeOfRelocation).toBe(undefined)
+      expect(formResponse.userSpecifiedRelocationType).toBe(undefined)
     })
 
-    it('Selecting Other for What was the type of relocation? and adding content to typeOfRelocation textbox should not return validation error message', () => {
+    it('Selecting Other for What was the type of relocation? and adding content to userSpecifiedRelocationType textbox should not return validation error message', () => {
       const input = {
         ...validInput,
         relocationCompliancy: 'false',
         relocationType: 'OTHER',
-        typeOfRelocation: 'another kind of relocation',
+        userSpecifiedRelocationType: 'another kind of relocation',
       }
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([])
       expect(formResponse.relocationCompliancy).toEqual(false)
       expect(formResponse.relocationType).toBe('OTHER')
-      expect(formResponse.typeOfRelocation).toBe('another kind of relocation')
+      expect(formResponse.userSpecifiedRelocationType).toBe('another kind of relocation')
     })
 
     it('Not entering anything in the Who completed the F213 form field returns a validation error message', () => {

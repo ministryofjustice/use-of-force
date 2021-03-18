@@ -62,7 +62,7 @@ context('Check your answers page', () => {
     })
   })
 
-  it('Can edit RelocationAndInjuries answer including content from other typeOfRelocation textbox', () => {
+  it('Can edit RelocationAndInjuries answer including content from other userSpecifiedRelocationType textbox', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
 
@@ -147,7 +147,7 @@ context('Check your answers page', () => {
     const relocationAndInjuriesPage = RelocationAndInjuriesPage.verifyOnPage()
     relocationAndInjuriesPage.prisonerCompliant().check('false')
     relocationAndInjuriesPage.relocationType().check('OTHER')
-    relocationAndInjuriesPage.typeOfRelocation().type('another kind of relocation')
+    relocationAndInjuriesPage.userSpecifiedRelocationType().type('another kind of relocation')
     operation(relocationAndInjuriesPage)
     const revisitedAnswersPage = CheckAnswersPage.verifyOnPage()
     revisitedAnswersPage.prisonerCompliant().contains(finalValue)

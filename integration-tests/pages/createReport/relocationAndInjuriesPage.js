@@ -6,7 +6,7 @@ const relocationAndInjuriesPage = () =>
     prisonerRelocation: () => cy.get('[name="prisonerRelocation"]'),
     prisonerCompliant: () => cy.get('[name="relocationCompliancy"]'),
     relocationType: () => cy.get('[name="relocationType"]'),
-    typeOfRelocation: () => cy.get('[name="typeOfRelocation"]'),
+    userSpecifiedRelocationType: () => cy.get('[name="userSpecifiedRelocationType"]'),
     healthcareInvolved: () => cy.get('[name="healthcareInvolved"]'),
     healthcarePractionerName: () => cy.get('[name="healthcarePractionerName"]'),
     prisonerInjuries: () => cy.get('[name="prisonerInjuries"]'),

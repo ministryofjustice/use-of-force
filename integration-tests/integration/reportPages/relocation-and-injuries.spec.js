@@ -69,7 +69,7 @@ context('Submitting use of force details page', () => {
     fillFormAndSave()
     relocationAndInjuries.prisonerCompliant().check('false')
     relocationAndInjuries.relocationType().check('PRIMARY')
-    relocationAndInjuries.typeOfRelocation().should('not.be.visible')
+    relocationAndInjuries.userSpecifiedRelocationType().should('not.be.visible')
     relocationAndInjuries.clickSaveAndContinue()
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'relocationAndInjuries' }).then(
@@ -103,7 +103,7 @@ context('Submitting use of force details page', () => {
     fillFormAndSave()
     relocationAndInjuries.prisonerCompliant().check('false')
     relocationAndInjuries.relocationType().check('OTHER')
-    relocationAndInjuries.typeOfRelocation().type('moved to another location')
+    relocationAndInjuries.userSpecifiedRelocationType().type('moved to another location')
     relocationAndInjuries.clickSaveAndContinue()
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'relocationAndInjuries' }).then(
@@ -112,7 +112,7 @@ context('Submitting use of force details page', () => {
           prisonerRelocation: 'SEGREGATION_UNIT',
           relocationCompliancy: false,
           relocationType: 'OTHER',
-          typeOfRelocation: 'moved to another location',
+          userSpecifiedRelocationType: 'moved to another location',
           healthcareInvolved: true,
           f213CompletedBy: 'Dr Taylor',
           prisonerInjuries: true,
