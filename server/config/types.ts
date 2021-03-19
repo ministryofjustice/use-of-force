@@ -1,4 +1,4 @@
-type LabelledValue = { readonly value: string; readonly label: string }
+export type LabelledValue = { readonly value: string; readonly label: string; readonly inactive?: boolean }
 type LabelledEnum<K extends string> = Record<K, LabelledValue>
 
 const toEnum = <K extends string>(value: LabelledEnum<K>): Readonly<LabelledEnum<K>> => Object.freeze(value)
@@ -57,9 +57,12 @@ export const StatementStatus = toEnum({
 })
 
 export const RelocationType = toEnum({
-  SIDE: { value: 'SIDE', label: 'Side relocation' },
+  SIDE: { value: 'SIDE', label: 'Side relocation', inactive: true },
+  PRIMARY: { value: 'PRIMARY', label: 'Primary relocation' },
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
+  NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  OTHER: { value: 'OTHER', label: 'Other' },
 })
 
 export const UofReasons = toEnum({

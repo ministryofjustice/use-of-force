@@ -47,7 +47,7 @@ context('Check your answers page', () => {
       finalValue: 'No',
     })
 
-    canEditRelocationAndInjuriesPage({
+    canEditRelocationAndInjuriesPageWithoutOtherOptionSelected({
       checkAnswersPage,
       initialValue: 'Yes',
       operation: page => page.clickSave(),
@@ -59,6 +59,18 @@ context('Check your answers page', () => {
       initialValue: 'Yes',
       operation: page => page.clickSave(),
       finalValue: 'No',
+    })
+  })
+
+  it('Can edit RelocationAndInjuries answer including content from other userSpecifiedRelocationType textbox', () => {
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
+
+    canEditRelocationAndInjuriesPageWithOtherRelocationTextbox({
+      checkAnswersPage,
+      initialValue: 'Yes',
+      operation: page => page.clickSave(),
+      finalValue: 'No - another kind of relocation',
     })
   })
 
@@ -89,7 +101,7 @@ context('Check your answers page', () => {
       finalValue: 'Yes',
     })
 
-    canEditRelocationAndInjuriesPage({
+    canEditRelocationAndInjuriesPageWithoutOtherOptionSelected({
       checkAnswersPage,
       initialValue: 'Yes',
       operation: page => page.clickCancel(),
@@ -124,7 +136,29 @@ context('Check your answers page', () => {
     revisitedAnswersPage.positiveCommunicationUsed().contains(finalValue)
   }
 
-  const canEditRelocationAndInjuriesPage = ({ checkAnswersPage, initialValue, operation, finalValue }) => {
+  const canEditRelocationAndInjuriesPageWithOtherRelocationTextbox = ({
+    checkAnswersPage,
+    initialValue,
+    operation,
+    finalValue,
+  }) => {
+    checkAnswersPage.prisonerCompliant().contains(initialValue)
+    checkAnswersPage.editRelocationAndInjuriesLink().click()
+    const relocationAndInjuriesPage = RelocationAndInjuriesPage.verifyOnPage()
+    relocationAndInjuriesPage.prisonerCompliant().check('false')
+    relocationAndInjuriesPage.relocationType().check('OTHER')
+    relocationAndInjuriesPage.userSpecifiedRelocationType().type('another kind of relocation')
+    operation(relocationAndInjuriesPage)
+    const revisitedAnswersPage = CheckAnswersPage.verifyOnPage()
+    revisitedAnswersPage.prisonerCompliant().contains(finalValue)
+  }
+
+  const canEditRelocationAndInjuriesPageWithoutOtherOptionSelected = ({
+    checkAnswersPage,
+    initialValue,
+    operation,
+    finalValue,
+  }) => {
     checkAnswersPage.prisonerCompliant().contains(initialValue)
     checkAnswersPage.editRelocationAndInjuriesLink().click()
     const relocationAndInjuriesPage = RelocationAndInjuriesPage.verifyOnPage()

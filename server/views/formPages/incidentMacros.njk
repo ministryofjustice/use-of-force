@@ -281,7 +281,7 @@
                   {% if option.value === true %}
                     data-aria-controls="conditional-{{ name }}"
                   {% endif %}
-                  {% if option.value === question.primaryQuestion.value %}checked="checked" {% endif %}>
+                  {% if option.value === question.primaryQuestion.value %} checked="checked" {% endif %}>
           <label class="govuk-label govuk-radios__label"
                   {% if loop.index === 1 %}
                     for={{ name }}
@@ -320,6 +320,120 @@
             </fieldset>
           </div>
         </div>
+    </div>
+  </fieldset>
+</div>
+
+{% endmacro %}
+
+{% macro radiosWithNestedRadiosWithNestedOtherFieldTextbox(question) %}
+
+{% set radio_button_orientation = 'govuk-radios--inline' if question.orientation === 'inline' else 'govuk-radios'%}
+
+{% if question.primaryQuestion.errorMessage %}
+{% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
+{% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
+{% endif %}
+
+{% if not question.primaryQuestion.errorMessage and question.followUpQuestion.errorMessage.text %}
+{% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
+{% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
+{% endif %}
+
+{% if not question.primaryQuestion.errorMessage and question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
+{% set govukFormGroupErrorInnerTextbox  =  'govuk-form-group--error' %}
+{% set followUpErrorMessageForUserSpecifiedRelocationType = question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
+{% set govukFormInputError  =  'govuk-input--error' %}
+{% endif %}
+
+<div class="govuk-form-group {{govukFormGroupErrorOuter}}">
+  <fieldset class="govuk-fieldset">
+    <!-- primary  -->
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+      {{question.primaryQuestion.text}}
+    </legend>
+    <span class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ primaryErrorMessageText}}
+    </span>
+    <div class="govuk-!-margin-bottom-6">
+      <div class={{radio_button_orientation}} data-module="govuk-radios">
+        {% set name1 = question.primaryQuestion.name %}
+        {% for option in question.primaryQuestion.options %}
+        <div class="govuk-radios__item">
+          <input class="govuk-radios__input"
+                  {% if loop.index === 1 %}
+                    id={{name1}}
+                  {% else %}
+                    id="id-{{name1}}-{{loop.index}}"
+                  {% endif %}
+                 name="{{name1}}"
+                 type="radio"
+                 value="{{option.value}}"
+                  {% if option.value === question.primaryQuestion.value %} checked {% endif %}
+                  {% if option.value === question.followUpQuestionTriggeredOn %} data-aria-controls="conditional-{{name1}}" {% endif %}>
+          <label class="govuk-label govuk-radios__label"
+                  {% if loop.index === 1 %}
+                    for={{name1}}
+                  {% else %}
+                    for="id-{{name1}}-{{loop.index}}"
+                  {% endif %}>
+            {{option.label}}
+          </label>
+        </div>
+        {% endfor %}
+
+        <!-- followup-->
+        {% if question.followUpQuestion %}
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both"
+                 id="conditional-{{ name1 }}">
+              <div class="{{ govukFormGroupErrorInner }}">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend">{{ question.followUpQuestion.text }}</legend>
+
+                   {% if followUpErrorMessageText %}
+                    <span class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+                  {% endif %}
+
+                  {% set name2 = question.followUpQuestion.name %}
+                  {% for option in question.followUpQuestion.options %}
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input"
+                              {% if loop.index === 1 %}
+                                id={{ name2 }}
+                              {% else %}
+                                id="id-{{ name2 }}-{{ loop.index }}"
+                              {% endif %}
+                             name="{{ name2 }}"
+                             type="radio"
+                             value="{{ option.value }}"
+
+                              {% if option.value === question.followUpQuestion.value %} checked {% endif %}
+                              {% if option.value === "OTHER"  %} data-aria-controls="conditional-OTHER" {% endif %}>
+                      <label class="govuk-label govuk-radios__label"
+                              {% if loop.index === 1 %}
+                                for={{ name2 }}
+                              {% else %}
+                                for="id-{{ name2 }}-{{ loop.index }}"
+                              {% endif %}>
+                        {{ option.label }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                </fieldset>
+                  <div class="govuk-!-margin-top-2 govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-OTHER">
+                      <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
+                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageForUserSpecifiedRelocationType }}</span>
+                          <label class="govuk-label" for="userSpecifiedRelocationType"> Type of relocation  </label>
+                          <input class="govuk-input govuk-!-width-one-third" id="userSpecifiedRelocationType" name="userSpecifiedRelocationType" value="{{ question.followUpQuestionForUserSpecifiedRelocationType.value }}">
+                      </div>
+                  </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- end of followup -->
+      </div>
     </div>
   </fieldset>
 </div>
