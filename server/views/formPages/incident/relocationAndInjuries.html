@@ -28,37 +28,21 @@
         errorMessage: errors | findError('prisonerRelocation')
       }) }}
 
-    {{ incidentMacro.radiosWithNestedRadiosWithNestedOtherFieldTextbox({
+    {{ incidentMacro.relocationCompliancyAndRelocationType({
       primaryQuestion: {
-        text: "Was the prisoner compliant?",
-        name: "relocationCompliancy",
         value: data.relocationCompliancy,
-        options: [{
-          value: true,
-          label: "Yes"
-        }, {
-          value: false,
-          label: "No"
-        }],
         errorMessage: errors | findError('relocationCompliancy')
       },
       followUpQuestion: {
-        text: "What was the type of relocation?",
-        name: "relocationType",
         value: data.relocationType,
         errorMessage: errors | findError('relocationType'),
         options: data.types.RelocationType | list | extractAttr('value') | isActive  | toOptions('value', 'label')
       },
       followUpQuestionForUserSpecifiedRelocationType: {
-        text: "Type of relocation",
-        name: "userSpecifiedRelocationType",
         value: data.userSpecifiedRelocationType,
         errorMessage: errors | findError('userSpecifiedRelocationType')
-      },
-      followUpQuestionTriggeredOn: false,
-      orientation: 'stacked'
-    }
-    )}}
+      }
+    })}}
 
     <hr />
 
