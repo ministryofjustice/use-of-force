@@ -328,19 +328,19 @@
 
 {% macro relocationCompliancyAndRelocationType(question) %}
 
-{% if question.primaryQuestion.errorMessage %}
+{% if question.relocationCompliancy.errorMessage %}
 {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
-{% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
+{% set relocationCompliancyErrorMessageText = question.relocationCompliancy.errorMessage.text %}
 {% endif %}
 
-{% if not question.primaryQuestion.errorMessage and question.followUpQuestion.errorMessage.text %}
+{% if not question.relocationCompliancy.errorMessage and question.relocationType.errorMessage.text %}
 {% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
-{% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
+{% set relocationTypeErrorMessageText = question.relocationType.errorMessage.text %}
 {% endif %}
 
-{% if not question.primaryQuestion.errorMessage and question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
+{% if not question.relocationCompliancy.errorMessage and question.userSpecifiedReason.errorMessage.text %}
 {% set govukFormGroupErrorInnerTextbox  =  'govuk-form-group--error' %}
-{% set followUpErrorMessageForUserSpecifiedRelocationType = question.followUpQuestionForUserSpecifiedRelocationType.errorMessage.text %}
+{% set userSpecifiedReasonErrorMessageText = question.userSpecifiedReason.errorMessage.text %}
 {% endif %}
 
 <div class="govuk-form-group {{ govukFormGroupErrorOuter }}">
@@ -351,7 +351,7 @@
     </legend>
     <span class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span>
-      {{ primaryErrorMessageText }}
+      {{ relocationCompliancyErrorMessageText }}
     </span>
     <div class="govuk-!-margin-bottom-6">
       <div class="govuk-radios" data-module="govuk-radios">
@@ -361,7 +361,7 @@
                  name="relocationCompliancy"
                  type="radio"
                  value="true"
-                  {% if value === question.primaryQuestion.value %} checked {% endif %}>
+                 {% if question.relocationCompliancy.value %} checked {% endif %}>
           <label class="govuk-label govuk-radios__label" for="relocationCompliancy">Yes</label>
         </div>
         <div class="govuk-radios__item">
@@ -370,25 +370,25 @@
                   name="relocationCompliancy"
                   type="radio"
                   value="false"
-                  {% if value === question.primaryQuestion.value %} checked {% endif %}
+                  {% if question.relocationCompliancy.value === false %} checked {% endif %}
                   data-aria-controls="conditional-relocationCompliancy">
           <label class="govuk-label govuk-radios__label" for="id-relocationCompliancy-2">No</label>
         </div>
 
         <!-- followup-->
-        {% if question.followUpQuestion %}
+        {% if question.relocationType %}
           <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both"
                  id="conditional-relocationCompliancy">
               <div class="{{ govukFormGroupErrorInner }}">
                 <fieldset class="govuk-fieldset">
                   <legend class="govuk-fieldset__legend govuk-fieldset__legend">What was the type of relocation?</legend>
 
-                   {% if followUpErrorMessageText %}
+                   {% if relocationTypeErrorMessageText %}
                     <span class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+                      <span class="govuk-visually-hidden">Error:</span>{{ relocationTypeErrorMessageText }}</span>
                   {% endif %}
 
-                  {% for option in question.followUpQuestion.options %}
+                  {% for option in question.relocationType.options %}
                     <div class="govuk-radios__item">
                       <input class="govuk-radios__input"
                               {% if loop.index === 1 %}
@@ -399,7 +399,7 @@
                              name="relocationType"
                              type="radio"
                              value="{{ option.value }}"
-                              {% if option.value === question.followUpQuestion.value %} checked {% endif %}
+                              {% if option.value === question.relocationType.value %} checked {% endif %}
                               {% if option.value === "OTHER"  %} data-aria-controls="conditional-OTHER" {% endif %}>
                       <label class="govuk-label govuk-radios__label"
                               {% if loop.index === 1 %}
@@ -414,9 +414,9 @@
                 </fieldset>
                   <div class="govuk-!-margin-top-2 govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-OTHER">
                       <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
-                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageForUserSpecifiedRelocationType }}</span>
+                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ userSpecifiedReasonErrorMessageText }}</span>
                           <label class="govuk-label" for="userSpecifiedRelocationType">Type of relocation</label>
-                          <input class="govuk-input govuk-!-width-one-third" id="userSpecifiedRelocationType" name="userSpecifiedRelocationType" value="{{ question.followUpQuestionForUserSpecifiedRelocationType.value }}">
+                          <input class="govuk-input govuk-!-width-one-third" id="userSpecifiedRelocationType" name="userSpecifiedRelocationType" value="{{ question.userSpecifiedReason.value }}">
                       </div>
                   </div>
                 </div>
