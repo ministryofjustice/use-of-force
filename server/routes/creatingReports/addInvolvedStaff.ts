@@ -114,14 +114,14 @@ export default class AddInvolvedStaffRoutes {
     if (!firstName?.trim()) {
       errors.push({
         text: 'Enter a staff member’s first name',
-        href: '#firstname',
+        href: '#firstName',
       })
     }
 
     if (!lastName?.trim()) {
       errors.push({
         text: 'Enter a staff member’s last name',
-        href: '#lastname',
+        href: '#lastName',
       })
     }
 
