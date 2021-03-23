@@ -1,15 +1,19 @@
 import page from '../page'
 
-const whatIsStaffMembersNamePage = () =>
-  page('There is more than 1 person with that name', {
-    select: username => cy.get(`[data-qa="${username}"]`),
-    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
-    clickContinue: () => cy.get('[data-qa="continue"]').click(),
-    match: i => ({
-      username: () => cy.get(`[data-qa="username-${i}"]`),
-      prison: () => cy.get(`[data-qa="prison-${i}"]`),
-      email: () => cy.get(`[data-qa="email-${i}"]`),
-    }),
-  })
+const selectPrimaryUofReasonPage = () =>
+  page(
+    'n/a',
+    {
+      primaryReason: () => cy.get('#uof-primary-reasons :checked'),
+      checkReason: value => cy.get('#uof-primary-reasons [type="radio"]').check(value),
+      clickSaveAndContinue: () => cy.get('[data-qa="save-and-continue"]').click(),
+      clickSave: () => cy.get('[data-qa="save"]').click(),
+      clickCancel: () => cy.get('[data-qa="cancel"]').click(),
+    },
+    () => {
+      cy.get('h1').contains('Use of force details')
+      cy.get('legend.govuk-fieldset__legend--l').contains('What was the primary reason use of force was applied?')
+    }
+  )
 
-module.exports = { verifyOnPage: whatIsStaffMembersNamePage }
+module.exports = { verifyOnPage: selectPrimaryUofReasonPage }

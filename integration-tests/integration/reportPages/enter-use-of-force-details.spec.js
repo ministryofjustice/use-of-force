@@ -16,7 +16,7 @@ context('Enter use of force details page', () => {
   const fillFormAndSave = ({ restraintPositions = ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'] } = {}) => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
-    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
@@ -114,7 +114,7 @@ context('Enter use of force details page', () => {
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
-    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()

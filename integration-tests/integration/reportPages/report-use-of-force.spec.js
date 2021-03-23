@@ -43,7 +43,7 @@ context('Report use of force page', () => {
     })
 
     const selectUofReasonsPage = reportUseOfForcePageRevisited.goToSelectUofReasonsPage()
-    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPageRevisited = UseOfForceDetailsPage.verifyOnPage()

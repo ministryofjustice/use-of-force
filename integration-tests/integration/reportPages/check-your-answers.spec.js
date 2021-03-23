@@ -131,7 +131,7 @@ context('Check your answers page', () => {
     checkAnswersPage.positiveCommunicationUsed().contains(initialValue)
     checkAnswersPage.editUseOfForceDetailsLink().click()
     const selectUofReasonsPage = SelectUofReasonsPage.verifyOnPage()
-    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
     selectUofReasonsPage.clickSave()
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.postiveCommunication().check('false')

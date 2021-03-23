@@ -7,6 +7,8 @@ const prisonerCompliant = () => cy.get('[data-qa="compliancy"]')
 const photosTaken = () => cy.get('[data-qa="photographs"]')
 const painInducingTechniques = () => cy.get('[data-qa=painInducingTechniques]')
 const painInducingTechniquesUsed = () => cy.get('[data-qa=painInducingTechniquesUsed]')
+const reasonsForUseOfForce = () => cy.get('[data-qa="reasonsForUseOfForce"')
+const primaryReasonForUseOfForce = () => cy.get('[data-qa="primaryReason"')
 
 module.exports = {
   useOfForcePlanned,
@@ -18,6 +20,8 @@ module.exports = {
   painInducingTechniques,
   painInducingTechniquesUsed,
   prison,
+  reasonsForUseOfForce,
+  primaryReasonForUseOfForce,
 
   verifyInputs({
     involvedStaff = ['Mr_zagato Name (MR_ZAGATO)', 'Mrs_jones Name (MRS_JONES)', 'Test_user Name (TEST_USER)'],
@@ -48,6 +52,9 @@ module.exports = {
       })
 
     cy.get('[data-qa="witnesses"]').contains('Witness A').contains('Tom Jones')
+
+    reasonsForUseOfForce().contains('Fight between prisoners')
+    primaryReasonForUseOfForce().should('not.exist')
 
     positiveCommunicationUsed().contains('Yes')
     cy.get('[data-qa="personalProtection"]').contains('Yes')

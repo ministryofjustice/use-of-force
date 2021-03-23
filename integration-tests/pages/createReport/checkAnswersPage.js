@@ -19,6 +19,8 @@ const checkAnswersPage = () =>
     photosTaken: reportDetails.photosTaken,
     verifyInputs: reportDetails.verifyInputs,
     prison: reportDetails.prison,
+    reasonsForUseOfForce: reportDetails.reasonsForUseOfForce,
+    primaryReasonForUseOfForce: reportDetails.primaryReasonForUseOfForce,
 
     clickSubmit,
     backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),

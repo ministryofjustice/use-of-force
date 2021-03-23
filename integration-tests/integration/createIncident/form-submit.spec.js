@@ -73,7 +73,7 @@ context('Submit the incident report', () => {
     staffInvolvedPage.clickSaveAndContinue()
 
     const selectUofReasonsPage = SelectUofReasonsPage.verifyOnPage()
-    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()

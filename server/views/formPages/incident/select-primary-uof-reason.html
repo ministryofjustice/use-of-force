@@ -14,6 +14,7 @@
     {% for reason in data.reasons %}
       <input type="hidden" name="reasons[]" value="{{ reason.value }}" />
     {% endfor %}
+    <div id='uof-primary-reasons'>
       {{ govukRadios({
         idPrefix: "primaryReason",
         name: "primaryReason",
@@ -27,6 +28,7 @@
         items: data.reasons | toChecked('value', 'label', data.primaryReason),
         errorMessage: errors | findError('primaryReason') 
       }) }}
+      </div>
   </div>
 </div>
 
