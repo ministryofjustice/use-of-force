@@ -8,6 +8,7 @@ const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetail
 const RelocationAndInjuriesPage = require('../../pages/createReport/relocationAndInjuriesPage')
 const EvidencePage = require('../../pages/createReport/evidencePage')
 const StaffInvolvedPage = require('../../pages/createReport/staffInvolvedPage')
+const SelectUofReasonsPage = require('../../pages/createReport/selectUofReasonsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -129,6 +130,9 @@ context('Check your answers page', () => {
   const canEditUseOfForceDetailsPage = ({ checkAnswersPage, initialValue, operation, finalValue }) => {
     checkAnswersPage.positiveCommunicationUsed().contains(initialValue)
     checkAnswersPage.editUseOfForceDetailsLink().click()
+    const selectUofReasonsPage = SelectUofReasonsPage.verifyOnPage()
+    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSave()
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.postiveCommunication().check('false')
     operation(useOfForceDetailsPage)

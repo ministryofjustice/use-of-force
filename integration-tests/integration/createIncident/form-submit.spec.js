@@ -5,6 +5,7 @@ const ReportSentPage = require('../../pages/createReport/reportSentPage')
 const WhatIsStaffMembersNamePage = require('../../pages/createReport/whatIsStaffMembersNamePage')
 const StaffInvolvedPage = require('../../pages/createReport/staffInvolvedPage')
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
+const SelectUofReasonsPage = require('../../pages/createReport/selectUofReasonsPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 const { expectedPayload } = require('../seedData')
@@ -70,6 +71,10 @@ context('Submit the incident report', () => {
     })
     staffInvolvedPage.noMoreToAdd().click()
     staffInvolvedPage.clickSaveAndContinue()
+
+    const selectUofReasonsPage = SelectUofReasonsPage.verifyOnPage()
+    selectUofReasonsPage.checkReasons('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.fillForm()

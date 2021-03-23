@@ -4,7 +4,10 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
-{% set showCancelEditButton =showCancelEditButton | default(true) %}
+{% set showCancelEditButton = showCancelEditButton | default(true) %}
+{% set showSaveAndReturnButton = showSaveAndReturnButton | default(true) %}
+{% set saveButtonInEditModeText = saveButtonInEditModeText | default('Save') %}
+
 
 {% block content %}
 
@@ -25,7 +28,7 @@
   {% if editMode %}
 
     {{ govukButton({
-      text: "Save",
+      text: saveButtonInEditModeText,
       name: "submitType",
       value: 'save-and-continue',
       attributes: {'data-qa': 'save'}
@@ -52,17 +55,23 @@
       value: 'save-and-continue',
       attributes: {'data-qa': 'save-and-continue'}
     }) }}
-    <br/>
-    {{ 
-      submitLink({
-        label: 'Save and return to report use of force',
-        qa: 'save-and-return', 
-        value: 'save-and-return'
-      }) 
-    }}
+
+    {% if showSaveAndReturnButton %}
+      <br/>
+      {{ 
+        submitLink({
+          label: 'Save and return to report use of force',
+          qa: 'save-and-return', 
+          value: 'save-and-return'
+        }) 
+      }}
+    {% endif %}
 
   {% endif %}
 
+  {% block additionalActions %}
+
+  {% endblock %}
 </form>
 
 {% endblock %}

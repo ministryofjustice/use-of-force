@@ -24,7 +24,7 @@ module.exports = {
   paths,
   nextPaths: {
     incidentDetails: paths.staffInvolved,
-    involvedStaff: paths.useOfForceDetails,
+    involvedStaff: paths.whyWasUofApplied,
     useOfForceDetails: paths.relocationAndInjuries,
     relocationAndInjuries: paths.evidence,
     evidence: paths.reportUseOfForce,

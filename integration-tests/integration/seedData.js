@@ -21,6 +21,9 @@ const expectedPayload = {
     { name: 'Emily Jones', email: 'Emily@gov.uk', staffId: 5, username: 'EMILY_JONES', verified: true },
     { name: 'Jo Zagato', email: 'Jo@gov.uk', staffId: 2, username: 'JO_ZAGATO', verified: true },
   ],
+  reasonsForUseOfForce: {
+    reasons: ['FIGHT_BETWEEN_PRISONERS'],
+  },
   useOfForceDetails: {
     pavaUsed: true,
     batonUsed: true,

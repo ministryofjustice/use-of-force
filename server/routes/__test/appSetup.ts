@@ -1,4 +1,4 @@
-import express, { Express } from 'express'
+import express, { Express, RequestHandler } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
 import createError from 'http-errors'
@@ -60,7 +60,7 @@ export const coordinatorUser = {
 }
 
 export const appSetup = (
-  route,
+  route: RequestHandler,
   userSupplier = (): any => user,
   isProduction = false,
   flash = jest.fn().mockReturnValue([])

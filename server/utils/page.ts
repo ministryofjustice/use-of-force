@@ -19,7 +19,7 @@ export type HasTotalCount<T> = T & {
 export class PageResponse<T> {
   constructor(public readonly metaData: PageMetaData, public readonly items: T[]) {}
 
-  map<R>(f: (T) => R): PageResponse<R> {
+  map<R>(f: (t: T) => R): PageResponse<R> {
     return new PageResponse(this.metaData, this.items.map(f))
   }
 }
