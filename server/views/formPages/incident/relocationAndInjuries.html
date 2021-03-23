@@ -29,16 +29,16 @@
       }) }}
 
     {{ incidentMacro.relocationCompliancyAndRelocationType({
-      primaryQuestion: {
+      relocationCompliancy: {
         value: data.relocationCompliancy,
         errorMessage: errors | findError('relocationCompliancy')
       },
-      followUpQuestion: {
+      relocationType: {
         value: data.relocationType,
         errorMessage: errors | findError('relocationType'),
         options: data.types.RelocationType | list | extractAttr('value') | isActive  | toOptions('value', 'label')
       },
-      followUpQuestionForUserSpecifiedRelocationType: {
+      userSpecifiedReason: {
         value: data.userSpecifiedRelocationType,
         errorMessage: errors | findError('userSpecifiedRelocationType')
       }
