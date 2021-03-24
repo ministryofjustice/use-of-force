@@ -6,7 +6,7 @@ const {
   removeKeysWithEmptyValues,
   parseDate,
   stringToHash,
-  isHashedString,
+  isHashOfString,
 } = require('./utils')
 
 describe('properCaseName', () => {
@@ -107,12 +107,23 @@ describe('parseDate', () => {
 describe('hash', () => {
   it('should return hash', () => {
     // result generated via https://approsto.com/sha-generator/
-    const result = stringToHash('abcABC')
+    const inputString = 'abc'
+    const salt = 'ABC'
+    const result = stringToHash(inputString, salt)
     expect(result).toEqual('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=')
   })
 
-  it('should verify hash', () => {
-    const result = isHashedString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', 'abcABC')
+  it('should verify hash matches input string', () => {
+    const originalString = 'abc'
+    const salt = 'ABC'
+    const result = isHashOfString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', originalString, salt)
     expect(result).toBe(true)
+  })
+
+  it('should verify hash does not match input string', () => {
+    const originalString = 'def'
+    const salt = 'DEF'
+    const result = isHashOfString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', originalString, salt)
+    expect(result).toBe(false)
   })
 })
