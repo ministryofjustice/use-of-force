@@ -1,4 +1,5 @@
 const R = require('ramda')
+const crypto = require('crypto')
 const moment = require('moment')
 
 const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
@@ -42,6 +43,14 @@ const properCaseFullName = name =>
         .map(properCaseName)
         .join(' ')
 
+const stringToHash = inputString => {
+  return crypto.createHash('sha256').update(inputString).digest('base64')
+}
+
+const isHashedString = (hashValue, originalString) => {
+  return hashValue === crypto.createHash('sha256').update(originalString).digest('base64')
+}
+
 module.exports = {
   isNilOrEmpty,
   getFieldDetail,
@@ -55,4 +64,6 @@ module.exports = {
   isBlank,
   removeKeysWithEmptyValues,
   parseDate,
+  stringToHash,
+  isHashedString,
 }

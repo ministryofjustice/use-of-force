@@ -1,5 +1,13 @@
 const moment = require('moment')
-const { properCaseName, properCaseFullName, isNilOrEmpty, removeKeysWithEmptyValues, parseDate } = require('./utils')
+const {
+  properCaseName,
+  properCaseFullName,
+  isNilOrEmpty,
+  removeKeysWithEmptyValues,
+  parseDate,
+  stringToHash,
+  isHashedString,
+} = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -93,5 +101,18 @@ describe('parseDate', () => {
   })
   it('just wrong', () => {
     expect(parseDate('this is not a date', 'D MMM YYYY')).toEqual(null)
+  })
+})
+
+describe('hash', () => {
+  it('should return hash', () => {
+    // result generated via https://approsto.com/sha-generator/
+    const result = stringToHash('abcABC')
+    expect(result).toEqual('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=')
+  })
+
+  it('should verify hash', () => {
+    const result = isHashedString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', 'abcABC')
+    expect(result).toBe(true)
   })
 })
