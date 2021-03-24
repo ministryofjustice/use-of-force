@@ -49,4 +49,12 @@ context('Login functionality', () => {
     cy.login()
     yourStatements.loggedInName().contains('Bobby Brown')
   })
+
+  it('Favicon is successfully displayed in tab', () => {
+    cy.request({
+      url: '/favicon.ico',
+    }).then(resp => {
+      expect(resp.status).to.eq(200)
+    })
+  })
 })

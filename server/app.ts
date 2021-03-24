@@ -142,9 +142,12 @@ export default function createApp(services: Services): Express {
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
-  ;[`/node_modules/govuk_frontend_toolkit/images`].forEach(dir => {
-    app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
+  app.use('/favicon.ico', express.static(path.join(process.cwd(), `/assets/images/favicon.ico`), cacheControl))
+
+  app.use(
+    '/assets/images/icons',
+    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
+  )
 
   app.use(bunyanRequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }).requestLogger())
 
