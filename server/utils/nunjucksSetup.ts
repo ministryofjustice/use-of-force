@@ -7,6 +7,7 @@ import escapeHtml from 'escape-html'
 import config from '../config'
 import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
+import { SectionStatus } from '../services/drafts/reportStatusChecker'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -155,6 +156,20 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   njkEnv.addFilter('isActive', (types: LabelledValue[]) => {
     return types.filter(item => !item.inactive)
   })
+
+  njkEnv.addGlobal(
+    'composeStatus',
+    (status1: SectionStatus, status2: SectionStatus): SectionStatus => {
+      if (status1 === SectionStatus.COMPLETE && status2 === SectionStatus.COMPLETE) {
+        return SectionStatus.COMPLETE
+      }
+      const status = [status1, status2]
+      if (status.includes(SectionStatus.COMPLETE) || status.includes(SectionStatus.INCOMPLETE)) {
+        return SectionStatus.INCOMPLETE
+      }
+      return SectionStatus.NOT_STARTED
+    }
+  )
 
   return njkEnv
 }

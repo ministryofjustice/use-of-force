@@ -1,18 +1,17 @@
-const { SectionStatus, check, isReportComplete } = require('./reportStatusChecker')
+import { UofReasons } from '../../config/types'
+import { UseOfForceDraftReport } from '../../data/UseOfForceReport'
+import { SectionStatus, check, isReportComplete } from './reportStatusChecker'
 
 describe('statusCheck', () => {
-  const validReport = {
+  const validReport: UseOfForceDraftReport = {
     incidentDetails: {
-      incidentDate: {
-        date: '01/01/2019',
-        time: { hour: '12', minute: '30' },
-      },
       witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
       locationId: -25,
       plannedUseOfForce: true,
       authorisedBy: 'Eric Bloodaxe',
     },
     involvedStaff: [],
+    reasonsForUseOfForce: { reasons: [UofReasons.FIGHT_BETWEEN_PRISONERS.value] },
     useOfForceDetails: {
       pavaDrawn: false,
       restraint: false,
@@ -55,6 +54,7 @@ describe('statusCheck', () => {
       complete: false,
       incidentDetails: SectionStatus.NOT_STARTED,
       involvedStaff: SectionStatus.NOT_STARTED,
+      reasonsForUseOfForce: SectionStatus.NOT_STARTED,
       useOfForceDetails: SectionStatus.NOT_STARTED,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
@@ -72,6 +72,7 @@ describe('statusCheck', () => {
       complete: false,
       incidentDetails: SectionStatus.COMPLETE,
       involvedStaff: SectionStatus.COMPLETE,
+      reasonsForUseOfForce: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.NOT_STARTED,
       evidence: SectionStatus.NOT_STARTED,
@@ -87,6 +88,7 @@ describe('statusCheck', () => {
       complete: true,
       incidentDetails: SectionStatus.COMPLETE,
       involvedStaff: SectionStatus.COMPLETE,
+      reasonsForUseOfForce: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.COMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,
@@ -117,6 +119,7 @@ describe('statusCheck', () => {
       complete: false,
       incidentDetails: SectionStatus.COMPLETE,
       involvedStaff: SectionStatus.COMPLETE,
+      reasonsForUseOfForce: SectionStatus.COMPLETE,
       useOfForceDetails: SectionStatus.INCOMPLETE,
       relocationAndInjuries: SectionStatus.COMPLETE,
       evidence: SectionStatus.COMPLETE,

@@ -1,11 +1,12 @@
-const { full } = require('../../config/incident')
-const { isValid } = require('../validation')
+import { full } from '../../config/incident'
+import { UseOfForceDraftReport } from '../../data/UseOfForceReport'
+import { isValid } from '../validation'
 
-const SectionStatus = Object.freeze({
-  NOT_STARTED: 'NOT_STARTED',
-  INCOMPLETE: 'INCOMPLETE',
-  COMPLETE: 'COMPLETE',
-})
+export enum SectionStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  INCOMPLETE = 'INCOMPLETE',
+  COMPLETE = 'COMPLETE',
+}
 
 const getStatus = (validationSpec, sectionValues) => {
   if (!sectionValues) {
@@ -15,7 +16,7 @@ const getStatus = (validationSpec, sectionValues) => {
   return isValid(validationSpec.schema, sectionValues) ? SectionStatus.COMPLETE : SectionStatus.INCOMPLETE
 }
 
-const check = report => {
+export const check = (report: UseOfForceDraftReport): { complete: boolean } => {
   const result = Object.keys(full).reduce(
     (previous, key) => ({ ...previous, [key]: getStatus(full[key], report[key]) }),
     {}
@@ -25,8 +26,4 @@ const check = report => {
   return { ...result, complete }
 }
 
-module.exports = {
-  SectionStatus,
-  check,
-  isReportComplete: report => check(report).complete,
-}
+export const isReportComplete = (report: UseOfForceDraftReport): boolean => check(report).complete
