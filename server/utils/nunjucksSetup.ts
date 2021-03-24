@@ -118,7 +118,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }))
   })
 
-  njkEnv.addFilter('toPagination', (pageData: PageMetaData, query: any = {}) => {
+  njkEnv.addFilter('toPagination', (pageData: PageMetaData, query: Record<string, unknown> = {}) => {
     const urlForPage = n => `?${querystring.stringify({ ...query, page: n })}`
     const items = [...Array(pageData.totalPages).keys()].map(n => ({
       text: n + 1,

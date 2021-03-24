@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
 import { processInput } from '../../services/validation'
@@ -6,9 +6,9 @@ import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 
-const SubmitType = {
-  SAVE_AND_CONTINUE: 'save-and-continue',
-  SAVE_AND_RETURN: 'save-and-return',
+enum SubmitType {
+  SAVE_AND_CONTINUE = 'save-and-continue',
+  SAVE_AND_RETURN = 'save-and-return',
 }
 
 export default class CreateReport {
@@ -20,14 +20,14 @@ export default class CreateReport {
     return { form, isComplete: isReportComplete(form) }
   }
 
-  private async getSubmitRedirectLocation(req, form, bookingId, submitType) {
+  private async getSubmitRedirectLocation(req: Request, formName: string, bookingId: number, submitType: SubmitType) {
     const { username } = req.user
 
     if (await this.draftReportService.isDraftComplete(username, bookingId)) {
       return paths.checkYourAnswers(bookingId)
     }
 
-    const nextPath = nextPaths[form](bookingId)
+    const nextPath = nextPaths[formName](bookingId)
 
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : paths.reportUseOfForce(bookingId)
   }

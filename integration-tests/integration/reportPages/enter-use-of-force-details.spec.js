@@ -3,7 +3,7 @@ const { offender } = require('../../mockApis/data')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 
-context('Submitting use of force details page', () => {
+context('Enter use of force details page', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
@@ -15,7 +15,11 @@ context('Submitting use of force details page', () => {
 
   const fillFormAndSave = ({ restraintPositions = ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'] } = {}) => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    const useOfForceDetailsPage = reportUseOfForcePage.goToUseOfForceDetailsPage()
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.postiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
@@ -109,7 +113,11 @@ context('Submitting use of force details page', () => {
     cy.login()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    const useOfForceDetailsPage = reportUseOfForcePage.goToUseOfForceDetailsPage()
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.postiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')

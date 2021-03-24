@@ -3,7 +3,7 @@ import type SubmitDraftReportService from './submitDraftReportService'
 import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
 import type UserService from '../userService'
 import type { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
-import { check as getReportStatus } from './reportStatusChecker'
+import { check as getReportStatus, isReportComplete } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
 
 import {
@@ -40,13 +40,14 @@ export default class DraftReportService {
     return this.draftInvolvedStaffService.getInvolvedStaff(token, username, bookingId)
   }
 
-  public async getSelectedReasonsForUoF(
+  public async getUoFReasonState(
     userId: string,
     bookingId: number
-  ): Promise<{ primaryReason?: string; reasons: string[] }> {
+  ): Promise<{ isComplete: boolean; primaryReason?: string; reasons: string[] }> {
     const { form } = await this.getCurrentDraft(userId, bookingId)
     const reasonForm = form?.[REASONS_FOR_USE_OF_FORCE_FORM]
-    return { reasons: reasonForm?.reasons || [], primaryReason: reasonForm?.primaryReason }
+    const isComplete = isReportComplete(form || {})
+    return { isComplete, reasons: reasonForm?.reasons || [], primaryReason: reasonForm?.primaryReason }
   }
 
   public async getInvolvedStaffWithPrisons(

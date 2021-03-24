@@ -5,7 +5,9 @@ import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
 import DraftReportService, { AddStaffResult } from './draftReportService'
 import SubmitDraftReportService from './submitDraftReportService'
 import UpdateDraftReportService from './updateDraftReportService'
+import { isReportComplete } from './reportStatusChecker'
 
+jest.mock('./reportStatusChecker')
 jest.mock('../../data')
 jest.mock('../userService')
 jest.mock('./draftInvolvedStaffService')
@@ -55,14 +57,15 @@ describe('getCurrentDraft', () => {
   })
 })
 
-describe('getSelectedReasonsForUoF', () => {
+describe('getUoFReasonState', () => {
   test('it should call client', async () => {
     draftReportClient.get.mockResolvedValue({})
-    await service.getSelectedReasonsForUoF('user1', 1)
+    await service.getUoFReasonState('user1', 1)
     expect(draftReportClient.get).toHaveBeenCalledWith('user1', 1)
   })
 
   test('it should return when present', async () => {
+    ;(isReportComplete as jest.Mock).mockReturnValue(false)
     const reasonsForUseOfForce = {
       reasons: [
         'ASSAULT_ON_ANOTHER_PRISONER',
@@ -75,14 +78,22 @@ describe('getSelectedReasonsForUoF', () => {
     }
 
     draftReportClient.get.mockResolvedValue({ form: { reasonsForUseOfForce } })
-    const result = await service.getSelectedReasonsForUoF('user1', 1)
-    expect(result).toStrictEqual(reasonsForUseOfForce)
+    const result = await service.getUoFReasonState('user1', 1)
+    expect(result).toStrictEqual({ isComplete: false, ...reasonsForUseOfForce })
   })
 
   test('it should handle when absent', async () => {
+    ;(isReportComplete as jest.Mock).mockReturnValue(false)
     draftReportClient.get.mockResolvedValue({ form: {} })
-    const result = await service.getSelectedReasonsForUoF('user1', 1)
-    expect(result).toStrictEqual({ primaryReason: undefined, reasons: [] })
+    const result = await service.getUoFReasonState('user1', 1)
+    expect(result).toStrictEqual({ isComplete: false, primaryReason: undefined, reasons: [] })
+  })
+
+  test('when form is complete', async () => {
+    ;(isReportComplete as jest.Mock).mockReturnValue(true)
+    draftReportClient.get.mockResolvedValue({ form: {} })
+    const result = await service.getUoFReasonState('user1', 1)
+    expect(result).toStrictEqual({ isComplete: true, primaryReason: undefined, reasons: [] })
   })
 })
 

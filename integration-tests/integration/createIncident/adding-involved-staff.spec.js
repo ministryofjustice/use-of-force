@@ -3,7 +3,8 @@ const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForceP
 const StaffMemberNotFoundPage = require('../../pages/createReport/staffMemberNotFoundPage')
 const WhatIsStaffMembersNamePage = require('../../pages/createReport/whatIsStaffMembersNamePage')
 const StaffInvolvedPage = require('../../pages/createReport/staffInvolvedPage')
-const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
+const SelectUofReasonsPage = require('../../pages/createReport/selectUofReasonsPage')
+
 const DeleteStaffMemberPage = require('../../pages/createReport/deleteStaffMemberPage')
 const SelectStaffMemberPage = require('../../pages/createReport/selectStaffMemberPage')
 
@@ -82,7 +83,7 @@ context('Adding involved staff', () => {
     staffInvolvedPage.noMoreToAdd().click()
     staffInvolvedPage.clickSaveAndContinue()
 
-    UseOfForceDetailsPage.verifyOnPage()
+    SelectUofReasonsPage.verifyOnPage()
   })
 
   it('Only marked as complete after No more staff selected', () => {

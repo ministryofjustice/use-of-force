@@ -1,6 +1,7 @@
 const { offender } = require('../../mockApis/data')
 
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
+const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetailsPage')
 
 context('Report use of force page', () => {
   beforeEach(() => {
@@ -41,7 +42,11 @@ context('Report use of force page', () => {
       evidence: 'NOT_STARTED',
     })
 
-    const useOfForceDetailsPageRevisited = reportUseOfForcePageRevisited.goToUseOfForceDetailsPage()
+    const selectUofReasonsPage = reportUseOfForcePageRevisited.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPageRevisited = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPageRevisited.fillForm()
     const relocationPage = useOfForceDetailsPageRevisited.save()
     relocationPage.fillForm()

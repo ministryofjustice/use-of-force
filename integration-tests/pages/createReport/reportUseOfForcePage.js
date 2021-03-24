@@ -1,6 +1,6 @@
 import NewIncidentPage from './incidentDetailsPage'
 import CheckAnswersPage from './checkAnswersPage'
-import UseOfForceDetailsPage from './useOfForceDetailsPage'
+import SelectUofReasonsPage from './selectUofReasonsPage'
 import StaffInvolvedPage from './staffInvolvedPage'
 import page from '../page'
 
@@ -10,9 +10,9 @@ const tasklistPage = () =>
       cy.get('[data-qa-incident-details-link]').click()
       return NewIncidentPage.verifyOnPage()
     },
-    goToUseOfForceDetailsPage: () => {
+    goToSelectUofReasonsPage: () => {
       cy.get('[data-qa-use-of-force-details-link]').click()
-      return UseOfForceDetailsPage.verifyOnPage()
+      return SelectUofReasonsPage.verifyOnPage()
     },
     goToInvolvedStaffPage: () => {
       cy.get('[data-qa-staff-involved-link]').click()

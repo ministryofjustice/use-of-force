@@ -9,7 +9,9 @@ declare namespace Express {
     session: any
     logout: () => void
     csrfToken: () => string
-    flash: any
+    flash(): { [key: string]: any[] }
+    flash(type: string, message: any): number
+    flash(message: string): any[]
   }
   export interface Response {
     locals: {
