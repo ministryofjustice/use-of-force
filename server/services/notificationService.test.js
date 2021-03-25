@@ -17,7 +17,7 @@ const eventPublisher = {
 }
 
 let service
-const context = { id1: 1, id2: 'b' }
+const context = { reportId: 1, statementId: '2' }
 
 beforeEach(() => {
   client.sendEmail.mockResolvedValue({ body: 'response 1' })
@@ -56,7 +56,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementReminderSuccess',
-      properties: { id1: 1, id2: 'b', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -78,7 +78,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementOverdueSuccess',
-      properties: { id1: 1, id2: 'b', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -102,13 +102,15 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
+        REMOVAL_REQUEST_LINK:
+          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementReminderSuccess',
-      properties: { id1: 1, id2: 'b', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -128,13 +130,15 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
+        REMOVAL_REQUEST_LINK:
+          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementOverdueSuccess',
-      properties: { id1: 1, id2: 'b', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -157,13 +161,15 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
+        REMOVAL_REQUEST_LINK:
+          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestSuccess',
-      properties: { id1: 1, id2: 'b', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -188,14 +194,32 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
+        REMOVAL_REQUEST_LINK:
+          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestFailure',
-      properties: { id1: 1, id2: 'b', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
       detail: 'message 1',
+    })
+  })
+
+  describe('getRemovalRequestLink', () => {
+    it('should create correctly hashed url', () => {
+      const result = service.getRemovalRequestLink('123')
+      expect(result).toEqual(
+        'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/123?signature=cD1/XTvGh/B8kJvcmHuM5vGnLIuUornImFlxDEH/evo='
+      )
+    })
+
+    it('should verify incorrect hash', () => {
+      const result = service.getRemovalRequestLink('789')
+      expect(result).not.toEqual(
+        'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/123?signature=someIncorrectHash'
+      )
     })
   })
 })

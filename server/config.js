@@ -47,6 +47,7 @@ module.exports = {
         OVERDUE: get('TEMPLATE_REPORTER_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
       },
     },
+    hashSecret: get('HASH_SECRET', 'someSecret'),
   },
   apis: {
     oauth2: {
