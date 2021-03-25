@@ -58,4 +58,44 @@ context('Report use of force page', () => {
     reportUseOfForcePageAfterAllPartsComplete.checkAllPartsComplete()
     reportUseOfForcePageAfterAllPartsComplete.checkYourAnswersLink().should('exist')
   })
+
+  it('Selecting use of force reasons but no uof details marks uof details as incomplete', () => {
+    cy.login()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    reportUseOfForcePage.checkNoPartsComplete()
+
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndReturn()
+
+    {
+      const reportUseOfForcePageRevisited = ReportUseOfForcePage.verifyOnPage()
+      reportUseOfForcePageRevisited.checkParts({
+        incidentDetails: 'NOT_STARTED',
+        staffInvolved: 'NOT_STARTED',
+        useOfForceDetails: 'INCOMPLETE',
+        relocationAndInjuries: 'NOT_STARTED',
+        evidence: 'NOT_STARTED',
+      })
+      const selectUofReasonsPage = reportUseOfForcePageRevisited.goToSelectUofReasonsPage()
+      selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+      selectUofReasonsPage.clickSaveAndContinue()
+    }
+
+    const useOfForceDetailsPageRevisited = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPageRevisited.fillForm()
+    selectUofReasonsPage.clickSaveAndReturn()
+
+    {
+      const reportUseOfForcePageRevisited = ReportUseOfForcePage.verifyOnPage()
+      reportUseOfForcePageRevisited.checkParts({
+        incidentDetails: 'NOT_STARTED',
+        staffInvolved: 'NOT_STARTED',
+        useOfForceDetails: 'COMPLETE',
+        relocationAndInjuries: 'NOT_STARTED',
+        evidence: 'NOT_STARTED',
+      })
+    }
+  })
 })

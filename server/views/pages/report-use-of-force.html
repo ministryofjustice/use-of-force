@@ -71,7 +71,7 @@
             {{  section(name = "use-of-force-details", 
                       label = "Use of force details",  
                       url = "/report/" + bookingId + "/why-was-uof-applied", 
-                      value = status.useOfForceDetails) }}
+                      value = composeStatus(status.useOfForceDetails, status.reasonsForUseOfForce)) }}
 
             {{  section(name = "relocation-and-injuries", 
                       label = "Relocation and Injuries",  

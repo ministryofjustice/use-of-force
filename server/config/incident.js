@@ -3,6 +3,7 @@ const staffInvolved = require('./forms/staffInvolved')
 const useOfForceDetailsForm = require('./forms/useOfForceDetailsForm')
 const relocationAndInjuriesForm = require('./forms/relocationAndInjuriesForm')
 const evidenceForm = require('./forms/evidenceForm')
+const reasonsForUseOfForceForm = require('./forms/reasonsForUseOfForceForm')
 
 const paths = {
   reportUseOfForce: bookingId => `/report/${bookingId}/report-use-of-force`,
@@ -31,6 +32,7 @@ module.exports = {
   },
   full: {
     incidentDetails: incidentDetails.complete,
+    reasonsForUseOfForce: reasonsForUseOfForceForm.complete,
     useOfForceDetails: useOfForceDetailsForm.complete,
     relocationAndInjuries: relocationAndInjuriesForm.complete,
     evidence: evidenceForm.complete,

@@ -1,12 +1,13 @@
 export type IncidentDetails = {
   plannedUseOfForce: boolean
+  locationId: number
   authorisedBy: string
   witnesses: { name: string }[]
 }
 
 export type UseOfForceDetails = {
   positiveCommunication: boolean
-  personalProtectionTechniques: string
+  personalProtectionTechniques: boolean
   batonDrawn: boolean
   batonUsed: boolean
   pavaDrawn: boolean
@@ -35,7 +36,7 @@ export type RelocationAndInjuries = {
   f213CompletedBy: string
   prisonerHospitalisation: boolean
   staffMedicalAttention: boolean
-  staffNeedingMedicalAttention: { name: string }[]
+  staffNeedingMedicalAttention: { name: string; hospitalisation: boolean }[]
 }
 
 export type Evidence = {
@@ -43,12 +44,21 @@ export type Evidence = {
   baggedEvidence: boolean
   photographsTaken: boolean
   cctvRecording: string
-  bodyWornCamera: boolean
-  bodyWornCameraNumbers: string[]
+  bodyWornCamera: string
+  bodyWornCameraNumbers: { cameraNum: string }[]
+}
+
+export type InvolvedStaff = {
+  name: string
+  email: string
+  staffId: number
+  username: string
+  verified: boolean
 }
 
 export type UseOfForceReport = {
   incidentDetails: IncidentDetails
+  involvedStaff: InvolvedStaff[]
   reasonsForUseOfForce: ReasonsForUseOfForce
   useOfForceDetails: UseOfForceDetails
   relocationAndInjuries: RelocationAndInjuries

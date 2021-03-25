@@ -8,6 +8,7 @@ const selectUofReasonsPage = () =>
       checkReason: value => cy.get('#uof-reasons [type="checkbox"]').check(value),
       uncheckReason: value => cy.get('#uof-reasons [type="checkbox"]').uncheck(value),
       clickSaveAndContinue: () => cy.get('[data-qa="save-and-continue"]').click(),
+      clickSaveAndReturn: () => cy.get('[data-qa="save-and-return"]').click(),
       clickSave: () => cy.get('[data-qa="save"]').click(),
       clickCancel: () => cy.get('[data-qa="cancel"]').click(),
     },
