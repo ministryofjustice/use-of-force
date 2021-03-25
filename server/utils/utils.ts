@@ -3,10 +3,8 @@ import crypto from 'crypto'
 import moment, { Moment } from 'moment'
 
 export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
-export const getIn = R.path
 export const { equals } = R
 export const firstItem = R.head
-export const mergeWithRight = R.mergeDeepRight
 
 export const getFieldDetail = (fieldPath: string, fieldConfig: string): string =>
   R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
@@ -54,21 +52,4 @@ export const stringToHash = (inputString: string, salt: string): string => {
 
 export const isHashOfString = (hashValue: string, originalString: string, salt: string): boolean => {
   return hashValue === stringToHash(originalString, salt)
-}
-
-module.exports = {
-  isNilOrEmpty,
-  getFieldDetail,
-  getFieldName,
-  properCaseName,
-  properCaseFullName,
-  getIn,
-  equals,
-  firstItem,
-  mergeWithRight,
-  isBlank,
-  removeKeysWithEmptyValues,
-  parseDate,
-  stringToHash,
-  isHashOfString,
 }
