@@ -1,5 +1,13 @@
 const moment = require('moment')
-const { properCaseName, properCaseFullName, isNilOrEmpty, removeKeysWithEmptyValues, parseDate } = require('./utils')
+const {
+  properCaseName,
+  properCaseFullName,
+  isNilOrEmpty,
+  removeKeysWithEmptyValues,
+  parseDate,
+  stringToHash,
+  isHashOfString,
+} = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -93,5 +101,29 @@ describe('parseDate', () => {
   })
   it('just wrong', () => {
     expect(parseDate('this is not a date', 'D MMM YYYY')).toEqual(null)
+  })
+})
+
+describe('hash', () => {
+  it('should return hash', () => {
+    // result generated via https://approsto.com/sha-generator/
+    const inputString = 'abc'
+    const salt = 'ABC'
+    const result = stringToHash(inputString, salt)
+    expect(result).toEqual('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=')
+  })
+
+  it('should verify hash matches input string', () => {
+    const originalString = 'abc'
+    const salt = 'ABC'
+    const result = isHashOfString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', originalString, salt)
+    expect(result).toBe(true)
+  })
+
+  it('should verify hash does not match input string', () => {
+    const originalString = 'def'
+    const salt = 'DEF'
+    const result = isHashOfString('XVnsPWdyGrzz4FzZhZQ1s2agjqxtfKqd3tNx1JC1tM8=', originalString, salt)
+    expect(result).toBe(false)
   })
 })

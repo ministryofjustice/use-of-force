@@ -29,9 +29,13 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
-  userSpecifiedRelocationType: joi.when('relocationType', {
-    is: 'OTHER',
-    then: requiredStringMsg('Enter the type of relocation').alter(optionalForPartialValidation),
+  userSpecifiedRelocationType: joi.when('relocationCompliancy', {
+    is: false,
+    then: joi.when('relocationType', {
+      is: 'OTHER',
+      then: requiredStringMsg('Enter the type of relocation').alter(optionalForPartialValidation),
+      otherwise: joi.any().strip(),
+    }),
     otherwise: joi.any().strip(),
   }),
 

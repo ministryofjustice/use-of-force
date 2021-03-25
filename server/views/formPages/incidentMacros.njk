@@ -416,7 +416,10 @@
                       <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
                         <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ userSpecifiedReasonErrorMessageText }}</span>
                           <label class="govuk-label" for="userSpecifiedRelocationType">Type of relocation</label>
-                          <input class="govuk-input govuk-!-width-one-third" id="userSpecifiedRelocationType" name="userSpecifiedRelocationType" value="{{ question.userSpecifiedReason.value }}">
+                          <input class="govuk-input govuk-!-width-one-third" 
+                                 id="userSpecifiedRelocationType" 
+                                 name="userSpecifiedRelocationType"
+                                 value="{{ question.userSpecifiedReason.value }}">
                       </div>
                   </div>
                 </div>
