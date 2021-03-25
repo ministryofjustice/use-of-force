@@ -173,6 +173,20 @@ describe("'complete' schema", () => {
       expect(formResponse.userSpecifiedRelocationType).toBe(undefined)
     })
 
+    it('When a user selects Yes for Was the prisoner compliant, userSpecified text should not be saved', () => {
+      const input = {
+        ...validInput,
+        relocationCompliancy: 'true',
+        relocationType: 'OTHER',
+        userSpecifiedRelocationType: 'another kind of relocation',
+      }
+      const { formResponse } = check(input)
+
+      expect(formResponse.relocationCompliancy).toEqual(true)
+      expect(formResponse.relocationType).toBe(undefined)
+      expect(formResponse.userSpecifiedRelocationType).toBe(undefined)
+    })
+
     it('Selecting Other for What was the type of relocation? but nothing in userSpecifiedRelocationType textbox returns validation error message', () => {
       const input = {
         ...validInput,
