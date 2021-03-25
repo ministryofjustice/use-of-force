@@ -142,14 +142,14 @@ describe('GET /check-your-answers', () => {
       })
   })
 
-  it('Should contain vehicle', () => {
+  it('Should contain NTRG in correct case', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
     draftReportService.getCurrentDraft.mockResolvedValue({
       form: {
         incidentDetails: {},
         relocationAndInjuries: {
           relocationCompliancy: false,
-          relocationType: 'VEHICLE',
+          relocationType: 'NTRG',
         },
       },
     })
@@ -159,7 +159,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('No - relocated to vehicle')
+        expect(res.text).toContain('No - Handed to local staff (NTRG)')
       })
   })
 

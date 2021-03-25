@@ -71,12 +71,12 @@ const createUseOfForceDetails = (
 }
 
 const getRelocationType = relocationType => {
-  return relocationType ? ` - ${toLabel(RelocationType, relocationType).toLowerCase()}` : ''
+  return relocationType ? ` - ${toLabel(RelocationType, relocationType)}` : ''
 }
 
 const getNonCompliancyType = relocationAndInjuries => {
   return relocationAndInjuries.relocationType === 'OTHER'
-    ? `${NO} - ${relocationAndInjuries.userSpecifiedRelocationType.toLowerCase()}`
+    ? `${NO} - ${relocationAndInjuries.userSpecifiedRelocationType}`
     : `${NO}${getRelocationType(relocationAndInjuries.relocationType)}`
 }
 

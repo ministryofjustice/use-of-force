@@ -30,6 +30,7 @@ export type RelocationAndInjuries = {
   prisonerRelocation: string
   relocationCompliancy: boolean
   relocationType: string
+  userSpecifiedRelocationType?: string
   healthcareInvolved: boolean
   healthcarePractionerName: string
   prisonerInjuries: boolean
