@@ -1,6 +1,5 @@
 import express, { Handler, Router } from 'express'
 import flash from 'connect-flash'
-import bodyParser from 'body-parser'
 
 import creatingReportsRoutes from './creatingReports'
 import maintainingReportsRoutes from './maintainingReports'
@@ -13,7 +12,7 @@ export default function Index(authenticationMiddleware: Handler, services: Servi
   const router = express.Router()
 
   router.use(authenticationMiddleware)
-  router.use(bodyParser.urlencoded({ extended: false }))
+  router.use(express.urlencoded({ extended: false }))
   router.use(flash())
 
   router.use((req, res, next) => {
