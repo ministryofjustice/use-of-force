@@ -6,6 +6,7 @@ import { initialiseAppInsights } from './server/utils/azure-appinsights'
 
 initialiseAppInsights()
 
+/** @type {any} */
 const knex = require('knex')
 const knexfile = require('./knexfile')
 const app = require('./server/index').default
