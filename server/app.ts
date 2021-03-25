@@ -8,7 +8,6 @@ import path from 'path'
 import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
-import bodyParser from 'body-parser'
 import crypto from 'crypto'
 import createError from 'http-errors'
 import redis from 'redis'
@@ -111,8 +110,8 @@ export default function createApp(services: Services): Express {
   app.use(passport.session())
 
   // Request Processing Configuration
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
 
   // Resource Delivery Configuration
   app.use(compression())
