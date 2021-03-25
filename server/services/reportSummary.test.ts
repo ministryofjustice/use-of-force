@@ -3,7 +3,7 @@ import { Prison } from '../data/prisonClientTypes'
 import { UseOfForceDraftReport } from '../data/UseOfForceReport'
 import reportSummary from './reportSummary'
 
-const form: UseOfForceDraftReport = { useOfForceDetails: {}, reasonsForUseOfForce: {} }
+const form: UseOfForceDraftReport = { useOfForceDetails: {}, relocationAndInjuries: {}, reasonsForUseOfForce: {} }
 const offenderDetail = {}
 const prison: Prison = { agencyId: 'MDI', description: 'Moorland HMP', active: true, agencyType: 'INST' }
 const locationDescription = ''
@@ -83,6 +83,21 @@ describe('reportSummary', () => {
       form.reasonsForUseOfForce.primaryReason = UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.value
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
       expect(result.useOfForceDetails.primaryReason).toEqual(UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.label)
+    })
+  })
+
+  describe('Relocation type', () => {
+    it('should return description', () => {
+      form.relocationAndInjuries.relocationType = 'NTRG'
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.relocationAndInjuries.relocationCompliancy).toEqual('No - Handed to local staff (NTRG)')
+    })
+
+    it('should return user provided description when provided', () => {
+      form.relocationAndInjuries.relocationType = 'OTHER'
+      form.relocationAndInjuries.userSpecifiedRelocationType = 'We had to put them on a BIG boat'
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.relocationAndInjuries.relocationCompliancy).toEqual('No - We had to put them on a BIG boat')
     })
   })
 })
