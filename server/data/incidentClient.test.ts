@@ -171,6 +171,20 @@ test('getReport', () => {
   })
 })
 
+test('getAnonReportSummary', () => {
+  incidentClient.getAnonReportSummary(1)
+
+  expect(query).toBeCalledWith({
+    text: `select vs.id "statementId"
+            ,  vr.incident_date "incidentDate"
+            ,  vr.agency_id "agencyId"
+            from v_statement vs
+            join v_report vr on vs.report_id = vr.id
+            where vs.id = $1`,
+    values: [1],
+  })
+})
+
 test('changeStatus', () => {
   incidentClient.changeStatus('report1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE)
 

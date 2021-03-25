@@ -16,6 +16,12 @@ export interface ReportSummary {
   status?: string
 }
 
+export interface AnonReportSummary {
+  statementId: number
+  incidentDate: Date
+  agencyId: string
+}
+
 export interface IncompleteReportSummary extends ReportSummary {
   isOverdue?: boolean
 }
