@@ -107,7 +107,7 @@ module.exports = {
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {
-    emailUrl: get('EMAIL_LOCATION_URL', '/', requiredInProduction),
+    emailUrl: get('EMAIL_LOCATION_URL', 'http://localhost:3000', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
   https: production,

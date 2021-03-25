@@ -102,8 +102,7 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK:
-          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=`,
       },
       reference: null,
     })
@@ -130,8 +129,7 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK:
-          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=`,
       },
       reference: null,
     })
@@ -161,8 +159,7 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK:
-          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=`,
       },
       reference: null,
     })
@@ -194,8 +191,7 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK:
-          'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=',
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=Bldst0gtBLxRaYy7q91GM6l+f+z4RthHxxS4QgAdRG4=`,
       },
       reference: null,
     })
@@ -210,16 +206,7 @@ describe('send involved staff notifications', () => {
   describe('getRemovalRequestLink', () => {
     it('should create correctly hashed url', () => {
       const result = service.getRemovalRequestLink('123')
-      expect(result).toEqual(
-        'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/123?signature=cD1/XTvGh/B8kJvcmHuM5vGnLIuUornImFlxDEH/evo='
-      )
-    })
-
-    it('should verify incorrect hash', () => {
-      const result = service.getRemovalRequestLink('789')
-      expect(result).not.toEqual(
-        'https://prisoner-offender-search-dev.prison.service.justice.gov.uk/request-removal/123?signature=someIncorrectHash'
-      )
+      expect(result).toEqual(`${emailUrl}/request-removal/123?signature=cD1/XTvGh/B8kJvcmHuM5vGnLIuUornImFlxDEH/evo=`)
     })
   })
 })
