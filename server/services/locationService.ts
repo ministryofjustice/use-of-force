@@ -12,9 +12,9 @@ export default class LocationService {
     return prisons.sort((a, b) => a.description.localeCompare(b.description, 'en', { ignorePunctuation: true }))
   }
 
-  async getPrisonById(token: string, prisonId: string): Promise<Prison> {
+  async getPrisonById(token: string, agencyId: AgencyId): Promise<Prison> {
     const prisonClient = this.prisonClientBuilder(token)
-    return prisonClient.getPrisonById(prisonId)
+    return prisonClient.getPrisonById(agencyId)
   }
 
   async getLocation(token: string, locationId: number): Promise<PrisonLocation | Record<string, unknown>> {
