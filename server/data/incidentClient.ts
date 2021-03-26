@@ -7,6 +7,7 @@ import {
   IncompleteReportSummary,
   InvolvedStaff,
   Report,
+  AnonReportSummary,
 } from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 
@@ -37,6 +38,19 @@ export default class IncidentClient {
           from v_report r
           where r.user_id = $1 and r.id = $2`,
       values: [userId, reportId],
+    })
+    return results.rows[0]
+  }
+
+  async getAnonReportSummary(statementId: number): Promise<AnonReportSummary | undefined> {
+    const results = await this.query({
+      text: `select vs.id "statementId"
+            ,  vr.incident_date "incidentDate"
+            ,  vr.agency_id "agencyId"
+            from v_statement vs
+            join v_report vr on vs.report_id = vr.id
+            where vs.id = $1`,
+      values: [statementId],
     })
     return results.rows[0]
   }

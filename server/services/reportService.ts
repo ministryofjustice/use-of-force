@@ -1,5 +1,5 @@
 import type { IncidentClient } from '../data'
-import type { ReportSummary, IncompleteReportSummary, Report } from '../data/incidentClientTypes'
+import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
 import type { SystemToken } from '../types/uof'
 
 import logger from '../../log'
@@ -46,12 +46,16 @@ export default class ReportService {
   }
 
   async getReport(userId: string, reportId: number): Promise<Report> {
-    const report = this.incidentClient.getReport(userId, reportId)
+    const report = await this.incidentClient.getReport(userId, reportId)
 
     if (!report) {
       throw new Error(`Report does not exist: ${reportId}`)
     }
     return report
+  }
+
+  async getAnonReportSummary(reportId: number): Promise<AnonReportSummary | undefined> {
+    return this.incidentClient.getAnonReportSummary(reportId)
   }
 
   async getReports(userId: string, page: number): Promise<PageResponse<IncidentSummary>> {
