@@ -1,5 +1,7 @@
 const { NotifyClient } = require('notifications-node-client')
 const moment = require('moment')
+const { email } = require('../config')
+const { stringToHash } = require('../utils/utils')
 const {
   links: { emailUrl },
   email: {
@@ -14,6 +16,11 @@ const createNotificationService = (emailClient, eventPublisher) => {
   const asDate = date => moment(date).format('dddd D MMMM')
 
   const asTime = date => moment(date).format('HH:mm')
+
+  const getRemovalRequestLink = statementId => {
+    const hash = stringToHash(statementId, email.urlSigningSecret)
+    return `${emailUrl}/request-removal/${statementId}?signature=${hash}`
+  }
 
   const sendReporterStatementReminder = async (
     emailAddress,
@@ -65,6 +72,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
           DEADLINE_DATE: asDate(overdueDate),
           DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
+          REMOVAL_REQUEST_LINK: getRemovalRequestLink(context.statementId),
         },
         reference: null,
       })
@@ -125,6 +133,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
           SUBMITTED_DATE: asDate(submittedDate),
           SUBMITTED_TIME: asTime(submittedDate),
           LINK: emailUrl,
+          REMOVAL_REQUEST_LINK: getRemovalRequestLink(context.statementId),
         },
         reference: null,
       })
@@ -160,6 +169,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
           DEADLINE_DATE: asDate(overdueDate),
           DEADLINE_TIME: asTime(overdueDate),
           LINK: emailUrl,
+          REMOVAL_REQUEST_LINK: getRemovalRequestLink(context.statementId),
         },
         reference: null,
       })
@@ -184,6 +194,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
     sendInvolvedStaffStatementReminder,
     sendReporterStatementOverdue,
     sendInvolvedStaffStatementOverdue,
+    getRemovalRequestLink,
   }
 }
 

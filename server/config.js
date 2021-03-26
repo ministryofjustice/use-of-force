@@ -47,6 +47,7 @@ module.exports = {
         OVERDUE: get('TEMPLATE_REPORTER_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
       },
     },
+    urlSigningSecret: get('URL_SIGNING_SECRET', 'someUrlSigningSecret'),
   },
   apis: {
     oauth2: {
@@ -106,7 +107,7 @@ module.exports = {
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {
-    emailUrl: get('EMAIL_LOCATION_URL', '/', requiredInProduction),
+    emailUrl: get('EMAIL_LOCATION_URL', 'http://localhost:3000', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
   https: production,
