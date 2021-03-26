@@ -36,6 +36,18 @@ describe('getReport', () => {
   })
 })
 
+describe('getAnonReportSummary', () => {
+  test('it should call query on db', async () => {
+    const result = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI' }
+    incidentClient.getAnonReportSummary.mockResolvedValue(result)
+
+    await expect(service.getAnonReportSummary(1)).resolves.toStrictEqual(result)
+
+    expect(incidentClient.getAnonReportSummary).toBeCalledTimes(1)
+    expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
+  })
+})
+
 describe('getReports', () => {
   test('it should call query on db', async () => {
     offenderService.getOffenderNames.mockResolvedValue({ AA1234A: 'James Stuart' })
