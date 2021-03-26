@@ -1,22 +1,25 @@
 import IncidentClient from '../data/incidentClient'
 import ReportService from './reportService'
 import OffenderService from './offenderService'
+import LocationService from './locationService'
 import { PageResponse } from '../utils/page'
 import { Report } from '../data/incidentClientTypes'
+import { Prison } from '../data/prisonClientTypes'
 
 jest.mock('../data/incidentClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
+jest.mock('./locationService')
 
 const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
-
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
 let service: ReportService
 
 beforeEach(() => {
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
-  service = new ReportService(incidentClient, offenderService, systemToken)
+  service = new ReportService(incidentClient, offenderService, locationService, systemToken)
 })
 
 afterEach(() => {
@@ -38,12 +41,17 @@ describe('getReport', () => {
 
 describe('getAnonReportSummary', () => {
   test('it should call query on db', async () => {
-    const result = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI' }
-    incidentClient.getAnonReportSummary.mockResolvedValue(result)
+    const report = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI' }
+    locationService.getPrisonById.mockResolvedValue({ description: 'Moorland HMP' } as Prison)
+    incidentClient.getAnonReportSummary.mockResolvedValue(report)
 
-    await expect(service.getAnonReportSummary(1)).resolves.toStrictEqual(result)
-
-    expect(incidentClient.getAnonReportSummary).toBeCalledTimes(1)
+    await expect(service.getAnonReportSummary('token-1', 1)).resolves.toStrictEqual({
+      statementId: 1,
+      incidentDate: new Date(1),
+      agencyId: 'MDI',
+      prisonName: 'Moorland HMP',
+    })
+    expect(locationService.getPrisonById).toBeCalledWith('token-1', 'MDI')
     expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
   })
 })
