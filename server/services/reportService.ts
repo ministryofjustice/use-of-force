@@ -1,10 +1,11 @@
-import type { IncidentClient } from '../data'
+import { IncidentClient } from '../data'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
 import type { SystemToken } from '../types/uof'
 
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
+import LocationService from './locationService'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -19,6 +20,8 @@ export interface IncidentSummary {
   offenderNo: string
   status: string
 }
+
+export type AnonReportSummaryWithPrison = AnonReportSummary & { prisonName: string }
 
 const toReport = (namesByOffenderNumber: NamesByOffenderNumber) => (
   reportSummary: ReportSummary | IncompleteReportSummary
@@ -36,6 +39,7 @@ export default class ReportService {
   constructor(
     private readonly incidentClient: IncidentClient,
     private readonly offenderService: OffenderService,
+    private readonly locationService: LocationService,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -54,8 +58,10 @@ export default class ReportService {
     return report
   }
 
-  async getAnonReportSummary(reportId: number): Promise<AnonReportSummary | undefined> {
-    return this.incidentClient.getAnonReportSummary(reportId)
+  async getAnonReportSummary(token: string, statementId: number): Promise<AnonReportSummaryWithPrison | undefined> {
+    const report = await this.incidentClient.getAnonReportSummary(statementId)
+    const prison = await this.locationService.getPrisonById(token, report.agencyId)
+    return { ...report, prisonName: prison.description }
   }
 
   async getReports(userId: string, page: number): Promise<PageResponse<IncidentSummary>> {

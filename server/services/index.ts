@@ -42,7 +42,8 @@ const userService = new UserService(prisonClientBuilder, authClientBuilder)
 const notificationService = notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
 const offenderService = new OffenderService(prisonClientBuilder)
-const reportService = new ReportService(incidentClient, offenderService, systemToken)
+const locationService = new LocationService(prisonClientBuilder)
+const reportService = new ReportService(incidentClient, offenderService, locationService, systemToken)
 
 const submitDraftReportService = new SubmitDraftReportService(
   draftReportClient,
@@ -78,7 +79,6 @@ const reviewService = new ReviewService(
 )
 const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
-const locationService = new LocationService(prisonClientBuilder)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
 export const services = {

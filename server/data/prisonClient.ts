@@ -46,9 +46,9 @@ export default class PrisonClient {
     })
   }
 
-  getPrisonById(prisonId: string): Promise<Prison> {
+  getPrisonById(agencyId: string): Promise<Prison> {
     return this.restClient.get({
-      path: `/api/agencies/${prisonId}?activeOnly=false`,
+      path: `/api/agencies/${agencyId}?activeOnly=false`,
     })
   }
 
