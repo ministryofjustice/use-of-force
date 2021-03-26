@@ -84,6 +84,12 @@ env:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: SESSION_SECRET
+  
+  - name: URL_SIGNING_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: URL_SIGNING_SECRET
 
   - name: NOMIS_AUTH_URL
     value: {{ .Values.env.NOMIS_AUTH_URL | quote }}
