@@ -115,6 +115,9 @@ env:
   - name: TOKENVERIFICATION_API_ENABLED
     value: {{ .Values.env.TOKENVERIFICATION_API_ENABLED | quote }}
 
+  - name: DISPUTE_INVOLVEMENT_ENABLED
+    value: {{ .Values.env.DISPUTE_INVOLVEMENT_ENABLED | quote }}
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
