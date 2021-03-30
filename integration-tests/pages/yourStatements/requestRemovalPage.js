@@ -1,5 +1,4 @@
 import page from '../page'
-// import ConfirmStatementPage from './checkYourStatementPage'
 
 const requestRemovalPage = () =>
   page('Request to be removed from a use of force incident', {
@@ -11,7 +10,6 @@ const requestRemovalPage = () =>
     requestToBeRemoved: () => cy.get('[data-qa=submit]'),
     submit: () => {
       cy.get('[data-qa=submit]').click()
-      //   return ConfirmStatementPage.verifyOnPage()
     },
   })
 
