@@ -1,4 +1,3 @@
-import { Request, Response } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 import { parseDate } from '../../utils/utils'
@@ -6,7 +5,7 @@ import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
 import { OffenderService, ReviewService, ReportDetailBuilder } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
-import Reviewer from './reviewer'
+import { ReviewerStatementWithComments } from '../../services/reviewService'
 
 const userSupplier = jest.fn()
 
@@ -209,56 +208,35 @@ describe('GET /view-statements', () => {
       })
   })
 
+  const statement = (params: { id: number; submitted: boolean }): ReviewerStatementWithComments =>
+    ({
+      id: params.id,
+      isOverdue: false,
+      isSubmitted: params.submitted,
+      statement: `Statement for user ${params.id}`,
+      isVerified: true,
+      name: `User ${params.id}`,
+      userId: `USER_${params.id}`,
+    } as ReviewerStatementWithComments)
+
   it('should only render submitted statements', async () => {
-    reviewService.getStatements.mockResolvedValue([
-      {
-        id: 1,
-        isOverdue: false,
-        isSubmitted: true,
-        isVerified: true,
-        name: 'Licence Case Admin',
-        userId: 'CA_USER',
-      },
-      {
-        id: 2,
-        isOverdue: false,
-        isSubmitted: false,
-        isVerified: true,
-        name: 'Itag User',
-        userId: 'ITAG_USER',
-      },
-      {
-        id: 3,
-        isOverdue: false,
-        isSubmitted: true,
-        isVerified: true,
-        name: 'Coordinator',
-        userId: 'COORDINATOR_USER',
-      },
-    ])
+    userSupplier.mockReturnValue(coordinatorUser)
 
-    const req = ({
-      params: { reportId: 1 },
-      body: {},
-    } as unknown) as jest.Mocked<Request>
+    const statementOne = statement({ id: 1, submitted: true })
+    const statementTwo = statement({ id: 2, submitted: false })
+    const statementThree = statement({ id: 3, submitted: true })
 
-    const res = ({
-      locals: { user: { username: 'UOF_COORDINATOR_USER' } },
-      render: jest.fn(),
-    } as unknown) as jest.Mocked<Response>
+    reviewService.getStatements.mockResolvedValue([statementOne, statementTwo, statementThree])
 
-    const systemToken = jest.fn().mockResolvedValue('system-token-1')
-
-    reviewService.getStatement = jest.fn()
-
-    const reviewer = new Reviewer(offenderService, reportDetailBuilder, reviewService, systemToken)
-
-    await reviewer.reviewStatements(req, res)
-
-    expect(reviewService.getStatement).toBeCalledTimes(2)
-    expect(reviewService.getStatement.mock.calls).toEqual([[1], [3]])
-    expect(res.render).toBeCalled()
-
-    expect(reviewService.getStatement.mock.calls).toEqual([[1], [3]])
+    return request(app)
+      .get('/1/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(statementOne.statement)
+        expect(res.text).not.toContain(statementTwo.statement)
+        expect(res.text).toContain(statementThree.statement)
+        expect(reviewService.getStatements).toHaveBeenCalledWith('user1-system-token', 1)
+      })
   })
 })

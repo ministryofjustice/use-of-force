@@ -1,11 +1,11 @@
 import logger from '../../log'
-import { StatementStatus, ReportStatus } from '../config/types'
+import { StatementStatus, ReportStatus, LabelledValue } from '../config/types'
 import statementConfig from '../config/forms/statementForm'
 import { processInput } from './validation'
 import type { InTransaction } from '../data/dataAccess/db'
 import type { StatementsClient, IncidentClient } from '../data'
 import { PageResponse } from '../utils/page'
-import { StatementWithComments, Status, StatementSummary } from './statementServiceTypes'
+import { StatementWithComments, StatementSummary } from './statementServiceTypes'
 import { StatementUpdate } from '../data/statementsClientTypes'
 
 type Error = { href: string; text: string }
@@ -21,7 +21,7 @@ export default class StatementService {
     return this.statementsClient.getStatements(userId, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<StatementWithComments> {
+  async getStatementForUser(userId: string, reportId: number, status: LabelledValue): Promise<StatementWithComments> {
     const statement = await this.statementsClient.getStatementForUser(userId, reportId, status)
     if (!statement) {
       throw new Error(`Report: '${reportId}' does not exist`)
