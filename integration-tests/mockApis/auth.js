@@ -23,6 +23,19 @@ const createToken = (isReviewer, isCoordinator) => {
   return jwt.sign(payload, 'secret', { expiresIn: '1h' })
 }
 
+const createClientCredsToken = () => {
+  const payload = {
+    access_token: 'token',
+    token_type: 'bearer',
+    expires_in: 1199,
+    scope: 'read',
+    sub: 'use-of-force-system',
+    auth_source: 'none',
+    iss: 'https://sign-in-dev.hmpps.service.justice.gov.uk/auth/issuer',
+  }
+
+  return jwt.sign(payload, 'secret', { expiresIn: '1h' })
+}
 const getLoginUrl = () =>
   getRequests().then(data => {
     const { requests } = data.body
@@ -86,10 +99,32 @@ const token = ({ userName = 'TEST_USER', isReviewer = false, isCoordinator = fal
         Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
-        access_token: createToken(isReviewer, isCoordinator),
+        access_token: createClientCredsToken(isReviewer, isCoordinator),
         token_type: 'bearer',
         refresh_token: 'refresh',
         user_name: userName,
+        expires_in: 600,
+        scope: 'read write',
+        internalUser: true,
+      },
+    },
+  })
+
+const stubTokenCredentials = () =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: '/auth/oauth/token',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        access_token: createToken(),
+        token_type: 'bearer',
+        refresh_token: 'refresh',
         expires_in: 600,
         scope: 'read write',
         internalUser: true,
@@ -200,4 +235,5 @@ module.exports = {
   stubFindUsers: ({ firstName, lastName, results }) => stubFindUser(firstName, lastName, results),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
   stubVerifyToken,
+  stubTokenCredentials,
 }

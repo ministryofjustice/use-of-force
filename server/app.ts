@@ -13,6 +13,7 @@ import createError from 'http-errors'
 import redis from 'redis'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
+import flash from 'connect-flash'
 
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -28,7 +29,11 @@ import populateCurrentUser from './middleware/populateCurrentUser'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import errorHandler from './errorHandler'
 
+import RemovalRequest from './routes/viewingReports/requestRemoval'
+
 import config from './config'
+import asyncMiddleware from './middleware/asyncMiddleware'
+import csrf from './middleware/csrfMiddleware'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -246,8 +251,11 @@ export default function createApp(services: Services): Express {
     res.redirect(authLogoutUrl)
   })
 
-  const currentUserInContext = populateCurrentUser(services.userService)
-  app.use(currentUserInContext)
+  app.use(populateCurrentUser(services.userService))
+
+  const removalRequest = new RemovalRequest(services.reportService, services.systemToken)
+  app.get('/request-removal/:statementId', flash(), csrf(), asyncMiddleware(removalRequest.view))
+  app.post('/request-removal/:statementId', flash(), asyncMiddleware(removalRequest.submit))
 
   app.use(authorisationMiddleware)
 
