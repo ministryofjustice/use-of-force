@@ -99,7 +99,7 @@ const token = ({ userName = 'TEST_USER', isReviewer = false, isCoordinator = fal
         Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
-        access_token: createClientCredsToken(isReviewer, isCoordinator),
+        access_token: createToken(isReviewer, isCoordinator),
         token_type: 'bearer',
         refresh_token: 'refresh',
         user_name: userName,
@@ -110,7 +110,7 @@ const token = ({ userName = 'TEST_USER', isReviewer = false, isCoordinator = fal
     },
   })
 
-const stubTokenCredentials = () =>
+const stubClientCredentialsToken = () =>
   stubFor({
     request: {
       method: 'POST',
@@ -122,7 +122,7 @@ const stubTokenCredentials = () =>
         'Content-Type': 'application/json;charset=UTF-8',
       },
       jsonBody: {
-        access_token: createToken(),
+        access_token: createClientCredsToken(),
         token_type: 'bearer',
         refresh_token: 'refresh',
         expires_in: 600,
@@ -235,5 +235,5 @@ module.exports = {
   stubFindUsers: ({ firstName, lastName, results }) => stubFindUser(firstName, lastName, results),
   stubUnverifiedUserDetailsRetrieval: username => Promise.all([stubUser(username), stubUnverifiedEmail(username)]),
   stubVerifyToken,
-  stubTokenCredentials,
+  stubClientCredentialsToken,
 }
