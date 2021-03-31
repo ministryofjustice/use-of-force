@@ -240,11 +240,27 @@ export default class StatementsClient {
     })
   }
 
-  async isStatementPresentForUser(reportId: number, username: string, query: QueryPerformer = this.query) {
+  async isStatementPresentForUser(
+    reportId: number,
+    username: string,
+    query: QueryPerformer = this.query
+  ): Promise<boolean> {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
       values: [reportId, username],
     })
     return parseInt(rows[0].count, 10) > 0
+  }
+
+  async requestStatementRemoval(statementId: number, reason: string): Promise<void> {
+    await this.query({
+      text: `update "statement"
+              set statement_status = $1
+              ,   removal_requested_date = now()
+              ,   removal_requested_reason = $2
+              ,   updated_date = now()
+              where id = $3`,
+      values: [StatementStatus.REMOVAL_REQUESTED.value, reason, statementId],
+    })
   }
 }

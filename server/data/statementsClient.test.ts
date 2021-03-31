@@ -247,3 +247,17 @@ test('isStatementPresentForUser', async () => {
     values: [1, 'user-1'],
   })
 })
+
+test('requestStatementRemoval', async () => {
+  await statementsClient.requestStatementRemoval(1, 'removal reason')
+
+  expect(query).toBeCalledWith({
+    text: `update "statement"
+              set statement_status = $1
+              ,   removal_requested_date = now()
+              ,   removal_requested_reason = $2
+              ,   updated_date = now()
+              where id = $3`,
+    values: [StatementStatus.REMOVAL_REQUESTED.value, 'removal reason', 1],
+  })
+})

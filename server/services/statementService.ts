@@ -61,4 +61,9 @@ export default class StatementService {
     logger.info(`Saving additional comment for statement with id: ${statementId}`)
     await this.statementsClient.saveAdditionalComment(statementId, additionalComment)
   }
+
+  async requestStatementRemoval(statementId: number, reason: string): Promise<void> {
+    logger.info(`Requesting removal from statement with id: ${statementId}`)
+    await this.statementsClient.requestStatementRemoval(statementId, reason)
+  }
 }

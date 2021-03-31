@@ -168,4 +168,11 @@ describe('statmentService', () => {
       )
     })
   })
+
+  describe('requestStatementRemoval', () => {
+    test('request statement removal', async () => {
+      await service.requestStatementRemoval(1, 'request reason')
+      expect(statementsClient.requestStatementRemoval).toBeCalledWith(1, 'request reason')
+    })
+  })
 })
