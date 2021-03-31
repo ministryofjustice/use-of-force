@@ -39,7 +39,7 @@ export type ReviewerStatement = {
   userId: string
   isOverdue: boolean
   isSubmitted: boolean
-  isDisputed: boolean
+  isRemovalRequested: boolean
   bookingId: number
   incidentDate: Date
   lastTrainingMonth: number
