@@ -46,6 +46,6 @@ module.exports = on => {
 
     stubVerifyToken: active => auth.stubVerifyToken(active),
 
-    stubTokenCredentials: auth.stubTokenCredentials,
+    stubClientCredentialsToken: auth.stubClientCredentialsToken,
   })
 }
