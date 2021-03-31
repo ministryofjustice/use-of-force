@@ -40,22 +40,22 @@ test('getStatementForUser', () => {
 
   expect(query).toBeCalledWith({
     text: `select s.id
-    ,      r.booking_id             "bookingId"
-    ,      r.incident_date          "incidentDate"
-    ,      s.last_training_month    "lastTrainingMonth"
-    ,      s.last_training_year     "lastTrainingYear"
-    ,      s.job_start_year         "jobStartYear"
-    ,      s.statement
-    ,      s.submitted_date         "submittedDate"
-    ,      s.name                   "name"
-    ,      r.reporter_name          "reporterName"
-    from report r
-    left join statement s on r.id = s.report_id
-    where r.id = $1
-      and r.deleted is null
-      and s.user_id = $2
-      and s.statement_status = $3
-      and s.deleted is null`,
+            ,      r.booking_id             "bookingId"
+            ,      r.incident_date          "incidentDate"
+            ,      s.last_training_month    "lastTrainingMonth"
+            ,      s.last_training_year     "lastTrainingYear"
+            ,      s.job_start_year         "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date         "submittedDate"
+            ,      s.name                   "name"
+            ,      r.reporter_name          "reporterName"
+            from report r
+            left join statement s on r.id = s.report_id
+            where r.id = $1
+              and r.deleted is null
+              and s.user_id = $2
+              and s.statement_status = $3
+              and s.deleted is null`,
     values: [19, 'user-1', StatementStatus.PENDING.value],
   })
 })
@@ -189,14 +189,25 @@ test('getStatementsForReviewer', () => {
   statementsClient.getStatementsForReviewer(1)
 
   expect(query).toBeCalledWith({
-    text: `select id
-            ,      name
-            ,      user_id                  "userId"
-            ,      overdue_date <= now()    "isOverdue"
-            ,      statement_status = $1    "isSubmitted"
-            from v_statement where report_id = $2
-            order by name`,
-    values: [StatementStatus.SUBMITTED.value, 1],
+    text: `select s.id
+            ,      r.id                       "reportId"
+            ,      s.name
+            ,      s.user_id                  "userId"
+            ,      s.overdue_date <= now()    "isOverdue"
+            ,      s.statement_status = $1    "isSubmitted"
+            ,      s.statement_status = $2    "isDisputed"
+            ,      r.booking_id               "bookingId"
+            ,      r.incident_date            "incidentDate"
+            ,      s.last_training_month      "lastTrainingMonth"
+            ,      s.last_training_year       "lastTrainingYear"
+            ,      s.job_start_year           "jobStartYear"
+            ,      s.statement  
+            ,      s.submitted_date           "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where report_id = $3
+            order by s.name`,
+    values: [StatementStatus.SUBMITTED.value, StatementStatus.DISPUTED.value, 1],
   })
 })
 
@@ -205,20 +216,23 @@ test('getStatementForReviewer', () => {
 
   expect(query).toBeCalledWith({
     text: `select s.id
-    ,      r.id                     "reportId"
-    ,      s.name
-    ,      r.booking_id             "bookingId"
-    ,      r.incident_date          "incidentDate"
-    ,      s.last_training_month    "lastTrainingMonth"
-    ,      s.last_training_year     "lastTrainingYear"
-    ,      s.job_start_year         "jobStartYear"
-    ,      s.statement
-    ,      s.submitted_date         "submittedDate"
-    from report r
-    left join statement s on r.id = s.report_id
-    where s.id = $1
-    and s.deleted is null`,
-    values: [1],
+            ,      r.id                       "reportId"
+            ,      s.name
+            ,      s.user_id                  "userId"
+            ,      s.overdue_date <= now()    "isOverdue"
+            ,      s.statement_status = $1    "isSubmitted"
+            ,      s.statement_status = $2    "isDisputed"
+            ,      r.booking_id               "bookingId"
+            ,      r.incident_date            "incidentDate"
+            ,      s.last_training_month      "lastTrainingMonth"
+            ,      s.last_training_year       "lastTrainingYear"
+            ,      s.job_start_year           "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date           "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where s.id = $3`,
+    values: [StatementStatus.SUBMITTED.value, StatementStatus.DISPUTED.value, 1],
   })
 })
 

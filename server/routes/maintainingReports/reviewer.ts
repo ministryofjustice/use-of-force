@@ -78,27 +78,22 @@ export default class ReviewerRoutes {
     )
     const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
-    const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab }
-
     const reportDataForPrint = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
-    const submittedStatements = statements.filter(stmnt => stmnt.isSubmitted)
-
-    const statementsWithNarrative = await Promise.all(
-      submittedStatements.map(statement => this.reviewService.getStatement(statement.id))
-    )
-
     return res.render('pages/reviewer/view-statements', {
-      data,
+      data: { incidentId: reportId, reporterName, submittedDate, offenderDetail, statements, tab },
       reportDataForPrint,
-      statements: statementsWithNarrative,
+      statements: statements.filter(stmnt => stmnt.isSubmitted),
     })
   }
 
   reviewStatement = async (req: Request, res: Response): Promise<void> => {
     const { statementId } = req.params
 
-    const statement = await this.reviewService.getStatement(parseInt(statementId, 10))
+    const statement = await this.reviewService.getStatement(
+      await this.systemToken(res.locals.user.username),
+      parseInt(statementId, 10)
+    )
 
     const offenderDetail = await this.offenderService.getOffenderDetails(
       await this.systemToken(res.locals.user.username),

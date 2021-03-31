@@ -7,10 +7,10 @@ import type {
   AdditionalComment,
   UsernameToStatementIds,
   StatementUpdate,
+  ReviewerStatement,
 } from './statementsClientTypes'
-import { Status } from '../services/statementServiceTypes'
 import type { DraftInvolvedStaff } from '../services/drafts/draftInvolvedStaffService'
-import { StatementStatus } from '../config/types'
+import { StatementStatus, LabelledValue } from '../config/types'
 
 type StatementCreationResult = { id: number; userId: string }
 
@@ -41,61 +41,75 @@ export default class StatementsClient {
     return buildPageResponse(result.rows, page)
   }
 
-  async getStatementForUser(userId: string, reportId: number, status: Status): Promise<Statement> {
+  async getStatementForUser(userId: string, reportId: number, status: LabelledValue): Promise<Statement> {
     const results = await this.query({
       text: `select s.id
-    ,      r.booking_id             "bookingId"
-    ,      r.incident_date          "incidentDate"
-    ,      s.last_training_month    "lastTrainingMonth"
-    ,      s.last_training_year     "lastTrainingYear"
-    ,      s.job_start_year         "jobStartYear"
-    ,      s.statement
-    ,      s.submitted_date         "submittedDate"
-    ,      s.name                   "name"
-    ,      r.reporter_name          "reporterName"
-    from report r
-    left join statement s on r.id = s.report_id
-    where r.id = $1
-      and r.deleted is null
-      and s.user_id = $2
-      and s.statement_status = $3
-      and s.deleted is null`,
+            ,      r.booking_id             "bookingId"
+            ,      r.incident_date          "incidentDate"
+            ,      s.last_training_month    "lastTrainingMonth"
+            ,      s.last_training_year     "lastTrainingYear"
+            ,      s.job_start_year         "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date         "submittedDate"
+            ,      s.name                   "name"
+            ,      r.reporter_name          "reporterName"
+            from report r
+            left join statement s on r.id = s.report_id
+            where r.id = $1
+              and r.deleted is null
+              and s.user_id = $2
+              and s.statement_status = $3
+              and s.deleted is null`,
       values: [reportId, userId, status.value],
     })
     return results.rows[0]
   }
 
-  async getStatementForReviewer(statementId: number) {
+  async getStatementForReviewer(statementId: number): Promise<ReviewerStatement> {
     const results = await this.query({
       text: `select s.id
-    ,      r.id                     "reportId"
-    ,      s.name
-    ,      r.booking_id             "bookingId"
-    ,      r.incident_date          "incidentDate"
-    ,      s.last_training_month    "lastTrainingMonth"
-    ,      s.last_training_year     "lastTrainingYear"
-    ,      s.job_start_year         "jobStartYear"
-    ,      s.statement
-    ,      s.submitted_date         "submittedDate"
-    from report r
-    left join statement s on r.id = s.report_id
-    where s.id = $1
-    and s.deleted is null`,
-      values: [statementId],
+            ,      r.id                       "reportId"
+            ,      s.name
+            ,      s.user_id                  "userId"
+            ,      s.overdue_date <= now()    "isOverdue"
+            ,      s.statement_status = $1    "isSubmitted"
+            ,      s.statement_status = $2    "isDisputed"
+            ,      r.booking_id               "bookingId"
+            ,      r.incident_date            "incidentDate"
+            ,      s.last_training_month      "lastTrainingMonth"
+            ,      s.last_training_year       "lastTrainingYear"
+            ,      s.job_start_year           "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date           "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where s.id = $3`,
+      values: [StatementStatus.SUBMITTED.value, StatementStatus.DISPUTED.value, statementId],
     })
     return results.rows[0]
   }
 
-  async getStatementsForReviewer(reportId: number) {
+  async getStatementsForReviewer(reportId: number): Promise<ReviewerStatement[]> {
     const results = await this.query({
-      text: `select id
-            ,      name
-            ,      user_id                  "userId"
-            ,      overdue_date <= now()    "isOverdue"
-            ,      statement_status = $1    "isSubmitted"
-            from v_statement where report_id = $2
-            order by name`,
-      values: [StatementStatus.SUBMITTED.value, reportId],
+      text: `select s.id
+            ,      r.id                       "reportId"
+            ,      s.name
+            ,      s.user_id                  "userId"
+            ,      s.overdue_date <= now()    "isOverdue"
+            ,      s.statement_status = $1    "isSubmitted"
+            ,      s.statement_status = $2    "isDisputed"
+            ,      r.booking_id               "bookingId"
+            ,      r.incident_date            "incidentDate"
+            ,      s.last_training_month      "lastTrainingMonth"
+            ,      s.last_training_year       "lastTrainingYear"
+            ,      s.job_start_year           "jobStartYear"
+            ,      s.statement  
+            ,      s.submitted_date           "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where report_id = $3
+            order by s.name`,
+      values: [StatementStatus.SUBMITTED.value, StatementStatus.DISPUTED.value, reportId],
     })
     return results.rows
   }

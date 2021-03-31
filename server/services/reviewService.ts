@@ -3,6 +3,7 @@ import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummar
 import { PageResponse, toPage } from '../utils/page'
 import { IncidentClient, StatementsClient, RestClientBuilder, AuthClient } from '../data'
 import OffenderService from './offenderService'
+import { AdditionalComment, ReviewerStatement } from '../data/statementsClientTypes'
 
 export interface IncidentSummary {
   id: number
@@ -29,18 +30,21 @@ const toIncidentSummary = (namesByOffenderNumber: NamesByOffenderNumber) => (
   offenderNo: reportSummary.offenderNo,
 })
 
-// Surely this is defined somewhere useful? In a base set of typescript types perhaps?
-interface Predicate<T> {
-  (x: T): boolean
-}
+type Predicate<T> = (t: T) => boolean
 
 const offenderNameFilter = (nameToMatch?: string): Predicate<IncidentSummary> => {
-  const regexp = new RegExp(`^.*${nameToMatch}.*$`, 'i')
+  const safeString = nameToMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regexp = new RegExp(`^.*${safeString}.*$`, 'i')
   return incidentSummary => regexp.test(incidentSummary.offenderName)
 }
 
 export interface ReportQuery extends IncidentSearchQuery {
   prisonerName?: string
+}
+
+export type ReviewerStatementWithComments = ReviewerStatement & {
+  additionalComments: AdditionalComment[]
+  isVerified: boolean
 }
 
 export default class ReviewService {
@@ -51,14 +55,6 @@ export default class ReviewService {
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken
   ) {}
-
-  private async statementsWithVerifiedInfo(token: string, statements: any[]): Promise<any[]> {
-    const authClient = this.authClientBuilder(token)
-    const results = statements.map(statement =>
-      authClient.getEmail(statement.userId).then(email => ({ ...statement, isVerified: email.verified }))
-    )
-    return Promise.all(results)
-  }
 
   async getReport(reportId: number): Promise<Report> {
     const report = await this.incidentClient.getReportForReviewer(reportId)
@@ -100,17 +96,25 @@ export default class ReviewService {
     return incomplete.map(toIncidentSummary(namesByOffenderNumber))
   }
 
-  async getStatements(token: string, reportId: number) {
+  async getStatements(token: string, reportId: number): Promise<ReviewerStatementWithComments[]> {
     const statements = await this.statementsClient.getStatementsForReviewer(reportId)
-    return this.statementsWithVerifiedInfo(token, statements)
+    const authClient = this.authClientBuilder(token)
+    return Promise.all(statements.map(statement => this.decorateStatement(authClient, statement)))
   }
 
-  async getStatement(statementId: number) {
+  async getStatement(token: string, statementId: number): Promise<ReviewerStatementWithComments> {
     const statement = await this.statementsClient.getStatementForReviewer(statementId)
     if (!statement) {
       throw new Error(`Statement: '${statementId}' does not exist`)
     }
-    const additionalComments = await this.statementsClient.getAdditionalComments(statement.id)
-    return { additionalComments, ...statement }
+    const authClient = this.authClientBuilder(token)
+    return this.decorateStatement(authClient, statement)
+  }
+
+  private async decorateStatement(authClient: AuthClient, statement: ReviewerStatement) {
+    return Promise.all([
+      this.statementsClient.getAdditionalComments(statement.id),
+      authClient.getEmail(statement.userId),
+    ]).then(([additionalComments, email]) => ({ ...statement, additionalComments, isVerified: email.verified }))
   }
 }

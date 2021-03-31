@@ -29,7 +29,9 @@ const draftInvolvedStaffService = new DraftInvolvedStaffService(
   null,
   null
 ) as jest.Mocked<DraftInvolvedStaffService>
+
 const aUser = username => ({ username } as FoundUserResult)
+const isReportCompleteMock = isReportComplete as jest.Mock
 
 let service: DraftReportService
 
@@ -65,7 +67,7 @@ describe('getUoFReasonState', () => {
   })
 
   test('it should return when present', async () => {
-    ;(isReportComplete as jest.Mock).mockReturnValue(false)
+    isReportCompleteMock.mockReturnValue(false)
     const reasonsForUseOfForce = {
       reasons: [
         'ASSAULT_ON_ANOTHER_PRISONER',
@@ -83,14 +85,14 @@ describe('getUoFReasonState', () => {
   })
 
   test('it should handle when absent', async () => {
-    ;(isReportComplete as jest.Mock).mockReturnValue(false)
+    isReportCompleteMock.mockReturnValue(false)
     draftReportClient.get.mockResolvedValue({ form: {} })
     const result = await service.getUoFReasonState('user1', 1)
     expect(result).toStrictEqual({ isComplete: false, primaryReason: undefined, reasons: [] })
   })
 
   test('when form is complete', async () => {
-    ;(isReportComplete as jest.Mock).mockReturnValue(true)
+    isReportCompleteMock.mockReturnValue(true)
     draftReportClient.get.mockResolvedValue({ form: {} })
     const result = await service.getUoFReasonState('user1', 1)
     expect(result).toStrictEqual({ isComplete: true, primaryReason: undefined, reasons: [] })

@@ -1,9 +1,10 @@
-import { IncidentClient, StatementsClient, AuthClient } from '../data'
+import { IncidentClient, StatementsClient, AuthClient, RestClientBuilder } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import { EmailResult } from '../data/authClient'
+import { ReviewerStatement } from '../data/statementsClientTypes'
 
 jest.mock('../data')
 jest.mock('./offenderService')
@@ -11,15 +12,15 @@ jest.mock('./offenderService')
 const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
-
-const authClientBuilder = jest.fn().mockReturnValue(authClient)
-
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 let service: ReviewService
+let authClientBuilder: RestClientBuilder<AuthClient>
 
 describe('reviewService', () => {
   beforeEach(() => {
+    authClientBuilder = jest.fn().mockReturnValue(authClient)
+
     service = new ReviewService(
       statementsClient,
       incidentClient,
@@ -37,7 +38,7 @@ describe('reviewService', () => {
     authClient.getEmail
       .mockResolvedValueOnce({ verified: false } as EmailResult)
       .mockResolvedValueOnce({ verified: true } as EmailResult)
-    statementsClient.getStatementsForReviewer.mockResolvedValue([{ id: 1 }, { id: 2 }])
+    statementsClient.getStatementsForReviewer.mockResolvedValue([{ id: 1 }, { id: 2 }] as ReviewerStatement[])
 
     const statements = await service.getStatements('token-1', 1)
 
@@ -51,8 +52,8 @@ describe('reviewService', () => {
   describe('getStatement', () => {
     test('success', async () => {
       const date = new Date('2019-03-05 01:03:28')
-      statementsClient.getStatementForReviewer.mockResolvedValue({ id: 2 })
-
+      statementsClient.getStatementForReviewer.mockResolvedValue({ userId: 'USER_1', id: 2 } as ReviewerStatement)
+      authClient.getEmail.mockResolvedValue({ verified: true } as EmailResult)
       statementsClient.getAdditionalComments.mockResolvedValue([
         {
           additionalComment: 'comment1',
@@ -60,10 +61,12 @@ describe('reviewService', () => {
         },
       ])
 
-      const output = await service.getStatement(1)
+      const output = await service.getStatement('token-1', 1)
 
       expect(output).toEqual({
         id: 2,
+        userId: 'USER_1',
+        isVerified: true,
         additionalComments: [
           {
             additionalComment: 'comment1',
@@ -72,13 +75,15 @@ describe('reviewService', () => {
         ],
       })
 
+      expect(authClientBuilder).toBeCalledWith('token-1')
+      expect(authClient.getEmail).toBeCalledWith('USER_1')
       expect(statementsClient.getStatementForReviewer).toBeCalledWith(1)
     })
 
     test('failed as no statement', async () => {
       statementsClient.getStatementForReviewer.mockReturnValue(null)
 
-      await expect(service.getStatement(1)).rejects.toThrow("Statement: '1' does not exist")
+      await expect(service.getStatement('token-1', 1)).rejects.toThrow("Statement: '1' does not exist")
     })
   })
 
@@ -194,6 +199,20 @@ describe('reviewService', () => {
       )
       expect(incidentClient.getAllCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
       expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+    })
+
+    test('escapes regex characters when filtering by prisoner name', async () => {
+      const query = { prisonerName: 'b.a[?d' }
+
+      incidentClient.getAllCompletedReportsForReviewer.mockResolvedValue([reportSummary(1), reportSummary(2)])
+
+      offenderService.getOffenderNames.mockResolvedValue({
+        'offender-1': 'Prisoner prisoner-1',
+        'offender-2': 'Prisoner prisoner-2',
+      })
+
+      const result = await service.getCompletedReports('userName', 'agency-1', query, 1)
+      expect(result).toEqual(new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
     })
   })
 })
