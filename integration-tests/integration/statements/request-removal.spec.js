@@ -5,7 +5,7 @@ const { ReportStatus } = require('../../../dist/server/config/types')
 context('Request removal', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubTokenCredentials')
+    cy.task('stubClientCredentialsToken')
     cy.task('stubPrison', 'MDI')
   })
 
