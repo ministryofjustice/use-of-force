@@ -29,6 +29,7 @@ import authorisationMiddleware from './middleware/authorisationMiddleware'
 import errorHandler from './errorHandler'
 
 import config from './config'
+import unauthenticatedRoutes from './routes/unauthenticated'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -246,9 +247,9 @@ export default function createApp(services: Services): Express {
     res.redirect(authLogoutUrl)
   })
 
-  const currentUserInContext = populateCurrentUser(services.userService)
-  app.use(currentUserInContext)
+  app.use(populateCurrentUser(services.userService))
 
+  app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)
 
   app.use(createRouter(authenticationMiddleware, services))

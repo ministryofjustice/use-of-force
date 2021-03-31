@@ -45,5 +45,7 @@ module.exports = on => {
     stubUnverifiedUserDetailsRetrieval: auth.stubUnverifiedUserDetailsRetrieval,
 
     stubVerifyToken: active => auth.stubVerifyToken(active),
+
+    stubClientCredentialsToken: auth.stubClientCredentialsToken,
   })
 }

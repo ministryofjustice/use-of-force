@@ -2,7 +2,7 @@ import express, { Express, RequestHandler } from 'express'
 import cookieSession from 'cookie-session'
 import createError from 'http-errors'
 
-import allRoutes from '../index'
+import authenticatedRoutes from '../index'
 import * as db from '../../data/dataAccess/db'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
@@ -22,6 +22,7 @@ import type {
   PrisonerSearchService,
 } from '../../services'
 import UserService from '../../services/userService'
+import unauthenticatedRoutes from '../unauthenticated'
 
 export const user = {
   firstName: 'first',
@@ -58,11 +59,12 @@ export const coordinatorUser = {
   activeCaseLoadId: 'LEI',
 }
 
-export const appSetup = (
-  route: RequestHandler,
-  userSupplier = (): any => user,
-  isProduction = false,
-  flash = jest.fn().mockReturnValue([])
+const appSetup = (
+  authenticated: RequestHandler,
+  unauthenticated: RequestHandler,
+  userSupplier,
+  isProduction,
+  flash
 ): Express => {
   const app = express()
 
@@ -83,7 +85,8 @@ export const appSetup = (
   app.use(cookieSession({ keys: [''] }))
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
-  app.use('/', route)
+  app.use(unauthenticated)
+  app.use(authenticated)
   app.use((req, res, next) => {
     next(createError(404, 'Not found'))
   })
@@ -98,7 +101,7 @@ export const appWithAllRoutes = (
   isProduction?: boolean,
   flash = jest.fn().mockReturnValue([])
 ): Express => {
-  const route = allRoutes(authenticationMiddleware, {
+  const services = {
     statementService: {} as StatementService,
     offenderService: {} as OffenderService,
     reportService: {} as ReportService,
@@ -113,6 +116,8 @@ export const appWithAllRoutes = (
     reportingService: {} as ReportingService,
     signInService: {} as any,
     ...overrides,
-  })
-  return appSetup(route, userSupplier, isProduction, flash)
+  }
+  const authenticated = authenticatedRoutes(authenticationMiddleware, services)
+  const unauthenticated = unauthenticatedRoutes(services)
+  return appSetup(authenticated, unauthenticated, userSupplier, isProduction, flash)
 }
