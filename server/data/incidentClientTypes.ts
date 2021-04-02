@@ -24,6 +24,7 @@ export interface AnonReportSummary {
 
 export interface IncompleteReportSummary extends ReportSummary {
   isOverdue?: boolean
+  isRemovalRequested?: boolean
 }
 
 export interface Report extends ReportSummary {

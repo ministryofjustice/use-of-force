@@ -127,6 +127,17 @@ describe(`GET /completed-incidents`, () => {
 })
 
 describe(`GET /not-completed-incidents`, () => {
+  const commonReportData = {
+    id: 1,
+    bookingId: 1,
+    incidentdate: new Date(),
+    staffMemberName: 'Coordinator Use-Of-Force',
+    isOverdue: true,
+    isRemovalRequested: false,
+    offenderName: 'Strudwick, Stephen',
+    offenderNo: 'Z0019ZZ',
+  }
+
   it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
 
@@ -147,6 +158,43 @@ describe(`GET /not-completed-incidents`, () => {
       .expect(401)
       .expect(res => expect(res.text).toContain('Not authorised to access this resource'))
   })
+
+  it('should display the OVERDUE badge but not REMOVAL REQUEST badge', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getIncompleteReports.mockResolvedValue([
+      { ...commonReportData, isOverdue: true, isRemovalRequested: false },
+    ])
+
+    return request(app)
+      .get('/not-completed-incidents')
+      .expect(200)
+      .expect(res => expect(res.text).toContain('OVERDUE'))
+      .expect(res => expect(res.text).not.toContain('REMOVAL REQUEST'))
+  })
+  it('should display the REMOVAL REQUEST badge but not OVERDUE badge', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getIncompleteReports.mockResolvedValue([
+      { ...commonReportData, isOverdue: false, isRemovalRequested: true },
+    ])
+
+    return request(app)
+      .get('/not-completed-incidents')
+      .expect(200)
+      .expect(res => expect(res.text).not.toContain('OVERDUE'))
+      .expect(res => expect(res.text).toContain('REMOVAL REQUEST'))
+  })
+  it('should display both the REMOVAL REQUEST and OVERDUE badges', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getIncompleteReports.mockResolvedValue([
+      { ...commonReportData, isOverdue: true, isRemovalRequested: true },
+    ])
+
+    return request(app)
+      .get('/not-completed-incidents')
+      .expect(200)
+      .expect(res => expect(res.text).toContain('OVERDUE'))
+      .expect(res => expect(res.text).toContain('REMOVAL REQUEST'))
+  })
 })
 
 describe('GET /view-report', () => {
@@ -165,6 +213,23 @@ describe('GET /view-report', () => {
 })
 
 describe('GET /view-statements', () => {
+  const commonStatementData = {
+    id: 1,
+    reportId: 10,
+    name: 'Mr Coordinator',
+    userId: 'COORDINATOR_USER',
+    isSubmitted: false,
+    bookingId: 1,
+    incidentDate: new Date(),
+    lastTrainingMonth: null,
+    lastTrainingYear: null,
+    jobStartYear: null,
+    statement: null,
+    submittedDate: null,
+    additionalComments: [],
+    isVerified: true,
+  }
+
   it('should render page if reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
     reviewService.getReport.mockResolvedValue(report)
@@ -237,6 +302,74 @@ describe('GET /view-statements', () => {
         expect(res.text).not.toContain(statementTwo.statement)
         expect(res.text).toContain(statementThree.statement)
         expect(reviewService.getStatements).toHaveBeenCalledWith('user1-system-token', 1)
+      })
+  })
+
+  it('should display OVERDUE badge but not REMOVAL REQUEST badge or removal request link', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getStatements.mockResolvedValue([
+      { ...commonStatementData, isOverdue: true, isRemovalRequested: false },
+    ])
+
+    return request(app)
+      .get('/10/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('OVERDUE')
+        expect(res.text).not.toContain('REMOVAL REQUEST')
+        expect(res.text).not.toContain('View removal request')
+      })
+  })
+
+  it('should display REMOVAL REQUEST badge and removal request link but not OVERDUE badge', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getStatements.mockResolvedValue([
+      { ...commonStatementData, isOverdue: false, isRemovalRequested: true },
+    ])
+
+    return request(app)
+      .get('/10/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('OVERDUE')
+        expect(res.text).toContain('REMOVAL REQUEST')
+        expect(res.text).toContain('View removal request')
+      })
+  })
+
+  it('should display REMOVAL REQUEST badge and removal request link but not OVERDUE badge, because of overriding', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getStatements.mockResolvedValue([
+      { ...commonStatementData, isOverdue: true, isRemovalRequested: true },
+    ])
+
+    return request(app)
+      .get('/10/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('OVERDUE')
+        expect(res.text).toContain('REMOVAL REQUEST')
+        expect(res.text).toContain('View removal request')
+      })
+  })
+
+  it('should not display REMOVAL REQUEST, OVERDUE or removal request link', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getStatements.mockResolvedValue([
+      { ...commonStatementData, isOverdue: false, isRemovalRequested: false },
+    ])
+
+    return request(app)
+      .get('/10/view-statements')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('OVERDUE')
+        expect(res.text).not.toContain('REMOVAL REQUEST')
+        expect(res.text).not.toContain('View removal request')
       })
   })
 })
