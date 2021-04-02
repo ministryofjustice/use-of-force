@@ -11,6 +11,7 @@ export interface IncidentSummary {
   incidentdate: Date
   staffMemberName: string
   isOverdue: boolean
+  isRemovalRequested: boolean
   offenderName: string
   offenderNo: string
 }
@@ -26,6 +27,7 @@ const toIncidentSummary = (namesByOffenderNumber: NamesByOffenderNumber) => (
   incidentdate: reportSummary.incidentDate,
   staffMemberName: reportSummary.reporterName,
   isOverdue: 'isOverdue' in reportSummary ? reportSummary?.isOverdue : false,
+  isRemovalRequested: 'isRemovalRequested' in reportSummary ? reportSummary?.isRemovalRequested : false,
   offenderName: namesByOffenderNumber[reportSummary.offenderNo],
   offenderNo: reportSummary.offenderNo,
 })

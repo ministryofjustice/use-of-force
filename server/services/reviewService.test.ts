@@ -117,6 +117,7 @@ describe('reviewService', () => {
       incidentdate: new Date(id),
       staffMemberName: `reporter-${id}`,
       isOverdue: false,
+      isRemovalRequested: false,
       offenderName: `Prisoner prisoner-${id}`,
       offenderNo: `offender-${id}`,
     })
@@ -151,6 +152,7 @@ describe('reviewService', () => {
       incidentdate: new Date(id),
       staffMemberName: `reporter-${id}`,
       isOverdue: false,
+      isRemovalRequested: false,
       offenderName: `Prisoner prisoner-${id}`,
       offenderNo: `offender-${id}`,
     })
