@@ -10,3 +10,7 @@
 <span data-qa="{{props.qa}}" class="moj-badge moj-badge--red">{{props.text}}</span>
 {% endmacro %}
 
+
+{% macro removalRequestedBadge(props) %}
+<span data-qa="{{props.qa}}" class="moj-badge moj-badge--bright-purple {{props.class}}">{{props.text}}</span>
+{% endmacro %}
