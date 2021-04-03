@@ -42,9 +42,6 @@
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{statement.name }}</td>
             <td class="govuk-table__cell">
-              {% if not statement.isVerified %}
-                <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
-              {% endif %}
 
               {% set removalRequested = statement.isRemovalRequested %}
 
@@ -64,6 +61,13 @@
                   }) 
                 }}                  
               {% endif %}
+
+              {% if not statement.isVerified and (removalRequested or statement.isOverdue) %}
+              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3 govuk-!-margin-top-1">EMAIL NOT VERIFIED </span>
+              {% elif not statement.isVerified %}
+              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3">EMAIL NOT VERIFIED </span>
+              {% endif %}
+
             </td>
 
             <td class="govuk-table__cell">
