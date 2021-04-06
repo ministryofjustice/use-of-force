@@ -31,8 +31,7 @@ context('Request removal', () => {
 
   it('A user can submit their statement removal request', () => {
     seedReport().then(statementId => {
-      cy.task('updateStatementId', { oldId: statementId, newId: 10 })
-      const requestRemovalPage = RequestRemovalPage.visit(10, 'mrsSjv9LqjClfvuNubYx4ACALTltJvqLmXYE0TKz6Xo=')
+      const requestRemovalPage = RequestRemovalPage.visit(statementId)
       requestRemovalPage.incidentDate().contains('22 January 2019')
       requestRemovalPage.incidentTime().contains('09:57')
       requestRemovalPage.prisonName().contains('Moorland')
@@ -45,8 +44,7 @@ context('Request removal', () => {
 
   it('A user will be shown a validation message when no reason is provided', () => {
     seedReport().then(statementId => {
-      cy.task('updateStatementId', { oldId: statementId, newId: 10 })
-      const requestRemovalPage = RequestRemovalPage.visit(10, 'mrsSjv9LqjClfvuNubYx4ACALTltJvqLmXYE0TKz6Xo=')
+      const requestRemovalPage = RequestRemovalPage.visit(statementId)
       requestRemovalPage.incidentDate().contains('22 January 2019')
       requestRemovalPage.incidentTime().contains('09:57')
       requestRemovalPage.prisonName().contains('Moorland')
@@ -60,9 +58,8 @@ context('Request removal', () => {
   })
 
   it('A user will be shown a message if trying to request removal from deleted statement', () => {
-    seedReport().then(statementId => {
-      cy.task('updateStatementId', { oldId: statementId, newId: 11 })
-      RequestRemovalPage.goTo(10, 'mrsSjv9LqjClfvuNubYx4ACALTltJvqLmXYE0TKz6Xo=')
+    seedReport().then(() => {
+      RequestRemovalPage.goTo(10)
       AlreadyRemovedPage.verifyOnPage()
     })
   })

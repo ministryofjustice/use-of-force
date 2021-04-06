@@ -18,7 +18,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
   const asTime = date => moment(date).format('HH:mm')
 
   const getRemovalRequestLink = statementId => {
-    const hash = stringToHash(statementId, email.urlSigningSecret)
+    const hash = stringToHash(statementId.toString(), email.urlSigningSecret)
     return `${emailUrl}/request-removal/${statementId}?signature=${hash}`
   }
 

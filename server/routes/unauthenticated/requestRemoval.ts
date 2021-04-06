@@ -15,11 +15,14 @@ export default class RemovalRequest {
     private readonly systemToken: SystemToken
   ) {}
 
+  private isSignatureValid = (statementId: unknown, signature: unknown): boolean =>
+    isHashOfString(signature?.toString() || '', statementId.toString(), config.email.urlSigningSecret)
+
   view: RequestHandler = async (req, res, next) => {
     const statementId = extractStatementId(req)
     const { signature } = req.query
 
-    if (!isHashOfString(signature?.toString() || '', statementId.toString(), config.email.urlSigningSecret)) {
+    if (!this.isSignatureValid(statementId, signature)) {
       return next(createHttpError(404, 'Not found'))
     }
 
@@ -36,7 +39,7 @@ export default class RemovalRequest {
     const statementId = extractStatementId(req)
     const { reason, signature } = req.body
 
-    if (!isHashOfString(signature?.toString() || '', statementId.toString(), config.email.urlSigningSecret)) {
+    if (!this.isSignatureValid(statementId, signature)) {
       return next(createHttpError(404, 'Not found'))
     }
 
@@ -47,7 +50,7 @@ export default class RemovalRequest {
           href: '#reason',
         },
       ])
-      return res.redirect(paths.requestRemoval(statementId, signature))
+      return res.redirect(paths.requestRemoval(statementId, encodeURIComponent(signature)))
     }
 
     await this.statementService.requestStatementRemoval(statementId, reason)

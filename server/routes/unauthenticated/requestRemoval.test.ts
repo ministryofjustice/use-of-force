@@ -95,7 +95,7 @@ describe('Request removal controller', () => {
         .post(paths.requestRemoval(1))
         .send({ signature: validSignature })
         .expect(302)
-        .expect('Location', `/request-removal/1?signature=${validSignature}`)
+        .expect('Location', `/request-removal/1?signature=${encodeURIComponent(validSignature)}`)
         .expect(() => {
           expect(statementService.requestStatementRemoval).not.toBeCalled()
           expect(flash).toBeCalledWith('errors', [

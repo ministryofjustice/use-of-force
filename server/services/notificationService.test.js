@@ -17,7 +17,7 @@ const eventPublisher = {
 }
 
 let service
-const context = { reportId: 1, statementId: '2' }
+const context = { reportId: 1, statementId: 2 }
 
 beforeEach(() => {
   client.sendEmail.mockResolvedValue({ body: 'response 1' })
@@ -56,7 +56,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementReminderSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -78,7 +78,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementOverdueSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -109,7 +109,7 @@ describe('send involved staff notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementReminderSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -136,7 +136,7 @@ describe('send involved staff notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementOverdueSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -166,7 +166,7 @@ describe('send involved staff notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -198,7 +198,7 @@ describe('send involved staff notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestFailure',
-      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'message 1',
     })
   })
