@@ -1,5 +1,4 @@
 import R from 'ramda'
-import crypto from 'crypto'
 import moment, { Moment } from 'moment'
 
 export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
@@ -45,11 +44,3 @@ export const properCaseFullName = (name: string): string =>
         .filter(s => s.trim().length)
         .map(properCaseName)
         .join(' ')
-
-export const stringToHash = (inputString: string, salt: string): string => {
-  return crypto.createHash('sha256').update(`${inputString}${salt}`).digest('base64')
-}
-
-export const isHashOfString = (hashValue: string, originalString: string, salt: string): boolean => {
-  return hashValue === stringToHash(originalString, salt)
-}

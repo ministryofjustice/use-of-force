@@ -102,7 +102,7 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
@@ -129,7 +129,7 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
@@ -159,7 +159,7 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
@@ -191,7 +191,7 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
@@ -206,7 +206,7 @@ describe('send involved staff notifications', () => {
   describe('getRemovalRequestLink', () => {
     it('should create correctly hashed url', () => {
       const result = service.getRemovalRequestLink('123')
-      expect(result).toEqual(`${emailUrl}/request-removal/123?signature=L1eMGRpPwQqiUuuK8Tn6hKqfZDNghdgL3uX5E8mxi4o=`)
+      expect(result).toEqual(`${emailUrl}/request-removal/123?signature=hESh8cNdn2xMrSDMWHfScbm7jgo20W94cx6+7CA31H0=`)
     })
   })
 })

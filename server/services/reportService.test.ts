@@ -54,6 +54,14 @@ describe('getAnonReportSummary', () => {
     expect(locationService.getPrisonById).toBeCalledWith('token-1', 'MDI')
     expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
   })
+
+  test('should handle when report doesnt exist', async () => {
+    incidentClient.getAnonReportSummary.mockResolvedValue(undefined)
+
+    await expect(service.getAnonReportSummary('token-1', 1)).resolves.toStrictEqual(undefined)
+    expect(locationService.getPrisonById).not.toBeCalled()
+    expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
+  })
 })
 
 describe('getReports', () => {

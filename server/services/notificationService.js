@@ -1,7 +1,7 @@
 const { NotifyClient } = require('notifications-node-client')
 const moment = require('moment')
 const { email } = require('../config')
-const { stringToHash } = require('../utils/utils')
+const { stringToHash } = require('../utils/hash')
 const {
   links: { emailUrl },
   email: {

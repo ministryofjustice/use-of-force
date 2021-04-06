@@ -18,9 +18,12 @@ const requestRemovalPage = () =>
   })
 
 module.exports = {
-  visit: statementId => {
-    cy.visit(`/request-removal/${statementId}`)
+  visit: (statementId, signature) => {
+    cy.visit(`/request-removal/${statementId}?signature=${signature}`)
     return requestRemovalPage()
+  },
+  goTo: (statementId, signature) => {
+    cy.visit(`/request-removal/${statementId}?signature=${signature}`)
   },
   verifyOnPage: requestRemovalPage,
 }

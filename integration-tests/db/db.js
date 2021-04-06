@@ -113,11 +113,17 @@ const getReportCount = statuses => {
     .then(result => parseInt(result.rows[0].count, 10))
 }
 
+const updateStatementId = ({ newId, oldId }) =>
+  db.query({
+    text: format(`UPDATE statement set id = %L WHERE id = %L`, newId, oldId),
+  })
+
 module.exports = {
   getStatementForUser,
   getAllStatementsForReport,
   seedReport,
   seedReports,
+  updateStatementId,
   submitStatement,
   getReportCount,
 

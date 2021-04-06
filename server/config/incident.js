@@ -19,7 +19,10 @@ const paths = {
   relocationAndInjuries: bookingId => `/report/${bookingId}/relocation-and-injuries`,
   evidence: bookingId => `/report/${bookingId}/evidence`,
   checkYourAnswers: bookingId => `/report/${bookingId}/check-your-answers`,
-  requestRemoval: statementId => `/request-removal/${statementId}`,
+  requestRemoval: (statementId, signature) =>
+    `/request-removal/${statementId}${signature ? `?signature=${signature}` : ''}`,
+  alreadyRemoved: () => '/already-removed',
+  removalRequested: () => '/removal-requested',
 }
 
 module.exports = {

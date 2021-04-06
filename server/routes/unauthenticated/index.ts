@@ -16,6 +16,7 @@ export default function UnauthenticatedRoutes(services: Services): Router {
   router.post('/request-removal/:statementId', flash(), asyncMiddleware(removalRequest.submit))
 
   router.get('/removal-requested', removalRequest.viewConfirmation)
+  router.get('/already-removed', asyncMiddleware(removalRequest.viewAlreadyRemoved))
 
   return router
 }

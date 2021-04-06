@@ -60,6 +60,9 @@ export default class ReportService {
 
   async getAnonReportSummary(token: string, statementId: number): Promise<AnonReportSummaryWithPrison | undefined> {
     const report = await this.incidentClient.getAnonReportSummary(statementId)
+    if (!report) {
+      return undefined
+    }
     const prison = await this.locationService.getPrisonById(token, report.agencyId)
     return { ...report, prisonName: prison.description }
   }
