@@ -19,6 +19,7 @@ const paths = {
   relocationAndInjuries: bookingId => `/report/${bookingId}/relocation-and-injuries`,
   evidence: bookingId => `/report/${bookingId}/evidence`,
   checkYourAnswers: bookingId => `/report/${bookingId}/check-your-answers`,
+  requestRemoval: statementId => `/request-removal/${statementId}`,
 }
 
 module.exports = {

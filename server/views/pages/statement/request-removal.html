@@ -2,6 +2,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% set pageTitle = 'Request to be removed from a use of force incident' %}
 
@@ -57,8 +58,8 @@
       <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
     {{ govukTextarea({
-      name: "removal-reason",
-      id: "removal-reason",
+      name: "reason",
+      id: "reason",
       label: {
         text: "Why should you be removed from this incident?"
       },

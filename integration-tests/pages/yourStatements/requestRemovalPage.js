@@ -5,7 +5,11 @@ const requestRemovalPage = () =>
     incidentDate: () => cy.get('.incidentDate'),
     incidentTime: () => cy.get('.incidentTime'),
     prisonName: () => cy.get('.prisonName'),
-    reason: () => cy.get('[name=removal-reason]'),
+    reason: () => cy.get('[name=reason]'),
+    inlineError: () => cy.get('.govuk-error-message'),
+
+    errorSummaryTitle: () => cy.get('#error-summary-title'),
+    errorSummaryBody: () => cy.get('.govuk-error-summary__body'),
 
     requestToBeRemoved: () => cy.get('[data-qa=submit]'),
     submit: () => {
