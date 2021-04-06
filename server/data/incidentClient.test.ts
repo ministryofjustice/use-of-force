@@ -59,7 +59,7 @@ test('getReportForReviewer', () => {
 test('getIncompleteReportsForReviewer', () => {
   const isOverdue = `(select count(*) from "v_statement" s
                       where r.id = s.report_id 
-                      and (s.statement_status = $3 or s.statement_status = $4)
+                      and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
   const isRemovalRequested = `(select count(*) from "v_statement" s
