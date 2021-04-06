@@ -1,7 +1,8 @@
 {% extends "../partials/incidentPage.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %} 
-{% from  "../macros.njk" import overdueBadge %}    
+{% from  "../macros.njk" import overdueBadge %}   
+{% from  "../macros.njk" import removalRequestedBadge %}    
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
@@ -16,10 +17,7 @@
       <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
       <th class="govuk-table__header reporter" scope="col">Reporter</th>
       <th class="govuk-table__header report" scope="col"></th>
-      {% if user.isCoordinator %}      
-      <th class="govuk-table__header delete" scope="col"></th>
-      {% endif %}      
-      <th class="govuk-table__header overdue" scope="col"></th>
+      <th class="govuk-table__header report" scope="col"></th>
     </tr>
   </thead>
 
@@ -30,28 +28,25 @@
           <td class="govuk-table__cell">{{report.offenderName}}</td>
           <td class="govuk-table__cell">{{report.offenderNo}}</td>
           <td class="govuk-table__cell">{{report.staffMemberName}}</td>
+          <td class="govuk-table__cell"><a href="/{{ report.id }}/view-statements" draggable="false" class="govuk-link">View incident</a></td>
+    
           <td class="govuk-table__cell">
-            <a
-              href="/{{ report.id }}/view-statements"
-              draggable="false"
-              class="govuk-link" 
-            >
-              View incident
-            </a>
-          </td>
-          {% if user.isCoordinator %}
-          <td class="govuk-table__cell">
-              <a href="/coordinator/report/{{ report.id }}/confirm-delete" class="govuk-link" data-qa='delete'> Delete incident </a>
-          </td>
-          {% endif %}  
-          <td class="govuk-table__cell text-align-right">
             {% if report.isOverdue %}
+            {{ 
+              overdueBadge({
+                text: 'OVERDUE', 
+                qa: 'overdue' 
+              }) 
+            }}     
+            <br>
+            {% endif %}
+            {% if report.isRemovalRequested %}
               {{ 
-                overdueBadge({
-                  text: 'OVERDUE', 
-                  qa: 'overdue' 
+                removalRequestedBadge({
+                  text: 'REMOVAL REQUEST', 
+                  qa: 'removal-request' 
                 }) 
-              }}
+              }}                  
             {% endif %}
           </td>
       </tr>  

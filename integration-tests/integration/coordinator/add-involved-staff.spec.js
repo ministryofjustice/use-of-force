@@ -66,7 +66,7 @@ context('A use of force coordinator can add involved staff', () => {
       .statements()
       .then(result =>
         expect(result).to.deep.equal([
-          { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
+          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
     viewStatementsPage.reportLink().click()
@@ -92,8 +92,8 @@ context('A use of force coordinator can add involved staff', () => {
       .statements()
       .then(result =>
         expect(result).to.deep.equal([
-          { username: 'MRS_JONES name', link: '', isOverdue: false, isUnverified: false },
-          { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
+          { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       )
 
@@ -187,7 +187,9 @@ context('A use of force coordinator can add involved staff', () => {
     viewStatementsPage
       .statements()
       .then(result =>
-        expect(result).to.deep.equal([{ username: 'TEST_USER name', link: '', isOverdue: false, isUnverified: false }])
+        expect(result).to.deep.equal([
+          { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        ])
       )
 
     viewStatementsPage.reportLink().click()

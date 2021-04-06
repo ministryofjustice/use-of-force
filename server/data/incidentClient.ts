@@ -79,6 +79,10 @@ export default class IncidentClient {
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
+    const isRemovalRequested = `(select count(*) from "v_statement" s
+                      where r.id = s.report_id
+                      and s.statement_status = $4) > 0`
+
     const results = await this.query({
       text: `select r.id
             , r.booking_id     "bookingId"
@@ -86,11 +90,17 @@ export default class IncidentClient {
             , r.offender_no    "offenderNo"
             , r.incident_date  "incidentDate"
             , ${isOverdue}     "isOverdue"
+            , ${isRemovalRequested}  "isRemovalRequested"
             from v_report r
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
-      values: [ReportStatus.SUBMITTED.value, agencyId, StatementStatus.PENDING.value],
+      values: [
+        ReportStatus.SUBMITTED.value,
+        agencyId,
+        StatementStatus.PENDING.value,
+        StatementStatus.REMOVAL_REQUESTED.value,
+      ],
     })
     return results.rows
   }

@@ -58,7 +58,7 @@ context('view statement page', () => {
 
       viewStatementsPage.statements().then(result => {
         expect(result).to.deep.equal([
-          { username: 'TEST_USER name', link: 'View statement', isOverdue: false, isUnverified: false },
+          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
         ])
       })
 

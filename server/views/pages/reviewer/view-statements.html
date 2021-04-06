@@ -1,7 +1,8 @@
 {% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from  "../../macros.njk" import overdueBadge %}    
+{% from  "../../macros.njk" import overdueBadge %}   
+{% from  "../../macros.njk" import removalRequestedBadge %}    
 {% import "../reportDetailMacro.njk" as reportDetail %} 
 {% set pageTitle = 'Use of force incident' %}
 
@@ -30,42 +31,76 @@
       <table class="govuk-table" data-qa="statements">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Staff member involved</th>
+            <th class="govuk-table__header" scope="col">Staff members involved</th>
+            <th class="govuk-table__header" scope="col"></th>
             <th class="govuk-table__header" scope="col"></th>
           </tr>
         </thead>
 
         <tbody class="govuk-table__body">
-            {% for statement in data.statements %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{statement.name }}</td>
-              <td class="govuk-table__cell">
-                {% if statement.isSubmitted %}
+          {% for statement in data.statements %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{statement.name }}</td>
+            <td class="govuk-table__cell">
+
+              {% set removalRequested = statement.isRemovalRequested %}
+
+              {% if removalRequested %}
+                {{ 
+                  removalRequestedBadge({
+                    text: 'REMOVAL REQUEST', 
+                    qa: 'removal-request' 
+                  }) 
+                }}     
+
+              {% elif statement.isOverdue %}
+                {{ 
+                  overdueBadge({
+                    text: 'OVERDUE', 
+                    qa: 'overdue' 
+                  }) 
+                }}                  
+              {% endif %}
+
+              {% if not statement.isVerified and (removalRequested or statement.isOverdue) %}
+              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3 govuk-!-margin-top-1">EMAIL NOT VERIFIED </span>
+              {% elif not statement.isVerified %}
+              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3">EMAIL NOT VERIFIED </span>
+              {% endif %}
+
+            </td>
+
+            <td class="govuk-table__cell">
+              {% if statement.isSubmitted %}
                 <a
                   href= {{ '/' + statement.id + '/view-statement' }}
                   draggable="false"
-                  class="govuk-link">
+                  class="govuk-link float-right">
                     View statement
                 </a>
-                {% else %}
-                  {% if not statement.isVerified %}
-                    <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
-                  {% endif %}
-                  {% if statement.isOverdue %}
-                    {{ 
-                      overdueBadge({
-                        text: 'OVERDUE', 
-                        qa: 'overdue' 
-                      }) 
-                    }}                  
-                  {% endif %}
-                {% endif %}
-              </td>
-            </tr>  
-            {% endfor %}
 
+              {% elif removalRequested %}
+                <a
+                href= {{ '/' + statement.id + '/view-removal-request' }}
+                draggable="false"
+                class="govuk-link float-right">
+                View removal request
+                </a>
+              {% endif %}
+            </td>
+          </tr>  
+          {% endfor %}
         </tbody>
       </table>
+
+      <div class="govuk-!-margin-bottom-2">
+        {% if user.isCoordinator %}
+            <td class="govuk-table__cell">
+                <a href="/coordinator/report/{{ data.incidentId }}/confirm-delete" class="govuk-link" data-qa='delete'> Delete incident </a>
+            </td>
+        {% endif %}  
+      </div>
+
       <a
         href={{data.tab}}
         draggable="false"

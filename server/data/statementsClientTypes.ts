@@ -35,6 +35,7 @@ export type UsernameToStatementIds = { [username: string]: number }
 
 export type ReviewerStatement = {
   id: number
+  reportId: number
   name: string
   userId: string
   isOverdue: boolean
