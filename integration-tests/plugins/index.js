@@ -2,12 +2,16 @@ const auth = require('../mockApis/auth')
 const { resetStubs } = require('../mockApis/wiremock')
 const prisonApi = require('../mockApis/prisonApi')
 const search = require('../mockApis/search')
+const { stringToHash } = require('../../dist/server/utils/hash')
 
 const db = require('../db/db')
+const config = require('../../dist/server/config')
 
 module.exports = on => {
   on('task', {
     ...db,
+
+    stringToHash: text => stringToHash(text, config.email.urlSigningSecret),
 
     reset: () => Promise.all([db.clearDb(), resetStubs()]),
 

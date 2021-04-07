@@ -17,7 +17,7 @@ const eventPublisher = {
 }
 
 let service
-const context = { reportId: 1, statementId: '2' }
+const context = { reportId: 1, statementId: 2 }
 
 beforeEach(() => {
   client.sendEmail.mockResolvedValue({ body: 'response 1' })
@@ -56,7 +56,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementReminderSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -78,7 +78,7 @@ describe('send reporter notifications', () => {
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendReporterStatementOverdueSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -102,14 +102,14 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementReminderSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -129,14 +129,14 @@ describe('send involved staff notifications', () => {
         SUBMITTED_TIME: '15:45',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendInvolvedStaffStatementOverdueSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, submittedDate, involvedName },
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
     })
   })
@@ -159,14 +159,14 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestSuccess',
-      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'response 1',
     })
   })
@@ -191,14 +191,14 @@ describe('send involved staff notifications', () => {
         REPORTER_NAME: 'Jane Smith',
         INVOLVED_NAME: 'Thelma Jones',
         LINK: emailUrl,
-        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=9CjB5Rfw/N+TQjQKqmD8AFKXZO3DCLO6R7YsxgyRpUY=`,
+        REMOVAL_REQUEST_LINK: `${emailUrl}/request-removal/2?signature=nZ+yN0VrZl1JJPoy4rs6onN6lB9Xbb8EvXzgbKiZ28A=`,
       },
       reference: null,
     })
 
     expect(eventPublisher.publish).toBeCalledWith({
       name: 'SendStatementRequestFailure',
-      properties: { reportId: 1, statementId: '2', incidentDate, involvedName, submittedDate, reporterName },
+      properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'message 1',
     })
   })
@@ -206,7 +206,7 @@ describe('send involved staff notifications', () => {
   describe('getRemovalRequestLink', () => {
     it('should create correctly hashed url', () => {
       const result = service.getRemovalRequestLink('123')
-      expect(result).toEqual(`${emailUrl}/request-removal/123?signature=L1eMGRpPwQqiUuuK8Tn6hKqfZDNghdgL3uX5E8mxi4o=`)
+      expect(result).toEqual(`${emailUrl}/request-removal/123?signature=hESh8cNdn2xMrSDMWHfScbm7jgo20W94cx6+7CA31H0=`)
     })
   })
 })

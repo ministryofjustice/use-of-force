@@ -1,6 +1,7 @@
 const moment = require('moment')
 const RequestRemovalPage = require('../../pages/yourStatements/requestRemovalPage')
 const RemovalRequestedPage = require('../../pages/yourStatements/removalRequestedPage')
+const AlreadyRemovedPage = require('../../pages/yourStatements/alreadyRemovedPage')
 const { ReportStatus } = require('../../../dist/server/config/types')
 
 context('Request removal', () => {
@@ -17,7 +18,13 @@ context('Request removal', () => {
         incidentDate: moment('2019-01-22 09:57:40.000'),
         agencyId: 'MDI',
         involvedStaff: [
-          { name: 'Emily Jones', email: 'Emily@gov.uk', staffId: 5, username: 'EMILY_JONES', verified: true },
+          {
+            name: 'Emily Jones',
+            email: 'Emily@gov.uk',
+            staffId: 5,
+            username: 'EMILY_JONES',
+            verified: true,
+          },
         ],
       })
       .then(result => result.EMILY_JONES)
@@ -47,6 +54,13 @@ context('Request removal', () => {
       requestRemovalPage.errorSummaryTitle().contains('There is a problem')
       requestRemovalPage.errorSummaryBody().contains('Enter why you should be removed from this incident')
       requestRemovalPage.inlineError().contains('Enter why you should be removed from this incident')
+    })
+  })
+
+  it('A user will be shown a message if trying to request removal from deleted statement', () => {
+    seedReport().then(() => {
+      RequestRemovalPage.goTo(10)
+      AlreadyRemovedPage.verifyOnPage()
     })
   })
 })

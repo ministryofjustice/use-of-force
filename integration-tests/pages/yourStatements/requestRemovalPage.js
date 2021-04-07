@@ -17,10 +17,16 @@ const requestRemovalPage = () =>
     },
   })
 
+const visit = statementId =>
+  cy.task('stringToHash', statementId.toString()).then(signature => {
+    cy.visit(`/request-removal/${statementId}?signature=${encodeURIComponent(signature)}`)
+  })
+
 module.exports = {
   visit: statementId => {
-    cy.visit(`/request-removal/${statementId}`)
+    visit(statementId)
     return requestRemovalPage()
   },
+  goTo: statementId => visit(statementId),
   verifyOnPage: requestRemovalPage,
 }
