@@ -48,7 +48,22 @@ export default class CoordinatorRoutes {
       return res.redirect(`${endpoint}/view-removal-request`)
     }
 
-    return confirm === 'yes' ? res.redirect(`${endpoint}/confirm-delete`) : res.redirect(`${endpoint}/not-removed`)
+    return confirm === 'yes'
+      ? res.redirect(`${endpoint}/confirm-delete`)
+      : res.redirect(`${endpoint}/staff-member-not-removed`)
+  }
+
+  viewStaffMemberNotRemoved: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const returnToIncidentLink = `/${reportId}/view-statements`
+    const staffMember = await this.involvedStaffService.loadInvolvedStaff(
+      parseInt(reportId, 10),
+      parseInt(statementId, 10)
+    )
+
+    const data = { name: staffMember.name, email: staffMember.email, returnToIncidentLink }
+
+    return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {

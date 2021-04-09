@@ -468,7 +468,28 @@ describe('coordinator', () => {
           .post('/coordinator/report/123/statement/2/view-removal-request')
           .send({ confirm: 'no' })
           .expect(302)
-          .expect('Location', '/coordinator/report/123/statement/2/not-removed')
+          .expect('Location', '/coordinator/report/123/statement/2/staff-member-not-removed')
+      })
+    })
+
+    describe('staffmemberNotRemoved', () => {
+      it('should display name and email', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
+          statementId: 2,
+          name: 'Bob Smith',
+          userId: 'someUserId',
+          email: 'bob@gmail.com',
+        })
+        await request(app)
+          .get('/coordinator/report/123/statement/2/staff-member-not-removed')
+          .expect(200)
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect(res => {
+            expect(res.text).toContain('Staff member not removed')
+            expect(res.text).toContain('Bob Smith')
+            expect(res.text).toContain('bob@gmail.com')
+          })
       })
     })
   })

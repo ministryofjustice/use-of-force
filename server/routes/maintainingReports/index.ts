@@ -58,6 +58,11 @@ export default function Index(services: Services): Router {
     get('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.viewRemovalRequest)
     post('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.submitRemovalRequest)
 
+    get(
+      '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
+      coordinator.viewStaffMemberNotRemoved
+    )
+
     return router
   }
 }
