@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express'
-import type { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../../services'
+import type { InvolvedStaffService, OffenderService, ReportService, ReviewService, UserService } from '../../services'
 import type { SystemToken } from '../../types/uof'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
@@ -13,8 +13,28 @@ export default class CoordinatorRoutes {
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
+    private readonly userService: UserService
   ) {}
+
+  viewRemovalRequest: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const token = await this.systemToken(res.locals.user.username)
+    const [{ name, userId, email }, removalReason] = await Promise.all([
+      this.involvedStaffService.loadInvolvedStaff(parseInt(reportId, 10), parseInt(statementId, 10)),
+      this.involvedStaffService.getInvolvedStaffRemovalRequestedReason(parseInt(statementId, 10)),
+    ])
+    const location = await this.userService.getUserLocation(token, userId)
+
+    const data = {
+      name,
+      userId,
+      location,
+      email,
+      removalReason,
+    }
+    res.render('pages/coordinator/view-removal-request.html', { data })
+  }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params

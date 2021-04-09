@@ -36,6 +36,10 @@ export default class PrisonClient {
     return this.restClient.get({ path: '/api/users/me' })
   }
 
+  async getUserbyUsername(username: string): Promise<UserDetail> {
+    return this.restClient.get({ path: `/api/users/${username}` })
+  }
+
   getUserCaseLoads(): Promise<CaseLoad[]> {
     return this.restClient.get({ path: '/api/users/me/caseLoads' })
   }

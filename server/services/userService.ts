@@ -123,4 +123,16 @@ export default class UserService {
       throw error
     }
   }
+
+  public async getUserLocation(token: string, username: string): Promise<string> {
+    try {
+      const prisonClient = this.prisonClientBuilder(token)
+      const user = await prisonClient.getUserbyUsername(username)
+      const caseload = await prisonClient.getPrisonById(user.activeCaseLoadId)
+      return caseload.description
+    } catch (error) {
+      logger.error('Error during getUser: ', error.stack)
+      throw error
+    }
+  }
 }

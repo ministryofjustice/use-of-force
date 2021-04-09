@@ -49,3 +49,5 @@ export type ReviewerStatement = {
   statement: string
   submittedDate: Date
 }
+
+export type RemovalRequestedReason = { removalRequestedReason: string }
