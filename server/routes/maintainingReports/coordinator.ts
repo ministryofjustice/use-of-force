@@ -25,7 +25,6 @@ export default class CoordinatorRoutes {
       this.involvedStaffService.getInvolvedStaffRemovalRequestedReason(parseInt(statementId, 10)),
     ])
     const location = await this.userService.getUserLocation(token, userId)
-
     const data = {
       name,
       userId,
@@ -33,7 +32,23 @@ export default class CoordinatorRoutes {
       email,
       removalReason,
     }
-    res.render('pages/coordinator/view-removal-request.html', { data })
+    const errors = req.flash('errors')
+    res.render('pages/coordinator/view-removal-request.html', { data, errors })
+  }
+
+  submitRemovalRequest: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const { confirm } = req.body
+    const endpoint = `/coordinator/report/${reportId}/statement/${statementId}`
+
+    if (!confirm) {
+      req.flash('errors', [
+        { href: '#confirm', text: 'Select yes if you want to remove this person from the incident' },
+      ])
+      return res.redirect(`${endpoint}/view-removal-request`)
+    }
+
+    return confirm === 'yes' ? res.redirect(`${endpoint}/confirm-delete`) : res.redirect(`${endpoint}/not-removed`)
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {

@@ -56,6 +56,8 @@ export default function Index(services: Services): Router {
     post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
 
     get('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.viewRemovalRequest)
+    post('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.submitRemovalRequest)
+
     return router
   }
 }

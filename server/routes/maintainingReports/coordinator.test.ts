@@ -419,5 +419,57 @@ describe('coordinator', () => {
         expect(userService.getUserLocation).toBeCalledWith('user1-system-token', 'someUserId')
       })
     })
+
+    describe('submitRemovalRequest', () => {
+      it('should redirect to itself if yes no not selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        const flash = jest.fn().mockReturnValue([])
+
+        app = appWithAllRoutes(
+          {
+            involvedStaffService,
+            reportService,
+            offenderService,
+            reviewService,
+            userService,
+          },
+          userSupplier,
+          null,
+          flash
+        )
+
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: undefined })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/view-removal-request')
+          .expect(() => {
+            expect(flash).toBeCalledWith('errors', [
+              {
+                text: 'Select yes if you want to remove this person from the incident',
+                href: '#confirm',
+              },
+            ])
+          })
+      })
+
+      it('should redirect to confirm-delete if yes selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: 'yes' })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/confirm-delete')
+      })
+
+      it('should redirect to not-removed if no selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: 'no' })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/not-removed')
+      })
+    })
   })
 })

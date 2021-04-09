@@ -1,13 +1,25 @@
 {% extends "../../partials/layout.html" %} 
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %} 
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% set pageTitle = 'Request to be removed from use of force incident' %} 
 
 {% block content %}
 
 <div class="govuk-grid-row govuk-body">
+
+  {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+          titleText: 'There is a problem',
+          errorList: errors,
+          attributes: { 'data-qa-errors': true }
+      })
+      }}
+  {% endif %}
+  
   <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-9">
     <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
     <h2 class="govuk-heading-l">Staff member details</h2>
@@ -46,15 +58,16 @@
                 {{ govukRadios({
                   classes: "govuk-radios--inline",
                   name: "confirm",
+                  errorMessage: errors | findError('confirm'),
                   items: [
                     {
-                      value: true,
-                      id: "yes",
+                      value: 'yes',
+                      id: "confirm",
                       text: "Yes", 
                       attributes: {'data-qa': 'yes'}
                     },
                     {
-                      value: false,
+                      value: 'no',
                       id: "no",
                       text: "No",
                       attributes: {'data-qa': 'no'}
