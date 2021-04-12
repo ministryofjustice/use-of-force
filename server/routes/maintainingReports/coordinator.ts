@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express'
-import type { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../../services'
+import type { InvolvedStaffService, OffenderService, ReportService, ReviewService, UserService } from '../../services'
 import type { SystemToken } from '../../types/uof'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
@@ -13,8 +13,58 @@ export default class CoordinatorRoutes {
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
+    private readonly userService: UserService
   ) {}
+
+  viewRemovalRequest: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const token = await this.systemToken(res.locals.user.username)
+    const [{ name, userId, email }, removalReason] = await Promise.all([
+      this.involvedStaffService.loadInvolvedStaff(parseInt(reportId, 10), parseInt(statementId, 10)),
+      this.involvedStaffService.getInvolvedStaffRemovalRequestedReason(parseInt(statementId, 10)),
+    ])
+    const location = await this.userService.getUserLocation(token, userId)
+    const data = {
+      name,
+      userId,
+      location,
+      email,
+      removalReason,
+    }
+    const errors = req.flash('errors')
+    res.render('pages/coordinator/view-removal-request.html', { data, errors })
+  }
+
+  submitRemovalRequest: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const { confirm } = req.body
+    const endpoint = `/coordinator/report/${reportId}/statement/${statementId}`
+
+    if (!confirm) {
+      req.flash('errors', [
+        { href: '#confirm', text: 'Select yes if you want to remove this person from the incident' },
+      ])
+      return res.redirect(`${endpoint}/view-removal-request`)
+    }
+
+    return confirm === 'yes'
+      ? res.redirect(`${endpoint}/confirm-delete`)
+      : res.redirect(`${endpoint}/staff-member-not-removed`)
+  }
+
+  viewStaffMemberNotRemoved: RequestHandler = async (req, res) => {
+    const { reportId, statementId } = req.params
+    const returnToIncidentLink = `/${reportId}/view-statements`
+    const staffMember = await this.involvedStaffService.loadInvolvedStaff(
+      parseInt(reportId, 10),
+      parseInt(statementId, 10)
+    )
+
+    const data = { name: staffMember.name, email: staffMember.email, returnToIncidentLink }
+
+    return res.render('pages/coordinator/staff-member-not-removed.html', { data })
+  }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params

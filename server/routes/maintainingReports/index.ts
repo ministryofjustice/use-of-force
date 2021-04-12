@@ -6,7 +6,7 @@ import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/rol
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'
 
-import type { Services } from '../../services'
+import { Services } from '../../services'
 
 export default function Index(services: Services): Router {
   const {
@@ -16,6 +16,7 @@ export default function Index(services: Services): Router {
     reviewService,
     systemToken,
     reportDetailBuilder,
+    userService,
   } = services
 
   const router = express.Router()
@@ -38,7 +39,8 @@ export default function Index(services: Services): Router {
       involvedStaffService,
       reviewService,
       offenderService,
-      systemToken
+      systemToken,
+      userService
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -52,6 +54,14 @@ export default function Index(services: Services): Router {
 
     get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
     post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
+
+    get('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.viewRemovalRequest)
+    post('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.submitRemovalRequest)
+
+    get(
+      '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
+      coordinator.viewStaffMemberNotRemoved
+    )
 
     return router
   }

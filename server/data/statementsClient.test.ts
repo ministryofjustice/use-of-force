@@ -261,3 +261,12 @@ test('requestStatementRemoval', async () => {
     values: [StatementStatus.REMOVAL_REQUESTED.value, 'removal reason', 1],
   })
 })
+
+test('getRemovalRequestedReasonByStatementId', async () => {
+  statementsClient.getRemovalRequestedReasonByStatementId(1)
+
+  expect(query).toBeCalledWith({
+    text: `select removal_requested_reason  "removalRequestedReason" from v_statement where id = $1`,
+    values: [1],
+  })
+})

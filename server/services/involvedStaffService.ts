@@ -25,6 +25,11 @@ export class InvolvedStaffService {
     return this.incidentClient.getInvolvedStaff(reportId)
   }
 
+  public async getInvolvedStaffRemovalRequestedReason(statementId: number): Promise<string> {
+    const reason = await this.statementsClient.getRemovalRequestedReasonByStatementId(statementId)
+    return reason.removalRequestedReason
+  }
+
   public async loadInvolvedStaff(reportId: number, statementId: number): Promise<InvolvedStaff> {
     const involvedStaff = await this.incidentClient.getInvolvedStaff(reportId)
     const found = involvedStaff.find(staff => staff.statementId === statementId)

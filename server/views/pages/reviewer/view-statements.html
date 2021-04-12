@@ -81,7 +81,7 @@
 
               {% elif removalRequested %}
                 <a
-                href= {{ '/' + statement.id + '/view-removal-request' }}
+                href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
                 draggable="false"
                 class="govuk-link float-right">
                 View removal request

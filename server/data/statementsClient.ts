@@ -8,6 +8,7 @@ import type {
   UsernameToStatementIds,
   StatementUpdate,
   ReviewerStatement,
+  RemovalRequestedReason,
 } from './statementsClientTypes'
 import type { DraftInvolvedStaff } from '../services/drafts/draftInvolvedStaffService'
 import { StatementStatus, LabelledValue } from '../config/types'
@@ -262,5 +263,13 @@ export default class StatementsClient {
               where id = $3`,
       values: [StatementStatus.REMOVAL_REQUESTED.value, reason, statementId],
     })
+  }
+
+  async getRemovalRequestedReasonByStatementId(statementId: number): Promise<RemovalRequestedReason> {
+    const { rows } = await this.query({
+      text: `select removal_requested_reason  "removalRequestedReason" from v_statement where id = $1`,
+      values: [statementId],
+    })
+    return rows[0]
   }
 }

@@ -1,0 +1,92 @@
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageTitle = 'Request to be removed from use of force incident' %} 
+
+{% block content %}
+
+<div class="govuk-grid-row govuk-body">
+
+  {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+          titleText: 'There is a problem',
+          errorList: errors,
+          attributes: { 'data-qa-errors': true }
+      })
+      }}
+  {% endif %}
+
+  <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-9">
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    <h2 class="govuk-heading-l">Staff member details</h2>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value" data-qa="name">{{data.name}}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">User ID</dt>
+        <dd class="govuk-summary-list__value" data-qa="userId">{{data.userId}}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Location</dt>
+        <dd class="govuk-summary-list__value" data-qa="location">{{data.location}}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email address</dt>
+        <dd class="govuk-summary-list__value" data-qa="email">{{data.email}}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reason for removal</dt>
+        <dd class="govuk-summary-list__value" data-qa="removalReason">{{data.removalReason}}</dd>
+      </div>
+    </dl>
+    <div class="govuk-inset-text">
+      You should email the staff member if you have any questions about their request to be removed from this incident.
+    </div>
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                  Would you like to remove this person from the incident?
+              </legend>
+                {{ govukRadios({
+                  classes: "govuk-radios--inline",
+                  name: "confirm",
+                  errorMessage: errors | findError('confirm'),
+                  items: [
+                    {
+                      value: 'yes',
+                      id: "confirm",
+                      text: "Yes", 
+                      attributes: {'data-qa': 'yes'}
+                    },
+                    {
+                      value: 'no',
+                      id: "no",
+                      text: "No",
+                      attributes: {'data-qa': 'no'}
+                    }
+                  ]
+                }) 
+              }} 
+          </fieldset>
+      </div>
+
+      {{ 
+        govukButton({
+          text: "Continue",
+          value: 'continue',
+          attributes: {'data-qa': 'continue'}
+        }) 
+      }}
+
+  </form>
+  </div>
+</div>
+{% endblock %}

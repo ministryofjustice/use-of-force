@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
-import { InvolvedStaffService, OffenderService, ReportService, ReviewService } from '../../services'
+import { InvolvedStaffService, OffenderService, ReportService, ReviewService, UserService } from '../../services'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 
@@ -8,11 +8,13 @@ jest.mock('../../services/offenderService')
 jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
 jest.mock('../../services/reviewService')
+jest.mock('../../services/userService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null) as jest.Mocked<ReportService>
 const involvedStaffService = new InvolvedStaffService(null, null, null, null) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
+const userService = new UserService(null, null) as jest.Mocked<UserService>
 
 const userSupplier = jest.fn()
 
@@ -26,6 +28,7 @@ describe('coordinator', () => {
         reportService,
         offenderService,
         reviewService,
+        userService,
       },
       userSupplier
     )
@@ -388,6 +391,106 @@ describe('coordinator', () => {
         })
 
       expect(involvedStaffService.removeInvolvedStaff).not.toBeCalled()
+    })
+  })
+
+  describe('Removal request', () => {
+    describe('viewRemovalRequest', () => {
+      it('should call involvedStaffService and userService', async () => {
+        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
+          statementId: 1,
+          name: '',
+          userId: 'someUserId',
+          email: '',
+        })
+        involvedStaffService.getInvolvedStaffRemovalRequestedReason.mockResolvedValue('')
+        userService.getUserLocation.mockResolvedValue('Leeds')
+        userSupplier.mockReturnValue(coordinatorUser)
+
+        await request(app)
+          .get('/coordinator/report/123/statement/2/view-removal-request')
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('Request to be removed from use of force incident')
+          })
+
+        expect(involvedStaffService.loadInvolvedStaff).toBeCalledWith(123, 2)
+        expect(involvedStaffService.getInvolvedStaffRemovalRequestedReason).toBeCalledWith(2)
+        expect(userService.getUserLocation).toBeCalledWith('user1-system-token', 'someUserId')
+      })
+    })
+
+    describe('submitRemovalRequest', () => {
+      it('should redirect to itself if yes no not selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        const flash = jest.fn().mockReturnValue([])
+
+        app = appWithAllRoutes(
+          {
+            involvedStaffService,
+            reportService,
+            offenderService,
+            reviewService,
+            userService,
+          },
+          userSupplier,
+          null,
+          flash
+        )
+
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: undefined })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/view-removal-request')
+          .expect(() => {
+            expect(flash).toBeCalledWith('errors', [
+              {
+                text: 'Select yes if you want to remove this person from the incident',
+                href: '#confirm',
+              },
+            ])
+          })
+      })
+
+      it('should redirect to confirm-delete if yes selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: 'yes' })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/confirm-delete')
+      })
+
+      it('should redirect to not-removed if no selected', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        await request(app)
+          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .send({ confirm: 'no' })
+          .expect(302)
+          .expect('Location', '/coordinator/report/123/statement/2/staff-member-not-removed')
+      })
+    })
+
+    describe('staffmemberNotRemoved', () => {
+      it('should display name and email', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
+          statementId: 2,
+          name: 'Bob Smith',
+          userId: 'someUserId',
+          email: 'bob@gmail.com',
+        })
+        await request(app)
+          .get('/coordinator/report/123/statement/2/staff-member-not-removed')
+          .expect(200)
+          .expect('Content-Type', 'text/html; charset=utf-8')
+          .expect(res => {
+            expect(res.text).toContain('Staff member not removed')
+            expect(res.text).toContain('Bob Smith')
+            expect(res.text).toContain('bob@gmail.com')
+          })
+      })
     })
   })
 })

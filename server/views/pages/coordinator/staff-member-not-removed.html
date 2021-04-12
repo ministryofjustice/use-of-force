@@ -1,0 +1,38 @@
+{% extends "../../partials/layout.html" %} 
+
+{% set pageTitle = 'Staff member not removed' %} 
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds govuk-body">
+
+      <h1 class="govuk-heading-xl">{{pageTitle}}</h1>
+      <p>The staff member will still need to complete their statement. You should email them to let them know why they have not been removed from this incident.</p>
+
+      <h2 class="govuk-heading-l">
+          Staff member details
+      </h2>
+
+      <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                  Name
+              </dt>
+              <dd class="govuk-summary-list__value">
+                  {{data.name}}
+              </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                  Email address
+              </dt>
+              <dd class="govuk-summary-list__value">
+                  {{data.email}}
+              </dd>
+          </div>
+      </dl>
+
+      <p><a href={{data.returnToIncidentLink}}>Return to use of force incident</a></p>
+  </div>
+</div>
+{% endblock %}

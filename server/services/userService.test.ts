@@ -229,4 +229,30 @@ describe('compareUsers', () => {
     expect(results('UNK')([user1, user2])).toEqual(['USER_1', 'USER_2'])
     expect(results('UNK')([user2, user1])).toEqual(['USER_1', 'USER_2'])
   })
+  describe('getUserLocation', () => {
+    it('should return user location', async () => {
+      const user1 = ({
+        staffId: 485828,
+        username: 'BOB_SMITH',
+        firstName: 'Bob',
+        lastName: 'Smith',
+        activeCaseLoadId: 'MDI',
+        accountStatus: 'ACTIVE',
+        active: true,
+      } as unknown) as UserDetail
+
+      const caseload = {
+        agencyId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        longDescription: 'some longer description',
+        agencyType: 'INST',
+        active: true,
+      }
+
+      prisonClient.getUserbyUsername.mockResolvedValue(user1)
+      prisonClient.getPrisonById.mockResolvedValue(caseload)
+      const result = await service.getUserLocation(token, 'Bob Smith')
+      expect(result).toEqual('Moorland (HMP & YOI)')
+    })
+  })
 })
