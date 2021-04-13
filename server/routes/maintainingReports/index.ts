@@ -17,6 +17,7 @@ export default function Index(services: Services): Router {
     systemToken,
     reportDetailBuilder,
     userService,
+    statementService,
   } = services
 
   const router = express.Router()
@@ -40,7 +41,8 @@ export default function Index(services: Services): Router {
       reviewService,
       offenderService,
       systemToken,
-      userService
+      userService,
+      statementService
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))

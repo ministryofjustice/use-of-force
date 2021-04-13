@@ -265,6 +265,18 @@ export default class StatementsClient {
     })
   }
 
+  async refuseStatementRemoval(statusToSet: LabelledValue, statementId: number): Promise<void> {
+    await this.query({
+      text: `update "statement"
+              set statement_status = $1
+              ,   removal_requested_date = null
+              ,   removal_requested_reason = null
+              ,   updated_date = now()
+              where id = $2`,
+      values: [statusToSet.value, statementId],
+    })
+  }
+
   async getRemovalRequestedReasonByStatementId(statementId: number): Promise<RemovalRequestedReason> {
     const { rows } = await this.query({
       text: `select removal_requested_reason  "removalRequestedReason" from v_statement where id = $1`,
