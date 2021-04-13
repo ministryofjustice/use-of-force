@@ -1,6 +1,13 @@
 import request from 'supertest'
 import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
-import { InvolvedStaffService, OffenderService, ReportService, ReviewService, UserService } from '../../services'
+import {
+  InvolvedStaffService,
+  OffenderService,
+  ReportService,
+  ReviewService,
+  UserService,
+  StatementService,
+} from '../../services'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 
@@ -9,12 +16,14 @@ jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
 jest.mock('../../services/reviewService')
 jest.mock('../../services/userService')
+jest.mock('../../services/statementService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null) as jest.Mocked<ReportService>
 const involvedStaffService = new InvolvedStaffService(null, null, null, null) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
+const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 
 const userSupplier = jest.fn()
 
@@ -29,6 +38,7 @@ describe('coordinator', () => {
         offenderService,
         reviewService,
         userService,
+        statementService,
       },
       userSupplier
     )
@@ -432,6 +442,7 @@ describe('coordinator', () => {
             offenderService,
             reviewService,
             userService,
+            statementService,
           },
           userSupplier,
           null,
@@ -462,13 +473,17 @@ describe('coordinator', () => {
           .expect('Location', '/coordinator/report/123/statement/2/confirm-delete')
       })
 
-      it('should redirect to not-removed if no selected', async () => {
+      it('should call refuseRequest and redirect to staff-member-not-removed if no selected', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
+        statementService.refuseRequest.mockResolvedValue()
+
         await request(app)
           .post('/coordinator/report/123/statement/2/view-removal-request')
           .send({ confirm: 'no' })
           .expect(302)
           .expect('Location', '/coordinator/report/123/statement/2/staff-member-not-removed')
+
+        expect(statementService.refuseRequest).toBeCalledWith(2)
       })
     })
 

@@ -262,6 +262,20 @@ test('requestStatementRemoval', async () => {
   })
 })
 
+test('refuseStatementRemoval', async () => {
+  await statementsClient.refuseStatementRemoval(StatementStatus.PENDING, 1)
+
+  expect(query).toBeCalledWith({
+    text: `update "statement"
+              set statement_status = $1
+              ,   removal_requested_date = null
+              ,   removal_requested_reason = null
+              ,   updated_date = now()
+              where id = $2`,
+    values: [StatementStatus.PENDING.value, 1],
+  })
+})
+
 test('getRemovalRequestedReasonByStatementId', async () => {
   statementsClient.getRemovalRequestedReasonByStatementId(1)
 

@@ -175,4 +175,54 @@ describe('statmentService', () => {
       expect(statementsClient.requestStatementRemoval).toBeCalledWith(1, 'request reason')
     })
   })
+
+  describe('refuseRequest', () => {
+    test('refuse pending statement removal request', async () => {
+      const date = new Date()
+      statementsClient.getStatementForReviewer.mockResolvedValue({
+        id: 1,
+        bookingId: 19,
+        reportId: 1223,
+        userId: 'user1',
+        isOverdue: false,
+        isSubmitted: false,
+        isRemovalRequested: true,
+        incidentDate: date,
+        lastTrainingMonth: 1,
+        lastTrainingYear: 2000,
+        jobStartYear: 1998,
+        statement: 'A statement',
+        submittedDate: null,
+        name: 'bob',
+      })
+
+      await service.refuseRequest(1)
+      expect(statementsClient.getStatementForReviewer).toBeCalledWith(1)
+      expect(statementsClient.refuseStatementRemoval).toBeCalledWith(StatementStatus.PENDING, 1)
+    })
+
+    test('refuse submitted statement removal request', async () => {
+      const date = new Date()
+      statementsClient.getStatementForReviewer.mockResolvedValue({
+        id: 1,
+        bookingId: 19,
+        reportId: 1223,
+        userId: 'user1',
+        isOverdue: false,
+        isSubmitted: false,
+        isRemovalRequested: true,
+        incidentDate: date,
+        lastTrainingMonth: 1,
+        lastTrainingYear: 2000,
+        jobStartYear: 1998,
+        statement: 'A statement',
+        submittedDate: date,
+        name: 'bob',
+      })
+
+      await service.refuseRequest(1)
+      expect(statementsClient.getStatementForReviewer).toBeCalledWith(1)
+      expect(statementsClient.refuseStatementRemoval).toBeCalledWith(StatementStatus.SUBMITTED, 1)
+    })
+  })
 })

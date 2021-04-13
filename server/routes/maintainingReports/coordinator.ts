@@ -1,5 +1,12 @@
 import type { Request, RequestHandler } from 'express'
-import type { InvolvedStaffService, OffenderService, ReportService, ReviewService, UserService } from '../../services'
+import type {
+  InvolvedStaffService,
+  OffenderService,
+  ReportService,
+  ReviewService,
+  UserService,
+  StatementService,
+} from '../../services'
 import type { SystemToken } from '../../types/uof'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
@@ -14,7 +21,8 @@ export default class CoordinatorRoutes {
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly statementService: StatementService
   ) {}
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
@@ -39,18 +47,20 @@ export default class CoordinatorRoutes {
   submitRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
     const { confirm } = req.body
-    const endpoint = `/coordinator/report/${reportId}/statement/${statementId}`
 
     if (!confirm) {
       req.flash('errors', [
         { href: '#confirm', text: 'Select yes if you want to remove this person from the incident' },
       ])
-      return res.redirect(`${endpoint}/view-removal-request`)
+      return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`)
     }
 
-    return confirm === 'yes'
-      ? res.redirect(`${endpoint}/confirm-delete`)
-      : res.redirect(`${endpoint}/staff-member-not-removed`)
+    if (confirm === 'no') {
+      await this.statementService.refuseRequest(parseInt(statementId, 10))
+      return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/staff-member-not-removed`)
+    }
+
+    return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/confirm-delete`)
   }
 
   viewStaffMemberNotRemoved: RequestHandler = async (req, res) => {
