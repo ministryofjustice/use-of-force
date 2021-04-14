@@ -69,23 +69,23 @@ export default class StatementsClient {
   async getStatementForReviewer(statementId: number): Promise<ReviewerStatement> {
     const results = await this.query({
       text: `select s.id
-            ,      r.id                       "reportId"
+            ,      r.id                                      "reportId"
             ,      s.name
-            ,      s.user_id                  "userId"
-            ,      s.overdue_date <= now()    "isOverdue"
-            ,      s.statement_status = $1    "isSubmitted"
-            ,      s.statement_status = $2    "isRemovalRequested"
-            ,      r.booking_id               "bookingId"
-            ,      r.incident_date            "incidentDate"
-            ,      s.last_training_month      "lastTrainingMonth"
-            ,      s.last_training_year       "lastTrainingYear"
-            ,      s.job_start_year           "jobStartYear"
+            ,      s.user_id                                 "userId"
+            ,      s.overdue_date <= now()                   "isOverdue"
+            ,      s.statement_status = $1                   "isSubmitted"
+            ,      s.removal_requested_date is not null      "isRemovalRequested"
+            ,      r.booking_id                              "bookingId"
+            ,      r.incident_date                           "incidentDate"
+            ,      s.last_training_month                     "lastTrainingMonth"
+            ,      s.last_training_year                      "lastTrainingYear"
+            ,      s.job_start_year                          "jobStartYear"
             ,      s.statement
-            ,      s.submitted_date           "submittedDate"
+            ,      s.submitted_date                          "submittedDate"
             from v_report r
             left join v_statement s on r.id = s.report_id
-            where s.id = $3`,
-      values: [StatementStatus.SUBMITTED.value, StatementStatus.REMOVAL_REQUESTED.value, statementId],
+            where s.id = $2`,
+      values: [StatementStatus.SUBMITTED.value, statementId],
     })
     return results.rows[0]
   }
@@ -93,24 +93,24 @@ export default class StatementsClient {
   async getStatementsForReviewer(reportId: number): Promise<ReviewerStatement[]> {
     const results = await this.query({
       text: `select s.id
-            ,      r.id                       "reportId"
+            ,      r.id                                   "reportId"
             ,      s.name
-            ,      s.user_id                  "userId"
-            ,      s.overdue_date <= now()    "isOverdue"
-            ,      s.statement_status = $1    "isSubmitted"
-            ,      s.statement_status = $2    "isRemovalRequested"
-            ,      r.booking_id               "bookingId"
-            ,      r.incident_date            "incidentDate"
-            ,      s.last_training_month      "lastTrainingMonth"
-            ,      s.last_training_year       "lastTrainingYear"
-            ,      s.job_start_year           "jobStartYear"
-            ,      s.statement  
-            ,      s.submitted_date           "submittedDate"
+            ,      s.user_id                              "userId"
+            ,      s.overdue_date <= now()                "isOverdue"
+            ,      s.statement_status = $1                "isSubmitted"
+            ,      s.removal_requested_date is not null   "isRemovalRequested"
+            ,      r.booking_id                           "bookingId"
+            ,      r.incident_date                        "incidentDate"
+            ,      s.last_training_month                  "lastTrainingMonth"
+            ,      s.last_training_year                   "lastTrainingYear"
+            ,      s.job_start_year                       "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date                       "submittedDate"
             from v_report r
             left join v_statement s on r.id = s.report_id
-            where report_id = $3
+            where report_id = $2
             order by s.name`,
-      values: [StatementStatus.SUBMITTED.value, StatementStatus.REMOVAL_REQUESTED.value, reportId],
+      values: [StatementStatus.SUBMITTED.value, reportId],
     })
     return results.rows
   }
@@ -256,24 +256,22 @@ export default class StatementsClient {
   async requestStatementRemoval(statementId: number, reason: string): Promise<void> {
     await this.query({
       text: `update "statement"
-              set statement_status = $1
-              ,   removal_requested_date = now()
-              ,   removal_requested_reason = $2
+              set removal_requested_date = now()
+              ,   removal_requested_reason = $1
               ,   updated_date = now()
-              where id = $3`,
-      values: [StatementStatus.REMOVAL_REQUESTED.value, reason, statementId],
+              where id = $2`,
+      values: [reason, statementId],
     })
   }
 
-  async refuseStatementRemoval(statusToSet: LabelledValue, statementId: number): Promise<void> {
+  async refuseStatementRemoval(statementId: number): Promise<void> {
     await this.query({
       text: `update "statement"
-              set statement_status = $1
-              ,   removal_requested_date = null
+              set removal_requested_date = null
               ,   removal_requested_reason = null
               ,   updated_date = now()
-              where id = $2`,
-      values: [statusToSet.value, statementId],
+              where id = $1`,
+      values: [statementId],
     })
   }
 

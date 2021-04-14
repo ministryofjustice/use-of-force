@@ -190,24 +190,24 @@ test('getStatementsForReviewer', () => {
 
   expect(query).toBeCalledWith({
     text: `select s.id
-            ,      r.id                       "reportId"
+            ,      r.id                                   "reportId"
             ,      s.name
-            ,      s.user_id                  "userId"
-            ,      s.overdue_date <= now()    "isOverdue"
-            ,      s.statement_status = $1    "isSubmitted"
-            ,      s.statement_status = $2    "isRemovalRequested"
-            ,      r.booking_id               "bookingId"
-            ,      r.incident_date            "incidentDate"
-            ,      s.last_training_month      "lastTrainingMonth"
-            ,      s.last_training_year       "lastTrainingYear"
-            ,      s.job_start_year           "jobStartYear"
-            ,      s.statement  
-            ,      s.submitted_date           "submittedDate"
+            ,      s.user_id                              "userId"
+            ,      s.overdue_date <= now()                "isOverdue"
+            ,      s.statement_status = $1                "isSubmitted"
+            ,      s.removal_requested_date is not null   "isRemovalRequested"
+            ,      r.booking_id                           "bookingId"
+            ,      r.incident_date                        "incidentDate"
+            ,      s.last_training_month                  "lastTrainingMonth"
+            ,      s.last_training_year                   "lastTrainingYear"
+            ,      s.job_start_year                       "jobStartYear"
+            ,      s.statement
+            ,      s.submitted_date                       "submittedDate"
             from v_report r
             left join v_statement s on r.id = s.report_id
-            where report_id = $3
+            where report_id = $2
             order by s.name`,
-    values: [StatementStatus.SUBMITTED.value, StatementStatus.REMOVAL_REQUESTED.value, 1],
+    values: [StatementStatus.SUBMITTED.value, 1],
   })
 })
 
@@ -216,23 +216,23 @@ test('getStatementForReviewer', () => {
 
   expect(query).toBeCalledWith({
     text: `select s.id
-            ,      r.id                       "reportId"
+            ,      r.id                                      "reportId"
             ,      s.name
-            ,      s.user_id                  "userId"
-            ,      s.overdue_date <= now()    "isOverdue"
-            ,      s.statement_status = $1    "isSubmitted"
-            ,      s.statement_status = $2    "isRemovalRequested"
-            ,      r.booking_id               "bookingId"
-            ,      r.incident_date            "incidentDate"
-            ,      s.last_training_month      "lastTrainingMonth"
-            ,      s.last_training_year       "lastTrainingYear"
-            ,      s.job_start_year           "jobStartYear"
+            ,      s.user_id                                 "userId"
+            ,      s.overdue_date <= now()                   "isOverdue"
+            ,      s.statement_status = $1                   "isSubmitted"
+            ,      s.removal_requested_date is not null      "isRemovalRequested"
+            ,      r.booking_id                              "bookingId"
+            ,      r.incident_date                           "incidentDate"
+            ,      s.last_training_month                     "lastTrainingMonth"
+            ,      s.last_training_year                      "lastTrainingYear"
+            ,      s.job_start_year                          "jobStartYear"
             ,      s.statement
-            ,      s.submitted_date           "submittedDate"
+            ,      s.submitted_date                          "submittedDate"
             from v_report r
             left join v_statement s on r.id = s.report_id
-            where s.id = $3`,
-    values: [StatementStatus.SUBMITTED.value, StatementStatus.REMOVAL_REQUESTED.value, 1],
+            where s.id = $2`,
+    values: [StatementStatus.SUBMITTED.value, 1],
   })
 })
 
@@ -253,26 +253,24 @@ test('requestStatementRemoval', async () => {
 
   expect(query).toBeCalledWith({
     text: `update "statement"
-              set statement_status = $1
-              ,   removal_requested_date = now()
-              ,   removal_requested_reason = $2
+              set removal_requested_date = now()
+              ,   removal_requested_reason = $1
               ,   updated_date = now()
-              where id = $3`,
-    values: [StatementStatus.REMOVAL_REQUESTED.value, 'removal reason', 1],
+              where id = $2`,
+    values: ['removal reason', 1],
   })
 })
 
 test('refuseStatementRemoval', async () => {
-  await statementsClient.refuseStatementRemoval(StatementStatus.PENDING, 1)
+  await statementsClient.refuseStatementRemoval(1)
 
   expect(query).toBeCalledWith({
     text: `update "statement"
-              set statement_status = $1
-              ,   removal_requested_date = null
+              set removal_requested_date = null
               ,   removal_requested_reason = null
               ,   updated_date = now()
-              where id = $2`,
-    values: [StatementStatus.PENDING.value, 1],
+              where id = $1`,
+    values: [1],
   })
 })
 

@@ -54,7 +54,6 @@ export const ReportStatus = toEnum({
 export const StatementStatus = toEnum({
   PENDING: { value: 'PENDING', label: 'Pending' },
   SUBMITTED: { value: 'SUBMITTED', label: 'Submitted' },
-  REMOVAL_REQUESTED: { value: 'REMOVAL_REQUESTED', label: 'Removal requested' },
 })
 
 export const RelocationType = toEnum({

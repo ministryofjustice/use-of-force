@@ -69,8 +69,6 @@ export default class StatementService {
 
   async refuseRequest(statementId: number): Promise<void> {
     logger.info(`Removal request refused for statement with id: ${statementId}`)
-    const statement = await this.statementsClient.getStatementForReviewer(statementId)
-    const statusToSet = statement.submittedDate ? StatementStatus.SUBMITTED : StatementStatus.PENDING
-    await this.statementsClient.refuseStatementRemoval(statusToSet, statementId)
+    await this.statementsClient.refuseStatementRemoval(statementId)
   }
 }
