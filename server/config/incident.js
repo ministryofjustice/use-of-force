@@ -9,6 +9,8 @@ const paths = {
   reportUseOfForce: bookingId => `/report/${bookingId}/report-use-of-force`,
   incidentDetails: bookingId => `/report/${bookingId}/incident-details`,
   staffInvolved: bookingId => `/report/${bookingId}/staff-involved`,
+  addInvolvedStaff: reportId => `/coordinator/report/${reportId}/add-staff`,
+  addInvolvedStaffResult: (reportId, result) => `/coordinator/report/${reportId}/add-staff/result/${result}`,
   staffMemberName: bookingId => `/report/${bookingId}/staff-member-name`,
   staffNotFound: bookingId => `/report/${bookingId}/staff-member-not-found`,
   selectStaffMember: bookingId => `/report/${bookingId}/select-staff-member`,
@@ -23,6 +25,15 @@ const paths = {
     `/request-removal/${statementId}${signature ? `?signature=${signature}` : ''}`,
   alreadyRemoved: () => '/already-removed',
   removalRequested: () => '/removal-requested',
+  viewRemovalRequest: (reportId, statementId) =>
+    `/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`,
+  staffMemberNotRemoved: (reportId, statementId) =>
+    `/coordinator/report/${reportId}/statement/${statementId}/staff-member-not-removed`,
+  confirmStatementDelete: (reportId, statementId, removalRequest) =>
+    `/coordinator/report/${reportId}/statement/${statementId}/confirm-delete${
+      removalRequest ? `?removalRequest=${removalRequest}` : ''
+    }`,
+  confirmReportDelete: reportId => `/coordinator/report/${reportId}/confirm-delete`,
 }
 
 module.exports = {

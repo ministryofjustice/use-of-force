@@ -30,6 +30,7 @@
       <div class="govuk-grid-column-full">
         <form method="post" action="/coordinator/report/{{data.reportId}}/statement/{{data.statementId}}/delete">
           <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          <input type="hidden" name="removalRequest" value="{{ data.removalRequest }}" />
           {{ govukRadios({
                 classes: "govuk-radios--inline",
                 name: "confirm",
