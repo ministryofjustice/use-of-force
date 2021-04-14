@@ -22,9 +22,6 @@
         <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
         <th class="govuk-table__header reporter" scope="col">Reporter</th>
         <th class="govuk-table__header report" scope="col"></th>
-        {% if user.isCoordinator %}      
-        <th class="govuk-table__header delete" scope="col"></th>
-        {% endif %}
       </tr>
   </thead>
 
@@ -44,11 +41,6 @@
             View incident
           </a>
         </td>
-        {% if user.isCoordinator %}
-        <td class="govuk-table__cell">
-            <a href="/coordinator/report/{{ report.id }}/confirm-delete" class="govuk-link" data-qa='delete'> Delete incident </a>
-        </td>
-        {% endif %}  
       </tr>  
       {% endfor %}
 
