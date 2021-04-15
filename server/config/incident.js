@@ -29,6 +29,8 @@ const paths = {
     `/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`,
   staffMemberNotRemoved: (reportId, statementId) =>
     `/coordinator/report/${reportId}/statement/${statementId}/staff-member-not-removed`,
+  viewStatements: reportId => `/${reportId}/view-statements`,
+  viewReport: reportId => `/${reportId}/view-report`,
   confirmStatementDelete: (reportId, statementId, removalRequest) =>
     `/coordinator/report/${reportId}/statement/${statementId}/confirm-delete${
       removalRequest ? `?removalRequest=${removalRequest}` : ''

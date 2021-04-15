@@ -340,13 +340,26 @@ describe('coordinator', () => {
   })
 
   describe('Delete statement', () => {
-    it('not confirming deletion triggers validation', async () => {
+    it('Validation error redirects back to current page', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
       await request(app)
         .post('/coordinator/report/123/statement/2/delete')
         .expect(302)
         .expect('Location', paths.confirmStatementDelete(123, 2))
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+        })
+    })
+
+    it('On removal request, validation error preserves correct navigation', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.confirmStatementDelete(123, 2, true))
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
         })
@@ -365,6 +378,19 @@ describe('coordinator', () => {
         })
     })
 
+    it('On removal request, redirects to view statements page after confirmation of yes', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ confirm: 'yes', removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.viewStatements(123))
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(123, 2)
+        })
+    })
+
     it('when confirming not to delete statement', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
@@ -373,6 +399,19 @@ describe('coordinator', () => {
         .send({ confirm: 'no' })
         .expect(302)
         .expect('Location', '/123/view-report')
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+        })
+    })
+
+    it('On removal request, redirects to view statements page after confirmation of no', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ confirm: 'no', removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.viewStatements(123))
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
         })

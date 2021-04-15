@@ -114,7 +114,7 @@ export default class CoordinatorRoutes {
     const knownResult = Object.values(AddStaffResult).some(knownValue => knownValue === result)
 
     if (!username || !knownResult || result === AddStaffResult.SUCCESS) {
-      return res.redirect(`/${reportId}/view-report`)
+      return res.redirect(paths.viewReport(reportId))
     }
 
     if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
@@ -194,7 +194,7 @@ export default class CoordinatorRoutes {
       await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
     }
 
-    const location = removalRequest ? `/${reportId}/view-statements` : `/${reportId}/view-report`
+    const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
     return res.redirect(location)
   }
 }
