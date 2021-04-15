@@ -17,13 +17,14 @@ test('getStatements', async () => {
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
   expect(query).toBeCalledWith({
     text: `select r.id, count(*) OVER() AS "totalCount"
-            , r.reporter_name          "reporterName"
-            , r.offender_no            "offenderNo"
-            , r.incident_date          "incidentDate"
+            , r.reporter_name                        "reporterName"
+            , r.offender_no                          "offenderNo"
+            , r.incident_date                        "incidentDate"
             , s."name"
-            , s.in_progress            "inProgress"
-            , s.overdue_date <= now()  "isOverdue"
-            , s.statement_status       "status"
+            , s.in_progress                          "inProgress"
+            , s.overdue_date <= now()                "isOverdue"
+            , s.removal_requested_date is not null   "isRemovalRequested"
+            , s.statement_status                     "status"
             from statement s 
             inner join report r on s.report_id = r.id   
           where s.user_id = $1

@@ -84,6 +84,11 @@ const seedReport = ({
     })
 }
 
+const requestRemovalFromStatement = ({ statementId, reason }) => {
+  statementsClient.requestStatementRemoval(statementId, reason)
+  return null
+}
+
 const submitStatement = ({ userId, reportId }) =>
   statementsClient
     .saveStatement(userId, reportId, {
@@ -119,6 +124,7 @@ module.exports = {
   seedReport,
   seedReports,
   submitStatement,
+  requestRemovalFromStatement,
   getReportCount,
 
   clearDb() {

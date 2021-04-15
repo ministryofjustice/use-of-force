@@ -17,6 +17,7 @@ const yourStatementsPage = () =>
       reporter: () => col(i, 3),
       action: () => col(i, 4).find('a'),
       overdue: () => col(i, 5).find('[data-qa=overdue]'),
+      removalRequested: () => col(i, 5).find('[data-qa=removal-request]'),
       reportId: () =>
         col(i, 4)
           .find('a')

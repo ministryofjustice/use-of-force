@@ -18,6 +18,7 @@ const toStatement = namesByOffenderNumber => (incident: StatementSummary) => ({
   offenderNo: incident.offenderNo,
   status: incident.status,
   isOverdue: incident.isOverdue,
+  isRemovalRequested: incident.isRemovalRequested,
 })
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
