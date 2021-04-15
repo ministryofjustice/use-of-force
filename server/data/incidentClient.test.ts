@@ -64,7 +64,7 @@ test('getIncompleteReportsForReviewer', () => {
 
   const isRemovalRequested = `(select count(*) from "v_statement" s
                       where r.id = s.report_id
-                      and s.statement_status = $4) > 0`
+                      and s.removal_requested_date is not null) > 0`
 
   incidentClient.getIncompleteReportsForReviewer('agency-1')
 
@@ -80,12 +80,7 @@ test('getIncompleteReportsForReviewer', () => {
           where r.status = $1
           and   r.agency_id = $2
           order by r.incident_date`,
-    values: [
-      ReportStatus.SUBMITTED.value,
-      'agency-1',
-      StatementStatus.PENDING.value,
-      StatementStatus.REMOVAL_REQUESTED.value,
-    ],
+    values: [ReportStatus.SUBMITTED.value, 'agency-1', StatementStatus.PENDING.value],
   })
 })
 
