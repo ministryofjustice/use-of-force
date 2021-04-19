@@ -5,6 +5,7 @@ export type StatementSummary = {
   incidentDate: Date
   name: string // name of staff
   inProgress: boolean
+  isRemovalRequested: boolean
   isOverdue: boolean
   status: string
 }

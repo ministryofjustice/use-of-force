@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { offender, offender2 } = require('../../mockApis/data')
+const { offender, offender2, offender3 } = require('../../mockApis/data')
 const YourStatementsPage = require('../../pages/yourStatements/yourStatementsPage')
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -9,9 +9,10 @@ context('A user views their statements list', () => {
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubOffenderDetails', offender2)
+    cy.task('stubOffenderDetails', offender3)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
-    cy.task('stubOffenders', [offender, offender2])
+    cy.task('stubOffenders', [offender, offender2, offender3])
     cy.task('stubLocation', '357591')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
@@ -38,7 +39,7 @@ context('A user views their statements list', () => {
         agencyId: offender.agencyId,
         offenderNumber: offender2.offenderNo,
         bookingId: offender2.bookingId,
-        incidentDate: moment('2019-09-09 09:57:40.000').toDate(),
+        incidentDate: moment('2019-09-09 07:57:40.000').toDate(),
         overdueDate: moment().subtract(4, 'd').toDate(),
         involvedStaff: [
           {
@@ -46,27 +47,66 @@ context('A user views their statements list', () => {
             name: 'TEST_USER name',
             email: 'TEST_USER@gov.uk',
           },
+          {
+            username: 'MR_ZAGATO',
+            name: 'MR_ZAGATO name',
+            email: 'MR_ZAGATO@gov.uk',
+          },
         ],
       },
-    ])
+      {
+        status: ReportStatus.SUBMITTED,
+        submittedDate: moment().toDate(),
+        agencyId: offender.agencyId,
+        offenderNumber: offender3.offenderNo,
+        bookingId: offender3.bookingId,
+        incidentDate: moment('2019-09-09 06:57:40.000').toDate(),
+        overdueDate: moment().subtract(4, 'd').toDate(),
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+          {
+            username: 'MRS_JONES',
+            name: 'MRS_JONES name',
+            email: 'MRS_JONES@gov.uk',
+          },
+        ],
+      },
+    ]).then(statementIds => {
+      cy.task('requestRemovalFromStatement', { statementId: statementIds[2].TEST_USER, reason: 'not working' })
+    })
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
     yourStatementsPage.pagination().should('not.exist')
 
     {
-      const { date, prisoner, overdue, action } = yourStatementsPage.statements(0)
+      const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('not.exist')
+      removalRequested().should('not.exist')
       action().should('contain.text', 'Start')
     }
 
     {
-      const { date, prisoner, overdue, action } = yourStatementsPage.statements(1)
+      const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(1)
       prisoner().contains('Jones, June')
       date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
       overdue().should('exist')
+      removalRequested().should('not.exist')
+      action().should('contain.text', 'Start')
+    }
+
+    {
+      const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(2)
+      prisoner().contains('Smith, Simon')
+      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      overdue().should('not.exist')
+      removalRequested().should('exist')
       action().should('contain.text', 'Start')
     }
   })

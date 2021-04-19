@@ -15,4 +15,12 @@ module.exports = {
     agencyId: 'MDI',
     dateOfBirth: '2000-12-26',
   },
+  offender3: {
+    bookingId: 1003,
+    offenderNo: 'A1234AE',
+    firstName: 'SIMON',
+    lastName: 'SMITH',
+    agencyId: 'MDI',
+    dateOfBirth: '2000-12-26',
+  },
 }

@@ -39,6 +39,7 @@ describe('statmentService', () => {
         reporterName: 'BOB',
         inProgress: false,
         isOverdue: false,
+        isRemovalRequested: false,
         name: 'bob',
         status: StatementStatus.PENDING.value,
         incidentDate: new Date(),
