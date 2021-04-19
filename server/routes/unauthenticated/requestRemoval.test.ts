@@ -21,6 +21,7 @@ describe('Request removal controller', () => {
     incidentDate: new Date(1),
     agencyId: 'MDI',
     prisonName: 'Moorland HMP',
+    isRemovalRequested: false,
   }
 
   beforeEach(() => {
@@ -59,6 +60,14 @@ describe('Request removal controller', () => {
         .get(paths.requestRemoval(1, validSignature))
         .expect(302)
         .expect('Location', paths.alreadyRemoved())
+    })
+
+    it('should redirect when already requested', () => {
+      reportService.getAnonReportSummary.mockResolvedValue({ ...report, isRemovalRequested: true })
+      return request(app)
+        .get(paths.requestRemoval(1, validSignature))
+        .expect(302)
+        .expect('Location', paths.removalAlreadyRequested())
     })
 
     it('should redirect on invalid signature', () => {
@@ -127,6 +136,17 @@ describe('Request removal controller', () => {
         .expect(res => {
           expect(res.text).toContain('Your request has been submitted')
           expect(res.text).toContain('You no longer need to complete a statement.')
+        }))
+  })
+
+  describe('GET /removal-already-requested', () => {
+    it('should render page', () =>
+      request(app)
+        .get(paths.removalAlreadyRequested())
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('You have already requested to be removed from this use of force incident')
         }))
   })
 })
