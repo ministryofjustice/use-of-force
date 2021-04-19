@@ -126,8 +126,9 @@ export default class UserService {
 
   public async getUserLocation(token: string, username: string): Promise<string> {
     try {
+      const authClient = this.authClientBuilder(token)
       const prisonClient = this.prisonClientBuilder(token)
-      const user = await prisonClient.getUserbyUsername(username)
+      const user = await authClient.getUser(username)
       const caseload = await prisonClient.getPrisonById(user.activeCaseLoadId)
       return caseload.description
     } catch (error) {

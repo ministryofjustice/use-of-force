@@ -18,7 +18,7 @@
               <dt class="govuk-summary-list__key">
                   Name
               </dt>
-              <dd class="govuk-summary-list__value">
+              <dd class="govuk-summary-list__value" data-qa="name">
                   {{data.name}}
               </dd>
           </div>
@@ -26,13 +26,13 @@
               <dt class="govuk-summary-list__key">
                   Email address
               </dt>
-              <dd class="govuk-summary-list__value">
+              <dd class="govuk-summary-list__value" data-qa="email">
                   {{data.email}}
               </dd>
           </div>
       </dl>
 
-      <p><a href="/{{ data.reportId }}/view-statements">Return to use of force incident</a></p>
+      <p><a data-qa="return-to-incident" href="/{{ data.reportId }}/view-statements">Return to use of force incident</a></p>
   </div>
 </div>
 {% endblock %}
