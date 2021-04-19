@@ -24,6 +24,7 @@ const paths = {
   requestRemoval: (statementId, signature) =>
     `/request-removal/${statementId}${signature ? `?signature=${signature}` : ''}`,
   alreadyRemoved: () => '/already-removed',
+  removalAlreadyRequested: () => '/removal-already-requested',
   removalRequested: () => '/removal-requested',
   viewRemovalRequest: (reportId, statementId) =>
     `/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`,

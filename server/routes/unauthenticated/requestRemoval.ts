@@ -32,6 +32,10 @@ export default class RemovalRequest {
       return res.redirect(paths.alreadyRemoved())
     }
 
+    if (report.isRemovalRequested) {
+      return res.redirect(paths.removalAlreadyRequested())
+    }
+
     return res.render(`pages/statement/request-removal.html`, { errors: req.flash('errors'), report, signature })
   }
 
@@ -57,11 +61,10 @@ export default class RemovalRequest {
     return res.redirect(paths.removalRequested())
   }
 
-  viewConfirmation: RequestHandler = (req, res) => {
-    return res.render(`pages/statement/removal-requested.html`)
-  }
+  viewConfirmation: RequestHandler = (req, res) => res.render(`pages/statement/removal-requested.html`)
 
-  viewAlreadyRemoved: RequestHandler = (req, res) => {
-    return res.render(`pages/statement/already-removed.html`)
-  }
+  viewAlreadyRemoved: RequestHandler = (req, res) => res.render(`pages/statement/already-removed.html`)
+
+  viewRemovalAlreadyRequested: RequestHandler = (req, res) =>
+    res.render('pages/statement/removal-already-requested.html')
 }

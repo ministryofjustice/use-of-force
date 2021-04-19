@@ -20,6 +20,7 @@ export interface AnonReportSummary {
   statementId: number
   incidentDate: Date
   agencyId: string
+  isRemovalRequested: boolean
 }
 
 export interface IncompleteReportSummary extends ReportSummary {
