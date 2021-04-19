@@ -2,6 +2,8 @@ const moment = require('moment')
 const RequestRemovalPage = require('../../pages/yourStatements/requestRemovalPage')
 const RemovalRequestedPage = require('../../pages/yourStatements/removalRequestedPage')
 const AlreadyRemovedPage = require('../../pages/yourStatements/alreadyRemovedPage')
+const RemovalAlreadyRequestedPage = require('../../pages/yourStatements/removalAlreadyRequestedPage')
+
 const { ReportStatus } = require('../../../dist/server/config/types')
 
 context('Request removal', () => {
@@ -61,6 +63,16 @@ context('Request removal', () => {
     seedReport().then(() => {
       RequestRemovalPage.goTo(10)
       AlreadyRemovedPage.verifyOnPage()
+    })
+  })
+
+  it('A user will be shown a message if trying to request removal from a statement they have already requested removal for', () => {
+    seedReport().then(statementId => {
+      cy.task('requestRemovalFromStatement', { statementId, reason: 'not working that day' })
+
+      RequestRemovalPage.goTo(statementId)
+
+      RemovalAlreadyRequestedPage.verifyOnPage()
     })
   })
 })

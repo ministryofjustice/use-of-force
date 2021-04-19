@@ -47,6 +47,7 @@ export default class IncidentClient {
       text: `select vs.id "statementId"
             ,  vr.incident_date "incidentDate"
             ,  vr.agency_id "agencyId"
+            ,  vs.removal_requested_date is not null "isRemovalRequested"
             from v_statement vs
             join v_report vr on vs.report_id = vr.id
             where vs.id = $1`,

@@ -41,7 +41,7 @@ describe('getReport', () => {
 
 describe('getAnonReportSummary', () => {
   test('it should call query on db', async () => {
-    const report = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI' }
+    const report = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI', isRemovalRequested: true }
     locationService.getPrisonById.mockResolvedValue({ description: 'Moorland HMP' } as Prison)
     incidentClient.getAnonReportSummary.mockResolvedValue(report)
 
@@ -50,6 +50,7 @@ describe('getAnonReportSummary', () => {
       incidentDate: new Date(1),
       agencyId: 'MDI',
       prisonName: 'Moorland HMP',
+      isRemovalRequested: true,
     })
     expect(locationService.getPrisonById).toBeCalledWith('token-1', 'MDI')
     expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
