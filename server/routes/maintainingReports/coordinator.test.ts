@@ -8,6 +8,7 @@ import {
   UserService,
   StatementService,
 } from '../../services'
+import { paths } from '../../config/incident'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 
@@ -53,7 +54,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
       await request(app)
-        .get('/coordinator/report/1/add-staff')
+        .get(paths.addInvolvedStaff(1))
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
@@ -65,7 +66,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/coordinator/report/1/add-staff')
+        .get(paths.addInvolvedStaff(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -76,7 +77,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/coordinator/report/1/add-staff')
+        .get(paths.addInvolvedStaff(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -89,10 +90,10 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(coordinatorUser)
       involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
       await request(app)
-        .post('/coordinator/report/1/add-staff')
+        .post(paths.addInvolvedStaff(1))
         .send({ username: 'sally' })
         .expect(302)
-        .expect('Location', '/coordinator/report/1/add-staff/result/success')
+        .expect('Location', paths.addInvolvedStaffResult(1, 'success'))
 
       expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', 1, 'sally')
     })
@@ -101,7 +102,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .post('/coordinator/report/1/add-staff')
+        .post(paths.addInvolvedStaff(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -114,7 +115,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .post('/coordinator/report/1/add-staff')
+        .post(paths.addInvolvedStaff(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -129,7 +130,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(coordinatorUser)
       involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
       await request(app)
-        .get('/coordinator/report/1/add-staff/result/success')
+        .get(paths.addInvolvedStaffResult(1, 'success'))
         .expect(302)
         .expect('Location', '/1/view-report')
     })
@@ -138,7 +139,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/coordinator/report/1/add-staff/result/success')
+        .get(paths.addInvolvedStaffResult(1, 'success'))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -149,7 +150,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/coordinator/report/1/add-staff/result/success')
+        .get(paths.addInvolvedStaffResult(1, 'success'))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -164,7 +165,7 @@ describe('coordinator', () => {
       reviewService.getReport.mockResolvedValue({} as Report)
 
       await request(app)
-        .get('/coordinator/report/1/confirm-delete')
+        .get(paths.confirmReportDelete(1))
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
@@ -176,7 +177,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/coordinator/report/1/confirm-delete')
+        .get(paths.confirmReportDelete(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -189,7 +190,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/coordinator/report/1/confirm-delete')
+        .get(paths.confirmReportDelete(1))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -206,7 +207,7 @@ describe('coordinator', () => {
       await request(app)
         .post('/coordinator/report/123/delete')
         .expect(302)
-        .expect('Location', '/coordinator/report/123/confirm-delete')
+        .expect('Location', paths.confirmReportDelete(123))
         .expect(() => {
           expect(reportService.deleteReport).not.toHaveBeenCalled()
         })
@@ -303,7 +304,7 @@ describe('coordinator', () => {
       involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'Bob' } as InvolvedStaff)
 
       await request(app)
-        .get('/coordinator/report/1/statement/2/confirm-delete')
+        .get(paths.confirmStatementDelete(1, 2))
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
@@ -315,7 +316,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get('/coordinator/report/1/statement/2/confirm-delete')
+        .get(paths.confirmStatementDelete(1, 2))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -328,7 +329,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get('/coordinator/report/1/statement/2/confirm-delete')
+        .get(paths.confirmStatementDelete(1, 2))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -339,13 +340,26 @@ describe('coordinator', () => {
   })
 
   describe('Delete statement', () => {
-    it('not confirming deletion triggers validation', async () => {
+    it('Validation error redirects back to current page', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
       await request(app)
         .post('/coordinator/report/123/statement/2/delete')
         .expect(302)
-        .expect('Location', '/coordinator/report/123/statement/2/confirm-delete')
+        .expect('Location', paths.confirmStatementDelete(123, 2))
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+        })
+    })
+
+    it('On removal request, validation error preserves correct navigation', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.confirmStatementDelete(123, 2, true))
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
         })
@@ -364,6 +378,19 @@ describe('coordinator', () => {
         })
     })
 
+    it('On removal request, redirects to view statements page after confirmation of yes', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ confirm: 'yes', removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.viewStatements(123))
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(123, 2)
+        })
+    })
+
     it('when confirming not to delete statement', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
 
@@ -372,6 +399,19 @@ describe('coordinator', () => {
         .send({ confirm: 'no' })
         .expect(302)
         .expect('Location', '/123/view-report')
+        .expect(() => {
+          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+        })
+    })
+
+    it('On removal request, redirects to view statements page after confirmation of no', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      await request(app)
+        .post('/coordinator/report/123/statement/2/delete')
+        .send({ confirm: 'no', removalRequest: 'true' })
+        .expect(302)
+        .expect('Location', paths.viewStatements(123))
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
         })
@@ -405,7 +445,7 @@ describe('coordinator', () => {
   })
 
   describe('Removal request', () => {
-    describe('viewRemovalRequest', () => {
+    describe('view removal request', () => {
       it('should call involvedStaffService and userService', async () => {
         involvedStaffService.loadInvolvedStaff.mockResolvedValue({
           statementId: 1,
@@ -418,7 +458,7 @@ describe('coordinator', () => {
         userSupplier.mockReturnValue(coordinatorUser)
 
         await request(app)
-          .get('/coordinator/report/123/statement/2/view-removal-request')
+          .get(paths.viewRemovalRequest(123, 2))
           .expect(200)
           .expect(res => {
             expect(res.text).toContain('Request to be removed from use of force incident')
@@ -430,7 +470,7 @@ describe('coordinator', () => {
       })
     })
 
-    describe('submitRemovalRequest', () => {
+    describe('submit removal request', () => {
       it('should redirect to itself if yes no not selected', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
         const flash = jest.fn().mockReturnValue([])
@@ -450,10 +490,10 @@ describe('coordinator', () => {
         )
 
         await request(app)
-          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .post(paths.viewRemovalRequest(123, 2))
           .send({ confirm: undefined })
           .expect(302)
-          .expect('Location', '/coordinator/report/123/statement/2/view-removal-request')
+          .expect('Location', paths.viewRemovalRequest(123, 2))
           .expect(() => {
             expect(flash).toBeCalledWith('errors', [
               {
@@ -467,10 +507,10 @@ describe('coordinator', () => {
       it('should redirect to confirm-delete if yes selected', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
         await request(app)
-          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .post(paths.viewRemovalRequest(123, 2))
           .send({ confirm: 'yes' })
           .expect(302)
-          .expect('Location', '/coordinator/report/123/statement/2/confirm-delete')
+          .expect('Location', paths.confirmStatementDelete(123, 2, true))
       })
 
       it('should call refuseRequest and redirect to staff-member-not-removed if no selected', async () => {
@@ -478,16 +518,16 @@ describe('coordinator', () => {
         statementService.refuseRequest.mockResolvedValue()
 
         await request(app)
-          .post('/coordinator/report/123/statement/2/view-removal-request')
+          .post(paths.viewRemovalRequest(123, 2))
           .send({ confirm: 'no' })
           .expect(302)
-          .expect('Location', '/coordinator/report/123/statement/2/staff-member-not-removed')
+          .expect('Location', paths.staffMemberNotRemoved(123, 2))
 
         expect(statementService.refuseRequest).toBeCalledWith(2)
       })
     })
 
-    describe('staffmemberNotRemoved', () => {
+    describe('staff member not removed', () => {
       it('should display name and email', async () => {
         userSupplier.mockReturnValue(coordinatorUser)
         involvedStaffService.loadInvolvedStaff.mockResolvedValue({
@@ -497,7 +537,7 @@ describe('coordinator', () => {
           email: 'bob@gmail.com',
         })
         await request(app)
-          .get('/coordinator/report/123/statement/2/staff-member-not-removed')
+          .get(paths.staffMemberNotRemoved(123, 2))
           .expect(200)
           .expect('Content-Type', 'text/html; charset=utf-8')
           .expect(res => {

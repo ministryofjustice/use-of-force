@@ -37,6 +37,18 @@ describe('getInvolvedStaff', () => {
   })
 })
 
+describe('getInvolvedStaffRemovalRequestedReason', () => {
+  test('it should call query on db and return removal requested reason', async () => {
+    statementsClient.getRemovalRequestedReasonByStatementId.mockResolvedValue({
+      removalRequestedReason: 'reason',
+    })
+
+    await expect(service.getInvolvedStaffRemovalRequestedReason(1)).resolves.toBe('reason')
+
+    expect(statementsClient.getRemovalRequestedReasonByStatementId).toBeCalledWith(1)
+  })
+})
+
 describe('update', () => {
   const reportSubmittedDate = moment('2019-09-06 21:26:18').toDate()
   const overdueDate = moment(reportSubmittedDate).add(3, 'days').toDate()

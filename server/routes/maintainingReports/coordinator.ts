@@ -10,6 +10,7 @@ import type {
 import type { SystemToken } from '../../types/uof'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
+import { paths } from '../../config/incident'
 import { ReportStatus } from '../../config/types'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
@@ -52,26 +53,25 @@ export default class CoordinatorRoutes {
       req.flash('errors', [
         { href: '#confirm', text: 'Select yes if you want to remove this person from the incident' },
       ])
-      return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`)
+      return res.redirect(paths.viewRemovalRequest(reportId, statementId))
     }
 
     if (confirm === 'no') {
       await this.statementService.refuseRequest(parseInt(statementId, 10))
-      return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/staff-member-not-removed`)
+      return res.redirect(paths.staffMemberNotRemoved(reportId, statementId))
     }
 
-    return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/confirm-delete`)
+    return res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
   }
 
   viewStaffMemberNotRemoved: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
-    const returnToIncidentLink = `/${reportId}/view-statements`
     const staffMember = await this.involvedStaffService.loadInvolvedStaff(
       parseInt(reportId, 10),
       parseInt(statementId, 10)
     )
 
-    const data = { name: staffMember.name, email: staffMember.email, returnToIncidentLink }
+    const data = { name: staffMember.name, email: staffMember.email, reportId }
 
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
@@ -93,7 +93,7 @@ export default class CoordinatorRoutes {
 
     if (!username.trim()) {
       req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
-      return res.redirect(`/coordinator/report/${reportId}/add-staff`)
+      return res.redirect(paths.addInvolvedStaff(reportId))
     }
 
     const result = await this.involvedStaffService.addInvolvedStaff(
@@ -103,7 +103,7 @@ export default class CoordinatorRoutes {
     )
 
     req.flash('username', username.toUpperCase())
-    return res.redirect(`/coordinator/report/${reportId}/add-staff/result/${result}`)
+    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
   }
 
   viewAddInvolvedStaffResult: RequestHandler = async (req, res) => {
@@ -114,7 +114,7 @@ export default class CoordinatorRoutes {
     const knownResult = Object.values(AddStaffResult).some(knownValue => knownValue === result)
 
     if (!username || !knownResult || result === AddStaffResult.SUCCESS) {
-      return res.redirect(`/${reportId}/view-report`)
+      return res.redirect(paths.viewReport(reportId))
     }
 
     if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
@@ -150,7 +150,7 @@ export default class CoordinatorRoutes {
 
     if (!confirm) {
       req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this report' }])
-      return res.redirect(`/coordinator/report/${reportId}/confirm-delete`)
+      return res.redirect(paths.confirmReportDelete(reportId))
     }
 
     const report = await this.reviewService.getReport(reportId)
@@ -167,12 +167,13 @@ export default class CoordinatorRoutes {
   confirmDeleteStatement: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const { statementId } = req.params
+    const { removalRequest } = req.query
 
     const staffMember = await this.involvedStaffService.loadInvolvedStaff(reportId, parseInt(statementId, 10))
 
     const errors = req.flash('errors')
 
-    const data = { reportId, statementId, displayName: staffMember.name }
+    const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
     res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
   }
@@ -180,17 +181,20 @@ export default class CoordinatorRoutes {
   deleteStatement: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const { statementId } = req.params
-    const { confirm } = req.body
+    const { confirm, removalRequest } = req.body
 
     if (!confirm) {
       req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
-      return res.redirect(`/coordinator/report/${reportId}/statement/${statementId}/confirm-delete`)
+      return removalRequest
+        ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
+        : res.redirect(paths.confirmStatementDelete(reportId, statementId))
     }
 
     if (confirm === 'yes') {
       await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
     }
 
-    return res.redirect(`/${reportId}/view-report`)
+    const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
+    return res.redirect(location)
   }
 }
