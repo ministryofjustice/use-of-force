@@ -40,23 +40,7 @@ describe('prisonClient', () => {
       expect(output).toEqual(userResponse)
     })
   })
-  describe('getUserbyUsername', () => {
-    const userResponse = {
-      staffId: 1,
-      username: 'CA_USER',
-      firstName: 'Ca',
-      lastName: 'User',
-      activeCaseLoadId: 'LEI',
-      accountStatus: 'ACTIVE',
-      active: true,
-    }
-    it('should return data from api', async () => {
-      fakePrisonApi.get('/api/users/CA_USER').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
 
-      const output = await prisonClient.getUserbyUsername('CA_USER')
-      expect(output).toEqual(userResponse)
-    })
-  })
   describe('getUserCaseLoads', () => {
     const caseloads = []
     it('should return data from api', async () => {
