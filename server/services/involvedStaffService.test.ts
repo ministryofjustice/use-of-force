@@ -20,10 +20,29 @@ const db = {
   inTransaction: fn => fn(client),
 }
 
+const notificationService = {
+  sendInvolvedStaffRemovedFromReport: jest.fn(),
+}
+
 let service: InvolvedStaffService
 
 beforeEach(() => {
-  service = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
+  service = new InvolvedStaffService(
+    incidentClient,
+    statementsClient,
+    userService,
+    db.inTransaction,
+    notificationService
+  )
+
+  statementsClient.getInvolvedStaffToRemove.mockResolvedValue({
+    id: 1,
+    userId: 'some_user',
+    name: 'Some User',
+    email: 'some.user@email.com',
+    incidentDate: new Date('2021-04-01 10:00:00'),
+    submittedDate: new Date('2021-05-01 10:00:00'),
+  })
 })
 
 afterEach(() => {
@@ -158,6 +177,17 @@ describe('update', () => {
         query: client,
       })
 
+      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+        'some.user@email.com',
+        {
+          incidentDate: moment('2021-04-01 10:00:00').toDate(),
+          involvedName: 'Some User',
+          submittedDate: moment('2021-05-01 10:00:00').toDate(),
+        },
+        { reportId: 1, statementId: 2 }
+      )
+
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
 
@@ -171,6 +201,17 @@ describe('update', () => {
         query: client,
       })
 
+      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+        'some.user@email.com',
+        {
+          incidentDate: moment('2021-04-01 10:00:00').toDate(),
+          involvedName: 'Some User',
+          submittedDate: moment('2021-05-01 10:00:00').toDate(),
+        },
+        { reportId: 1, statementId: 2 }
+      )
+
       expect(incidentClient.changeStatus).toHaveBeenCalledWith(1, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
     })
 
@@ -183,7 +224,16 @@ describe('update', () => {
         statementId: 2,
         query: client,
       })
-
+      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+        'some.user@email.com',
+        {
+          incidentDate: moment('2021-04-01 10:00:00').toDate(),
+          involvedName: 'Some User',
+          submittedDate: moment('2021-05-01 10:00:00').toDate(),
+        },
+        { reportId: 1, statementId: 2 }
+      )
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
   })

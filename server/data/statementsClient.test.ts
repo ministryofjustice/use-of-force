@@ -212,6 +212,22 @@ test('getStatementsForReviewer', () => {
   })
 })
 
+test('getInvolvedStaffToRemove', () => {
+  statementsClient.getInvolvedStaffToRemove(1)
+
+  expect(query).toBeCalledWith({
+    text: `select s.id
+            ,      s.user_id                                 "userId"
+            ,      s.name                                    "name" 
+            ,      s.email                                   "email"
+            ,      r.incident_date                           "incidentDate"
+            ,      r.submitted_date                          "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where s.id = $1`,
+    values: [1],
+  })
+})
 test('getStatementForReviewer', () => {
   statementsClient.getStatementForReviewer(1)
 

@@ -47,6 +47,7 @@ module.exports = {
             REQUEST: 'a58349d2-8a5f-4a22-8cb3-6a1410201a01',
             REMINDER: 'f561f2bc-9a64-4af2-a34c-ebee08c7503b',
             OVERDUE: 'da6a4684-ec87-4ead-8fcd-ec3a126c4926',
+            REMOVED: 'fc24f4e4-a927-492b-9bb4-dfe4f9e6c383',
           }
         : {
             REQUEST: '6c231fa9-316d-40c7-8cc0-efee73845009',

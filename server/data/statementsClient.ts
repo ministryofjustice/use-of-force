@@ -4,6 +4,7 @@ import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage }
 import type {
   StatementSummary,
   Statement,
+  InvolvedStaffToRemove,
   AdditionalComment,
   UsernameToStatementIds,
   StatementUpdate,
@@ -63,6 +64,22 @@ export default class StatementsClient {
               and s.statement_status = $3
               and s.deleted is null`,
       values: [reportId, userId, status.value],
+    })
+    return results.rows[0]
+  }
+
+  async getInvolvedStaffToRemove(statementId: number): Promise<InvolvedStaffToRemove> {
+    const results = await this.query({
+      text: `select s.id
+            ,      s.user_id                                 "userId"
+            ,      s.name                                    "name" 
+            ,      s.email                                   "email"
+            ,      r.incident_date                           "incidentDate"
+            ,      r.submitted_date                          "submittedDate"
+            from v_report r
+            left join v_statement s on r.id = s.report_id
+            where s.id = $1`,
+      values: [statementId],
     })
     return results.rows[0]
   }

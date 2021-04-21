@@ -5,7 +5,7 @@ import ReportDetailBuilder from './reportDetailBuilder'
 
 jest.mock('.')
 
-const involvedStaffService = new InvolvedStaffService(null, null, null, null) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
