@@ -41,7 +41,7 @@ export const RelocationLocation = toEnum({
   OWN_CELL: { value: 'OWN_CELL', label: 'Own cell' },
   GATED_CELL: { value: 'GATED_CELL', label: 'Gated cell' },
   SEGREGATION_UNIT: { value: 'SEGREGATION_UNIT', label: 'Segregation unit' },
-  SPECIAL_ACCOMODATION: { value: 'SPECIAL_ACCOMODATION', label: 'Special accomodation' },
+  SPECIAL_ACCOMMODATION: { value: 'SPECIAL_ACCOMMODATION', label: 'Special accommodation' },
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
 })
 
