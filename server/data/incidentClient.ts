@@ -227,6 +227,7 @@ export default class IncidentClient {
           where s.next_reminder_date < now()
           and s.statement_status = $1
           and s.deleted is null
+          and s.removal_requested_date is null
           order by s.id
           for update of s skip locked
           LIMIT 1`,
