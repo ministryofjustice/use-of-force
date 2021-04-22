@@ -56,6 +56,34 @@ const createNotificationService = (emailClient, eventPublisher) => {
         })
       )
 
+  const sendInvolvedStaffRemovedFromReport = async (
+    emailAddress,
+    { involvedName, incidentDate, submittedDate },
+    context
+  ) =>
+    emailClient
+      .sendEmail(involvedStaff.REMOVED, emailAddress, {
+        personalisation: {
+          INVOLVED_NAME: involvedName,
+          INCIDENT_DATE: asDate(incidentDate),
+        },
+        reference: null,
+      })
+      .then(({ body }) =>
+        eventPublisher.publish({
+          name: 'SendInvolvedStaffRemovedFromReportSuccess',
+          properties: { involvedName, incidentDate, submittedDate, ...context },
+          detail: body,
+        })
+      )
+      .catch(({ message }) =>
+        eventPublisher.publish({
+          name: 'SendInvolvedStaffRemovedFromReportFailure',
+          properties: { involvedName, incidentDate, submittedDate, ...context },
+          detail: message,
+        })
+      )
+
   const sendInvolvedStaffStatementReminder = async (
     emailAddress,
     { involvedName, incidentDate, submittedDate, overdueDate },
@@ -195,6 +223,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
     sendReporterStatementOverdue,
     sendInvolvedStaffStatementOverdue,
     getRemovalRequestLink,
+    sendInvolvedStaffRemovedFromReport,
   }
 }
 

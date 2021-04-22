@@ -18,7 +18,8 @@ export class InvolvedStaffService {
     private readonly incidentClient: IncidentClient,
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
-    private readonly inTransaction: InTransaction
+    private readonly inTransaction: InTransaction,
+    private readonly notificationService
   ) {}
 
   public getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
@@ -88,6 +89,8 @@ export class InvolvedStaffService {
   public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
+    const involvedStaff = await this.statementsClient.getInvolvedStaffToRemove(statementId)
+
     await this.inTransaction(async client => {
       const pendingStatementBeforeDeletion = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
@@ -105,5 +108,15 @@ export class InvolvedStaffService {
         }
       }
     })
+
+    const { submittedDate, email, name: involvedName } = involvedStaff
+    const incidentDate = moment(involvedStaff.incidentDate).toDate()
+    const context = { reportId, statementId }
+
+    await this.notificationService.sendInvolvedStaffRemovedFromReport(
+      email,
+      { involvedName, incidentDate, submittedDate },
+      context
+    )
   }
 }

@@ -141,6 +141,27 @@ describe('send involved staff notifications', () => {
     })
   })
 
+  test('sendInvolvedStaffRemovedFromReport', async () => {
+    await service.sendInvolvedStaffRemovedFromReport(
+      'user@email.com',
+      { involvedName, incidentDate, submittedDate },
+      context
+    )
+
+    expect(client.sendEmail).toBeCalledWith(involvedStaff.REMOVED, 'user@email.com', {
+      personalisation: {
+        INVOLVED_NAME: 'Thelma Jones',
+        INCIDENT_DATE: 'Tuesday 12 February',
+      },
+      reference: null,
+    })
+
+    expect(eventPublisher.publish).toBeCalledWith({
+      name: 'SendInvolvedStaffRemovedFromReportSuccess',
+      properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
+      detail: 'response 1',
+    })
+  })
   test('sendStatementRequest', async () => {
     await service.sendStatementRequest(
       'user@email.com',

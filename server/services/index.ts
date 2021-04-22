@@ -40,7 +40,13 @@ const eventPublisher = EventPublisher(telemetryClient)
 const heatmapBuilder = createHeatmapBuilder(prisonClientBuilder)
 const userService = new UserService(prisonClientBuilder, authClientBuilder)
 const notificationService = notificationServiceFactory(eventPublisher)
-const involvedStaffService = new InvolvedStaffService(incidentClient, statementsClient, userService, db.inTransaction)
+const involvedStaffService = new InvolvedStaffService(
+  incidentClient,
+  statementsClient,
+  userService,
+  db.inTransaction,
+  notificationService
+)
 const offenderService = new OffenderService(prisonClientBuilder)
 const locationService = new LocationService(prisonClientBuilder)
 const reportService = new ReportService(incidentClient, offenderService, locationService, systemToken)

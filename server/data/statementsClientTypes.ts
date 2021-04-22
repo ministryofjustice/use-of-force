@@ -23,6 +23,15 @@ export type Statement = {
   reporterName: string
 }
 
+export type InvolvedStaffToRemove = {
+  id: number
+  userId: string
+  name: string
+  email: string
+  incidentDate: Date
+  submittedDate: Date
+}
+
 export type StatementUpdate = {
   lastTrainingMonth: number
   lastTrainingYear: number
