@@ -291,11 +291,15 @@ test('refuseStatementRemoval', async () => {
   })
 })
 
-test('getRemovalRequestedReasonByStatementId', async () => {
-  statementsClient.getRemovalRequestedReasonByStatementId(1)
+test('getRemovalRequest', async () => {
+  statementsClient.getRemovalRequest(1)
 
   expect(query).toBeCalledWith({
-    text: `select removal_requested_reason  "removalRequestedReason" from v_statement where id = $1`,
+    text: `select removal_requested_reason "removalRequestedReason"
+              , (select count(*) from "v_statement" s
+    where s.removal_requested_date is not null) > 0 "isRemovalRequested" 
+              from v_statement 
+              where id = $1`,
     values: [1],
   })
 })
