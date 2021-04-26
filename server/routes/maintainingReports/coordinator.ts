@@ -44,7 +44,7 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
 
     if (!removalRequest.isRemovalRequested) {
-      return res.redirect(paths.viewStatements(reportId))
+      return res.redirect(paths.viewStatements(parseInt(reportId, 10)))
     }
     return res.render('pages/coordinator/view-removal-request.html', { data, errors })
   }

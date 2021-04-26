@@ -297,7 +297,8 @@ test('getRemovalRequest', async () => {
   expect(query).toBeCalledWith({
     text: `select removal_requested_reason "removalRequestedReason"
               , (select count(*) from "v_statement" s
-    where s.removal_requested_date is not null) > 0 "isRemovalRequested" 
+                      where s.id = $1
+                      and s.removal_requested_date is not null) > 0 "isRemovalRequested" 
               from v_statement 
               where id = $1`,
     values: [1],
