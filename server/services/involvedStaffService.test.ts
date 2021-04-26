@@ -56,15 +56,19 @@ describe('getInvolvedStaff', () => {
   })
 })
 
-describe('getInvolvedStaffRemovalRequestedReason', () => {
+describe('getInvolvedStaffRemovalRequest', () => {
   test('it should call query on db and return removal requested reason', async () => {
-    statementsClient.getRemovalRequestedReasonByStatementId.mockResolvedValue({
-      removalRequestedReason: 'reason',
+    statementsClient.getRemovalRequest.mockResolvedValue({
+      isRemovalRequested: true,
+      removalRequestedReason: 'Some reason',
     })
 
-    await expect(service.getInvolvedStaffRemovalRequestedReason(1)).resolves.toBe('reason')
+    await expect(service.getInvolvedStaffRemovalRequest(1)).resolves.toStrictEqual({
+      isRemovalRequested: true,
+      removalRequestedReason: 'Some reason',
+    })
 
-    expect(statementsClient.getRemovalRequestedReasonByStatementId).toBeCalledWith(1)
+    expect(statementsClient.getRemovalRequest).toBeCalledWith(1)
   })
 })
 

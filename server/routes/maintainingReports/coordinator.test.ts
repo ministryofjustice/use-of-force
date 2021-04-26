@@ -453,7 +453,10 @@ describe('coordinator', () => {
           userId: 'someUserId',
           email: '',
         })
-        involvedStaffService.getInvolvedStaffRemovalRequestedReason.mockResolvedValue('')
+        involvedStaffService.getInvolvedStaffRemovalRequest.mockResolvedValue({
+          isRemovalRequested: true,
+          removalRequestedReason: 'I was not there',
+        })
         userService.getUserLocation.mockResolvedValue('Leeds')
         userSupplier.mockReturnValue(coordinatorUser)
 
@@ -465,7 +468,7 @@ describe('coordinator', () => {
           })
 
         expect(involvedStaffService.loadInvolvedStaff).toBeCalledWith(123, 2)
-        expect(involvedStaffService.getInvolvedStaffRemovalRequestedReason).toBeCalledWith(2)
+        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toBeCalledWith(2)
         expect(userService.getUserLocation).toBeCalledWith('user1-system-token', 'someUserId')
       })
     })
@@ -545,6 +548,25 @@ describe('coordinator', () => {
             expect(res.text).toContain('Bob Smith')
             expect(res.text).toContain('bob@gmail.com')
           })
+      })
+      it('should redirect to view-statements because removal_requested_date is null', async () => {
+        userSupplier.mockReturnValue(coordinatorUser)
+        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
+          statementId: 2,
+          name: 'Bob Smith',
+          userId: 'someUserId',
+          email: 'bob@gmail.com',
+        })
+
+        involvedStaffService.getInvolvedStaffRemovalRequest.mockResolvedValue({
+          isRemovalRequested: false,
+          removalRequestedReason: '',
+        })
+
+        await request(app)
+          .get(paths.viewRemovalRequest(123, 2))
+          .expect(302)
+          .expect('Location', paths.viewStatements(123))
       })
     })
   })
