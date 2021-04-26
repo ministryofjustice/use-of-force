@@ -294,14 +294,10 @@ export default class StatementsClient {
   }
 
   async getRemovalRequest(statementId: number): Promise<RemovalRequest> {
-    const isRemovalRequested = `(select count(*) from "v_statement" s
-                      where s.id = $1
-                      and s.removal_requested_date is not null) > 0`
-
     const { rows } = await this.query({
-      text: `select removal_requested_reason "removalRequestedReason"
-              , ${isRemovalRequested} "isRemovalRequested" 
-              from v_statement 
+      text: `select s.removal_requested_reason "removalRequestedReason"
+              , s.removal_requested_date is not null "isRemovalRequested"
+              from v_statement s 
               where id = $1`,
       values: [statementId],
     })
