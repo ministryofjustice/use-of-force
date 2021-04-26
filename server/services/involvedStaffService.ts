@@ -5,6 +5,7 @@ import type { IncidentClient, StatementsClient } from '../data'
 import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
 import { InvolvedStaff } from '../data/incidentClientTypes'
+import { RemovalRequest } from '../data/statementsClientTypes'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -26,9 +27,9 @@ export class InvolvedStaffService {
     return this.incidentClient.getInvolvedStaff(reportId)
   }
 
-  public async getInvolvedStaffRemovalRequestedReason(statementId: number): Promise<string> {
-    const reason = await this.statementsClient.getRemovalRequestedReasonByStatementId(statementId)
-    return reason.removalRequestedReason
+  public async getInvolvedStaffRemovalRequest(statementId: number): Promise<RemovalRequest> {
+    const removalRequest = await this.statementsClient.getRemovalRequest(statementId)
+    return removalRequest
   }
 
   public async loadInvolvedStaff(reportId: number, statementId: number): Promise<InvolvedStaff> {

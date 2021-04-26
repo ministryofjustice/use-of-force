@@ -60,4 +60,7 @@ export type ReviewerStatement = {
   submittedDate: Date
 }
 
-export type RemovalRequestedReason = { removalRequestedReason: string }
+export type RemovalRequest = {
+  isRemovalRequested: boolean
+  removalRequestedReason: string
+}
