@@ -30,7 +30,7 @@ context('Login functionality', () => {
     cy.task('stubLogin', { firstName: 'James', lastName: 'Stuart' })
     cy.login()
     const yourStatements = YourStatements.verifyOnPage()
-    yourStatements.loggedInName().contains('James Stuart')
+    yourStatements.loggedInName().contains('J. Stuart')
     cy.request('/logout/').its('body').should('contain', 'Sign in')
   })
 
@@ -39,7 +39,7 @@ context('Login functionality', () => {
     cy.task('stubLogin', { firstName: 'James', lastName: 'Stuart' })
     cy.login()
     const yourStatements = YourStatements.verifyOnPage()
-    yourStatements.loggedInName().contains('James Stuart')
+    yourStatements.loggedInName().contains('J. Stuart')
 
     cy.task('stubVerifyToken', false)
     cy.request('/').its('body').should('contain', 'Sign in')
@@ -47,7 +47,7 @@ context('Login functionality', () => {
     // now login as Bobby Brown
     cy.task('stubLogin', { firstName: 'Bobby', lastName: 'Brown' })
     cy.login()
-    yourStatements.loggedInName().contains('Bobby Brown')
+    yourStatements.loggedInName().contains('B. Brown')
   })
 
   it('Favicon is successfully displayed in tab', () => {

@@ -181,6 +181,14 @@ export default function createApp(services: Services): Express {
 
   app.use(addTemplateVariables)
 
+  function addreturnURL(req, res, next) {
+    const returnUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+    res.locals.returnUrl = returnUrl
+    next()
+  }
+
+  app.use(addreturnURL)
+
   // Don't cache dynamic resources
   app.use(noCache())
 

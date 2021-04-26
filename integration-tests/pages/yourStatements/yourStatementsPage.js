@@ -24,7 +24,7 @@ const yourStatementsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
-    loggedInName: () => cy.get('.user-block ul:first-child'),
+    loggedInName: () => cy.get('[data-qa=logged-in-name]'),
   })
 
 module.exports = {

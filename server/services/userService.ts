@@ -1,5 +1,5 @@
 import logger from '../../log'
-import { properCaseName } from '../utils/utils'
+import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import type { RestClientBuilder, PrisonClient, AuthClient } from '../data'
 import { User, UserWithPrison, FoundUserResult } from '../types/uof'
@@ -22,10 +22,12 @@ export default class UserService {
 
       const activeCaseLoads = user.activeCaseLoadId ? await prisonClient.getUserCaseLoads() : []
       const activeCaseLoad = activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === user.activeCaseLoadId)
+      const displayName = `${properCaseName(user.firstName)} ${properCaseName(user.lastName)}`
 
       return {
         ...user,
-        displayName: `${properCaseName(user.firstName)} ${properCaseName(user.lastName)}`,
+        displayName,
+        displayNameInitial: `${forenameToInitial(displayName)}`,
         activeCaseLoad,
       }
     } catch (error) {
