@@ -17,6 +17,10 @@
 {% set lastTrainingYearClass = 'govuk-!-margin-left-5 govuk-input--width-4' %}
 {% endif %}
 
+{% block beforeContent %}
+  {% include "../../partials/breadcrumbs.njk" %}
+{% endblock %}
+
 {% block content %}
 <div class="govuk-body">
   {% if errors.length > 0 %}

@@ -1,17 +1,14 @@
 {% extends "./layout.html" %} 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from  "../macros.njk" import exitLink %}   
 
 {% set pageTitle = 'Use of force incidents' %}
 
-{% macro exitLink(qa) %}
-    <div class="govuk-grid-column-full">
-        <a href="{{ links.exitUrl }}" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" data-qa="{{qa}}">Exit to Digital Prison Services</a>
-    </div>
-{% endmacro %}
-
 {% block beforeContent %}
-    <div class="govuk-grid-row">
-        {{ exitLink("exit-to-dps-link-top") }}
-    </div>    
+    {{ govukBackLink({
+        text: "Digital Prison Services",
+        href: links.exitUrl
+      }) }}
 {% endblock %}
 
 {% block content %}
@@ -55,7 +52,11 @@
         {% block tabContent %}
         {% endblock %}
         <div class="govuk-grid-row govuk-!-margin-top-4">
-            {{ exitLink("exit-to-dps-link") }}
+            {{ 
+                exitLink({
+                  qa: 'exit-to-dps-link' 
+                }) 
+              }}  
         </div>
     </div>
 {% endblock %}
