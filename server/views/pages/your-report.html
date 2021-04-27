@@ -6,6 +6,10 @@
 
 {% set pageTitle = 'Use of force report' %}
 
+{% block beforeContent %}
+  {% include "../partials/breadcrumbs.njk" %}
+{% endblock %}
+
 {% block content %}
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 no-print">

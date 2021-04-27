@@ -10,6 +10,10 @@
 
 {% set pageTitle = 'Your use of force statement' %}
 
+{% block beforeContent %}
+  {% include "../../partials/breadcrumbs.njk" %}
+{% endblock %}
+
 {% block content %}
 
 <div class="govuk-body">

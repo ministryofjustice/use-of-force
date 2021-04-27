@@ -6,6 +6,10 @@
 {% import "../reportDetailMacro.njk" as reportDetail %} 
 {% set pageTitle = 'Use of force incident' %}
 
+{% block beforeContent %}
+  {% include "../../partials/breadcrumbs.njk" %}
+{% endblock %}
+
 {% block content %}
 <div class="govuk-body">
   <div class="govuk-grid-row no-print">     

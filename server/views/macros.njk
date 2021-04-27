@@ -14,3 +14,9 @@
 {% macro removalRequestedBadge(props) %}
 <span data-qa="{{props.qa}}" class="moj-badge moj-badge--bright-purple {{props.class}}">{{props.text}}</span>
 {% endmacro %}
+
+{% macro exitLink(props) %}
+    <div class="govuk-grid-column-full">
+        <a href="{{ links.exitUrl }}" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" data-qa="{{props.qa}}">Exit to Digital Prison Services</a>
+    </div>
+{% endmacro %}

@@ -1,6 +1,14 @@
 {% extends "../partials/layout.html" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% set pageTitle = 'Report use of force' %}
+
+{% block beforeContent %}
+    {{ govukBackLink({
+        text: "Digital Prison Services",
+        href: links.exitUrl
+      }) }}
+{% endblock %}
 
 {% macro section(name, label, url, value) %}
 <li class="app-task-list__item" data-qa-{{name}}={{value}}>
