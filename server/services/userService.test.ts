@@ -47,6 +47,7 @@ describe('getUser', () => {
     expect(result).toEqual({
       ...user,
       displayName: 'Jo Smith',
+      displayNameInitial: 'J. Smith',
       activeCaseLoad: { caseLoadId: '2', description: 'Leeds' },
     })
   })

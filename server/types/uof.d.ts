@@ -22,6 +22,7 @@ export type User = {
   lastName: string
   activeCaseLoad: CaseLoad
   displayName: string
+  displayNameInitial: string
 }
 
 export type FoundUserResult = {

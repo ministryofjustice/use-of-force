@@ -1,5 +1,12 @@
 const moment = require('moment')
-const { properCaseName, properCaseFullName, isNilOrEmpty, removeKeysWithEmptyValues, parseDate } = require('./utils')
+const {
+  properCaseName,
+  properCaseFullName,
+  forenameToInitial,
+  isNilOrEmpty,
+  removeKeysWithEmptyValues,
+  parseDate,
+} = require('./utils')
 
 describe('properCaseName', () => {
   it('null string', () => {
@@ -45,6 +52,18 @@ describe('properCaseFullName', () => {
     expect(properCaseFullName('JAMES robert MONTGOMERY-FOSTER-SMYTH-WALLACE-BOB')).toEqual(
       'James Robert Montgomery-Foster-Smyth-Wallace-Bob'
     )
+  })
+})
+
+describe('Forename to initial', () => {
+  it('should return null', () => {
+    expect(forenameToInitial('')).toEqual(null)
+  })
+  it('should change forename to initial', () => {
+    expect(forenameToInitial('Robert Smith')).toEqual('R. Smith')
+  })
+  it('should change forename to initial hypenated last name', () => {
+    expect(forenameToInitial('Robert Smith-Jones')).toEqual('R. Smith-Jones')
   })
 })
 
