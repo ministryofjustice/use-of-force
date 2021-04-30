@@ -62,21 +62,6 @@ test('create', async () => {
   })
 })
 
-test('update', () => {
-  const date = new Date()
-
-  draftReportClient.update(1, date, {})
-
-  expect(query).toBeCalledWith({
-    text: `update v_report r
-            set form_response = COALESCE($1,   r.form_response)
-            ,   incident_date = COALESCE($2,   r.incident_date)
-            ,   updated_date = now()
-            where r.id = $3`,
-    values: [{}, date, 1],
-  })
-})
-
 test('updateAgencyId', () => {
   draftReportClient.updateAgencyId('agencyId', 'username', 1)
 

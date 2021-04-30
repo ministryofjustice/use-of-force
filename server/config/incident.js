@@ -26,6 +26,8 @@ const paths = {
   alreadyRemoved: () => '/already-removed',
   removalAlreadyRequested: () => '/removal-already-requested',
   removalRequested: () => '/removal-requested',
+
+  // coordinator
   viewRemovalRequest: (reportId, statementId) =>
     `/coordinator/report/${reportId}/statement/${statementId}/view-removal-request`,
   staffMemberNotRemoved: (reportId, statementId) =>
@@ -37,6 +39,10 @@ const paths = {
       removalRequest ? `?removalRequest=${removalRequest}` : ''
     }`,
   confirmReportDelete: reportId => `/coordinator/report/${reportId}/confirm-delete`,
+
+  // admin
+  editReport: reportId => `/${reportId}/edit-report`,
+  editForm: (reportId, form) => `/${reportId}/edit-report/${form}`,
 }
 
 module.exports = {

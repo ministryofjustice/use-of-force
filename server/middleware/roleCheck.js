@@ -10,4 +10,5 @@ const check = userCheck => (req, res, next) => {
 module.exports = {
   coordinatorOnly: check(user => user.isCoordinator),
   reviewerOrCoordinatorOnly: check(user => user.isCoordinator || user.isReviewer),
+  adminOnly: check(user => user.isAdmin),
 }

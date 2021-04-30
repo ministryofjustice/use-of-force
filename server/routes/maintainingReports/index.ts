@@ -1,10 +1,11 @@
 import express, { Router } from 'express'
 
 import asyncMiddleware from '../../middleware/asyncMiddleware'
-import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
+import { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
 
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'
+import AdminRoutes from './admin'
 
 import { Services } from '../../services'
 
@@ -64,7 +65,17 @@ export default function Index(services: Services): Router {
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
       coordinator.viewStaffMemberNotRemoved
     )
-
-    return router
   }
+
+  {
+    const admin = new AdminRoutes(reviewService, offenderService, systemToken)
+    const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
+    const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
+
+    get('/:reportId/edit-report', admin.viewEditReport)
+    get('/:reportId/edit-report/:formName', admin.viewEditForm)
+    post('/:reportId/edit-report/:formName', admin.submitEditForm)
+  }
+
+  return router
 }

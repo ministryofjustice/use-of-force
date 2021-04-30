@@ -32,22 +32,6 @@ export default class DraftReportClient {
     return result.rows[0].id
   }
 
-  async update(
-    reportId: number,
-    incidentDate: Date | null,
-    formResponse: unknown | null,
-    query: QueryPerformer = this.query
-  ): Promise<void> {
-    await query({
-      text: `update v_report r
-            set form_response = COALESCE($1,   r.form_response)
-            ,   incident_date = COALESCE($2,   r.incident_date)
-            ,   updated_date = now()
-            where r.id = $3`,
-      values: [formResponse, incidentDate, reportId],
-    })
-  }
-
   async submit(
     userId: string,
     bookingId: number,
