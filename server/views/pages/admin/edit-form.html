@@ -1,0 +1,74 @@
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% import "../reportDetailMacro.njk" as reportDetail %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{%- from "moj/components/side-navigation/macro.njk" import mojSideNavigation -%}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+
+{% set pageTitle = 'Edit report' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      })
+    }}
+  {% endif %}
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">{{ pageTitle }}</h1>
+    <div class="govuk-grid-row ">
+      <div class="govuk-grid-column-full">
+        {{ reportDetail.reportHeadingWithSpacing(data) }}
+      </div>
+    </div>
+
+    {% set sideNavItems = [] %}
+    {% for section in data.formSections %}
+    {% set sideNavItems = (sideNavItems.push(
+        {
+        text: section,
+        href: '/' + data.incidentId + '/edit-report/' + section,
+        active: section === data.selectedFormName
+        }
+    ), sideNavItems) %}
+    {% endfor %}
+
+    <div class="govuk-grid-row govuk-!-padding-top-4">
+        <div class="govuk-grid-column-one-third">
+            {{ mojSideNavigation({
+            label: 'Side navigation',
+            items: sideNavItems,
+            classes: 'govuk-!-padding-top-0'
+            }) }}
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                {{ govukTextarea({
+                    id: "form",
+                    rows: 15,
+                    value: data.form,
+                    name: 'form',
+                    classes: 'govuk-!-margin-bottom-0',
+                    errorMessage: errors | findError('form')
+                }) }}
+                {{
+                    govukButton({
+                    text: 'Save',
+                    name: 'save',
+                    classes: 'govuk-button govuk-!-margin-top-1 float-right',
+                    attributes: { 'data-qa': 'continue' }
+                    })
+                }}
+            </form>
+        </div>
+    </div> 
+  </div>
+</div>
+{% endblock %}

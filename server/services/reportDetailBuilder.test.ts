@@ -2,6 +2,7 @@ import { Prison } from '../data/prisonClientTypes'
 import { InvolvedStaff, Report } from '../data/incidentClientTypes'
 import { LocationService, OffenderService, InvolvedStaffService } from '.'
 import ReportDetailBuilder from './reportDetailBuilder'
+import { UseOfForceReport } from '../data/UseOfForceReport'
 
 jest.mock('.')
 
@@ -41,7 +42,7 @@ describe('Build details', () => {
       id: 1,
       username: 'J_SMITH',
       offenderNo: 'A1234AA',
-      form: { incidentDetails: { locationId: 2 } },
+      form: { incidentDetails: { locationId: 2 } } as UseOfForceReport,
       incidentDate: new Date('2015-03-26T12:00:00Z'),
       bookingId: 33,
       reporterName: 'A User',

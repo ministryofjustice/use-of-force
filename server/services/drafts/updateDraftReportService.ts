@@ -2,11 +2,12 @@ import * as R from 'ramda'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
-import type { PrisonClient, RestClientBuilder, DraftReportClient } from '../../data'
+import type { PrisonClient, RestClientBuilder, DraftReportClient, IncidentClient } from '../../data'
 
 export default class UpdateDraftReportService {
   constructor(
     private readonly draftReportClient: DraftReportClient,
+    private readonly incidentClient: IncidentClient,
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly systemToken: SystemToken
   ) {}
@@ -54,7 +55,7 @@ export default class UpdateDraftReportService {
     const { username } = currentUser
     if (incidentDateValue || formValue) {
       logger.info(`Updated report with id: ${formId} for user: ${username} on booking: ${bookingId}`)
-      await this.draftReportClient.update(formId, incidentDateValue, formValue)
+      await this.incidentClient.update(formId, incidentDateValue, formValue)
     }
   }
 

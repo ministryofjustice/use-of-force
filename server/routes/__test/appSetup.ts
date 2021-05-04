@@ -44,6 +44,7 @@ export const reviewerUser = {
   displayName: 'First Last',
   isReviewer: true,
   isCoordinator: false,
+  isAdmin: false,
   activeCaseLoadId: 'LEI',
 }
 
@@ -56,6 +57,20 @@ export const coordinatorUser = {
   displayName: 'First Last',
   isReviewer: true,
   isCoordinator: true,
+  isAdmin: false,
+  activeCaseLoadId: 'LEI',
+}
+
+export const adminUser = {
+  firstName: 'first',
+  lastName: 'last',
+  userId: 'id',
+  token: 'token',
+  username: 'user1',
+  displayName: 'First Last',
+  isReviewer: false,
+  isCoordinator: false,
+  isAdmin: true,
   activeCaseLoadId: 'LEI',
 }
 

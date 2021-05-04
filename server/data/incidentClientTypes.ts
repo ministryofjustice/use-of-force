@@ -1,4 +1,5 @@
 import type moment from 'moment'
+import { UseOfForceReport } from './UseOfForceReport'
 
 export interface IncidentSearchQuery {
   prisonNumber?: string
@@ -32,7 +33,7 @@ export interface Report extends ReportSummary {
   username: string
   agencyId: string
   submittedDate: Date
-  form: Record<string, any>
+  form: UseOfForceReport
 }
 
 export interface InvolvedStaff {

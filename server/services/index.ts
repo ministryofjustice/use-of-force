@@ -58,7 +58,12 @@ const submitDraftReportService = new SubmitDraftReportService(
   db.inTransaction
 )
 
-const updateDraftReportService = new UpdateDraftReportService(draftReportClient, prisonClientBuilder, systemToken)
+const updateDraftReportService = new UpdateDraftReportService(
+  draftReportClient,
+  incidentClient,
+  prisonClientBuilder,
+  systemToken
+)
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   authClientBuilder,
   prisonClientBuilder,

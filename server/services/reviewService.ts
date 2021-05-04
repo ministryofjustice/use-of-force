@@ -1,4 +1,6 @@
-import type { AgencyId, SystemToken } from '../types/uof'
+import * as R from 'ramda'
+import type { AgencyId, LoggedInUser, SystemToken } from '../types/uof'
+import logger from '../../log'
 import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
 import { IncidentClient, StatementsClient, RestClientBuilder, AuthClient } from '../data'
@@ -118,5 +120,37 @@ export default class ReviewService {
       this.statementsClient.getAdditionalComments(statement.id),
       authClient.getEmail(statement.userId),
     ]).then(([additionalComments, email]) => ({ ...statement, additionalComments, isVerified: email.verified }))
+  }
+
+  private getUpdatedReport(
+    existingReport: Record<string, unknown>,
+    formName: string,
+    updatedSection
+  ): Record<string, unknown> | false {
+    const updatedFormObject = {
+      ...existingReport,
+      [formName]: updatedSection,
+    }
+
+    const payloadChanged = !R.equals(existingReport, updatedFormObject)
+    return payloadChanged ? updatedFormObject : false
+  }
+
+  public async update(
+    currentUser: LoggedInUser,
+    reportId: number,
+    formName: string,
+    updatedSection: unknown,
+    incidentDate?: Date | null
+  ): Promise<void> {
+    const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
+
+    const updatedPayload = this.getUpdatedReport(form, formName, updatedSection)
+
+    if (updatedPayload || incidentDate) {
+      const { username } = currentUser
+      logger.info(`Updated report with id: ${id} for user: ${username}`)
+      await this.incidentClient.update(id, incidentDate, updatedPayload)
+    }
   }
 }

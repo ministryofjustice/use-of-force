@@ -22,7 +22,12 @@ const submitDraftReportService = new SubmitDraftReportService(
   null,
   null
 ) as jest.Mocked<SubmitDraftReportService>
-const updateDraftReportService = new UpdateDraftReportService(null, null, null) as jest.Mocked<UpdateDraftReportService>
+const updateDraftReportService = new UpdateDraftReportService(
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<UpdateDraftReportService>
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   null,
   null,
