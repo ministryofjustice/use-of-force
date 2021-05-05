@@ -194,7 +194,8 @@ test('getStatementsForReviewer', () => {
             ,      r.id                                   "reportId"
             ,      s.name
             ,      s.user_id                              "userId"
-            ,      s.overdue_date <= now()                "isOverdue"
+            ,      (s.overdue_date <= now()) and
+                   (s.statement_status != $1)             "isOverdue"
             ,      s.statement_status = $1                "isSubmitted"
             ,      s.removal_requested_date is not null   "isRemovalRequested"
             ,      r.booking_id                           "bookingId"
@@ -236,7 +237,8 @@ test('getStatementForReviewer', () => {
             ,      r.id                                      "reportId"
             ,      s.name
             ,      s.user_id                                 "userId"
-            ,      s.overdue_date <= now()                   "isOverdue"
+            ,      (s.overdue_date <= now()) and 
+                   (s.statement_status != $1)                "isOverdue"
             ,      s.statement_status = $1                   "isSubmitted"
             ,      s.removal_requested_date is not null      "isRemovalRequested"
             ,      r.booking_id                              "bookingId"
