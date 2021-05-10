@@ -11,7 +11,7 @@ jest.mock('../../server/data/incidentClient')
 jest.mock('./reminderSender')
 jest.mock('./emailResolver')
 
-const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const reminderSender = new ReminderSender(null) as jest.Mocked<ReminderSender>
 const emailResolver = new EmailResolver(null, null, null) as jest.Mocked<EmailResolver>
 

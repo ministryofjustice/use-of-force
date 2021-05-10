@@ -2,14 +2,19 @@ import moment from 'moment'
 import IncidentClient from './incidentClient'
 import { ReportStatus, StatementStatus } from '../config/types'
 import { PageResponse } from '../utils/page'
+import ReportLogClient from './reportLogClient'
 
+jest.mock('./reportLogClient')
+
+const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 let incidentClient: IncidentClient
 const query = jest.fn()
-const inTransaction = jest.fn()
+const transactionalQuery = jest.fn()
+const inTransaction = callback => callback(transactionalQuery)
 
 beforeEach(() => {
   jest.resetAllMocks()
-  incidentClient = new IncidentClient(query, inTransaction)
+  incidentClient = new IncidentClient(query, inTransaction, reportLogClient)
   query.mockResolvedValue({ rows: [] })
 })
 
@@ -191,16 +196,41 @@ test('getAnonReportSummary', () => {
   })
 })
 
-test('changeStatus', () => {
-  incidentClient.changeStatus('report1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE)
+describe('changeStatus', () => {
+  test('changeStatus to incomplete', async () => {
+    await incidentClient.changeStatus(1, 'USER-1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, transactionalQuery)
 
-  expect(query).toBeCalledWith({
-    text: `update v_report r
+    expect(transactionalQuery).toBeCalledWith({
+      text: `update v_report r
             set status = $1
             ,   updated_date = now()
           where id = $2
           and status = $3`,
-    values: [ReportStatus.COMPLETE.value, 'report1', ReportStatus.SUBMITTED.value],
+      values: [ReportStatus.SUBMITTED.value, 1, ReportStatus.COMPLETE.value],
+    })
+
+    expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalQuery, 'USER-1', 1, 'REPORT_STATUS_CHANGED', {
+      new: 'SUBMITTED',
+      old: 'COMPLETE',
+    })
+  })
+
+  test('changeStatus to complete', async () => {
+    await incidentClient.changeStatus(1, 'USER-1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE, transactionalQuery)
+
+    expect(transactionalQuery).toBeCalledWith({
+      text: `update v_report r
+            set status = $1
+            ,   updated_date = now()
+          where id = $2
+          and status = $3`,
+      values: [ReportStatus.COMPLETE.value, 1, ReportStatus.SUBMITTED.value],
+    })
+
+    expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalQuery, 'USER-1', 1, 'REPORT_COMPLETED', {
+      new: 'COMPLETE',
+      old: 'SUBMITTED',
+    })
   })
 })
 
@@ -223,8 +253,8 @@ test('getInvolvedStaff', async () => {
 })
 
 test('getNextNotificationReminder', () => {
-  incidentClient.getNextNotificationReminder(query)
-  expect(query).toBeCalledWith({
+  incidentClient.getNextNotificationReminder(transactionalQuery)
+  expect(transactionalQuery).toBeCalledWith({
     text: `select s.id                     "statementId"
           ,       r.id                     "reportId"
           ,       s.user_id                "userId"
@@ -261,24 +291,23 @@ test('setNextReminderDate', () => {
 })
 
 test('deleteReport', async () => {
-  inTransaction.mockImplementation(callback => callback(query))
-
   const date = new Date()
-  await incidentClient.deleteReport(-1, date)
+  await incidentClient.deleteReport('USER-1', -1, date)
 
-  expect(query).toBeCalledWith({
+  expect(transactionalQuery).toBeCalledWith({
     text: 'update report set deleted = $1 where id = $2',
     values: [date, -1],
   })
-  expect(query).toBeCalledWith({
+  expect(transactionalQuery).toBeCalledWith({
     text: 'update statement set deleted = $1 where id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
-  expect(query).toBeCalledWith({
+  expect(transactionalQuery).toBeCalledWith({
     text:
       'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
+  expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalQuery, 'USER-1', -1, 'REPORT_DELETED')
 })
 
 test('update', () => {

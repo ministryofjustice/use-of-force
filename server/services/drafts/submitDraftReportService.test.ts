@@ -49,7 +49,7 @@ describe('submit', () => {
     )
 
     expect(draftReportClient.submit).toBeCalledTimes(1)
-    expect(draftReportClient.submit).toBeCalledWith(currentUser.username, 2, now.toDate(), client)
+    expect(draftReportClient.submit).toBeCalledWith(1, currentUser.username, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {

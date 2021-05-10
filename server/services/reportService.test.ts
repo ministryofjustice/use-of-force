@@ -5,21 +5,35 @@ import LocationService from './locationService'
 import { PageResponse } from '../utils/page'
 import { Report } from '../data/incidentClientTypes'
 import { Prison } from '../data/prisonClientTypes'
+import { LoggedInUser } from '../types/uof'
+import ReportLogClient from '../data/reportLogClient'
 
 jest.mock('../data/incidentClient')
+jest.mock('../data/reportLogClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
 jest.mock('./locationService')
 
-const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
+
+const transactionalClient = jest.fn()
+const inTransaction = callback => callback(transactionalClient)
 
 let service: ReportService
 
 beforeEach(() => {
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
-  service = new ReportService(incidentClient, offenderService, locationService, systemToken)
+  service = new ReportService(
+    incidentClient,
+    offenderService,
+    locationService,
+    reportLogClient,
+    inTransaction,
+    systemToken
+  )
 })
 
 afterEach(() => {
@@ -105,13 +119,76 @@ describe('deleteReport', () => {
 
     await service.deleteReport('currentUser', 1)
 
-    expect(incidentClient.deleteReport).toBeCalledWith(1)
+    expect(incidentClient.deleteReport).toBeCalledWith('currentUser', 1)
   })
+
   test('when report does not exists', async () => {
     incidentClient.getReportForReviewer.mockReturnValue(null)
 
     await expect(service.deleteReport('currentUser', 1)).rejects.toThrow(`Report: '1' does not exist`)
 
     expect(incidentClient.deleteReport).not.toHaveBeenCalled()
+  })
+
+  describe('update', () => {
+    test('can update form body when a change has occurred', async () => {
+      incidentClient.getReportForReviewer.mockResolvedValue({
+        id: 1,
+        form: { evidence: { baggedEvidence: false } },
+      } as Report)
+
+      await service.update({ username: 'USER-1', token: 'token-1' } as LoggedInUser, 12, 'evidence', {
+        baggedEvidence: true,
+      })
+
+      expect(incidentClient.update).toHaveBeenCalledWith(
+        1,
+        undefined,
+        { evidence: { baggedEvidence: true } },
+        transactionalClient
+      )
+    })
+
+    test('does not update when no change has occurred', async () => {
+      incidentClient.getReportForReviewer.mockResolvedValue({
+        id: 1,
+        form: { evidence: { baggedEvidence: true } },
+      } as Report)
+
+      await service.update({ username: 'USER-1', token: 'token-1' } as LoggedInUser, 12, 'evidence', {
+        baggedEvidence: true,
+      })
+
+      expect(incidentClient.update).not.toHaveBeenCalled()
+    })
+
+    test('can update incident date when provided', async () => {
+      const incidentDate = new Date()
+      incidentClient.getReportForReviewer.mockResolvedValue({
+        id: 1,
+        form: { evidence: { baggedEvidence: true } },
+      } as Report)
+
+      await service.update(
+        { username: 'USER-1', token: 'token-1' } as LoggedInUser,
+        12,
+        'evidence',
+        {
+          baggedEvidence: true,
+        },
+        incidentDate
+      )
+
+      expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, false, transactionalClient)
+      expect(reportLogClient.insert).toBeCalledWith(transactionalClient, 'USER-1', 12, 'REPORT_MODIFIED', {
+        formName: 'evidence',
+        originalSection: {
+          baggedEvidence: true,
+        },
+        updatedSection: {
+          baggedEvidence: true,
+        },
+      })
+    })
   })
 })

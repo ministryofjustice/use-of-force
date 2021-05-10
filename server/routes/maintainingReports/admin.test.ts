@@ -1,21 +1,21 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
-import { UofReasons } from '../../config/types'
 import { Report } from '../../data/incidentClientTypes'
-import { OffenderService, ReviewService } from '../../services'
+import { OffenderService, ReportService, ReviewService } from '../../services'
 import { appWithAllRoutes, adminUser, coordinatorUser, user } from '../__test/appSetup'
 
 jest.mock('../../services')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 
 let app
 const flash = jest.fn()
 const userSupplier = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reviewService, offenderService }, userSupplier, undefined, flash)
+  app = appWithAllRoutes({ reportService, reviewService, offenderService }, userSupplier, undefined, flash)
 })
 
 afterEach(() => {
@@ -119,7 +119,7 @@ describe('/:reportId/edit-report', () => {
         .expect(302)
         .expect('Location', paths.editForm(-19, 'evidence'))
         .expect(() => {
-          expect(reviewService.update).toHaveBeenCalledWith(adminUser, -19, 'evidence', {
+          expect(reportService.update).toHaveBeenCalledWith(adminUser, -19, 'evidence', {
             evidence: {
               baggedEvidence: true,
             },
@@ -139,7 +139,7 @@ describe('/:reportId/edit-report', () => {
         .expect(302)
         .expect('Location', paths.editForm(-19, 'evidence'))
         .expect(() => {
-          expect(reviewService.update).not.toHaveBeenCalled()
+          expect(reportService.update).not.toHaveBeenCalled()
           expect(flash).toHaveBeenCalledWith('errors', {
             href: '#form',
             text: 'Unexpected token h in JSON at position 1',

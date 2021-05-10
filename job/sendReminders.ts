@@ -19,11 +19,13 @@ import EmailResolver from './reminders/emailResolver'
 import createReminderPoller from './reminders/reminderPoller'
 import ReminderSender from './reminders/reminderSender'
 import eventPublisherFactory from '../server/services/eventPublisher'
+import ReportLogClient from '../server/data/reportLogClient'
 
 const eventPublisher = eventPublisherFactory(buildAppInsightsClient('use-of-force-reminder-job'))
 
 const statementClient = new StatementsClient(db.query)
-const incidentClient = new IncidentClient(db.query, db.inTransaction)
+const reportLogClient = new ReportLogClient()
+const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 
 const emailResolver = new EmailResolver(token => new AuthClient(token), systemToken, statementClient)
 const notificationService = notificationServiceFactory(eventPublisher)

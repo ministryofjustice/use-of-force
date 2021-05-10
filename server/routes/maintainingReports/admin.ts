@@ -1,10 +1,11 @@
 import type { RequestHandler } from 'express'
 import { paths } from '../../config/incident'
-import type { OffenderService, ReviewService } from '../../services'
+import type { OffenderService, ReportService, ReviewService } from '../../services'
 import type { SystemToken } from '../../types/uof'
 
 export default class AdminRoutes {
   constructor(
+    private readonly reportService: ReportService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken
@@ -44,7 +45,7 @@ export default class AdminRoutes {
 
     try {
       const updatedSection = JSON.parse(form)
-      await this.reviewService.update(res.locals.user, parseInt(reportId, 10), formName, updatedSection)
+      await this.reportService.update(res.locals.user, parseInt(reportId, 10), formName, updatedSection)
 
       return res.redirect(paths.editForm(Number(reportId), formName))
     } catch (e) {
