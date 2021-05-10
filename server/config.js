@@ -14,12 +14,7 @@ function get(name, fallback, options = {}) {
 
 const requiredInProduction = { requireInProduction: true }
 
-const disputeInvolvementEnabled = get('DISPUTE_INVOLVEMENT_ENABLED', false)
-
 module.exports = {
-  features: {
-    disputeInvolvementEnabled,
-  },
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),
@@ -42,18 +37,13 @@ module.exports = {
     notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),
     enabled: get('NOTIFY_ENABLED', true),
     templates: {
-      involvedStaff: disputeInvolvementEnabled
-        ? {
-            REQUEST: 'a58349d2-8a5f-4a22-8cb3-6a1410201a01',
-            REMINDER: 'f561f2bc-9a64-4af2-a34c-ebee08c7503b',
-            OVERDUE: 'da6a4684-ec87-4ead-8fcd-ec3a126c4926',
-            REMOVED: 'fc24f4e4-a927-492b-9bb4-dfe4f9e6c383',
-          }
-        : {
-            REQUEST: '6c231fa9-316d-40c7-8cc0-efee73845009',
-            REMINDER: 'a8c8f449-b605-4a7c-9324-cd0840cdb758',
-            OVERDUE: '9cd692a0-68c6-4e33-b38a-595e84422841',
-          },
+      involvedStaff: {
+        REQUEST: 'a58349d2-8a5f-4a22-8cb3-6a1410201a01',
+        REMINDER: 'f561f2bc-9a64-4af2-a34c-ebee08c7503b',
+        OVERDUE: 'da6a4684-ec87-4ead-8fcd-ec3a126c4926',
+        REMOVED: 'fc24f4e4-a927-492b-9bb4-dfe4f9e6c383',
+      },
+
       reporter: {
         REMINDER: get('TEMPLATE_REPORTER_REMINDER', 'c4611599-929f-4f27-94f7-af1ee85fef6d'),
         OVERDUE: get('TEMPLATE_REPORTER_OVERDUE', '1cd6cd3f-7d45-4487-b029-c2a1270e6be8'),
