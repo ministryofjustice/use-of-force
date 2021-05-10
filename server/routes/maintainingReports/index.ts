@@ -68,7 +68,7 @@ export default function Index(services: Services): Router {
   }
 
   {
-    const admin = new AdminRoutes(reviewService, offenderService, systemToken)
+    const admin = new AdminRoutes(reportService, reviewService, offenderService, systemToken)
     const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
 

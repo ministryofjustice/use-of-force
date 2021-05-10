@@ -1,11 +1,14 @@
+import R from 'ramda'
 import { IncidentClient } from '../data'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
-import type { SystemToken } from '../types/uof'
+import type { LoggedInUser, SystemToken } from '../types/uof'
 
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import LocationService from './locationService'
+import ReportLogClient from '../data/reportLogClient'
+import { InTransaction } from '../data/dataAccess/db'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -40,6 +43,8 @@ export default class ReportService {
     private readonly incidentClient: IncidentClient,
     private readonly offenderService: OffenderService,
     private readonly locationService: LocationService,
+    private readonly reportLogClient: ReportLogClient,
+    private readonly inTransaction: InTransaction,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -81,6 +86,46 @@ export default class ReportService {
       throw new Error(`Report: '${reportId}' does not exist`)
     }
 
-    await this.incidentClient.deleteReport(reportId)
+    await this.incidentClient.deleteReport(username, reportId)
+  }
+
+  private getUpdatedReport(
+    existingReport: Record<string, unknown>,
+    formName: string,
+    updatedSection
+  ): Record<string, unknown> | false {
+    const updatedFormObject = {
+      ...existingReport,
+      [formName]: updatedSection,
+    }
+
+    const payloadChanged = !R.equals(existingReport, updatedFormObject)
+    return payloadChanged ? updatedFormObject : false
+  }
+
+  public async update(
+    currentUser: LoggedInUser,
+    reportId: number,
+    formName: string,
+    updatedSection: unknown,
+    incidentDate?: Date | null
+  ): Promise<void> {
+    const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
+
+    const updatedPayload = this.getUpdatedReport(form, formName, updatedSection)
+
+    if (updatedPayload || incidentDate) {
+      const { username } = currentUser
+      logger.info(`Updated report with id: ${id} for user: ${username}`)
+
+      this.inTransaction(async query => {
+        await this.incidentClient.update(id, incidentDate, updatedPayload, query)
+        await this.reportLogClient.insert(query, username, reportId, 'REPORT_MODIFIED', {
+          formName,
+          originalSection: form[formName],
+          updatedSection,
+        })
+      })
+    }
   }
 }

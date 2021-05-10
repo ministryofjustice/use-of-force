@@ -52,7 +52,7 @@ export default class StatementService {
 
       if (pendingStatementCount === 0) {
         logger.info(`All statements complete on : ${reportId}, marking as complete`)
-        await this.incidentClient.changeStatus(reportId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+        await this.incidentClient.changeStatus(reportId, userId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
       }
     })
   }

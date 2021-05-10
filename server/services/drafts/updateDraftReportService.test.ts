@@ -1,16 +1,20 @@
 import { RestClientBuilder, PrisonClient, DraftReportClient, IncidentClient } from '../../data'
 import { InmateDetail } from '../../data/prisonClientTypes'
+import ReportLogClient from '../../data/reportLogClient'
 import { LoggedInUser } from '../../types/uof'
 import UpdateDraftReportService from './updateDraftReportService'
 
 jest.mock('../../data')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
-const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
+const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 
 const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
 const incidentDate = new Date()
+const transactionalClient = jest.fn()
+const inTransaction = callback => callback(transactionalClient)
 
 let service: UpdateDraftReportService
 let prisonClientBuilder: RestClientBuilder<PrisonClient>
@@ -18,7 +22,14 @@ let prisonClientBuilder: RestClientBuilder<PrisonClient>
 beforeEach(() => {
   prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
-  service = new UpdateDraftReportService(draftReportClient, incidentClient, prisonClientBuilder, systemToken)
+  service = new UpdateDraftReportService(
+    draftReportClient,
+    incidentClient,
+    reportLogClient,
+    inTransaction,
+    prisonClientBuilder,
+    systemToken
+  )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   prisonClient.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' } as InmateDetail)
 })

@@ -34,6 +34,7 @@ const {
   statementsClient,
   systemToken,
   telemetryClient,
+  reportLogClient,
 } = dataAccess
 
 const eventPublisher = EventPublisher(telemetryClient)
@@ -49,7 +50,14 @@ const involvedStaffService = new InvolvedStaffService(
 )
 const offenderService = new OffenderService(prisonClientBuilder)
 const locationService = new LocationService(prisonClientBuilder)
-const reportService = new ReportService(incidentClient, offenderService, locationService, systemToken)
+const reportService = new ReportService(
+  incidentClient,
+  offenderService,
+  locationService,
+  reportLogClient,
+  db.inTransaction,
+  systemToken
+)
 
 const submitDraftReportService = new SubmitDraftReportService(
   draftReportClient,
@@ -61,6 +69,8 @@ const submitDraftReportService = new SubmitDraftReportService(
 const updateDraftReportService = new UpdateDraftReportService(
   draftReportClient,
   incidentClient,
+  reportLogClient,
+  db.inTransaction,
   prisonClientBuilder,
   systemToken
 )

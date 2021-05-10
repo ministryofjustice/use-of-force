@@ -5,6 +5,7 @@ import logger from '../../../log'
 import { InTransaction } from '../../data/dataAccess/db'
 import { LoggedInUser } from '../../types/uof'
 import { DraftInvolvedStaff } from './draftInvolvedStaffService'
+import ReportLogClient from '../../data/reportLogClient'
 
 export type PersistedInvolvedStaff = DraftInvolvedStaff & { statementId: number }
 
@@ -62,9 +63,9 @@ export default class SubmitDraftReportService {
           client
         )
         const idFor = user => userNamesToStatementIds[user.username]
-
-        logger.info(`Submitting report for user: ${currentUser.username} and booking: ${bookingId}`)
-        await this.draftReportClient.submit(currentUser.username, bookingId, reportSubmittedDate.toDate(), client)
+        const { username } = currentUser
+        logger.info(`Submitting report for user: ${username} and booking: ${bookingId}`)
+        await this.draftReportClient.submit(reportId, username, reportSubmittedDate.toDate(), client)
         return involvedStaff.map(staffMember => ({ ...staffMember, statementId: idFor(staffMember) }))
       })
 

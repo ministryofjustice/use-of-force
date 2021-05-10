@@ -5,12 +5,11 @@ import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import { EmailResult } from '../data/authClient'
 import { ReviewerStatement } from '../data/statementsClientTypes'
-import { LoggedInUser } from '../types/uof'
 
 jest.mock('../data')
 jest.mock('./offenderService')
 
-const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
@@ -135,54 +134,6 @@ describe('reviewService', () => {
       expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
       expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
       expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
-    })
-  })
-
-  describe('update', () => {
-    test('can update form body when a change has occurred', async () => {
-      incidentClient.getReportForReviewer.mockResolvedValue({
-        id: 1,
-        form: { evidence: { baggedEvidence: false } },
-      } as Report)
-
-      await service.update({ username: 'USER-1', token: 'token-1' } as LoggedInUser, 12, 'evidence', {
-        baggedEvidence: true,
-      })
-
-      expect(incidentClient.update).toHaveBeenCalledWith(1, undefined, { evidence: { baggedEvidence: true } })
-    })
-
-    test('does not update when no change has occurred', async () => {
-      incidentClient.getReportForReviewer.mockResolvedValue({
-        id: 1,
-        form: { evidence: { baggedEvidence: true } },
-      } as Report)
-
-      await service.update({ username: 'USER-1', token: 'token-1' } as LoggedInUser, 12, 'evidence', {
-        baggedEvidence: true,
-      })
-
-      expect(incidentClient.update).not.toHaveBeenCalled()
-    })
-
-    test('can update incident date when provided', async () => {
-      const incidentDate = new Date()
-      incidentClient.getReportForReviewer.mockResolvedValue({
-        id: 1,
-        form: { evidence: { baggedEvidence: true } },
-      } as Report)
-
-      await service.update(
-        { username: 'USER-1', token: 'token-1' } as LoggedInUser,
-        12,
-        'evidence',
-        {
-          baggedEvidence: true,
-        },
-        incidentDate
-      )
-
-      expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, false)
     })
   })
 
