@@ -1,13 +1,17 @@
 import DraftReportClient from './draftReportClient'
 import { ReportStatus } from '../config/types'
+import ReportLogClient from './reportLogClient'
+
+jest.mock('./reportLogClient')
 
 let draftReportClient: DraftReportClient
 const query = jest.fn()
-const inTransaction = jest.fn()
+const transactionalQuery = jest.fn()
+const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 
 beforeEach(() => {
   jest.resetAllMocks()
-  draftReportClient = new DraftReportClient(query, inTransaction)
+  draftReportClient = new DraftReportClient(query, reportLogClient)
   query.mockResolvedValue({ rows: [] })
 })
 
@@ -76,21 +80,20 @@ test('updateAgencyId', () => {
   })
 })
 
-test('submit', () => {
+test('submit', async () => {
   const date = new Date()
-  draftReportClient.submit('user1', 1, date)
+  await draftReportClient.submit(1, 'user1', date, transactionalQuery)
 
-  expect(query).toBeCalledWith({
+  expect(transactionalQuery).toBeCalledWith({
     text: `update v_report r
             set status = $1
             ,   submitted_date = $2
             ,   updated_date = now()
-          where r.user_id = $3
-          and r.booking_id = $4
-          and r.status = $5
-          and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
-    values: [ReportStatus.SUBMITTED.value, date, 'user1', 1, ReportStatus.IN_PROGRESS.value],
+          where r.id = $3
+          and r.status = $4`,
+    values: [ReportStatus.SUBMITTED.value, date, 1, ReportStatus.IN_PROGRESS.value],
   })
+  expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalQuery, 'user1', 1, 'REPORT_SUBMITTED')
 })
 
 test('getInvolvedStaff', async () => {

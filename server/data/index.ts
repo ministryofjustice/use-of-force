@@ -1,6 +1,7 @@
 import { buildAppInsightsClient } from '../utils/azure-appinsights'
 import createRestClientBuilder, { RestClient, ClientOptions } from './restClient'
 
+import ReportLogClient from './reportLogClient'
 import PrisonerSearchClient from './prisonerSearchClient'
 import IncidentClient from './incidentClient'
 import ReportingClient from './reportingClient'
@@ -13,9 +14,10 @@ import config from '../config'
 import { AuthClient, systemToken } from './authClient'
 import * as db from './dataAccess/db'
 
-const incidentClient = new IncidentClient(db.query, db.inTransaction)
+const reportLogClient = new ReportLogClient()
+const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 const reportingClient = new ReportingClient(db.query)
-const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
+const draftReportClient = new DraftReportClient(db.query, reportLogClient)
 const statementsClient = new StatementsClient(db.query)
 const telemetryClient = buildAppInsightsClient()
 
@@ -36,6 +38,7 @@ export const dataAccess = {
   reportingClient,
   telemetryClient,
   draftReportClient,
+  reportLogClient,
   systemToken,
   authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
   prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
@@ -52,4 +55,5 @@ export {
   PrisonerSearchClient,
   AuthClient,
   DraftReportClient,
+  reportLogClient,
 }

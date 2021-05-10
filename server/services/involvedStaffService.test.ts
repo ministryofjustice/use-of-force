@@ -10,7 +10,7 @@ jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
 jest.mock('./userService')
 
-const incidentClient = new IncidentClient(null, null) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 
@@ -103,7 +103,13 @@ describe('update', () => {
 
       expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, staff, client)
 
-      expect(incidentClient.changeStatus).toBeCalledWith(1, ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
+      expect(incidentClient.changeStatus).toBeCalledWith(
+        1,
+        'SYSTEM',
+        ReportStatus.COMPLETE,
+        ReportStatus.SUBMITTED,
+        client
+      )
     })
 
     test('to report which is not yet complete', async () => {
@@ -216,7 +222,13 @@ describe('update', () => {
         { reportId: 1, statementId: 2 }
       )
 
-      expect(incidentClient.changeStatus).toHaveBeenCalledWith(1, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+      expect(incidentClient.changeStatus).toHaveBeenCalledWith(
+        1,
+        'SYSTEM',
+        ReportStatus.SUBMITTED,
+        ReportStatus.COMPLETE,
+        client
+      )
     })
 
     test('with outstanding statements still remaining', async () => {

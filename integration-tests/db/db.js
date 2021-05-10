@@ -4,6 +4,7 @@ const moment = require('moment')
 
 const { expectedPayload } = require('../integration/seedData')
 const db = require('../../dist/server/data/dataAccess/db')
+const ReportLogClient = require('../../dist/server/data/reportLogClient').default
 const IncidentClient = require('../../dist/server/data/incidentClient').default
 const DraftReportClient = require('../../dist/server/data/draftReportClient').default
 const StatementsClient = require('../../dist/server/data/statementsClient').default
@@ -11,8 +12,9 @@ const StatementService = require('../../dist/server/services/statementService').
 const { ReportStatus } = require('../../dist/server/config/types')
 const { equals } = require('../../dist/server/utils/utils')
 
-const incidentClient = new IncidentClient(db.query, db.inTransaction)
-const draftReportClient = new DraftReportClient(db.query, db.inTransaction)
+const reportLogClient = new ReportLogClient()
+const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
+const draftReportClient = new DraftReportClient(db.query, reportLogClient)
 const statementsClient = new StatementsClient(db.query)
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 

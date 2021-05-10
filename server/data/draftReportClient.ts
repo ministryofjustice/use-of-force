@@ -1,13 +1,14 @@
-import { QueryPerformer, InTransaction } from './dataAccess/db'
+import { QueryPerformer } from './dataAccess/db'
 import { ReportStatus } from '../config/types'
 import { DraftReport, NoDraftReport, StaffDetails } from './draftReportClientTypes'
 import { AgencyId } from '../types/uof'
+import ReportLogClient from './reportLogClient'
 
 const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
 export default class DraftReportClient {
-  constructor(private readonly query: QueryPerformer, private readonly inTransaction: InTransaction) {}
+  constructor(private readonly query: QueryPerformer, private readonly reportLogClient: ReportLogClient) {}
 
   async create(
     { userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse },
@@ -32,23 +33,17 @@ export default class DraftReportClient {
     return result.rows[0].id
   }
 
-  async submit(
-    userId: string,
-    bookingId: number,
-    submittedDate: Date,
-    query: QueryPerformer = this.query
-  ): Promise<void> {
+  async submit(reportId: number, userId: string, submittedDate: Date, query: QueryPerformer): Promise<void> {
     await query({
       text: `update v_report r
             set status = $1
             ,   submitted_date = $2
             ,   updated_date = now()
-          where r.user_id = $3
-          and r.booking_id = $4
-          and r.status = $5
-          and r.sequence_no = ${maxSequenceForBooking}`,
-      values: [ReportStatus.SUBMITTED.value, submittedDate, userId, bookingId, ReportStatus.IN_PROGRESS.value],
+          where r.id = $3
+          and r.status = $4`,
+      values: [ReportStatus.SUBMITTED.value, submittedDate, reportId, ReportStatus.IN_PROGRESS.value],
     })
+    await this.reportLogClient.insert(query, userId, reportId, 'REPORT_SUBMITTED')
   }
 
   async get(

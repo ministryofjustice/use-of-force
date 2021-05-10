@@ -10,7 +10,7 @@ jest.mock('../../services/reportService')
 jest.mock('../../services/statementService')
 
 describe('Request removal controller', () => {
-  const reportService = new ReportService(null, null, null, null) as jest.Mocked<ReportService>
+  const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
   const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 
   let app

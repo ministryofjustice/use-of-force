@@ -81,7 +81,14 @@ export class InvolvedStaffService {
 
       if (report.status === ReportStatus.COMPLETE.value) {
         logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)
-        await this.incidentClient.changeStatus(reportId, ReportStatus.COMPLETE, ReportStatus.SUBMITTED, client)
+        // TODO provide real username
+        await this.incidentClient.changeStatus(
+          reportId,
+          'SYSTEM',
+          ReportStatus.COMPLETE,
+          ReportStatus.SUBMITTED,
+          client
+        )
       }
       return foundUser.verified ? AddStaffResult.SUCCESS : AddStaffResult.SUCCESS_UNVERIFIED
     })
@@ -104,8 +111,15 @@ export class InvolvedStaffService {
         const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
         if (pendingStatementCount === 0) {
+          // TODO provide real username
           logger.info(`All statements complete on : ${reportId}, marking as complete`)
-          await this.incidentClient.changeStatus(reportId, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+          await this.incidentClient.changeStatus(
+            reportId,
+            'SYSTEM',
+            ReportStatus.SUBMITTED,
+            ReportStatus.COMPLETE,
+            client
+          )
         }
       }
     })

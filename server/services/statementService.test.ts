@@ -8,7 +8,7 @@ import { Statement, StatementUpdate } from '../data/statementsClientTypes'
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
 
-const incidentClient = new IncidentClient(jest.fn(), jest.fn()) as jest.Mocked<IncidentClient>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(jest.fn()) as jest.Mocked<StatementsClient>
 
 const client = 'client-1'
@@ -136,7 +136,13 @@ describe('statmentService', () => {
       expect(statementsClient.submitStatement).toBeCalledTimes(1)
       expect(statementsClient.submitStatement).toBeCalledWith('user1', 1, client)
 
-      expect(incidentClient.changeStatus).toHaveBeenCalledWith(1, ReportStatus.SUBMITTED, ReportStatus.COMPLETE, client)
+      expect(incidentClient.changeStatus).toHaveBeenCalledWith(
+        1,
+        'user1',
+        ReportStatus.SUBMITTED,
+        ReportStatus.COMPLETE,
+        client
+      )
     })
   })
 

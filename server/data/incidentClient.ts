@@ -1,6 +1,6 @@
-import { QueryPerformer, InTransaction } from './dataAccess/db'
+import type { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
-import { ReportStatus, StatementStatus } from '../config/types'
+import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
 import {
   IncidentSearchQuery,
   ReportSummary,
@@ -10,18 +10,35 @@ import {
   AnonReportSummary,
 } from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
+import ReportLogClient from './reportLogClient'
 
 export default class IncidentClient {
-  constructor(private readonly query: QueryPerformer, private readonly inTransaction: InTransaction) {}
+  constructor(
+    private readonly query: QueryPerformer,
+    private readonly inTransaction: InTransaction,
+    private readonly reportLogClient: ReportLogClient
+  ) {}
 
-  changeStatus(reportId, startState, endState, query: QueryPerformer = this.query) {
-    return query({
+  async changeStatus(
+    reportId: number,
+    userId: string,
+    startState: LabelledValue,
+    endState: LabelledValue,
+    query: QueryPerformer
+  ): Promise<void> {
+    await query({
       text: `update v_report r
             set status = $1
             ,   updated_date = now()
           where id = $2
           and status = $3`,
       values: [endState.value, reportId, startState.value],
+    })
+
+    const event = endState === ReportStatus.COMPLETE ? 'REPORT_COMPLETED' : 'REPORT_STATUS_CHANGED'
+    await this.reportLogClient.insert(query, userId, reportId, event, {
+      old: startState.value,
+      new: endState.value,
     })
   }
 
@@ -190,20 +207,22 @@ export default class IncidentClient {
     return results.rows
   }
 
-  async deleteReport(reportId: number, now: Date = new Date()): Promise<void> {
-    return this.inTransaction(async query => {
-      await query({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
+  async deleteReport(userId: string, reportId: number, now: Date = new Date()): Promise<void> {
+    await this.inTransaction(async client => {
+      await client({ text: `update report set deleted = $1 where id = $2`, values: [now, reportId] })
 
       const statementQuery = `(select id from statement where report_id = $2)`
 
-      await query({
+      await client({
         text: `update statement set deleted = $1 where id in ${statementQuery}`,
         values: [now, reportId],
       })
-      await query({
+      await client({
         text: `update statement_amendments set deleted = $1 where statement_id in ${statementQuery}`,
         values: [now, reportId],
       })
+
+      await this.reportLogClient.insert(client, userId, reportId, 'REPORT_DELETED')
     })
   }
 

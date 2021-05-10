@@ -3,11 +3,15 @@ import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
 import type { PrisonClient, RestClientBuilder, DraftReportClient, IncidentClient } from '../../data'
+import ReportLogClient from '../../data/reportLogClient'
+import { InTransaction } from '../../data/dataAccess/db'
 
 export default class UpdateDraftReportService {
   constructor(
     private readonly draftReportClient: DraftReportClient,
     private readonly incidentClient: IncidentClient,
+    private readonly reportLogClient: ReportLogClient,
+    private readonly inTransaction: InTransaction,
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly systemToken: SystemToken
   ) {}
@@ -65,16 +69,21 @@ export default class UpdateDraftReportService {
     const token = await this.systemToken(userId)
     const prisonClient = this.prisonClientBuilder(token)
     const { offenderNo, agencyId } = await prisonClient.getOffenderDetails(bookingId)
-    const id = await this.draftReportClient.create({
-      userId,
-      reporterName,
-      bookingId,
-      agencyId,
-      offenderNo,
-      incidentDate: incidentDateValue,
-      formResponse: formObject,
+
+    return this.inTransaction(async client => {
+      const id = await this.draftReportClient.create({
+        userId,
+        reporterName,
+        bookingId,
+        agencyId,
+        offenderNo,
+        incidentDate: incidentDateValue,
+        formResponse: formObject,
+      })
+      await this.reportLogClient.create(client, userId, id)
+
+      logger.info(`Created new report with id: ${id} for user: ${userId} on booking: ${bookingId}`)
     })
-    logger.info(`Created new report with id: ${id} for user: ${userId} on booking: ${bookingId}`)
   }
 
   public async updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {
