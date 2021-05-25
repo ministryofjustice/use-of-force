@@ -83,7 +83,7 @@ export type EmailResult = {
   verified: boolean
 }
 
-type UserResult = {
+export type UserResult = {
   name: string
   activeCaseLoadId?: string
   staffId: number

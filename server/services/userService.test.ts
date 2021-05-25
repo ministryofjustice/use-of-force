@@ -26,7 +26,7 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('getUser', () => {
+describe('getSelf', () => {
   const user = {
     staffId: 3,
     username: 'jouser',
@@ -42,7 +42,7 @@ describe('getUser', () => {
       { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
     ])
 
-    const result = await service.getUser(token)
+    const result = await service.getSelf(token)
 
     expect(result).toEqual({
       ...user,
@@ -59,75 +59,72 @@ describe('getUser', () => {
       { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
     ])
 
-    await service.getUser(token)
+    await service.getSelf(token)
 
     expect(prisonClientBuilder).toBeCalledWith(token)
   })
 })
 
-describe('getUsers', () => {
-  it('All successfull', async () => {
+describe('getUser', () => {
+  it('Successfull', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'June', email: 'bn@email.com', exists: true, verified: true }
 
-    authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser
-      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
-      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
 
-    const result = await service.getUsers(token, ['Bob', 'June'])
+    const result = await service.getUser(token, 'Bob')
 
-    expect(result).toEqual([
-      {
-        username: 'Bob',
-        name: 'Bob Smith',
-        staffId: 123,
-        email: 'an@email.com',
-        verified: true,
-        activeCaseLoadId: 'MDI',
-      },
-      {
-        username: 'June',
-        name: 'June Jones',
-        staffId: 234,
-        email: 'bn@email.com',
-        verified: true,
-        activeCaseLoadId: 'MDI',
-      },
-    ])
+    expect(result).toEqual({
+      exists: true,
+      username: 'Bob',
+      name: 'Bob Smith',
+      staffId: 123,
+      email: 'an@email.com',
+      verified: true,
+      activeCaseLoadId: 'MDI',
+    })
   })
 
-  it('One not verified', async () => {
-    const user1 = { username: 'BOB', email: 'an@email.com', exists: true, verified: true }
-    const user2 = { username: 'JUNE', exists: true, verified: false }
+  it('User not verified', async () => {
+    const user1 = { username: 'BOB', exists: true, verified: false }
 
-    authClient.getEmail.mockResolvedValueOnce(user1).mockResolvedValueOnce(user2)
-    authClient.getUser
-      .mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
-      .mockResolvedValueOnce({ name: 'June Jones', staffId: 234, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
 
-    const result = await service.getUsers(token, ['Bob', 'June'])
+    const result = await service.getUser(token, 'Bob')
 
-    expect(result).toEqual([
-      {
-        username: 'BOB',
-        name: 'Bob Smith',
-        staffId: 123,
-        email: 'an@email.com',
-        verified: true,
-        activeCaseLoadId: 'MDI',
-      },
-      {
-        username: 'JUNE',
-        name: 'June Jones',
-        staffId: 234,
-        email: undefined,
-        verified: false,
-        activeCaseLoadId: 'MDI',
-      },
-    ])
+    expect(result).toEqual({
+      exists: true,
+      username: 'BOB',
+      name: 'Bob Smith',
+      staffId: 123,
+      email: undefined,
+      verified: false,
+      activeCaseLoadId: 'MDI',
+    })
 
-    expect(authClient.getEmail.mock.calls).toEqual([['BOB'], ['JUNE']])
+    expect(authClient.getEmail).toHaveBeenCalledWith('BOB')
+  })
+
+  it('User not exists', async () => {
+    const user1 = { username: 'BOB', exists: false, verified: false }
+
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+
+    const result = await service.getUser(token, 'Bob')
+
+    expect(result).toEqual({
+      exists: false,
+      username: 'BOB',
+      name: undefined,
+      staffId: undefined,
+      email: undefined,
+      verified: false,
+      activeCaseLoadId: undefined,
+    })
+
+    expect(authClient.getEmail).toHaveBeenCalledWith('BOB')
   })
 
   it('should use the user token', async () => {
@@ -136,7 +133,7 @@ describe('getUsers', () => {
     authClient.getEmail.mockResolvedValueOnce(user1)
     authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1, activeCaseLoadId: 'MDI' })
 
-    await service.getUsers(token, ['Bob'])
+    await service.getUser(token, 'Bob')
 
     expect(authClientBuilder).toBeCalledWith(token)
   })
@@ -185,6 +182,7 @@ describe('findUsersWithPrisons', () => {
 
 describe('compareUsers', () => {
   const user = (username, caseLoad, prison): UserWithPrison => ({
+    exists: true,
     username,
     name: 'Bob Smith',
     email: 'an@email.com',

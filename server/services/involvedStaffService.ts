@@ -53,9 +53,9 @@ export class InvolvedStaffService {
   public async addInvolvedStaff(token: string, reportId: number, username: string): Promise<AddStaffResult> {
     logger.info(`Adding involved staff with username: ${username} to report: '${reportId}'`)
 
-    const [foundUser] = await this.userService.getUsers(token, [username])
+    const foundUser = await this.userService.getUser(token, username)
 
-    if (!foundUser) {
+    if (!foundUser.exists) {
       return AddStaffResult.MISSING
     }
 

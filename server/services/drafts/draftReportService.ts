@@ -115,8 +115,8 @@ export default class DraftReportService {
     username: string
   ): Promise<AddStaffResult> {
     const token = await this.systemToken(user.username)
-    const users = await this.userService.getUsers(token, [username])
-    return this.handleAddStaff(token, user, bookingId, users)
+    const userToAdd = await this.userService.getUser(token, username)
+    return this.handleAddStaff(token, user, bookingId, [userToAdd])
   }
 
   public async deleteInvolvedStaff(user: LoggedInUser, bookingId: number, userToDelete: string): Promise<void> {

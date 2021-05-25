@@ -3,7 +3,7 @@ import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import type { RestClientBuilder, PrisonClient, AuthClient } from '../data'
 import { User, UserWithPrison, FoundUserResult } from '../types/uof'
-import { EmailResult } from '../data/authClient'
+import { EmailResult, UserResult } from '../data/authClient'
 
 export default class UserService {
   constructor(
@@ -11,11 +11,7 @@ export default class UserService {
     private readonly authClientBuilder: RestClientBuilder<AuthClient>
   ) {}
 
-  private async emailNotExistPromise(username: string): Promise<EmailResult> {
-    return { username, exists: false, verified: false }
-  }
-
-  public async getUser(token: string): Promise<User> {
+  public async getSelf(token: string): Promise<User> {
     try {
       const prisonClient = this.prisonClientBuilder(token)
       const user = await prisonClient.getUser()
@@ -36,39 +32,25 @@ export default class UserService {
     }
   }
 
-  // TODO: multiple username support not required, so rewrite
-  public async getUsers(token: string, usernames: string[]): Promise<FoundUserResult[]> {
+  private async getEmailSafely(client: AuthClient, username: string): Promise<EmailResult> {
+    return usernamePattern.test(username) ? client.getEmail(username) : { username, exists: false, verified: false }
+  }
+
+  public async getUser(token: string, username: string): Promise<FoundUserResult> {
     try {
-      if (!usernames) {
-        return []
-      }
       const client = this.authClientBuilder(token)
+      const email = await this.getEmailSafely(client, username.toUpperCase())
+      const user = email.exists && (await client.getUser(email.username))
 
-      const getEmailSafely = username =>
-        usernamePattern.test(username) ? client.getEmail(username) : this.emailNotExistPromise(username)
-
-      const requests = usernames.map((username, i) =>
-        getEmailSafely(username.toUpperCase()).then(email => ({ ...email, i }))
-      )
-      const responses = await Promise.all(requests)
-
-      const usernamesForExisting = responses
-        .filter(email => email.exists)
-        .map(email => client.getUser(email.username).then(user => ({ ...user, ...email })))
-      const existing = await Promise.all(usernamesForExisting)
-
-      const results = [...existing]
-        .sort(({ i }, { i: j }) => i - j)
-        .map(({ username, verified, email, name, staffId, activeCaseLoadId }) => ({
-          username,
-          verified,
-          email,
-          name,
-          staffId,
-          activeCaseLoadId,
-        }))
-
-      return results
+      return {
+        exists: email.exists,
+        username: email.username,
+        verified: email.verified,
+        email: email.email,
+        name: user?.name,
+        staffId: user?.staffId,
+        activeCaseLoadId: user?.activeCaseLoadId,
+      }
     } catch (error) {
       logger.error('Error during getEmails: ', error.stack)
       throw error

@@ -14,23 +14,17 @@ export class DraftInvolvedStaffService {
   ) {}
 
   private async reporter(token: string, reporterUsername: string): Promise<DraftInvolvedStaff> {
-    const users = await this.userService.getUsers(token, [reporterUsername])
-    if (!users.length) {
+    const user = await this.userService.getUser(token, reporterUsername)
+    if (!user.exists) {
       throw new Error(`cannot load reporter user: ${reporterUsername}`)
     }
-    return users[0]
+    return user
   }
 
-  /**
-   * With the add to list pattern, a user will no longer be able to explicitly add themselves as involved staff.
-   * So we could just always add the user here. Unfortunately current draft reports could theoretically have added users.
-   * TODO: Add a migration to remove the current user if present on reports? Or check if even necessary?
-   */
   public async getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
     const retrievedStaff = await this.draftReportClient.getInvolvedStaff(username, bookingId)
-    const staffWithoutReporter = retrievedStaff.filter(staff => staff.username !== username)
     const user = await this.reporter(token, username)
-    return [{ ...user, isReporter: true }, ...staffWithoutReporter]
+    return [{ ...user, isReporter: true }, ...retrievedStaff]
   }
 
   public async getInvolvedStaffWithPrisons(
