@@ -77,20 +77,18 @@ describe('update', () => {
   const overdueDate = moment(reportSubmittedDate).add(3, 'days').toDate()
 
   describe('addInvolvedStaff', () => {
-    const staff = [
-      {
-        email: 'an@email',
-        name: 'Bob Smith',
-        staffId: 3,
-        username: 'Bob',
-        missing: false,
-        verified: true,
-        activeCaseLoadId: 'MDI',
-      },
-    ]
+    const staff = {
+      email: 'an@email',
+      name: 'Bob Smith',
+      staffId: 3,
+      username: 'Bob',
+      exists: true,
+      verified: true,
+      activeCaseLoadId: 'MDI',
+    }
 
     beforeEach(() => {
-      userService.getUsers.mockResolvedValue(staff)
+      userService.getUser.mockResolvedValue(staff)
     })
 
     test('to complete report', async () => {
@@ -101,7 +99,7 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, staff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [staff], client)
 
       expect(incidentClient.changeStatus).toBeCalledWith(
         1,
@@ -120,7 +118,7 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, staff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [staff], client)
 
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
@@ -154,24 +152,23 @@ describe('update', () => {
         status: ReportStatus.IN_PROGRESS.value,
       } as Report)
 
-      const unverifiedStaff = [
-        {
-          staffId: 3,
-          email: 'an@email',
-          username: 'Bob',
-          name: 'Bob Smith',
-          verified: false,
-          missing: false,
-          activeCaseLoadId: 'MDI',
-        },
-      ]
-      userService.getUsers.mockResolvedValue(unverifiedStaff)
+      const unverifiedStaff = {
+        exists: true,
+        staffId: 3,
+        email: 'an@email',
+        username: 'Bob',
+        name: 'Bob Smith',
+        verified: false,
+        activeCaseLoadId: 'MDI',
+      }
+
+      userService.getUser.mockResolvedValue(unverifiedStaff)
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(false)
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, unverifiedStaff, client)
+      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [unverifiedStaff], client)
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
   })

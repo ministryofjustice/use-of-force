@@ -158,7 +158,7 @@ describe('getInvolvedStaff', () => {
     })
 
     test('found multiple matches when all but one added', async () => {
-      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      userService.getUser.mockResolvedValueOnce(aUser('user-1'))
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([aUser('user-2')])
 
       userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
@@ -204,7 +204,7 @@ describe('getInvolvedStaff', () => {
 
     test('successfully add staff when none other present', async () => {
       userService.findUsers.mockResolvedValueOnce([aUser('user-2')])
-      userService.getUsers.mockResolvedValueOnce([aUser('user-1')])
+      userService.getUser.mockResolvedValueOnce(aUser('user-1'))
 
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([])
 

@@ -2,7 +2,7 @@ const logger = require('../../log')
 
 module.exports = userService => async (req, res, next) => {
   try {
-    const user = res.locals.user && (await userService.getUser(res.locals.user.token))
+    const user = res.locals.user && (await userService.getSelf(res.locals.user.token))
 
     if (user) {
       res.locals.user = { ...user, ...res.locals.user }
