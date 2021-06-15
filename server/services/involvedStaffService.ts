@@ -66,7 +66,7 @@ export class InvolvedStaffService {
       throw new Error(`Report: '${reportId}' does not exist`)
     }
 
-    if (await this.statementsClient.isStatementPresentForUser(reportId, username)) {
+    if (await this.statementsClient.isStatementPresentForUser(reportId, foundUser.username)) {
       return AddStaffResult.ALREADY_EXISTS
     }
 

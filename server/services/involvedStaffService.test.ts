@@ -81,7 +81,7 @@ describe('update', () => {
       email: 'an@email',
       name: 'Bob Smith',
       staffId: 3,
-      username: 'Bob',
+      username: 'BOB',
       exists: true,
       verified: true,
       activeCaseLoadId: 'MDI',
@@ -132,6 +132,12 @@ describe('update', () => {
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
 
+    test('passes correctly formatted arguments to statements client', async () => {
+      incidentClient.getReportForReviewer.mockResolvedValue({} as Report)
+
+      await service.addInvolvedStaff('token1', 1, 'Bob')
+      expect(statementsClient.isStatementPresentForUser).toBeCalledWith(1, 'BOB')
+    })
     test('when user already has a statement', async () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         submittedDate: reportSubmittedDate,
@@ -140,10 +146,12 @@ describe('update', () => {
 
       statementsClient.isStatementPresentForUser.mockResolvedValue(true)
 
-      await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.ALREADY_EXISTS)
+      const result = await service.addInvolvedStaff('token1', 1, 'Bob')
+      expect(result).toBe(AddStaffResult.ALREADY_EXISTS)
 
       expect(statementsClient.createStatements).not.toBeCalled()
       expect(incidentClient.changeStatus).not.toBeCalled()
+      expect(result).toBe('already-exists')
     })
 
     test('when user is unverified', async () => {
