@@ -1,5 +1,4 @@
 import express, { Express, RequestHandler, Response } from 'express'
-import bunyanRequestLogger from 'bunyan-request-logger'
 import addRequestId from 'express-request-id'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -13,6 +12,7 @@ import createError from 'http-errors'
 import redis from 'redis'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
+import RequestLogger from './middleware/requestLogger'
 
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -149,7 +149,7 @@ export default function createApp(services: Services): Express {
     express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
   )
 
-  app.use(bunyanRequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }).requestLogger())
+  app.use(RequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }))
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
