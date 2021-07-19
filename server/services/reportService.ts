@@ -1,7 +1,7 @@
 import R from 'ramda'
+import moment from 'moment'
 import { IncidentClient } from '../data'
-import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
-import type { LoggedInUser, SystemToken } from '../types/uof'
+import { ReportStatus } from '../config/types'
 
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
@@ -9,6 +9,16 @@ import OffenderService from './offenderService'
 import LocationService from './locationService'
 import ReportLogClient from '../data/reportLogClient'
 import { InTransaction } from '../data/dataAccess/db'
+import type {
+  ReportSummary,
+  IncompleteReportSummary,
+  Report,
+  AnonReportSummary,
+  offenderReports,
+  inProgressReport,
+} from '../data/incidentClientTypes'
+
+import type { LoggedInUser, SystemToken } from '../types/uof'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -61,6 +71,20 @@ export default class ReportService {
       throw new Error(`Report does not exist: ${reportId}`)
     }
     return report
+  }
+
+  async getReportInProgress(bookingId: number): Promise<inProgressReport | null> {
+    const report = await this.incidentClient.getReportInProgress(bookingId, ReportStatus.IN_PROGRESS.value)
+    return report
+  }
+
+  async getReportsByDate(bookingId: number, incidentDate: string): Promise<offenderReports[] | []> {
+    const startDate = moment(incidentDate, 'DDMMYYYY')
+    const endDate = moment(incidentDate, 'DDMMYYYY').add('1', 'd')
+    const reports = await this.incidentClient.getReportsForAnOffenderForSpecificDate(bookingId, [startDate, endDate])
+    return reports
+      .filter(report => report.status !== ReportStatus.IN_PROGRESS.value)
+      .map(r => ({ ...r, date: moment(r.date) }))
   }
 
   async getAnonReportSummary(token: string, statementId: number): Promise<AnonReportSummaryWithPrison | undefined> {

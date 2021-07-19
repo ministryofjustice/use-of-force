@@ -1,16 +1,20 @@
 import request from 'supertest'
+import moment from 'moment'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
+import ReportService from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
 
 jest.mock('../../services/drafts/draftReportService')
+jest.mock('../../services/reportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
 
 const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
+const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
@@ -18,7 +22,12 @@ let app
 const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
+  app = appWithAllRoutes(
+    { draftReportService, offenderService, locationService, reportService },
+    undefined,
+    false,
+    flash
+  )
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({
     displayName: 'Bob Smith',
@@ -117,7 +126,8 @@ describe('GET /section/form', () => {
 })
 
 describe('POST save and continue /section/form', () => {
-  test('should redirect to next page', () => {
+  test('should redirect to the staff-involved page', () => {
+    reportService.getReportsByDate.mockResolvedValue([])
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -146,6 +156,30 @@ describe('POST save and continue /section/form', () => {
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
         )
       })
+  })
+
+  test('should redirect to the report-may-already-exist page', () => {
+    const reports = {
+      date: moment('21/01/2019', 'DDMMYYYY'),
+      form: {},
+      reporter: 'Harry',
+      status: 'SUBMITTED',
+    } as undefined
+
+    reportService.getReportsByDate.mockResolvedValue([reports])
+    return request(app)
+      .post(`/report/1/incident-details`)
+      .send({
+        submitType: 'save-and-continue',
+        incidentDate: {
+          date: '21/01/2019',
+          time: { hour: '12', minute: '45' },
+        },
+        locationId: -1,
+        plannedUseOfForce: 'false',
+      })
+      .expect(302)
+      .expect('Location', '/report/1/report-may-already-exist/')
   })
 
   test('Submitting invalid update is not allowed and user redirected to same page', () =>
@@ -256,6 +290,7 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
+  // is saving without incident date correct? - . Dev returns validation error
   test('Submitting without incident date is allowed', () => {
     return request(app)
       .post(`/report/1/incident-details`)

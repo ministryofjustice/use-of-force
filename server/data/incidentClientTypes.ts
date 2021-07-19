@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import type moment from 'moment'
 import { UseOfForceReport } from './UseOfForceReport'
 
@@ -41,4 +42,18 @@ export interface InvolvedStaff {
   userId: string
   name: string
   email: string
+}
+
+export type offenderReports = {
+  date: moment.Moment
+  form: {
+    incidentDetails: Record<string, string>
+  }
+  reporter: string
+  status: string
+}
+
+export type inProgressReport = {
+  id: number
+  incidentdate: string
 }

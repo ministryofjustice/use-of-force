@@ -3,6 +3,9 @@ import asyncMiddleware from '../../middleware/asyncMiddleware'
 
 import CreateReportRoutes from './createReport'
 import IncidentDetailsRoutes from './incidentDetails'
+import ReportMayAlreadyExistRoutes from './reportMayAlreadyExist'
+import ReportCancelledRoutes from './reportCancelled'
+import ReportHasBeenDeletedRoutes from './reportHasBeenDeleted'
 import AddInvolvedStaffRoutes from './addInvolvedStaff'
 import WhyWasUoFAppliedRoutes from './whyWasUoFApplied'
 import SearchForPrisonerRoutes from './searchForPrisoner'
@@ -18,6 +21,7 @@ export default function Index({
   systemToken,
   locationService,
   prisonerSearchService,
+  reportService,
 }: Services): Router {
   const router = express.Router()
 
@@ -34,9 +38,30 @@ export default function Index({
   const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, systemToken, locationService)
+  const incidentDetails = new IncidentDetailsRoutes(
+    draftReportService,
+    offenderService,
+    systemToken,
+    locationService,
+    reportService
+  )
   get(reportPath('incident-details'), incidentDetails.view)
   post(reportPath('incident-details'), incidentDetails.submit)
+
+  const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(
+    systemToken,
+    reportService,
+    locationService,
+    offenderService
+  )
+  get(reportPath('report-may-already-exist'), reportMayAlreadyExist.view)
+  post(reportPath('report-may-already-exist'), reportMayAlreadyExist.submit)
+
+  const reportCancelled = new ReportCancelledRoutes()
+  get(reportPath('report-cancelled'), reportCancelled.view)
+
+  const reportHasBeenDeleted = new ReportHasBeenDeletedRoutes()
+  get(reportPath('report-has-been-deleted'), reportHasBeenDeleted.view)
 
   const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken)
   get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)

@@ -6,6 +6,7 @@ import { processInput } from '../../services/validation'
 import { nextPaths, full, partial } from '../../config/incident'
 import type OffenderService from '../../services/offenderService'
 import type LocationService from '../../services/locationService'
+import type ReportService from '../../services/reportService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
 import type { SystemToken } from '../../types/uof'
@@ -24,7 +25,8 @@ export default class IncidentDetailsRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
+    private readonly reportService: ReportService
   ) {}
 
   private loadForm = async req => {
@@ -131,7 +133,17 @@ export default class IncidentDetailsRoutes {
       updatedSection,
       incidentDate ? incidentDate.value : null
     )
-
+    if (incidentDate) {
+      const reportsOnSameDayAsNewReport = await this.reportService.getReportsByDate(
+        parseInt(bookingId, 10),
+        incidentDate.date
+      )
+      req.flash('originalSubmitType', null) // delete any old data
+      req.flash('originalSubmitType', submitType)
+      if (reportsOnSameDayAsNewReport?.length) {
+        return res.redirect(`/report/${bookingId}/report-may-already-exist/`)
+      }
+    }
     const location = await this.getSubmitRedirectLocation(req, bookingId, submitType)
     return res.redirect(location)
   }

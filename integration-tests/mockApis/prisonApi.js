@@ -84,6 +84,7 @@ module.exports = {
         },
         jsonBody: {
           description: 'ASSO A Wing',
+          userDescription: 'ASSO A Wing',
         },
       },
     })
