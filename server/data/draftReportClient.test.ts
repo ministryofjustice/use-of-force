@@ -1,3 +1,4 @@
+import moment from 'moment'
 import DraftReportClient from './draftReportClient'
 import { ReportStatus } from '../config/types'
 import ReportLogClient from './reportLogClient'
@@ -119,5 +120,33 @@ test('getInvolvedStaff', async () => {
   expect(query).toBeCalledWith({
     text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3`,
     values: [1, 'user-1', ReportStatus.IN_PROGRESS.value],
+  })
+})
+
+test('getDuplicateReports', () => {
+  const startDate = moment('2021-07-13')
+  const endDate = moment('2021-07-13')
+
+  draftReportClient.getDuplicateReports(1, [startDate, endDate])
+  expect(query).toBeCalledWith({
+    text: `select r.incident_date date, r.form_response form, r.reporter_name reporter, r.status status
+              from v_report r where r.booking_id >= $1
+              and r.incident_date >= $2
+              and r.incident_date <= $3`,
+    values: [1, startDate, endDate],
+  })
+})
+test('deleteReport', () => {
+  const now = new Date()
+  const userId = 'USER-1'
+  const bookingId = 1
+  draftReportClient.deleteReport(userId, bookingId)
+  expect(query).toBeCalledWith({
+    text: `update v_report r
+              set deleted = $1 
+              where r.user_id = $2
+              and r.booking_id = $3
+              and r.status = $4`,
+    values: [now, userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
 })

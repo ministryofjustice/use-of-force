@@ -1,5 +1,5 @@
-import moment from 'moment'
 import IncidentClient from '../data/incidentClient'
+import DraftReportClient from '../data/draftReportClient'
 import ReportService from './reportService'
 import OffenderService from './offenderService'
 import LocationService from './locationService'
@@ -10,12 +10,15 @@ import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
 
 jest.mock('../data/incidentClient')
+jest.mock('../data/draftReportClient')
 jest.mock('../data/reportLogClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
 jest.mock('./locationService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
+const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
+
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
@@ -29,6 +32,7 @@ beforeEach(() => {
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
   service = new ReportService(
     incidentClient,
+    draftReportClient,
     offenderService,
     locationService,
     reportLogClient,
@@ -52,65 +56,6 @@ describe('reportService', () => {
 
     test('it should throw an error if report doesnt exist', async () => {
       await expect(service.getReport('user1', 1)).rejects.toThrow('Report does not exist: 1')
-    })
-  })
-
-  describe('getReportInProgress', () => {
-    test('should call db query with correct arguments', async () => {
-      await service.getReportInProgress(1)
-      expect(incidentClient.getReportInProgress).toBeCalledWith(1, 'IN_PROGRESS')
-    })
-  })
-
-  describe('getReportsByDate', () => {
-    test('should call incidentClient with correct inputs', async () => {
-      const dbMock = [
-        {
-          date: moment('10/07/2021', 'DDMMYYYY'),
-          form: {
-            incidentDetails: {},
-          },
-          reporter: 'Bob',
-          status: 'SUBMITTED',
-        },
-      ]
-      incidentClient.getReportsForAnOffenderForSpecificDate.mockResolvedValue(dbMock)
-      await service.getReportsByDate(1, '10/07/2021')
-      await expect(incidentClient.getReportsForAnOffenderForSpecificDate).toBeCalled() // more work needed for inputs
-    })
-    test('should return correct results', async () => {
-      // failing - why is date 1 hr before ??
-
-      const mockCurrentReports = [
-        {
-          date: moment('10/07/2021', 'DDMMYYYY'),
-          form: {
-            incidentDetails: {},
-          },
-          reporter: 'Bob',
-          status: 'SUBMITTED',
-        },
-        {
-          date: moment('10/07/2021', 'DDMMYYYY'),
-          form: {
-            incidentDetails: {},
-          },
-          reporter: 'Harry',
-          status: 'IN_PROGRESS',
-        },
-      ]
-      incidentClient.getReportsForAnOffenderForSpecificDate.mockResolvedValue(mockCurrentReports)
-      const results = await service.getReportsByDate(1, '10/07/2021')
-      await expect(results).toStrictEqual([
-        {
-          date: moment('10/07/2021', 'DDMMYYYY'),
-          form: {
-            incidentDetails: {},
-          },
-          reporter: 'Bob',
-          status: 'SUBMITTED',
-        },
-      ])
     })
   })
 

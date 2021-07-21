@@ -1,5 +1,5 @@
 import type { QueryPerformer, InTransaction } from './dataAccess/db'
-import { AgencyId, DateRange } from '../types/uof'
+import { AgencyId } from '../types/uof'
 import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
 import {
   IncidentSearchQuery,
@@ -8,8 +8,6 @@ import {
   InvolvedStaff,
   Report,
   AnonReportSummary,
-  offenderReports,
-  inProgressReport,
 } from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 import ReportLogClient from './reportLogClient'
@@ -281,37 +279,5 @@ export default class IncidentClient {
             where r.id = $3`,
       values: [formResponse, incidentDate, reportId],
     })
-  }
-
-  async getReportInProgress(bookingId: number, status: string): Promise<inProgressReport> {
-    const result = await this.query({
-      text: `
-      select vr.id id, vr.incident_date as incidentdate
-      from v_report vr 
-      where booking_id = $1
-      and status = $2`,
-      values: [bookingId, status],
-    })
-    return result.rows[0]
-  }
-
-  async getReportsForAnOffenderForSpecificDate(
-    bookingId: number,
-    [startDate, endDate]: DateRange
-  ): Promise<offenderReports[]> {
-    const results = await this.query({
-      text: `
-      select vr.incident_date date, vr.form_response form, vr.reporter_name reporter, vr.status status
-      from v_report vr where vr.offender_no 
-      = (
-        select vr2.offender_no from v_report vr2 
-        where vr2.booking_id = $1
-        limit 1
-        )
-      and vr.incident_date >= $2
-      and vr.incident_date < $3`,
-      values: [bookingId, startDate, endDate],
-    })
-    return results.rows
   }
 }

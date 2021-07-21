@@ -6,7 +6,15 @@ import { appWithAllRoutes, user } from '../__test/appSetup'
 
 jest.mock('../../services')
 
-const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
+const draftReportService = new DraftReportService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<DraftReportService>
 
 let app
 const flash = jest.fn()

@@ -324,36 +324,3 @@ test('update', () => {
     values: [{}, date, 1],
   })
 })
-
-test('getReportInProgress', () => {
-  incidentClient.getReportInProgress(1, 'IN_PROGRESS')
-
-  expect(query).toBeCalledWith({
-    text: `
-      select vr.id id, vr.incident_date as incidentdate
-      from v_report vr 
-      where booking_id = $1
-      and status = $2`,
-    values: [1, 'IN_PROGRESS'],
-  })
-})
-
-test('getReportsForAnOffenderForSpecificDate', () => {
-  const startDate = moment('13/07/2021', 'DDMMYYYY')
-  const endDate = moment('14/07/2021', 'DDMMYYYY')
-
-  incidentClient.getReportsForAnOffenderForSpecificDate(1, [startDate, endDate])
-  expect(query).toBeCalledWith({
-    text: `
-      select vr.incident_date date, vr.form_response form, vr.reporter_name reporter, vr.status status
-      from v_report vr where vr.offender_no 
-      = (
-        select vr2.offender_no from v_report vr2 
-        where vr2.booking_id = $1
-        limit 1
-        )
-      and vr.incident_date >= $2
-      and vr.incident_date < $3`,
-    values: [1, startDate, endDate],
-  })
-})

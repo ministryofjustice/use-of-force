@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { DraftReportClient } from '../../data'
 import type { LoggedInUser, FoundUserResult } from '../../types/uof'
 import UserService from '../userService'
@@ -5,6 +6,7 @@ import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
 import DraftReportService, { AddStaffResult } from './draftReportService'
 import SubmitDraftReportService from './submitDraftReportService'
 import UpdateDraftReportService from './updateDraftReportService'
+import LocationService from '../locationService'
 import { isReportComplete } from './reportStatusChecker'
 
 jest.mock('./reportStatusChecker')
@@ -13,6 +15,7 @@ jest.mock('../userService')
 jest.mock('./draftInvolvedStaffService')
 jest.mock('./submitDraftReportService')
 jest.mock('./updateDraftReportService')
+jest.mock('../locationService')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
@@ -37,6 +40,8 @@ const draftInvolvedStaffService = new DraftInvolvedStaffService(
   null
 ) as jest.Mocked<DraftInvolvedStaffService>
 
+const locationService = new LocationService(null) as jest.Mocked<LocationService>
+
 const aUser = username => ({ username } as FoundUserResult)
 const isReportCompleteMock = isReportComplete as jest.Mock
 
@@ -49,6 +54,7 @@ beforeEach(() => {
     updateDraftReportService,
     submitDraftReportService,
     userService,
+    locationService,
     async username => `${username}-system-token`
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
@@ -301,5 +307,56 @@ describe('markInvolvedStaffComplete', () => {
 
     expect(draftReportClient.get).toBeCalledWith('user-1', 1)
     expect(updateDraftReportService.process).not.toBeCalled()
+  })
+})
+
+describe('getPotentialDuplicates', () => {
+  test('should call draftReportClient with correct inputs', async () => {
+    const dbMock = [
+      {
+        date: moment('10/07/2021', 'DDMMYYYY'),
+        form: {
+          incidentDetails: {},
+        },
+        reporter: 'Bob',
+        status: 'SUBMITTED',
+      },
+    ]
+    draftReportClient.getDuplicateReports.mockResolvedValue(dbMock)
+    await service.getPotentialDuplicates(1, moment('2021-10-07'), 'USER-1')
+    await expect(draftReportClient.getDuplicateReports).toBeCalledWith(1, [
+      moment('2021-10-07').startOf('d'),
+      moment('2021-10-07').endOf('d'),
+    ])
+  })
+  test('should return correct results', async () => {
+    const mockCurrentReports = [
+      {
+        date: moment('2021-10-07'),
+        form: {
+          incidentDetails: {},
+        },
+        reporter: 'Bob',
+        status: 'SUBMITTED',
+      },
+      {
+        date: moment('2021-10-07'),
+        form: {
+          incidentDetails: {},
+        },
+        reporter: 'Harry',
+        status: 'IN_PROGRESS',
+      },
+    ]
+    draftReportClient.getDuplicateReports.mockResolvedValue(mockCurrentReports)
+    locationService.getLocation.mockResolvedValue({ userDescription: 'Room A' })
+    const results = await service.getPotentialDuplicates(1, moment('2021-10-07'), 'USER-1')
+    await expect(results).toStrictEqual([
+      {
+        date: moment('2021-10-07'),
+        location: 'Room A',
+        reporter: 'Bob',
+      },
+    ])
   })
 })

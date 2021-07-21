@@ -13,8 +13,16 @@ jest.mock('../../services/reportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
 
-const draftReportService = new DraftReportService(null, null, null, null, null, null) as jest.Mocked<DraftReportService>
-const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
+const draftReportService = new DraftReportService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<DraftReportService>
+const reportService = new ReportService(null, null, null, null, null, null, null) as jest.Mocked<ReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
@@ -127,7 +135,7 @@ describe('GET /section/form', () => {
 
 describe('POST save and continue /section/form', () => {
   test('should redirect to the staff-involved page', () => {
-    reportService.getReportsByDate.mockResolvedValue([])
+    draftReportService.getPotentialDuplicates.mockResolvedValue([])
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -166,7 +174,7 @@ describe('POST save and continue /section/form', () => {
       status: 'SUBMITTED',
     } as undefined
 
-    reportService.getReportsByDate.mockResolvedValue([reports])
+    draftReportService.getPotentialDuplicates.mockResolvedValue([reports])
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
@@ -179,7 +187,7 @@ describe('POST save and continue /section/form', () => {
         plannedUseOfForce: 'false',
       })
       .expect(302)
-      .expect('Location', '/report/1/report-may-already-exist/')
+      .expect('Location', '/report/1/report-may-already-exist?submission=save-and-continue')
   })
 
   test('Submitting invalid update is not allowed and user redirected to same page', () =>

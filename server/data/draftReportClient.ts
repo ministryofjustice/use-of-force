@@ -1,7 +1,7 @@
 import { QueryPerformer } from './dataAccess/db'
 import { ReportStatus } from '../config/types'
-import { DraftReport, NoDraftReport, StaffDetails } from './draftReportClientTypes'
-import { AgencyId } from '../types/uof'
+import { DraftReport, NoDraftReport, StaffDetails, OffenderReport } from './draftReportClientTypes'
+import { AgencyId, DateRange } from '../types/uof'
 import ReportLogClient from './reportLogClient'
 
 const maxSequenceForBooking =
@@ -88,6 +88,28 @@ export default class DraftReportClient {
                   and r.booking_id = $3
                   and r.sequence_no = ${maxSequenceForBooking}`,
       values: [agencyId, username, bookingId],
+    })
+  }
+
+  async getDuplicateReports(bookingId: number, [startDate, endDate]: DateRange): Promise<OffenderReport[]> {
+    const results = await this.query({
+      text: `select r.incident_date date, r.form_response form, r.reporter_name reporter, r.status status
+              from v_report r where r.booking_id >= $1
+              and r.incident_date >= $2
+              and r.incident_date <= $3`,
+      values: [bookingId, startDate, endDate],
+    })
+    return results.rows
+  }
+
+  async deleteReport(userId: string, bookingId: number, now: Date = new Date()): Promise<void> {
+    await this.query({
+      text: `update v_report r
+              set deleted = $1 
+              where r.user_id = $2
+              and r.booking_id = $3
+              and r.status = $4`,
+      values: [now, userId, bookingId, ReportStatus.IN_PROGRESS.value],
     })
   }
 }

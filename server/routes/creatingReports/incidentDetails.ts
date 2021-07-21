@@ -108,6 +108,7 @@ export default class IncidentDetailsRoutes {
   public submit = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { submitType } = req.body
+    const token = await this.systemToken(res.locals.user.username)
 
     const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
@@ -133,15 +134,16 @@ export default class IncidentDetailsRoutes {
       updatedSection,
       incidentDate ? incidentDate.value : null
     )
+
     if (incidentDate) {
-      const reportsOnSameDayAsNewReport = await this.reportService.getReportsByDate(
+      const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
-        incidentDate.date
+        moment(incidentDate.value),
+        token
       )
-      req.flash('originalSubmitType', null) // delete any old data
-      req.flash('originalSubmitType', submitType)
-      if (reportsOnSameDayAsNewReport?.length) {
-        return res.redirect(`/report/${bookingId}/report-may-already-exist/`)
+
+      if (duplicates?.length) {
+        return res.redirect(`/report/${bookingId}/report-may-already-exist?submission=${submitType}`)
       }
     }
     const location = await this.getSubmitRedirectLocation(req, bookingId, submitType)

@@ -8,7 +8,7 @@ jest.mock('../../services')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
+const reportService = new ReportService(null, null, null, null, null, null, null) as jest.Mocked<ReportService>
 
 let app
 const flash = jest.fn()

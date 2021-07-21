@@ -1,20 +1,17 @@
 {% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
-{% set pageTitle = pageData.pageTitle %} 
+{% set pageTitle = 'This report has been deleted' %} 
 
 {% block content %}
   <div class="govuk-body">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl mainHeading">{{pageData.pageTitle}}</h1>
+        <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+        <p>The use of force report you're trying to view has been deleted.</p>
         <p>
-          The use of force report you're trying to view has been deleted.
+          <a  data-qa="not-completed-link" href="/not-completed-incidents">  View use of force incidents </a>
         </p>
-          <p>
-            <a  data-qa="not-completed-link" href="/not-completed-incidents">  View use of force incidents </a>
-          </p>
-
       </div>
     </div>
   </div>
-{% endblock %} {% block script %} {% endblock %}
+{% endblock %}

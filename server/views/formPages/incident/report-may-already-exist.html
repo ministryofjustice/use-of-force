@@ -3,7 +3,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
-{% set pageTitle = pageData.pageTitle %} 
+{% set pageTitle = 'A report for this incident may already exist' %} 
 
 
 {% block content %}
@@ -11,18 +11,18 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if errors.length > 0 %}
-      {{
-        govukErrorSummary({
-          titleText: 'There is a problem',
-          errorList: errors,
-          attributes: { 'data-qa-errors': true }
-        })
-      }}
+        {{
+          govukErrorSummary({
+            titleText: 'There is a problem',
+            errorList: errors,
+            attributes: { 'data-qa-errors': true }
+          })
+        }}
       {% endif %}
-      <h1 class="govuk-heading-xl mainHeading">{{ pageData.pageTitle }}</h1>
+      <h1 class="govuk-heading-xl mainHeading"> {{ pageTitle }} </h1>
       <p class="govuk-!-margin-bottom-1">
         <span class="govuk-label--s">Prisoner:&nbsp;</span>
-        <span data-qa="offender-name">{{ pageData.offenderName }}</span>
+        <span data-qa="offender-name">{{ offenderName }}</span>
       </p>
       <p>
         A use of force incident for this prisoner has been reported as taking place on the same day. If the incident
@@ -43,12 +43,12 @@
         </thead>
 
         <tbody class="govuk-table__body">
-          {% for report in pageData.reports %}
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{report.date}}</td>
-            <td class="govuk-table__cell">{{report.location.userDescription}}</td>
-            <td class="govuk-table__cell">{{report.reporter}}</td>
-          </tr>
+          {% for report in reports %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{report.date | formatDate('dddd D MMM YYYY, HH:mm')}}</td>
+              <td class="govuk-table__cell">{{report.location}}</td>
+              <td class="govuk-table__cell">{{report.reporter}}</td>
+            </tr>
           {% endfor %}
         </tbody>
       </table>
@@ -93,4 +93,4 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block script %} {% endblock %}
+{% endblock %}

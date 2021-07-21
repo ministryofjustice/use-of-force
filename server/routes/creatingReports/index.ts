@@ -51,6 +51,7 @@ export default function Index({
   const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(
     systemToken,
     reportService,
+    draftReportService,
     locationService,
     offenderService
   )
