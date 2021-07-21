@@ -140,7 +140,7 @@ export default class IncidentDetailsRoutes {
         token
       )
 
-      if (duplicates?.length) {
+      if (duplicates.length) {
         return res.redirect(`/report/${bookingId}/report-may-already-exist?submission=${submitType}`)
       }
     }

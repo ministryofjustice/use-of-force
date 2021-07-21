@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import type moment from 'moment'
 import { UseOfForceReport } from './UseOfForceReport'
 

@@ -128,6 +128,7 @@ test('getDuplicateReports', () => {
   const endDate = moment('2021-07-13')
 
   draftReportClient.getDuplicateReports(1, [startDate, endDate])
+
   expect(query).toBeCalledWith({
     text: `select r.incident_date date, r.form_response form, r.reporter_name reporter, r.status status
               from v_report r where r.booking_id >= $1
@@ -136,11 +137,13 @@ test('getDuplicateReports', () => {
     values: [1, startDate, endDate],
   })
 })
+
 test('deleteReport', () => {
   const now = new Date()
   const userId = 'USER-1'
   const bookingId = 1
   draftReportClient.deleteReport(userId, bookingId)
+
   expect(query).toBeCalledWith({
     text: `update v_report r
               set deleted = $1 

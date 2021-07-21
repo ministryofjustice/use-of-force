@@ -36,6 +36,7 @@ beforeEach(() => {
   })
   locationService.getIncidentLocations.mockResolvedValue([])
   flash.mockReturnValue([])
+  draftReportService.getPotentialDuplicates.mockResolvedValue([])
 })
 
 afterEach(() => {
