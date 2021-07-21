@@ -6,7 +6,6 @@ import { processInput } from '../../services/validation'
 import { nextPaths, full, partial } from '../../config/incident'
 import type OffenderService from '../../services/offenderService'
 import type LocationService from '../../services/locationService'
-import type ReportService from '../../services/reportService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
 import type { SystemToken } from '../../types/uof'
@@ -25,8 +24,7 @@ export default class IncidentDetailsRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
-    private readonly locationService: LocationService,
-    private readonly reportService: ReportService
+    private readonly locationService: LocationService
   ) {}
 
   private loadForm = async req => {

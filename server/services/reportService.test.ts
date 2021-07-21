@@ -1,5 +1,4 @@
 import IncidentClient from '../data/incidentClient'
-import DraftReportClient from '../data/draftReportClient'
 import ReportService from './reportService'
 import OffenderService from './offenderService'
 import LocationService from './locationService'
@@ -10,14 +9,12 @@ import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
 
 jest.mock('../data/incidentClient')
-jest.mock('../data/draftReportClient')
 jest.mock('../data/reportLogClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
 jest.mock('./locationService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
-const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
@@ -32,7 +29,6 @@ beforeEach(() => {
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
   service = new ReportService(
     incidentClient,
-    draftReportClient,
     offenderService,
     locationService,
     reportLogClient,

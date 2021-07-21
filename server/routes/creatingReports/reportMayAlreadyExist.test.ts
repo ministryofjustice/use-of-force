@@ -1,14 +1,11 @@
 import request from 'supertest'
-import { DraftReportService, LocationService, OffenderService } from '../../services'
+import { DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
 
 jest.mock('../../services/offenderService')
-jest.mock('../../services/reportService')
-jest.mock('../../services/locationService')
 jest.mock('../../services/drafts/draftReportService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
 const draftReportService = new DraftReportService(
   null,
   null,
@@ -22,10 +19,9 @@ const draftReportService = new DraftReportService(
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, locationService, offenderService })
+  app = appWithAllRoutes({ draftReportService, offenderService })
   offenderService.getOffenderDetails.mockResolvedValue({})
   draftReportService.getCurrentDraft.mockResolvedValue(null)
-  locationService.getLocation.mockResolvedValue({})
 })
 
 afterEach(() => {

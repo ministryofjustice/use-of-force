@@ -3,13 +3,11 @@ import moment from 'moment'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
-import ReportService from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
 
 jest.mock('../../services/drafts/draftReportService')
-jest.mock('../../services/reportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
 
@@ -22,7 +20,6 @@ const draftReportService = new DraftReportService(
   null,
   null
 ) as jest.Mocked<DraftReportService>
-const reportService = new ReportService(null, null, null, null, null, null, null) as jest.Mocked<ReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null) as jest.Mocked<LocationService>
 
@@ -30,12 +27,7 @@ let app
 const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes(
-    { draftReportService, offenderService, locationService, reportService },
-    undefined,
-    false,
-    flash
-  )
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({
     displayName: 'Bob Smith',

@@ -21,7 +21,6 @@ export default function Index({
   systemToken,
   locationService,
   prisonerSearchService,
-  reportService,
 }: Services): Router {
   const router = express.Router()
 
@@ -38,23 +37,11 @@ export default function Index({
   const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  const incidentDetails = new IncidentDetailsRoutes(
-    draftReportService,
-    offenderService,
-    systemToken,
-    locationService,
-    reportService
-  )
+  const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, systemToken, locationService)
   get(reportPath('incident-details'), incidentDetails.view)
   post(reportPath('incident-details'), incidentDetails.submit)
 
-  const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(
-    systemToken,
-    reportService,
-    draftReportService,
-    locationService,
-    offenderService
-  )
+  const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(systemToken, draftReportService, offenderService)
   get(reportPath('report-may-already-exist'), reportMayAlreadyExist.view)
   post(reportPath('report-may-already-exist'), reportMayAlreadyExist.submit)
 

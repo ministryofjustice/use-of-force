@@ -1,7 +1,5 @@
 import { Request, Response, RequestHandler } from 'express'
 import moment from 'moment'
-import type LocationService from '../../services/locationService'
-import type ReportService from '../../services/reportService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type OffenderService from '../../services/offenderService'
 import { SystemToken } from '../../types/uof'
@@ -9,9 +7,7 @@ import { SystemToken } from '../../types/uof'
 export default class ReportMayAlreadyExistRoutes {
   constructor(
     private readonly systemToken: SystemToken,
-    private readonly reportService: ReportService,
     private readonly draftReportService: DraftReportService,
-    private readonly locationService: LocationService,
     private readonly offenderService: OffenderService
   ) {}
 

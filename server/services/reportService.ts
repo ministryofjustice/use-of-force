@@ -6,7 +6,6 @@ import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import LocationService from './locationService'
 import ReportLogClient from '../data/reportLogClient'
-import DraftReportClient from '../data/draftReportClient'
 import { InTransaction } from '../data/dataAccess/db'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
 
@@ -43,7 +42,6 @@ const toReport = (namesByOffenderNumber: NamesByOffenderNumber) => (
 export default class ReportService {
   constructor(
     private readonly incidentClient: IncidentClient,
-    private readonly draftReportClient: DraftReportClient,
     private readonly offenderService: OffenderService,
     private readonly locationService: LocationService,
     private readonly reportLogClient: ReportLogClient,

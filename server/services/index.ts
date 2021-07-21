@@ -52,7 +52,6 @@ const offenderService = new OffenderService(prisonClientBuilder)
 const locationService = new LocationService(prisonClientBuilder)
 const reportService = new ReportService(
   incidentClient,
-  draftReportClient,
   offenderService,
   locationService,
   reportLogClient,

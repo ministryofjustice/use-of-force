@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import type moment from 'moment'
 import { UseOfForceReport } from './UseOfForceReport'
-import { PrisonLocation } from './prisonClientTypes'
 
 export interface IncidentSearchQuery {
   prisonNumber?: string
