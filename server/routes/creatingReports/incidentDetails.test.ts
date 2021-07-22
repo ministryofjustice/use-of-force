@@ -291,7 +291,6 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
-  // is saving without incident date correct? - . Dev returns validation error
   test('Submitting without incident date is allowed', () => {
     return request(app)
       .post(`/report/1/incident-details`)

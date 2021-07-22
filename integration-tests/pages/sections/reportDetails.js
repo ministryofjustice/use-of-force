@@ -37,7 +37,7 @@ module.exports = {
 
     prison().contains('Moorland')
 
-    cy.get('[data-qa="location"]').contains('ASSO A Wing')
+    cy.get('[data-qa="location"]').contains('ASSO A WING')
     useOfForcePlanned().contains('Yes')
     authorisedBy().contains('Eric Bloodaxe')
 
