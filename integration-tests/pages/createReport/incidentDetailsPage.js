@@ -65,6 +65,7 @@ const incidentDetailsPage = () =>
     saveAndReturn: () => {
       cy.get('[data-qa="save-and-return"]').click()
     },
+    clickContinueOrReturn: directionFollowingSave => cy.get(`[data-qa=${directionFollowingSave}]`).click(),
     cancelButton: () => cy.get('[data-qa="cancel"]'),
   })
 

@@ -83,7 +83,8 @@ module.exports = {
           'Content-Type': 'application/json;charset=UTF-8',
         },
         jsonBody: {
-          description: 'ASSO A Wing',
+          description: 'ASSO A WING',
+          userDescription: 'ASSO A Wing',
         },
       },
     })

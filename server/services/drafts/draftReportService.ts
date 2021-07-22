@@ -1,10 +1,13 @@
+import moment, { Moment } from 'moment'
 import type { DraftReportClient } from '../../data'
 import type SubmitDraftReportService from './submitDraftReportService'
 import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
 import type UserService from '../userService'
-import type { DraftReport, NoDraftReport } from '../../data/draftReportClientTypes'
+import type { DraftReport, NoDraftReport, DuplicateReport } from '../../data/draftReportClientTypes'
 import { check as getReportStatus, isReportComplete } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
+import LocationService from '../locationService'
+import { ReportStatus } from '../../config/types'
 
 import {
   DraftInvolvedStaffService,
@@ -29,6 +32,7 @@ export default class DraftReportService {
     private readonly updateDraftReport: UpdateDraftReportService,
     private readonly submitDraftReport: SubmitDraftReportService,
     private readonly userService: UserService,
+    private readonly locationService: LocationService,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -117,6 +121,32 @@ export default class DraftReportService {
     const token = await this.systemToken(user.username)
     const userToAdd = await this.userService.getUser(token, username)
     return this.handleAddStaff(token, user, bookingId, [userToAdd])
+  }
+
+  async getPotentialDuplicates(
+    bookingId: number,
+    incidentDate: Moment,
+    token: string
+  ): Promise<Partial<DuplicateReport[] | []>> {
+    const startDate = moment(incidentDate).startOf('day')
+    const endDate = moment(incidentDate).endOf('day')
+    const reports = await this.draftReportClient.getDuplicateReports(bookingId, [startDate, endDate])
+    return Promise.all(
+      reports
+        .filter(report => report.status !== ReportStatus.IN_PROGRESS.value)
+        .map(async r => {
+          const location = await this.locationService.getLocation(token, r.form.incidentDetails.locationId)
+          return {
+            reporter: r.reporter,
+            date: moment(r.date),
+            location: location?.userDescription?.toString(),
+          }
+        })
+    )
+  }
+
+  public deleteReport(userId: string, bookingId: number): Promise<void> {
+    return this.draftReportClient.deleteReport(userId, bookingId)
   }
 
   public async deleteInvolvedStaff(user: LoggedInUser, bookingId: number, userToDelete: string): Promise<void> {

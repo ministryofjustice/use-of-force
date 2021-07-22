@@ -1,0 +1,96 @@
+{% extends "../../partials/layout.html" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = 'A report for this incident may already exist' %} 
+
+
+{% block content %}
+<div class="govuk-body">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errors.length > 0 %}
+        {{
+          govukErrorSummary({
+            titleText: 'There is a problem',
+            errorList: errors,
+            attributes: { 'data-qa-errors': true }
+          })
+        }}
+      {% endif %}
+      <h1 class="govuk-heading-xl mainHeading"> {{ pageTitle }} </h1>
+      <p class="govuk-!-margin-bottom-1">
+        <span class="govuk-label--s">Prisoner:&nbsp;</span>
+        <span data-qa="offender-name">{{ offenderName }}</span>
+      </p>
+      <p>
+        A use of force incident for this prisoner has been reported as taking place on the same day. If the incident
+        you're reporting has already been reported, you do not need to create another report.
+      </p>
+
+      <table class="govuk-table" data-qa="table">
+        <caption class="govuk-table__caption govuk-table__caption--m">
+          Use of force incidents
+        </caption>
+
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Incident date and time</th>
+            <th scope="col" class="govuk-table__header">Location</th>
+            <th scope="col" class="govuk-table__header">Reporter</th>
+          </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+          {% for report in reports %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{report.date | formatDate('dddd D MMM YYYY, HH:mm')}}</td>
+              <td class="govuk-table__cell">{{report.location}}</td>
+              <td class="govuk-table__cell">{{report.reporter}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                 Has this incident already been reported?
+              </legend>
+                {{ govukRadios({
+                  classes: "govuk-radios",
+                  name: "cancelReport",
+                  errorMessage: errors | findError('cancel-report-yes'),
+                  items: [
+                    {
+                      value: 'true',
+                      id: "cancel-report-yes",
+                      text: "Yes - cancel this report", 
+                      attributes: {'data-qa': 'yes'}
+                    },
+                    {
+                      value: 'false',
+                      id: "no",
+                      text: "No - continue to report a different incident",
+                      attributes: {'data-qa': 'no'}
+                    }
+                  ]
+                }) 
+              }} 
+          </fieldset>
+        </div>
+        <div>
+          {{ govukButton({
+            text: "Save and continue",
+            value: 'save-and-continue',
+            attributes: {'data-qa': 'save-and-continue'}
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -87,6 +87,7 @@ const draftReportService = new DraftReportService(
   updateDraftReportService,
   submitDraftReportService,
   userService,
+  locationService,
   systemToken
 )
 
