@@ -291,7 +291,7 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
-  test('Submitting without incident date is allowed', () => {
+  test('Submitting an update to a draft report without an incident date is allowed', () => {
     return request(app)
       .post(`/report/1/incident-details`)
       .send({

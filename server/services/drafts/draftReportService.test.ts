@@ -315,9 +315,7 @@ describe('getPotentialDuplicates', () => {
     const dbMock = [
       {
         date: moment('10/07/2021', 'DDMMYYYY'),
-        form: {
-          incidentDetails: {},
-        },
+        locationId: 1,
         reporter: 'Bob',
         status: 'SUBMITTED',
       },
@@ -333,19 +331,15 @@ describe('getPotentialDuplicates', () => {
     const mockCurrentReports = [
       {
         date: moment('2021-10-07'),
-        form: {
-          incidentDetails: {},
-        },
+        locationId: 1,
         reporter: 'Bob',
         status: 'SUBMITTED',
       },
       {
         date: moment('2021-10-07'),
-        form: {
-          incidentDetails: {},
-        },
+        locationId: 1,
         reporter: 'Harry',
-        status: 'IN_PROGRESS',
+        status: 'COMPLETED',
       },
     ]
     draftReportClient.getDuplicateReports.mockResolvedValue(mockCurrentReports)
@@ -356,6 +350,11 @@ describe('getPotentialDuplicates', () => {
         date: moment('2021-10-07'),
         location: 'Room A',
         reporter: 'Bob',
+      },
+      {
+        date: moment('2021-10-07'),
+        location: 'Room A',
+        reporter: 'Harry',
       },
     ])
   })

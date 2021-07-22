@@ -132,16 +132,14 @@ export default class DraftReportService {
     const endDate = moment(incidentDate).endOf('day')
     const reports = await this.draftReportClient.getDuplicateReports(bookingId, [startDate, endDate])
     return Promise.all(
-      reports
-        .filter(report => report.status !== ReportStatus.IN_PROGRESS.value)
-        .map(async r => {
-          const location = await this.locationService.getLocation(token, r.form.incidentDetails.locationId)
-          return {
-            reporter: r.reporter,
-            date: moment(r.date),
-            location: location?.userDescription?.toString(),
-          }
-        })
+      reports.map(async r => {
+        const location = await this.locationService.getLocation(token, r.locationId)
+        return {
+          reporter: r.reporter,
+          date: moment(r.date),
+          location: location?.userDescription?.toString(),
+        }
+      })
     )
   }
 

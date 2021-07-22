@@ -18,9 +18,7 @@ export interface StaffDetails {
 
 export type OffenderReport = {
   date: moment.Moment
-  form: {
-    incidentDetails: Record<string, number>
-  }
+  locationId: number
   reporter: string
   status: string
 }

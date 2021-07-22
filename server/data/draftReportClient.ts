@@ -93,11 +93,16 @@ export default class DraftReportClient {
 
   async getDuplicateReports(bookingId: number, [startDate, endDate]: DateRange): Promise<OffenderReport[]> {
     const results = await this.query({
-      text: `select r.incident_date date, r.form_response form, r.reporter_name reporter, r.status status
-              from v_report r where r.booking_id >= $1
+      text: `select r.incident_date date
+              ,   r.form_response -> 'incidentDetails' ->> 'locationId' "locationId"
+              ,   r.reporter_name reporter
+              ,   r.status status
+              from v_report r
+              where r.booking_id >= $1
               and r.incident_date >= $2
-              and r.incident_date <= $3`,
-      values: [bookingId, startDate, endDate],
+              and r.incident_date <= $3
+              and r.status != $4`,
+      values: [bookingId, startDate, endDate, ReportStatus.IN_PROGRESS.value],
     })
     return results.rows
   }

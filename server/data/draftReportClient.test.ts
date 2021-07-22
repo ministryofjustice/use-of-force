@@ -130,11 +130,16 @@ test('getDuplicateReports', () => {
   draftReportClient.getDuplicateReports(1, [startDate, endDate])
 
   expect(query).toBeCalledWith({
-    text: `select r.incident_date date, r.form_response form, r.reporter_name reporter, r.status status
-              from v_report r where r.booking_id >= $1
+    text: `select r.incident_date date
+              ,   r.form_response -> 'incidentDetails' ->> 'locationId' "locationId"
+              ,   r.reporter_name reporter
+              ,   r.status status
+              from v_report r
+              where r.booking_id >= $1
               and r.incident_date >= $2
-              and r.incident_date <= $3`,
-    values: [1, startDate, endDate],
+              and r.incident_date <= $3
+              and r.status != $4`,
+    values: [1, startDate, endDate, ReportStatus.IN_PROGRESS.value],
   })
 })
 
