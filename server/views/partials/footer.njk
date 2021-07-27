@@ -1,0 +1,12 @@
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
+
+{{ govukFooter({
+  meta: {
+    items: [
+      {
+        href: "/get-help",
+        text: "Get help"
+      }
+    ]
+  }
+}) }}

@@ -112,6 +112,8 @@ module.exports = {
     emailUrl: get('EMAIL_LOCATION_URL', 'http://localhost:3000', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
+  supportTelephone: '0203 788 4636',
+  supportExtension: '#6598',
   https: production,
   googleTagManager: {
     key: get('TAG_MANAGER_KEY', null),

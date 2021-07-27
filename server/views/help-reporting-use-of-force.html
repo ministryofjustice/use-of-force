@@ -1,0 +1,38 @@
+{% extends "./partials/layout.html" %}
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
+
+{% block content %}
+  <div class="govuk-body govuk-width-container"> 
+    <div class="govuk-grid-row"> 
+      <div class="govuk-grid-column-two-thirds"> 
+        <h1 class="govuk-heading-l">Help reporting a use of force incident</h1>
+
+          <p>You can use this service to report a use of force incident in a prison and add a statement to an existing report.</p>
+          
+        <h2 class="govuk-heading-m govuk-!-padding-10">Reporting use of force on a prisoner in a different establishment</h2>
+          <p>You can report a use of force on a prisoner in any establishment.</p>
+          <p>Select ‘Use of force incidents’ from the DPS homepage and click ‘Report use of force on a prisoner in another prison’.</p>
+
+        <h2 class="govuk-heading-m govuk-!-padding-10">Deleting duplicate reports for the same incident</h2>
+          <p>You’ll need to contact your local use of force coordinator to ask them to delete the duplicate report.</p>
+          
+        <h2 class="govuk-heading-m govuk-!-padding-10">If you have been incorrectly added to a use of force report</h2>
+          <p>You can request to be removed from a use of force report by following the link in any of the emails you have received about the incident. A use of force coordinator will review your request, and you’ll receive an email when you have been removed from the report.</p>
+            
+        <h2 class="govuk-heading-m govuk-!-padding-10">Adding a member of staff to an existing report</h2>
+          <p>Contact your local use of force coordinator to add staff members to an existing report.</p>
+
+        <h2 class="govuk-heading-m govuk-!-padding-10">Adding a regional resource to a report</h2>
+          <p>If a regional resource was a witness to the use of force, you can add them as a witness on the ‘Incident details’ page.</p> 
+          <p>If a regional resource was involved in the use of force, you'll need to add them as a staff member involved in the use of force incident. The regional resource will need a DPS account before you can add them to the report.</p>
+            
+        <h2 class="govuk-heading-m govuk-!-padding-10">Technical support</h2>
+          <p>For technical support, you should contact the helpdesk by calling {{supportTelephone}}, or {{supportExtension}} from inside an establishment.</p>    
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+{{  govukFooter({}) }}
+{% endblock %}
