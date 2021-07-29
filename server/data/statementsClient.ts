@@ -147,8 +147,12 @@ export default class StatementsClient {
     return results.rows
   }
 
-  saveAdditionalComment(statementId: number, additionalComment: string, query: QueryPerformer = this.query) {
-    return query({
+  async saveAdditionalComment(
+    statementId: number,
+    additionalComment: string,
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    await query({
       text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
       values: [statementId, additionalComment],
@@ -184,8 +188,8 @@ export default class StatementsClient {
     })
   }
 
-  submitStatement(userId: string, reportId: number, query: QueryPerformer = this.query) {
-    return query({
+  async submitStatement(userId: string, reportId: number, query: QueryPerformer = this.query): Promise<void> {
+    await query({
       text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
@@ -213,7 +217,7 @@ export default class StatementsClient {
     })
   }
 
-  async getNumberOfPendingStatements(reportId: number, query: QueryPerformer = this.query) {
+  async getNumberOfPendingStatements(reportId: number, query: QueryPerformer = this.query): Promise<number> {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
       values: [reportId, StatementStatus.PENDING.value],
@@ -250,7 +254,7 @@ export default class StatementsClient {
     )
   }
 
-  async deleteStatement({ statementId, query, now = new Date() }) {
+  async deleteStatement({ statementId, query, now = new Date() }): Promise<void> {
     await query({
       text: `update statement set deleted = $1 where id = $2`,
       values: [now, statementId],
