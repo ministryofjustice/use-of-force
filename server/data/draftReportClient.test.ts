@@ -148,7 +148,7 @@ test('deleteReport', () => {
   const now = new Date()
   const userId = 'USER-1'
   const bookingId = 1
-  draftReportClient.deleteReport(userId, bookingId)
+  draftReportClient.deleteReport(userId, bookingId, now)
 
   expect(query).toBeCalledWith({
     text: `update v_report r
