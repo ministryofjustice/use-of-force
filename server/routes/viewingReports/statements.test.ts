@@ -142,7 +142,7 @@ describe('GET /:reportId/add-comment-to-statement', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Add a comment to your statement')
-        expect(res.text).toContain(1)
+        expect(res.text).toContain('1')
         expect(res.text).toContain('Jimmy Choo')
         expect(res.text).toContain('Some initial statement')
       }))

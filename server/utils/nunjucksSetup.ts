@@ -159,19 +159,16 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return types.filter(item => !item.inactive)
   })
 
-  njkEnv.addGlobal(
-    'composeStatus',
-    (status1: SectionStatus, status2: SectionStatus): SectionStatus => {
-      if (status1 === SectionStatus.COMPLETE && status2 === SectionStatus.COMPLETE) {
-        return SectionStatus.COMPLETE
-      }
-      const status = [status1, status2]
-      if (status.includes(SectionStatus.COMPLETE) || status.includes(SectionStatus.INCOMPLETE)) {
-        return SectionStatus.INCOMPLETE
-      }
-      return SectionStatus.NOT_STARTED
+  njkEnv.addGlobal('composeStatus', (status1: SectionStatus, status2: SectionStatus): SectionStatus => {
+    if (status1 === SectionStatus.COMPLETE && status2 === SectionStatus.COMPLETE) {
+      return SectionStatus.COMPLETE
     }
-  )
+    const status = [status1, status2]
+    if (status.includes(SectionStatus.COMPLETE) || status.includes(SectionStatus.INCOMPLETE)) {
+      return SectionStatus.INCOMPLETE
+    }
+    return SectionStatus.NOT_STARTED
+  })
 
   return njkEnv
 }

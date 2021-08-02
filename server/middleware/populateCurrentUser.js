@@ -6,6 +6,11 @@ module.exports = userService => async (req, res, next) => {
 
     if (user) {
       res.locals.user = { ...user, ...res.locals.user }
+      res.locals = {
+        ...res.locals,
+        currentUrlPath: req.originalUrl,
+        hostname: req.hostname,
+      }
     } else {
       logger.info('No user available')
     }

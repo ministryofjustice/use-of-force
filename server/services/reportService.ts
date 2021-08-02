@@ -27,17 +27,17 @@ export interface IncidentSummary {
 
 export type AnonReportSummaryWithPrison = AnonReportSummary & { prisonName: string }
 
-const toReport = (namesByOffenderNumber: NamesByOffenderNumber) => (
-  reportSummary: ReportSummary | IncompleteReportSummary
-): IncidentSummary => ({
-  id: reportSummary.id,
-  bookingId: reportSummary.bookingId,
-  incidentdate: reportSummary.incidentDate,
-  staffMemberName: reportSummary.reporterName,
-  offenderName: namesByOffenderNumber[reportSummary.offenderNo],
-  offenderNo: reportSummary.offenderNo,
-  status: reportSummary.status,
-})
+const toReport =
+  (namesByOffenderNumber: NamesByOffenderNumber) =>
+  (reportSummary: ReportSummary | IncompleteReportSummary): IncidentSummary => ({
+    id: reportSummary.id,
+    bookingId: reportSummary.bookingId,
+    incidentdate: reportSummary.incidentDate,
+    staffMemberName: reportSummary.reporterName,
+    offenderName: namesByOffenderNumber[reportSummary.offenderNo],
+    offenderNo: reportSummary.offenderNo,
+    status: reportSummary.status,
+  })
 
 export default class ReportService {
   constructor(

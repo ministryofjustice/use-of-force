@@ -16,10 +16,11 @@ export default class CheckAnswerRoutes {
 
   public view = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { form = {}, incidentDate, agencyId: prisonId } = await this.draftReportService.getCurrentDraft(
-      req.user.username,
-      parseInt(bookingId, 10)
-    )
+    const {
+      form = {},
+      incidentDate,
+      agencyId: prisonId,
+    } = await this.draftReportService.getCurrentDraft(req.user.username, parseInt(bookingId, 10))
     const { complete } = this.draftReportService.getReportStatus(form)
 
     if (!complete) {

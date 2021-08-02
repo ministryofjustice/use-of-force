@@ -19,18 +19,18 @@ export interface IncidentSummary {
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
 }
-const toIncidentSummary = (namesByOffenderNumber: NamesByOffenderNumber) => (
-  reportSummary: ReportSummary | IncompleteReportSummary
-): IncidentSummary => ({
-  id: reportSummary.id,
-  bookingId: reportSummary.bookingId,
-  incidentdate: reportSummary.incidentDate,
-  staffMemberName: reportSummary.reporterName,
-  isOverdue: 'isOverdue' in reportSummary ? reportSummary?.isOverdue : false,
-  isRemovalRequested: 'isRemovalRequested' in reportSummary ? reportSummary?.isRemovalRequested : false,
-  offenderName: namesByOffenderNumber[reportSummary.offenderNo],
-  offenderNo: reportSummary.offenderNo,
-})
+const toIncidentSummary =
+  (namesByOffenderNumber: NamesByOffenderNumber) =>
+  (reportSummary: ReportSummary | IncompleteReportSummary): IncidentSummary => ({
+    id: reportSummary.id,
+    bookingId: reportSummary.bookingId,
+    incidentdate: reportSummary.incidentDate,
+    staffMemberName: reportSummary.reporterName,
+    isOverdue: 'isOverdue' in reportSummary ? reportSummary?.isOverdue : false,
+    isRemovalRequested: 'isRemovalRequested' in reportSummary ? reportSummary?.isRemovalRequested : false,
+    offenderName: namesByOffenderNumber[reportSummary.offenderNo],
+    offenderNo: reportSummary.offenderNo,
+  })
 
 type Predicate<T> = (t: T) => boolean
 

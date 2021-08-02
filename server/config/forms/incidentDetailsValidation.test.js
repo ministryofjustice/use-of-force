@@ -3,7 +3,11 @@ const { complete, partial } = require('./incidentDetailsForm')
 const { processInput } = require('../../services/validation')
 
 const buildCheck = schema => input => {
-  const { payloadFields: formResponse, errors, extractedFields } = processInput({
+  const {
+    payloadFields: formResponse,
+    errors,
+    extractedFields,
+  } = processInput({
     validationSpec: schema,
     input,
   })

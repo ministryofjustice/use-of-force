@@ -182,4 +182,35 @@ context('A user views their statements list', () => {
       ])
     )
   })
+
+  it('Page should display the feedback banner with the correct href', () => {
+    cy.task('stubOffenders', [offender])
+    cy.login()
+
+    cy.task(
+      'seedReports',
+      Array.from(Array(62)).map((_, i) => ({
+        status: ReportStatus.SUBMITTED,
+        bookingId: i,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      }))
+    )
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+
+    yourStatementsPage
+      .feedbackBanner()
+      .find('a')
+      .should('contain', 'Give feedback on this service')
+      .should('have.attr', 'href')
+      .then(href => {
+        expect(href).to.equal('https://eu.surveymonkey.com/r/GYB8Y9Q?source=localhost/your-statements')
+      })
+  })
 })

@@ -1,0 +1,11 @@
+{%  macro feedbackBanner(params) %}
+  <div class="govuk-!-display-none-print">
+    <div class="govuk-width-container">
+      <div class="feedback-banner" data-qa="feedback-banner">
+        <a href="https://eu.surveymonkey.com/r/GYB8Y9Q?source={{ params.hostname + params.currentUrlPath }}" class="govuk-link govuk-link--inverse" target="_blank" rel="noopener noreferrer">
+          Give feedback on this service
+        </a>
+      </div>
+    </div>
+  </div>
+{%  endmacro %}

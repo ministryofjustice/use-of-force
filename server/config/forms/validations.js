@@ -32,11 +32,13 @@ const requiredBooleanMsg = message =>
   })
 
 const requiredOneOf = (...values) => joi.valid(...values).required()
-const requiredOneOfMsg = (...values) => message =>
-  requiredOneOf(...values).messages({
-    'any.required': message,
-    'any.only': message,
-  })
+const requiredOneOfMsg =
+  (...values) =>
+  message =>
+    requiredOneOf(...values).messages({
+      'any.required': message,
+      'any.only': message,
+    })
 
 const requiredNumber = joi.number().required()
 const requiredNumberMsg = message =>
