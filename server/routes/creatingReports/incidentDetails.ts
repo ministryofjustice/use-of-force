@@ -132,10 +132,10 @@ export default class IncidentDetailsRoutes {
       parseInt(bookingId, 10),
       formName,
       updatedSection,
-      incidentDate ? incidentDate.value : null
+      incidentDate?.value || null
     )
 
-    if (incidentDate) {
+    if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),

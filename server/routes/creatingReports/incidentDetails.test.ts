@@ -247,6 +247,7 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/change-prison')
       .expect(() => {
+        expect(draftReportService.getPotentialDuplicates).not.toBeCalled()
         expect(draftReportService.process).toBeCalledTimes(1)
         expect(draftReportService.process).toBeCalledWith(
           user,
