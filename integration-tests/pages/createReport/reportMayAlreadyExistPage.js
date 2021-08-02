@@ -1,15 +1,20 @@
 import page from '../page'
 
+const row = i => cy.get(`[data-qa="table"] tbody tr`).eq(i)
+const col = (i, j) => row(i).find('td').eq(j)
+
 const reportMayAlreadyExist = () =>
   page('A report for this incident may already exist', {
     offenderName: () => cy.get('[data-qa="offender-name"]'),
-    table: () => cy.get('[data-qa="table"]').find('tbody').find('tr'),
-    date: () => cy.get(`[data-qa="table"] tbody tr td`).eq(0),
-    location: () => cy.get(`[data-qa="table"] tbody tr td`).eq(1),
-    reporter: () => cy.get(`[data-qa="table"] tbody tr td`).eq(2),
-    cancelReportYesRadio: () => cy.get('[data-qa="yes"]'),
-    cancelReportNoRadio: () => cy.get('[data-qa="no"]'),
-    saveAndContinueButton: () => cy.get('[data-qa="save-and-continue"]'),
+    getRow: i => ({
+      dateTime: () => col(i, 0),
+      location: () => col(i, 1),
+      reporter: () => col(i, 2),
+    }),
+    getRows: () => cy.get('[data-qa=table]').find('tbody').find('tr'),
+    cancelReport: () => cy.get('[data-qa="yes"]'),
+    continueReport: () => cy.get('[data-qa="no"]'),
+    saveAndContinue: () => cy.get('[data-qa="save-and-continue"]'),
   })
 
 module.exports = { verifyOnPage: reportMayAlreadyExist }

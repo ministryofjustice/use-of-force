@@ -98,10 +98,11 @@ export default class DraftReportClient {
               ,   r.reporter_name reporter
               ,   r.status status
               from v_report r
-              where r.booking_id >= $1
+              where r.booking_id = $1
               and r.incident_date >= $2
               and r.incident_date <= $3
-              and r.status != $4`,
+              and r.status != $4
+              order by date asc`,
       values: [bookingId, startDate, endDate, ReportStatus.IN_PROGRESS.value],
     })
     return results.rows

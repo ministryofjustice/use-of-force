@@ -1,6 +1,7 @@
 import format from 'pg-format'
 import type { QueryPerformer } from './dataAccess/db'
 import type { AgencyId, DateRange, OffenderNoWithIncidentCount, OffenderNoWithIncidentDate } from '../types/uof'
+import type { LabelledValue } from '../config/types'
 
 export default class ReportingClient {
   constructor(private readonly query: QueryPerformer) {}
@@ -54,7 +55,7 @@ export default class ReportingClient {
   public async getIncidentsOverview(
     agencyId: AgencyId,
     [startDate, endDate]: DateRange,
-    statuses
+    statuses: LabelledValue[]
   ): Promise<Record<string, number>[]> {
     const statusValues = statuses.map(s => s.value)
     const results = await this.query({
