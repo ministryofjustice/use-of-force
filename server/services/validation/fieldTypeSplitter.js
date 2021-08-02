@@ -9,10 +9,12 @@ const extractPropertyNamesForFieldType = (fieldTypeValue, description) => {
 }
 
 // [keys] -> (accumulator, [key, value]) -> accumulator
-const buildReduceFn = keysToSplitOn => (acc, [key, value]) => {
-  const fieldSetKey = keysToSplitOn.includes(key) ? 'extractedFields' : 'payloadFields'
-  return isNilOrEmpty(value) ? acc : R.assocPath([fieldSetKey, key], value, acc)
-}
+const buildReduceFn =
+  keysToSplitOn =>
+  (acc, [key, value]) => {
+    const fieldSetKey = keysToSplitOn.includes(key) ? 'extractedFields' : 'payloadFields'
+    return isNilOrEmpty(value) ? acc : R.assocPath([fieldSetKey, key], value, acc)
+  }
 
 // ((accumulator, [key, value]) -> accumulator) -> input -> splitInput
 const buildWithReduceFn = reduceFn => input => {

@@ -303,8 +303,7 @@ test('deleteReport', async () => {
     values: [date, -1],
   })
   expect(transactionalQuery).toBeCalledWith({
-    text:
-      'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
+    text: 'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
   expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalQuery, 'USER-1', -1, 'REPORT_DELETED')

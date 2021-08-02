@@ -44,15 +44,20 @@ const simplifyArrayDescription = description => ({
   items: R.map(simplifyDescription, R.propOr([], 'items', description)),
 })
 
-const objectSanitiser = ({ keys, sanitiser }) => object => {
-  const filteredKeys = R.pick(Object.keys(object), keys)
-  const sanitisers = R.map(sanitiserFor, filteredKeys)
-  return sanitiser(R.mapObjIndexed((s, key) => s(object[key]), sanitisers))
-}
+const objectSanitiser =
+  ({ keys, sanitiser }) =>
+  object => {
+    const filteredKeys = R.pick(Object.keys(object), keys)
+    const sanitisers = R.map(sanitiserFor, filteredKeys)
+    return sanitiser(R.mapObjIndexed((s, key) => s(object[key]), sanitisers))
+  }
 
 const nilSafeObjectSanitiser = description => R.unless(R.isNil, objectSanitiser(description))
 
-const arraySanitiser = ({ sanitiser, items }) => array => sanitiser(array.map(sanitiserFor(items[0])))
+const arraySanitiser =
+  ({ sanitiser, items }) =>
+  array =>
+    sanitiser(array.map(sanitiserFor(items[0])))
 
 const nilSafeArraySanitiser = description => R.unless(R.isNil, arraySanitiser(description))
 /**

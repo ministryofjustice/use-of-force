@@ -22,13 +22,13 @@ describe('authorisationMiddleware', () => {
   const next = jest.fn()
 
   const createResWithToken = (authorities?: { authorities: string[] }): Response =>
-    (({
+    ({
       locals: {
         user: {
           token: createToken(authorities),
         },
       },
-    } as unknown) as Response)
+    } as unknown as Response)
 
   describe('isReviewer', () => {
     test('Should populate isReviewer for reviewer', () => {

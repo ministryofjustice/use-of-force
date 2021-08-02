@@ -70,18 +70,20 @@ export default class UserService {
     }
   }
 
-  comparesUsers = (agencyId: string) => (user1: UserWithPrison, user2: UserWithPrison): number => {
-    if (user1.activeCaseLoadId === user2.activeCaseLoadId) {
-      return user1.username.localeCompare(user2.username)
+  comparesUsers =
+    (agencyId: string) =>
+    (user1: UserWithPrison, user2: UserWithPrison): number => {
+      if (user1.activeCaseLoadId === user2.activeCaseLoadId) {
+        return user1.username.localeCompare(user2.username)
+      }
+      if (user1.activeCaseLoadId === agencyId || !user2.activeCaseLoadId) {
+        return -1
+      }
+      if (user2.activeCaseLoadId === agencyId || !user1.activeCaseLoadId) {
+        return 1
+      }
+      return user1.prison?.localeCompare(user2.prison) || -1
     }
-    if (user1.activeCaseLoadId === agencyId || !user2.activeCaseLoadId) {
-      return -1
-    }
-    if (user2.activeCaseLoadId === agencyId || !user1.activeCaseLoadId) {
-      return 1
-    }
-    return user1.prison?.localeCompare(user2.prison) || -1
-  }
 
   public async findUsersWithPrisons(
     token: string,

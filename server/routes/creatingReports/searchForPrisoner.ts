@@ -12,18 +12,20 @@ const extractForm = ({ prisonNumber, firstName, lastName, agencyId }): { form: S
 export default class SearchForPrisonerRoutes {
   constructor(private readonly prisonerSearchService: PrisonerSearchService) {}
 
-  private renderView = validate => async (req, res): Promise<void> => {
-    const { form, openDetails } = extractForm(req.query)
-    const error = validate ? validateForm(form) : null
-    const results = error || !validate ? [] : await this.prisonerSearchService.search(req.user.username, form)
-    const prisons = await this.prisonerSearchService.getPrisons(req.user.username)
+  private renderView =
+    validate =>
+    async (req, res): Promise<void> => {
+      const { form, openDetails } = extractForm(req.query)
+      const error = validate ? validateForm(form) : null
+      const results = error || !validate ? [] : await this.prisonerSearchService.search(req.user.username, form)
+      const prisons = await this.prisonerSearchService.getPrisons(req.user.username)
 
-    return res.render('pages/search-for-prisoner', {
-      data: { prisons, results, form: { ...form, openDetails } },
-      errors: error ? [error] : [],
-      errorOccurred: Boolean(error),
-    })
-  }
+      return res.render('pages/search-for-prisoner', {
+        data: { prisons, results, form: { ...form, openDetails } },
+        errors: error ? [error] : [],
+        errorOccurred: Boolean(error),
+      })
+    }
 
   view = this.renderView(false)
 

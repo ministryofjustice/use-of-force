@@ -16,7 +16,7 @@ jest.mock('../../services/reportDetailBuilder')
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const report = ({ id: 1, form: { incidentDetails: {} } } as unknown) as Report
+const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
 
 let app
 

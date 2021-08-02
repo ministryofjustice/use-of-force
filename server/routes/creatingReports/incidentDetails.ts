@@ -29,10 +29,12 @@ export default class IncidentDetailsRoutes {
 
   private loadForm = async req => {
     const { bookingId } = req.params
-    const { id: formId, incidentDate, form = {}, agencyId } = await this.draftReportService.getCurrentDraft(
-      req.user.username,
-      bookingId
-    )
+    const {
+      id: formId,
+      incidentDate,
+      form = {},
+      agencyId,
+    } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
     return { formId, incidentDate, form, persistedAgencyId: agencyId, isComplete: isReportComplete(form) }
   }
 

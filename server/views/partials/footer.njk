@@ -1,4 +1,12 @@
 {% from "govuk/components/footer/macro.njk" import govukFooter %}
+{% from "./feedbackBanner.njk" import feedbackBanner %}
+
+{{ 
+  feedbackBanner({
+    currentUrlPath: currentUrlPath,
+    hostname: hostname
+  })
+}}
 
 {{ govukFooter({
   meta: {
