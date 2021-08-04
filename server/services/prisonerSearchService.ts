@@ -28,7 +28,9 @@ export default class PrisonerSearchService {
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
     const client = this.prisonClientBuilder(token)
     const prisons = await client.getPrisons()
-    return prisons.map(({ agencyId, description }) => ({ agencyId, description }))
+    return prisons
+      .map(({ agencyId, description }) => ({ agencyId, description }))
+      .sort((a, b) => a.description.localeCompare(b.description))
   }
 
   private async createPrisonNameLookup(token: string): Promise<(agencyId: string) => string> {

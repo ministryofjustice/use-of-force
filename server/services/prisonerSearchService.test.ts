@@ -60,5 +60,20 @@ describe('prisonerSearchService', () => {
       expect(results).toStrictEqual(expected)
       expect(prisonClientBuilder).toBeCalledWith('user1-token-1')
     })
+
+    it('sorts lists of Prisons alphabetically', async () => {
+      const unsortedPrisonList = [
+        { agencyId: 'RSI', description: 'HMP Risley' },
+        { agencyId: 'MDI', description: 'HMP Moorlands' },
+        { agencyId: 'LEI', description: 'HMP Leeds' },
+      ] as Prison[]
+      prisonClient.getPrisons.mockResolvedValue(unsortedPrisonList)
+      const results = await service.getPrisons('user1')
+      expect(results).toStrictEqual([
+        { agencyId: 'LEI', description: 'HMP Leeds' },
+        { agencyId: 'MDI', description: 'HMP Moorlands' },
+        { agencyId: 'RSI', description: 'HMP Risley' },
+      ])
+    })
   })
 })
