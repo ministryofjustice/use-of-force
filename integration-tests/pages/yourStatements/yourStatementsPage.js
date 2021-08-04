@@ -25,7 +25,6 @@ const yourStatementsPage = () =>
           .then(link => link.match(/\/(.*?)\/your-statement/)[1]),
     }),
     loggedInName: () => cy.get('[data-qa=logged-in-name]'),
-    feedbackBanner: () => cy.get('[data-qa="feedback-banner"]'),
   })
 
 module.exports = {

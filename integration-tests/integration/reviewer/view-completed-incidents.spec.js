@@ -157,6 +157,46 @@ context('A use of force reviewer can view completed incidents at the current age
     completedIncidentsPage.getNoCompleteRows().contains('There are no completed incidents')
   })
 
+  it('PII not sent to survey', () => {
+    cy.task('stubReviewerLogin')
+    cy.login()
+
+    cy.task('stubOffenders', [offender3, offender2, offender])
+
+    cy.task('seedReport', {
+      status: ReportStatus.COMPLETE,
+      submittedDate: moment().toDate(),
+      incidentDate: moment('2019-01-22 09:57:40.000'),
+      agencyId: offender.agencyId,
+      bookingId: offender.bookingId,
+      sequenceNumber: 1,
+      involvedStaff: [
+        {
+          username: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
+        },
+      ],
+    })
+
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.getCompleteRows().should('have.length', 1)
+
+    completedIncidentsPage.filter.prisonNumber().type('A1234AC')
+    completedIncidentsPage.filter.reporter().type('James')
+    completedIncidentsPage.filter.dateFrom().type('22 Jan 2019')
+    completedIncidentsPage.filter.dateTo().type('25 Jan 2019')
+    completedIncidentsPage.filter.apply().click()
+
+    completedIncidentsPage
+      .feedbackBannerLink()
+      .should('contain', 'Give feedback on this service')
+      .should('have.attr', 'href')
+      .then(href => {
+        expect(href).to.equal('https://eu.surveymonkey.com/r/GYB8Y9Q?source=localhost/completed-incidents')
+      })
+  })
+
   it('A normal user cannot view all incidents', () => {
     cy.task('stubLogin')
     cy.login()

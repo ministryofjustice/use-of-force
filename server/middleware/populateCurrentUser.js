@@ -8,7 +8,7 @@ module.exports = userService => async (req, res, next) => {
       res.locals.user = { ...user, ...res.locals.user }
       res.locals = {
         ...res.locals,
-        currentUrlPath: req.originalUrl,
+        currentUrlPath: req.baseUrl + req.path,
         hostname: req.hostname,
       }
     } else {
