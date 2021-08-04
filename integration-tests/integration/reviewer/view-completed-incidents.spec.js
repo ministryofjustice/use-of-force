@@ -157,7 +157,7 @@ context('A use of force reviewer can view completed incidents at the current age
     completedIncidentsPage.getNoCompleteRows().contains('There are no completed incidents')
   })
 
-  it.only('PII not sent to survey', () => {
+  it('PII not sent to survey', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 
