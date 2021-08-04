@@ -205,8 +205,7 @@ context('A user views their statements list', () => {
     const yourStatementsPage = YourStatementsPage.goTo()
 
     yourStatementsPage
-      .feedbackBanner()
-      .find('a')
+      .feedbackBannerLink()
       .should('contain', 'Give feedback on this service')
       .should('have.attr', 'href')
       .then(href => {
