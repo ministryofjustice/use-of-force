@@ -1,16 +1,16 @@
 const logger = require('../../log')
 
 module.exports = userService => async (req, res, next) => {
+  res.locals = {
+    ...res.locals,
+    currentUrlPath: req.baseUrl + req.path,
+    hostname: req.hostname,
+  }
   try {
     const user = res.locals.user && (await userService.getSelf(res.locals.user.token))
 
     if (user) {
       res.locals.user = { ...user, ...res.locals.user }
-      res.locals = {
-        ...res.locals,
-        currentUrlPath: req.baseUrl + req.path,
-        hostname: req.hostname,
-      }
     } else {
       logger.info('No user available')
     }
