@@ -184,8 +184,8 @@ context('A use of force reviewer can view completed incidents at the current age
 
     completedIncidentsPage.filter.prisonNumber().type('A1234AC')
     completedIncidentsPage.filter.reporter().type('James')
-    completedIncidentsPage.filter.dateFrom().type('22 Jan 2019')
-    completedIncidentsPage.filter.dateTo().type('25 Jan 2019')
+    completedIncidentsPage.filter.dateFrom().type('22/01/2019')
+    completedIncidentsPage.filter.dateTo().type('25/01/2019')
     completedIncidentsPage.filter.apply().click()
 
     completedIncidentsPage
@@ -279,5 +279,18 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=4', text: 'Next set of pages', selected: false },
       ])
     )
+  })
+
+  it('Search dates display correct format', () => {
+    cy.task('stubReviewerLogin')
+    cy.login()
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+
+    completedIncidentsPage.filter.dateFrom().type('22/01/2019')
+    completedIncidentsPage.filter.dateTo().type('25/01/2019')
+    completedIncidentsPage.filter.apply().click()
+
+    completedIncidentsPage.filter.dateFrom().should('have.value', '22/01/2019')
+    completedIncidentsPage.filter.dateTo().should('have.value', '25/01/2019')
   })
 })

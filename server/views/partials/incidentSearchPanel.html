@@ -38,9 +38,10 @@
             id: 'dateFrom',
             label: 'Date from',
             name: 'dateFrom',
-            date: query.dateFrom | formatDate('D MMM YYYY'),
+            date: query.dateFrom | formatDate('DD/MM/YYYY'),
             attributes: {
-              'disable-future-dates': 'true'
+              'disable-future-dates': 'true',
+              'date-format': 'dd/mm/yy'
             }
         }) }}
         </div>
@@ -49,9 +50,10 @@
             id: 'dateTo',
             label: 'Date to',
             name: 'dateTo',
-            date: query.dateTo | formatDate('D MMM YYYY'),
+            date: query.dateTo | formatDate('DD/MM/YYYY'),
             attributes: {
-              'disable-future-dates': 'true'
+              'disable-future-dates': 'true',
+              'date-format': 'dd/mm/yy'
             }
         }) }} 
         </div>
