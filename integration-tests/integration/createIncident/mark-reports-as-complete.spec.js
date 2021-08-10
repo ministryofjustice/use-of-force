@@ -44,7 +44,7 @@ context('Marking a report as complete', () => {
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
     }
 
     notCompletedIncidentsPage.yourStatementsTab().click()
@@ -78,7 +78,7 @@ context('Marking a report as complete', () => {
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
     }
   })
 })

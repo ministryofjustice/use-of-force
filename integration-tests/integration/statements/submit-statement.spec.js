@@ -39,7 +39,7 @@ context('Submit statement', () => {
       const { date, prisoner, reporter, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       action().should('contain.text', 'Start')
       action().click()
     }
@@ -57,7 +57,7 @@ context('Submit statement', () => {
       const { date, prisoner, reporter, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       action().should('contain.text', 'Continue')
       action().click()
     }
@@ -78,7 +78,7 @@ context('Submit statement', () => {
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       action().should('contain.text', 'View statement')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
     }
   })
 
@@ -110,7 +110,7 @@ context('Submit statement', () => {
     const { date, prisoner, reporter, reportId, action } = incidentsPage.statements(0)
     prisoner().contains('Smith, Norman')
     reporter().contains('James Stuart')
-    date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+    date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
     action().should('contain.text', 'View statement')
     reportId().then(id =>
       cy.task('getStatementForUser', { reportId: id, status: StatementStatus.SUBMITTED }).then(statement => {

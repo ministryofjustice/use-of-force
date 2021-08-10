@@ -145,7 +145,7 @@ context('A use of force reviewer can view completed incidents at the current age
 
     {
       const { date, prisoner, prisonNumber, reporter } = completedIncidentsPage.getCompleteRow(0)
-      date().contains('25 Jan 2019')
+      date().contains('25/01/2019')
       prisoner().contains('Smith, Norman')
       prisonNumber().contains('A1234AC')
       reporter().contains('Robert James')

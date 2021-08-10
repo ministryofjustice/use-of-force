@@ -85,7 +85,7 @@ context('A use of force reviewer can view incidents at the current agency', () =
       prisoner().contains('Smith, Norman')
       prisonNumber().contains('A1234AC')
       reporter().contains('James Stuart')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       overdue().should('not.exist')
     }
   })
@@ -120,7 +120,7 @@ context('A use of force reviewer can view incidents at the current agency', () =
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
       prisonNumber().contains('A1234AC')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       overdue().should('exist')
     }
   })
