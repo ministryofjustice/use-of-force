@@ -25,7 +25,7 @@
     <tbody class="govuk-table__body">
         {% for report in reports %}
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{report.incidentdate | formatDate('D MMMM YYYY')}}</td>
+            <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>
             <td class="govuk-table__cell">{{report.offenderName}}</td>
             <td class="govuk-table__cell">{{report.offenderNo}}</td>
             <td class="govuk-table__cell govuk-!-padding-top-{{ 1 if report.status == 'IN_PROGRESS' else 3 }}">

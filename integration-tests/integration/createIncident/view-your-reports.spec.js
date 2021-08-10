@@ -50,14 +50,14 @@ context('A reporter views their report list', () => {
     {
       const { action, date, prisoner } = yourReportsPage.reports(1)
       prisoner().contains('Smith, Norman')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       action().contains('View report')
     }
 
     {
       const { action, date, prisoner } = yourReportsPage.reports(0)
       prisoner().contains('Smith, Norman')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       action().contains('Continue')
       action().click()
 

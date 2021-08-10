@@ -86,7 +86,7 @@ context('A user views their statements list', () => {
     {
       const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(0)
       prisoner().contains('Smith, Norman')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       overdue().should('not.exist')
       removalRequested().should('not.exist')
       action().should('contain.text', 'Start')
@@ -95,7 +95,7 @@ context('A user views their statements list', () => {
     {
       const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(1)
       prisoner().contains('Jones, June')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       overdue().should('exist')
       removalRequested().should('not.exist')
       action().should('contain.text', 'Start')
@@ -104,7 +104,7 @@ context('A user views their statements list', () => {
     {
       const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(2)
       prisoner().contains('Smith, Simon')
-      date().should(elem => expect(elem.text()).to.match(/\d{1,2} .* \d{4}/))
+      date().should(elem => expect(elem.text()).to.match(/\d{2}[/]\d{2}[/]\d{4}/))
       overdue().should('not.exist')
       removalRequested().should('exist')
       action().should('contain.text', 'Start')
