@@ -54,7 +54,7 @@ describe(`GET /completed-incidents`, () => {
 
     return request(app)
       .get(
-        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&&dateFrom=09/01/2020&dateTo=15/01/2020&prisonerName=Jimmy Choo'
       )
       .expect(200)
       .expect('Content-Type', /html/)
@@ -64,8 +64,8 @@ describe(`GET /completed-incidents`, () => {
           'user1',
           'LEI',
           {
-            dateFrom: parseDate('9 Jan 2020', 'D MMM YYYY'),
-            dateTo: parseDate('15 Jan 2020', 'D MMM YYYY'),
+            dateFrom: parseDate('09/01/2020', 'DD/MM/YYYY'),
+            dateTo: parseDate('15/01/2020', 'DD/MM/YYYY'),
             prisonNumber: 'A1234AA',
             reporter: 'Bob',
             prisonerName: 'Jimmy Choo',
