@@ -37,10 +37,16 @@ export default class ReviewerRoutes {
       dateTo: dateTo ? parseDate(dateTo, 'DD/MM/YYYY') : null,
     })
 
+    const searchCriteria = { ...query }
+
+    if (searchCriteria.dateTo) {
+      searchCriteria.dateTo = parseDate(dateTo, 'DD/MM/YYYY').endOf('day')
+    }
+
     const { items: reports, metaData: pageData } = await this.reviewService.getCompletedReports(
       res.locals.user.username,
       res.locals.user.activeCaseLoadId,
-      query,
+      searchCriteria,
       page
     )
     return res.render('pages/completed-incidents', {

@@ -65,7 +65,7 @@ describe(`GET /completed-incidents`, () => {
           'LEI',
           {
             dateFrom: parseDate('09/01/2020', 'DD/MM/YYYY'),
-            dateTo: parseDate('15/01/2020', 'DD/MM/YYYY'),
+            dateTo: parseDate('15/01/2020', 'DD/MM/YYYY').endOf('day'),
             prisonNumber: 'A1234AA',
             reporter: 'Bob',
             prisonerName: 'Jimmy Choo',
@@ -96,7 +96,7 @@ describe(`GET /completed-incidents`, () => {
       })
   })
 
-  it('should pass handle invalid dates', () => {
+  it('should handle invalid dates', () => {
     userSupplier.mockReturnValue(reviewerUser)
 
     return request(app)
