@@ -34,7 +34,7 @@ export default class ReviewerRoutes {
       prisonNumber,
       reporter,
       dateFrom: dateFrom ? parseDate(dateFrom, 'DD/MM/YYYY') : null,
-      dateTo: dateTo ? parseDate(dateTo, 'DD/MM/YYYY') : null,
+      dateTo: dateTo ? parseDate(dateTo, 'DD/MM/YYYY')?.endOf('day') : null,
     })
 
     const { items: reports, metaData: pageData } = await this.reviewService.getCompletedReports(
