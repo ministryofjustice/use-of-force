@@ -34,19 +34,13 @@ export default class ReviewerRoutes {
       prisonNumber,
       reporter,
       dateFrom: dateFrom ? parseDate(dateFrom, 'DD/MM/YYYY') : null,
-      dateTo: dateTo ? parseDate(dateTo, 'DD/MM/YYYY') : null,
+      dateTo: dateTo ? parseDate(dateTo, 'DD/MM/YYYY')?.endOf('day') : null,
     })
-
-    const searchCriteria = { ...query }
-
-    if (searchCriteria.dateTo) {
-      searchCriteria.dateTo = parseDate(dateTo, 'DD/MM/YYYY').endOf('day')
-    }
 
     const { items: reports, metaData: pageData } = await this.reviewService.getCompletedReports(
       res.locals.user.username,
       res.locals.user.activeCaseLoadId,
-      searchCriteria,
+      query,
       page
     )
     return res.render('pages/completed-incidents', {
