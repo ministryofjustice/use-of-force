@@ -4,5 +4,6 @@
 generic-prometheus-alerts:
   targetApplication: use-of-force
 
-  ingress:
+ingress:
+  annotations:
     external-dns.alpha.kubernetes.io/aws-weight: "100"
