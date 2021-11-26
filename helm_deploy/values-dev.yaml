@@ -12,6 +12,7 @@ ingress:
   enabled: true
   enable_allow_list: false
   host: dev.use-of-force.service.justice.gov.uk
+  contextColour: green
   cert_secret: use-of-force-cert
   path: /
   annotations:
