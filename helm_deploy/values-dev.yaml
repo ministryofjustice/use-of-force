@@ -15,7 +15,7 @@ ingress:
   cert_secret: use-of-force-cert
   path: /
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-dev-blue
+    external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-dev-green
 
 
 env:
