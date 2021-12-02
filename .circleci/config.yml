@@ -1,14 +1,17 @@
 version: 2.1
 
+parameters:
+  node_version:
+    type: string
+    default: "16.13-browsers"
+
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
-
-node_version: 16.13-browsers
 
 executors:
   integration-tests:
     docker:
-      - image: cimg/node:{{ node_version }}
+      - image: cimg/node:<< pipeline.parameters.node_version >>
       - image: circleci/postgres:10.13-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
@@ -23,7 +26,7 @@ jobs:
   build:
     executor:
       name: hmpps/node
-      tag: {{ node_version }}
+      tag: << pipeline.parameters.node_version >>
     steps:
       - checkout
       - restore_cache:
@@ -58,7 +61,7 @@ jobs:
   unit_test:
     executor:
       name: hmpps/node
-      tag: {{ node_version }}
+      tag: << pipeline.parameters.node_version >>
     steps:
       - checkout
       - restore_cache:
