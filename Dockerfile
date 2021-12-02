@@ -24,7 +24,7 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:14.17-buster-slim
+FROM node:16.13-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \
