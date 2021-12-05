@@ -8,6 +8,7 @@ import {
   InvolvedStaff,
   Report,
   AnonReportSummary,
+  NotificationReminder,
 } from './incidentClientTypes'
 import { PageResponse, buildPageResponse, HasTotalCount, offsetAndLimitForPage } from '../utils/page'
 import ReportLogClient from './reportLogClient'
@@ -227,29 +228,29 @@ export default class IncidentClient {
   }
 
   // Note: this locks the statement row until surrounding transaction is committed so is not suitable for general use
-  async getNextNotificationReminder(transactionalClient: QueryPerformer) {
+  async getNextNotificationReminder(transactionalClient: QueryPerformer): Promise<NotificationReminder> {
     const result = await transactionalClient({
       text: `select s.id                     "statementId"
-          ,       r.id                     "reportId"
-          ,       s.user_id                "userId"
-          ,       s.email                  "recipientEmail" 
-          ,       s.name                   "recipientName"
-          ,       s.next_reminder_date     "nextReminderDate"  
-          ,       r.submitted_date         "submittedDate"
-          ,       r.reporter_name          "reporterName"
-          ,       r.incident_date          "incidentDate"
-          ,       r.user_id = s.user_id    "isReporter"
-          ,       s.overdue_date           "overdueDate"
-          ,       s.overdue_date <= now()  "isOverdue"
-          from statement s
-          left join report r on r.id = s.report_id
-          where s.next_reminder_date < now()
-          and s.statement_status = $1
-          and s.deleted is null
-          and s.removal_requested_date is null
-          order by s.id
-          for update of s skip locked
-          LIMIT 1`,
+              ,       r.id                     "reportId"
+              ,       s.user_id                "userId"
+              ,       s.email                  "recipientEmail" 
+              ,       s.name                   "recipientName"
+              ,       s.next_reminder_date     "nextReminderDate"  
+              ,       r.submitted_date         "submittedDate"
+              ,       r.reporter_name          "reporterName"
+              ,       r.incident_date          "incidentDate"
+              ,       r.user_id = s.user_id    "isReporter"
+              ,       s.overdue_date           "overdueDate"
+              ,       s.overdue_date <= now()  "isOverdue"
+              from statement s
+              left join report r on r.id = s.report_id
+              where s.next_reminder_date < now()
+              and s.statement_status = $1
+              and s.deleted is null
+              and s.removal_requested_date is null
+              order by s.id
+              for update of s skip locked
+              LIMIT 1`,
       values: [StatementStatus.PENDING.value],
     })
     const {

@@ -3,6 +3,7 @@ import IncidentClient from '../../server/data/incidentClient'
 import reminderPoller from './reminderPoller'
 import ReminderSender from './reminderSender'
 import EmailResolver from './emailResolver'
+import { NotificationReminder } from '../../server/data/incidentClientTypes'
 
 const client = 'client-1'
 const inTransaction = fn => fn(client)
@@ -30,7 +31,10 @@ describe('poll for reminders', () => {
   })
 
   test('successfully poll one reminder', async () => {
-    incidentClient.getNextNotificationReminder.mockResolvedValueOnce({ reminder: 1, recipientEmail: 'user@gov.uk' })
+    incidentClient.getNextNotificationReminder.mockResolvedValueOnce({
+      reminder: 1,
+      recipientEmail: 'user@gov.uk',
+    } as NotificationReminder)
 
     const count = await poll()
 
@@ -45,14 +49,14 @@ describe('poll for reminders', () => {
         nextReminderDate: moment('2019-01-10 10:30:43.122'),
         reportId: 2,
         userId: 'BOB',
-      })
+      } as NotificationReminder)
       .mockResolvedValueOnce({
         statementId: 2,
         nextReminderDate: moment('2019-01-10 10:32:43.122'),
         reportId: 3,
         userId: 'BARRY',
         recipientEmail: 'user@gov.uk',
-      })
+      } as NotificationReminder)
 
     emailResolver.resolveEmail.mockResolvedValue(null)
 
@@ -81,7 +85,7 @@ describe('poll for reminders', () => {
       reportId: 2,
       userId: 'BOB',
       isOverdue: true,
-    })
+    } as NotificationReminder)
 
     emailResolver.resolveEmail.mockResolvedValue(null)
 
@@ -101,7 +105,7 @@ describe('poll for reminders', () => {
       reportId: 2,
       userId: 'BOB',
       isOverdue: true,
-    })
+    } as NotificationReminder)
 
     emailResolver.resolveEmail.mockResolvedValue(true)
 
@@ -115,7 +119,11 @@ describe('poll for reminders', () => {
   })
 
   test('process reminder for recently verified user', async () => {
-    incidentClient.getNextNotificationReminder.mockResolvedValueOnce({ reminder: 1, reportId: 2, userId: 'BOB' })
+    incidentClient.getNextNotificationReminder.mockResolvedValueOnce({
+      reminder: 1,
+      reportId: 2,
+      userId: 'BOB',
+    } as NotificationReminder)
     emailResolver.resolveEmail.mockResolvedValue(true)
 
     const count = await poll()
@@ -127,7 +135,10 @@ describe('poll for reminders', () => {
   })
 
   test('infinite reminders - only process 50 reminders in one go', async () => {
-    incidentClient.getNextNotificationReminder.mockResolvedValue({ reminder: 1, recipientEmail: 'user@gov.uk' })
+    incidentClient.getNextNotificationReminder.mockResolvedValue({
+      reminder: 1,
+      recipientEmail: 'user@gov.uk',
+    } as NotificationReminder)
 
     const count = await poll()
 

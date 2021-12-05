@@ -19,7 +19,7 @@
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 50",
     "typecheck": "tsc",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --detectOpenHandles",
     "int-test": "DB_NAME=use-of-force-int DB_PORT=5432 cypress run",
     "int-test-ui": "DB_NAME=use-of-force-int DB_PORT=5432 cypress open",
     "migrate": "knex migrate:latest",

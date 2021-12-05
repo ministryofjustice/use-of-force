@@ -11,6 +11,7 @@ describe('service healthcheck', () => {
 
   afterEach(() => {
     nock.cleanAll()
+    nock.abortPendingRequests()
   })
 
   describe('check healthy', () => {
