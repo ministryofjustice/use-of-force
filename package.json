@@ -19,7 +19,7 @@
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 50",
     "typecheck": "tsc",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --detectOpenHandles",
     "int-test": "DB_NAME=use-of-force-int DB_PORT=5432 cypress run",
     "int-test-ui": "DB_NAME=use-of-force-int DB_PORT=5432 cypress open",
     "migrate": "knex migrate:latest",
@@ -28,8 +28,8 @@
     "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "engines": {
-    "node": "^14.*",
-    "npm": "^7.*"
+    "node": "^16",
+    "npm": "^7"
   },
   "jest": {
     "preset": "ts-jest",
@@ -135,6 +135,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/node": "^16.11.7",
     "@types/bunyan": "^1.8.7",
     "@types/express": "^4.17.13",
     "@types/hapi__joi": "^17.1.7",

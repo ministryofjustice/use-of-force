@@ -1,4 +1,4 @@
-import type moment from 'moment'
+import moment, { Moment } from 'moment'
 import { UseOfForceReport } from './UseOfForceReport'
 
 export interface IncidentSearchQuery {
@@ -41,4 +41,20 @@ export interface InvolvedStaff {
   userId: string
   name: string
   email: string
+}
+
+export interface NotificationReminder {
+  reportId: number
+  statementId: number
+  userId: string
+  recipientEmail: string
+  recipientName: string
+  nextReminderDate: Moment
+  submittedDate: Moment
+  reporterName: string
+  incidentDate: Moment
+  isReporter: boolean
+  overdueDate: Moment
+  isOverdue?: boolean
+  reminder: number
 }
