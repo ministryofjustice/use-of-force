@@ -6,7 +6,7 @@ parameters:
     default: 16.13-browsers
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@3.12
 
 executors:
   integration-tests:
