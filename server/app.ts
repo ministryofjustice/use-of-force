@@ -73,9 +73,11 @@ export default function createApp(services: Services): Express {
           // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
           scriptSrc: [
             "'self'",
+            "'unsafe-eval'",
             (req, res: Response) => `'nonce-${res.locals.cspNonce}'`,
             'code.jquery.com',
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+            'www.googletagmanager.com',
           ],
           imgSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com', 'https://code.jquery.com'],
           connectSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com'],
