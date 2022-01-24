@@ -1,17 +1,26 @@
 version: 2.1
 
-parameters:
-  node_version:
-    type: string
-    default: 16.13-browsers
-
 orbs:
   hmpps: ministryofjustice/hmpps@3.12
+  slack: circleci/slack@4.4.2
+
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: elp_alerts_security
+
+  releases-slack-channel:
+    type: string
+    default: dps-releases
+
+  node-version:
+    type: string
+    default: 16.13-browsers
 
 executors:
   integration-tests:
     docker:
-      - image: cimg/node:<< pipeline.parameters.node_version >>
+      - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: circleci/postgres:10.13-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
@@ -26,14 +35,17 @@ jobs:
   build:
     executor:
       name: hmpps/node
-      tag: << pipeline.parameters.node_version >>
+      tag: << pipeline.parameters.node-version >>
     steps:
       - checkout
+      - run:
+          name: Update npm
+          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: npm ci
+          command: npm ci --no-audit
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -61,7 +73,7 @@ jobs:
   unit_test:
     executor:
       name: hmpps/node
-      tag: << pipeline.parameters.node_version >>
+      tag: << pipeline.parameters.node-version >>
     steps:
       - checkout
       - restore_cache:
@@ -84,8 +96,11 @@ jobs:
           name: Install missing OS dependency
           command: sudo apt-get install libxss1
       - run:
+          name: Get wiremock
+          command: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
+      - run:
           name: Run wiremock
-          command: java -jar .circleci/wiremock-standalone-2.23.2.jar --port 9091
+          command: java -jar wiremock.jar --port 9091
           background: true
       - run:
           name: Run the node app.
@@ -131,8 +146,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
-          context:
-            - hmpps-common-vars
+          context: hmpps-common-vars
           filters:
             branches:
               only:
@@ -150,8 +164,8 @@ workflows:
           name: deploy_preprod
           env: "preprod"
           context:
-            - use-of-force-preprod
             - hmpps-common-vars
+            - use-of-force-preprod
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -162,42 +176,32 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
-            - use-of-force-prod
             - hmpps-common-vars
+            - use-of-force-prod
           requires:
             - request-prod-approval
 
   security:
     triggers:
       - schedule:
-          cron: "42 5 * * 1-5"
+          cron: "0 7 * * 1-5"
           filters:
             branches:
               only:
                 - main
     jobs:
       - hmpps/npm_security_audit:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
-      - hmpps/veracode_pipeline_scan:
-          context:
-            - veracode-credentials
-            - hmpps-common-vars
-  security-weekly:
-    triggers:
-      - schedule:
-          cron: "31 6 * * 1"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
-
