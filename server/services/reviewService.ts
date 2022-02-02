@@ -75,7 +75,7 @@ export default class ReviewService {
   async getCompletedReports(
     username: string,
     agencyId: AgencyId,
-    query: ReportQuery = {},
+    query: ReportQuery,
     page: number
   ): Promise<PageResponse<IncidentSummary>> {
     if (query.prisonerName) {

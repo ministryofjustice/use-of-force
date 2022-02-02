@@ -1,5 +1,5 @@
 import moment from 'moment'
-import stringify from 'csv-stringify'
+import { stringify } from 'csv-stringify'
 import logger from '../../../log'
 import { HeatmapBuilder } from './heatmapBuilder'
 import { Aggregator } from './incidentCountAggregator'

@@ -3,7 +3,7 @@ import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import type { RestClientBuilder, PrisonClient, AuthClient } from '../data'
 import { User, UserWithPrison, FoundUserResult } from '../types/uof'
-import { EmailResult, UserResult } from '../data/authClient'
+import { EmailResult } from '../data/authClient'
 
 export default class UserService {
   constructor(

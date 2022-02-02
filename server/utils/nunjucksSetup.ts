@@ -38,6 +38,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   njkEnv.addGlobal('authUrl', config.apis.oauth2.url)
   njkEnv.addGlobal('apiClientId', config.apis.oauth2.apiClientId)
 
+  // eslint-disable-next-line default-param-last
   njkEnv.addFilter('findError', (array: Error[] = [], formFieldId: string) => {
     const item = array.find(error => error.href === `#${formFieldId}`)
     if (item) {

@@ -1,6 +1,6 @@
 import { SearchForm } from '../../data/prisonerSearchClient'
 
-const prisonNumberPatttern = new RegExp(/^[A-Z][0-9]{4}[A-Z]{2}$/i)
+const prisonNumberPatttern = /^[A-Z][0-9]{4}[A-Z]{2}$/i
 
 type Error = {
   href: string
