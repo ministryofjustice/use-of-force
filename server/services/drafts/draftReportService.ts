@@ -7,7 +7,6 @@ import type { DraftReport, NoDraftReport, DuplicateReport } from '../../data/dra
 import { check as getReportStatus, isReportComplete } from './reportStatusChecker'
 import UpdateDraftReportService from './updateDraftReportService'
 import LocationService from '../locationService'
-import { ReportStatus } from '../../config/types'
 
 import {
   DraftInvolvedStaffService,
