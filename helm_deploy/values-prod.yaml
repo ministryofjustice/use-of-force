@@ -71,6 +71,8 @@ allow_list:
   moj-official-tgw-preprod: "51.149.251.0/24"
   crc-rrp: "62.253.83.37/32"
   crc-pp-wwm: "5.153.255.210/32"
+  five-wells-1: "20.49.214.199"
+  five-wells-2: "20.49.214.228"
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
