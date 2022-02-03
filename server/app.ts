@@ -67,6 +67,7 @@ export default function createApp(services: Services): Express {
   })
   app.use(
     helmet({
+      crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
