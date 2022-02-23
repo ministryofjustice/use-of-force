@@ -1,5 +1,5 @@
 import express, { Express, RequestHandler, Response } from 'express'
-import addRequestId from 'express-request-id'
+import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import noCache from 'nocache'
 import csurf from 'csurf'
@@ -94,7 +94,16 @@ export default function createApp(services: Services): Express {
     tls: config.redis.tls_enabled === 'true' ? {} : false,
   })
 
-  app.use(addRequestId())
+  app.use((req, res, next) => {
+    const headerName = 'X-Request-Id'
+    const oldValue = req.get(headerName)
+    const id = oldValue === undefined ? uuidv4() : oldValue
+
+    res.set(headerName, id)
+    req.id = id
+
+    next()
+  })
 
   const RedisStore = ConnectRedis(session)
   app.use(
