@@ -8,3 +8,6 @@ dependencies:
   - name: generic-prometheus-alerts
     version: 0.1.2
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
+  - name: generic-data-analytics-extractor
+    version: 0.1.0
+    repository: https://ministryofjustice.github.io/hmpps-helm-charts
