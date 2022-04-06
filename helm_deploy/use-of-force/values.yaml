@@ -4,6 +4,10 @@
 generic-prometheus-alerts:
   targetApplication: use-of-force
 
+generic-data-analytics-extractor:
+  databaseSecretName: dps-rds-instance-output
+  analyticalPlatformSecretName: uof-analytical-platform-reporting-s3-bucket
+
 ingress:
   annotations:
     external-dns.alpha.kubernetes.io/aws-weight: "100"

@@ -17,6 +17,8 @@ ingress:
   annotations:
     external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-dev-green
 
+generic-data-analytics-extractor:
+  enabled: true
 
 env:
   NOMIS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth

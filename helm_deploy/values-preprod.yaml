@@ -17,6 +17,9 @@ ingress:
   annotations:
     external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-preprod-green
 
+generic-data-analytics-extractor:
+  enabled: false
+
 env:
   NOMIS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
   PRISON_API_URL: "https://api-preprod.prison.service.justice.gov.uk"
