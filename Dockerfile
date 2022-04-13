@@ -4,36 +4,39 @@ ARG BUILD_NUMBER
 ARG GIT_REF
 
 RUN apt-get update && \
-    apt-get upgrade -y
+        apt-get upgrade -y
 
 WORKDIR /app
 
 RUN apt-get install -y curl
 
 RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
-    > /app/root.cert
+        > /app/root.cert
 
 
 COPY . .
 
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
-    npm run build && \
-    export BUILD_NUMBER=${BUILD_NUMBER:-1_0_0} && \
-    export GIT_REF=${GIT_REF:-dummy} && \
-    npm run record-build-info
+        npm run build && \
+        export BUILD_NUMBER=${BUILD_NUMBER:-1_0_0} && \
+        export GIT_REF=${GIT_REF:-dummy} && \
+        npm run record-build-info
 
 RUN npm prune --production
 
 FROM node:16.13-bullseye-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
+# Cache breaking
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+
 RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+        apt-get upgrade -y && \
+        apt-get autoremove -y && \
+        rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+        adduser --uid 2000 --system appuser --gid 2000
 
 ENV TZ=Europe/London
 RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
