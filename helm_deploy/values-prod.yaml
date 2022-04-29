@@ -83,4 +83,5 @@ allow_list:
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
+  targetApplication: use-of-force
+  alertSeverity: elp_alerts

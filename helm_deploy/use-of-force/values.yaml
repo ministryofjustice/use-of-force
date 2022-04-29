@@ -3,6 +3,7 @@
 
 generic-prometheus-alerts:
   targetApplication: use-of-force
+  alertSeverity: digital-prison-service-dev
 
 generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output
