@@ -30,7 +30,6 @@ const {
   incidentClient,
   prisonClientBuilder,
   prisonerSearchClientBuilder,
-  reportingClient,
   statementsClient,
   systemToken,
   telemetryClient,
@@ -99,7 +98,7 @@ const reviewService = new ReviewService(
   offenderService,
   systemToken
 )
-const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
+const reportingService = new ReportingService(offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 

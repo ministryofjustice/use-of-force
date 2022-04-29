@@ -9,7 +9,6 @@ import { ageGroupCsvRendererConfig, aggregateIncidentsByAgeGroup } from './incid
 import { ReportStatus } from '../../config/types'
 import { AgencyId, DateRange } from '../../types/uof'
 import type OffenderService from '../offenderService'
-import type ReportingClient from '../../data/reportingClient'
 
 const toCsv = (columns, results): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -33,7 +32,6 @@ const formatRange = ([start, end]): string => `${start.format()}' and '${end.for
 
 export default class ReportingService {
   constructor(
-    private readonly reportingClient: ReportingClient,
     private readonly offenderService: OffenderService,
     private readonly heatmapBuilder: HeatmapBuilder
   ) {}
