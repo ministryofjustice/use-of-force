@@ -1,6 +1,5 @@
 import { dataAccess } from '../data'
 import OffenderService from './offenderService'
-import ReportingService from './reporting/reportingService'
 import PrisonerSearchService from './prisonerSearchService'
 
 import ReportService from './reportService'
@@ -96,7 +95,6 @@ const reviewService = new ReviewService(
   offenderService,
   systemToken
 )
-const reportingService = new ReportingService(offenderService)
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
@@ -109,7 +107,6 @@ export const services = {
   userService,
   prisonerSearchService,
   reviewService,
-  reportingService,
   systemToken,
   locationService,
   reportDetailBuilder,
@@ -122,7 +119,6 @@ export {
   InvolvedStaffService,
   DraftReportService,
   ReportService,
-  ReportingService,
   LocationService,
   StatementService,
   ReviewService,
