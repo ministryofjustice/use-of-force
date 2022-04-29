@@ -1,7 +1,6 @@
 import moment from 'moment'
 import { stringify } from 'csv-stringify'
 import logger from '../../../log'
-import { HeatmapBuilder } from './heatmapBuilder'
 import { Aggregator } from './incidentCountAggregator'
 import religiousGroupAggregator from './religiousGroupAggregator'
 import ethnicGroupAggregator from './ethnicGroupAggregator'
@@ -32,8 +31,7 @@ const formatRange = ([start, end]): string => `${start.format()}' and '${end.for
 
 export default class ReportingService {
   constructor(
-    private readonly offenderService: OffenderService,
-    private readonly heatmapBuilder: HeatmapBuilder
+    private readonly offenderService: OffenderService
   ) {}
 
 }
