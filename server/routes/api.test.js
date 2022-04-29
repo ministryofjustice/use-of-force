@@ -1,17 +1,7 @@
 const request = require('supertest')
-const { user, reviewerUser, coordinatorUser, appWithAllRoutes } = require('./__test/appSetup')
+const { user, appWithAllRoutes } = require('./__test/appSetup')
 
 const userSupplier = jest.fn()
-
-/** @type {any} */
-const reportingService = {
-  getMostOftenInvolvedStaff: jest.fn(),
-  getMostOftenInvolvedPrisoners: jest.fn(),
-  getIncidentsOverview: jest.fn(),
-  getIncidentHeatmap: jest.fn(),
-  getIncidentsByReligiousGroup: jest.fn(),
-  getIncidentsByAgeGroup: jest.fn(),
-}
 
 /** @type {any} */
 const offenderService = {
@@ -23,7 +13,7 @@ describe('api', () => {
 
   beforeEach(() => {
     offenderService.getOffenderImage.mockResolvedValue('')
-    app = appWithAllRoutes({ offenderService, reportingService }, userSupplier)
+    app = appWithAllRoutes({ offenderService }, userSupplier)
   })
 
   afterEach(() => {
