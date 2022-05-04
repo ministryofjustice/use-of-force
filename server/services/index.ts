@@ -1,6 +1,5 @@
 import { dataAccess } from '../data'
 import OffenderService from './offenderService'
-import ReportingService from './reporting/reportingService'
 import PrisonerSearchService from './prisonerSearchService'
 
 import ReportService from './reportService'
@@ -15,7 +14,6 @@ import StatementService from './statementService'
 import { InvolvedStaffService } from './involvedStaffService'
 import UserService from './userService'
 
-import createHeatmapBuilder from './reporting/heatmapBuilder'
 import EventPublisher from './eventPublisher'
 
 import * as db from '../data/dataAccess/db'
@@ -30,7 +28,6 @@ const {
   incidentClient,
   prisonClientBuilder,
   prisonerSearchClientBuilder,
-  reportingClient,
   statementsClient,
   systemToken,
   telemetryClient,
@@ -38,7 +35,6 @@ const {
 } = dataAccess
 
 const eventPublisher = EventPublisher(telemetryClient)
-const heatmapBuilder = createHeatmapBuilder(prisonClientBuilder)
 const userService = new UserService(prisonClientBuilder, authClientBuilder)
 const notificationService = notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(
@@ -99,7 +95,6 @@ const reviewService = new ReviewService(
   offenderService,
   systemToken
 )
-const reportingService = new ReportingService(reportingClient, offenderService, heatmapBuilder)
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
 
@@ -112,7 +107,6 @@ export const services = {
   userService,
   prisonerSearchService,
   reviewService,
-  reportingService,
   systemToken,
   locationService,
   reportDetailBuilder,
@@ -125,7 +119,6 @@ export {
   InvolvedStaffService,
   DraftReportService,
   ReportService,
-  ReportingService,
   LocationService,
   StatementService,
   ReviewService,

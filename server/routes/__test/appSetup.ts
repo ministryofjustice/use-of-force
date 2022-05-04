@@ -13,7 +13,6 @@ import type {
   StatementService,
   OffenderService,
   ReportService,
-  ReportingService,
   ReportDetailBuilder,
   ReviewService,
   InvolvedStaffService,
@@ -128,7 +127,6 @@ export const appWithAllRoutes = (
     reportDetailBuilder: {} as ReportDetailBuilder,
     draftReportService: {} as DraftReportService,
     userService: {} as UserService,
-    reportingService: {} as ReportingService,
     signInService: {} as any,
     ...overrides,
   }
