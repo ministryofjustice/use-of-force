@@ -9,9 +9,9 @@ import compression from 'compression'
 import passport from 'passport'
 import crypto from 'crypto'
 import createError from 'http-errors'
-import redis from 'redis'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
+import { createRedisClient } from './data/redisClient'
 import RequestLogger from './middleware/requestLogger'
 
 import createRouter from './routes'
@@ -30,6 +30,7 @@ import errorHandler from './errorHandler'
 
 import config from './config'
 import unauthenticatedRoutes from './routes/unauthenticated'
+import asyncMiddleware from './middleware/asyncMiddleware'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -87,13 +88,6 @@ export default function createApp(services: Services): Express {
     })
   )
 
-  const client = redis.createClient({
-    port: config.redis.port,
-    password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
-  })
-
   app.use((req, res, next) => {
     const headerName = 'X-Request-Id'
     const oldValue = req.get(headerName)
@@ -106,6 +100,9 @@ export default function createApp(services: Services): Express {
   })
 
   const RedisStore = ConnectRedis(session)
+  const client = createRedisClient({ legacyMode: true })
+  client.connect()
+
   app.use(
     session({
       store: new RedisStore({ client }),
@@ -114,6 +111,13 @@ export default function createApp(services: Services): Express {
       resave: false, // redis implements touch so shouldn't need this
       saveUninitialized: false,
       rolling: true,
+    })
+  )
+
+  app.use(
+    asyncMiddleware((req, res, next) => {
+      req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+      next()
     })
   )
 
@@ -250,20 +254,26 @@ export default function createApp(services: Services): Express {
 
   app.get('/login', passport.authenticate('oauth2'))
 
-  app.get('/login/callback', (req, res, next) =>
-    passport.authenticate('oauth2', {
-      successReturnToOrRedirect: req.session.returnTo || '/',
-      failureRedirect: '/autherror',
-    })(req, res, next)
+  app.get(
+    '/login/callback',
+    asyncMiddleware((req, res, next) =>
+      passport.authenticate('oauth2', {
+        successReturnToOrRedirect: req.session.returnTo || '/',
+        failureRedirect: '/autherror',
+      })(req, res, next)
+    )
   )
 
-  app.use('/logout', (req, res) => {
-    if (req.user) {
-      req.logout()
-      req.session.destroy()
-    }
-    res.redirect(authLogoutUrl)
-  })
+  app.use(
+    '/logout',
+    asyncMiddleware((req, res) => {
+      if (req.user) {
+        req.logout()
+        req.session.destroy()
+      }
+      res.redirect(authLogoutUrl)
+    })
+  )
 
   app.use(populateCurrentUser(services.userService))
 

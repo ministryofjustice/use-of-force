@@ -52,3 +52,10 @@ export type LoggedInUser = {
   isCoordinator: boolean
   activeCaseLoadId: string
 }
+
+export type Error = {
+  name: string
+  message: string
+  stack?: string
+  status?: number
+}

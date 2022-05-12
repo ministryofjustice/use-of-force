@@ -7,6 +7,8 @@ import logger from '../../log'
 import config from '../config'
 import { generateOauthClientToken } from '../authentication/clientCredentials'
 import { SystemToken, FoundUserResult } from '../types/uof'
+import { buildErrorHandler } from './clientErrorHandler'
+import TokenStore from './tokenStore'
 
 const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
@@ -22,24 +24,54 @@ const agentOptions = {
 
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-async function getSystemClientToken(username?: string) {
-  const clientToken = generateOauthClientToken(config.apis.oauth2.systemClientId, config.apis.oauth2.systemClientSecret)
+async function getSystemClientToken(tokenStore: TokenStore, username?: string) {
+  const key = username || '%ANONYMOUS%'
+  const token = await tokenStore.getToken(key)
 
-  const oauthRequest = username
-    ? querystring.stringify({ grant_type: 'client_credentials', username })
-    : querystring.stringify({ grant_type: 'client_credentials' })
+  if (token) {
+    return token
+  }
 
-  logger.info(
-    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
+  const clientTokenHeader = generateOauthClientToken(
+    config.apis.oauth2.systemClientId,
+    config.apis.oauth2.systemClientSecret
   )
 
-  const result = await superagent
+  const oauthRequest = username ? { grant_type: 'client_credentials', username } : { grant_type: 'client_credentials' }
+  const newToken = await oauthTokenRequest(clientTokenHeader, oauthRequest)
+
+  logger.info(`Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${key}'`)
+
+  await tokenStore.setToken(key, newToken.token, newToken.expiresIn - 60)
+  return newToken.token
+}
+
+const oauthTokenRequest = async (clientTokenHeader, oauthRequest) => {
+  const oauthResult = await getOauthToken(clientTokenHeader, oauthRequest)
+  logger.info(`Oauth request for grant type '${oauthRequest.grant_type}', result status: ${oauthResult.status}`)
+
+  return parseOauthTokens(oauthResult)
+}
+
+const getOauthToken = (oauthClientToken, requestSpec) => {
+  const oauthRequest = querystring.stringify(requestSpec)
+  const handleError = buildErrorHandler('OAuth')
+
+  return superagent
     .post(`${apiUrl}/oauth/token`)
-    .set('Authorization', clientToken)
+    .set('Authorization', oauthClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(oauthRequest)
     .timeout(timeoutSpec)
-  return result.body
+    .catch(error => handleError(error, 'oauth/token', 'POST'))
+}
+
+const parseOauthTokens = oauthResult => {
+  const token = oauthResult.body.access_token
+  const refreshToken = oauthResult.body.refresh_token
+  const expiresIn = oauthResult.body.expires_in
+
+  return { token, refreshToken, expiresIn }
 }
 
 type GetParams = {
@@ -127,7 +159,9 @@ export class AuthClient {
   }
 }
 
-export const systemToken: SystemToken = async (username?: string): Promise<string> => {
-  const systemClientToken = await getSystemClientToken(username)
-  return systemClientToken.access_token
-}
+export const systemTokenBuilder =
+  (tokenStore: TokenStore): SystemToken =>
+  async (username?: string): Promise<string> => {
+    const systemClientToken = await getSystemClientToken(tokenStore, username)
+    return systemClientToken
+  }
