@@ -7,7 +7,6 @@ import logger from '../../log'
 import config from '../config'
 import { generateOauthClientToken } from '../authentication/clientCredentials'
 import { SystemToken, FoundUserResult } from '../types/uof'
-import { buildErrorHandler } from './clientErrorHandler'
 import TokenStore from './tokenStore'
 
 const timeoutSpec = {
@@ -55,7 +54,6 @@ const oauthTokenRequest = async (clientTokenHeader, oauthRequest) => {
 
 const getOauthToken = (oauthClientToken, requestSpec) => {
   const oauthRequest = querystring.stringify(requestSpec)
-  const handleError = buildErrorHandler('OAuth')
 
   return superagent
     .post(`${apiUrl}/oauth/token`)
@@ -63,7 +61,6 @@ const getOauthToken = (oauthClientToken, requestSpec) => {
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(oauthRequest)
     .timeout(timeoutSpec)
-    .catch(error => handleError(error, 'oauth/token', 'POST'))
 }
 
 const parseOauthTokens = oauthResult => {
