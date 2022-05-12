@@ -24,7 +24,7 @@ module.exports = {
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
   redis: {
-    host: process.env.REDIS_HOST,
+    host: get('REDIS_HOST', 'localhost'),
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),

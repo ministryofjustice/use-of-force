@@ -1,14 +1,26 @@
 import nock from 'nock'
+import { RedisClient } from './redisClient'
 import config from '../config'
-import { AuthClient, systemToken } from './authClient'
+import { AuthClient, systemTokenBuilder } from './authClient'
+import TokenStore from './tokenStore'
+
+const redisClient = {
+  get: jest.fn(),
+  set: jest.fn(),
+  on: jest.fn(),
+  connect: jest.fn(),
+  isOpen: true,
+} as unknown as jest.Mocked<RedisClient>
 
 describe('authClient', () => {
+  let systemToken
   let fakeApi
   let client: AuthClient
 
   const token = 'token-1'
 
   beforeEach(() => {
+    systemToken = systemTokenBuilder(new TokenStore(redisClient as RedisClient))
     fakeApi = nock(config.apis.oauth2.url)
     client = new AuthClient(token)
   })

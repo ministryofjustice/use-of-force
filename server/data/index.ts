@@ -10,8 +10,10 @@ import StatementsClient from './statementsClient'
 import PrisonClient from './prisonClient'
 import config from '../config'
 
-import { AuthClient, systemToken } from './authClient'
+import { AuthClient, systemTokenBuilder } from './authClient'
 import * as db from './dataAccess/db'
+import TokenStore from './tokenStore'
+import { createRedisClient } from './redisClient'
 
 const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
@@ -36,7 +38,7 @@ export const dataAccess = {
   telemetryClient,
   draftReportClient,
   reportLogClient,
-  systemToken,
+  systemToken: systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false }))),
   authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
   prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
   prisonerSearchClientBuilder: restClientBuilder('prisonerSearchApi', config.apis.prisonerSearch, PrisonerSearchClient),

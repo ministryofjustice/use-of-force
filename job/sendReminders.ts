@@ -13,13 +13,15 @@ import logger from '../log'
 import * as db from '../server/data/dataAccess/db'
 
 import { notificationServiceFactory } from '../server/services/notificationService'
-import { AuthClient, systemToken } from '../server/data/authClient'
+import { AuthClient, systemTokenBuilder } from '../server/data/authClient'
 
 import EmailResolver from './reminders/emailResolver'
 import createReminderPoller from './reminders/reminderPoller'
 import ReminderSender from './reminders/reminderSender'
 import eventPublisherFactory from '../server/services/eventPublisher'
 import ReportLogClient from '../server/data/reportLogClient'
+import TokenStore from '../server/data/tokenStore'
+import { createRedisClient } from '../server/data/redisClient'
 
 const eventPublisher = eventPublisherFactory(buildAppInsightsClient('use-of-force-reminder-job'))
 
@@ -27,6 +29,7 @@ const statementClient = new StatementsClient(db.query)
 const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 
+const systemToken = systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false })))
 const emailResolver = new EmailResolver(token => new AuthClient(token), systemToken, statementClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 
