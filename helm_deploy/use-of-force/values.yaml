@@ -8,6 +8,7 @@ generic-prometheus-alerts:
 generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output
   analyticalPlatformSecretName: uof-analytical-platform-reporting-s3-bucket
+  enabled: true
 
 ingress:
   annotations:
