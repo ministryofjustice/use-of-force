@@ -9,9 +9,10 @@ function authenticationMiddlewareFactory(tokenVerifier) {
     if (req.isAuthenticated() && (await tokenVerifier.verify(res.locals.user.token))) {
       return next()
     }
-    req.logout()
-    const query = querystring.stringify({ returnTo: req.originalUrl })
-    return res.redirect(`/login?${query}`)
+    return req.logout(() => {
+      const query = querystring.stringify({ returnTo: req.originalUrl })
+      return res.redirect(`/login?${query}`)
+    })
   }
 }
 
