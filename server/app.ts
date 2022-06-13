@@ -268,8 +268,7 @@ export default function createApp(services: Services): Express {
     '/logout',
     asyncMiddleware((req, res) => {
       if (req.user) {
-        req.logout()
-        req.session.destroy()
+        req.logout(() => req.session.destroy())
       }
       res.redirect(authLogoutUrl)
     })
