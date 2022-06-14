@@ -26,6 +26,9 @@ env:
   TOKENVERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
   TOKENVERIFICATION_API_ENABLED: true
 
+generic-data-analytics-extractor:
+  enabled: true
+
 allow_list:
   office: "217.33.148.210/32"
   quantum: "62.25.109.197/32"
