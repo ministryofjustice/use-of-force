@@ -17,4 +17,4 @@
           expr: kube_job_status_failed{namespace="use-of-force-prod",job_name=~"db-refresh-job.*"} > 0
           for: 1m
           labels:
-            severity: digital-prison-service
+            severity: elp_alerts
