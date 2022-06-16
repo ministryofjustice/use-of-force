@@ -37,7 +37,7 @@ export default class ReportDataBuilder {
 
     const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
-    const { description: locationDescription = '' } = await this.locationService.getLocation(
+    const { userDescription: locationDescription = '' } = await this.locationService.getLocation(
       token,
       form.incidentDetails.locationId
     )
