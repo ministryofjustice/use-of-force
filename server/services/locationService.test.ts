@@ -1,13 +1,13 @@
+import { PrisonClient } from '../data'
+import type { Prison, PrisonLocation } from '../data/prisonClientTypes'
 import LocationService from './locationService'
+
+jest.mock('../data')
 
 const prisonClientBuilder = jest.fn()
 const token = 'token'
 
-const prisonClient = {
-  getPrisons: jest.fn(),
-  getPrisonById: jest.fn(),
-  getLocations: jest.fn(),
-}
+const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
 
 let locationService
 
@@ -17,20 +17,11 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  prisonClient.getPrisons.mockReset()
-  prisonClient.getPrisonById.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('locationService', () => {
   describe('getPrisons', () => {
-    it('should not return a prison', async () => {
-      const prisons = ['no prison']
-
-      prisonClient.getPrisons.mockReturnValue(prisons)
-      const result = await locationService.getPrisons(token)
-      expect(result).toEqual(prisons)
-    })
-
     it('should return all prisons details in alpha order', async () => {
       const prisonsMock = [
         {
@@ -45,7 +36,7 @@ describe('locationService', () => {
           agencyId: 'P3',
           description: 'Harrow',
         },
-      ]
+      ] as Prison[]
 
       const prisonsInOrder = [
         {
@@ -60,17 +51,65 @@ describe('locationService', () => {
           agencyId: 'P1',
           description: 'Zealand',
         },
-      ]
+      ] as Prison[]
 
-      prisonClient.getPrisons.mockReturnValue(prisonsMock)
+      prisonClient.getPrisons.mockResolvedValue(prisonsMock)
       const result = await locationService.getPrisons(token)
       expect(result).toEqual(prisonsInOrder)
     })
   })
 
+  describe('getLocation', () => {
+    it('calls service correctly', async () => {
+      prisonClient.getLocation.mockResolvedValue({
+        userDescription: 'Zealand',
+        locationPrefix: 'Z001',
+      } as PrisonLocation)
+
+      await locationService.getLocation(token, 123)
+
+      expect(prisonClient.getLocation).toBeCalledWith(123)
+    })
+
+    it('should retrieve user description when one exists', async () => {
+      prisonClient.getLocation.mockResolvedValue({
+        userDescription: 'Zealand',
+        locationPrefix: 'Z001',
+      } as PrisonLocation)
+
+      const result = await locationService.getLocation(token, 123)
+
+      expect(result).toEqual('Zealand')
+    })
+
+    it('should retrieve prefix when user description exists', async () => {
+      prisonClient.getLocation.mockResolvedValue({ locationPrefix: 'Z001' } as PrisonLocation)
+
+      const result = await locationService.getLocation(token, 123)
+
+      expect(result).toEqual('Z001')
+    })
+
+    it('should default to empty string when neither user description or prefix exist', async () => {
+      prisonClient.getLocation.mockResolvedValue({} as PrisonLocation)
+
+      const result = await locationService.getLocation(token, 123)
+
+      expect(result).toEqual('')
+    })
+
+    it('should default to empty string when neither location doesnt exist', async () => {
+      prisonClient.getLocation.mockResolvedValue(undefined)
+
+      const result = await locationService.getLocation(token, 123)
+
+      expect(result).toEqual('')
+    })
+  })
+
   describe('getIncidentLocations', () => {
     it('should retrieve locations', async () => {
-      prisonClient.getLocations.mockReturnValue([])
+      prisonClient.getLocations.mockResolvedValue([])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
@@ -79,102 +118,101 @@ describe('locationService', () => {
     })
 
     it('should assign internalLocationCode as userDescription when userDescription value is absent', async () => {
-      prisonClient.getLocations.mockReturnValue([
-        { id: 2, locationPrefix: 'P2', userDescription: undefined },
-        { id: 6, locationPrefix: 'OC', userDescription: 'Other cell' },
-        { id: 3, locationPrefix: 'P3', userDescription: 'place 3' },
-        { id: 5, locationPrefix: 'PC', userDescription: "Prisoner's cell" },
-        { id: 1, locationPrefix: 'P1', userDescription: 'place 1' },
-        { id: 4, locationPrefix: 'P4', userDescription: undefined },
-      ])
+      prisonClient.getLocations.mockResolvedValue([
+        { locationPrefix: 'P2', userDescription: undefined },
+        { locationPrefix: 'OC', userDescription: 'Other cell' },
+        { locationPrefix: 'P3', userDescription: 'place 3' },
+        { locationPrefix: 'PC', userDescription: "Prisoner's cell" },
+        { locationPrefix: 'P1', userDescription: 'place 1' },
+        { locationPrefix: 'P4', userDescription: undefined },
+      ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
-        { id: 5, locationPrefix: 'PC', userDescription: "Prisoner's cell" },
-        { id: 6, locationPrefix: 'OC', userDescription: 'Other cell' },
-        { id: 2, locationPrefix: 'P2', userDescription: 'P2' },
-        { id: 4, locationPrefix: 'P4', userDescription: 'P4' },
-        { id: 1, locationPrefix: 'P1', userDescription: 'place 1' },
-        { id: 3, locationPrefix: 'P3', userDescription: 'place 3' },
+        { locationPrefix: 'PC', userDescription: "Prisoner's cell" },
+        { locationPrefix: 'OC', userDescription: 'Other cell' },
+        { locationPrefix: 'P2', userDescription: 'P2' },
+        { locationPrefix: 'P4', userDescription: 'P4' },
+        { locationPrefix: 'P1', userDescription: 'place 1' },
+        { locationPrefix: 'P3', userDescription: 'place 3' },
       ])
     })
 
     it('should sort retrieved locations with top 2 primary locations at the begining', async () => {
-      prisonClient.getLocations.mockReturnValue([
-        { id: 2, userDescription: 'place 2' },
-        { id: 6, userDescription: 'Other cell' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 5, userDescription: "Prisoner's cell" },
-        { id: 1, userDescription: 'place 1' },
-        { id: 4, userDescription: 'place 4' },
-      ])
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'place 2' },
+        { userDescription: 'Other cell' },
+        { userDescription: 'place 3' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 4' },
+      ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
-        { id: 5, userDescription: "Prisoner's cell" },
-        { id: 6, userDescription: 'Other cell' },
-        { id: 1, userDescription: 'place 1' },
-        { id: 2, userDescription: 'place 2' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 4, userDescription: 'place 4' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'Other cell' },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 2' },
+        { userDescription: 'place 3' },
+        { userDescription: 'place 4' },
       ])
     })
 
     it('should sort retrieved locations with only 1 primary location at the begining', async () => {
-      prisonClient.getLocations.mockReturnValue([
-        { id: 2, userDescription: 'place 2' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 5, userDescription: "Prisoner's cell" },
-        { id: 1, userDescription: 'place 1' },
-        { id: 4, userDescription: 'place 4' },
-      ])
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'place 2' },
+        { userDescription: 'place 3' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 4' },
+      ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
-        { id: 5, userDescription: "Prisoner's cell" },
-        { id: 1, userDescription: 'place 1' },
-        { id: 2, userDescription: 'place 2' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 4, userDescription: 'place 4' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 2' },
+        { userDescription: 'place 3' },
+        { userDescription: 'place 4' },
       ])
     })
 
     it('should sort retrieved locations with zero primary locations at the begining', async () => {
-      prisonClient.getLocations.mockReturnValue([
-        { id: 2, userDescription: 'place 2' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 1, userDescription: 'place 1' },
-        { id: 4, userDescription: 'place 4' },
-      ])
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'place 2' },
+        { userDescription: 'place 3' },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 4' },
+      ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([
-        { id: 1, userDescription: 'place 1' },
-        { id: 2, userDescription: 'place 2' },
-        { id: 3, userDescription: 'place 3' },
-        { id: 4, userDescription: 'place 4' },
+        { userDescription: 'place 1' },
+        { userDescription: 'place 2' },
+        { userDescription: 'place 3' },
+        { userDescription: 'place 4' },
       ])
     })
 
     it('should sort retrieved locations with zero other locations', async () => {
-      prisonClient.getLocations.mockReturnValue([
-        { id: 6, userDescription: 'Other cell' },
-        { id: 5, userDescription: "Prisoner's cell" },
-      ])
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'Other cell' },
+        { userDescription: "Prisoner's cell" },
+      ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
-      expect(result).toEqual([
-        { id: 5, userDescription: "Prisoner's cell" },
-        { id: 6, userDescription: 'Other cell' },
-      ])
+      expect(result).toEqual([{ userDescription: "Prisoner's cell" }, { userDescription: 'Other cell' }])
     })
 
     it('should use token', async () => {
+      prisonClient.getLocations.mockResolvedValue([])
+
       await locationService.getIncidentLocations(token, 'WRI')
 
       expect(prisonClientBuilder).toBeCalledWith(token)

@@ -37,10 +37,7 @@ export default class ReportDataBuilder {
 
     const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
-    const { description: locationDescription = '' } = await this.locationService.getLocation(
-      token,
-      form.incidentDetails.locationId
-    )
+    const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.locationId)
     const involvedStaff = await this.involvedStaffService.getInvolvedStaff(id)
     const involvedStaffNameAndUsernames = involvedStaff.map(this.format(id, username))
 
@@ -51,14 +48,7 @@ export default class ReportDataBuilder {
       reporterName,
       submittedDate,
       bookingId,
-      ...reportSummary(
-        form,
-        offenderDetail,
-        prison,
-        locationDescription.toString(),
-        involvedStaffNameAndUsernames,
-        incidentDate
-      ),
+      ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
     }
   }
 }

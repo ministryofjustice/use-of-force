@@ -29,7 +29,7 @@ afterEach(() => {
 
 describe('Build details', () => {
   it('succeeds', async () => {
-    locationService.getLocation.mockResolvedValue({ description: 'Wing A' })
+    locationService.getLocation.mockResolvedValue('Wing A')
 
     involvedStaffService.getInvolvedStaff.mockResolvedValue([
       { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22 },

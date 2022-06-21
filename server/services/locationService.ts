@@ -17,12 +17,13 @@ export default class LocationService {
     return prisonClient.getPrisonById(agencyId)
   }
 
-  async getLocation(token: string, locationId: number): Promise<PrisonLocation | Record<string, unknown>> {
+  async getLocation(token: string, locationId: number): Promise<string> {
     if (!locationId) {
-      return Promise.resolve({})
+      return ''
     }
     const prisonClient = this.prisonClientBuilder(token)
-    return prisonClient.getLocation(locationId)
+    const { userDescription, locationPrefix } = (await prisonClient.getLocation(locationId)) || {}
+    return userDescription || locationPrefix || ''
   }
 
   async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {

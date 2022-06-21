@@ -59,16 +59,15 @@ export default class PrisonClient {
     })
   }
 
-  async getLocation(locationId: number): Promise<PrisonLocation | Record<string, unknown>> {
-    let location = {}
+  async getLocation(locationId: number): Promise<PrisonLocation> {
     try {
-      location = await this.restClient.get({ path: `/api/locations/${locationId}?includeInactive=true` })
+      return await this.restClient.get({ path: `/api/locations/${locationId}?includeInactive=true` })
     } catch (error) {
       if (error?.status !== 404) {
         throw error
       }
+      return undefined
     }
-    return location
   }
 
   getOffenderImage(bookingId: number): Promise<Readable> {

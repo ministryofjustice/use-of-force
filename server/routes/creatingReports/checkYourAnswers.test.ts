@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { Prison } from '../../data/prisonClientTypes'
+import { Prison, PrisonLocation } from '../../data/prisonClientTypes'
 import LocationService from '../../services/locationService'
 import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'
@@ -28,7 +28,7 @@ beforeEach(() => {
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
-  locationService.getLocation.mockResolvedValue({})
+  locationService.getLocation.mockResolvedValue('')
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)
   draftReportService.getInvolvedStaff.mockResolvedValue([])
 })
@@ -189,6 +189,18 @@ describe('GET /check-your-answers', () => {
       })
       .expect(res => {
         expect(res.text).toContain('Sheffield')
+      })
+  })
+
+  it('Should match location format', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    locationService.getLocation.mockResolvedValue('VCC Visits')
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('VCC Visits')
       })
   })
 })

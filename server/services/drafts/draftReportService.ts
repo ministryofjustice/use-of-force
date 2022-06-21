@@ -136,7 +136,7 @@ export default class DraftReportService {
         return {
           reporter: r.reporter,
           date: moment(r.date),
-          location: location?.userDescription?.toString(),
+          location,
         }
       })
     )
