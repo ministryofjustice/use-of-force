@@ -116,7 +116,7 @@ describe('prisonClient', () => {
         .reply(404)
 
       const output = await prisonClient.getLocation(123)
-      expect(output).toStrictEqual({})
+      expect(output).toStrictEqual(undefined)
     })
   })
 

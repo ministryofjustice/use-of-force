@@ -28,7 +28,7 @@ beforeEach(() => {
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
-  locationService.getLocation.mockResolvedValue({})
+  locationService.getLocation.mockResolvedValue('')
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)
   draftReportService.getInvolvedStaff.mockResolvedValue([])
 })
@@ -194,10 +194,7 @@ describe('GET /check-your-answers', () => {
 
   it('Should match location format', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
-    locationService.getLocation.mockResolvedValue({
-      description: 'VCC VISITS',
-      userDescription: 'VCC Visits',
-    } as PrisonLocation)
+    locationService.getLocation.mockResolvedValue('VCC Visits')
     return request(app)
       .get('/report/-35/check-your-answers')
       .expect(200)

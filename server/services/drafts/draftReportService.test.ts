@@ -343,7 +343,7 @@ describe('getPotentialDuplicates', () => {
       },
     ]
     draftReportClient.getDuplicateReports.mockResolvedValue(mockCurrentReports)
-    locationService.getLocation.mockResolvedValue({ userDescription: 'Room A' })
+    locationService.getLocation.mockResolvedValue('Room A')
     const results = await service.getPotentialDuplicates(1, moment('2021-10-07'), 'USER-1')
     await expect(results).toStrictEqual([
       {
