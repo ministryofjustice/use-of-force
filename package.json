@@ -145,6 +145,7 @@
     "@types/superagent": "^4.1.15",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
+    "audit-ci": "^6.3.0",
     "concurrently": "^7.2.1",
     "cypress": "^9.6.0",
     "cypress-multi-reporters": "^1.6.0",
