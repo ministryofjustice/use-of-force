@@ -15,6 +15,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "dist"],
+  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist"],
   "include": ["**/*.js", "**/*.ts"]
 }
