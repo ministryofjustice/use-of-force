@@ -1,19 +1,20 @@
-{{- if and .Values.ingress.enabled .Values.ingress.v0_47_enabled -}}
+{{- if and .Values.ingress.enabled .Values.ingress.v1_2_enabled -}}
 {{- $fullName := include "app.fullname" . -}}
+{{- $ingressName := print $fullName "-v1-2" }}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $ingressName }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
-    external-dns.alpha.kubernetes.io/set-identifier: use-of-force-{{ $fullName }}-green
-    external-dns.alpha.kubernetes.io/aws-weight: "0"
+    external-dns.alpha.kubernetes.io/set-identifier: {{ $ingressName }}-{{ .Release.Namespace }}-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
     {{ if .Values.ingress.enable_allow_list }}nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allow_list | quote }}{{ end }}
 spec:
+  ingressClassName: "default"
   tls:
   - hosts:
     - {{ .Values.ingress.host }}

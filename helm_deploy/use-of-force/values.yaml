@@ -11,5 +11,5 @@ generic-data-analytics-extractor:
   enabled: true
 
 ingress:
-  annotations:
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
+  v1_2_enabled: true
+  v0_47_enabled: true

@@ -14,8 +14,6 @@ ingress:
   host: preprod.use-of-force.service.justice.gov.uk
   cert_secret: use-of-force-cert
   path: /
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-preprod-green
 
 env:
   NOMIS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
