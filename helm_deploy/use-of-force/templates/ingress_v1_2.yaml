@@ -12,7 +12,6 @@ metadata:
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
     external-dns.alpha.kubernetes.io/set-identifier: {{ $ingressName }}-{{ .Release.Namespace }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    {{- toYaml .Values.ingress.annotations | nindent 4 }}
     {{ if .Values.ingress.enable_allow_list }}nginx.ingress.kubernetes.io/whitelist-source-range: {{ include "app.joinListWithComma" .Values.allow_list | quote }}{{ end }}
 spec:
   ingressClassName: "default"
