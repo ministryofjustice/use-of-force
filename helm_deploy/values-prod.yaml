@@ -14,8 +14,6 @@ ingress:
   host: use-of-force.service.justice.gov.uk
   cert_secret: use-of-force-cert
   path: /
-  annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: use-of-force-use-of-force-prod-green
 
 env:
   NOMIS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
