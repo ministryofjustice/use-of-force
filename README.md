@@ -1,6 +1,6 @@
 # Use of Force
-[![CircleCI](https://circleci.com/gh/ministryofjustice/use-of-force/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/use-of-force)
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fuse-of-force)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#use-of-force "Link to report")
+[![CircleCI](https://circleci.com/gh/ministryofjustice/use-of-force/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/use-of-force)
 
 A service to allow recording of Use of Force incidents.
 
