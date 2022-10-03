@@ -1,4 +1,4 @@
-FROM node:16.13-bullseye as builder
+FROM node:16.17-bullseye as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -24,7 +24,7 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:16.13-bullseye-slim
+FROM node:16.17-bullseye-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 # Cache breaking

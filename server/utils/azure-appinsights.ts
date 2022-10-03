@@ -1,4 +1,3 @@
-import { config } from 'dotenv'
 import { Contracts, setup, defaultClient, TelemetryClient, DistributedTracingModes } from 'applicationinsights'
 import { EnvelopeTelemetry } from 'applicationinsights/out/Declarations/Contracts'
 import applicationVersion from '../application-version'
@@ -9,8 +8,6 @@ export type ContextObject = {
 }
 
 export const initialiseAppInsights = (): void => {
-  // Loads .env file contents into | process.env
-  config()
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     // eslint-disable-next-line no-console
     console.log('Enabling azure application insights')
