@@ -12,4 +12,3 @@ generic-data-analytics-extractor:
 
 ingress:
   v1_2_enabled: true
-  v0_47_enabled: true
