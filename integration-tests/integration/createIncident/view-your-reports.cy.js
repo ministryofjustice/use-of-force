@@ -105,25 +105,25 @@ context('A reporter views their report list', () => {
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=4', text: '4', selected: false },
-        { href: '?page=2', text: 'Next set of pages', selected: false },
+        { href: '?page=2', text: 'Next page', selected: false },
       ])
     )
-    yourReportsPage.clickLinkWithText('Next set of pages')
+    yourReportsPage.clickLinkWithText('Next page')
     yourReportsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
-        { href: '?page=1', text: 'Previous set of pages', selected: false },
+        { href: '?page=1', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=4', text: '4', selected: false },
-        { href: '?page=3', text: 'Next set of pages', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
 
     yourReportsPage.clickLinkWithText('4')
     yourReportsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous set of pages', selected: false },
+        { href: '?page=3', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
@@ -131,15 +131,15 @@ context('A reporter views their report list', () => {
       ])
     )
 
-    yourReportsPage.clickLinkWithText('Previous set of pages')
+    yourReportsPage.clickLinkWithText('Previous page')
     yourReportsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
-        { href: '?page=2', text: 'Previous set of pages', selected: false },
+        { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
         { href: '?page=4', text: '4', selected: false },
-        { href: '?page=4', text: 'Next set of pages', selected: false },
+        { href: '?page=4', text: 'Next page', selected: false },
       ])
     )
   })
