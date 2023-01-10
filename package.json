@@ -9,7 +9,7 @@
     "copy-views": "cp -R server/views dist/server/",
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-ts": "tsc -w",
-    "watch-node": "DEBUG=gov-starter-server* DB_PORT=5433 nodemon --watch dist/ dist/server.js | bunyan -o short",
+    "watch-node": "DEBUG=gov-starter-server* DB_PORT=5433 nodemon -r dotenv/config --watch dist/ dist/server.js | bunyan -o short",
     "start:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\"",
     "start-feature": "export $(cat feature.env) && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "watch-node-feature": "export $(cat feature.env) && nodemon -r dotenv/config --watch dist/ $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
