@@ -4,24 +4,17 @@
 
 A service to allow recording of Use of Force incidents.
 
-## Getting started
-The easiest way to run the app is to use docker compose to build the local app as a docker image and download and run the three required containers.
-
-`docker-compose pull`
-
-`docker-compose up`
-
 ### Dependencies
 The app requires: 
-* `HMPPs Auth Service` for authentication
-* `prison-api` to retrieve offender and prison information
-* It's own postgres DB to store report information
+* A postgres DB to store report information
 * A REDIS instance for storing sessions
 
-### Runing the app for development**
 
-To start the main services excluding the use of force app: 
-`docker-compose up --scale=use-of-force=0`
+## Getting started
+The easiest way to run the app is to use docker compose to start local postgres and redis DBs
+
+`docker-compose pull`
+`docker-compose up`
 
 Install dependencies using `npm install`, ensuring you are using >= `Node v16`
 
@@ -29,18 +22,14 @@ And then, to build the assets and start the app with nodemon:
 `npm run start:dev`
 
 ### Accessing the application
+Use your _GEN development credentials
 
-Any of the seed users should be able to raise incidents and view their incidents and statements, e.g:
-username: `ITAG_USER`, password: `password`
-username: `CA_USER`,   password: `password123456`
+### user roles
+a reviewer is able to see all incidents on their current caseload:
+a force coordinator will additionally be able to add or delete staff and remove reports:
 
 
-There is a reviewer user who will additionally be able to see all incidents on their current caseload:
-username: `UOF_REVIEWER_USER`, password: `password123456`
-
-You can log in as a use of force coordinator in the sample data with the user who will additionally be able to add or delete staff and remove reports:
-username: `UOF_COORDINATOR_USER` password:`password123456`
-
+### urls
 Once the use of force app has started, there are multiple ways to access the app.
 
 * To create a report: 
