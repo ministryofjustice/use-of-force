@@ -1,6 +1,7 @@
 {% extends "./layout.html" %} 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from  "../macros.njk" import exitLink %}   
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% set pageTitle = 'Use of force incidents' %}
 
@@ -12,6 +13,17 @@
 {% endblock %}
 
 {% block content %}
+
+
+{% set html %}
+  <p class="govuk-notification-banner__heading">
+    Report use of force will not be available on [Wednesday 5 April 2023] from [6am to 8am] due to maintenance.
+  </p>
+{% endset %}
+
+{{ govukNotificationBanner({
+  html: html
+}) }}   
 
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
