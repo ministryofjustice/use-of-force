@@ -1,0 +1,25 @@
+{% extends "./partials/layout.html" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageTitle =  "This service is unavailable" %}
+
+{% block beforeContent %}
+    {{ govukBackLink({
+        text: "Digital Prison Services",
+        href: links.exitUrl      
+    }) }}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row govuk-body">
+        <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">This service is currently unavailable</h1>
+        <p>You will be able to use Report use of force at 8:00am on Wednesday 5 April 2023.</p>
+        <p>If you were reporting a use of force, we have not saved your work. You will have to start again later.</p>
+   
+        <p class = "govuk-!-margin-top-8">
+            <a href="{{ links.exitUrl }}" class=" govuk-link govuk-!-font-size-19 govuk-link--no-visited-state">Exit to Digital Prison Services</a>
+        </p>
+    
+    </div>
+{% endblock %}
