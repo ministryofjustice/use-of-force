@@ -8,6 +8,7 @@ import apiRoutes from './api'
 import csrf from '../middleware/csrfMiddleware'
 
 import type { Services } from '../services'
+import config from '../config'
 
 export default function Index(authenticationMiddleware: Handler, services: Services): Router {
   const router = express.Router()
@@ -19,6 +20,11 @@ export default function Index(authenticationMiddleware: Handler, services: Servi
 
   router.use(csrf())
 
+  if (config.serviceIsUnvailable) {
+    router.all('*', (req, res) => {
+      res.render('service-unavailable.njk')
+    })
+  }
   router.use(creatingReportsRoutes(services))
   router.use(maintainingReportsRoutes(services))
   router.use(viewingReportsRoutes(services))
