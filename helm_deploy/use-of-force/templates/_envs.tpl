@@ -114,9 +114,6 @@ env:
 
   - name: TOKENVERIFICATION_API_ENABLED
     value: {{ .Values.env.TOKENVERIFICATION_API_ENABLED | quote }}
-  
-  - name: SERVICE_IS_UNAVAILABLE
-    value: {{ .Values.env.SERVICE_IS_UNAVAILABLE | quote }}
 
   - name: REDIS_HOST
     valueFrom:

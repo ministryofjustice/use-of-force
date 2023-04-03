@@ -13,7 +13,6 @@ function get(name, fallback, options = {}) {
 const requiredInProduction = { requireInProduction: true }
 
 module.exports = {
-  serviceIsUnvailable: process.env.SERVICE_IS_UNAVAILABLE === 'true',
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),

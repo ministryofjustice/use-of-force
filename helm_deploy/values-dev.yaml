@@ -23,4 +23,3 @@ env:
   EMAIL_LOCATION_URL: https://dev.use-of-force.service.justice.gov.uk
   TOKENVERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
   TOKENVERIFICATION_API_ENABLED: true
-  SERVICE_IS_UNAVAILABLE: true
