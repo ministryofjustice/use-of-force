@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6
+  hmpps: ministryofjustice/hmpps@7
 
 parameters:
   alerts-slack-channel:
@@ -14,7 +14,7 @@ parameters:
 
   node-version:
     type: string
-    default: 18.12-browsers
+    default: 18.16-browsers
 
 executors:
   integration-tests:
