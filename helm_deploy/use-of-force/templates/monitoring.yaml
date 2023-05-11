@@ -16,7 +16,7 @@ spec:
       expr: time() - kube_cronjob_next_schedule_time{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} > 600
       for: 10m
       labels:
-        severity: digital-prison-service
+        severity: elp_alerts
     - alert: KubeJobCompletion
       annotations:
         message: CronJob {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.job_name {{ "}}" }} failed.
@@ -25,4 +25,4 @@ spec:
         kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics", namespace="{{ .Release.Namespace }}"} > 0
       for: 10m
       labels:
-        severity: digital-prison-service
+        severity: elp_alerts
