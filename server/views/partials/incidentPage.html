@@ -1,5 +1,6 @@
 {% extends "./layout.html" %} 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from  "../macros.njk" import exitLink %}   
 
 {% set pageTitle = 'Use of force incidents' %}
@@ -11,7 +12,24 @@
       }) }}
 {% endblock %}
 
+{% set html %}
+<p class="govuk-notification-banner__heading">
+    Maintenance work is planned for 8am on Thursday 20 July.
+    Use of force may be temporarily unavailable.
+</p>
+{% endset %}
+
+
 {% block content %}
+    {% if featureFlagOutageBannerEnabled %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                {{ govukNotificationBanner({
+                    html: html
+                }) }}
+            </div>
+        </div>
+    {% endif %}
 
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
