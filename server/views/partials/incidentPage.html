@@ -21,14 +21,15 @@
 
 
 {% block content %}
-
+    {% if featureFlagOutageBannerEnabled %}
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {{ govukNotificationBanner({
-                html: html
-            }) }}
+            <div class="govuk-grid-column-two-thirds">
+                {{ govukNotificationBanner({
+                    html: html
+                }) }}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
 
