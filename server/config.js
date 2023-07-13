@@ -117,5 +117,5 @@ module.exports = {
     key: get('TAG_MANAGER_KEY', null),
     environment: get('TAG_MANAGER_ENVIRONMENT', ''), // The additional GTM snippet string that configures a non-prod environment
   },
-  featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', false, requiredInProduction) === 'true',
+  featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', 'false', requiredInProduction) === 'true',
 }
