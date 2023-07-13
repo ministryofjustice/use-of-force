@@ -114,6 +114,9 @@ env:
 
   - name: TOKENVERIFICATION_API_ENABLED
     value: {{ .Values.env.TOKENVERIFICATION_API_ENABLED | quote }}
+    
+  - name: FEATURE_FLAG_OUTAGE_BANNER_ENABLED
+    value: {{ .Values.env.FEATURE_FLAG_OUTAGE_BANNER_ENABLED | quote }}
 
   - name: REDIS_HOST
     valueFrom:
