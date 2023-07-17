@@ -42,7 +42,7 @@ export function buildPageResponse<T>(
   pageSize: number = PAGE_SIZE
 ): PageResponse<T> {
   assert(!results[0] || results[0].totalCount, 'Result set does not define a total count')
-  const items = results.map(({ totalCount, ...rest }) => rest as any as T)
+  const items = results.map(({ totalCount, ...rest }) => rest as T)
   const totalCount = (results[0] && results[0].totalCount) || 0
   const metaData = metaDataForPage(page, totalCount, pageSize)
   return new PageResponse(metaData, items)

@@ -96,6 +96,7 @@ describe('buildPageResponse', () => {
   })
 
   it('does not have total count', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results = [{ name: 'statement' }] as any
     expect(() => buildPageResponse(results, 1, 3)).toThrowError('Result set does not define a total count')
   })

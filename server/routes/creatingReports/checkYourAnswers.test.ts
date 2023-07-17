@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { Prison, PrisonLocation } from '../../data/prisonClientTypes'
+import { Prison } from '../../data/prisonClientTypes'
 import LocationService from '../../services/locationService'
 import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'

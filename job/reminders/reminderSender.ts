@@ -1,7 +1,7 @@
 import logger from '../../log'
 
 export default class ReminderService {
-  constructor(private readonly notificationService: any) {}
+  constructor(private readonly notificationService) {}
 
   private context = ({ statementId, reportId }) => ({ statementId, reportId })
 

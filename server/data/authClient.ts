@@ -80,7 +80,7 @@ type GetParams = {
 }
 
 function getBuilder(token) {
-  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetParams): Promise<any> => {
+  return async ({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetParams) => {
     logger.info(`Get using user credentials: calling auth: ${path} ${query}`)
     try {
       const result = await superagent

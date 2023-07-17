@@ -127,6 +127,7 @@ export const appWithAllRoutes = (
     reportDetailBuilder: {} as ReportDetailBuilder,
     draftReportService: {} as DraftReportService,
     userService: {} as UserService,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     signInService: {} as any,
     ...overrides,
   }
