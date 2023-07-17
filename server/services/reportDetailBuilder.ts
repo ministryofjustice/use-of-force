@@ -11,6 +11,7 @@ export interface ReportDetail {
   reporterName: string
   submittedDate: Date
   bookingId: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [reportSummaryKeys: string]: any
 }
 

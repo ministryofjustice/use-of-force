@@ -43,7 +43,7 @@ export type LoggedInUser = {
   username: string
   token: string
   refreshToken: string
-  refreshTime: any
+  refreshTime: Date
   firstName: string
   lastName: string
   userId: string

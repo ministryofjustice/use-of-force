@@ -41,6 +41,7 @@ module.exports = {
     useOfForcePlanned().contains('Yes')
     authorisedBy().contains('Eric Bloodaxe')
 
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
     cy.get(`[data-qa="staffInvolved"]`)
       .first()
       .find('li')

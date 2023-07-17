@@ -6,7 +6,9 @@ import sanitiseError from '../utils/errorSanitiser'
 
 interface GetRequest {
   path?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headers?: any
   responseType?: string
 }

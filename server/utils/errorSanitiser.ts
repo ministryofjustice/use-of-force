@@ -1,4 +1,4 @@
-const sanitiseError = (error: any) => {
+const sanitiseError = error => {
   if (error.response) {
     return {
       status: error.response.status,
