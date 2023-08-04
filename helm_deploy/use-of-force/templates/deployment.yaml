@@ -21,6 +21,7 @@ spec:
       labels:
         {{- include "app.selectorLabels" . | nindent 8 }}
     spec:
+      serviceAccountName: use-of-force
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
