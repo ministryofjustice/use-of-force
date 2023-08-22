@@ -101,7 +101,7 @@
     "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "^1.6.6",
     "agentkeepalive": "^4.3.0",
-    "applicationinsights": "^2.6.0",
+    "applicationinsights": "^2.7.3",
     "applicationinsights-native-metrics": "^0.0.9",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
