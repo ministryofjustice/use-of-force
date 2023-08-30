@@ -5,10 +5,15 @@
 {% set pageTitle = 'Report use of force' %}
 
 {% block beforeContent %}
-    {{ govukBackLink({
+  {{ govukBreadcrumbs({
+    items: [
+    {
         text: "Digital Prison Services",
         href: links.exitUrl
-      }) }}
+    }
+    ],
+    classes: "govuk-!-display-none-print"
+  }) }}
 {% endblock %}
 
 {% macro section(name, label, url, value) %}
