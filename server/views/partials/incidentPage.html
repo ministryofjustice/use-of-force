@@ -1,15 +1,19 @@
 {% extends "./layout.html" %} 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from  "../macros.njk" import exitLink %}   
 
 {% set pageTitle = 'Use of force incidents' %}
 
 {% block beforeContent %}
-    {{ govukBackLink({
-        text: "Digital Prison Services",
-        href: links.exitUrl
-      }) }}
+    {{ govukBreadcrumbs({
+        items: [
+        {
+            text: "Digital Prison Services",
+            href: links.exitUrl
+        }
+        ],
+        classes: "govuk-!-display-none-print"
+    }) }}
 {% endblock %}
 
 {% set html %}
