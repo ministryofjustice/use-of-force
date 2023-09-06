@@ -14,7 +14,7 @@ parameters:
 
   node-version:
     type: string
-    default: ^18.17.1
+    default: 18.17.1
 
 executors:
   integration-tests:
