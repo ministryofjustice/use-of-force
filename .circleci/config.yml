@@ -14,7 +14,7 @@ parameters:
 
   node-version:
     type: string
-    default: 18.12-browsers
+    default: ^18.17.0
 
 executors:
   integration-tests:
