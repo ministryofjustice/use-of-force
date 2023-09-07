@@ -73,5 +73,6 @@ export default defineConfig({
     excludeSpecPattern: '**/!(*.cy).js',
     specPattern: 'integration-tests/integration/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'integration-tests/support/index.js',
+    experimentalRunAllSpecs: true,
   },
 })
