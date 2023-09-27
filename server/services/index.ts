@@ -21,12 +21,14 @@ import createSignInService from '../authentication/signInService'
 
 import { notificationServiceFactory } from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
+import FeComponentsService from './feComponentsService'
 
 const {
   authClientBuilder,
   draftReportClient,
   incidentClient,
   prisonClientBuilder,
+  feComponentsClientBuilder,
   prisonerSearchClientBuilder,
   statementsClient,
   systemToken,
@@ -97,6 +99,7 @@ const reviewService = new ReviewService(
 )
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
 const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
+const feComponentsService = new FeComponentsService(feComponentsClientBuilder)
 
 export const services = {
   involvedStaffService,
@@ -111,6 +114,7 @@ export const services = {
   locationService,
   reportDetailBuilder,
   draftReportService,
+  feComponentsService,
 }
 
 export type Services = typeof services
@@ -126,4 +130,5 @@ export {
   PrisonerSearchService,
   ReportDetailBuilder,
   UserService,
+  FeComponentsService,
 }

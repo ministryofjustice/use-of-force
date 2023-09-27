@@ -9,6 +9,8 @@ import { stringToHash } from './server/utils/hash'
 import db from './integration-tests/db/db'
 import config from './dist/server/config'
 
+import components from './integration-tests/mockApis/components'
+
 export default defineConfig({
   chromeWebSecurity: false,
   fixturesFolder: 'integration-tests/fixtures',
@@ -67,6 +69,10 @@ export default defineConfig({
         stubVerifyToken: active => auth.stubVerifyToken(active),
 
         stubClientCredentialsToken: auth.stubClientCredentialsToken,
+
+        stubComponents: components.stubComponents,
+
+        stubComponentsFail: components.stubComponentsFail,
       })
     },
     baseUrl: 'http://localhost:3007',

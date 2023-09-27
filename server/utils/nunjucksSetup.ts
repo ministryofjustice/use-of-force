@@ -8,6 +8,7 @@ import config from '../config'
 import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
 import { SectionStatus } from '../services/drafts/reportStatusChecker'
+import { initialiseName } from './utils'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -171,6 +172,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }
     return SectionStatus.NOT_STARTED
   })
+
+  njkEnv.addFilter('initialiseName', initialiseName)
 
   return njkEnv
 }

@@ -53,6 +53,10 @@ const tasklistPage = () =>
         evidence: 'NOT_STARTED',
       })
     },
+
+    fallbackHeaderUserName: () => cy.get('[data-qa=header-user-name]'),
+    commonComponentsHeader: () => cy.get('header').contains('Common Components Header'),
+    commonComponentsFooter: () => cy.get('footer').contains('Common Components Footer'),
   })
 
 module.exports = {

@@ -24,6 +24,9 @@ env:
   TOKENVERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
   TOKENVERIFICATION_API_ENABLED: true
   FEATURE_FLAG_OUTAGE_BANNER_ENABLED: false
+  DPS_URL: https://digital.prison.service.justice.gov.uk/
+  COMPONENT_API_URL: "https://frontend-components.hmpps.service.justice.gov.uk"
+  ENVIRONMENT_NAME: ''
 
 allow_list:
   office: "217.33.148.210/32"

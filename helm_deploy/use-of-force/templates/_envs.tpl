@@ -118,6 +118,15 @@ env:
   - name: FEATURE_FLAG_OUTAGE_BANNER_ENABLED
     value: {{ .Values.env.FEATURE_FLAG_OUTAGE_BANNER_ENABLED | quote }}
 
+  - name: DPS_URL
+    value: {{ .Values.env.DPS_URL | quote }}
+
+  - name: COMPONENT_API_URL
+    value: {{ .Values.env.COMPONENT_API_URL | quote }}
+
+  - name: ENVIRONMENT_NAME
+    value: {{ .Values.env.ENVIRONMENT_NAME | quote }}
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
