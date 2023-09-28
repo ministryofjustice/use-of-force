@@ -1,4 +1,4 @@
-import express, { Express, RequestHandler, Response } from 'express'
+import express, { Express, RequestHandler, Response, Request } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -31,6 +31,8 @@ import errorHandler from './errorHandler'
 import config from './config'
 import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
+import getFrontendComponents from './middleware/feComponentsMiddleware'
+import setUpEnvironmentName from './middleware/setUpEnvironmentName'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -54,6 +56,8 @@ export default function createApp(services: Services): Express {
   // View Engine Configuration
   app.set('view engine', 'html')
 
+  setUpEnvironmentName(app)
+
   nunjucksSetup(app)
 
   // Server Configuration
@@ -66,6 +70,25 @@ export default function createApp(services: Services): Express {
     res.locals.cspNonce = crypto.randomBytes(16).toString('base64')
     next()
   })
+
+  const scriptSrc = [
+    "'self'",
+    'code.jquery.com',
+    "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+    (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
+  ]
+  const styleSrc = ["'self'", 'code.jquery.com', (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`]
+  const imgSrc = ["'self'", 'data:', 'www.googletagmanager.com', 'www.google-analytics.com', 'https://code.jquery.com']
+  const fontSrc = ["'self'"]
+  const connectSrc = ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com']
+
+  if (config.apis.frontendComponents.url) {
+    scriptSrc.push(config.apis.frontendComponents.url)
+    styleSrc.push(config.apis.frontendComponents.url)
+    imgSrc.push(config.apis.frontendComponents.url)
+    fontSrc.push(config.apis.frontendComponents.url)
+  }
+
   app.use(
     helmet({
       crossOriginEmbedderPolicy: false,
@@ -73,16 +96,11 @@ export default function createApp(services: Services): Express {
         directives: {
           defaultSrc: ["'self'"],
           // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: [
-            "'self'",
-            (req, res: Response) => `'nonce-${res.locals.cspNonce}'`,
-            'code.jquery.com',
-            "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
-          ],
-          imgSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com', 'https://code.jquery.com'],
-          connectSrc: ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com'],
-          styleSrc: ["'self'", 'code.jquery.com'],
-          fontSrc: ["'self'"],
+          scriptSrc,
+          imgSrc,
+          connectSrc,
+          styleSrc,
+          fontSrc,
         },
       },
     })
@@ -213,7 +231,7 @@ export default function createApp(services: Services): Express {
 
   // JWT token refresh
   app.use(async (req, res, next) => {
-    if (req.user && req.originalUrl !== '/logout') {
+    if (req.user && req.originalUrl !== '/sign-out') {
       const timeToRefresh = new Date() > req.user.refreshTime
       if (timeToRefresh) {
         try {
@@ -229,7 +247,7 @@ export default function createApp(services: Services): Express {
           req.user.refreshTime = newToken.refreshTime
         } catch (error) {
           logger.error(`Token refresh error: ${req.user.username}`, error.stack)
-          return res.redirect('/logout')
+          return res.redirect('/sign-out')
         }
       }
     }
@@ -265,7 +283,7 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(
-    '/logout',
+    '/sign-out',
     asyncMiddleware((req, res) => {
       if (req.user) {
         req.logout(() => req.session.destroy())
@@ -275,6 +293,8 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(populateCurrentUser(services.userService))
+
+  app.get('*', getFrontendComponents(services.feComponentsService))
 
   app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)

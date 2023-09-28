@@ -104,18 +104,30 @@ module.exports = {
       },
       enabled: process.env.TOKENVERIFICATION_API_ENABLED === 'true',
     },
+    frontendComponents: {
+      url: get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction),
+      timeout: {
+        response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000),
+        deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
+    digitalPrisonServiceUrl: get('DPS_URL', 'http://localhost:3000', requiredInProduction),
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)}`,
   links: {
     emailUrl: get('EMAIL_LOCATION_URL', 'http://localhost:3000', requiredInProduction),
     exitUrl: get('EXIT_LOCATION_URL', '/', requiredInProduction),
   },
-  supportTelephone: '0800 917 5148',
-  supportExtension: '#6598',
   https: production,
   googleTagManager: {
     key: get('TAG_MANAGER_KEY', null),
     environment: get('TAG_MANAGER_ENVIRONMENT', ''), // The additional GTM snippet string that configures a non-prod environment
   },
   featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', 'false', requiredInProduction) === 'true',
+  environmentName: get('ENVIRONMENT_NAME', ''),
 }

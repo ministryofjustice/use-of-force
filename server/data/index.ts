@@ -8,6 +8,7 @@ import DraftReportClient from './draftReportClient'
 import StatementsClient from './statementsClient'
 
 import PrisonClient from './prisonClient'
+import FeComponentsClient from './feComponentsClient'
 import config from '../config'
 
 import { AuthClient, systemTokenBuilder } from './authClient'
@@ -41,6 +42,11 @@ export const dataAccess = {
   systemToken: systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false }))),
   authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
   prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
+  feComponentsClientBuilder: restClientBuilder<FeComponentsClient>(
+    'feComponentApi',
+    config.apis.frontendComponents,
+    FeComponentsClient
+  ),
   prisonerSearchClientBuilder: restClientBuilder('prisonerSearchApi', config.apis.prisonerSearch, PrisonerSearchClient),
 }
 
@@ -51,6 +57,7 @@ export {
   RestClientBuilder,
   IncidentClient,
   PrisonClient,
+  FeComponentsClient,
   PrisonerSearchClient,
   AuthClient,
   DraftReportClient,

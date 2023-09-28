@@ -5,7 +5,6 @@ import asyncMiddleware from '../../middleware/asyncMiddleware'
 import type { Services } from '../../services'
 import RemovalRequest from './requestRemoval'
 import csrf from '../../middleware/csrfMiddleware'
-import HelpReportingUseOfForce from './helpReportingUseOfForce'
 
 export default function UnauthenticatedRoutes(services: Services): Router {
   const { reportService, statementService, systemToken } = services
@@ -19,8 +18,6 @@ export default function UnauthenticatedRoutes(services: Services): Router {
   router.get('/removal-requested', removalRequest.viewConfirmation)
   router.get('/already-removed', asyncMiddleware(removalRequest.viewAlreadyRemoved))
   router.get('/removal-already-requested', asyncMiddleware(removalRequest.viewRemovalAlreadyRequested))
-
-  router.get('/get-help', asyncMiddleware(HelpReportingUseOfForce()))
 
   return router
 }

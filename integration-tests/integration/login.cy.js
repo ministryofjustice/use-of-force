@@ -31,7 +31,7 @@ context('Login functionality', () => {
     cy.login()
     const yourStatements = YourStatements.verifyOnPage()
     yourStatements.loggedInName().contains('J. Stuart')
-    cy.request('/logout/').its('body').should('contain', 'Sign in')
+    cy.request('/sign-out').its('body').should('contain', 'Sign in')
   })
 
   it('New user login should log current user out', () => {

@@ -8,6 +8,7 @@ import config from '../config'
 import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
 import { SectionStatus } from '../services/drafts/reportStatusChecker'
+import { initialiseName } from './utils'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -38,6 +39,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   njkEnv.addGlobal('authUrl', config.apis.oauth2.url)
   njkEnv.addGlobal('apiClientId', config.apis.oauth2.apiClientId)
   njkEnv.addGlobal('featureFlagOutageBannerEnabled', config.featureFlagOutageBannerEnabled)
+  njkEnv.addGlobal('digitalPrisonServiceUrl', config.apis.digitalPrisonServiceUrl)
 
   // eslint-disable-next-line default-param-last
   njkEnv.addFilter('findError', (array: Error[] = [], formFieldId: string) => {
@@ -171,6 +173,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }
     return SectionStatus.NOT_STARTED
   })
+
+  njkEnv.addFilter('initialiseName', initialiseName)
 
   return njkEnv
 }
