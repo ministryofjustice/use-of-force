@@ -2,7 +2,6 @@ import { Response } from 'express'
 import feComponentsMiddleware from './feComponentsMiddleware'
 import FeComponentsService from '../services/feComponentsService'
 import { Services } from '../services'
-import config from '../config'
 import logger from '../../log'
 
 jest.mock('../services/feComponentsService')
