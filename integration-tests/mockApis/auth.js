@@ -152,7 +152,7 @@ const stubUser = username =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/auth/api/user/${encodeURI(username)}`,
+      urlPattern: `/users/${encodeURI(username)}`,
     },
     response: {
       status: 200,
@@ -175,7 +175,7 @@ const stubFindUser = (firstName, lastName, results) =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/auth/api/prisonuser\\?firstName=${encodeURI(firstName)}&lastName=${encodeURI(lastName)}`,
+      urlPattern: `/prisonusers\\?firstName=${encodeURI(firstName)}&lastName=${encodeURI(lastName)}`,
     },
     response: {
       status: 200,
@@ -198,7 +198,7 @@ const stubEmail = username =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/auth/api/user/${encodeURI(username)}/email`,
+      urlPattern: `/users/${encodeURI(username)}/email`,
     },
     response: {
       status: 200,
@@ -216,7 +216,7 @@ const stubUnverifiedEmail = username =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/auth/api/user/${encodeURI(username)}/email`,
+      urlPattern: `/users/${encodeURI(username)}/email`,
     },
     response: {
       status: 204,

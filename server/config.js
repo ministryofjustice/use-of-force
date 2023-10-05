@@ -67,6 +67,13 @@ module.exports = {
       systemClientId: get('SYSTEM_CLIENT_ID', get('API_CLIENT_ID', 'use-of-force-system'), requiredInProduction),
       systemClientSecret: get('SYSTEM_CLIENT_SECRET', get('API_CLIENT_SECRET', 'clientsecret'), requiredInProduction),
     },
+    hmppsManageUsersApi: {
+      url: get('HMPPS_MANAGE_USERS_API_URL', 'http://localhost:8081', requiredInProduction),
+      timeout: {
+        response: get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000),
+      },
+    },
     prison: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {

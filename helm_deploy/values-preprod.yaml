@@ -27,6 +27,7 @@ env:
   DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
   COMPONENT_API_URL: "https://frontend-components-preprod.hmpps.service.justice.gov.uk"
   ENVIRONMENT_NAME: 'PRE-PRODUCTION'
+  HMPPS_MANAGE_USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
 
 allow_list:
   office: "217.33.148.210/32"

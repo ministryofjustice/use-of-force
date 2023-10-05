@@ -94,6 +94,9 @@ env:
   - name: NOMIS_AUTH_URL
     value: {{ .Values.env.NOMIS_AUTH_URL | quote }}
 
+  - name: HMPPS_MANAGE_USERS_API_URL
+    value: {{ .Values.env.HMPPS_MANAGE_USERS_API_URL | quote }}
+
   - name: PRISON_API_URL
     value: {{ .Values.env.PRISON_API_URL | quote }}
 
