@@ -13,7 +13,8 @@ const timeoutSpec = {
   response: config.apis.oauth2.timeout.response,
   deadline: config.apis.oauth2.timeout.deadline,
 }
-const apiUrl = config.apis.oauth2.url
+const hmppsAuthUrl = config.apis.oauth2.url
+const hmppsManageUsersApiUrl = config.apis.hmppsManageUsersApi.url
 
 const agentOptions = {
   maxSockets: config.apis.oauth2.agent.maxSockets,
@@ -21,7 +22,7 @@ const agentOptions = {
   freeSocketTimeout: config.apis.oauth2.agent.freeSocketTimeout,
 }
 
-const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
+const keepaliveAgent = hmppsAuthUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 async function getSystemClientToken(tokenStore: TokenStore, username?: string) {
   const key = username || '%ANONYMOUS%'
@@ -56,7 +57,7 @@ const getOauthToken = (oauthClientToken, requestSpec) => {
   const oauthRequest = querystring.stringify(requestSpec)
 
   return superagent
-    .post(`${apiUrl}/oauth/token`)
+    .post(`${hmppsAuthUrl}/oauth/token`)
     .set('Authorization', oauthClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(oauthRequest)
@@ -126,7 +127,7 @@ export class AuthClient {
   }
 
   async getEmail(username: string): Promise<EmailResult> {
-    const path = `${apiUrl}/api/user/${username}/email`
+    const path = `${hmppsManageUsersApiUrl}/users/${username}/email`
     const { status, body } = await this.get({ path, raw: true })
     return {
       email: body.email,
@@ -137,7 +138,7 @@ export class AuthClient {
   }
 
   async getUser(username: string): Promise<UserResult> {
-    const path = `${apiUrl}/api/user/${username}`
+    const path = `${hmppsManageUsersApiUrl}/users/${username}`
     const body = await this.get({ path })
     return body
   }
@@ -147,7 +148,7 @@ export class AuthClient {
   }
 
   async findUsers(firstName: string, lastName: string): Promise<FoundUserResult[]> {
-    const path = `${apiUrl}/api/prisonuser`
+    const path = `${hmppsManageUsersApiUrl}/prisonusers`
     const body = await this.get({
       path,
       query: querystring.stringify({ firstName: firstName?.trim(), lastName: lastName?.trim() }),

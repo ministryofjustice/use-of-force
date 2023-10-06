@@ -14,14 +14,16 @@ const redisClient = {
 
 describe('authClient', () => {
   let systemToken
-  let fakeApi
+  let fakeHmppsAuthApi
+  let fakeHmppsManageUsersApi
   let client: AuthClient
 
   const token = 'token-1'
 
   beforeEach(() => {
     systemToken = systemTokenBuilder(new TokenStore(redisClient as RedisClient))
-    fakeApi = nock(config.apis.oauth2.url)
+    fakeHmppsAuthApi = nock(config.apis.oauth2.url)
+    fakeHmppsManageUsersApi = nock(config.apis.hmppsManageUsersApi.url)
     client = new AuthClient(token)
   })
 
@@ -34,8 +36,8 @@ describe('authClient', () => {
     const userResponse = { username: 'BOB', email: 'an@email.com' }
 
     it('email exists', async () => {
-      fakeApi
-        .get(`/api/user/${userName}/email`)
+      fakeHmppsManageUsersApi
+        .get(`/users/${userName}/email`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, userResponse)
 
@@ -44,27 +46,27 @@ describe('authClient', () => {
     })
 
     it('no verified email exists', async () => {
-      fakeApi.get(`/api/user/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(204)
+      fakeHmppsManageUsersApi.get(`/users/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(204)
 
       const output = await client.getEmail(userName)
       expect(output).toEqual({ username: 'Bob', exists: true, verified: false })
     })
 
     it('user doesnt exist', async () => {
-      fakeApi.get(`/api/user/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(404)
+      fakeHmppsManageUsersApi.get(`/users/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(404)
 
       const output = await client.getEmail(userName)
       expect(output).toEqual({ username: 'Bob', exists: false, verified: false })
     })
 
     it('username offends the auth service', async () => {
-      fakeApi.get(`/api/user/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(400)
+      fakeHmppsManageUsersApi.get(`/users/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(400)
 
       expect(client.getEmail(userName)).rejects.toThrow('Bad Request')
     })
 
     it('not authorised error', async () => {
-      fakeApi.get(`/api/user/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(401)
+      fakeHmppsManageUsersApi.get(`/users/${userName}/email`).matchHeader('authorization', `Bearer ${token}`).reply(401)
 
       expect(client.getEmail(userName)).rejects.toThrow('Unauthorized')
     })
@@ -75,7 +77,10 @@ describe('authClient', () => {
     const userResponse = { username: 'Bob', email: 'an@email.com' }
 
     it('user exists', async () => {
-      fakeApi.get(`/api/user/${userName}`).matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
+      fakeHmppsManageUsersApi
+        .get(`/users/${userName}`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, userResponse)
 
       const output = await client.getUser(userName)
       expect(output).toEqual(userResponse)
@@ -87,8 +92,14 @@ describe('authClient', () => {
     const user2 = { username: 'Jo', email: 'bn@email.com' }
 
     it('getUsers', async () => {
-      fakeApi.get(`/api/user/${user1.username}`).matchHeader('authorization', `Bearer ${token}`).reply(200, user1)
-      fakeApi.get(`/api/user/${user2.username}`).matchHeader('authorization', `Bearer ${token}`).reply(200, user2)
+      fakeHmppsManageUsersApi
+        .get(`/users/${user1.username}`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, user1)
+      fakeHmppsManageUsersApi
+        .get(`/users/${user2.username}`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, user2)
 
       const output = await client.getUsers([user1.username, user2.username])
       expect(output).toEqual(expect.arrayContaining([user1, user2]))
@@ -99,8 +110,8 @@ describe('authClient', () => {
     const userResponse = { username: 'Bob', email: 'an@email.com' }
 
     it('user exists', async () => {
-      fakeApi
-        .get(`/api/prisonuser?firstName=bob&lastName=smith`)
+      fakeHmppsManageUsersApi
+        .get(`/prisonusers?firstName=bob&lastName=smith`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, userResponse)
 
@@ -109,8 +120,8 @@ describe('authClient', () => {
     })
 
     it('it trims names', async () => {
-      fakeApi
-        .get(`/api/prisonuser?firstName=bob&lastName=smith`)
+      fakeHmppsManageUsersApi
+        .get(`/prisonusers?firstName=bob&lastName=smith`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, userResponse)
 
@@ -123,7 +134,7 @@ describe('authClient', () => {
     const tokenObject = { access_token: 'token-1' }
     it('with username', async () => {
       const userName = 'Bob'
-      fakeApi
+      fakeHmppsAuthApi
         .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
         .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -134,7 +145,7 @@ describe('authClient', () => {
     })
 
     it('without username', async () => {
-      fakeApi
+      fakeHmppsAuthApi
         .post(`/oauth/token`, 'grant_type=client_credentials')
         .basicAuth({ user: config.apis.oauth2.systemClientId, pass: config.apis.oauth2.systemClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
