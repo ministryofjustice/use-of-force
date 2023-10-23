@@ -18,7 +18,7 @@ ingress:
 env:
   NOMIS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
   PRISON_API_URL: "https://api.prison.service.justice.gov.uk"
-  PRISONER_SEARCH_API_URL: https://prisoner-offender-search.prison.service.justice.gov.uk
+  PRISONER_SEARCH_API_URL: https://prisoner-search.prison.service.justice.gov.uk
   EXIT_LOCATION_URL: https://digital.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://use-of-force.service.justice.gov.uk
   TOKENVERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
