@@ -11,4 +11,4 @@ dependencies:
   - name: generic-data-analytics-extractor
     version: develop
     repository: https://ministryofjustice.github.io/hmpps-helm-charts
-    args: "extract_table_names.py && extract_pg_jsonl_snapshot.py && upload_data_file_to_data_platform.sh"
+    args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
