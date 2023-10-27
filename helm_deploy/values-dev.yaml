@@ -28,3 +28,8 @@ env:
   COMPONENT_API_URL: "https://frontend-components-dev.hmpps.service.justice.gov.uk"
   ENVIRONMENT_NAME: 'DEV'
   HMPPS_MANAGE_USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
+
+generic-data-analytics-extractor:
+  image:
+    tag: 1.2.0
+  args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
