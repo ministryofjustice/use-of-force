@@ -7,8 +7,9 @@ generic-prometheus-alerts:
 
 generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output
-  analyticalPlatformSecretName: uof-analytical-platform-reporting-s3-bucket
+  destinationS3SecretName: uof-analytical-platform-reporting-s3-bucket
   enabled: true
+  serviceAccountName: YOUR-IRSA-ENABLED-SERVICE-ACCOUNT
 
 ingress:
   v1_2_enabled: true
