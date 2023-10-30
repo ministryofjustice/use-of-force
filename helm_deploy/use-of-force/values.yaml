@@ -9,7 +9,7 @@ generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output
   destinationS3SecretName: uof-analytical-platform-reporting-s3-bucket
   enabled: true
-  serviceAccountName: use-of-force-dev-to-ap-s3
+  serviceAccountName: uof-to-ap-s3-irsa
 
 ingress:
   v1_2_enabled: true
