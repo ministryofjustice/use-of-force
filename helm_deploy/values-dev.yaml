@@ -31,6 +31,7 @@ env:
 
 generic-data-analytics-extractor:
   version: 1.0.1
+  destinationS3SecretName: uof-analytical-platform-reporting-s3-bucket
   image:
     tag: v1.2.1
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
