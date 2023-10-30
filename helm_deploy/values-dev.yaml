@@ -31,6 +31,6 @@ env:
 
 generic-data-analytics-extractor:
   image:
-    tag: 1.2.0
+    tag: v1.2.0
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
   
