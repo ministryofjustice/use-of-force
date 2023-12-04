@@ -91,4 +91,4 @@ allow_list:
   azure-landing-zone-public-egress-2: "20.26.11.108/32"
 
 generic-data-analytics-extractor:
-  serviceAccountName: use-of-force-prod-to-ap-s3
+  serviceAccountName: use-of-force-preprod-to-ap-s3
