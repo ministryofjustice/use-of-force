@@ -14,13 +14,13 @@ parameters:
 
   node-version:
     type: string
-    default: 18.17.1-browsers
+    default: 21.5.0-browsers
 
 executors:
   integration-tests:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: circleci/postgres:10.13-ram
+      - image: circleci/postgres:14.7-ram
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force

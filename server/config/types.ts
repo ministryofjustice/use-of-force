@@ -43,6 +43,9 @@ export const RelocationLocation = toEnum({
   SEGREGATION_UNIT: { value: 'SEGREGATION_UNIT', label: 'Segregation unit' },
   SPECIAL_ACCOMMODATION: { value: 'SPECIAL_ACCOMMODATION', label: 'Special accommodation' },
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
+  RECEPTION: { value: 'RECEPTION', label: 'Reception' },
+  OTHER_WING: { value: 'OTHER_WING', label: 'Other wing' },
+  FACILITATE_RELEASE: { value: 'FACILITATE_RELEASE', label: 'To facilitate release' },
 })
 
 export const ReportStatus = toEnum({

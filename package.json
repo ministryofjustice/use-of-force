@@ -29,8 +29,8 @@
     "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "engines": {
-    "node": "^18",
-    "npm": "<10"
+    "node": "^21",
+    "npm": "^10"
   },
   "jest": {
     "transform": {
