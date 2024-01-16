@@ -20,7 +20,7 @@ executors:
   integration-tests:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: circleci/postgres:14.7-ram
+      - image: cimg/postgres:14.7
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
