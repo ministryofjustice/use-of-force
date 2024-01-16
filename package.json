@@ -29,7 +29,7 @@
     "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "engines": {
-    "node": "^21",
+    "node": "^20",
     "npm": "^10"
   },
   "jest": {
