@@ -16,7 +16,7 @@ The easiest way to run the app is to use docker compose to start local postgres 
 `docker-compose pull`
 `docker-compose up`
 
-Install dependencies using `npm install`, ensuring you are using >= `Node v16`
+Install dependencies using `npm install`, ensuring you are using >= `Node v20`
 
 And then, to build the assets and start the app with nodemon:
 `npm run start:dev`
