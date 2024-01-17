@@ -82,6 +82,8 @@ export const UofReasons = toEnum({
   PHYSICAL_THREAT: { value: 'PHYSICAL_THREAT', label: 'Physical threat' },
   VERBAL_THREAT: { value: 'VERBAL_THREAT', label: 'Verbal threat' },
   REFUSAL_TO_LOCATE_TO_CELL: { value: 'REFUSAL_TO_LOCATE_TO_CELL', label: 'Refusal to locate to cell' },
+  REFUSAL_TO_TRANSFER: { value: 'REFUSAL_TO_TRANSFER', label: 'Refusal to transfer' },
+  REFUSAL_TO_RELOCATE_CELLS: { value: 'REFUSAL_TO_RELOCATE_CELLS', label: 'Refusal to relocate cells' },
   TO_PREVENT_ESCAPE_OR_ABSCONDING: {
     value: 'TO_PREVENT_ESCAPE_OR_ABSCONDING',
     label: 'To prevent escape or absconding',

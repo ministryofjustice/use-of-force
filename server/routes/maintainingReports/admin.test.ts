@@ -128,7 +128,7 @@ describe('/:reportId/edit-report', () => {
         })
     })
 
-    it('should redirect to select primary reason page when more than one reason selected', () => {
+    it('should not accept invalid json as input', () => {
       userSupplier.mockReturnValue(adminUser)
 
       return request(app)
