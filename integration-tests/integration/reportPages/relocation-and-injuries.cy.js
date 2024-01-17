@@ -134,6 +134,40 @@ context('Submitting use of force details page', () => {
     )
   })
 
+  it('Compliancy of "No" and "KNEELING" is stored correctly', () => {
+    fillFormAndSave()
+    relocationAndInjuries.prisonerCompliant().check('false')
+    relocationAndInjuries.relocationType().check('KNEELING')
+    relocationAndInjuries.userSpecifiedRelocationType().should('not.be.visible')
+    relocationAndInjuries.clickSaveAndContinue()
+
+    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'relocationAndInjuries' }).then(
+      ({ section }) => {
+        expect(section).to.deep.equal({
+          prisonerRelocation: 'SEGREGATION_UNIT',
+          relocationCompliancy: false,
+          relocationType: 'KNEELING',
+          healthcareInvolved: true,
+          f213CompletedBy: 'Dr Taylor',
+          prisonerInjuries: true,
+          healthcarePractionerName: 'Dr Smith',
+          prisonerHospitalisation: true,
+          staffMedicalAttention: true,
+          staffNeedingMedicalAttention: [
+            {
+              name: 'Eddie Thomas',
+              hospitalisation: true,
+            },
+            {
+              name: 'Jayne Eyre',
+              hospitalisation: true,
+            },
+          ],
+        })
+      }
+    )
+  })
+
   it('Displays validation messages', () => {
     fillFormAndSave()
     relocationAndInjuries.prisonerCompliant().check('false')
