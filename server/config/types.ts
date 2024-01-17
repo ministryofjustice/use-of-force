@@ -28,8 +28,8 @@ export const ControlAndRestraintPosition = toEnum({
 })
 
 export const PainInducingTechniquesUsed = toEnum({
-  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
-  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
+  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Wrist flexion' },
+  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Wrist rotation' },
   MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
   SHOULDER_CONTROL: { value: 'SHOULDER_CONTROL', label: 'Shoulder control' },
   THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
