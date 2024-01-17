@@ -18,6 +18,8 @@ beforeEach(() => {
     pavaUsed: 'true',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
+    escortingHold: 'true',
+    escortingHoldOfficersInvolved: '1',
     restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
@@ -44,6 +46,8 @@ describe('complete schema', () => {
         pavaUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
+        escortingHoldOfficersInvolved: 1,
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
@@ -78,6 +82,10 @@ describe('complete schema', () => {
           text: 'Select yes if a guiding hold was used',
         },
         {
+          href: '#escortingHold',
+          text: 'Select yes if an escorting hold was used',
+        },
+        {
           href: '#restraint',
           text: 'Select yes if control and restraint was used',
         },
@@ -91,7 +99,7 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(8)
+      expect(errors.length).toEqual(9)
 
       expect(formResponse).toEqual({})
     })
@@ -238,6 +246,52 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
       expect(formResponse.guidingHold).toEqual(true)
       expect(formResponse.guidingHoldOfficersInvolved).toEqual(2)
+    })
+
+    it("Not selecting an option for 'escorting hold' returns validation error message plus 'how many officers involved' is undefined", () => {
+      const input = {
+        ...validInput,
+        escortingHold: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#escortingHold',
+          text: 'Select yes if an escorting hold was used',
+        },
+      ])
+      expect(formResponse.escortingHold).toEqual(undefined)
+      expect(formResponse.escortingHoldOfficersInvolved).toBe(undefined)
+    })
+
+    it("Selecting Yes to 'escorting hold' but nothing for 'how many officers were involved' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        escortingHoldOfficersInvolved: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#escortingHoldOfficersInvolved',
+          text: 'Select how many officers were involved in the escorting hold',
+        },
+      ])
+      expect(formResponse.escortingHold).toEqual(true)
+      expect(formResponse.escortingHoldOfficersInvolved).toBe(undefined)
+    })
+
+    it("Selecting 1 for 'how many officers were involved' return no errors", () => {
+      const input = {
+        ...validInput,
+        escortingHoldOfficersInvolved: '1',
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+      expect(formResponse.escortingHold).toEqual(true)
+      expect(formResponse.escortingHoldOfficersInvolved).toEqual(1)
     })
 
     it("Not selecting an option for 'restraint'returns a validation error message plus 'restraint positions' is undefined", () => {
@@ -393,6 +447,8 @@ describe('partial schema', () => {
         pavaUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
+        escortingHoldOfficersInvolved: 1,
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
@@ -415,6 +471,7 @@ describe('partial schema', () => {
       batonDrawn: 'true',
       pavaDrawn: 'true',
       guidingHold: 'true',
+      escortingHold: 'true',
       restraint: 'true',
       restraintPositions: [],
     })
@@ -423,6 +480,7 @@ describe('partial schema', () => {
     expect(formResponse).toEqual({
       batonDrawn: true,
       guidingHold: true,
+      escortingHold: true,
       pavaDrawn: true,
       restraint: true,
     })

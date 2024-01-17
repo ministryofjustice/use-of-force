@@ -110,6 +110,7 @@ describe('Build details', () => {
         batonDrawn: undefined,
         controlAndRestraintUsed: undefined,
         guidingHoldUsed: undefined,
+        escortingHoldUsed: undefined,
         handcuffsApplied: undefined,
         painInducingTechniques: undefined,
         pavaDrawn: undefined,

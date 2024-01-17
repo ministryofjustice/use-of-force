@@ -212,6 +212,16 @@
         print: print
       })
     }}
+    {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was an escorting hold used?',
+          'data-qa': 'escortingHold',
+          dataValue: data.useOfForceDetails.escortingHoldUsed | capitalize,
+          print: print
+        })
+      }}
+    {% endif %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was control and restraint used?',
