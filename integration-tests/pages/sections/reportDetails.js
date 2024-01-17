@@ -65,7 +65,7 @@ module.exports = {
     cy.get('[data-qa="restraintUsed"]').contains('Yes - standing, on back (supine), on front (prone), kneeling')
     handcuffsApplied().contains('Yes')
     painInducingTechniques().contains('Yes')
-    cy.get('[data-qa="painInducingTechniques"]').contains('Yes - final lock flexion, thumb lock')
+    cy.get('[data-qa="painInducingTechniques"]').contains('Yes - wrist flexion, thumb lock')
 
     cy.get('[data-qa="prisonerRelocation"]').contains('Segregation unit')
     prisonerCompliant().contains('Yes')

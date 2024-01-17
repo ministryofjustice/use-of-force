@@ -28,8 +28,8 @@ export const ControlAndRestraintPosition = toEnum({
 })
 
 export const PainInducingTechniquesUsed = toEnum({
-  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
-  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
+  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Wrist flexion' },
+  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Wrist rotation' },
   MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
   SHOULDER_CONTROL: { value: 'SHOULDER_CONTROL', label: 'Shoulder control' },
   THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
@@ -43,6 +43,9 @@ export const RelocationLocation = toEnum({
   SEGREGATION_UNIT: { value: 'SEGREGATION_UNIT', label: 'Segregation unit' },
   SPECIAL_ACCOMMODATION: { value: 'SPECIAL_ACCOMMODATION', label: 'Special accommodation' },
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
+  RECEPTION: { value: 'RECEPTION', label: 'Reception' },
+  OTHER_WING: { value: 'OTHER_WING', label: 'Other wing' },
+  FACILITATE_RELEASE: { value: 'FACILITATE_RELEASE', label: 'To facilitate release' },
 })
 
 export const ReportStatus = toEnum({
@@ -62,6 +65,8 @@ export const RelocationType = toEnum({
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
   NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  SEARCH_UNDER_RESTRAINT: { value: 'SEARCH_UNDER_RESTRAINT', label: 'Full search under restraint' },
+  KNEELING: { value: 'KNEELING', label: 'Kneeling' },
   OTHER: { value: 'OTHER', label: 'Other' },
 })
 
