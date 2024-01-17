@@ -65,6 +65,8 @@ export const RelocationType = toEnum({
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
   NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  SEARCH_UNDER_RESTRAINT: { value: 'SEARCH_UNDER_RESTRAINT', label: 'Full search under restraint' },
+  KNEELING: { value: 'KNEELING', label: 'Kneeling' },
   OTHER: { value: 'OTHER', label: 'Other' },
 })
 
