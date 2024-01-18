@@ -28,6 +28,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraint().check('true')
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
@@ -48,6 +49,7 @@ context('Enter use of force details page', () => {
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
         pavaUsed: true,
@@ -100,6 +102,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
+    useOfForceDetailsPage.escortingHold().should('have.value', 'true')
     useOfForceDetailsPage.restraint().should('have.value', 'true')
     useOfForceDetailsPage.restraintPositions.standing().should('be.checked')
     useOfForceDetailsPage.restraintPositions.faceDown().should('not.be.checked')
@@ -124,6 +127,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraint().check('false')
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')
