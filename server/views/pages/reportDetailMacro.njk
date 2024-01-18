@@ -217,7 +217,7 @@
         reportDetailsMacros.tableRow({
           label: 'Was an escorting hold used?',
           'data-qa': 'escortingHold',
-          dataValue: data.useOfForceDetails.escortingHoldUsed | capitalize,
+          dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo,
           print: print
         })
       }}

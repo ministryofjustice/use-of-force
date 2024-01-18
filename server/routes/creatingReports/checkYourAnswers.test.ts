@@ -57,6 +57,7 @@ describe('GET /check-your-answers', () => {
           restraint: false,
           batonDrawn: false,
           guidingHold: false,
+          escortingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,
           personalProtectionTechniques: false,

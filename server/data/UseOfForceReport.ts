@@ -13,8 +13,8 @@ export type UseOfForceDetails = {
   pavaDrawn: boolean
   pavaUsed: boolean
   guidingHold: boolean
-  escortingHold?: boolean
   guidingHoldOfficersInvolved: number
+  escortingHold?: boolean
   restraint: boolean
   restraintPositions: string[]
   handcuffsApplied: boolean
