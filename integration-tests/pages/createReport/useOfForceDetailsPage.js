@@ -3,19 +3,20 @@ import RelocationAndInjuriesPage from './relocationAndInjuriesPage'
 
 const useOfForceDetailsPage = () =>
   page('Use of force details', {
-    postiveCommunication: () => cy.get('[name="positiveCommunication"]'),
+    positiveCommunication: () => cy.get('[name="positiveCommunication"]'),
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
     pavaDrawn: () => cy.get('[name="pavaDrawn"]'),
     pavaUsed: () => cy.get('[name="pavaUsed"]'),
     guidingHold: () => cy.get('[name="guidingHold"]'),
-
     guidingHoldOfficersInvolved: {
       check: value => cy.get('[name="guidingHoldOfficersInvolved"]').check(value),
       one: () => cy.get('[name="guidingHoldOfficersInvolved"][value="1"]'),
       two: () => cy.get('[name="guidingHoldOfficersInvolved"][value="2"]'),
     },
+
+    escortingHold: () => cy.get('[name="escortingHold"]'),
 
     restraintPositions: {
       check: value => cy.get('#control-and-restraint [type="checkbox"]').check(value),
@@ -43,7 +44,7 @@ const useOfForceDetailsPage = () =>
     },
 
     fillForm() {
-      this.postiveCommunication().check('true')
+      this.positiveCommunication().check('true')
       this.personalProtectionTechniques().check('true')
       this.batonDrawn().check('true')
       this.batonUsed().check('true')
@@ -51,6 +52,7 @@ const useOfForceDetailsPage = () =>
       this.pavaUsed().check('true')
       this.guidingHold().check('true')
       this.guidingHoldOfficersInvolved.check('2')
+      this.escortingHold().check('true')
       this.restraint().check('true')
       this.restraintPositions.check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       this.handcuffsApplied().check('true')
