@@ -29,14 +29,14 @@ describe('reportSummary', () => {
       form.useOfForceDetails.painInducingTechniques = true
       form.useOfForceDetails.painInducingTechniquesUsed = ['FINAL_LOCK_FLEXION']
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
-      expect(result.useOfForceDetails.painInducingTechniques).toEqual('Yes - Final lock flexion')
+      expect(result.useOfForceDetails.painInducingTechniques).toEqual('Yes - Wrist flexion')
     })
 
     it('should return 2 techniques used', () => {
       form.useOfForceDetails.painInducingTechniques = true
       form.useOfForceDetails.painInducingTechniquesUsed = ['FINAL_LOCK_FLEXION', 'THUMB_LOCK']
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
-      expect(result.useOfForceDetails.painInducingTechniques).toEqual('Yes - Final lock flexion, Thumb lock')
+      expect(result.useOfForceDetails.painInducingTechniques).toEqual('Yes - Wrist flexion, Thumb lock')
     })
 
     it('should return "No"', () => {

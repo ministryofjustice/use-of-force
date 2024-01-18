@@ -28,8 +28,8 @@ export const ControlAndRestraintPosition = toEnum({
 })
 
 export const PainInducingTechniquesUsed = toEnum({
-  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
-  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
+  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Wrist flexion' },
+  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Wrist rotation' },
   MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
   SHOULDER_CONTROL: { value: 'SHOULDER_CONTROL', label: 'Shoulder control' },
   THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
@@ -65,6 +65,8 @@ export const RelocationType = toEnum({
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
   NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  SEARCH_UNDER_RESTRAINT: { value: 'SEARCH_UNDER_RESTRAINT', label: 'Full search under restraint' },
+  KNEELING: { value: 'KNEELING', label: 'Kneeling' },
   OTHER: { value: 'OTHER', label: 'Other' },
 })
 
@@ -80,6 +82,8 @@ export const UofReasons = toEnum({
   PHYSICAL_THREAT: { value: 'PHYSICAL_THREAT', label: 'Physical threat' },
   VERBAL_THREAT: { value: 'VERBAL_THREAT', label: 'Verbal threat' },
   REFUSAL_TO_LOCATE_TO_CELL: { value: 'REFUSAL_TO_LOCATE_TO_CELL', label: 'Refusal to locate to cell' },
+  REFUSAL_TO_TRANSFER: { value: 'REFUSAL_TO_TRANSFER', label: 'Refusal to transfer' },
+  REFUSAL_TO_RELOCATE_CELLS: { value: 'REFUSAL_TO_RELOCATE_CELLS', label: 'Refusal to relocate cells' },
   TO_PREVENT_ESCAPE_OR_ABSCONDING: {
     value: 'TO_PREVENT_ESCAPE_OR_ABSCONDING',
     label: 'To prevent escape or absconding',
