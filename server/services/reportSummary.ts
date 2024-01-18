@@ -61,9 +61,7 @@ const createUseOfForceDetails = (
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
-    escortingHoldUsed: whenPresent(details.escortingHold, value =>
-      value ? howManyOfficersInvolved(details.escortingHoldOfficersInvolved) : NO
-    ),
+    escortingHoldUsed: details.escortingHold,
     controlAndRestraintUsed: whenPresent(details.restraint, value =>
       value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : NO
     ),

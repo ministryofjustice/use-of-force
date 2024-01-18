@@ -113,33 +113,13 @@
     )}}
 
     <!-- Q6 -->
-    {{ incidentMacro.radiosWithNestedRadios({
-      primaryQuestion: {
-        text: "Was an escorting hold used?",
-        name: "escortingHold",
-        value: data.escortingHold,
-        options: yesNoOptions,
-        errorMessage: errors | findError('escortingHold')
-
-      },
-      followUpQuestion: {
-        text: "How many officers were involved?",
-        name: "escortingHoldOfficersInvolved",
-        value: data.escortingHoldOfficersInvolved,
-        errorMessage: errors | findError('escortingHoldOfficersInvolved'),
-        options: [{
-          value: 1,
-          label: "1"
-        },
-        {
-          value: 2,
-          label: "2"
-        }]
-      },
-      followUpQuestionTriggeredOn: true,
-      orientation: 'inline'
-    }
-    )}}
+    {{ incidentMacro.radio( {
+    text: "Was an escorting hold used?",
+    name: "escortingHold",
+    value: data.escortingHold,
+    options: yesNoOptions,
+    errorMessage: errors | findError('escortingHold')
+    })}}
 
     <!-- Q7 -->
     <div id="control-and-restraint">
