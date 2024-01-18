@@ -3,7 +3,7 @@ import RelocationAndInjuriesPage from './relocationAndInjuriesPage'
 
 const useOfForceDetailsPage = () =>
   page('Use of force details', {
-    positiveCommunication: () => cy.get('[name="positiveCommunication"]'),
+    postiveCommunication: () => cy.get('[name="positiveCommunication"]'),
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
@@ -44,7 +44,7 @@ const useOfForceDetailsPage = () =>
     },
 
     fillForm() {
-      this.positiveCommunication().check('true')
+      this.postiveCommunication().check('true')
       this.personalProtectionTechniques().check('true')
       this.batonDrawn().check('true')
       this.batonUsed().check('true')
