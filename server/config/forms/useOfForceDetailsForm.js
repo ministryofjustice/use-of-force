@@ -40,6 +40,8 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
+  escortingHold: requiredBooleanMsg('Select yes if an escorting hold was used').alter(optionalForPartialValidation),
+
   restraint: requiredBooleanMsg('Select yes if control and restraint was used').alter(optionalForPartialValidation),
 
   restraintPositions: joi.when('restraint', {

@@ -18,6 +18,7 @@ beforeEach(() => {
     pavaUsed: 'true',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
+    escortingHold: 'true',
     restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
@@ -44,6 +45,7 @@ describe('complete schema', () => {
         pavaUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
@@ -52,7 +54,7 @@ describe('complete schema', () => {
       })
     })
 
-    it('Should return 8 error massages if no input field is completed', () => {
+    it('Should return 9 error massages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -78,6 +80,10 @@ describe('complete schema', () => {
           text: 'Select yes if a guiding hold was used',
         },
         {
+          href: '#escortingHold',
+          text: 'Select yes if an escorting hold was used',
+        },
+        {
           href: '#restraint',
           text: 'Select yes if control and restraint was used',
         },
@@ -91,7 +97,7 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(8)
+      expect(errors.length).toEqual(9)
 
       expect(formResponse).toEqual({})
     })
@@ -238,6 +244,22 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
       expect(formResponse.guidingHold).toEqual(true)
       expect(formResponse.guidingHoldOfficersInvolved).toEqual(2)
+    })
+
+    it("Not selecting an option for 'escorting hold' returns validation error message plus 'how many officers involved' is undefined", () => {
+      const input = {
+        ...validInput,
+        escortingHold: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#escortingHold',
+          text: 'Select yes if an escorting hold was used',
+        },
+      ])
+      expect(formResponse.escortingHold).toEqual(undefined)
     })
 
     it("Not selecting an option for 'restraint'returns a validation error message plus 'restraint positions' is undefined", () => {
@@ -393,6 +415,7 @@ describe('partial schema', () => {
         pavaUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
@@ -415,6 +438,7 @@ describe('partial schema', () => {
       batonDrawn: 'true',
       pavaDrawn: 'true',
       guidingHold: 'true',
+      escortingHold: 'true',
       restraint: 'true',
       restraintPositions: [],
     })
@@ -423,6 +447,7 @@ describe('partial schema', () => {
     expect(formResponse).toEqual({
       batonDrawn: true,
       guidingHold: true,
+      escortingHold: true,
       pavaDrawn: true,
       restraint: true,
     })

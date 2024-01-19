@@ -20,7 +20,7 @@ context('Enter use of force details page', () => {
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().check('true')
+    useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
     useOfForceDetailsPage.batonUsed().check('true')
@@ -28,6 +28,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraint().check('true')
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
@@ -48,6 +49,7 @@ context('Enter use of force details page', () => {
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
         pavaUsed: true,
@@ -72,6 +74,7 @@ context('Enter use of force details page', () => {
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
         pavaUsed: true,
@@ -92,7 +95,7 @@ context('Enter use of force details page', () => {
     cy.go('back')
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().should('have.value', 'true')
+    useOfForceDetailsPage.positiveCommunication().should('have.value', 'true')
     useOfForceDetailsPage.personalProtectionTechniques().should('have.value', 'true')
     useOfForceDetailsPage.batonDrawn().should('have.value', 'true')
     useOfForceDetailsPage.batonUsed().should('have.value', 'true')
@@ -100,6 +103,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
+    useOfForceDetailsPage.escortingHold().should('have.value', 'true')
     useOfForceDetailsPage.restraint().should('have.value', 'true')
     useOfForceDetailsPage.restraintPositions.standing().should('be.checked')
     useOfForceDetailsPage.restraintPositions.faceDown().should('not.be.checked')
@@ -118,12 +122,13 @@ context('Enter use of force details page', () => {
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().check('true')
+    useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraint().check('false')
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')

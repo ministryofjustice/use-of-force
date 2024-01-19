@@ -43,6 +43,7 @@ const validUseOfForceDetailsRequest = {
   batonDrawn: 'false',
   pavaDrawn: 'false',
   guidingHold: 'false',
+  escortingHold: 'false',
   restraint: 'false',
   painInducingTechniques: 'false',
   handcuffsApplied: 'false',
@@ -56,6 +57,7 @@ const validUseofForceDetailUpdate = [
   {
     batonDrawn: false,
     guidingHold: false,
+    escortingHold: false,
     handcuffsApplied: false,
     painInducingTechniques: false,
     pavaDrawn: false,
@@ -112,6 +114,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toBeCalledTimes(1)
         expect(draftReportService.process).toBeCalledWith(user, 1, 'useOfForceDetails', {
           guidingHold: false,
+          escortingHold: false,
           handcuffsApplied: false,
           painInducingTechniques: false,
           pavaDrawn: false,

@@ -14,6 +14,7 @@ export type UseOfForceDetails = {
   pavaUsed: boolean
   guidingHold: boolean
   guidingHoldOfficersInvolved: number
+  escortingHold?: boolean
   restraint: boolean
   restraintPositions: string[]
   handcuffsApplied: boolean

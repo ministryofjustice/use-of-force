@@ -30,6 +30,7 @@ const expectedPayload = {
     pavaDrawn: true,
     batonDrawn: true,
     guidingHold: true,
+    escortingHold: true,
     restraint: true,
     handcuffsApplied: true,
     restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],

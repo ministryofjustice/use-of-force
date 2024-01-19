@@ -113,6 +113,15 @@
     )}}
 
     <!-- Q6 -->
+    {{ incidentMacro.radio( {
+    text: "Was an escorting hold used?",
+    name: "escortingHold",
+    value: data.escortingHold,
+    options: yesNoOptions,
+    errorMessage: errors | findError('escortingHold')
+    })}}
+
+    <!-- Q7 -->
     <div id="control-and-restraint">
     {{ incidentMacro.radiosWithNestedCheckboxes({
       primaryQuestion: {
@@ -133,7 +142,7 @@
   }}
   </div>
 
-  <!-- Q7 -->
+  <!-- Q8 -->
     <div id="pain-inducing-techniques">
       {{ incidentMacro.radiosWithNestedCheckboxes({
         primaryQuestion: {
@@ -154,7 +163,7 @@
     }}
     </div>
 
-    <!-- Q8 -->
+    <!-- Q9 -->
     {{ incidentMacro.radio( {
       text: "Were handcuffs applied?",
       name: "handcuffsApplied",
