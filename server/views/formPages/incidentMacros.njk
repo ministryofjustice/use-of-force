@@ -1,3 +1,7 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 {% macro radio(question) %}
 {% if question.errorMessage.text %}
 {% set govukFormGroupError =  'govuk-form-group--error' %}
@@ -47,6 +51,108 @@
 </div>
 {% endmacro %}
 
+
+{% macro radioWithNestedTextBox(question) %}
+    <div class="govuk-!-margin-bottom-9
+    {% if question.errors | findError('bodyWornCamera') %}
+      govuk-form-group--error
+      {% set cameraErrMsg =  question.errors | findError('bodyWornCamera') %}
+    {% endif %}">
+    
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend ">
+        Was any part of the incident captured on a body-worn camera?
+      </legend>
+      <span id="cameraErrMsg" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ cameraErrMsg.text }}
+      </span>
+      
+      <div class="govuk-radios" data-module="govuk-radios">
+        <div class=" govuk-radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="bodyWornCamera" name="bodyWornCamera" 
+            type="radio" value="YES" data-aria-controls="body-worn-camera-conditional" 
+            {% if question.value.bodyWornCamera === 'YES' %} checked="checked" {% endif %}>
+            <label class="govuk-label govuk-radios__label" for="bodyWornCamera">
+              Yes
+            </label>
+          </div>
+          <!-- hidden panel starts here -->
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="body-worn-camera-conditional">
+
+            <!-- add another starts here -->
+            <div class="add-another-camera" id="bodyWornCameraNumbers">
+
+              {% for camera in question.value.bodyWornCameraNumbers %}
+                {{ addCameraNumber(question.errors, index = loop.index0, value = camera.cameraNum, showRemove = loop.length != 1) }}
+              {% else %}
+                {{ addCameraNumber(question.errors, index = 0, value = null, showRemove = false) }}
+              {% endfor %}
+
+              <div class="button-action">
+                {{
+                govukButton({
+                  text: 'Add another',
+                  classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                  attributes: { 'data-qa-add-another-camera': true }
+                })
+              }}
+              </div>
+            </div>
+            <!-- add another ends here -->
+          </div>
+          <!-- hidden panel end -->
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="body-worn-camera-no" name="bodyWornCamera" type="radio" value="NO" {% if question.value.bodyWornCamera === 'NO' %} checked="checked" {% endif %}>
+            <label class="govuk-label govuk-radios__label" for="body-worn-camera-no">
+              No
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="body-worn-camera-notKnown" name="bodyWornCamera" type="radio" value="NOT_KNOWN" {% if question.value.bodyWornCamera === 'NOT_KNOWN' %} checked="checked" {% endif %}>
+            <label class="govuk-label govuk-radios__label" for="body-worn-camera-notKnown">
+              Not known
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- end of radios -->
+    </fieldset>
+  </div>
+{% endmacro %}
+
+{% macro addCameraNumber(errors, index, value, showRemove) %}
+  {% call govukFieldset({ classes: 'add-another__item' }) %}
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third" id="bodyWornCameraNumbers[{{index}}]">
+      {{
+      govukInput({
+        errorMessage: errors | findErrors(['bodyWornCameraNumbers[' + index + ']', 'bodyWornCameraNumbers[' + index + '][cameraNum]']),
+        label: {
+          html: 'Camera number'
+        },
+        id: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
+        name: 'bodyWornCameraNumbers[' + index + '][cameraNum]',
+        value: value,
+        attributes: {
+          'data-name': 'bodyWornCameraNumbers[%index%][cameraNum]',
+          'data-id': 'bodyWornCameraNumbers[%index%][cameraNum]'
+        }
+        })
+      }}
+      </div>
+      <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+        {% if showRemove %}
+          <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button">
+          Remove
+          </button>
+        {% endif  %}
+      </div>
+  </div>  
+  {% endcall %}
+{% endmacro%}
 
 {% macro radiosWithNestedRadios(question) %}
 

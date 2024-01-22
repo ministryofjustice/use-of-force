@@ -107,6 +107,7 @@ describe('Build details', () => {
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00.000Z'),
       useOfForceDetails: {
+        bodyCameras: undefined,
         batonDrawn: undefined,
         controlAndRestraintUsed: undefined,
         guidingHoldUsed: undefined,

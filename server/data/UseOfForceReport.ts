@@ -7,6 +7,8 @@ export type IncidentDetails = {
 
 export type UseOfForceDetails = {
   positiveCommunication: boolean
+  bodyWornCamera: string
+  bodyWornCameraNumbers: { cameraNum: string }[]
   personalProtectionTechniques: boolean
   batonDrawn: boolean
   batonUsed: boolean
@@ -46,8 +48,6 @@ export type Evidence = {
   baggedEvidence: boolean
   photographsTaken: boolean
   cctvRecording: string
-  bodyWornCamera: string
-  bodyWornCameraNumbers: { cameraNum: string }[]
 }
 
 export type InvolvedStaff = {

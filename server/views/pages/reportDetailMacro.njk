@@ -180,6 +180,16 @@
         print: print
       })
     }}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was any part of the incident captured on a body-worn camera?',
+        'data-qa': 'bodyCameras',
+        dataValue: data.useOfForceDetails.bodyCameras | capitalize,
+        print: print
+      })
+    }}
+
     {{
       reportDetailsMacros.tableRow({
         label: 'Were any personal protection techniques used?',
@@ -357,13 +367,4 @@
         print: print
       })
     }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was any part of the incident captured on a body-worn camera?',
-        'data-qa': 'bodyCameras',
-        dataValue: data.evidence.bodyCameras | capitalize,
-        print: print
-      })
-    }}
-
 {% endmacro %}

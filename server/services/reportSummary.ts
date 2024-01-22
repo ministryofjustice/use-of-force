@@ -68,6 +68,11 @@ const createUseOfForceDetails = (
 
     painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
+    bodyCameras: whenPresent(details.bodyWornCamera, value =>
+      value === BodyWornCameras.YES.value
+        ? `${YES} - ${extractCommaSeparatedList('cameraNum', details.bodyWornCameraNumbers)}` || YES
+        : toLabel(BodyWornCameras, value)
+    ),
   }
 }
 
@@ -108,11 +113,6 @@ const createEvidence = (evidence: Partial<Evidence> = {}) => {
     evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
     photographs: evidence.photographsTaken,
     cctv: toLabel(Cctv, evidence.cctvRecording),
-    bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
-      value === Cctv.YES.value
-        ? `${YES} - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || YES
-        : toLabel(BodyWornCameras, value)
-    ),
   }
 }
 
