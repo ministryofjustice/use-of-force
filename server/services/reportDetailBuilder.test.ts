@@ -55,7 +55,6 @@ describe('Build details', () => {
     expect(result).toStrictEqual({
       bookingId: 33,
       evidence: {
-        bodyCameras: undefined,
         cctv: undefined,
         evidenceBaggedTagged: 'No',
         photographs: undefined,
