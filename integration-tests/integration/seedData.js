@@ -2,9 +2,7 @@ const expectedPayload = {
   evidence: {
     cctvRecording: 'NOT_KNOWN',
     baggedEvidence: true,
-    bodyWornCamera: 'YES',
     photographsTaken: true,
-    bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
     evidenceTagAndDescription: [
       { description: 'This evidence was collected from the prisoner 1', evidenceTagReference: 'Bagged evidence 1' },
       { description: 'This evidence was collected from the prisoner 2', evidenceTagReference: 'Bagged evidence 2' },
@@ -25,6 +23,8 @@ const expectedPayload = {
     reasons: ['FIGHT_BETWEEN_PRISONERS'],
   },
   useOfForceDetails: {
+    bodyWornCamera: 'YES',
+    bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
     pavaUsed: true,
     batonUsed: true,
     pavaDrawn: true,

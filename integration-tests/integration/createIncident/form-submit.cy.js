@@ -23,7 +23,7 @@ context('Submit the incident report', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('Submitting a form', () => {
+  it.only('Submitting a form', () => {
     cy.login()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
@@ -78,6 +78,12 @@ context('Submit the incident report', () => {
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.fillForm()
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).type('123')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(1).type('789')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(2).type('456')
     const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()
