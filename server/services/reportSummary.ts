@@ -47,8 +47,14 @@ const createIncidentDetails = (
 
 const createUseOfForceDetails = (
   details: Partial<UseOfForceDetails> = {},
-  reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {}
+  reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {},
+  evidence: Partial<Evidence> = {}
 ) => {
+  const bodyWornCamera = details.bodyWornCamera ? details.bodyWornCamera : evidence.bodyWornCamera
+  const bodyWornCameraNumbers = details.bodyWornCameraNumbers
+    ? details.bodyWornCameraNumbers
+    : evidence.bodyWornCameraNumbers
+
   return {
     reasonsForUseOfForce: whenPresent(reasonsForUseOfForce.reasons, reasons =>
       reasons.map(value => toLabel(UofReasons, value)).join(', ')
@@ -68,9 +74,9 @@ const createUseOfForceDetails = (
 
     painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
-    bodyCameras: whenPresent(details.bodyWornCamera, value =>
+    bodyCameras: whenPresent(bodyWornCamera, value =>
       value === BodyWornCameras.YES.value
-        ? `${YES} - ${extractCommaSeparatedList('cameraNum', details.bodyWornCameraNumbers)}` || YES
+        ? `${YES} - ${extractCommaSeparatedList('cameraNum', bodyWornCameraNumbers)}` || YES
         : toLabel(BodyWornCameras, value)
     ),
   }
@@ -193,7 +199,7 @@ export = (
       incidentDate
     ),
     offenderDetail,
-    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce),
+    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence),
     relocationAndInjuries: createRelocation(relocationAndInjuries),
     evidence: createEvidence(evidence),
   }
