@@ -7,6 +7,7 @@ import {
   RelocationType,
   toLabel,
   UofReasons,
+  findEnum,
 } from '../config/types'
 import { Prison } from '../data/prisonClientTypes'
 import {
@@ -62,9 +63,10 @@ const createUseOfForceDetails = (
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
     escortingHoldUsed: details.escortingHold,
-    controlAndRestraintUsed: whenPresent(details.restraint, value =>
-      value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : NO
-    ),
+    controlAndRestraintUsed:
+      details.restraint === undefined || details.restraint
+        ? getRestraintPositions(details.restraintPositions)
+        : getRestraintPositions(ControlAndRestraintPosition.NONE),
 
     painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
@@ -126,9 +128,44 @@ const wasWeaponUsed = weaponUsed => {
 }
 
 const getRestraintPositions = positions => {
-  return positions == null
-    ? ''
-    : `${YES} - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
+  if (positions == null) {
+    return Array.of[ControlAndRestraintPosition.NONE.label]
+  }
+  return toParentChild(toArray(positions))
+}
+
+const toParentChild = postions => {
+  const positionObjects = postions.map(p => findEnum(ControlAndRestraintPosition, p))
+  console.log(positionObjects)
+  const parents: any[] = []
+  const children: any[] = []
+  positionObjects.forEach(obj => {
+    if (obj.parent == null) {
+      parents.push(obj)
+    } else {
+      children.push(obj)
+    }
+  })
+  console.log(parents)
+  console.log(children)
+  const parentChild: string[] = []
+  parents.forEach(function (p) {
+    const thesechildren = children
+      .filter(pos => pos.parent === p.value)
+      .map(child => child.label)
+      .join(', ')
+    if (thesechildren === '') {
+      parentChild.push(p.label)
+    } else {
+      parentChild.push(`${p.label}: ${thesechildren}`)
+    }
+  })
+  console.log(parentChild)
+  return parentChild
+}
+
+const toArray = obj => {
+  return Array.isArray(obj) ? obj : Array.of(obj)
 }
 
 const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {

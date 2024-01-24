@@ -226,8 +226,9 @@
       reportDetailsMacros.tableRow({
         label: 'Was control and restraint used?',
         'data-qa': 'restraintUsed',
-        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize,
-        print: print
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
+        print: print,
+        type: 'itemPerLine'
       })
     }}
     
