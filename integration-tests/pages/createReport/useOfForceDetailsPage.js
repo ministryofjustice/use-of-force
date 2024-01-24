@@ -7,8 +7,8 @@ const useOfForceDetailsPage = () =>
 
     bodyWornCamera: () => cy.get('[name="bodyWornCamera"]'),
     bodyWornCameraNumber: index => cy.get(`[name="bodyWornCameraNumbers[${index}][cameraNum]"]`),
-    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-camera = true]').click(),
-    removeBodyWornCamera: index => cy.get('.add-another-camera .add-another__remove-button').eq(index).click(),
+    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-input = true]').click(),
+    removeBodyWornCamera: index => cy.get('.add-another-input .add-another__remove-button').eq(index).click(),
 
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
