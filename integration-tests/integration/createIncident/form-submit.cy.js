@@ -23,7 +23,7 @@ context('Submit the incident report', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it.only('Submitting a form', () => {
+  it('Submitting a form', () => {
     cy.login()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
