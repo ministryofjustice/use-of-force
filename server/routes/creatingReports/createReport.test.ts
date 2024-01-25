@@ -38,6 +38,8 @@ describe('GET /section/form', () => {
 })
 
 const validUseOfForceDetailsRequest = {
+  bodyWornCamera: 'YES',
+  bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
   positiveCommunication: 'false',
   personalProtectionTechniques: 'false',
   batonDrawn: 'false',
@@ -55,6 +57,8 @@ const validUseofForceDetailUpdate = [
   1,
   'useOfForceDetails',
   {
+    bodyWornCamera: 'YES',
+    bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
     batonDrawn: false,
     guidingHold: false,
     escortingHold: false,
@@ -107,7 +111,7 @@ describe('POST save and return to tasklist', () => {
   test('Submitting invalid update is allowed', () => {
     return request(app)
       .post(`/report/1/use-of-force-details`)
-      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null, submitType: 'save-and-return' })
+      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null, bodyWornCamera: null, submitType: 'save-and-return' })
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
@@ -132,6 +136,7 @@ describe('POST save and return to tasklist', () => {
         ...validUseOfForceDetailsRequest,
         restraint: 'true',
         restraintPositions: ['not a valid value'],
+        bodyWornCamera: ['another invalid input'],
         submitType: 'save-and-return',
       })
       .expect(302)
@@ -186,8 +191,6 @@ describe('Submitting evidence page', () => {
         .send({
           submitType,
           baggedEvidence: 'true',
-          bodyWornCamera: 'YES',
-          bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
           cctvRecording: 'YES',
           evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
           photographsTaken: 'true',
@@ -199,8 +202,6 @@ describe('Submitting evidence page', () => {
 
           expect(draftReportService.process).toBeCalledWith(user, 1, 'evidence', {
             baggedEvidence: true,
-            bodyWornCamera: 'YES',
-            bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
             cctvRecording: 'YES',
             evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
             photographsTaken: true,
