@@ -78,7 +78,7 @@ context('Enter use of force details page', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraintPositions: ['STANDING'],
+        restraintPositions: 'STANDING',
         painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
