@@ -158,14 +158,13 @@ describe('POST save once complete and return to check-your-answers', () => {
       .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
-        restraint: 'true',
         restraintPositions: ['not a valid value'],
         submitType: 'save-and-return',
       })
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       })
   })
 })
