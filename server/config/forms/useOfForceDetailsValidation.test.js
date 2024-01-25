@@ -195,7 +195,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
@@ -222,7 +221,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
@@ -253,7 +251,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
