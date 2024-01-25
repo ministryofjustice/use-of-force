@@ -31,12 +31,10 @@ const expectedPayload = {
     batonDrawn: true,
     guidingHold: true,
     escortingHold: true,
-    restraint: true,
     handcuffsApplied: true,
     restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
     painInducingTechniques: true,
     painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-
     positiveCommunication: true,
     guidingHoldOfficersInvolved: 2,
     personalProtectionTechniques: true,
