@@ -55,7 +55,6 @@ context('Enter use of force details page', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
         painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
@@ -80,7 +79,6 @@ context('Enter use of force details page', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING'],
         painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
@@ -104,7 +102,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
     useOfForceDetailsPage.escortingHold().should('have.value', 'true')
-    useOfForceDetailsPage.restraint().should('have.value', 'true')
     useOfForceDetailsPage.restraintPositions.standing().should('be.checked')
     useOfForceDetailsPage.restraintPositions.faceDown().should('not.be.checked')
     useOfForceDetailsPage.restraintPositions.kneeling().should('be.checked')
@@ -129,7 +126,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
-    useOfForceDetailsPage.restraint().check('false')
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.clickSaveAndContinue()

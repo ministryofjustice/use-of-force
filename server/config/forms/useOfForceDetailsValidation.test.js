@@ -19,7 +19,6 @@ beforeEach(() => {
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
     escortingHold: 'true',
-    restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
     painInducingTechniques: 'true',
