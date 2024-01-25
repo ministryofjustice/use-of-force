@@ -69,7 +69,7 @@
         {{ primaryErrorMessageText}}
       </span>
       
-      <div class="govuk-radios" data-module="govuk-radios">
+      <div class="govuk-radios{% if not question.primaryQuestion.includeNotKnown %}--inline{% endif %}" data-module="govuk-radios">
         <div class=" govuk-radios">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
