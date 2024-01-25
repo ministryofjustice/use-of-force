@@ -1,3 +1,4 @@
+const { use } = require('passport')
 const { offender } = require('../../mockApis/data')
 
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
@@ -21,6 +22,11 @@ context('Enter use of force details page', () => {
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.positiveCommunication().check('true')
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).type('123')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(1).type('345')
+    useOfForceDetailsPage.removeBodyWornCamera(0)
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
     useOfForceDetailsPage.batonUsed().check('true')
@@ -44,6 +50,8 @@ context('Enter use of force details page', () => {
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
       expect(section).to.deep.equal({
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,
@@ -68,6 +76,8 @@ context('Enter use of force details page', () => {
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
       expect(section).to.deep.equal({
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,
@@ -93,6 +103,8 @@ context('Enter use of force details page', () => {
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.positiveCommunication().should('have.value', 'true')
+    useOfForceDetailsPage.bodyWornCamera().should('have.value', 'YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).should('have.value', '345')
     useOfForceDetailsPage.personalProtectionTechniques().should('have.value', 'true')
     useOfForceDetailsPage.batonDrawn().should('have.value', 'true')
     useOfForceDetailsPage.batonUsed().should('have.value', 'true')
@@ -119,6 +131,7 @@ context('Enter use of force details page', () => {
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.positiveCommunication().check('true')
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
@@ -129,5 +142,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.clickSaveAndContinue()
     useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
+    useOfForceDetailsPage.errorSummary().contains('Enter the body-worn camera number')
   })
 })

@@ -22,13 +22,13 @@ describe('statusCheck', () => {
       personalProtectionTechniques: true,
       painInducingTechniques: false,
       restraintPositions: 'NONE',
+      bodyWornCamera: 'YES',
+      bodyWornCameraNumbers: [{ cameraNum: '1111' }, { cameraNum: '2222' }],
     },
     evidence: {
       cctvRecording: 'NO',
       baggedEvidence: true,
-      bodyWornCamera: 'YES',
       photographsTaken: false,
-      bodyWornCameraNumbers: [{ cameraNum: '1111' }, { cameraNum: '2222' }],
       evidenceTagAndDescription: [
         { description: 'aaaaa', evidenceTagReference: '1111' },
         { description: 'bbbb', evidenceTagReference: '2222' },

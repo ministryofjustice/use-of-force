@@ -11,6 +11,7 @@ let validInput = {}
 beforeEach(() => {
   validInput = {
     positiveCommunication: 'true',
+    bodyWornCamera: 'NO',
     personalProtectionTechniques: 'true',
     batonDrawn: 'true',
     batonUsed: 'true',
@@ -37,6 +38,7 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         positiveCommunication: true,
+        bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
         batonDrawn: true,
         batonUsed: true,
@@ -52,7 +54,7 @@ describe('complete schema', () => {
       })
     })
 
-    it('Should return 9 error massages if no input field is completed', () => {
+    it('Should return 10 error massages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -60,6 +62,10 @@ describe('complete schema', () => {
         {
           href: '#positiveCommunication',
           text: 'Select yes if positive communication was used',
+        },
+        {
+          href: '#bodyWornCamera',
+          text: 'Select yes if any part of the incident was captured on a body-worn camera',
         },
         {
           href: '#personalProtectionTechniques',
@@ -95,7 +101,7 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(9)
+      expect(errors.length).toEqual(10)
 
       expect(formResponse).toEqual({})
     })
@@ -116,6 +122,141 @@ describe('complete schema', () => {
       ])
     })
 
+    it("Not selecting an option for 'body worn cameras' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        bodyWornCamera: undefined,
+      }
+      const { errors } = check(input)
+      expect(errors).toEqual([
+        {
+          href: '#bodyWornCamera',
+          text: 'Select yes if any part of the incident was captured on a body-worn camera',
+        },
+      ])
+    })
+
+    it('Not adding camera numbers but selecting YES for bodyWornCameras returns validation error messages', () => {
+      validInput.bodyWornCamera = 'YES'
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([{ href: '#bodyWornCameraNumbers[0]', text: '"bodyWornCameraNumbers" is required' }])
+    })
+
+    it('Should return validation error if more than one body-worn camera with same identifier', () => {
+      validInput.bodyWornCamera = 'YES'
+      validInput.bodyWornCameraNumbers = [{ cameraNum: '1' }, { cameraNum: '1' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([
+        { href: '#bodyWornCameraNumbers[1]', text: "Camera '1' has already been added - remove this camera" },
+      ])
+    })
+
+    it('Should not return validation error if all body-worn camera identifiers are unique', () => {
+      validInput.bodyWornCamera = 'YES'
+      validInput.bodyWornCameraNumbers = [{ cameraNum: '1' }, { cameraNum: '2' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([])
+    })
+
+    it('Should trim empty-string body-worn camera identifiers', () => {
+      validInput.bodyWornCamera = 'YES'
+      validInput.bodyWornCameraNumbers = [
+        { cameraNum: '    AAA  ', age: '29' },
+        { cameraNum: '' },
+        { cameraNum: 'BBB' },
+      ]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [
+          {
+            cameraNum: 'AAA',
+          },
+          {
+            cameraNum: 'BBB',
+          },
+        ],
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniques: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraint: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
+
+    it('Body-worn camera identifiers are not required when bodyWornCamera is NO', () => {
+      validInput.bodyWornCamer = 'NO'
+      validInput.bodyWornCameraNumbers = [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'AAA' }]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniques: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraint: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
+
+    it('Body worn camera field must be one of allowed values', () => {
+      validInput.bodyWornCamera = 'SOMETHING_RANDOM'
+      validInput.bodyWornCameraNumbers = [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'AAA' }]
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#bodyWornCamera',
+          text: 'Select yes if any part of the incident was captured on a body-worn camera',
+        },
+      ])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'SOMETHING_RANDOM',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniques: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraint: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
     it("Not selecting an option for 'personal protection techniques' returns a validation error message", () => {
       const input = {
         ...validInput,
@@ -397,6 +538,7 @@ describe('partial schema', () => {
 
       expect(formResponse).toEqual({
         positiveCommunication: true,
+        bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
         batonDrawn: true,
         batonUsed: true,

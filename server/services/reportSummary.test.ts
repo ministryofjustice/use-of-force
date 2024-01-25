@@ -3,7 +3,12 @@ import { Prison } from '../data/prisonClientTypes'
 import { UseOfForceDraftReport } from '../data/UseOfForceReport'
 import reportSummary from './reportSummary'
 
-const form: UseOfForceDraftReport = { useOfForceDetails: {}, relocationAndInjuries: {}, reasonsForUseOfForce: {} }
+const form: UseOfForceDraftReport = {
+  useOfForceDetails: {},
+  relocationAndInjuries: {},
+  reasonsForUseOfForce: {},
+  evidence: {},
+}
 const offenderDetail = {}
 const prison: Prison = { agencyId: 'MDI', description: 'Moorland HMP', active: true, agencyType: 'INST' }
 const locationDescription = ''
@@ -46,7 +51,33 @@ describe('reportSummary', () => {
       expect(result.useOfForceDetails.painInducingTechniques).toEqual('No')
     })
   })
+  describe('Use of force details', () => {
+    it("should return body-camera details in 'details' even if in 'evidence' data ", () => {
+      form.useOfForceDetails = {}
+      form.evidence.bodyWornCamera = 'NO'
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.bodyCameras).toEqual('No')
+    })
 
+    it("should return body-camera reference numbers within 'details' section even if they are part of 'evidence' data", () => {
+      form.useOfForceDetails = {}
+      form.evidence = {
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '1' }, { cameraNum: '2' }],
+      }
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.bodyCameras).toEqual('Yes - 1, 2')
+    })
+
+    it("should return body-camera details saved in 'details' data", () => {
+      form.useOfForceDetails = {
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '1' }, { cameraNum: '2' }],
+      }
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.bodyCameras).toEqual('Yes - 1, 2')
+    })
+  })
   describe('Use of force reasons', () => {
     it('should return undefined', () => {
       form.reasonsForUseOfForce.reasons = undefined

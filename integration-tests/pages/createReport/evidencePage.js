@@ -20,15 +20,6 @@ const evidencePage = () =>
       cy.get('[name="evidenceTagAndDescription[2][description]"]').type('Clothes samples')
       this.photosTaken().check('true')
       cy.get('[name="cctvRecording"]').check('NOT_KNOWN')
-      cy.get('[name="bodyWornCamera"]').check('YES')
-      cy.get('[name="bodyWornCameraNumbers[0][cameraNum]"]').type('123')
-      cy.get('[data-qa-add-another-camera = true]').click()
-      cy.get('[name="bodyWornCameraNumbers[1][cameraNum]"]').type('456')
-      cy.get('[data-qa-add-another-camera = true]').click()
-      cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('789')
-      cy.get('.add-another-camera .add-another__remove-button').eq(1).click()
-      cy.get('[data-qa-add-another-camera = true]').click()
-      cy.get('[name="bodyWornCameraNumbers[2][cameraNum]"]').type('456')
     },
 
     save: () => {

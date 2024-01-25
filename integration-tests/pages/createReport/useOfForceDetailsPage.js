@@ -4,6 +4,12 @@ import RelocationAndInjuriesPage from './relocationAndInjuriesPage'
 const useOfForceDetailsPage = () =>
   page('Use of force details', {
     positiveCommunication: () => cy.get('[name="positiveCommunication"]'),
+
+    bodyWornCamera: () => cy.get('[name="bodyWornCamera"]'),
+    bodyWornCameraNumber: index => cy.get(`[name="bodyWornCameraNumbers[${index}][cameraNum]"]`),
+    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-input = true]').click(),
+    removeBodyWornCamera: index => cy.get('.add-another-input .add-another__remove-button').eq(index).click(),
+
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
@@ -45,6 +51,7 @@ const useOfForceDetailsPage = () =>
 
     fillForm() {
       this.positiveCommunication().check('true')
+      this.bodyWornCamera().check('NO')
       this.personalProtectionTechniques().check('true')
       this.batonDrawn().check('true')
       this.batonUsed().check('true')

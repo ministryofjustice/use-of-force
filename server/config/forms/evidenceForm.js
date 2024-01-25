@@ -39,27 +39,6 @@ const completeSchema = joi.object({
     'NO',
     'NOT_KNOWN'
   )('Select yes if any part of the incident captured on CCTV').alter(optionalForPartialValidation),
-
-  bodyWornCamera: requiredOneOfMsg(
-    'YES',
-    'NO',
-    'NOT_KNOWN'
-  )('Select yes if any part of the incident was captured on a body-worn camera').alter(optionalForPartialValidation),
-  bodyWornCameraNumbers: joi
-    .when('bodyWornCamera', {
-      is: 'YES',
-      then: arrayOfObjects({
-        cameraNum: requiredStringMsg('Enter the body-worn camera number').alter(optionalForPartialValidation),
-      })
-        .min(1)
-        .message('Enter the body-worn camera number')
-        .ruleset.unique('cameraNum')
-        .message("Camera '{#value.cameraNum}' has already been added - remove this camera")
-        .required()
-        .alter(minZeroForPartialValidation),
-      otherwise: joi.any().strip(),
-    })
-    .meta({ firstFieldName: 'bodyWornCameraNumbers[0]' }),
 })
 
 module.exports = {
