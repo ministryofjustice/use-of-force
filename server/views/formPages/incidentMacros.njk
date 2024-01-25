@@ -248,11 +248,6 @@
         {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
     {% endif %}
 
-{% if not question.primaryQuestion.errorMessage and question.followUpQuestion.errorMessage.text %}
-    {% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
-    {% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
-{% endif %}
-
 <div class="govuk-form-group  {{govukFormGroupErrorOuter}} govuk-!-margin-bottom-6">
   <fieldset class="govuk-fieldset" aria-describedby="{{question.primaryQuestion.name}}-hint">
 
@@ -263,7 +258,7 @@
 
     <span class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span>
-      {{ primaryErrorMessageText}}
+      {{primaryErrorMessageText}}
     </span>
 
     <div id="{{question.primaryQuestion.name}}-hint" class="govuk-hint">
