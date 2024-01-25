@@ -29,7 +29,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
-    useOfForceDetailsPage.restraint().check('true')
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.painInducingTechniques().check('true')
