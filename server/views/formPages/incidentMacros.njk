@@ -124,12 +124,14 @@
               No
             </label>
           </div>
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="primary-question-notKnown" name="{{question.primaryQuestion.name}}" type="radio" value="NOT_KNOWN" {% if question.primaryQuestion.value === 'NOT_KNOWN' %} checked="checked" {% endif %}>
-            <label class="govuk-label govuk-radios__label" for="primary-question-notKnown">
-              Not known
-            </label>
-          </div>
+          {% if question.primaryQuestion.includeNotKnown %}
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="primary-question-notKnown" name="{{question.primaryQuestion.name}}" type="radio" value="NOT_KNOWN" {% if question.primaryQuestion.value === 'NOT_KNOWN' %} checked="checked" {% endif %}>
+                <label class="govuk-label govuk-radios__label" for="primary-question-notKnown">
+                  Not known
+                </label>
+              </div>
+          {% endif %}
         </div>
       </div>
       <!-- end of radios -->
