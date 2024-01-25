@@ -14,7 +14,6 @@ describe('statusCheck', () => {
     reasonsForUseOfForce: { reasons: [UofReasons.FIGHT_BETWEEN_PRISONERS.value] },
     useOfForceDetails: {
       pavaDrawn: false,
-      restraint: false,
       batonDrawn: false,
       guidingHold: false,
       escortingHold: false,
@@ -22,6 +21,7 @@ describe('statusCheck', () => {
       positiveCommunication: false,
       personalProtectionTechniques: true,
       painInducingTechniques: false,
+      restraintPositions: 'NONE',
     },
     evidence: {
       cctvRecording: 'NO',

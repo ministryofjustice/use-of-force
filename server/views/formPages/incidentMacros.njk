@@ -277,7 +277,7 @@
                <div class="govuk-checkboxes__item">
                    <input
                            class="govuk-checkboxes__input"
-                           id="{{option.value}}"
+                           id="parent-{{option.value}}"
                            name="{{question.primaryQuestion.name}}"
                            type="checkbox"
                            value="{{option.value}}"
@@ -287,7 +287,7 @@
                              data-aria-controls="conditional-{{option.value}}"
                             {% if option.value in question.primaryQuestion.value %} checked {% endif %}
                    >
-                   <label class="govuk-label govuk-checkboxes__label" for="{{option.value}}">
+                   <label class="govuk-label govuk-checkboxes__label" for="parent-{{option.value}}">
                        {{option.label}}
                    </label>
                </div>
@@ -298,12 +298,12 @@
                                <div class="govuk-checkboxes__item">
                                    <input
                                            class="govuk-checkboxes__input"
-                                           id="{{subopt.value}}"
+                                           id="child-{{subopt.value}}"
                                            name="{{question.primaryQuestion.name}}"
                                            type="checkbox"
                                            value="{{subopt.value}}"
                                    {% if subopt.value in question.primaryQuestion.value %} checked {% endif %}>
-                                   <label class="govuk-label govuk-checkboxes__label" for="{{subopt.value}}">
+                                   <label class="govuk-label govuk-checkboxes__label" for="child-{{subopt.value}}">
                                        {{subopt.label}}
                                    </label>
                                </div>

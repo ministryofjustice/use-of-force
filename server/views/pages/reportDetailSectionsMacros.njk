@@ -21,7 +21,7 @@
         &ndash;
       {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}
         {%for item in dataItem.dataValue %}
-            {{item}}
+            {{item | capitalize}}
           {%if item.length > 1 and not loop.last %}
           <br/>
           {% endif %}

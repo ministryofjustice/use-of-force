@@ -1,8 +1,6 @@
 const joi = require('@hapi/joi')
-const { required } = require('@hapi/joi')
 const { validations } = require('./validations')
 const { buildValidationSpec } = require('../../services/validation')
-const { ControlAndRestraintPosition } = require('../types')
 
 const { requiredBooleanMsg, requiredOneOfMsg, requiredIntegerRangeMsg, optionalForPartialValidation } = validations
 
@@ -43,39 +41,43 @@ const completeSchema = joi.object({
   }),
 
   escortingHold: requiredBooleanMsg('Select yes if an escorting hold was used').alter(optionalForPartialValidation),
-  restraintPositions: joi.any().required().alter(optionalForPartialValidation),
-  // restraintPositions: joi
-  //   .alternatives()
-  //   .try(
-  //     joi
-  //       .array()
-  //       .items(
-  //         requiredOneOfMsg(
-  //           'STANDING',
-  //           'FACE_DOWN',
-  //           'ON_BACK',
-  //           'KNEELING',
-  //           'NONE'
-  //         )('Select if any control and restraint positions were used').alter(optionalForPartialValidation)
-  //       ),
-  //     joi.allow(
-  //       positions.STANDING__WRIST_WEAVE.value,
-  //       positions.STANDING__DOUBLE_WRIST_HOLD.value,
-  //       positions.STANDING__UNDERHOOK.value,
-  //       positions.STANDING__WRIST_HOLD.value,
-  //       positions.STANDING__STRAIGHT_ARM_HOLD.value,
-  //       positions.ON_BACK__STRAIGHT_ARM_HOLD.value,
-  //       positions.ON_BACK__CONVERSION_TO_RBH.value,
-  //       positions.ON_BACK__WRIST_HOLD.value,
-  //       positions.FACE_DOWN__BALANCE_DISPLACEMENT.value,
-  //       positions.FACE_DOWN__STRAIGHT_ARM_HOLD.value,
-  //       positions.FACE_DOWN__CONVERSION_TO_RBH.value,
-  //       positions.FACE_DOWN__WRIST_HOLD.value,
-  //     )
-  //   )
-  //   .required()
-  //   .messages({ 'any.required': 'Select the control and restraint positions used2' })
-  //   .alter(optionalForPartialValidation),
+  restraintPositions: joi
+    .alternatives()
+    .try(
+      joi
+        .valid('STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING', 'NONE')
+        .messages({ 'any.only': 'Select which control and restraint positions were used' }),
+      joi
+        .array()
+        .items(
+          requiredOneOfMsg(
+            'STANDING',
+            'STANDING__WRIST_WEAVE',
+            'STANDING__DOUBLE_WRIST_HOLD',
+            'STANDING__UNDERHOOK',
+            'STANDING__WRIST_HOLD',
+            'STANDING__STRAIGHT_HOLD',
+            'ON_BACK',
+            'ON_BACK__STRAIGHT_ARM_HOLD',
+            'ON_BACK__CONVERSION_TO_RBH',
+            'ON_BACK__WRIST_HOLD',
+            'FACE_DOWN',
+            'FACE_DOWN__BALANCE_DISPLACEMENT',
+            'FACE_DOWN__STRAIGHT_ARM_HOLD',
+            'FACE_DOWN__CONVERSION_TO_RBH',
+            'FACE_DOWN__WRIST_HOLD',
+            'KNEELING'
+          )('Select which control and restraint positions were used')
+        )
+    )
+    .messages({
+      'alternatives.types': 'Select which control and restraint positions were used',
+    })
+    .required()
+    .messages({
+      'any.required': 'Select which control and restraint positions were used',
+    })
+    .alter(optionalForPartialValidation),
 
   painInducingTechniques: requiredBooleanMsg('Select yes if pain inducing techniques were used').alter(
     optionalForPartialValidation
