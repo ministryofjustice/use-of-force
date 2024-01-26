@@ -17,8 +17,8 @@ export type UseOfForceDetails = {
   guidingHold: boolean
   guidingHoldOfficersInvolved: number
   escortingHold?: boolean
-  restraint: boolean
-  restraintPositions: string[]
+  restraint?: boolean
+  restraintPositions: string | string[]
   handcuffsApplied: boolean
   painInducingTechniques: boolean
   painInducingTechniquesUsed: string[]

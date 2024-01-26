@@ -22,12 +22,19 @@
       {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}
         {%for item in dataItem.dataValue %}
           {%for value in item %}
-            {{value}} 
+            {{value}}
             {% if not loop.last %}<br/>{% endif %}
           {% endfor%}
-          <br/>
+      <br/>
           {%if item.length > 1 and not loop.last %}
-          <br/>
+            <br/>
+          {% endif %}
+        {% endfor %}
+      {% elif dataItem.dataValue | isArray and dataItem.type === 'parentChild' %}
+        {%for item in dataItem.dataValue %}
+          {{item | capitalize}}
+          {%if item.length > 1 and not loop.last %}
+            <br/>
           {% endif %}
         {% endfor %}
       {% else %}

@@ -30,9 +30,9 @@ const useOfForceDetailsPage = () =>
       onBack: () => cy.get('#control-and-restraint [type="checkbox"][value="ON_BACK"]'),
       faceDown: () => cy.get('#control-and-restraint [type="checkbox"][value="FACE_DOWN"]'),
       kneeling: () => cy.get('#control-and-restraint [type="checkbox"][value="KNEELING"]'),
+      none: () => cy.get('#control-and-restraint [type="checkbox"][value="NONE"]'),
     },
 
-    restraint: () => cy.get('[name="restraint"]'),
     handcuffsApplied: () => cy.get('[name="handcuffsApplied"]'),
 
     painInducingTechniques: () => cy.get('[name="painInducingTechniques"]'),
@@ -60,7 +60,6 @@ const useOfForceDetailsPage = () =>
       this.guidingHold().check('true')
       this.guidingHoldOfficersInvolved.check('2')
       this.escortingHold().check('true')
-      this.restraint().check('true')
       this.restraintPositions.check(['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'])
       this.handcuffsApplied().check('true')
       this.painInducingTechniques().check('true')
