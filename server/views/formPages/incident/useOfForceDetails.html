@@ -37,7 +37,8 @@
         text: "Was any part of the incident captured on a body-worn camera?",
         name: "bodyWornCamera",
         value: data.bodyWornCamera,
-        errorMessage: errors | findError('bodyWornCamera')
+        errorMessage: errors | findError('bodyWornCamera'),
+        includeNotKnown: false
     },
       followUpQuestion:{
         name: "bodyWornCameraNumbers",
