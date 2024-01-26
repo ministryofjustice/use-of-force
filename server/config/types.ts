@@ -27,6 +27,11 @@ export const BodyWornCameras = toEnum({
   NOT_KNOWN: { value: 'NOT_KNOWN', label: 'Not Known' },
 })
 
+export const WeaponsSeen = toEnum({
+  YES: { value: 'YES', label: 'Yes' },
+  NO: { value: 'NO', label: 'No' },
+})
+
 export const Cctv = toEnum({
   YES: { value: 'YES', label: 'Yes' },
   NO: { value: 'NO', label: 'No' },

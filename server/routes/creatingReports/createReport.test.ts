@@ -44,6 +44,7 @@ const validUseOfForceDetailsRequest = {
   personalProtectionTechniques: 'false',
   batonDrawn: 'false',
   pavaDrawn: 'false',
+  weaponsSeen: 'NO',
   guidingHold: 'false',
   escortingHold: 'false',
   painInducingTechniquesUsed: 'NONE',
@@ -65,6 +66,7 @@ const validUseOfForceDetailUpdate = [
     handcuffsApplied: false,
     painInducingTechniquesUsed: 'NONE',
     pavaDrawn: false,
+    weaponsSeen: 'NO',
     personalProtectionTechniques: false,
     positiveCommunication: false,
     restraintPositions: 'NONE',
@@ -125,6 +127,7 @@ describe('POST save and return to tasklist', () => {
           personalProtectionTechniques: false,
           positiveCommunication: false,
           restraintPositions: 'NONE',
+          weaponsSeen: 'NO',
         })
       })
   })

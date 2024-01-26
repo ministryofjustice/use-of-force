@@ -52,12 +52,32 @@ const completeSchema = joi.object({
   }),
 
   pavaDrawn: requiredBooleanMsg('Select yes if PAVA was drawn').alter(optionalForPartialValidation),
-
   pavaUsed: joi.when('pavaDrawn', {
     is: true,
     then: requiredBooleanMsg('Select yes if PAVA was used').alter(optionalForPartialValidation),
     otherwise: joi.any().strip(),
   }),
+
+  weaponsSeen: requiredOneOfMsg(
+    'YES',
+    'NO'
+  )('Select yes if any weapons were observed').alter(optionalForPartialValidation),
+
+  weaponTypes: joi
+    .when('weaponsSeen', {
+      is: 'YES',
+      then: arrayOfObjects({
+        weaponType: requiredStringMsg('Enter the type of weapon observed').alter(optionalForPartialValidation),
+      })
+        .min(1)
+        .message('Enter the type of weapon observed')
+        .ruleset.unique('weaponType')
+        .message("Weapon '{#value.weaponType}' has already been added - remove this weapon")
+        .required()
+        .alter(minZeroForPartialValidation),
+      otherwise: joi.any().strip(),
+    })
+    .meta({ firstFieldName: 'weaponTypes[0]' }),
 
   guidingHold: requiredBooleanMsg('Select yes if a guiding hold was used').alter(optionalForPartialValidation),
 

@@ -28,6 +28,8 @@ const expectedPayload = {
     pavaUsed: true,
     batonUsed: true,
     pavaDrawn: true,
+    weaponsSeen: true,
+    weaponTypes: [{ weaponType: 'knife' }, { weaponType: 'shiv' }, { weaponType: 'hammer' }],
     batonDrawn: true,
     guidingHold: true,
     escortingHold: true,

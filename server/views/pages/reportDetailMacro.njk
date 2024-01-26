@@ -216,6 +216,14 @@
     }}
     {{
       reportDetailsMacros.tableRow({
+        label: 'Were any weapons observed?',
+        'data-qa': 'weaponsSeen',
+        dataValue: data.useOfForceDetails.weaponsSeen,
+        print: print
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
         label: 'Was a guiding hold used?',
         'data-qa': 'guidingHold',
         dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize,
