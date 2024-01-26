@@ -127,6 +127,20 @@ describe('complete schema', () => {
       ])
     })
 
+    it("Not selecting an option for 'weaponsSeen' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        weaponsSeen: undefined,
+      }
+      const { errors } = check(input)
+      expect(errors).toEqual([
+        {
+          href: '#weaponsSeen',
+          text: 'Select yes if any weapons were observed',
+        },
+      ])
+    })
+
     it("Not selecting an option for 'body worn cameras' returns a validation error message", () => {
       const input = {
         ...validInput,
@@ -504,6 +518,122 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
       expect(formResponse.painInducingTechniquesUsed).toEqual(['FINAL_LOCK_FLEXION', 'THUMB_LOCK'])
     })
+    it('Not adding weapon types but selecting YES for weaponsSeen returns validation error messages', () => {
+      const input = {
+        ...validInput,
+        weaponsSeen: 'YES',
+        weaponTypes: undefined,
+      }
+
+      const { errors } = check(input)
+
+      expect(errors).toEqual([{ href: '#weaponTypes[0]', text: '"weaponTypes" is required' }])
+    })
+
+    it('Should allow weaponTypes to be duplicated', () => {
+      validInput.weaponsSeen = 'YES'
+      validInput.weaponTypes = [{ weaponType: 'knife' }, { weaponType: 'knife' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([])
+    })
+
+    it('Should not return validation error if all weapons are unique', () => {
+      validInput.weaponsSeen = 'YES'
+      validInput.weaponTypes = [{ weaponType: 'knife' }, { weaponType: 'bat' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([])
+    })
+
+    it('Should trim empty-string weapon types', () => {
+      validInput.weaponsSeen = 'YES'
+      validInput.weaponTypes = [{ weaponType: '    AAA  ', age: '29' }, { weaponType: '' }, { weaponType: 'BBB' }]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        weaponsSeen: 'YES',
+        weaponTypes: [
+          {
+            weaponType: 'AAA',
+          },
+          {
+            weaponType: 'BBB',
+          },
+        ],
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
+
+    it('Weapon Types are removed when Weapons Seen is NO', () => {
+      validInput.weaponsSeen = 'NO'
+      validInput.weaponTypes = [{ weaponType: 'AAA' }, { weaponType: '' }, { weaponType: 'AAA' }]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        weaponsSeen: 'NO',
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
+
+    it('WeaponsSeen field must be one of allowed values', () => {
+      validInput.weaponsSeen = 'SOMETHING_RANDOM'
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#weaponsSeen',
+          text: 'Select yes if any weapons were observed',
+        },
+      ])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        weaponsSeen: 'SOMETHING_RANDOM',
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
   })
 })
 
@@ -575,132 +705,5 @@ describe('partial schema', () => {
       },
     ])
     expect(formResponse.restraintPositions).toBe('STANDING__WRIST_HOLD')
-  })
-
-  it("Not selecting an option for 'weaponsSeen' returns a validation error message", () => {
-    validInput.weaponsSeen = undefined
-
-    const { errors } = check(validInput)
-    expect(errors).toEqual([
-      {
-        href: '#weaponsSeen',
-        text: 'Select yes if any weapons were observed',
-      },
-    ])
-  })
-
-  it('Not adding weapon types but selecting YES for weaponsSeen returns validation error messages', () => {
-    validInput.weaponsSeen = 'YES'
-    validInput.weaponTypes = undefined
-    const { errors } = check(validInput)
-
-    expect(errors).toEqual([{ href: '#weaponTypes[0]', text: 'Enter the type of weapon observed' }])
-  })
-
-  it('Should return validation error if  weaponTypes are duplicated', () => {
-    validInput.weaponsSeen = 'YES'
-    validInput.weaponTypes = [{ weaponType: 'knife' }, { weaponType: 'knife' }]
-    const { errors } = check(validInput)
-
-    expect(errors).toEqual([
-      { href: '#weaponTypes[1]', text: "Weapon 'knife' has already been added - remove this weapon" },
-    ])
-  })
-
-  it('Should not return validation error if all weapons are unique', () => {
-    validInput.weaponsSeen = 'YES'
-    validInput.weaponTypes = [{ weaponType: 'knife' }, { weaponType: 'bat' }]
-    const { errors } = check(validInput)
-
-    expect(errors).toEqual([])
-  })
-
-  it('Should trim empty-string weapon types', () => {
-    validInput.weaponsSeen = 'YES'
-    validInput.weaponTypes = [{ weaponType: '    AAA  ', age: '29' }, { weaponType: '' }, { weaponType: 'BBB' }]
-
-    const { errors, formResponse } = check(validInput)
-
-    expect(errors).toEqual([])
-
-    expect(formResponse).toEqual({
-      batonDrawn: true,
-      batonUsed: true,
-      bodyWornCamera: 'NO',
-      escortingHold: true,
-      guidingHold: true,
-      guidingHoldOfficersInvolved: 2,
-      handcuffsApplied: true,
-      painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-      pavaDrawn: true,
-      pavaUsed: true,
-      weaponsSeen: 'YES',
-      weaponTypes: [
-        {
-          weaponType: 'AAA',
-        },
-        {
-          weaponType: 'BBB',
-        },
-      ],
-      personalProtectionTechniques: true,
-      positiveCommunication: true,
-      restraintPositions: ['STANDING', 'FACE_DOWN'],
-    })
-  })
-
-  it('Weapon Types are removed when Weapons Seen is NO', () => {
-    validInput.weaponsSeen = 'NO'
-    validInput.weaponTypes = [{ weaponType: 'AAA' }, { weaponType: '' }, { weaponType: 'AAA' }]
-
-    const { errors, formResponse } = check(validInput)
-
-    expect(errors).toEqual([])
-
-    expect(formResponse).toEqual({
-      batonDrawn: true,
-      batonUsed: true,
-      bodyWornCamera: 'NO',
-      escortingHold: true,
-      guidingHold: true,
-      guidingHoldOfficersInvolved: 2,
-      handcuffsApplied: true,
-      painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-      pavaDrawn: true,
-      pavaUsed: true,
-      weaponsSeen: 'NO',
-      personalProtectionTechniques: true,
-      positiveCommunication: true,
-      restraintPositions: ['STANDING', 'FACE_DOWN'],
-    })
-  })
-
-  it('WeaponsSeen field must be one of allowed values', () => {
-    validInput.weaponsSeen = 'SOMETHING_RANDOM'
-    const { errors, formResponse } = check(validInput)
-
-    expect(errors).toEqual([
-      {
-        href: '#weaponsSeen',
-        text: 'Select yes if any weapons were observed',
-      },
-    ])
-
-    expect(formResponse).toEqual({
-      batonDrawn: true,
-      batonUsed: true,
-      bodyWornCamera: 'NO',
-      escortingHold: true,
-      guidingHold: true,
-      guidingHoldOfficersInvolved: 2,
-      handcuffsApplied: true,
-      painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-      pavaDrawn: true,
-      pavaUsed: true,
-      weaponsSeen: 'SOMETHING_RANDOM',
-      personalProtectionTechniques: true,
-      positiveCommunication: true,
-      restraintPositions: ['STANDING', 'FACE_DOWN'],
-    })
   })
 })

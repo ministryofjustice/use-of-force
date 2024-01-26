@@ -71,8 +71,6 @@ const completeSchema = joi.object({
       })
         .min(1)
         .message('Enter the type of weapon observed')
-        .ruleset.unique('weaponType')
-        .message("Weapon '{#value.weaponType}' has already been added - remove this weapon")
         .required()
         .alter(minZeroForPartialValidation),
       otherwise: joi.any().strip(),
