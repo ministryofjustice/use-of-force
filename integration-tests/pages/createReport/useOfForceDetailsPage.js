@@ -7,14 +7,17 @@ const useOfForceDetailsPage = () =>
 
     bodyWornCamera: () => cy.get('[name="bodyWornCamera"]'),
     bodyWornCameraNumber: index => cy.get(`[name="bodyWornCameraNumbers[${index}][cameraNum]"]`),
-    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-input = true]').click(),
-    removeBodyWornCamera: index => cy.get('.add-another-input .add-another__remove-button').eq(index).click(),
-
+    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-bodyWornCameraNumbers = true]').click(),
+    removeBodyWornCamera: index =>
+      cy.get('.add-another-bodyWornCameraNumbers .add-another__remove-button').eq(index).click(),
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
     pavaDrawn: () => cy.get('[name="pavaDrawn"]'),
     pavaUsed: () => cy.get('[name="pavaUsed"]'),
+    weaponsSeen: () => cy.get('[name="weaponsSeen"]'),
+    addWeaponType: () => cy.get('[data-qa-add-another-weaponType = true]').click(),
+    removeWeaponType: index => cy.get('.add-another-weaponType .add-another__remove-button').eq(index).click(),
     guidingHold: () => cy.get('[name="guidingHold"]'),
     guidingHoldOfficersInvolved: {
       check: value => cy.get('[name="guidingHoldOfficersInvolved"]').check(value),
@@ -56,6 +59,7 @@ const useOfForceDetailsPage = () =>
       this.batonDrawn().check('true')
       this.batonUsed().check('true')
       this.pavaDrawn().check('true')
+      this.weaponsSeen().check('NO')
       this.pavaUsed().check('true')
       this.guidingHold().check('true')
       this.guidingHoldOfficersInvolved.check('2')
