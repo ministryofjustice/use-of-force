@@ -109,34 +109,39 @@ const completeSchema = joi.object({
     })
     .alter(optionalForPartialValidation),
 
-  painInducingTechniques: requiredBooleanMsg('Select yes if pain inducing techniques were used').alter(
-    optionalForPartialValidation
-  ),
-
-  painInducingTechniquesUsed: joi.when('painInducingTechniques', {
-    is: true,
-    then: joi
-      .alternatives()
-      .try(
-        joi
-          .array()
-          .items(
-            requiredOneOfMsg(
-              'FINAL_LOCK_FLEXION',
-              'FINAL_LOCK_ROTATION',
-              'MANDIBULAR_ANGLE_TECHNIQUE',
-              'SHOULDER_CONTROL',
-              'THROUGH_RIGID_BAR_CUFFS',
-              'THUMB_LOCK',
-              'UPPER_ARM_CONTROL'
-            )('Select the pain inducing techniques used').alter(optionalForPartialValidation)
-          )
-      )
-      .required()
-      .messages({ 'any.required': 'Select the pain inducing techniques used' })
-      .alter(optionalForPartialValidation),
-    otherwise: joi.any().strip(),
-  }),
+  painInducingTechniquesUsed: joi
+    .alternatives()
+    .try(
+      joi
+        .valid(
+          'FINAL_LOCK_FLEXION',
+          'FINAL_LOCK_ROTATION',
+          'MANDIBULAR_ANGLE_TECHNIQUE',
+          'SHOULDER_CONTROL',
+          'THROUGH_RIGID_BAR_CUFFS',
+          'THUMB_LOCK',
+          'UPPER_ARM_CONTROL',
+          'NONE'
+        )
+        .messages({ 'any.only': 'Select if any pain inducing techniques were used' }),
+      joi
+        .array()
+        .items(
+          requiredOneOfMsg(
+            'FINAL_LOCK_FLEXION',
+            'FINAL_LOCK_ROTATION',
+            'MANDIBULAR_ANGLE_TECHNIQUE',
+            'SHOULDER_CONTROL',
+            'THROUGH_RIGID_BAR_CUFFS',
+            'THUMB_LOCK',
+            'UPPER_ARM_CONTROL',
+            'NONE'
+          )('Select if any pain inducing techniques were used').alter(optionalForPartialValidation)
+        )
+    )
+    .required()
+    .messages({ 'any.required': 'Select if any pain inducing techniques were used' })
+    .alter(optionalForPartialValidation),
 
   handcuffsApplied: requiredBooleanMsg('Select yes if handcuffs were applied').alter(optionalForPartialValidation),
 })

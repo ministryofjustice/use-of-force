@@ -37,7 +37,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
-    useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.painInducingTechniquesUsed.check(['THUMB_LOCK', 'THROUGH_RIGID_BAR_CUFFS'])
     const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     return relocationAndInjuriesPage
@@ -63,7 +62,6 @@ context('Enter use of force details page', () => {
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
-        painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
@@ -89,7 +87,6 @@ context('Enter use of force details page', () => {
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: 'STANDING',
-        painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
@@ -118,7 +115,8 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.restraintPositions.kneeling().should('be.checked')
     useOfForceDetailsPage.restraintPositions.onBack().should('not.be.checked')
     useOfForceDetailsPage.handcuffsApplied().should('have.value', 'true')
-    useOfForceDetailsPage.painInducingTechniques().should('have.value', 'true')
+    useOfForceDetailsPage.painInducingTechniquesUsed.throughRigidBarCuffs().should('be.checked')
+    useOfForceDetailsPage.painInducingTechniquesUsed.thumbLock().should('be.checked')
   })
 
   it('Displays validation messages', () => {
@@ -139,9 +137,9 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.handcuffsApplied().check('true')
-    useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.clickSaveAndContinue()
     useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
     useOfForceDetailsPage.errorSummary().contains('Enter the body-worn camera number')
+    useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
   })
 })
