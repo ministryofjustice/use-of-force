@@ -40,7 +40,7 @@
         errorMessage: errors | findError('bodyWornCamera'),
         includeNotKnown: false
     },
-      followUpQuestion:{      
+      followUpQuestion:{
         name: "bodyWornCameraNumbers",
         value: data.bodyWornCameraNumbers,
         errorMessage: errors,
@@ -140,20 +140,14 @@
 
     <!-- Q8 -->
     <div id="control-and-restraint">
-    {{ incidentMacro.radiosWithNestedCheckboxes({
+    {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
-        text: "Was control and restraint used?",
-        name: "restraint",
-        value: data.restraint,
-        options: yesNoOptions,
-        errorMessage: errors | findError('restraint')
-      },
-      followUpQuestion: {
-        text: "What positions were used?",
+        text: "Which control and restraint positions were used?",
+        hint: "Select all that apply",
         name: "restraintPositions",
-        value: data.restraintPositions or [],
-        errorMessage: errors | findError('restraintPositions'),
-        options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label')
+        value: data.restraintPositions | toArray,
+        options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label'),
+        errorMessage: errors | findError('restraintPositions')
       }
     }) 
   }}
@@ -194,5 +188,6 @@
 {% endblock %}
 
 {% block script %}
+<script src="/assets/deselect-children.js"></script>
 <script src="/assets/add-another-evidence.js"></script>
 {% endblock %}

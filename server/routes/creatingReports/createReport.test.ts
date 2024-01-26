@@ -46,9 +46,9 @@ const validUseOfForceDetailsRequest = {
   pavaDrawn: 'false',
   guidingHold: 'false',
   escortingHold: 'false',
-  restraint: 'false',
   painInducingTechniques: 'false',
   handcuffsApplied: 'false',
+  restraintPositions: 'NONE',
   submitType: 'save-and-continue',
 }
 
@@ -67,7 +67,7 @@ const validUseofForceDetailUpdate = [
     pavaDrawn: false,
     personalProtectionTechniques: false,
     positiveCommunication: false,
-    restraint: false,
+    restraintPositions: 'NONE',
   },
 ]
 
@@ -79,8 +79,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/relocation-and-injuries')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseofForceDetailUpdate)
       })
   })
 
@@ -91,7 +91,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       }))
 })
 
@@ -103,8 +103,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseofForceDetailUpdate)
       })
   })
 
@@ -115,8 +115,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(user, 1, 'useOfForceDetails', {
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(user, 1, 'useOfForceDetails', {
           guidingHold: false,
           escortingHold: false,
           handcuffsApplied: false,
@@ -124,7 +124,7 @@ describe('POST save and return to tasklist', () => {
           pavaDrawn: false,
           personalProtectionTechniques: false,
           positiveCommunication: false,
-          restraint: false,
+          restraintPositions: 'NONE',
         })
       })
   })
@@ -163,14 +163,13 @@ describe('POST save once complete and return to check-your-answers', () => {
       .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
-        restraint: 'true',
         restraintPositions: ['not a valid value'],
         submitType: 'save-and-return',
       })
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       })
   })
 })

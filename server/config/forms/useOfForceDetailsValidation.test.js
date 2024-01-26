@@ -20,7 +20,6 @@ beforeEach(() => {
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
     escortingHold: 'true',
-    restraint: 'true',
     restraintPositions: ['STANDING', 'FACE_DOWN'],
     handcuffsApplied: 'true',
     painInducingTechniques: 'true',
@@ -48,7 +47,6 @@ describe('complete schema', () => {
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
         painInducingTechniques: true,
@@ -90,8 +88,8 @@ describe('complete schema', () => {
           text: 'Select yes if an escorting hold was used',
         },
         {
-          href: '#restraint',
-          text: 'Select yes if control and restraint was used',
+          href: '#restraintPositions',
+          text: 'Select which control and restraint positions were used',
         },
         {
           href: '#painInducingTechniques',
@@ -197,7 +195,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
@@ -224,7 +221,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
@@ -255,7 +251,6 @@ describe('complete schema', () => {
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
       })
     })
@@ -403,24 +398,7 @@ describe('complete schema', () => {
       expect(formResponse.escortingHold).toEqual(undefined)
     })
 
-    it("Not selecting an option for 'restraint'returns a validation error message plus 'restraint positions' is undefined", () => {
-      const input = {
-        ...validInput,
-        restraint: undefined,
-      }
-      const { errors, formResponse } = check(input)
-
-      expect(errors).toEqual([
-        {
-          href: '#restraint',
-          text: 'Select yes if control and restraint was used',
-        },
-      ])
-      expect(formResponse.restraint).toBe(undefined)
-      expect(formResponse.restraintPositions).toBe(undefined)
-    })
-
-    it("Selecting Yes to 'restraint' but nothing for 'restraint positions' returns a validation error message", () => {
+    it("Selecting nothing for 'restraint positions' returns a validation error message", () => {
       const input = {
         ...validInput,
         restraintPositions: undefined,
@@ -430,10 +408,9 @@ describe('complete schema', () => {
       expect(errors).toEqual([
         {
           href: '#restraintPositions',
-          text: 'Select the control and restraint positions used',
+          text: 'Select which control and restraint positions were used',
         },
       ])
-      expect(formResponse.restraint).toEqual(true)
       expect(formResponse.restraintPositions).toBe(undefined)
     })
 
@@ -445,7 +422,6 @@ describe('complete schema', () => {
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([])
-      expect(formResponse.restraint).toBe(true)
       expect(formResponse.restraintPositions).toEqual(['KNEELING'])
     })
 
@@ -456,8 +432,18 @@ describe('complete schema', () => {
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([])
-      expect(formResponse.restraint).toEqual(true)
       expect(formResponse.restraintPositions).toEqual(['STANDING', 'FACE_DOWN'])
+    })
+
+    it("Selecting 'Standing' and child option 'Wrist hold' for 'restraint positions' returns no errors", () => {
+      const input = {
+        ...validInput,
+        restraintPositions: ['STANDING', 'STANDING__WRIST_HOLD'],
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([])
+      expect(formResponse.restraintPositions).toEqual(['STANDING', 'STANDING__WRIST_HOLD'])
     })
 
     it("Not selecting an option for 'handcuffs applied' returns a validation error message", () => {
@@ -558,7 +544,6 @@ describe('partial schema', () => {
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
         handcuffsApplied: true,
         painInducingTechniques: true,
@@ -566,7 +551,7 @@ describe('partial schema', () => {
       })
     })
 
-    it('Should return no error massages if no input field is completed', () => {
+    it('Should return no error messages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -575,14 +560,13 @@ describe('partial schema', () => {
     })
   })
 
-  it('Should return no error massages when dependent answers are absent', () => {
+  it('Should return no error messages when dependent answers are absent', () => {
     const { errors, formResponse } = check({
       batonDrawn: 'true',
       pavaDrawn: 'true',
       guidingHold: 'true',
       escortingHold: 'true',
-      restraint: 'true',
-      restraintPositions: [],
+      restraintPositions: 'NONE',
     })
 
     expect(errors).toEqual([])
@@ -591,7 +575,22 @@ describe('partial schema', () => {
       guidingHold: true,
       escortingHold: true,
       pavaDrawn: true,
-      restraint: true,
+      restraintPositions: 'NONE',
     })
+  })
+  it('Selecting only a child control technique returns a validation error message', () => {
+    const input = {
+      ...validInput,
+      restraintPositions: 'STANDING__WRIST_HOLD',
+    }
+    const { errors, formResponse } = check(input)
+
+    expect(errors).toEqual([
+      {
+        href: '#restraintPositions',
+        text: 'Select which control and restraint positions were used',
+      },
+    ])
+    expect(formResponse.restraintPositions).toBe('STANDING__WRIST_HOLD')
   })
 })

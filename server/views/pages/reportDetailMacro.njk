@@ -234,10 +234,11 @@
     {% endif %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was control and restraint used?',
+        label: 'Which control and restraint techniques were used?',
         'data-qa': 'restraintUsed',
-        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize,
-        print: print
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
+        print: print,
+        type: 'parentChild'
       })
     }}
     
