@@ -20,7 +20,7 @@ describe('statusCheck', () => {
       handcuffsApplied: false,
       positiveCommunication: false,
       personalProtectionTechniques: true,
-      painInducingTechniques: false,
+      painInducingTechniquesUsed: 'NONE',
       restraintPositions: 'NONE',
       bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: '1111' }, { cameraNum: '2222' }],
@@ -110,7 +110,6 @@ describe('statusCheck', () => {
         handcuffsApplied: null,
         positiveCommunication: false,
         personalProtectionTechniques: undefined,
-        painInducingTechniques: false,
         painInducingTechniquesUsed: null,
       },
     }

@@ -46,13 +46,13 @@ const validUseOfForceDetailsRequest = {
   pavaDrawn: 'false',
   guidingHold: 'false',
   escortingHold: 'false',
-  painInducingTechniques: 'false',
+  painInducingTechniquesUsed: 'NONE',
   handcuffsApplied: 'false',
   restraintPositions: 'NONE',
   submitType: 'save-and-continue',
 }
 
-const validUseofForceDetailUpdate = [
+const validUseOfForceDetailUpdate = [
   user,
   1,
   'useOfForceDetails',
@@ -63,7 +63,7 @@ const validUseofForceDetailUpdate = [
     guidingHold: false,
     escortingHold: false,
     handcuffsApplied: false,
-    painInducingTechniques: false,
+    painInducingTechniquesUsed: 'NONE',
     pavaDrawn: false,
     personalProtectionTechniques: false,
     positiveCommunication: false,
@@ -80,7 +80,7 @@ describe('POST save and continue /section/form', () => {
       .expect('Location', '/report/1/relocation-and-injuries')
       .expect(() => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
-        expect(draftReportService.process).toHaveBeenCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 
@@ -104,7 +104,7 @@ describe('POST save and return to tasklist', () => {
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
-        expect(draftReportService.process).toHaveBeenCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 
@@ -120,7 +120,7 @@ describe('POST save and return to tasklist', () => {
           guidingHold: false,
           escortingHold: false,
           handcuffsApplied: false,
-          painInducingTechniques: false,
+          painInducingTechniquesUsed: 'NONE',
           pavaDrawn: false,
           personalProtectionTechniques: false,
           positiveCommunication: false,
@@ -152,8 +152,8 @@ describe('POST save once complete and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 

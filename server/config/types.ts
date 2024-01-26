@@ -96,6 +96,7 @@ export const PainInducingTechniquesUsed = toEnum({
   THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
   THUMB_LOCK: { value: 'THUMB_LOCK', label: 'Thumb lock' },
   UPPER_ARM_CONTROL: { value: 'UPPER_ARM_CONTROL', label: 'Upper arm control' },
+  NONE: { value: 'NONE', label: 'No pain inducing techniques were used', exclusive: true },
 })
 
 export const RelocationLocation = toEnum({

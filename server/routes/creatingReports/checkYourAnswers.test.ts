@@ -71,7 +71,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).not.toContain('Were pain inducing techniques used?')
+        expect(res.text).not.toContain('Which pain inducing techniques were used?')
       })
   })
 
@@ -98,7 +98,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Were pain inducing techniques used?')
+        expect(res.text).toContain('Which pain inducing techniques were used?')
       })
   })
 
@@ -125,10 +125,35 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Were pain inducing techniques used?')
+        expect(res.text).toContain('Which pain inducing techniques were used?')
       })
   })
 
+  it('Should contain the pain inducing techniques question [pain inducing techniques is undefined but techniques listed]', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          pavaDrawn: false,
+          batonDrawn: false,
+          guidingHold: false,
+          handcuffsApplied: false,
+          positiveCommunication: false,
+          painInducingTechniquesUsed: 'NONE',
+          personalProtectionTechniques: false,
+          restraintPositions: 'NONE',
+        },
+      },
+    })
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Which pain inducing techniques were used?')
+      })
+  })
   it('Should contain prisoner compliant', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
     draftReportService.getCurrentDraft.mockResolvedValue({

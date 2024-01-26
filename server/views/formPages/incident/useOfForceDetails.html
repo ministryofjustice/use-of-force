@@ -154,16 +154,10 @@
 
   <!-- Q9 -->
     <div id="pain-inducing-techniques">
-      {{ incidentMacro.radiosWithNestedCheckboxes({
+      {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
-          text: "Were pain inducing techniques used?",
-          name: "painInducingTechniques",
-          value: data.painInducingTechniques,
-          options: yesNoOptions,
-          errorMessage: errors | findError('painInducingTechniques')
-        },
-        followUpQuestion: {
-          text: "What pain inducing techniques  were used?",
+          text: "Which pain inducing techniques were used?",
+          hint: "Select all that apply",
           name: "painInducingTechniquesUsed",
           value: data.painInducingTechniquesUsed or [],
           errorMessage: errors | findError('painInducingTechniquesUsed'),

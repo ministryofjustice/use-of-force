@@ -20,8 +20,8 @@ export type UseOfForceDetails = {
   restraint?: boolean
   restraintPositions: string | string[]
   handcuffsApplied: boolean
-  painInducingTechniques: boolean
-  painInducingTechniquesUsed: string[]
+  painInducingTechniques?: boolean
+  painInducingTechniquesUsed: string | string[]
 }
 
 export type ReasonsForUseOfForce = {

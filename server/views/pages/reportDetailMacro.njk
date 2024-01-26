@@ -243,10 +243,10 @@
     }}
     
     {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
-    {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
+    {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Were pain inducing techniques used?',
+          label: 'Which pain inducing techniques were used?',
           'data-qa': 'painInducingTechniques',
           dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
           print: print

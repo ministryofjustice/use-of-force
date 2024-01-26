@@ -142,7 +142,6 @@ const getRestraintPositions = positions => {
 
 const toParentChild = postions => {
   const positionObjects = postions.map(p => findEnum(ControlAndRestraintPosition, p))
-  console.log(positionObjects)
   const parents: any[] = []
   const children: any[] = []
   positionObjects.forEach(obj => {
@@ -152,8 +151,6 @@ const toParentChild = postions => {
       children.push(obj)
     }
   })
-  console.log(parents)
-  console.log(children)
   const parentChild: string[] = []
   parents.forEach(function (p) {
     const thesechildren = children
@@ -166,7 +163,6 @@ const toParentChild = postions => {
       parentChild.push(`${p.label}: ${thesechildren}`)
     }
   })
-  console.log(parentChild)
   return parentChild
 }
 
@@ -175,7 +171,7 @@ const toArray = obj => {
 }
 
 const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {
-  if (details.painInducingTechniques === undefined) {
+  if (details.painInducingTechniques === undefined && !details.painInducingTechniquesUsed) {
     return undefined
   }
 
@@ -183,13 +179,13 @@ const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {
     return YES
   }
 
-  if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
-    return `${YES} - ${details.painInducingTechniquesUsed
+  if (details.painInducingTechniquesUsed) {
+    return `${toArray(details.painInducingTechniquesUsed)
       .map(technique => toLabel(PainInducingTechniquesUsed, technique))
       .join(', ')}`
   }
 
-  return NO
+  return PainInducingTechniquesUsed.NONE.label
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
