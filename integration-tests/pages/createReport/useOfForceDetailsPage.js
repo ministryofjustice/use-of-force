@@ -7,7 +7,7 @@ const useOfForceDetailsPage = () =>
 
     bodyWornCamera: () => cy.get('[name="bodyWornCamera"]'),
     bodyWornCameraNumber: index => cy.get(`[name="bodyWornCameraNumbers[${index}][cameraNum]"]`),
-    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-bodyWornCameraNumbers = true]').click(),
+    addAnotherBodyWornCamera: () => cy.get('[data-qa-add-another-input = true]').click(),
     removeBodyWornCamera: index =>
       cy.get('.add-another-bodyWornCameraNumbers .add-another__remove-button').eq(index).click(),
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
@@ -16,7 +16,7 @@ const useOfForceDetailsPage = () =>
     pavaDrawn: () => cy.get('[name="pavaDrawn"]'),
     pavaUsed: () => cy.get('[name="pavaUsed"]'),
     weaponsSeen: () => cy.get('[name="weaponsSeen"]'),
-    addWeaponType: () => cy.get('[data-qa-add-another-weaponType = true]').click(),
+    addWeaponType: () => cy.get('[data-qa-add-another-input = true]').click(),
     removeWeaponType: index => cy.get('.add-another-weaponType .add-another__remove-button').eq(index).click(),
     guidingHold: () => cy.get('[name="guidingHold"]'),
     guidingHoldOfficersInvolved: {
