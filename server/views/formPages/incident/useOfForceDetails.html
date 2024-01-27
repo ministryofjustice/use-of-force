@@ -32,13 +32,13 @@
     })}}
 
     <!-- Q2 new question body-worn camera question which was previously in the evidence page -->
-    {{ incidentMacro.radioWithMultipleNestedTextBox({
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Was any part of the incident captured on a body-worn camera?",
         name: "bodyWornCamera",
         value: data.bodyWornCamera,
         errorMessage: errors | findError('bodyWornCamera'),
-        includeNotKnown: false
+        questionSubject: 'body-worn-camera'
     },
       followUpQuestion:{
         name: "bodyWornCameraNumbers",
@@ -184,4 +184,5 @@
 {% block script %}
 <script src="/assets/deselect-children.js"></script>
 <script src="/assets/add-another-evidence.js"></script>
+<script src="/assets/add-another-detail.js"></script>
 {% endblock %}

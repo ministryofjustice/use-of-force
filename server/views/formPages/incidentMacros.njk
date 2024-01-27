@@ -51,94 +51,6 @@
 </div>
 {% endmacro %}
 
-
-{% macro radioWithMultipleNestedTextBox(question) %}
-
-  {% if question.primaryQuestion.errorMessage %}
-    {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
-    {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
-  {% endif %}
-    
-  <div class="govuk-!-margin-bottom-9 {{govukFormGroupErrorOuter}}">
-    <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend ">
-        {{question.primaryQuestion.text}}
-      </legend>
-      <span id="primaryQuestionErrMsg" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span>
-        {{ primaryErrorMessageText}}
-      </span>
-      
-      <div class="govuk-radios{% if not question.primaryQuestion.includeNotKnown %}--inline{% endif %}" data-module="govuk-radios">
-        <div class=" govuk-radios">
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
-            type="radio" value="YES" data-aria-controls="conditional-inputs" 
-            {% if question.primaryQuestion.value === 'YES' %} checked="checked" {% endif %}>
-            <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}">
-              Yes
-            </label>
-          </div>
-          <!-- hidden panel starts here -->
-          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-inputs">
-
-            <!-- add another starts here -->
-            <div class="add-another-input" id="{{question.followUpQuestion.name}}">
-              {% for item in question.followUpQuestion.value %}
-               
-                {{ addAnother(
-                question.followUpQuestion.otherIds, 
-                question.followUpQuestion.name, 
-                question.followUpQuestion.errorMessage, 
-                index = loop.index0, 
-                value = item[question.followUpQuestion.otherIds[0]], 
-                showRemove = loop.length != 1) 
-                }}
-              {% else %}
-                {{ addAnother(
-                question.followUpQuestion.otherIds, 
-                question.followUpQuestion.name, 
-                question.followUpQuestion.errorMessage, 
-                index = 0, 
-                value = null, 
-                showRemove = false) }}
-              {% endfor %}
-
-              <div class="button-action">
-                {{
-                govukButton({
-                  text: 'Add another',
-                  classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
-                  attributes: { 'data-qa-add-another-input': true }
-                })
-              }}
-              </div>
-            </div>
-            <!-- add another ends here -->
-          </div>
-          <!-- hidden panel end -->
-
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="primary-question-no" name="{{question.primaryQuestion.name}}" type="radio" value="NO" {% if question.primaryQuestion.value === 'NO' %} checked="checked" {% endif %}>
-            <label class="govuk-label govuk-radios__label" for="primary-question-no">
-              No
-            </label>
-          </div>
-          {% if question.primaryQuestion.includeNotKnown %}
-              <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="primary-question-notKnown" name="{{question.primaryQuestion.name}}" type="radio" value="NOT_KNOWN" {% if question.primaryQuestion.value === 'NOT_KNOWN' %} checked="checked" {% endif %}>
-                <label class="govuk-label govuk-radios__label" for="primary-question-notKnown">
-                  Not known
-                </label>
-              </div>
-          {% endif %}
-        </div>
-      </div>
-      <!-- end of radios -->
-    </fieldset>
-  </div>
-{% endmacro %}
-
 {% macro addAnother(otherIds, name, errors, index, value, showRemove) %}
   {% call govukFieldset({ classes: 'add-another__item' }) %}
   <div class="govuk-grid-row">
@@ -169,6 +81,80 @@
   </div>  
   {% endcall %}
 {% endmacro%}
+
+{% macro radiosWithAddAnotherTextBox(question) %}
+
+  {% if question.primaryQuestion.errorMessage %}
+    {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
+    {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
+  {% endif %}
+    
+  <div class="govuk-!-margin-bottom-9 {{govukFormGroupErrorOuter}}">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend ">
+        {{question.primaryQuestion.text}}
+      </legend>
+      <span id="primaryQuestionErrMsg" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ primaryErrorMessageText}}
+      </span>
+      
+      <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+        <div class="govuk-radios__item">
+          <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
+          type="radio" value="YES" data-aria-controls="conditional-input-for-{{question.primaryQuestion.questionSubject}}"
+          {% if question.primaryQuestion.value === 'YES' %} checked="checked" {% endif %}>
+          <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}">
+            Yes
+          </label>
+        </div>
+        <div class="govuk-radios__item">
+          <input class="govuk-radios__input" id="primary-question-no" 
+          name="{{question.primaryQuestion.name}}" type="radio" value="NO" 
+          {% if question.primaryQuestion.value === 'NO' %} checked="checked" {% endif %}>
+          <label class="govuk-label govuk-radios__label" for="primary-question-no">
+            No
+          </label>
+        </div>
+        <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-input-for-{{question.primaryQuestion.questionSubject}}">
+          <div class="add-another-{{question.primaryQuestion.questionSubject}}" id="{{question.followUpQuestion.name}}">
+            {% set dataqa = ["add-another-", question.primaryQuestion.questionSubject ] | join %}
+            
+            {% for item in question.followUpQuestion.value %}
+              
+              {{ addAnother(
+              question.followUpQuestion.otherIds, 
+              question.followUpQuestion.name, 
+              question.followUpQuestion.errorMessage, 
+              index = loop.index0, 
+              value = item[question.followUpQuestion.otherIds[0]], 
+              showRemove = loop.length != 1) 
+              }}
+            {% else %}
+              {{ addAnother(
+              question.followUpQuestion.otherIds, 
+              question.followUpQuestion.name, 
+              question.followUpQuestion.errorMessage, 
+              index = 0, 
+              value = null, 
+              showRemove = false) }}
+            {% endfor %}
+
+            <div class="button-action">
+              {{
+              govukButton({
+                text: 'Add another',
+                classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                attributes: {dataqa: dataqa}
+              })
+            }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+{% endmacro %}
 
 {% macro radiosWithNestedRadios(question) %}
 

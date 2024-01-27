@@ -19,8 +19,7 @@ const completeSchema = joi.object({
 
   bodyWornCamera: requiredOneOfMsg(
     'YES',
-    'NO',
-    'NOT_KNOWN'
+    'NO'
   )('Select yes if any part of the incident was captured on a body-worn camera').alter(optionalForPartialValidation),
 
   bodyWornCameraNumbers: joi
