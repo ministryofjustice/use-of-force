@@ -114,6 +114,7 @@ describe('Build details', () => {
         handcuffsApplied: undefined,
         painInducingTechniques: undefined,
         pavaDrawn: undefined,
+        weaponsObserved: undefined,
         personalProtectionTechniques: undefined,
         positiveCommunicationUsed: undefined,
         primaryReason: undefined,

@@ -24,6 +24,8 @@ describe('statusCheck', () => {
       restraintPositions: 'NONE',
       bodyWornCamera: 'YES',
       bodyWornCameraNumbers: [{ cameraNum: '1111' }, { cameraNum: '2222' }],
+      weaponsObserved: 'YES',
+      weaponTypes: [{ weaponType: 'gun' }],
     },
     evidence: {
       cctvRecording: 'NO',

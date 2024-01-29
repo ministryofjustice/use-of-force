@@ -32,13 +32,13 @@
     })}}
 
     <!-- Q2 new question body-worn camera question which was previously in the evidence page -->
-    {{ incidentMacro.radioWithMultipleNestedTextBox({
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Was any part of the incident captured on a body-worn camera?",
         name: "bodyWornCamera",
         value: data.bodyWornCamera,
         errorMessage: errors | findError('bodyWornCamera'),
-        includeNotKnown: false
+        questionSubject: 'body-worn-camera'
     },
       followUpQuestion:{
         name: "bodyWornCameraNumbers",
@@ -101,6 +101,23 @@
     )}}
 
     <!-- Q6 -->
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
+      primaryQuestion:{
+        text: "Were any weapons observed?",
+        name: "weaponsObserved",
+        value: data.weaponsObserved,
+        errorMessage: errors | findError('weaponsObserved'),
+        questionSubject: 'weapons-observed'
+    },
+      followUpQuestion:{
+        name: "weaponTypes",
+        value: data.weaponTypes,
+        errorMessage: errors,
+        otherIds: ['weaponType', 'Weapon type']
+      }
+    }) }}
+
+    <!-- Q7 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a guiding hold used?",
@@ -129,7 +146,7 @@
     }
     )}}
 
-    <!-- Q7 -->
+    <!-- Q8 -->
     {{ incidentMacro.radio( {
     text: "Was an escorting hold used?",
     name: "escortingHold",
@@ -138,7 +155,7 @@
     errorMessage: errors | findError('escortingHold')
     })}}
 
-    <!-- Q8 -->
+    <!-- Q9 -->
     <div id="control-and-restraint">
     {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
@@ -153,7 +170,7 @@
   }}
   </div>
 
-  <!-- Q9 -->
+  <!-- Q10 -->
     <div id="pain-inducing-techniques">
       {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
@@ -168,7 +185,7 @@
     }}
     </div>
 
-    <!-- 10 -->
+    <!-- 11 -->
     {{ incidentMacro.radio( {
       text: "Were handcuffs applied?",
       name: "handcuffsApplied",
@@ -184,4 +201,5 @@
 {% block script %}
 <script src="/assets/deselect-children.js"></script>
 <script src="/assets/add-another-evidence.js"></script>
+<script src="/assets/add-another-detail.js"></script>
 {% endblock %}
