@@ -14,7 +14,7 @@ export type UseOfForceDetails = {
   batonUsed: boolean
   pavaDrawn: boolean
   pavaUsed: boolean
-  weaponsObserved: boolean
+  weaponsObserved: string
   weaponTypes: { weaponType: string }[]
   guidingHold: boolean
   guidingHoldOfficersInvolved: number

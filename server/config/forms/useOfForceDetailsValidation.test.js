@@ -1,5 +1,6 @@
 const { complete, partial } = require('./useOfForceDetailsForm')
 const { processInput } = require('../../services/validation')
+const { BodyWornCameras } = require('../types')
 
 const checkFactory = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })
@@ -45,6 +46,7 @@ describe('complete schema', () => {
         batonUsed: true,
         pavaDrawn: true,
         pavaUsed: true,
+        weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
@@ -192,6 +194,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
+        weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -200,7 +203,7 @@ describe('complete schema', () => {
     })
 
     it('Body-worn camera identifiers are not required when bodyWornCamera is NO', () => {
-      validInput.bodyWornCamer = 'NO'
+      validInput.bodyWornCamera = 'NO'
       validInput.bodyWornCameraNumbers = [{ cameraNum: 'AAA' }, { cameraNum: '' }, { cameraNum: 'AAA' }]
 
       const { errors, formResponse } = check(validInput)
@@ -217,6 +220,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
+        weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -246,6 +250,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
+        weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -629,6 +634,7 @@ describe('partial schema', () => {
         batonUsed: true,
         pavaDrawn: true,
         pavaUsed: true,
+        weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
@@ -650,19 +656,23 @@ describe('partial schema', () => {
   it('Should return no error messages when dependent answers are absent', () => {
     const { errors, formResponse } = check({
       batonDrawn: 'true',
+      bodyWornCamera: 'YES',
       pavaDrawn: 'true',
       guidingHold: 'true',
       escortingHold: 'true',
       restraintPositions: 'NONE',
+      weaponsObserved: 'YES',
     })
 
     expect(errors).toEqual([])
     expect(formResponse).toEqual({
       batonDrawn: true,
+      bodyWornCamera: 'YES',
       guidingHold: true,
       escortingHold: true,
       pavaDrawn: true,
       restraintPositions: 'NONE',
+      weaponsObserved: 'YES',
     })
   })
   it('Selecting only a child control technique returns a validation error message', () => {
