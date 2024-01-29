@@ -380,7 +380,7 @@
                <div class="govuk-checkboxes__item">
                    <input
                            class="govuk-checkboxes__input"
-                           id="parent-{{option.value}}"
+                           id="{{question.primaryQuestion.name}}-parent-{{option.value}}"
                            name="{{question.primaryQuestion.name}}"
                            type="checkbox"
                            value="{{option.value}}"
@@ -390,7 +390,7 @@
                              data-aria-controls="conditional-{{option.value}}"
                             {% if option.value in question.primaryQuestion.value %} checked {% endif %}
                    >
-                   <label class="govuk-label govuk-checkboxes__label" for="parent-{{option.value}}">
+                   <label class="govuk-label govuk-checkboxes__label" for="{{question.primaryQuestion.name}}-parent-{{option.value}}"> 
                        {{option.label}}
                    </label>
                </div>
