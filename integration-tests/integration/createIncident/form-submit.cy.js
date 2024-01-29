@@ -84,6 +84,14 @@ context('Submit the incident report', () => {
     useOfForceDetailsPage.bodyWornCameraNumber(1).type('789')
     useOfForceDetailsPage.addAnotherBodyWornCamera()
     useOfForceDetailsPage.bodyWornCameraNumber(2).type('456')
+
+    useOfForceDetailsPage.weaponsObserved().check('YES')
+    useOfForceDetailsPage.weaponTypes(0).type('gun')
+    useOfForceDetailsPage.addAnotherWeapon()
+    useOfForceDetailsPage.weaponTypes(1).type('knife')
+    useOfForceDetailsPage.addAnotherWeapon()
+    useOfForceDetailsPage.weaponTypes(2).type('fork')
+
     const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     relocationAndInjuriesPage.fillForm()
     const evidencePage = relocationAndInjuriesPage.save()

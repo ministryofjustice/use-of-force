@@ -16,6 +16,7 @@ beforeEach(() => {
     batonDrawn: 'true',
     batonUsed: 'true',
     pavaDrawn: 'true',
+    weaponsObserved: 'NO',
     pavaUsed: 'true',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
@@ -53,7 +54,7 @@ describe('complete schema', () => {
       })
     })
 
-    it('Should return 9 error messages if no input field is completed', () => {
+    it('Should return 10 error messages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -78,6 +79,7 @@ describe('complete schema', () => {
           href: '#pavaDrawn',
           text: 'Select yes if PAVA was drawn',
         },
+        { href: '#weaponsObserved', text: 'Select yes if any weapons were observed' },
         {
           href: '#guidingHold',
           text: 'Select yes if a guiding hold was used',
@@ -100,7 +102,7 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(10)
+      expect(errors.length).toEqual(11)
 
       expect(formResponse).toEqual({})
     })
@@ -330,6 +332,118 @@ describe('complete schema', () => {
       ])
       expect(formResponse.pavaDrawn).toEqual(true)
       expect(formResponse.pavaUsed).toBe(undefined)
+    })
+
+    it("Not selecting an option for 'weapons observed' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        weaponsObserved: undefined,
+      }
+      const { errors } = check(input)
+      expect(errors).toEqual([
+        {
+          href: '#weaponsObserved',
+          text: 'Select yes if any weapons were observed',
+        },
+      ])
+    })
+
+    it('Selecting YES for weapons observed but not adding weapon types generates validation error', () => {
+      validInput.weaponsObserved = 'YES'
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([{ href: '#weaponTypes[0]', text: '"weaponTypes" is required' }])
+    })
+
+    it('Should return validation error if more than one weapon with same identifier', () => {
+      validInput.weaponsObserved = 'YES'
+      validInput.weaponTypes = [{ weaponType: 'Gun' }, { weaponType: 'Gun' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([
+        { href: '#weaponTypes[1]', text: "Weapon 'Gun' has already been added - remove this weapon" },
+      ])
+    })
+
+    it('Should not return validation error if all weapon observed identifiers are unique', () => {
+      validInput.weaponsObserved = 'YES'
+      validInput.weaponTypes = [{ weaponType: 'Gun' }, { weaponType: 'Knife' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([])
+    })
+
+    it('Should trim empty-string weapons observed identifiers', () => {
+      validInput.weaponsObserved = 'YES'
+      validInput.weaponTypes = [{ weaponType: '    gun ', age: 'knife' }, { weaponType: '' }, { weaponType: 'GUN' }]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+        weaponTypes: [
+          {
+            weaponType: 'gun',
+          },
+          {
+            weaponType: 'GUN',
+          },
+        ],
+        weaponsObserved: 'YES',
+      })
+    })
+
+    it('Weapon types identifiers are not required when weaponsObserved is NO', () => {
+      validInput.weaponsObserved = 'NO'
+      validInput.weaponTypes = [{ weaponType: 'Gun' }]
+
+      const { errors, formResponse } = check(validInput)
+
+      expect(errors).toEqual([])
+
+      expect(formResponse).toEqual({
+        batonDrawn: true,
+        batonUsed: true,
+        bodyWornCamera: 'NO',
+        weaponsObserved: 'NO',
+        escortingHold: true,
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        handcuffsApplied: true,
+        painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
+        pavaDrawn: true,
+        pavaUsed: true,
+        personalProtectionTechniques: true,
+        positiveCommunication: true,
+        restraintPositions: ['STANDING', 'FACE_DOWN'],
+      })
+    })
+
+    it('Weapons observed field must be one of allowed values', () => {
+      validInput.weaponsObserved = 'SOMETHING_RANDOM'
+      validInput.weaponTypes = [{ weaponType: 'gun' }]
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#weaponsObserved',
+          text: 'Select yes if any weapons were observed',
+        },
+      ])
     })
 
     it("Not selecting an option for 'guiding hold' returns validation error message plus 'how many officers involved' is undefined", () => {

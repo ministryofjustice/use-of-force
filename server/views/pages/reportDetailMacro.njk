@@ -214,6 +214,18 @@
         print: print
       })
     }}
+
+    {% if data.useOfForceDetails.weaponsObserved != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were any weapons observed?',
+          'data-qa': 'weaponTypes',
+          dataValue: data.useOfForceDetails.weaponsObserved | capitalize,
+          print: print
+        })
+      }}
+    {% endif %}
+
     {{
       reportDetailsMacros.tableRow({
         label: 'Was a guiding hold used?',

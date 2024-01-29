@@ -15,6 +15,9 @@ const useOfForceDetailsPage = () =>
     batonDrawn: () => cy.get('[name="batonDrawn"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
     pavaDrawn: () => cy.get('[name="pavaDrawn"]'),
+    weaponsObserved: () => cy.get('[name="weaponsObserved"]'),
+    weaponTypes: index => cy.get(`[name="weaponTypes[${index}][weaponType]"]`),
+    addAnotherWeapon: () => cy.get('[dataqa=add-another-weapons-observed]').click(),
     pavaUsed: () => cy.get('[name="pavaUsed"]'),
     guidingHold: () => cy.get('[name="guidingHold"]'),
     guidingHoldOfficersInvolved: {
@@ -58,6 +61,7 @@ const useOfForceDetailsPage = () =>
       this.batonUsed().check('true')
       this.pavaDrawn().check('true')
       this.pavaUsed().check('true')
+      this.weaponsObserved().check('NO')
       this.guidingHold().check('true')
       this.guidingHoldOfficersInvolved.check('2')
       this.escortingHold().check('true')

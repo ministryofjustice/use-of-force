@@ -8,6 +8,7 @@ import {
   toLabel,
   UofReasons,
   findEnum,
+  WeaponsObserved,
 } from '../config/types'
 import { Prison } from '../data/prisonClientTypes'
 import {
@@ -80,6 +81,12 @@ const createUseOfForceDetails = (
       value === BodyWornCameras.YES.value
         ? `${YES} - ${extractCommaSeparatedList('cameraNum', bodyWornCameraNumbers)}` || YES
         : toLabel(BodyWornCameras, value)
+    ),
+
+    weaponsObserved: whenPresent(details.weaponsObserved, value =>
+      value === WeaponsObserved.YES.value
+        ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
+        : toLabel(WeaponsObserved, value)
     ),
   }
 }

@@ -1,4 +1,3 @@
-const { use } = require('passport')
 const { offender } = require('../../mockApis/data')
 
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
@@ -31,6 +30,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.batonDrawn().check('true')
     useOfForceDetailsPage.batonUsed().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.weaponsObserved().check('NO')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
@@ -59,6 +59,7 @@ context('Enter use of force details page', () => {
         handcuffsApplied: true,
         pavaDrawn: true,
         pavaUsed: true,
+        weaponsObserved: 'NO',
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
@@ -83,6 +84,7 @@ context('Enter use of force details page', () => {
         escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
+        weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -129,7 +131,6 @@ context('Enter use of force details page', () => {
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.positiveCommunication().check('true')
-    useOfForceDetailsPage.bodyWornCamera().check('YES')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
@@ -139,7 +140,61 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.handcuffsApplied().check('true')
     useOfForceDetailsPage.clickSaveAndContinue()
     useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
+    useOfForceDetailsPage
+      .errorSummary()
+      .contains('Select yes if any part of the incident was captured on a body-worn camera')
+    useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if any weapons were observed')
+  })
+
+  it('Displays secondary validation messages', () => {
+    cy.login()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.positiveCommunication().check('true')
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.personalProtectionTechniques().check('true')
+    useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.weaponsObserved().check('YES')
+    useOfForceDetailsPage.guidingHold().check('true')
+    useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
+    useOfForceDetailsPage.handcuffsApplied().check('true')
+    useOfForceDetailsPage.clickSaveAndContinue()
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
     useOfForceDetailsPage.errorSummary().contains('Enter the body-worn camera number')
     useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
+    useOfForceDetailsPage.errorSummary().contains('Enter the type of weapon observed')
+  })
+
+  it('Displays validation messages when multiple inputs are not unique', () => {
+    cy.login()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).type('1')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(1).type('1')
+
+    useOfForceDetailsPage.weaponsObserved().check('YES')
+    useOfForceDetailsPage.weaponTypes(0).type('gun')
+    useOfForceDetailsPage.addAnotherWeapon()
+    useOfForceDetailsPage.weaponTypes(1).type('gun')
+
+    useOfForceDetailsPage.clickSaveAndContinue()
+
+    useOfForceDetailsPage.errorSummary().contains("Camera '1' has already been added - remove this camera")
+    useOfForceDetailsPage.errorSummary().contains("Weapon 'gun' has already been added - remove this weapon")
   })
 })
