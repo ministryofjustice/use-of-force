@@ -24,6 +24,7 @@ export const findEnum = <K extends string>(type: LabelledEnum<K>, val: string): 
 export const BodyWornCameras = toEnum({
   YES: { value: 'YES', label: 'Yes' },
   NO: { value: 'NO', label: 'No' },
+  NOT_KNOWN: { value: 'NOT_KNOWN', label: 'Not Known' },
 })
 
 export const WeaponsObserved = toEnum({

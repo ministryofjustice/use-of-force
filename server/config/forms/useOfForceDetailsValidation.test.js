@@ -360,16 +360,6 @@ describe('complete schema', () => {
       expect(errors).toEqual([{ href: '#weaponTypes[0]', text: '"weaponTypes" is required' }])
     })
 
-    it('Should return validation error if more than one weapon with same identifier', () => {
-      validInput.weaponsObserved = 'YES'
-      validInput.weaponTypes = [{ weaponType: 'Gun' }, { weaponType: 'Gun' }]
-      const { errors } = check(validInput)
-
-      expect(errors).toEqual([
-        { href: '#weaponTypes[1]', text: "Weapon 'Gun' has already been added - remove this weapon" },
-      ])
-    })
-
     it('Should not return validation error if all weapon observed identifiers are unique', () => {
       validInput.weaponsObserved = 'YES'
       validInput.weaponTypes = [{ weaponType: 'Gun' }, { weaponType: 'Knife' }]

@@ -19,7 +19,8 @@ const completeSchema = joi.object({
 
   bodyWornCamera: requiredOneOfMsg(
     'YES',
-    'NO'
+    'NO',
+    'NOT_KNOWN'
   )('Select yes if any part of the incident was captured on a body-worn camera').alter(optionalForPartialValidation),
 
   bodyWornCameraNumbers: joi
@@ -65,8 +66,6 @@ const completeSchema = joi.object({
       })
         .min(1)
         .message('Enter the type of weapon observed')
-        .ruleset.unique('weaponType')
-        .message("Weapon '{#value.weaponType}' has already been added - remove this weapon")
         .required()
         .alter(minZeroForPartialValidation),
       otherwise: joi.any().strip(),

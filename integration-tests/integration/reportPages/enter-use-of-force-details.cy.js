@@ -186,15 +186,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.bodyWornCameraNumber(0).type('1')
     useOfForceDetailsPage.addAnotherBodyWornCamera()
     useOfForceDetailsPage.bodyWornCameraNumber(1).type('1')
-
-    useOfForceDetailsPage.weaponsObserved().check('YES')
-    useOfForceDetailsPage.weaponTypes(0).type('gun')
-    useOfForceDetailsPage.addAnotherWeapon()
-    useOfForceDetailsPage.weaponTypes(1).type('gun')
-
     useOfForceDetailsPage.clickSaveAndContinue()
-
     useOfForceDetailsPage.errorSummary().contains("Camera '1' has already been added - remove this camera")
-    useOfForceDetailsPage.errorSummary().contains("Weapon 'gun' has already been added - remove this weapon")
   })
 })
