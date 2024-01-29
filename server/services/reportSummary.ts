@@ -73,7 +73,7 @@ const createUseOfForceDetails = (
     controlAndRestraintUsed:
       details.restraint === undefined || details.restraint
         ? getRestraintPositions(details.restraintPositions)
-        : getRestraintPositions(ControlAndRestraintPosition.NONE),
+        : getRestraintPositions(ControlAndRestraintPosition.NONE.value),
 
     painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
