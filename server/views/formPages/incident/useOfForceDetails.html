@@ -160,7 +160,7 @@
     {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
         text: "Which control and restraint positions were used?",
-        hint: "Select all that apply",
+        hint: "Select all that apply.",
         name: "restraintPositions",
         value: data.restraintPositions | toArray,
         options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label'),
@@ -175,7 +175,7 @@
       {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
           text: "Which pain inducing techniques were used?",
-          hint: "Select all that apply",
+          hint: "Select all that apply.",
           name: "painInducingTechniquesUsed",
           value: data.painInducingTechniquesUsed or [],
           errorMessage: errors | findError('painInducingTechniquesUsed'),
