@@ -105,7 +105,7 @@ const completeSchema = joi.object({
             'STANDING__DOUBLE_WRIST_HOLD',
             'STANDING__UNDERHOOK',
             'STANDING__WRIST_HOLD',
-            'STANDING__STRAIGHT_HOLD',
+            'STANDING__STRAIGHT_ARM_HOLD',
             'ON_BACK',
             'ON_BACK__STRAIGHT_ARM_HOLD',
             'ON_BACK__CONVERSION_TO_RBH',
