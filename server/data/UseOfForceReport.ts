@@ -7,18 +7,23 @@ export type IncidentDetails = {
 
 export type UseOfForceDetails = {
   positiveCommunication: boolean
+  bodyWornCamera?: string
+  bodyWornCameraNumbers?: { cameraNum: string }[]
   personalProtectionTechniques: boolean
   batonDrawn: boolean
   batonUsed: boolean
   pavaDrawn: boolean
   pavaUsed: boolean
+  weaponsObserved: string
+  weaponTypes: { weaponType: string }[]
   guidingHold: boolean
   guidingHoldOfficersInvolved: number
-  restraint: boolean
-  restraintPositions: string[]
+  escortingHold?: boolean
+  restraint?: boolean
+  restraintPositions: string | string[]
   handcuffsApplied: boolean
-  painInducingTechniques: boolean
-  painInducingTechniquesUsed: string[]
+  painInducingTechniques?: boolean
+  painInducingTechniquesUsed: string | string[]
 }
 
 export type ReasonsForUseOfForce = {
@@ -45,8 +50,8 @@ export type Evidence = {
   baggedEvidence: boolean
   photographsTaken: boolean
   cctvRecording: string
-  bodyWornCamera: string
-  bodyWornCameraNumbers: { cameraNum: string }[]
+  bodyWornCamera?: string
+  bodyWornCameraNumbers?: { cameraNum: string }[]
 }
 
 export type InvolvedStaff = {

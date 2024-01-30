@@ -31,7 +31,24 @@
       errorMessage: errors | findError('positiveCommunication')
     })}}
 
-    <!-- Q2 -->
+    <!-- Q2 new question body-worn camera question which was previously in the evidence page -->
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
+      primaryQuestion:{
+        text: "Was any part of the incident captured on a body-worn camera?",
+        name: "bodyWornCamera",
+        value: data.bodyWornCamera,
+        errorMessage: errors | findError('bodyWornCamera'),
+        questionSubject: 'body-worn-camera'
+    },
+      followUpQuestion:{
+        name: "bodyWornCameraNumbers",
+        value: data.bodyWornCameraNumbers,
+        errorMessage: errors,
+        otherIds: ['cameraNum', 'Camera number']
+      }
+    }) }}
+
+    <!-- Q3 -->
     {{ incidentMacro.radio( {
       text: "Were any personal protection techniques used?",
       name: "personalProtectionTechniques",
@@ -40,7 +57,7 @@
       errorMessage: errors | findError('personalProtectionTechniques')
     })}}
 
-    <!-- Q3 -->
+    <!-- Q4 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a baton drawn by anyone during this incident?",
@@ -61,7 +78,7 @@
     }
     )}}
 
-    <!-- Q4 -->
+    <!-- Q5 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was PAVA drawn by anyone during this incident?",
@@ -83,7 +100,24 @@
     }
     )}}
 
-    <!-- Q5 -->
+    <!-- Q6 -->
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
+      primaryQuestion:{
+        text: "Were any weapons observed?",
+        name: "weaponsObserved",
+        value: data.weaponsObserved,
+        errorMessage: errors | findError('weaponsObserved'),
+        questionSubject: 'weapons-observed'
+    },
+      followUpQuestion:{
+        name: "weaponTypes",
+        value: data.weaponTypes,
+        errorMessage: errors,
+        otherIds: ['weaponType', 'Weapon type']
+      }
+    }) }}
+
+    <!-- Q7 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a guiding hold used?",
@@ -112,39 +146,36 @@
     }
     )}}
 
-    <!-- Q6 -->
+    <!-- Q8 -->
+    {{ incidentMacro.radio( {
+    text: "Was an escorting hold used?",
+    name: "escortingHold",
+    value: data.escortingHold,
+    options: yesNoOptions,
+    errorMessage: errors | findError('escortingHold')
+    })}}
+
+    <!-- Q9 -->
     <div id="control-and-restraint">
-    {{ incidentMacro.radiosWithNestedCheckboxes({
+    {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
-        text: "Was control and restraint used?",
-        name: "restraint",
-        value: data.restraint,
-        options: yesNoOptions,
-        errorMessage: errors | findError('restraint')
-      },
-      followUpQuestion: {
-        text: "What positions were used?",
+        text: "Which control and restraint positions were used?",
+        hint: "Select all that apply",
         name: "restraintPositions",
-        value: data.restraintPositions or [],
-        errorMessage: errors | findError('restraintPositions'),
-        options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label')
+        value: data.restraintPositions | toArray,
+        options: data.types.ControlAndRestraintPosition | list | extractAttr('value') | toOptions('value', 'label'),
+        errorMessage: errors | findError('restraintPositions')
       }
     }) 
   }}
   </div>
 
-  <!-- Q7 -->
+  <!-- Q10 -->
     <div id="pain-inducing-techniques">
-      {{ incidentMacro.radiosWithNestedCheckboxes({
+      {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
-          text: "Were pain inducing techniques used?",
-          name: "painInducingTechniques",
-          value: data.painInducingTechniques,
-          options: yesNoOptions,
-          errorMessage: errors | findError('painInducingTechniques')
-        },
-        followUpQuestion: {
-          text: "What pain inducing techniques  were used?",
+          text: "Which pain inducing techniques were used?",
+          hint: "Select all that apply",
           name: "painInducingTechniquesUsed",
           value: data.painInducingTechniquesUsed or [],
           errorMessage: errors | findError('painInducingTechniquesUsed'),
@@ -154,7 +185,7 @@
     }}
     </div>
 
-    <!-- Q8 -->
+    <!-- 11 -->
     {{ incidentMacro.radio( {
       text: "Were handcuffs applied?",
       name: "handcuffsApplied",
@@ -165,4 +196,10 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block script %}
+<script src="/assets/deselect-children.js"></script>
+<script src="/assets/add-another-evidence.js"></script>
+<script src="/assets/add-another-detail.js"></script>
 {% endblock %}

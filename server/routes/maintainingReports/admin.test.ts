@@ -128,7 +128,7 @@ describe('/:reportId/edit-report', () => {
         })
     })
 
-    it('should redirect to select primary reason page when more than one reason selected', () => {
+    it('should not accept invalid json as input', () => {
       userSupplier.mockReturnValue(adminUser)
 
       return request(app)
@@ -142,7 +142,7 @@ describe('/:reportId/edit-report', () => {
           expect(reportService.update).not.toHaveBeenCalled()
           expect(flash).toHaveBeenCalledWith('errors', {
             href: '#form',
-            text: 'Unexpected token h in JSON at position 1',
+            text: "Unexpected token 'h', \"this isn't json!\" is not valid JSON",
           })
         })
     })

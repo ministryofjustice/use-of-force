@@ -1,7 +1,7 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 
-{% set pageTitle = pageTitle | default('GOV.UK - Use of force') %}
+{% set pageTitle = pageTitle | default('GOV.UK - Use of force') %}
 
 {% block pageTitle %}
   {{ pageTitle }}
@@ -23,7 +23,7 @@
   <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
 <![endif]-->	
 
-{% if feComponents.jsInclude %}
+{% if feComponents.jsIncludes %}
     {% for js in feComponents.jsIncludes %}
       <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
     {% endfor %}

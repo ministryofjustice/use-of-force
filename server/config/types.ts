@@ -1,4 +1,12 @@
-export type LabelledValue = { readonly value: string; readonly label: string; readonly inactive?: boolean }
+export type LabelledValue = {
+  readonly value: string
+  readonly label: string
+  readonly inactive?: boolean
+  readonly sub_options_label?: string
+  readonly sub_options?: boolean
+  readonly parent?: string
+  readonly exclusive?: boolean
+}
 type LabelledEnum<K extends string> = Record<K, LabelledValue>
 
 const toEnum = <K extends string>(value: LabelledEnum<K>): Readonly<LabelledEnum<K>> => Object.freeze(value)
@@ -8,10 +16,20 @@ export const toLabel = <K extends string>(type: LabelledEnum<K>, val: string): s
   return match ? type[match].label : undefined
 }
 
+export const findEnum = <K extends string>(type: LabelledEnum<K>, val: string): Readonly<LabelledEnum<K>> => {
+  const match = Object.keys(type).find(value => value === val)
+  return match ? type[match] : undefined
+}
+
 export const BodyWornCameras = toEnum({
   YES: { value: 'YES', label: 'Yes' },
   NO: { value: 'NO', label: 'No' },
   NOT_KNOWN: { value: 'NOT_KNOWN', label: 'Not Known' },
+})
+
+export const WeaponsObserved = toEnum({
+  YES: { value: 'YES', label: 'Yes' },
+  NO: { value: 'NO', label: 'No' },
 })
 
 export const Cctv = toEnum({
@@ -21,20 +39,69 @@ export const Cctv = toEnum({
 })
 
 export const ControlAndRestraintPosition = toEnum({
-  STANDING: { value: 'STANDING', label: 'Standing' },
-  ON_BACK: { value: 'ON_BACK', label: 'On back (supine)' },
-  FACE_DOWN: { value: 'FACE_DOWN', label: 'On front (prone)' },
-  KNEELING: { value: 'KNEELING', label: 'Kneeling' },
+  STANDING: {
+    value: 'STANDING',
+    label: 'Standing',
+    sub_options_label: 'Standing techniques',
+    sub_options: true,
+  },
+  STANDING__WRIST_WEAVE: { value: 'STANDING__WRIST_WEAVE', label: 'Wrist weave', parent: 'STANDING' },
+  STANDING__DOUBLE_WRIST_HOLD: { value: 'STANDING__DOUBLE_WRIST_HOLD', label: 'Double wrist hold', parent: 'STANDING' },
+  STANDING__UNDERHOOK: { value: 'STANDING__UNDERHOOK', label: 'Underhook', parent: 'STANDING' },
+  STANDING__WRIST_HOLD: { value: 'STANDING__WRIST_HOLD', label: 'Wrist hold', parent: 'STANDING' },
+  STANDING__STRAIGHT_ARM_HOLD: { value: 'STANDING__STRAIGHT_ARM_HOLD', label: 'Straight arm hold', parent: 'STANDING' },
+  ON_BACK: {
+    value: 'ON_BACK',
+    label: 'On back (supine)',
+    sub_options_label: 'On back (supine) techniques',
+    sub_options: true,
+  },
+  ON_BACK__STRAIGHT_ARM_HOLD: {
+    value: 'ON_BACK__STRAIGHT_ARM_HOLD',
+    label: 'Straight arm hold (left or right)',
+    parent: 'ON_BACK',
+  },
+  ON_BACK__CONVERSION_TO_RBH: {
+    value: 'ON_BACK__CONVERSION_TO_RBH',
+    label: 'Conversion to apply RBH',
+    parent: 'ON_BACK',
+  },
+  ON_BACK__WRIST_HOLD: { value: 'ON_BACK__WRIST_HOLD', label: 'Wrist hold', parent: 'ON_BACK' },
+  FACE_DOWN: {
+    value: 'FACE_DOWN',
+    label: 'On front (prone)',
+    sub_options_label: 'On front (prone) techniques',
+    sub_options: true,
+  },
+  FACE_DOWN__BALANCE_DISPLACEMENT: {
+    value: 'FACE_DOWN__BALANCE_DISPLACEMENT',
+    label: 'Balance displacement technique',
+    parent: 'FACE_DOWN',
+  },
+  FACE_DOWN__STRAIGHT_ARM_HOLD: {
+    value: 'FACE_DOWN__STRAIGHT_ARM_HOLD',
+    label: 'Straight arm hold (left or right)',
+    parent: 'FACE_DOWN',
+  },
+  FACE_DOWN__CONVERSION_TO_RBH: {
+    value: 'FACE_DOWN__CONVERSION_TO_RBH',
+    label: 'Conversion to apply RBH',
+    parent: 'FACE_DOWN',
+  },
+  FACE_DOWN__WRIST_HOLD: { value: 'FACE_DOWN__WRIST_HOLD', label: 'Wrist hold', parent: 'FACE_DOWN' },
+  KNEELING: { value: 'KNEELING', label: 'Kneeling', sub_options: false },
+  NONE: { value: 'NONE', label: 'No control and restraint positions were used', exclusive: true, sub_options: false },
 })
 
 export const PainInducingTechniquesUsed = toEnum({
-  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Final lock flexion' },
-  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Final lock rotation' },
+  FINAL_LOCK_FLEXION: { value: 'FINAL_LOCK_FLEXION', label: 'Wrist flexion' },
+  FINAL_LOCK_ROTATION: { value: 'FINAL_LOCK_ROTATION', label: 'Wrist rotation' },
   MANDIBULAR_ANGLE_TECHNIQUE: { value: 'MANDIBULAR_ANGLE_TECHNIQUE', label: 'Mandibular angle technique' },
   SHOULDER_CONTROL: { value: 'SHOULDER_CONTROL', label: 'Shoulder control' },
   THROUGH_RIGID_BAR_CUFFS: { value: 'THROUGH_RIGID_BAR_CUFFS', label: 'Through rigid bar cuffs' },
   THUMB_LOCK: { value: 'THUMB_LOCK', label: 'Thumb lock' },
   UPPER_ARM_CONTROL: { value: 'UPPER_ARM_CONTROL', label: 'Upper arm control' },
+  NONE: { value: 'NONE', label: 'No pain inducing techniques were used', exclusive: true },
 })
 
 export const RelocationLocation = toEnum({
@@ -43,6 +110,9 @@ export const RelocationLocation = toEnum({
   SEGREGATION_UNIT: { value: 'SEGREGATION_UNIT', label: 'Segregation unit' },
   SPECIAL_ACCOMMODATION: { value: 'SPECIAL_ACCOMMODATION', label: 'Special accommodation' },
   CELLULAR_VEHICLE: { value: 'CELLULAR_VEHICLE', label: 'Cellular vehicle' },
+  RECEPTION: { value: 'RECEPTION', label: 'Reception' },
+  OTHER_WING: { value: 'OTHER_WING', label: 'Other wing' },
+  FACILITATE_RELEASE: { value: 'FACILITATE_RELEASE', label: 'To facilitate release' },
 })
 
 export const ReportStatus = toEnum({
@@ -62,6 +132,8 @@ export const RelocationType = toEnum({
   FULL: { value: 'FULL', label: 'Full relocation' },
   VEHICLE: { value: 'VEHICLE', label: 'Relocated to vehicle' },
   NTRG: { value: 'NTRG', label: 'Handed to local staff (NTRG)' },
+  SEARCH_UNDER_RESTRAINT: { value: 'SEARCH_UNDER_RESTRAINT', label: 'Full search under restraint' },
+  KNEELING: { value: 'KNEELING', label: 'Kneeling' },
   OTHER: { value: 'OTHER', label: 'Other' },
 })
 
@@ -77,6 +149,8 @@ export const UofReasons = toEnum({
   PHYSICAL_THREAT: { value: 'PHYSICAL_THREAT', label: 'Physical threat' },
   VERBAL_THREAT: { value: 'VERBAL_THREAT', label: 'Verbal threat' },
   REFUSAL_TO_LOCATE_TO_CELL: { value: 'REFUSAL_TO_LOCATE_TO_CELL', label: 'Refusal to locate to cell' },
+  REFUSAL_TO_TRANSFER: { value: 'REFUSAL_TO_TRANSFER', label: 'Refusal to transfer' },
+  REFUSAL_TO_RELOCATE_CELLS: { value: 'REFUSAL_TO_RELOCATE_CELLS', label: 'Refusal to relocate cells' },
   TO_PREVENT_ESCAPE_OR_ABSCONDING: {
     value: 'TO_PREVENT_ESCAPE_OR_ABSCONDING',
     label: 'To prevent escape or absconding',

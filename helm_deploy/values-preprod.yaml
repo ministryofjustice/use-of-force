@@ -17,7 +17,7 @@ ingress:
 
 env:
   NOMIS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-  PRISON_API_URL: "https://api-preprod.prison.service.justice.gov.uk"
+  PRISON_API_URL: "https://prison-api-preprod.prison.service.justice.gov.uk"
   PRISONER_SEARCH_API_URL: https://prisoner-search-preprod.prison.service.justice.gov.uk
   EXIT_LOCATION_URL: https://digital-preprod.prison.service.justice.gov.uk/
   EMAIL_LOCATION_URL: https://preprod.use-of-force.service.justice.gov.uk
@@ -89,3 +89,6 @@ allow_list:
   petty-france-wifi: "213.121.161.112/28"
   azure-landing-zone-public-egress-1: "20.26.11.71/32"
   azure-landing-zone-public-egress-2: "20.26.11.108/32"
+
+generic-data-analytics-extractor:
+  serviceAccountName: use-of-force-preprod-to-ap-s3

@@ -38,30 +38,38 @@ describe('GET /section/form', () => {
 })
 
 const validUseOfForceDetailsRequest = {
+  bodyWornCamera: 'YES',
+  bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
   positiveCommunication: 'false',
   personalProtectionTechniques: 'false',
   batonDrawn: 'false',
   pavaDrawn: 'false',
+  weaponsObserved: 'NO',
   guidingHold: 'false',
-  restraint: 'false',
-  painInducingTechniques: 'false',
+  escortingHold: 'false',
+  painInducingTechniquesUsed: 'NONE',
   handcuffsApplied: 'false',
+  restraintPositions: 'NONE',
   submitType: 'save-and-continue',
 }
 
-const validUseofForceDetailUpdate = [
+const validUseOfForceDetailUpdate = [
   user,
   1,
   'useOfForceDetails',
   {
+    bodyWornCamera: 'YES',
+    bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
     batonDrawn: false,
     guidingHold: false,
+    escortingHold: false,
     handcuffsApplied: false,
-    painInducingTechniques: false,
+    painInducingTechniquesUsed: 'NONE',
     pavaDrawn: false,
+    weaponsObserved: 'NO',
     personalProtectionTechniques: false,
     positiveCommunication: false,
-    restraint: false,
+    restraintPositions: 'NONE',
   },
 ]
 
@@ -73,8 +81,8 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/relocation-and-injuries')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 
@@ -85,7 +93,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       }))
 })
 
@@ -97,27 +105,29 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 
   test('Submitting invalid update is allowed', () => {
     return request(app)
       .post(`/report/1/use-of-force-details`)
-      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null, submitType: 'save-and-return' })
+      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null, bodyWornCamera: null, submitType: 'save-and-return' })
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(user, 1, 'useOfForceDetails', {
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(user, 1, 'useOfForceDetails', {
           guidingHold: false,
+          escortingHold: false,
           handcuffsApplied: false,
-          painInducingTechniques: false,
+          painInducingTechniquesUsed: 'NONE',
           pavaDrawn: false,
+          weaponsObserved: 'NO',
           personalProtectionTechniques: false,
           positiveCommunication: false,
-          restraint: false,
+          restraintPositions: 'NONE',
         })
       })
   })
@@ -129,6 +139,7 @@ describe('POST save and return to tasklist', () => {
         ...validUseOfForceDetailsRequest,
         restraint: 'true',
         restraintPositions: ['not a valid value'],
+        bodyWornCamera: ['another invalid input'],
         submitType: 'save-and-return',
       })
       .expect(302)
@@ -144,8 +155,8 @@ describe('POST save once complete and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(...validUseofForceDetailUpdate)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(...validUseOfForceDetailUpdate)
       })
   })
 
@@ -155,14 +166,13 @@ describe('POST save once complete and return to check-your-answers', () => {
       .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
-        restraint: 'true',
         restraintPositions: ['not a valid value'],
         submitType: 'save-and-return',
       })
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       })
   })
 })
@@ -183,8 +193,6 @@ describe('Submitting evidence page', () => {
         .send({
           submitType,
           baggedEvidence: 'true',
-          bodyWornCamera: 'YES',
-          bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
           cctvRecording: 'YES',
           evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
           photographsTaken: 'true',
@@ -196,8 +204,6 @@ describe('Submitting evidence page', () => {
 
           expect(draftReportService.process).toBeCalledWith(user, 1, 'evidence', {
             baggedEvidence: true,
-            bodyWornCamera: 'YES',
-            bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
             cctvRecording: 'YES',
             evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],
             photographsTaken: true,

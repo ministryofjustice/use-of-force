@@ -29,8 +29,8 @@
     "security_audit": "npx audit-ci --config audit-ci.json"
   },
   "engines": {
-    "node": "^18",
-    "npm": "<10"
+    "node": "^20",
+    "npm": "^10"
   },
   "jest": {
     "transform": {
@@ -124,7 +124,7 @@
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "nocache": "^3.0.4",
-    "notifications-node-client": "^6.0.0",
+    "notifications-node-client": "^7.0.6",
     "nunjucks": "^3.2.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
@@ -171,7 +171,7 @@
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.0",
     "nock": "^13.3.1",
-    "node-sass": "^8.0.0",
+    "node-sass": "^9.0.0",
     "nodemon": "^3.0.1",
     "prettier": "^2.8.8",
     "supertest": "^6.3.3",

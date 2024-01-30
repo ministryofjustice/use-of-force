@@ -8,13 +8,13 @@
 {% from "govuk/components/checkboxes/macro.njk"import govukCheckboxes %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
-{% set pageTitle = 'Your use of force statement' %}
+{% set pageTitle = 'Your use of force statement' %}
 
 {% if errors | findError('lastTrainingYear') %}
 {% set lastTrainingYearClass = 'govuk-input--width-4' %}
-{% set lastTrainingMonthClass = 'govuk-!-margin-right-3' %}
+{% set lastTrainingMonthClass = 'govuk-!-margin-right-3' %}
 {% else %}
-{% set lastTrainingYearClass = 'govuk-!-margin-left-5 govuk-input--width-4' %}
+{% set lastTrainingYearClass = 'govuk-!-margin-left-5 govuk-input--width-4' %}
 {% endif %}
 
 {% block beforeContent %}

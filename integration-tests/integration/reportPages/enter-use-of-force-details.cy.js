@@ -20,18 +20,23 @@ context('Enter use of force details page', () => {
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().check('true')
+    useOfForceDetailsPage.positiveCommunication().check('true')
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).type('123')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(1).type('345')
+    useOfForceDetailsPage.removeBodyWornCamera(0)
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
     useOfForceDetailsPage.batonUsed().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.weaponsObserved().check('NO')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
-    useOfForceDetailsPage.restraint().check('true')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.restraintPositions.check(restraintPositions)
     useOfForceDetailsPage.handcuffsApplied().check('true')
-    useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.painInducingTechniquesUsed.check(['THUMB_LOCK', 'THROUGH_RIGID_BAR_CUFFS'])
     const relocationAndInjuriesPage = useOfForceDetailsPage.save()
     return relocationAndInjuriesPage
@@ -44,18 +49,20 @@ context('Enter use of force details page', () => {
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
       expect(section).to.deep.equal({
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
         pavaUsed: true,
+        weaponsObserved: 'NO',
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
         restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
-        painInducingTechniques: true,
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
@@ -68,18 +75,20 @@ context('Enter use of force details page', () => {
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'useOfForceDetails' }).then(({ section }) => {
       expect(section).to.deep.equal({
+        bodyWornCamera: 'YES',
+        bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
+        escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
+        weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
-        restraint: true,
-        restraintPositions: ['STANDING'],
-        painInducingTechniques: true,
+        restraintPositions: 'STANDING',
         painInducingTechniquesUsed: ['THROUGH_RIGID_BAR_CUFFS', 'THUMB_LOCK'],
       })
     })
@@ -92,7 +101,9 @@ context('Enter use of force details page', () => {
     cy.go('back')
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().should('have.value', 'true')
+    useOfForceDetailsPage.positiveCommunication().should('have.value', 'true')
+    useOfForceDetailsPage.bodyWornCamera().should('have.value', 'YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).should('have.value', '345')
     useOfForceDetailsPage.personalProtectionTechniques().should('have.value', 'true')
     useOfForceDetailsPage.batonDrawn().should('have.value', 'true')
     useOfForceDetailsPage.batonUsed().should('have.value', 'true')
@@ -100,13 +111,14 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
-    useOfForceDetailsPage.restraint().should('have.value', 'true')
+    useOfForceDetailsPage.escortingHold().should('have.value', 'true')
     useOfForceDetailsPage.restraintPositions.standing().should('be.checked')
     useOfForceDetailsPage.restraintPositions.faceDown().should('not.be.checked')
     useOfForceDetailsPage.restraintPositions.kneeling().should('be.checked')
     useOfForceDetailsPage.restraintPositions.onBack().should('not.be.checked')
     useOfForceDetailsPage.handcuffsApplied().should('have.value', 'true')
-    useOfForceDetailsPage.painInducingTechniques().should('have.value', 'true')
+    useOfForceDetailsPage.painInducingTechniquesUsed.throughRigidBarCuffs().should('be.checked')
+    useOfForceDetailsPage.painInducingTechniquesUsed.thumbLock().should('be.checked')
   })
 
   it('Displays validation messages', () => {
@@ -118,16 +130,63 @@ context('Enter use of force details page', () => {
     selectUofReasonsPage.clickSaveAndContinue()
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
-    useOfForceDetailsPage.postiveCommunication().check('true')
+    useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
-    useOfForceDetailsPage.restraint().check('false')
+    useOfForceDetailsPage.escortingHold().check('true')
     useOfForceDetailsPage.handcuffsApplied().check('true')
-    useOfForceDetailsPage.painInducingTechniques().check('true')
     useOfForceDetailsPage.clickSaveAndContinue()
     useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
+    useOfForceDetailsPage
+      .errorSummary()
+      .contains('Select yes if any part of the incident was captured on a body-worn camera')
+    useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if any weapons were observed')
+  })
+
+  it('Displays secondary validation messages', () => {
+    cy.login()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.positiveCommunication().check('true')
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.personalProtectionTechniques().check('true')
+    useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.weaponsObserved().check('YES')
+    useOfForceDetailsPage.guidingHold().check('true')
+    useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
+    useOfForceDetailsPage.escortingHold().check('true')
+    useOfForceDetailsPage.handcuffsApplied().check('true')
+    useOfForceDetailsPage.clickSaveAndContinue()
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a baton was drawn')
+    useOfForceDetailsPage.errorSummary().contains('Enter the body-worn camera number')
+    useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
+    useOfForceDetailsPage.errorSummary().contains('Enter the type of weapon observed')
+  })
+
+  it('Displays validation messages when multiple inputs are not unique', () => {
+    cy.login()
+
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const selectUofReasonsPage = reportUseOfForcePage.goToSelectUofReasonsPage()
+    selectUofReasonsPage.checkReason('FIGHT_BETWEEN_PRISONERS')
+    selectUofReasonsPage.clickSaveAndContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.bodyWornCamera().check('YES')
+    useOfForceDetailsPage.bodyWornCameraNumber(0).type('1')
+    useOfForceDetailsPage.addAnotherBodyWornCamera()
+    useOfForceDetailsPage.bodyWornCameraNumber(1).type('1')
+    useOfForceDetailsPage.clickSaveAndContinue()
+    useOfForceDetailsPage.errorSummary().contains("Camera '1' has already been added - remove this camera")
   })
 })

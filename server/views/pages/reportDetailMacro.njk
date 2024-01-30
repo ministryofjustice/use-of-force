@@ -180,6 +180,16 @@
         print: print
       })
     }}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was any part of the incident captured on a body-worn camera?',
+        'data-qa': 'bodyCameras',
+        dataValue: data.useOfForceDetails.bodyCameras | capitalize,
+        print: print
+      })
+    }}
+
     {{
       reportDetailsMacros.tableRow({
         label: 'Were any personal protection techniques used?',
@@ -204,6 +214,18 @@
         print: print
       })
     }}
+
+    {% if data.useOfForceDetails.weaponsObserved != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were any weapons observed?',
+          'data-qa': 'weaponTypes',
+          dataValue: data.useOfForceDetails.weaponsObserved | capitalize,
+          print: print
+        })
+      }}
+    {% endif %}
+
     {{
       reportDetailsMacros.tableRow({
         label: 'Was a guiding hold used?',
@@ -212,20 +234,31 @@
         print: print
       })
     }}
+    {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was an escorting hold used?',
+          'data-qa': 'escortingHold',
+          dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo,
+          print: print
+        })
+      }}
+    {% endif %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was control and restraint used?',
+        label: 'Which control and restraint techniques were used?',
         'data-qa': 'restraintUsed',
-        dataValue: data.useOfForceDetails.controlAndRestraintUsed | capitalize,
-        print: print
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
+        print: print,
+        type: 'parentChild'
       })
     }}
     
     {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
-    {% if data.useOfForceDetails.painInducingTechniques != undefined  %}
+    {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Were pain inducing techniques used?',
+          label: 'Which pain inducing techniques were used?',
           'data-qa': 'painInducingTechniques',
           dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
           print: print
@@ -347,13 +380,4 @@
         print: print
       })
     }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was any part of the incident captured on a body-worn camera?',
-        'data-qa': 'bodyCameras',
-        dataValue: data.evidence.bodyCameras | capitalize,
-        print: print
-      })
-    }}
-
 {% endmacro %}

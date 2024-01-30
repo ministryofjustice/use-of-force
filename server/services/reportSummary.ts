@@ -7,6 +7,8 @@ import {
   RelocationType,
   toLabel,
   UofReasons,
+  findEnum,
+  WeaponsObserved,
 } from '../config/types'
 import { Prison } from '../data/prisonClientTypes'
 import {
@@ -47,8 +49,14 @@ const createIncidentDetails = (
 
 const createUseOfForceDetails = (
   details: Partial<UseOfForceDetails> = {},
-  reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {}
+  reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {},
+  evidence: Partial<Evidence> = {}
 ) => {
+  const bodyWornCamera = details.bodyWornCamera ? details.bodyWornCamera : evidence.bodyWornCamera
+  const bodyWornCameraNumbers = details.bodyWornCameraNumbers
+    ? details.bodyWornCameraNumbers
+    : evidence.bodyWornCameraNumbers
+
   return {
     reasonsForUseOfForce: whenPresent(reasonsForUseOfForce.reasons, reasons =>
       reasons.map(value => toLabel(UofReasons, value)).join(', ')
@@ -61,12 +69,25 @@ const createUseOfForceDetails = (
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
-    controlAndRestraintUsed: whenPresent(details.restraint, value =>
-      value === true && details.restraintPositions ? getRestraintPositions(details.restraintPositions) : NO
-    ),
+    escortingHoldUsed: details.escortingHold,
+    controlAndRestraintUsed:
+      details.restraint === undefined || details.restraint
+        ? getRestraintPositions(details.restraintPositions)
+        : getRestraintPositions(ControlAndRestraintPosition.NONE.value),
 
     painInducingTechniques: getPainInducingTechniques(details),
     handcuffsApplied: details.handcuffsApplied,
+    bodyCameras: whenPresent(bodyWornCamera, value =>
+      value === BodyWornCameras.YES.value
+        ? `${YES} - ${extractCommaSeparatedList('cameraNum', bodyWornCameraNumbers)}` || YES
+        : toLabel(BodyWornCameras, value)
+    ),
+
+    weaponsObserved: whenPresent(details.weaponsObserved, value =>
+      value === WeaponsObserved.YES.value
+        ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
+        : toLabel(WeaponsObserved, value)
+    ),
   }
 }
 
@@ -107,11 +128,6 @@ const createEvidence = (evidence: Partial<Evidence> = {}) => {
     evidenceBaggedTagged: baggedAndTaggedEvidence(evidence.evidenceTagAndDescription, evidence.baggedEvidence),
     photographs: evidence.photographsTaken,
     cctv: toLabel(Cctv, evidence.cctvRecording),
-    bodyCameras: whenPresent(evidence.bodyWornCamera, value =>
-      value === Cctv.YES.value
-        ? `${YES} - ${extractCommaSeparatedList('cameraNum', evidence.bodyWornCameraNumbers)}` || YES
-        : toLabel(BodyWornCameras, value)
-    ),
   }
 }
 
@@ -125,13 +141,44 @@ const wasWeaponUsed = weaponUsed => {
 }
 
 const getRestraintPositions = positions => {
-  return positions == null
-    ? ''
-    : `${YES} - ${positions.map(pos => toLabel(ControlAndRestraintPosition, pos)).join(', ')}`
+  if (positions == null) {
+    return Array.of[ControlAndRestraintPosition.NONE.label]
+  }
+  return toParentChild(toArray(positions))
+}
+
+const toParentChild = postions => {
+  const positionObjects = postions.map(p => findEnum(ControlAndRestraintPosition, p))
+  const parents: any[] = []
+  const children: any[] = []
+  positionObjects.forEach(obj => {
+    if (obj.parent == null) {
+      parents.push(obj)
+    } else {
+      children.push(obj)
+    }
+  })
+  const parentChild: string[] = []
+  parents.forEach(function (p) {
+    const thesechildren = children
+      .filter(pos => pos.parent === p.value)
+      .map(child => child.label)
+      .join(', ')
+    if (thesechildren === '') {
+      parentChild.push(p.label)
+    } else {
+      parentChild.push(`${p.label}: ${thesechildren}`)
+    }
+  })
+  return parentChild
+}
+
+const toArray = obj => {
+  return Array.isArray(obj) ? obj : Array.of(obj)
 }
 
 const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {
-  if (details.painInducingTechniques === undefined) {
+  if (details.painInducingTechniques === undefined && !details.painInducingTechniquesUsed) {
     return undefined
   }
 
@@ -139,13 +186,13 @@ const getPainInducingTechniques = (details: Partial<UseOfForceDetails>) => {
     return YES
   }
 
-  if (details.painInducingTechniques && details.painInducingTechniquesUsed) {
-    return `${YES} - ${details.painInducingTechniquesUsed
+  if (details.painInducingTechniquesUsed) {
+    return `${toArray(details.painInducingTechniquesUsed)
       .map(technique => toLabel(PainInducingTechniquesUsed, technique))
       .join(', ')}`
   }
 
-  return NO
+  return PainInducingTechniquesUsed.NONE.label
 }
 
 const staffTakenToHospital = (staffMembers = []) => {
@@ -192,7 +239,7 @@ export = (
       incidentDate
     ),
     offenderDetail,
-    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce),
+    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence),
     relocationAndInjuries: createRelocation(relocationAndInjuries),
     evidence: createEvidence(evidence),
   }

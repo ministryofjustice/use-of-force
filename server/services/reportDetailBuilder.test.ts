@@ -55,7 +55,6 @@ describe('Build details', () => {
     expect(result).toStrictEqual({
       bookingId: 33,
       evidence: {
-        bodyCameras: undefined,
         cctv: undefined,
         evidenceBaggedTagged: 'No',
         photographs: undefined,
@@ -107,12 +106,15 @@ describe('Build details', () => {
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00.000Z'),
       useOfForceDetails: {
+        bodyCameras: undefined,
         batonDrawn: undefined,
         controlAndRestraintUsed: undefined,
         guidingHoldUsed: undefined,
+        escortingHoldUsed: undefined,
         handcuffsApplied: undefined,
         painInducingTechniques: undefined,
         pavaDrawn: undefined,
+        weaponsObserved: undefined,
         personalProtectionTechniques: undefined,
         positiveCommunicationUsed: undefined,
         primaryReason: undefined,

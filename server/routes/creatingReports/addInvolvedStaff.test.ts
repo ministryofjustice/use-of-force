@@ -138,7 +138,7 @@ describe('delete staff page', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.deleteInvolvedStaff).not.toBeCalled()
+        expect(draftReportService.deleteInvolvedStaff).not.toHaveBeenCalled()
       })
   })
 
@@ -149,7 +149,7 @@ describe('delete staff page', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.deleteInvolvedStaff).toBeCalledWith(user, REPORT_ID, 'USER-1')
+        expect(draftReportService.deleteInvolvedStaff).toHaveBeenCalledWith(user, REPORT_ID, 'USER-1')
       })
   })
 })
@@ -195,7 +195,7 @@ describe('submit staff', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, REPORT_ID, 'Jo', 'Jones')
+        expect(draftReportService.addDraftStaffByName).toHaveBeenCalledWith(user, REPORT_ID, 'Jo', 'Jones')
       })
   })
 
@@ -207,7 +207,7 @@ describe('submit staff', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, REPORT_ID, 'Jo', 'Jones')
+        expect(draftReportService.addDraftStaffByName).toHaveBeenCalledWith(user, REPORT_ID, 'Jo', 'Jones')
       })
   })
 
@@ -219,7 +219,7 @@ describe('submit staff', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, REPORT_ID, 'Jo', 'Jones')
+        expect(draftReportService.addDraftStaffByName).toHaveBeenCalledWith(user, REPORT_ID, 'Jo', 'Jones')
       })
   })
 
@@ -231,7 +231,7 @@ describe('submit staff', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffNotFound(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.addDraftStaffByName).toBeCalledWith(user, REPORT_ID, 'Jo', 'Jones')
+        expect(draftReportService.addDraftStaffByName).toHaveBeenCalledWith(user, REPORT_ID, 'Jo', 'Jones')
       })
   })
 })
@@ -246,7 +246,7 @@ describe('multiple results', () => {
       .get(paths.selectStaffMember(REPORT_ID))
       .expect('Content-Type', /html/)
       .expect(() => {
-        expect(draftReportService.findUsers).toBeCalledWith('user1-system-token', 'MDI', 'Bob', 'Smith')
+        expect(draftReportService.findUsers).toHaveBeenCalledWith('user1-system-token', 'MDI', 'Bob', 'Smith')
       })
   })
   test('POST requires staff member to be selected', () => {
@@ -264,7 +264,7 @@ describe('multiple results', () => {
       .expect('Content-Type', /text\/plain/)
       .expect('Location', paths.staffInvolved(REPORT_ID))
       .expect(() => {
-        expect(draftReportService.addDraftStaffByUsername).toBeCalledWith(user, REPORT_ID, 'USER-2')
+        expect(draftReportService.addDraftStaffByUsername).toHaveBeenCalledWith(user, REPORT_ID, 'USER-2')
       })
   })
 })

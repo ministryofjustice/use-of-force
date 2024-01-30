@@ -2,9 +2,7 @@ const expectedPayload = {
   evidence: {
     cctvRecording: 'NOT_KNOWN',
     baggedEvidence: true,
-    bodyWornCamera: 'YES',
     photographsTaken: true,
-    bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
     evidenceTagAndDescription: [
       { description: 'This evidence was collected from the prisoner 1', evidenceTagReference: 'Bagged evidence 1' },
       { description: 'This evidence was collected from the prisoner 2', evidenceTagReference: 'Bagged evidence 2' },
@@ -25,17 +23,19 @@ const expectedPayload = {
     reasons: ['FIGHT_BETWEEN_PRISONERS'],
   },
   useOfForceDetails: {
+    bodyWornCamera: 'YES',
+    bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
     pavaUsed: true,
     batonUsed: true,
     pavaDrawn: true,
+    weaponsObserved: 'YES',
+    weaponTypes: [{ weaponType: 'gun' }, { weaponType: 'knife' }, { weaponType: 'fork' }],
     batonDrawn: true,
     guidingHold: true,
-    restraint: true,
+    escortingHold: true,
     handcuffsApplied: true,
     restraintPositions: ['STANDING', 'ON_BACK', 'FACE_DOWN', 'KNEELING'],
-    painInducingTechniques: true,
     painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-
     positiveCommunication: true,
     guidingHoldOfficersInvolved: 2,
     personalProtectionTechniques: true,
