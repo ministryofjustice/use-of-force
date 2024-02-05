@@ -42,7 +42,7 @@ export const ControlAndRestraintPosition = toEnum({
   STANDING: {
     value: 'STANDING',
     label: 'Standing',
-    sub_options_label: 'Standing techniques',
+    sub_options_label: 'Standing techniques (optional)',
     sub_options: true,
   },
   STANDING__WRIST_WEAVE: { value: 'STANDING__WRIST_WEAVE', label: 'Wrist weave', parent: 'STANDING' },
@@ -53,7 +53,7 @@ export const ControlAndRestraintPosition = toEnum({
   ON_BACK: {
     value: 'ON_BACK',
     label: 'On back (supine)',
-    sub_options_label: 'On back (supine) techniques',
+    sub_options_label: 'On back techniques (optional)',
     sub_options: true,
   },
   ON_BACK__STRAIGHT_ARM_HOLD: {
@@ -70,7 +70,7 @@ export const ControlAndRestraintPosition = toEnum({
   FACE_DOWN: {
     value: 'FACE_DOWN',
     label: 'On front (prone)',
-    sub_options_label: 'On front (prone) techniques',
+    sub_options_label: 'On front techniques (optional)',
     sub_options: true,
   },
   FACE_DOWN__BALANCE_DISPLACEMENT: {
@@ -85,7 +85,7 @@ export const ControlAndRestraintPosition = toEnum({
   },
   FACE_DOWN__CONVERSION_TO_RBH: {
     value: 'FACE_DOWN__CONVERSION_TO_RBH',
-    label: 'Conversion to apply RBH',
+    label: 'Conversion to apply rigid bar handcuffs',
     parent: 'FACE_DOWN',
   },
   FACE_DOWN__WRIST_HOLD: { value: 'FACE_DOWN__WRIST_HOLD', label: 'Wrist hold', parent: 'FACE_DOWN' },
