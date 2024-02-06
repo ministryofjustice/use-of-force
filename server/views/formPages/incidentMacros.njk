@@ -396,6 +396,10 @@
                </div>
                {% if option.sub_options %}
                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden clear-both" id="conditional-{{option.value}}">
+                       <div class="govuk-fieldset__legend">
+                           {{option.sub_options_label}}
+                       </div>
+
                        {% for subopt in question.primaryQuestion.options %}
                            {% if subopt.parent === option.value %}
                                <div class="govuk-checkboxes__item">
