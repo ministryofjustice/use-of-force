@@ -63,7 +63,7 @@ export const ControlAndRestraintPosition = toEnum({
   },
   ON_BACK__CONVERSION_TO_RBH: {
     value: 'ON_BACK__CONVERSION_TO_RBH',
-    label: 'Conversion to apply RBH',
+    label: 'Conversion to apply rigid bar handcuffs',
     parent: 'ON_BACK',
   },
   ON_BACK__WRIST_HOLD: { value: 'ON_BACK__WRIST_HOLD', label: 'Wrist hold', parent: 'ON_BACK' },
