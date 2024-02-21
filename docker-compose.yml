@@ -12,7 +12,7 @@ services:
       - '6379:6379'
 
   use-of-force-db:
-    image: postgres:14.3
+    image: postgres:15
     networks:
       - hmpps
     container_name: use-of-force-db

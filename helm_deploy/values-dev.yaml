@@ -31,4 +31,5 @@ env:
 
 generic-data-analytics-extractor:
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
+  cronJobSchedule: "0 21 * * *"
   

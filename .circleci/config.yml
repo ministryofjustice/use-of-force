@@ -20,12 +20,12 @@ executors:
   integration-tests:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: cimg/postgres:14.7
+      - image: cimg/postgres:15.5
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
           POSTGRES_DB: use-of-force-int
-      - image: bitnami/redis:5.0
+      - image: bitnami/redis:7.2
         environment:  
           ALLOW_EMPTY_PASSWORD=yes
     working_directory: ~/app
