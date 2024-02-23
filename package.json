@@ -124,7 +124,7 @@
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "nocache": "^3.0.4",
-    "notifications-node-client": "^7.0.6",
+    "notifications-node-client": "^8.0.0",
     "nunjucks": "^3.2.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
@@ -184,6 +184,9 @@
     },
     "jest-html-reporter": {
       "@babel/traverse": "7.23.2"
+    },
+    "node-sass": {
+      "ip": "2.0.1"
     }
   }
 }
