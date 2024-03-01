@@ -98,6 +98,7 @@ export default function createApp(services: Services): Express {
           // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
           scriptSrc,
           imgSrc,
+          formAction: [`'self' ${config.apis.digitalPrisonServiceUrl}`],
           connectSrc,
           styleSrc,
           fontSrc,
