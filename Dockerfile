@@ -1,4 +1,4 @@
-FROM node:20.11.0 as builder
+FROM node:20.12-bookworm-slim as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
