@@ -80,7 +80,14 @@ export default function createApp(services: Services): Express {
   const styleSrc = ["'self'", 'code.jquery.com', (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`]
   const imgSrc = ["'self'", 'data:', 'www.googletagmanager.com', 'www.google-analytics.com', 'https://code.jquery.com']
   const fontSrc = ["'self'"]
-  const connectSrc = ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com']
+  const connectSrc = [
+    "'self'",
+    'www.googletagmanager.com',
+    'www.google-analytics.com',
+    'region1.google-analytics.com',
+    'region1.analytics.google.com',
+    'stats.g.doubleclick.net',
+  ]
 
   if (config.apis.frontendComponents.url) {
     scriptSrc.push(config.apis.frontendComponents.url)
