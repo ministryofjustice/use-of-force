@@ -64,8 +64,8 @@ const createUseOfForceDetails = (
     primaryReason: whenPresent(reasonsForUseOfForce.primaryReason, value => toLabel(UofReasons, value)),
     positiveCommunicationUsed: details.positiveCommunication,
     personalProtectionTechniques: details.personalProtectionTechniques,
-    batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : NO)),
-    pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : NO)),
+    batonDrawn: details.batonDrawn,
+    pavaDrawn: details.pavaDrawn,
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),

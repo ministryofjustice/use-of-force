@@ -15,10 +15,8 @@ beforeEach(() => {
     bodyWornCamera: 'NO',
     personalProtectionTechniques: 'true',
     batonDrawn: 'true',
-    batonUsed: 'true',
     pavaDrawn: 'true',
     weaponsObserved: 'NO',
-    pavaUsed: 'true',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
     escortingHold: 'true',
@@ -43,9 +41,7 @@ describe('complete schema', () => {
         bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
         batonDrawn: true,
-        batonUsed: true,
         pavaDrawn: true,
-        pavaUsed: true,
         weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
@@ -178,7 +174,6 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         batonDrawn: true,
-        batonUsed: true,
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [
           {
@@ -195,7 +190,6 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
         weaponsObserved: 'NO',
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -212,7 +206,6 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         batonDrawn: true,
-        batonUsed: true,
         bodyWornCamera: 'NO',
         escortingHold: true,
         guidingHold: true,
@@ -221,7 +214,6 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
         weaponsObserved: 'NO',
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -242,7 +234,6 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         batonDrawn: true,
-        batonUsed: true,
         bodyWornCamera: 'SOMETHING_RANDOM',
         escortingHold: true,
         guidingHold: true,
@@ -251,7 +242,6 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
         weaponsObserved: 'NO',
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -288,23 +278,6 @@ describe('complete schema', () => {
       expect(formResponse.batonUsed).toBe(undefined)
     })
 
-    it("Selecting Yes to 'baton drawn' but nothing for 'baton used' returns a  validation error messaged", () => {
-      const input = {
-        ...validInput,
-        batonUsed: undefined,
-      }
-      const { errors, formResponse } = check(input)
-
-      expect(errors).toEqual([
-        {
-          href: '#batonUsed',
-          text: 'Select yes if a baton was used',
-        },
-      ])
-      expect(formResponse.batonDrawn).toEqual(true)
-      expect(formResponse.batonUsed).toBe(undefined)
-    })
-
     it("Not selecting an option for 'pava drawn' returns validation error message plus 'pava used' is undefined", () => {
       const input = {
         ...validInput,
@@ -319,24 +292,6 @@ describe('complete schema', () => {
         },
       ])
       expect(formResponse.pavaDrawn).toEqual(undefined)
-      expect(formResponse.pavaUsed).toBe(undefined)
-    })
-
-    it("Selecting Yes to 'pava drawn' but nothing for 'pava used' returns a validation error message", () => {
-      const input = {
-        ...validInput,
-        pavaUsed: undefined,
-      }
-      const { errors, formResponse } = check(input)
-
-      expect(errors).toEqual([
-        {
-          href: '#pavaUsed',
-          text: 'Select yes if PAVA was used',
-        },
-      ])
-      expect(formResponse.pavaDrawn).toEqual(true)
-      expect(formResponse.pavaUsed).toBe(undefined)
     })
 
     it("Not selecting an option for 'weapons observed' returns a validation error message", () => {
@@ -378,7 +333,6 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         batonDrawn: true,
-        batonUsed: true,
         bodyWornCamera: 'NO',
         escortingHold: true,
         guidingHold: true,
@@ -386,7 +340,6 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -412,7 +365,6 @@ describe('complete schema', () => {
 
       expect(formResponse).toEqual({
         batonDrawn: true,
-        batonUsed: true,
         bodyWornCamera: 'NO',
         weaponsObserved: 'NO',
         escortingHold: true,
@@ -421,7 +373,6 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawn: true,
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -621,9 +572,7 @@ describe('partial schema', () => {
         bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
         batonDrawn: true,
-        batonUsed: true,
         pavaDrawn: true,
-        pavaUsed: true,
         weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,

@@ -58,47 +58,22 @@
     })}}
 
     <!-- Q4 -->
-    {{ incidentMacro.radiosWithNestedRadios({
-      primaryQuestion: {
-        text: "Was a baton drawn by anyone during this incident?",
-        name: "batonDrawn",
-        value: data.batonDrawn,
-        options: yesNoOptions,
-        errorMessage: errors | findError('batonDrawn')
-      },
-      followUpQuestion: {
-        text: "Was it used?",
-        value: data.batonUsed,
-        name: "batonUsed",
-        options: yesNoOptions,
-        errorMessage: errors | findError('batonUsed')
-      },
-      followUpQuestionTriggeredOn: true,
-      orientation: 'inline'
-    }
-    )}}
+    {{ incidentMacro.radio({
+      text: "Was a baton drawn against the prisoner?",
+      name: "batonDrawn",
+      value: data.batonDrawn,
+      options: yesNoOptions,
+      errorMessage: errors | findError('batonDrawn')
+    })}}
 
     <!-- Q5 -->
-    {{ incidentMacro.radiosWithNestedRadios({
-      primaryQuestion: {
-        text: "Was PAVA drawn by anyone during this incident?",
-        name: "pavaDrawn",
-        value: data.pavaDrawn,
-        options: yesNoOptions,
-        errorMessage: errors | findError('pavaDrawn')
-
-      },
-      followUpQuestion: {
-        text: "Was it used?",
-        name: "pavaUsed",
-        value: data.pavaUsed,
-        options: yesNoOptions,
-        errorMessage: errors | findError('pavaUsed')
-      },
-      followUpQuestionTriggeredOn: true,
-      orientation: 'inline'
-    }
-    )}}
+    {{ incidentMacro.radio({
+      text: "Was PAVA drawn against the prisoner?",
+      name: "pavaDrawn",
+      value: data.pavaDrawn,
+      options: yesNoOptions,
+      errorMessage: errors | findError('pavaDrawn')
+    })}}
 
     <!-- Q6 -->
     {{ incidentMacro.radiosWithAddAnotherTextBox({

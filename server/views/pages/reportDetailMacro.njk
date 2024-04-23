@@ -200,17 +200,17 @@
     }}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was a baton drawn by anyone during this incident?',
+        label: 'Was a baton drawn against the prisoner?',
         'data-qa': 'batonDrawn',
-        dataValue: data.useOfForceDetails.batonDrawn,
+        dataValue: data.useOfForceDetails.batonDrawn | toYesNo,
         print: print
       })
     }}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was PAVA drawn by anyone during this incident?',
+        label: 'Was PAVA drawn against the prisoner?',
         'data-qa': 'pavaDrawn',
-        dataValue: data.useOfForceDetails.pavaDrawn,
+        dataValue: data.useOfForceDetails.pavaDrawn | toYesNo,
         print: print
       })
     }}

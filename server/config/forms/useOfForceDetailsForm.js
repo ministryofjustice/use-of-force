@@ -45,12 +45,6 @@ const completeSchema = joi.object({
 
   batonDrawn: requiredBooleanMsg('Select yes if a baton was drawn').alter(optionalForPartialValidation),
 
-  batonUsed: joi.when('batonDrawn', {
-    is: true,
-    then: requiredBooleanMsg('Select yes if a baton was used').alter(optionalForPartialValidation),
-    otherwise: joi.any().strip(),
-  }),
-
   pavaDrawn: requiredBooleanMsg('Select yes if PAVA was drawn').alter(optionalForPartialValidation),
 
   weaponsObserved: requiredOneOfMsg(
@@ -71,12 +65,6 @@ const completeSchema = joi.object({
       otherwise: joi.any().strip(),
     })
     .meta({ firstFieldName: 'weaponTypes[0]' }),
-
-  pavaUsed: joi.when('pavaDrawn', {
-    is: true,
-    then: requiredBooleanMsg('Select yes if PAVA was used').alter(optionalForPartialValidation),
-    otherwise: joi.any().strip(),
-  }),
 
   guidingHold: requiredBooleanMsg('Select yes if a guiding hold was used').alter(optionalForPartialValidation),
 
