@@ -133,13 +133,6 @@ const createEvidence = (evidence: Partial<Evidence> = {}) => {
 
 const whenPresent = (value, present) => (value == null ? undefined : present(value))
 
-const wasWeaponUsed = weaponUsed => {
-  if (weaponUsed == null) {
-    return undefined
-  }
-  return weaponUsed ? `${YES} and used` : `${YES} and not used`
-}
-
 const getRestraintPositions = positions => {
   if (positions == null) {
     return Array.of[ControlAndRestraintPosition.NONE.label]
