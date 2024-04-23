@@ -25,8 +25,6 @@ const expectedPayload = {
   useOfForceDetails: {
     bodyWornCamera: 'YES',
     bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
-    pavaUsed: true,
-    batonUsed: true,
     pavaDrawn: true,
     weaponsObserved: 'YES',
     weaponTypes: [{ weaponType: 'gun' }, { weaponType: 'knife' }, { weaponType: 'fork' }],

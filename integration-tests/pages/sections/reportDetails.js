@@ -57,8 +57,8 @@ module.exports = {
 
     positiveCommunicationUsed().contains('Yes')
     cy.get('[data-qa="personalProtection"]').contains('Yes')
-    cy.get('[data-qa="batonDrawn"]').contains('Yes and used')
-    cy.get('[data-qa="pavaDrawn"]').contains('Yes and used')
+    cy.get('[data-qa="batonDrawn"]').contains('Yes')
+    cy.get('[data-qa="pavaDrawn"]').contains('Yes')
     cy.get('[data-qa="guidingHold"]').contains('Yes - 2 officers involved')
     cy.get('[data-qa="escortingHold"]').contains('Yes')
     cy.get('[data-qa="restraintUsed"]').contains('Standing')

@@ -28,10 +28,8 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.removeBodyWornCamera(0)
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.batonDrawn().check('true')
-    useOfForceDetailsPage.batonUsed().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
     useOfForceDetailsPage.weaponsObserved().check('NO')
-    useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
@@ -52,13 +50,11 @@ context('Enter use of force details page', () => {
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
-        batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
-        pavaUsed: true,
         weaponsObserved: 'NO',
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -78,14 +74,12 @@ context('Enter use of force details page', () => {
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [{ cameraNum: '345' }],
         batonDrawn: true,
-        batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
         handcuffsApplied: true,
         pavaDrawn: true,
         weaponsObserved: 'NO',
-        pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: 'STANDING',
@@ -106,9 +100,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.bodyWornCameraNumber(0).should('have.value', '345')
     useOfForceDetailsPage.personalProtectionTechniques().should('have.value', 'true')
     useOfForceDetailsPage.batonDrawn().should('have.value', 'true')
-    useOfForceDetailsPage.batonUsed().should('have.value', 'true')
     useOfForceDetailsPage.pavaDrawn().should('have.value', 'true')
-    useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
     useOfForceDetailsPage.escortingHold().should('have.value', 'true')
@@ -133,7 +125,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
-    useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
@@ -160,7 +151,6 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.bodyWornCamera().check('YES')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawn().check('true')
-    useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.weaponsObserved().check('YES')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
