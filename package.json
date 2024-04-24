@@ -187,6 +187,9 @@
     },
     "notifications-node-client": {
       "axios": "1.6.8"
+    },
+    "superagent": {
+      "formidable": "3.5.1"
     }
   }
 }
