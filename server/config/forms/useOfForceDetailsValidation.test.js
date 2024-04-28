@@ -14,11 +14,11 @@ beforeEach(() => {
     positiveCommunication: 'true',
     bodyWornCamera: 'NO',
     personalProtectionTechniques: 'true',
-    batonDrawn: 'true',
+    batonDrawnAgainstPrisoner: 'true',
     batonUsed: 'true',
-    pavaDrawn: 'true',
-    weaponsObserved: 'NO',
+    pavaDrawnAgainstPrisoner: 'true',
     pavaUsed: 'true',
+    weaponsObserved: 'NO',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
     escortingHold: 'true',
@@ -42,9 +42,9 @@ describe('complete schema', () => {
         positiveCommunication: true,
         bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
         weaponsObserved: 'NO',
         guidingHold: true,
@@ -74,11 +74,11 @@ describe('complete schema', () => {
           text: 'Select yes if any personal protection techniques were used',
         },
         {
-          href: '#batonDrawn',
+          href: '#batonDrawnAgainstPrisoner',
           text: 'Select yes if a baton was drawn',
         },
         {
-          href: '#pavaDrawn',
+          href: '#pavaDrawnAgainstPrisoner',
           text: 'Select yes if PAVA was drawn',
         },
         { href: '#weaponsObserved', text: 'Select yes if any weapons were observed' },
@@ -177,7 +177,7 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [
@@ -193,7 +193,7 @@ describe('complete schema', () => {
         guidingHoldOfficersInvolved: 2,
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -211,7 +211,7 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         bodyWornCamera: 'NO',
         escortingHold: true,
@@ -219,7 +219,7 @@ describe('complete schema', () => {
         guidingHoldOfficersInvolved: 2,
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -241,7 +241,7 @@ describe('complete schema', () => {
       ])
 
       expect(formResponse).toEqual({
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         bodyWornCamera: 'SOMETHING_RANDOM',
         escortingHold: true,
@@ -249,7 +249,7 @@ describe('complete schema', () => {
         guidingHoldOfficersInvolved: 2,
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -274,17 +274,17 @@ describe('complete schema', () => {
     it("Not selecting an option for 'baton drawn' returns validation error message plus Baton Used is undefined", () => {
       const input = {
         ...validInput,
-        batonDrawn: undefined,
+        batonDrawnAgainstPrisoner: undefined,
       }
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([
         {
-          href: '#batonDrawn',
+          href: '#batonDrawnAgainstPrisoner',
           text: 'Select yes if a baton was drawn',
         },
       ])
-      expect(formResponse.batonDrawn).toBe(undefined)
+      expect(formResponse.batonDrawnAgainstPrisoner).toBe(undefined)
       expect(formResponse.batonUsed).toBe(undefined)
     })
 
@@ -301,24 +301,24 @@ describe('complete schema', () => {
           text: 'Select yes if a baton was used',
         },
       ])
-      expect(formResponse.batonDrawn).toEqual(true)
+      expect(formResponse.batonDrawnAgainstPrisoner).toEqual(true)
       expect(formResponse.batonUsed).toBe(undefined)
     })
 
     it("Not selecting an option for 'pava drawn' returns validation error message plus 'pava used' is undefined", () => {
       const input = {
         ...validInput,
-        pavaDrawn: undefined,
+        pavaDrawnAgainstPrisoner: undefined,
       }
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([
         {
-          href: '#pavaDrawn',
+          href: '#pavaDrawnAgainstPrisoner',
           text: 'Select yes if PAVA was drawn',
         },
       ])
-      expect(formResponse.pavaDrawn).toEqual(undefined)
+      expect(formResponse.pavaDrawnAgainstPrisoner).toEqual(undefined)
       expect(formResponse.pavaUsed).toBe(undefined)
     })
 
@@ -335,7 +335,7 @@ describe('complete schema', () => {
           text: 'Select yes if PAVA was used',
         },
       ])
-      expect(formResponse.pavaDrawn).toEqual(true)
+      expect(formResponse.pavaDrawnAgainstPrisoner).toEqual(true)
       expect(formResponse.pavaUsed).toBe(undefined)
     })
 
@@ -377,7 +377,7 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         bodyWornCamera: 'NO',
         escortingHold: true,
@@ -385,7 +385,7 @@ describe('complete schema', () => {
         guidingHoldOfficersInvolved: 2,
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -411,7 +411,7 @@ describe('complete schema', () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         bodyWornCamera: 'NO',
         weaponsObserved: 'NO',
@@ -420,7 +420,7 @@ describe('complete schema', () => {
         guidingHoldOfficersInvolved: 2,
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -620,9 +620,9 @@ describe('partial schema', () => {
         positiveCommunication: true,
         bodyWornCamera: 'NO',
         personalProtectionTechniques: true,
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
         weaponsObserved: 'NO',
         guidingHold: true,
@@ -645,9 +645,9 @@ describe('partial schema', () => {
 
   it('Should return no error messages when dependent answers are absent', () => {
     const { errors, formResponse } = check({
-      batonDrawn: 'true',
+      batonDrawnAgainstPrisoner: 'true',
       bodyWornCamera: 'YES',
-      pavaDrawn: 'true',
+      pavaDrawnAgainstPrisoner: 'true',
       guidingHold: 'true',
       escortingHold: 'true',
       restraintPositions: 'NONE',
@@ -656,11 +656,11 @@ describe('partial schema', () => {
 
     expect(errors).toEqual([])
     expect(formResponse).toEqual({
-      batonDrawn: true,
+      batonDrawnAgainstPrisoner: true,
       bodyWornCamera: 'YES',
       guidingHold: true,
       escortingHold: true,
-      pavaDrawn: true,
+      pavaDrawnAgainstPrisoner: true,
       restraintPositions: 'NONE',
       weaponsObserved: 'YES',
     })

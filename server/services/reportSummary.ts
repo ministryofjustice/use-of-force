@@ -65,7 +65,13 @@ const createUseOfForceDetails = (
     positiveCommunicationUsed: details.positiveCommunication,
     personalProtectionTechniques: details.personalProtectionTechniques,
     batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : NO)),
+    batonDrawnAgainstPrisoner: whenPresent(details.batonDrawnAgainstPrisoner, value =>
+      value ? wasWeaponUsed(details.batonUsed) : NO
+    ),
     pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : NO)),
+    pavaDrawnAgainstPrisoner: whenPresent(details.pavaDrawnAgainstPrisoner, value =>
+      value ? wasWeaponUsed(details.pavaUsed) : NO
+    ),
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),

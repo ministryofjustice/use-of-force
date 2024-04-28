@@ -42,8 +42,8 @@ const validUseOfForceDetailsRequest = {
   bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
   positiveCommunication: 'false',
   personalProtectionTechniques: 'false',
-  batonDrawn: 'false',
-  pavaDrawn: 'false',
+  batonDrawnAgainstPrisoner: 'false',
+  pavaDrawnAgainstPrisoner: 'false',
   weaponsObserved: 'NO',
   guidingHold: 'false',
   escortingHold: 'false',
@@ -60,12 +60,12 @@ const validUseOfForceDetailUpdate = [
   {
     bodyWornCamera: 'YES',
     bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
-    batonDrawn: false,
+    batonDrawnAgainstPrisoner: false,
+    pavaDrawnAgainstPrisoner: false,
     guidingHold: false,
     escortingHold: false,
     handcuffsApplied: false,
     painInducingTechniquesUsed: 'NONE',
-    pavaDrawn: false,
     weaponsObserved: 'NO',
     personalProtectionTechniques: false,
     positiveCommunication: false,
@@ -89,7 +89,7 @@ describe('POST save and continue /section/form', () => {
   test('Submitting invalid update is not allowed and user redirected to same page', () =>
     request(app)
       .post(`/report/1/use-of-force-details`)
-      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null })
+      .send({ ...validUseOfForceDetailsRequest, batonDrawnAgainstPrisoner: null })
       .expect(302)
       .expect('Location', '/report/1/use-of-force-details')
       .expect(() => {
@@ -113,7 +113,11 @@ describe('POST save and return to tasklist', () => {
   test('Submitting invalid update is allowed', () => {
     return request(app)
       .post(`/report/1/use-of-force-details`)
-      .send({ ...validUseOfForceDetailsRequest, batonDrawn: null, bodyWornCamera: null, submitType: 'save-and-return' })
+      .send({
+        ...validUseOfForceDetailsRequest,
+        bodyWornCamera: null,
+        submitType: 'save-and-return',
+      })
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
@@ -123,7 +127,8 @@ describe('POST save and return to tasklist', () => {
           escortingHold: false,
           handcuffsApplied: false,
           painInducingTechniquesUsed: 'NONE',
-          pavaDrawn: false,
+          pavaDrawnAgainstPrisoner: false,
+          batonDrawnAgainstPrisoner: false,
           weaponsObserved: 'NO',
           personalProtectionTechniques: false,
           positiveCommunication: false,

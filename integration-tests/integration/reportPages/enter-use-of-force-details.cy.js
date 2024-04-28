@@ -27,11 +27,11 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.bodyWornCameraNumber(1).type('345')
     useOfForceDetailsPage.removeBodyWornCamera(0)
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
-    useOfForceDetailsPage.batonDrawn().check('true')
+    useOfForceDetailsPage.batonDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.batonUsed().check('true')
-    useOfForceDetailsPage.pavaDrawn().check('true')
-    useOfForceDetailsPage.weaponsObserved().check('NO')
+    useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.weaponsObserved().check('NO')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
@@ -51,13 +51,13 @@ context('Enter use of force details page', () => {
       expect(section).to.deep.equal({
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [{ cameraNum: '345' }],
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
         handcuffsApplied: true,
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
         weaponsObserved: 'NO',
         personalProtectionTechniques: true,
@@ -77,13 +77,13 @@ context('Enter use of force details page', () => {
       expect(section).to.deep.equal({
         bodyWornCamera: 'YES',
         bodyWornCameraNumbers: [{ cameraNum: '345' }],
-        batonDrawn: true,
+        batonDrawnAgainstPrisoner: true,
         batonUsed: true,
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
         escortingHold: true,
         handcuffsApplied: true,
-        pavaDrawn: true,
+        pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -105,9 +105,9 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.bodyWornCamera().should('have.value', 'YES')
     useOfForceDetailsPage.bodyWornCameraNumber(0).should('have.value', '345')
     useOfForceDetailsPage.personalProtectionTechniques().should('have.value', 'true')
-    useOfForceDetailsPage.batonDrawn().should('have.value', 'true')
+    useOfForceDetailsPage.batonDrawnAgainstPrisoner().should('have.value', 'true')
     useOfForceDetailsPage.batonUsed().should('have.value', 'true')
-    useOfForceDetailsPage.pavaDrawn().should('have.value', 'true')
+    useOfForceDetailsPage.pavaDrawnAgainstPrisoner().should('have.value', 'true')
     useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
@@ -132,7 +132,7 @@ context('Enter use of force details page', () => {
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
-    useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
@@ -159,7 +159,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.positiveCommunication().check('true')
     useOfForceDetailsPage.bodyWornCamera().check('YES')
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
-    useOfForceDetailsPage.pavaDrawn().check('true')
+    useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
     useOfForceDetailsPage.weaponsObserved().check('YES')
     useOfForceDetailsPage.guidingHold().check('true')
