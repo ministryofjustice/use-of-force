@@ -134,5 +134,52 @@ context('A reporter views their own report', () => {
 
     const yourReportPage = YourReportPage.verifyOnPage()
     yourReportPage.location().contains('–')
+    yourReportPage.batonDrawnAgainstPrisonerLabel().contains('Was a baton drawn against the prisoner?')
+    yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn against the prisoner?')
+  })
+
+  it('A user can view reports and it will show the old version of the Baton and PAVA questions', () => {
+    cy.task('stubLocationNotFound', '357591')
+
+    cy.login()
+
+    expectedPayload.useOfForceDetails.batonDrawnAgainstPrisoner = undefined
+    expectedPayload.useOfForceDetails.pavaDrawnAgainstPrisoner = undefined
+    expectedPayload.useOfForceDetails.batonDrawn = true
+    expectedPayload.useOfForceDetails.pavaDrawn = true
+
+    cy.task('seedReport', {
+      status: ReportStatus.SUBMITTED,
+      submittedDate: '2019-09-04 11:27:52',
+      involvedStaff: [
+        {
+          username: 'MR_ZAGATO',
+          name: 'MR_ZAGATO name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'MRS_JONES',
+          name: 'MRS_JONES name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
+        },
+      ],
+      payload: expectedPayload,
+    })
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.yourReportsTab().click()
+
+    const yourReportsPage = YourReportsPage.verifyOnPage()
+    yourReportsPage.reports(0).action().click()
+
+    const yourReportPage = YourReportPage.verifyOnPage()
+
+    yourReportPage.batonDrawnLabel().contains('Was a baton drawn by anyone during this incident?')
+    yourReportPage.pavaDrawnLabel().contains('Was PAVA drawn by anyone during this incident?')
   })
 })

@@ -198,6 +198,8 @@
         print: print
       })
     }}
+
+  {% if data.useOfForceDetails.batonDrawn %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was a baton drawn by anyone during this incident?',
@@ -206,6 +208,18 @@
         print: print
       })
     }}
+  {% else %}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was a baton drawn against the prisoner?',
+        'data-qa': 'batonDrawnAgainstPrisoner',
+        dataValue: data.useOfForceDetails.batonDrawnAgainstPrisoner,
+        print: print
+      })
+    }}
+  {% endif %}
+  
+  {% if data.useOfForceDetails.pavaDrawn %}
     {{
       reportDetailsMacros.tableRow({
         label: 'Was PAVA drawn by anyone during this incident?',
@@ -214,6 +228,16 @@
         print: print
       })
     }}
+  {% else %}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was PAVA drawn against the prisoner?',
+        'data-qa': 'pavaDrawnAgainstPrisoner',
+        dataValue: data.useOfForceDetails.pavaDrawnAgainstPrisoner,
+        print: print
+      })
+    }}
+  {% endif %}
 
     {% if data.useOfForceDetails.weaponsObserved != undefined  %}
       {{

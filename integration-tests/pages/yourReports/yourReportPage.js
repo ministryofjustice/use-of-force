@@ -17,6 +17,14 @@ const viewYourReportPage = () =>
 
     location: () => cy.get('[data-qa="location"]'),
 
+    batonDrawnLabel: () => cy.get('[data-qa="batonDrawn"]').parent(),
+
+    batonDrawnAgainstPrisonerLabel: () => cy.get('[data-qa="batonDrawnAgainstPrisoner"]').parent(),
+
+    pavaDrawnLabel: () => cy.get('[data-qa="pavaDrawn"]').parent(),
+
+    pavaDrawnAgainstPrisonerLabel: () => cy.get('[data-qa="pavaDrawnAgainstPrisoner"]').parent(),
+
     verifyInputs: reportDetails.verifyInputs,
 
     useOfForcePlanned: reportDetails.useOfForcePlanned,

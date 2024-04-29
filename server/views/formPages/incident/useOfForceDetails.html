@@ -60,11 +60,11 @@
     <!-- Q4 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
-        text: "Was a baton drawn by anyone during this incident?",
-        name: "batonDrawn",
-        value: data.batonDrawn,
+        text: "Was a baton drawn against the prisoner?",
+        name: "batonDrawnAgainstPrisoner",
+        value: data.batonDrawnAgainstPrisoner,
         options: yesNoOptions,
-        errorMessage: errors | findError('batonDrawn')
+        errorMessage: errors | findError('batonDrawnAgainstPrisoner')
       },
       followUpQuestion: {
         text: "Was it used?",
@@ -81,11 +81,11 @@
     <!-- Q5 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
-        text: "Was PAVA drawn by anyone during this incident?",
-        name: "pavaDrawn",
-        value: data.pavaDrawn,
+        text: "Was PAVA drawn against the prisoner?",
+        name: "pavaDrawnAgainstPrisoner",
+        value: data.pavaDrawnAgainstPrisoner,
         options: yesNoOptions,
-        errorMessage: errors | findError('pavaDrawn')
+        errorMessage: errors | findError('pavaDrawnAgainstPrisoner')
 
       },
       followUpQuestion: {

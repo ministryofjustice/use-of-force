@@ -10,9 +10,11 @@ export type UseOfForceDetails = {
   bodyWornCamera?: string
   bodyWornCameraNumbers?: { cameraNum: string }[]
   personalProtectionTechniques: boolean
-  batonDrawn: boolean
+  batonDrawn?: boolean
+  batonDrawnAgainstPrisoner?: boolean
   batonUsed: boolean
-  pavaDrawn: boolean
+  pavaDrawn?: boolean
+  pavaDrawnAgainstPrisoner?: boolean
   pavaUsed: boolean
   weaponsObserved: string
   weaponTypes: { weaponType: string }[]

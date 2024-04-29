@@ -12,13 +12,13 @@ const useOfForceDetailsPage = () =>
       cy.get('.add-another-body-worn-camera .add-another__remove-button').eq(index).click(),
 
     personalProtectionTechniques: () => cy.get('[name="personalProtectionTechniques"]'),
-    batonDrawn: () => cy.get('[name="batonDrawn"]'),
+    batonDrawnAgainstPrisoner: () => cy.get('[name="batonDrawnAgainstPrisoner"]'),
     batonUsed: () => cy.get('[name="batonUsed"]'),
-    pavaDrawn: () => cy.get('[name="pavaDrawn"]'),
+    pavaDrawnAgainstPrisoner: () => cy.get('[name="pavaDrawnAgainstPrisoner"]'),
+    pavaUsed: () => cy.get('[name="pavaUsed"]'),
     weaponsObserved: () => cy.get('[name="weaponsObserved"]'),
     weaponTypes: index => cy.get(`[name="weaponTypes[${index}][weaponType]"]`),
     addAnotherWeapon: () => cy.get('[dataqa=add-another-weapons-observed]').click(),
-    pavaUsed: () => cy.get('[name="pavaUsed"]'),
     guidingHold: () => cy.get('[name="guidingHold"]'),
     guidingHoldOfficersInvolved: {
       check: value => cy.get('[name="guidingHoldOfficersInvolved"]').check(value),
@@ -57,9 +57,9 @@ const useOfForceDetailsPage = () =>
       this.positiveCommunication().check('true')
       this.bodyWornCamera().check('NO')
       this.personalProtectionTechniques().check('true')
-      this.batonDrawn().check('true')
+      this.batonDrawnAgainstPrisoner().check('true')
       this.batonUsed().check('true')
-      this.pavaDrawn().check('true')
+      this.pavaDrawnAgainstPrisoner().check('true')
       this.pavaUsed().check('true')
       this.weaponsObserved().check('NO')
       this.guidingHold().check('true')

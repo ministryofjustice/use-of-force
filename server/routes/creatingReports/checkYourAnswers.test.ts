@@ -53,8 +53,8 @@ describe('GET /check-your-answers', () => {
       form: {
         incidentDetails: {},
         useOfForceDetails: {
-          pavaDrawn: false,
-          batonDrawn: false,
+          pavaDrawnAgainstPrisoner: false,
+          batonDrawnAgainstPrisoner: false,
           guidingHold: false,
           escortingHold: false,
           handcuffsApplied: false,
@@ -81,8 +81,8 @@ describe('GET /check-your-answers', () => {
       form: {
         incidentDetails: {},
         useOfForceDetails: {
-          pavaDrawn: false,
-          batonDrawn: false,
+          pavaDrawnAgainstPrisoner: false,
+          batonDrawnAgainstPrisoner: false,
           guidingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,
@@ -108,8 +108,8 @@ describe('GET /check-your-answers', () => {
       form: {
         incidentDetails: {},
         useOfForceDetails: {
-          pavaDrawn: false,
-          batonDrawn: false,
+          pavaDrawnAgainstPrisoner: false,
+          batonDrawnAgainstPrisoner: false,
           guidingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,
@@ -135,8 +135,8 @@ describe('GET /check-your-answers', () => {
       form: {
         incidentDetails: {},
         useOfForceDetails: {
-          pavaDrawn: false,
-          batonDrawn: false,
+          pavaDrawnAgainstPrisoner: false,
+          batonDrawnAgainstPrisoner: false,
           guidingHold: false,
           handcuffsApplied: false,
           positiveCommunication: false,

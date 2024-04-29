@@ -13,8 +13,8 @@ describe('statusCheck', () => {
     involvedStaff: [],
     reasonsForUseOfForce: { reasons: [UofReasons.FIGHT_BETWEEN_PRISONERS.value] },
     useOfForceDetails: {
-      pavaDrawn: false,
-      batonDrawn: false,
+      pavaDrawnAgainstPrisoner: false,
+      batonDrawnAgainstPrisoner: false,
       guidingHold: false,
       escortingHold: false,
       handcuffsApplied: false,
@@ -104,9 +104,9 @@ describe('statusCheck', () => {
     const invalidReport = {
       ...validReport,
       useOfForceDetails: {
-        pavaDrawn: false,
+        pavaDrawnAgainstPrisoner: false,
         restraint: false,
-        batonDrawn: null,
+        batonDrawnAgainstPrisoner: null,
         guidingHold: false,
         escortingHold: false,
         handcuffsApplied: null,
