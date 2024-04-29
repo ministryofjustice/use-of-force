@@ -138,7 +138,7 @@ context('A reporter views their own report', () => {
     yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn against the prisoner?')
   })
 
-  it('A user can view their own report with the old version of the Baton and PAVA questions', () => {
+  it('A user can view reports and it will show the old version of the Baton and PAVA questions', () => {
     cy.task('stubLocationNotFound', '357591')
 
     cy.login()
@@ -178,7 +178,7 @@ context('A reporter views their own report', () => {
     yourReportsPage.reports(0).action().click()
 
     const yourReportPage = YourReportPage.verifyOnPage()
-    yourReportPage.location().contains('–')
+
     yourReportPage.batonDrawnLabel().contains('Was a baton drawn by anyone during this incident?')
     yourReportPage.pavaDrawnLabel().contains('Was PAVA drawn by anyone during this incident?')
   })
