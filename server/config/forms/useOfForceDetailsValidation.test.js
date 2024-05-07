@@ -1,6 +1,5 @@
 const { complete, partial } = require('./useOfForceDetailsForm')
 const { processInput } = require('../../services/validation')
-const { BodyWornCameras } = require('../types')
 
 const checkFactory = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })
