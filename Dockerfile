@@ -4,7 +4,7 @@ ARG BUILD_NUMBER
 ARG GIT_REF
 
 RUN apt-get update && \
-        apt-get upgrade -y \
+        apt-get upgrade -y
 RUN apt-get -y install g++ make python3 curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
