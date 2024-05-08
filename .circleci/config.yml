@@ -142,6 +142,15 @@ workflows:
             branches:
               only:
                 - main
+      - hmpps/build_docker:
+          name: test_build_docker
+          publish: false
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - main
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
