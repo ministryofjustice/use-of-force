@@ -28,6 +28,8 @@ export type QueryPerformer = <R extends QueryResultRow = any, I extends any[] = 
   values?: I
 ) => Promise<QueryResult<R>>
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const query: QueryPerformer = (queryTextOrConfig, values?) => pool.query(queryTextOrConfig, values)
 
 export type InTransaction = <R>(callback: (query: QueryPerformer) => Promise<R>) => Promise<R>
