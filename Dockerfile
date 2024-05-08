@@ -4,15 +4,13 @@ ARG BUILD_NUMBER
 ARG GIT_REF
 
 RUN apt-get update && \
-        apt-get upgrade -y
+        apt-get upgrade -y \
+RUN apt-get -y install g++ make python3 curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN apt-get install -y curl
-
 RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
         > /app/root.cert
-
 
 COPY . .
 
