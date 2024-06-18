@@ -9,7 +9,7 @@ RUN apt-get -y install g++ make python3 curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
+RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
         > /app/root.cert
 
 COPY . .
