@@ -137,4 +137,5 @@ module.exports = {
   },
   featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', 'false', requiredInProduction) === 'true',
   environmentName: get('ENVIRONMENT_NAME', ''),
+  featureFlagRemoveCellLocations: get('FEATURE_FLAG_REMOVE_CELL_LOCATIONS', ''),
 }

@@ -130,6 +130,9 @@ env:
   - name: ENVIRONMENT_NAME
     value: {{ .Values.env.ENVIRONMENT_NAME | quote }}
 
+  - name: FEATURE_FLAG_REMOVE_CELL_LOCATIONS
+    value: {{ .Values.env.FEATURE_FLAG_REMOVE_CELL_LOCATIONS | quote }}
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
