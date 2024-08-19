@@ -239,7 +239,7 @@ describe('locationService', () => {
       expect(result).toEqual([{ userDescription: 'Test wing' }])
     })
 
-    it('should not remove cell locations for prison in feature flag', async () => {
+    it('should not remove cell locations for prison not in feature flag', async () => {
       config.featureFlagRemoveCellLocations = 'HMI'
       prisonClient.getLocations.mockResolvedValue([
         { userDescription: 'Other cell' },
