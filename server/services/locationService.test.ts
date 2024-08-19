@@ -1,8 +1,10 @@
 import { PrisonClient } from '../data'
 import type { Prison, PrisonLocation } from '../data/prisonClientTypes'
 import LocationService from './locationService'
+import config from '../config'
 
 jest.mock('../data')
+jest.mock('../config')
 
 const prisonClientBuilder = jest.fn()
 const token = 'token'
@@ -139,7 +141,7 @@ describe('locationService', () => {
       ])
     })
 
-    it('should sort retrieved locations with top 2 primary locations at the begining', async () => {
+    it('should sort retrieved locations with top 2 primary locations at the beginning', async () => {
       prisonClient.getLocations.mockResolvedValue([
         { userDescription: 'place 2' },
         { userDescription: 'Other cell' },
@@ -203,11 +205,16 @@ describe('locationService', () => {
       prisonClient.getLocations.mockResolvedValue([
         { userDescription: 'Other cell' },
         { userDescription: "Prisoner's cell" },
+        { userDescription: 'In cell' },
       ] as PrisonLocation[])
 
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
-      expect(result).toEqual([{ userDescription: "Prisoner's cell" }, { userDescription: 'Other cell' }])
+      expect(result).toEqual([
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'Other cell' },
+        { userDescription: 'In cell' },
+      ])
     })
 
     it('should use token', async () => {
@@ -216,6 +223,39 @@ describe('locationService', () => {
       await locationService.getIncidentLocations(token, 'WRI')
 
       expect(prisonClientBuilder).toBeCalledWith(token)
+    })
+
+    it('should remove cell locations for prison in feature flag', async () => {
+      config.featureFlagRemoveCellLocations = 'HMI'
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'Other cell' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'In cell' },
+        { userDescription: 'Test wing' },
+      ] as PrisonLocation[])
+
+      const result = await locationService.getIncidentLocations(token, 'HMI')
+
+      expect(result).toEqual([{ userDescription: 'Test wing' }])
+    })
+
+    it('should not remove cell locations for prison in feature flag', async () => {
+      config.featureFlagRemoveCellLocations = 'HMI'
+      prisonClient.getLocations.mockResolvedValue([
+        { userDescription: 'Other cell' },
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'In cell' },
+        { userDescription: 'Test wing' },
+      ] as PrisonLocation[])
+
+      const result = await locationService.getIncidentLocations(token, 'MDI')
+
+      expect(result).toEqual([
+        { userDescription: "Prisoner's cell" },
+        { userDescription: 'Other cell' },
+        { userDescription: 'In cell' },
+        { userDescription: 'Test wing' },
+      ])
     })
   })
 })

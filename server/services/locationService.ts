@@ -52,7 +52,7 @@ export default class LocationService {
             location.userDescription.toUpperCase() !== 'IN CELL'
         )
         .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
-      if (config.featureFlagRemoveCellLocations === 'HMI') {
+      if (config.featureFlagRemoveCellLocations === agencyId) {
         return [...remainingLocations]
       }
       return [
