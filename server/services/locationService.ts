@@ -53,7 +53,7 @@ export default class LocationService {
         )
         .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
       if (config.featureFlagRemoveCellLocationAgencies.includes(agencyId)) {
-        return [...remainingLocations]
+        return remainingLocations
       }
       return [
         ...(prisonersCell ? [prisonersCell] : []),
