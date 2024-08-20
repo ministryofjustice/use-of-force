@@ -24,7 +24,7 @@ env:
   TOKENVERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
   TOKENVERIFICATION_API_ENABLED: true
   FEATURE_FLAG_OUTAGE_BANNER_ENABLED: false
-  FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES: ['HMI']
+  FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES: 'HMI'
   DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
   COMPONENT_API_URL: "https://frontend-components-dev.hmpps.service.justice.gov.uk"
   ENVIRONMENT_NAME: 'DEV'
