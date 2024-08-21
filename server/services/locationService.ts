@@ -2,6 +2,7 @@ import { AgencyId } from '../types/uof'
 import logger from '../../log'
 import { RestClientBuilder, PrisonClient } from '../data'
 import { Prison, PrisonLocation } from '../data/prisonClientTypes'
+import config from '../config'
 
 export default class LocationService {
   constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
@@ -41,16 +42,25 @@ export default class LocationService {
       const otherCell = formattedIncidentLocations.find(
         location => location.userDescription.toUpperCase() === 'OTHER CELL'
       )
+      const inCell = formattedIncidentLocations.find(location => location.userDescription.toUpperCase() === 'IN CELL')
 
       const remainingLocations = formattedIncidentLocations
         .filter(
           location =>
             location.userDescription.toUpperCase() !== 'OTHER CELL' &&
-            location.userDescription.toUpperCase() !== "PRISONER'S CELL"
+            location.userDescription.toUpperCase() !== "PRISONER'S CELL" &&
+            location.userDescription.toUpperCase() !== 'IN CELL'
         )
         .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
-
-      return [...(prisonersCell ? [prisonersCell] : []), ...(otherCell ? [otherCell] : []), ...remainingLocations]
+      if (config.featureFlagRemoveCellLocationAgencies.includes(agencyId)) {
+        return remainingLocations
+      }
+      return [
+        ...(prisonersCell ? [prisonersCell] : []),
+        ...(otherCell ? [otherCell] : []),
+        ...(inCell ? [inCell] : []),
+        ...remainingLocations,
+      ]
     } catch (error) {
       logger.error(error, 'Error during getIncidentLocations')
       throw error
