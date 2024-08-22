@@ -35,7 +35,7 @@ describe('/why-was-uof-applied', () => {
         .get(paths.whyWasUofApplied(-19))
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('Why was use of force applied?')
+          expect(res.text).toContain('Why was use of force applied against this prisoner?')
           expect(res.text).toContain(UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.label)
         })
     })
@@ -131,7 +131,7 @@ describe('/what-was-the-primary-reason-of-uof', () => {
         .get(paths.whatWasPrimaryReasonForUoF(-19))
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('What was the primary reason use of force was applied?')
+          expect(res.text).toContain('What was the primary reason use of force was applied against this prisoner?')
           expect(res.text).toContain(UofReasons.ASSAULT_ON_ANOTHER_PRISONER.label)
           expect(res.text).toContain(UofReasons.HOSTAGE_NTRG.label)
           // Not present as reasons from flash used rather than DB
@@ -150,7 +150,7 @@ describe('/what-was-the-primary-reason-of-uof', () => {
         .get(paths.whatWasPrimaryReasonForUoF(-19))
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('What was the primary reason use of force was applied?')
+          expect(res.text).toContain('What was the primary reason use of force was applied against this prisoner?')
           expect(res.text).toContain(UofReasons.ASSAULT_ON_ANOTHER_PRISONER.label)
           expect(res.text).toContain(UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.label)
         })
