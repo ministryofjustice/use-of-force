@@ -12,7 +12,9 @@ const selectPrimaryUofReasonPage = () =>
     },
     () => {
       cy.get('h1').contains('Use of force details')
-      cy.get('legend.govuk-fieldset__legend--l').contains('What was the primary reason use of force was applied?')
+      cy.get('legend.govuk-fieldset__legend--l').contains(
+        'What was the primary reason use of force was applied against this prisoner?'
+      )
     }
   )
 

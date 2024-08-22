@@ -24,7 +24,7 @@
 
     <!-- Q1 -->
     {{ incidentMacro.radio( {
-      text: "Was positive communication used to de-escalate the situation?",
+      text: "Was positive communication used to de-escalate the situation with this prisoner?",
       name: "positiveCommunication",
       value: data.positiveCommunication,
       options: yesNoOptions,
@@ -50,7 +50,7 @@
 
     <!-- Q3 -->
     {{ incidentMacro.radio( {
-      text: "Were any personal protection techniques used?",
+      text: "Were any personal protection techniques used against this prisoner?",
       name: "personalProtectionTechniques",
       value: data.personalProtectionTechniques,
       options: yesNoOptions,
@@ -60,14 +60,14 @@
     <!-- Q4 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
-        text: "Was a baton drawn against the prisoner?",
+        text: "Was a baton drawn by anyone against this prisoner?",
         name: "batonDrawnAgainstPrisoner",
         value: data.batonDrawnAgainstPrisoner,
         options: yesNoOptions,
         errorMessage: errors | findError('batonDrawnAgainstPrisoner')
       },
       followUpQuestion: {
-        text: "Was it used?",
+        text: "Was it used against this prisoner?",
         value: data.batonUsed,
         name: "batonUsed",
         options: yesNoOptions,
@@ -81,7 +81,7 @@
     <!-- Q5 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
-        text: "Was PAVA drawn against the prisoner?",
+        text: "Was PAVA drawn by anyone against this prisoner?",
         name: "pavaDrawnAgainstPrisoner",
         value: data.pavaDrawnAgainstPrisoner,
         options: yesNoOptions,
@@ -89,7 +89,7 @@
 
       },
       followUpQuestion: {
-        text: "Was it used?",
+        text: "Was it used against this prisoner?",
         name: "pavaUsed",
         value: data.pavaUsed,
         options: yesNoOptions,
@@ -120,7 +120,7 @@
     <!-- Q7 -->
     {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
-        text: "Was a guiding hold used?",
+        text: "Was a guiding hold used against this prisoner?",
         name: "guidingHold",
         value: data.guidingHold,
         options: yesNoOptions,
@@ -148,7 +148,7 @@
 
     <!-- Q8 -->
     {{ incidentMacro.radio( {
-    text: "Was an escorting hold used?",
+    text: "Was an escorting hold used against this prisoner?",
     name: "escortingHold",
     value: data.escortingHold,
     options: yesNoOptions,
@@ -159,7 +159,7 @@
     <div id="control-and-restraint">
     {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
-        text: "Which control and restraint positions were used?",
+        text: "Which control and restraint positions were used against this prisoner?",
         hint: "Select all that apply.",
         name: "restraintPositions",
         value: data.restraintPositions | toArray,
@@ -174,7 +174,7 @@
     <div id="pain-inducing-techniques">
       {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
-          text: "Which pain inducing techniques were used?",
+          text: "Which pain inducing techniques were used against this prisoner?",
           hint: "Select all that apply.",
           name: "painInducingTechniquesUsed",
           value: data.painInducingTechniquesUsed or [],
@@ -187,7 +187,7 @@
 
     <!-- 11 -->
     {{ incidentMacro.radio( {
-      text: "Were handcuffs applied?",
+      text: "Were handcuffs applied against this prisoner?",
       name: "handcuffsApplied",
       value: data.handcuffsApplied,
       options: yesNoOptions,

@@ -134,8 +134,8 @@ context('A reporter views their own report', () => {
 
     const yourReportPage = YourReportPage.verifyOnPage()
     yourReportPage.location().contains('–')
-    yourReportPage.batonDrawnAgainstPrisonerLabel().contains('Was a baton drawn against the prisoner?')
-    yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn against the prisoner?')
+    yourReportPage.batonDrawnAgainstPrisonerLabel().contains('Was a baton drawn by anyone against this prisoner?')
+    yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn by anyone against this prisoner?')
   })
 
   it('A user can view reports and it will show the old version of the Baton and PAVA questions', () => {

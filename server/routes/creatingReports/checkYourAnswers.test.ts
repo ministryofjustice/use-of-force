@@ -71,7 +71,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).not.toContain('Which pain inducing techniques were used?')
+        expect(res.text).not.toContain('Which pain inducing techniques were used against this prisoner?')
       })
   })
 
@@ -98,7 +98,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Which pain inducing techniques were used?')
+        expect(res.text).toContain('Which pain inducing techniques were used against this prisoner?')
       })
   })
 
@@ -125,7 +125,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Which pain inducing techniques were used?')
+        expect(res.text).toContain('Which pain inducing techniques were used against this prisoner?')
       })
   })
 
@@ -151,7 +151,7 @@ describe('GET /check-your-answers', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Which pain inducing techniques were used?')
+        expect(res.text).toContain('Which pain inducing techniques were used against this prisoner?')
       })
   })
   it('Should contain prisoner compliant', () => {
