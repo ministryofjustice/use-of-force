@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6
+  hmpps: ministryofjustice/hmpps@9.5.0
 
 parameters:
   alerts-slack-channel:
@@ -154,6 +154,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
           context: hmpps-common-vars
           filters:
             branches:
@@ -171,6 +173,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
           context:
             - hmpps-common-vars
             - use-of-force-preprod
@@ -183,6 +187,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
           slack_notification: true
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
