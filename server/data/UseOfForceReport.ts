@@ -1,6 +1,7 @@
 export type IncidentDetails = {
   plannedUseOfForce: boolean
   locationId: number
+  incidentLocationId?: string
   authorisedBy: string
   witnesses: { name: string }[]
 }

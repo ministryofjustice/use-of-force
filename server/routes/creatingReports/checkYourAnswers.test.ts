@@ -19,7 +19,7 @@ const draftReportService = new DraftReportService(
   null
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
 let app
 

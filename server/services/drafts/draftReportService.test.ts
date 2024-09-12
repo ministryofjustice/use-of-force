@@ -40,7 +40,7 @@ const draftInvolvedStaffService = new DraftInvolvedStaffService(
   null
 ) as jest.Mocked<DraftInvolvedStaffService>
 
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
 const aUser = username => ({ username } as FoundUserResult)
 const isReportCompleteMock = isReportComplete as jest.Mock
@@ -315,7 +315,7 @@ describe('getPotentialDuplicates', () => {
     const dbMock = [
       {
         date: moment('10/07/2021', 'DDMMYYYY'),
-        locationId: 1,
+        locationId: '1',
         reporter: 'Bob',
         status: 'SUBMITTED',
       },
@@ -331,13 +331,13 @@ describe('getPotentialDuplicates', () => {
     const mockCurrentReports = [
       {
         date: moment('2021-10-07'),
-        locationId: 1,
+        locationId: '1',
         reporter: 'Bob',
         status: 'SUBMITTED',
       },
       {
         date: moment('2021-10-07'),
-        locationId: 1,
+        locationId: '1',
         reporter: 'Harry',
         status: 'COMPLETED',
       },

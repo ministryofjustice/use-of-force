@@ -32,7 +32,7 @@ export default class CheckAnswerRoutes {
 
     const offenderDetail = await this.offenderService.getOffenderDetails(token, parseInt(bookingId, 10))
 
-    const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.locationId)
+    const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.incidentLocationId)
 
     const draftInvolvedStaff = await this.draftReportService.getInvolvedStaff(
       token,

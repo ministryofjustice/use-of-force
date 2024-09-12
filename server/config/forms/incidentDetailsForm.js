@@ -10,14 +10,8 @@ const {
   timeValidation,
 } = require('./incidentDateValidation')
 
-const {
-  optionalForPartialValidation,
-  requiredIntegerMsg,
-  requiredPatternMsg,
-  requiredStringMsg,
-  requiredBooleanMsg,
-  arrayOfObjects,
-} = validations
+const { optionalForPartialValidation, requiredPatternMsg, requiredStringMsg, requiredBooleanMsg, arrayOfObjects } =
+  validations
 
 const requiredIncidentDate = joi
   .object({
@@ -65,7 +59,7 @@ const requiredIncidentDate = joi
 const transientSchema = joi.object({
   incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }).alter(optionalForPartialValidation),
 
-  locationId: requiredIntegerMsg('Select the location of the incident').alter(optionalForPartialValidation),
+  incidentLocationId: requiredStringMsg('Select the location of the incident').alter(optionalForPartialValidation),
 
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
     optionalForPartialValidation

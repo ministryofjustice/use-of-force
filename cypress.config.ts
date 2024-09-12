@@ -3,6 +3,9 @@ import { defineConfig } from 'cypress'
 import auth from './integration-tests/mockApis/auth'
 import { resetStubs } from './integration-tests/mockApis/wiremock'
 import prisonApi from './integration-tests/mockApis/prisonApi'
+import locationApi from './integration-tests/mockApis/locationApi'
+import nomisMappingApi from './integration-tests/mockApis/nomisMappingApi'
+
 import search from './integration-tests/mockApis/search'
 import { stringToHash } from './server/utils/hash'
 
@@ -20,7 +23,6 @@ export default defineConfig({
   reporterOptions: {
     configFile: 'reporter-config.json',
   },
-  videoUploadOnPasses: false,
   taskTimeout: 60000,
   e2e: {
     // We've imported your old cypress plugins here.
@@ -48,15 +50,18 @@ export default defineConfig({
 
         stubOffenders: prisonApi.stubOffenders,
 
-        stubLocations: prisonApi.stubLocations,
+        // stubLocation: prisonApi.stubLocation,
+        // stubLocations: prisonApi.stubLocations,
+
+        stubLocation: locationApi.stubGetLocation,
+        stubLocations: locationApi.stubGetLocations,
+        stubDpsLocationMapping: nomisMappingApi.stubGetDpsLocationMappingUsingNomisLocationId,
 
         stubPrisons: prisonApi.stubPrisons,
 
         stubSearch: search.stubSearch,
 
         stubPrison: prisonApi.stubPrison,
-
-        stubLocation: prisonApi.stubLocation,
 
         stubLocationNotFound: prisonApi.stubLocationNotFound,
 

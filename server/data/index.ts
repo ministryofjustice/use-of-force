@@ -8,6 +8,8 @@ import DraftReportClient from './draftReportClient'
 import StatementsClient from './statementsClient'
 
 import PrisonClient from './prisonClient'
+import LocationClient from './locationClient'
+import NomisMappingClient from './nomisMappingClient'
 import FeComponentsClient from './feComponentsClient'
 import config from '../config'
 
@@ -42,6 +44,12 @@ export const dataAccess = {
   systemToken: systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false }))),
   authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
   prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
+  locationClientBuilder: restClientBuilder<LocationClient>('locationApi', config.apis.location, LocationClient),
+  nomisMappingClientBuilder: restClientBuilder<NomisMappingClient>(
+    'nomisMappingApi',
+    config.apis.nomisMapping,
+    NomisMappingClient
+  ),
   feComponentsClientBuilder: restClientBuilder<FeComponentsClient>(
     'feComponentApi',
     config.apis.frontendComponents,
@@ -57,6 +65,8 @@ export {
   RestClientBuilder,
   IncidentClient,
   PrisonClient,
+  LocationClient,
+  NomisMappingClient,
   FeComponentsClient,
   PrisonerSearchClient,
   AuthClient,

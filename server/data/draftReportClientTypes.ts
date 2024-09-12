@@ -19,7 +19,7 @@ export interface StaffDetails {
 
 export type OffenderReport = {
   date: moment.Moment
-  locationId: number
+  locationId: string
   reporter: string
   status: string
 }

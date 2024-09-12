@@ -20,6 +20,7 @@ export default function Index({
   draftReportService,
   systemToken,
   locationService,
+  nomisMappingService,
   prisonerSearchService,
 }: Services): Router {
   const router = express.Router()
