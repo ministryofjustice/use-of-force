@@ -17,7 +17,7 @@ context('A reporter views their own report', () => {
   })
 
   it('A user can view their own report', () => {
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 
@@ -68,7 +68,7 @@ context('A reporter views their own report', () => {
   })
 
   it('A user can view their own report when no authorisedBy field', () => {
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 
@@ -100,7 +100,7 @@ context('A reporter views their own report', () => {
   })
 
   it('A user can view their own report when location is not found', () => {
-    cy.task('stubLocationNotFound', '357591')
+    cy.task('stubLocationNotFound', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 
@@ -139,7 +139,7 @@ context('A reporter views their own report', () => {
   })
 
   it('A user can view reports and it will show the old version of the Baton and PAVA questions', () => {
-    cy.task('stubLocationNotFound', '357591')
+    cy.task('stubLocationNotFound', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 

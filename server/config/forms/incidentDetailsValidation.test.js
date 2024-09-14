@@ -15,7 +15,7 @@ const buildCheck = schema => input => {
 }
 
 let validInput = {}
-const incidentLocationId = 'incident-location-id'
+const incidentLocationId = '00000000-1111-2222-3333-444444444444'
 beforeEach(() => {
   validInput = {
     incidentDate: { date: '15/01/2019', time: { hour: '12', minute: '45' } },

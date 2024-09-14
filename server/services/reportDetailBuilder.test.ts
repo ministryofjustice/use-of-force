@@ -192,6 +192,6 @@ describe('Build details', () => {
 
     await reportDetailBuilder.build('Bob', report)
 
-    expect(locationService.getLocation).toHaveBeenCalledWith('system-token-for-Bob', dpsLocationId)
+    expect(locationService.getLocation).toHaveBeenCalledWith('system-token-for-Bob', incidentLocationId)
   })
 })

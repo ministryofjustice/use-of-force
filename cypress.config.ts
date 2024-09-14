@@ -50,11 +50,12 @@ export default defineConfig({
 
         stubOffenders: prisonApi.stubOffenders,
 
-        // stubLocation: prisonApi.stubLocation,
-        // stubLocations: prisonApi.stubLocations,
-
         stubLocation: locationApi.stubGetLocation,
+
         stubLocations: locationApi.stubGetLocations,
+
+        stubLocationNotFound: locationApi.stubLocationNotFound,
+
         stubDpsLocationMapping: nomisMappingApi.stubGetDpsLocationMappingUsingNomisLocationId,
 
         stubPrisons: prisonApi.stubPrisons,
@@ -62,8 +63,6 @@ export default defineConfig({
         stubSearch: search.stubSearch,
 
         stubPrison: prisonApi.stubPrison,
-
-        stubLocationNotFound: prisonApi.stubLocationNotFound,
 
         stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 

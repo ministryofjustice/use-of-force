@@ -182,7 +182,7 @@ export const Destinations = {
   CHECK_YOUR_ANSWERS: 'check-your-answers',
 }
 
-export enum NonResidentialUsageType {
+export const enum NonResidentialUsageType {
   ADJUDICATION_HEARING = 'ADJUDICATION_HEARING',
   APPOINTMENT = 'APPOINTMENT',
   MOVEMENT = 'MOVEMENT',

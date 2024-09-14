@@ -11,7 +11,7 @@ const expectedPayload = {
   },
   incidentDetails: {
     witnesses: [{ name: 'Witness A' }, { name: 'Tom Jones' }],
-    locationId: 357591,
+    incidentLocationId: '00000000-1111-2222-3333-444444444444',
     plannedUseOfForce: true,
     authorisedBy: 'Eric Bloodaxe',
   },

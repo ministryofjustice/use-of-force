@@ -1,7 +1,7 @@
 const { stubFor } = require('./wiremock')
 
 module.exports = {
-  stubGetDpsLocationMappingUsingNomisLocationId: (nomisLocationId, response) => {
+  stubGetDpsLocationMappingUsingNomisLocationId: nomisLocationId => {
     return stubFor({
       request: {
         method: 'GET',
@@ -12,7 +12,10 @@ module.exports = {
         headers: {
           'Content-Type': 'application/json;charset=UTF-8',
         },
-        jsonBody: response,
+        jsonBody: {
+          dpsLocationId: '00000000-1111-2222-3333-444444444440',
+          nomisLocationId: 123456,
+        },
       },
     })
   },

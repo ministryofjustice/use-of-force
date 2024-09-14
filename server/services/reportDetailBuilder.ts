@@ -48,9 +48,9 @@ export default class ReportDataBuilder {
     return dpsLocationId
 
     // TODO: locationId is the original id that may already be in DB.
-    // consider adding the dpsLocationDetail.incidentLocationId to the form_response.incidentDetails in the DB
+    // consider adding the dpsLocationDetail as the incidentLocationId to the form_response.incidentDetails json in the DB
     // when a user views an already submitted report.
-    // Do not delete the locationId already there (for safety!) as both can exist together
+    // Do not delete the existing locationId already there (for safety!) as both locationId and incidentLocationId can exist together
   }
 
   async build(currentUsername: string, report: Report): Promise<ReportDetail> {

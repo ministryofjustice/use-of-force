@@ -73,7 +73,7 @@ test('updateAgencyId', () => {
   expect(query).toBeCalledWith({
     text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
-                  ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
+                  ,   form_response = jsonb_set(form_Response, '{incidentDetails,incidentLocationId}', 'null'::jsonb)
                   where r.user_id = $2
                   and r.booking_id = $3
                   and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
@@ -131,7 +131,7 @@ test('getDuplicateReports', () => {
 
   expect(query).toBeCalledWith({
     text: `select r.incident_date date
-              ,   r.form_response -> 'incidentDetails' ->> 'locationId' "locationId"
+              ,   r.form_response -> 'incidentDetails' ->> 'incidentLocationId' "incidentLocationId"
               ,   r.reporter_name reporter
               ,   r.status status
               from v_report r
