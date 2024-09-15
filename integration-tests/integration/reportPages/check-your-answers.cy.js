@@ -30,6 +30,12 @@ context('Check your answers page', () => {
     cy.login()
   })
 
+  it('contains the incident location description', () => {
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
+    checkAnswersPage.location().contains('ASSO A Wing')
+  })
+
   it('Can edit answers from check your answers page ', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()

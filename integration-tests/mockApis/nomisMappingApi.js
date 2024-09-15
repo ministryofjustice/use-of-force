@@ -13,8 +13,8 @@ module.exports = {
           'Content-Type': 'application/json;charset=UTF-8',
         },
         jsonBody: {
-          dpsLocationId: '00000000-1111-2222-3333-444444444440',
-          nomisLocationId: 123456,
+          dpsLocationId: '00000000-1111-2222-3333-444444444444',
+          nomisLocationId,
         },
       },
     })
