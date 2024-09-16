@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import LocationService from '../../services/locationService'
+import NomisMappingService from '../../services/nomisMappingService'
 import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { SystemToken } from '../../types/uof'
@@ -11,24 +12,42 @@ export default class CheckAnswerRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
+    private readonly nomisMappingService: NomisMappingService
   ) {}
 
   public view = async (req: Request, res: Response): Promise<void> => {
+    const token = await this.systemToken(res.locals.user.username)
     const { bookingId } = req.params
     const {
+      id,
       form = {},
       incidentDate,
       agencyId: prisonId,
     } = await this.draftReportService.getCurrentDraft(req.user.username, parseInt(bookingId, 10))
+
+    // At this point the reportStatus may be 'incomplete' (because of the validation rules) if only the nomis locationId is present.
+    // This scenario would occur where a user is already at /check-your-answers when the new code to use incidentLocationId is deployed
+    // To pass validation we need the equivalent dpsLocationId persisted to the db as incidentLocationId.
+    // The following 'if-block' does that.
+
+    if (form.incidentDetails?.locationId && !form.incidentDetails?.incidentLocationId) {
+      const { dpsLocationId } = await this.nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
+        token,
+        form.incidentDetails.locationId
+      )
+
+      form.incidentDetails.incidentLocationId = dpsLocationId
+
+      await this.draftReportService.updateLocationId(id, incidentDate, form)
+    }
+
     const { complete } = this.draftReportService.getReportStatus(form)
 
     if (!complete) {
       // User should not be on this page if form is not complete.
       return res.redirect(`/`)
     }
-
-    const token = await this.systemToken(res.locals.user.username)
 
     const offenderDetail = await this.offenderService.getOffenderDetails(token, parseInt(bookingId, 10))
 

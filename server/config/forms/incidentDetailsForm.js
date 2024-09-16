@@ -60,6 +60,8 @@ const transientSchema = joi.object({
   incidentDate: requiredIncidentDate.meta({ fieldType: EXTRACTED }).alter(optionalForPartialValidation),
 
   incidentLocationId: requiredStringMsg('Select the location of the incident').alter(optionalForPartialValidation),
+  // although we don't capture locationId for new reports, existing partial reports may have reached the check-your-answers page with just the locationId
+  locationId: joi.optional(),
 
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
     optionalForPartialValidation

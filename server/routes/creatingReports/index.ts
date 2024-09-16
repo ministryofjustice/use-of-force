@@ -21,6 +21,7 @@ export default function Index({
   systemToken,
   locationService,
   prisonerSearchService,
+  nomisMappingService,
 }: Services): Router {
   const router = express.Router()
 
@@ -80,7 +81,13 @@ export default function Index({
   get(reportPath('evidence'), createReport.view('evidence'))
   post(reportPath('evidence'), createReport.submit('evidence'))
 
-  const checkYourAnswers = new CheckYourAnswerRoutes(draftReportService, offenderService, systemToken, locationService)
+  const checkYourAnswers = new CheckYourAnswerRoutes(
+    draftReportService,
+    offenderService,
+    systemToken,
+    locationService,
+    nomisMappingService
+  )
   get(reportPath('check-your-answers'), checkYourAnswers.view)
   post(reportPath('check-your-answers'), checkYourAnswers.submit)
   get('/:reportId/report-sent', checkYourAnswers.viewReportSent)

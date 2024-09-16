@@ -195,6 +195,10 @@ export default class DraftReportService {
     return this.updateDraftReport.updateAgencyId(agencyId, username, bookingId)
   }
 
+  public async updateLocationId(reportId, incidentDateValue, formValue) {
+    await this.updateDraftReport.updateLocationId(reportId, incidentDateValue, formValue)
+  }
+
   public async submit(currentUser: LoggedInUser, bookingId: number): Promise<number | false> {
     const involvedStaff = await this.getInvolvedStaff(
       await this.systemToken(currentUser.username),
