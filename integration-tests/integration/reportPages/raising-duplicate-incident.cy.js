@@ -15,7 +15,7 @@ context('Submitting duplicate report', () => {
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubPrisons')
     cy.task('stubUserDetailsRetrieval', ['AAAA', 'BBBB', 'TEST_USER'])
     cy.login()

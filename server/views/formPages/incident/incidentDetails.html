@@ -81,16 +81,16 @@
     <div class="govuk-grid-column-two-thirds">
       {{
         govukSelect({
-          id: 'locationId',
-          name: 'locationId',
+          id: 'incidentLocationId',
+          name: 'incidentLocationId',
           classes: 'govuk-!-width-one-third  govuk-!-margin-bottom-3',
-          errorMessage: errors | findError('locationId'),
+          errorMessage: errors | findError('incidentLocationId'),
           label: {
             text: 'Where in '+ data.prison.description + ' did the incident happen?',
             isPageHeading: false,
             classes: 'govuk-label--xs govuk-!-margin-bottom-2'
           },
-          items: data.locations | toSelect('locationId', 'userDescription', data.locationId )
+          items: data.locations | toSelect('incidentLocationId', 'userDescription', data.incidentLocationId )
         })
       }}
       <hr />

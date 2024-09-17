@@ -100,6 +100,12 @@ env:
   - name: PRISON_API_URL
     value: {{ .Values.env.PRISON_API_URL | quote }}
 
+  - name: LOCATIONS_INSIDE_PRISON_API_URL
+    value: {{ .Values.env.LOCATIONS_INSIDE_PRISON_API_URL | quote }}
+
+  - name: NOMIS_MAPPING_API_URL
+    value: {{ .Values.env.NOMIS_MAPPING_API_URL | quote }}
+
   - name: PRISONER_SEARCH_API_URL
     value: {{ .Values.env.PRISONER_SEARCH_API_URL | quote }}
 

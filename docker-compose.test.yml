@@ -24,7 +24,7 @@ services:
       - '6379:6379'
 
   wiremock:
-    image: rodolpheche/wiremock
+    image: wiremock/wiremock
     networks:
     - hmpps_int
     container_name: use-of-force-wiremock

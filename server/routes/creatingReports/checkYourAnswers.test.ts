@@ -2,6 +2,7 @@ import request from 'supertest'
 import { Prison } from '../../data/prisonClientTypes'
 import LocationService from '../../services/locationService'
 import OffenderService from '../../services/offenderService'
+import NomisMappingService from '../../services/nomisMappingService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 
@@ -19,21 +20,77 @@ const draftReportService = new DraftReportService(
   null
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
-
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
+const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
+nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId = jest.fn()
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService })
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService, nomisMappingService })
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
 
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue('')
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)
   draftReportService.getInvolvedStaff.mockResolvedValue([])
+  nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId.mockResolvedValue({
+    nomisLocationId: 123456,
+    dpsLocationId: '00000000-1111-2222-3333-444444444444',
+  })
+})
+
+afterEach(() => {
+  jest.resetAllMocks()
 })
 
 describe('GET /check-your-answers', () => {
+  it('Should get the dps location id if only the nomis location id is present', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      id: 1,
+      form: { incidentDetails: { locationId: 123456 } },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect(res => {
+        expect(nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId).toHaveBeenCalledWith(
+          'user1-system-token',
+          123456
+        )
+      })
+  })
+
+  it('Should get the incidentLocationId and update the the db', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      id: 1,
+      form: { incidentDetails: { locationId: 123456 } },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect(res => {
+        expect(draftReportService.updateLocationId).toHaveBeenCalled()
+      })
+  })
+
+  it('Should not attempt get the dps location id if it is already present', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      id: 1,
+      form: { incidentDetails: { incidentLocationId: '00000000-1111-2222-3333-444444444444' } },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect(res => {
+        expect(nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId).not.toHaveBeenCalled()
+      })
+  })
   it('Allow render if report is complete', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
 

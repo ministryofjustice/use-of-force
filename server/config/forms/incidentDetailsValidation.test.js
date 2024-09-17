@@ -15,11 +15,11 @@ const buildCheck = schema => input => {
 }
 
 let validInput = {}
-
+const incidentLocationId = '00000000-1111-2222-3333-444444444444'
 beforeEach(() => {
   validInput = {
     incidentDate: { date: '15/01/2019', time: { hour: '12', minute: '45' } },
-    locationId: -1,
+    incidentLocationId,
     plannedUseOfForce: 'false',
     witnesses: [{ name: 'User bob' }, { name: '' }],
   }
@@ -41,7 +41,7 @@ describe("'complete' validation", () => {
         },
       })
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: false,
         witnesses: [{ name: 'User bob' }],
       })
@@ -65,7 +65,7 @@ describe("'complete' validation", () => {
           text: 'Enter missing minutes',
         },
         {
-          href: '#locationId',
+          href: '#incidentLocationId',
           text: 'Select the location of the incident',
         },
         {
@@ -89,13 +89,13 @@ describe("'complete' validation", () => {
   })
 
   describe('Incident location', () => {
-    it('Not a number', () => {
-      const input = { ...validInput, locationId: 'aaa' }
+    it('is missing', () => {
+      const input = { ...validInput, incidentLocationId: undefined }
       const { errors, formResponse } = check(input)
 
       expect(errors).toEqual([
         {
-          href: '#locationId',
+          href: '#incidentLocationId',
           text: 'Select the location of the incident',
         },
       ])
@@ -116,7 +116,7 @@ describe("'complete' validation", () => {
 
       expect(formResponse).toEqual({
         plannedUseOfForce: false,
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -133,7 +133,7 @@ describe("'complete' validation", () => {
       ])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }],
       })
     })
@@ -150,7 +150,7 @@ describe("'complete' validation", () => {
       ])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: true,
         witnesses: [{ name: 'User bob' }],
       })
@@ -163,7 +163,7 @@ describe("'complete' validation", () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         authorisedBy: 'Eric Bloodaxe',
         plannedUseOfForce: true,
         witnesses: [{ name: 'User bob' }],
@@ -182,7 +182,7 @@ describe("'complete' validation", () => {
       ])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         authorisedBy: '0',
         plannedUseOfForce: true,
         witnesses: [{ name: 'User bob' }],
@@ -209,7 +209,7 @@ describe("'complete' validation", () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: false,
       })
     })
@@ -221,7 +221,7 @@ describe("'complete' validation", () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }],
       })
@@ -234,7 +234,7 @@ describe("'complete' validation", () => {
       expect(errors).toEqual([])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }],
       })
@@ -252,7 +252,7 @@ describe("'complete' validation", () => {
       ])
 
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: false,
         witnesses: [{ name: 'bob' }, { name: 'Bob' }],
       })
@@ -698,7 +698,7 @@ describe("'partial' validation", () => {
         },
       })
       expect(formResponse).toEqual({
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: true,
         witnesses: [{ name: 'User bob' }],
       })
