@@ -1,6 +1,59 @@
 ---
 # Values here are the same across all environments
+generic-service:
+  nameOverride: use-of-force
+  replicaCount: 4
 
+  image:
+    repository: quay.io/hmpps/use-of-force
+    tag: latest
+    port: 3000
+
+  ingress:
+    v1_2_enabled: true
+    enabled: true
+    enable_allow_list: false
+    cert_secret: use-of-force-cert
+    path: /
+
+  env:
+    TOKENVERIFICATION_API_ENABLED: true
+    FEATURE_FLAG_OUTAGE_BANNER_ENABLED: false
+    FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES: 'HMI'
+    DB_SSL_ENABLED: true
+    REDIS_TLS_ENABLED: true
+    NODE_ENV: production
+
+  namespace_secrets:
+    dps-rds-instance-output:
+      DB_PASS: database_password
+      DB_USER: database_username
+      DB_SERVER: rds_instance_address
+      DB_NAME: database_name
+      DB_HOST: url
+    use-of-force:
+      API_CLIENT_ID: API_CLIENT_ID
+      API_CLIENT_SECRET: API_CLIENT_SECRET
+      SYSTEM_CLIENT_ID: SYSTEM_CLIENT_ID
+      SYSTEM_CLIENT_SECRET: SYSTEM_CLIENT_SECRET
+      APPINSIGHTS_INSTRUMENTATIONKEY: APPINSIGHTS_INSTRUMENTATIONKEY
+      NOTIFY_API_KEY: NOTIFY_API_KEY
+      TAG_MANAGER_KEY: TAG_MANAGER_KEY
+      TAG_MANAGER_ENVIRONMENT: TAG_MANAGER_ENVIRONMENT
+      SESSION_SECRET: SESSION_SECRET
+      URL_SIGNING_SECRET: URL_SIGNING_SECRET
+    uof-elasticache-redis:
+      REDIS_HOST: primary_endpoint_address
+      REDIS_AUTH_TOKEN: auth_token
+
+  allowlist:
+    groups:
+      - moj_cloud_platform
+      - digital_staff_and_mojo
+
+  jobs:
+    cronspec: "0 8,12,15 * * *"
+  # jobs will run at 9am, 1pm and 4pm
 generic-prometheus-alerts:
   targetApplication: use-of-force
   alertSeverity: digital-prison-service-dev
@@ -13,5 +66,4 @@ generic-data-analytics-extractor:
   dataPlatformApiAuthSecretName: use-of-force-api-auth
   dataProductName: hmpps_use_of_force
 
-ingress:
-  v1_2_enabled: true
+
