@@ -63,62 +63,6 @@ describe('prisonClient', () => {
       expect(output).toEqual(locations)
     })
   })
-  describe('getLocations', () => {
-    const locations = []
-    it('should return data from api', async () => {
-      fakePrisonApi
-        .get('/api/agencies/MDI/locations?eventType=OCCUR')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, locations)
-
-      const output = await prisonClient.getLocations('MDI')
-      expect(output).toEqual(locations)
-    })
-    it('can search without filter', async () => {
-      fakePrisonApi
-        .get('/api/agencies/MDI/locations')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, locations)
-
-      const output = await prisonClient.getLocations('MDI', false)
-      expect(output).toEqual(locations)
-    })
-  })
-
-  describe('getLocation', () => {
-    it('Should include inactive locations in request', async () => {
-      const location = {
-        agencyId: 'MDI',
-        currentOccupancy: 0,
-        description: 'Location',
-        internalLocationCode: 'ILOC-01-01',
-        locationId: 123,
-        locationPrefix: 'ILOC',
-        locationType: 'Thing',
-        locationUsage: 'For things',
-        operationalCapacity: 1,
-        parentLocationId: 0,
-        userDescription: 'Its a location',
-      }
-      fakePrisonApi
-        .get('/api/locations/123?includeInactive=true')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, location)
-
-      const output = await prisonClient.getLocation(123)
-      expect(output).toEqual(location)
-    })
-
-    it('When location not found should return empty object', async () => {
-      fakePrisonApi
-        .get('/api/locations/123?includeInactive=true')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(404)
-
-      const output = await prisonClient.getLocation(123)
-      expect(output).toStrictEqual(undefined)
-    })
-  })
 
   describe('getOffenders', () => {
     const offenderNos = ['aaa', 'bbb']

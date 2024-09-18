@@ -17,7 +17,7 @@ jest.mock('./locationService')
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 
 const transactionalClient = jest.fn()

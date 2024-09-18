@@ -86,6 +86,30 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    location: {
+      url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
+      timeout: {
+        response: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
+    nomisMapping: {
+      url: get('NOMIS_MAPPING_API_URL', 'http://localhost:8080', requiredInProduction),
+      timeout: {
+        response: get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
     prisonerSearch: {
       url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {

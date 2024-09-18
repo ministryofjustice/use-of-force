@@ -8,6 +8,7 @@ import SubmitDraftReportService from './drafts/submitDraftReportService'
 import DraftReportService from './drafts/draftReportService'
 
 import LocationService from './locationService'
+import NomisMappingService from './nomisMappingService'
 import ReportDetailBuilder from './reportDetailBuilder'
 import ReviewService from './reviewService'
 import StatementService from './statementService'
@@ -28,6 +29,8 @@ const {
   draftReportClient,
   incidentClient,
   prisonClientBuilder,
+  locationClientBuilder,
+  nomisMappingClientBuilder,
   feComponentsClientBuilder,
   prisonerSearchClientBuilder,
   statementsClient,
@@ -47,7 +50,8 @@ const involvedStaffService = new InvolvedStaffService(
   notificationService
 )
 const offenderService = new OffenderService(prisonClientBuilder)
-const locationService = new LocationService(prisonClientBuilder)
+const locationService = new LocationService(prisonClientBuilder, locationClientBuilder)
+const nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)
 const reportService = new ReportService(
   incidentClient,
   offenderService,
@@ -98,7 +102,13 @@ const reviewService = new ReviewService(
   systemToken
 )
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
-const reportDetailBuilder = new ReportDetailBuilder(involvedStaffService, locationService, offenderService, systemToken)
+const reportDetailBuilder = new ReportDetailBuilder(
+  involvedStaffService,
+  locationService,
+  offenderService,
+  nomisMappingService,
+  systemToken
+)
 const feComponentsService = new FeComponentsService(feComponentsClientBuilder)
 
 export const services = {
@@ -112,6 +122,7 @@ export const services = {
   reviewService,
   systemToken,
   locationService,
+  nomisMappingService,
   reportDetailBuilder,
   draftReportService,
   feComponentsService,
@@ -124,6 +135,7 @@ export {
   DraftReportService,
   ReportService,
   LocationService,
+  NomisMappingService,
   StatementService,
   ReviewService,
   OffenderService,

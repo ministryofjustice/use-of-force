@@ -21,13 +21,19 @@ context('Check your answers page', () => {
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
     cy.task('stubOffenders', [offender])
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],
     })
     cy.login()
+  })
+
+  it('contains the incident location description', () => {
+    const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
+    const checkAnswersPage = reportUseOfForcePage.goToAnswerPage()
+    checkAnswersPage.location().contains('ASSO A Wing')
   })
 
   it('Can edit answers from check your answers page ', () => {

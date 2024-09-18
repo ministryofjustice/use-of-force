@@ -45,6 +45,13 @@ describe('updateAgencyId', () => {
   })
 })
 
+describe('updateLocationId', () => {
+  it('incidentClient.update should be called', async () => {
+    await service.updateLocationId(1, incidentDate, {})
+    expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, {})
+  })
+})
+
 describe('update', () => {
   test('should call update and pass in the form when form id is present', async () => {
     const formObject = { decision: 'Yes', followUp1: 'County', followUp2: 'Town' }

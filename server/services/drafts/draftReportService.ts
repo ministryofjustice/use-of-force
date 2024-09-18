@@ -132,7 +132,7 @@ export default class DraftReportService {
     const reports = await this.draftReportClient.getDuplicateReports(bookingId, [startDate, endDate])
     return Promise.all(
       reports.map(async r => {
-        const location = await this.locationService.getLocation(token, r.locationId)
+        const location = await this.locationService.getLocation(token, r.incidentLocationId)
         return {
           reporter: r.reporter,
           date: moment(r.date),
@@ -193,6 +193,10 @@ export default class DraftReportService {
 
   public updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {
     return this.updateDraftReport.updateAgencyId(agencyId, username, bookingId)
+  }
+
+  public async updateLocationId(reportId, incidentDateValue, formValue) {
+    await this.updateDraftReport.updateLocationId(reportId, incidentDateValue, formValue)
   }
 
   public async submit(currentUser: LoggedInUser, bookingId: number): Promise<number | false> {

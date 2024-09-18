@@ -131,7 +131,7 @@ interface Agency {
 export type Prison = Agency
 
 interface Location {
-  locationId: number
+  incidentLocationId: string
   locationType: string
   description: string
   locationUsage: string

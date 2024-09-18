@@ -21,10 +21,11 @@ const draftReportService = new DraftReportService(
   null
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
-const locationService = new LocationService(null) as jest.Mocked<LocationService>
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
 let app
 const flash = jest.fn()
+const incidentLocationId = 'incident-location-id'
 
 beforeEach(() => {
   app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
@@ -137,7 +138,7 @@ describe('POST save and continue /section/form', () => {
           date: '21/01/2019',
           time: { hour: '12', minute: '45' },
         },
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: 'false',
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -150,7 +151,7 @@ describe('POST save and continue /section/form', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             plannedUseOfForce: false,
             witnesses: [{ name: 'User bob' }],
           },
@@ -176,7 +177,7 @@ describe('POST save and continue /section/form', () => {
           date: '21/01/2019',
           time: { hour: '12', minute: '45' },
         },
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: 'false',
       })
       .expect(302)
@@ -192,7 +193,7 @@ describe('POST save and continue /section/form', () => {
           date: '21/01/2019',
           time: { hour: '12', minute: '45' },
         },
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -209,7 +210,7 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-return',
         incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: 'true',
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -222,7 +223,7 @@ describe('POST save and return to tasklist', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
@@ -240,7 +241,7 @@ describe('POST save and return to tasklist', () => {
           date: '21/01/2019',
           time: { hour: '12', minute: '45' },
         },
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: 'true',
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
@@ -254,7 +255,7 @@ describe('POST save and return to tasklist', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
@@ -272,7 +273,7 @@ describe('POST save and return to tasklist', () => {
           date: '21/01/2019',
           time: { hour: '12', minute: '45' },
         },
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -284,7 +285,7 @@ describe('POST save and return to tasklist', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
           toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
@@ -297,7 +298,7 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-return',
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
@@ -309,7 +310,7 @@ describe('POST save and return to tasklist', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
           null
@@ -340,7 +341,7 @@ describe('POST save and return to check-your-answers', () => {
       .send({
         submitType: 'save-and-continue',
         incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
-        locationId: -1,
+        incidentLocationId,
         plannedUseOfForce: 'true',
         authorisedBy: 'Eric Bloodaxe',
         witnesses: [{ name: 'User bob' }, { name: '' }],
@@ -354,7 +355,7 @@ describe('POST save and return to check-your-answers', () => {
           1,
           'incidentDetails',
           {
-            locationId: -1,
+            incidentLocationId,
             plannedUseOfForce: true,
             authorisedBy: 'Eric Bloodaxe',
             witnesses: [{ name: 'User bob' }],
@@ -370,7 +371,7 @@ describe('POST save and return to check-your-answers', () => {
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-continue',
-        locationId: -1,
+        incidentLocationId,
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)

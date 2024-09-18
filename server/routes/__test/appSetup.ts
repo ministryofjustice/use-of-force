@@ -8,18 +8,19 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 
 import { authenticationMiddleware } from './mockAuthentication'
-import type {
-  Services,
-  StatementService,
-  OffenderService,
-  ReportService,
-  ReportDetailBuilder,
-  ReviewService,
-  InvolvedStaffService,
-  DraftReportService,
-  LocationService,
-  PrisonerSearchService,
-  FeComponentsService,
+import {
+  type Services,
+  type StatementService,
+  type OffenderService,
+  type ReportService,
+  type ReportDetailBuilder,
+  type ReviewService,
+  type InvolvedStaffService,
+  type DraftReportService,
+  type LocationService,
+  type PrisonerSearchService,
+  type FeComponentsService,
+  NomisMappingService,
 } from '../../services'
 import UserService from '../../services/userService'
 import unauthenticatedRoutes from '../unauthenticated'
@@ -125,6 +126,7 @@ export const appWithAllRoutes = (
     prisonerSearchService: {} as PrisonerSearchService,
     systemToken: async username => `${username}-system-token`,
     locationService: {} as LocationService,
+    nomisMappingService: {} as NomisMappingService,
     reportDetailBuilder: {} as ReportDetailBuilder,
     draftReportService: {} as DraftReportService,
     userService: {} as UserService,

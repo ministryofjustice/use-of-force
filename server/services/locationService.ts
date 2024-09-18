@@ -1,11 +1,24 @@
 import { AgencyId } from '../types/uof'
 import logger from '../../log'
-import { RestClientBuilder, PrisonClient } from '../data'
+import { RestClientBuilder, PrisonClient, LocationClient } from '../data'
 import { Prison, PrisonLocation } from '../data/prisonClientTypes'
 import config from '../config'
 
 export default class LocationService {
-  constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
+  constructor(
+    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
+    private readonly locationClientBuilder: RestClientBuilder<LocationClient>
+  ) {}
+
+  mapLocationApiResponse(location) {
+    return {
+      incidentLocationId: location.id,
+      description: location.pathHierarchy,
+      agencyId: location.prisonId,
+      locationPrefix: location.key,
+      userDescription: location.localName,
+    } as PrisonLocation
+  }
 
   async getPrisons(token: string): Promise<Prison[]> {
     const prisonClient = this.prisonClientBuilder(token)
@@ -18,19 +31,22 @@ export default class LocationService {
     return prisonClient.getPrisonById(agencyId)
   }
 
-  async getLocation(token: string, locationId: number): Promise<string> {
-    if (!locationId) {
+  async getLocation(token: string, incidentLocationId: string): Promise<string> {
+    if (!incidentLocationId) {
       return ''
     }
-    const prisonClient = this.prisonClientBuilder(token)
-    const { userDescription, locationPrefix } = (await prisonClient.getLocation(locationId)) || {}
-    return userDescription || locationPrefix || ''
+    const locationClient = this.locationClientBuilder(token)
+
+    const { localName, pathHierarchy } = (await locationClient.getLocation(incidentLocationId)) || {}
+    return localName || pathHierarchy || ''
   }
 
   async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {
     try {
-      const prisonClient = this.prisonClientBuilder(token)
-      const incidentLocations = await prisonClient.getLocations(agencyId)
+      const locationClient = this.locationClientBuilder(token)
+      const locations = await locationClient.getLocations(agencyId, undefined)
+      const incidentLocations = locations.map(location => this.mapLocationApiResponse(location))
+
       const formattedIncidentLocations = incidentLocations.map(location => ({
         ...location,
         userDescription: location.userDescription ? location.userDescription : location.locationPrefix,

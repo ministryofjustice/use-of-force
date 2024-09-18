@@ -181,3 +181,14 @@ export const Destinations = {
   TASKLIST: 'back-to-task-list',
   CHECK_YOUR_ANSWERS: 'check-your-answers',
 }
+
+export const enum NonResidentialUsageType {
+  ADJUDICATION_HEARING = 'ADJUDICATION_HEARING',
+  APPOINTMENT = 'APPOINTMENT',
+  MOVEMENT = 'MOVEMENT',
+  OCCURRENCE = 'OCCURRENCE',
+  PROGRAMMES_ACTIVITIES = 'PROGRAMMES_ACTIVITIES',
+  PROPERTY = 'PROPERTY',
+  VISIT = 'VISIT',
+  OTHER = 'OTHER',
+}

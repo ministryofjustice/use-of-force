@@ -83,7 +83,7 @@ export default class DraftReportClient {
     await this.query({
       text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
-                  ,   form_response = jsonb_set(form_Response, '{incidentDetails,locationId}', 'null'::jsonb)
+                  ,   form_response = jsonb_set(form_Response, '{incidentDetails,incidentLocationId}', 'null'::jsonb)
                   where r.user_id = $2
                   and r.booking_id = $3
                   and r.sequence_no = ${maxSequenceForBooking}`,
@@ -94,7 +94,7 @@ export default class DraftReportClient {
   async getDuplicateReports(bookingId: number, [startDate, endDate]: DateRange): Promise<OffenderReport[]> {
     const results = await this.query({
       text: `select r.incident_date date
-              ,   r.form_response -> 'incidentDetails' ->> 'locationId' "locationId"
+              ,   r.form_response -> 'incidentDetails' ->> 'incidentLocationId' "incidentLocationId"
               ,   r.reporter_name reporter
               ,   r.status status
               from v_report r
