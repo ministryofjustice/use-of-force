@@ -10,10 +10,8 @@ generic-service:
     port: 3000
 
   ingress:
-    v1_2_enabled: true
     enabled: true
-    enable_allow_list: false
-    cert_secret: use-of-force-cert
+    tlsSecretName: use-of-force-cert
     path: /
 
   env:
