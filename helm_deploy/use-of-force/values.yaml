@@ -65,5 +65,3 @@ generic-data-analytics-extractor:
   serviceAccountName: use-of-force-dev-to-ap-s3
   dataPlatformApiAuthSecretName: use-of-force-api-auth
   dataProductName: hmpps_use_of_force
-
-
