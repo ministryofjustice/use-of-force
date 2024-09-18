@@ -46,6 +46,11 @@ generic-service:
       REDIS_HOST: primary_endpoint_address
       REDIS_AUTH_TOKEN: auth_token
 
+  allowlist:
+    groups:
+      - moj_cloud_platform
+      - digital_staff_and_mojo
+
   jobs:
     cronspec: "0 8,12,15 * * *"
   # jobs will run at 9am, 1pm and 4pm
