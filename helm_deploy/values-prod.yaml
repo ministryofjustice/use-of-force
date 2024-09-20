@@ -31,6 +31,11 @@ generic-service:
       interservfls: "51.179.196.131/32"
       crc-rrp: "62.253.83.37/32"
       crc-pp-wwm: "5.153.255.210/32"
+      dxc_webproxy1: "195.92.38.20/32"
+      dxc_webproxy2: "195.92.38.21/32"
+      dxc_webproxy3: "195.92.38.22/32"
+      dxc_webproxy4: "195.92.38.23/32"
+      serco: "217.22.14.0/24"
 
       groups:
         - prisons
