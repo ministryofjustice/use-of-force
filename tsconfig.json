@@ -14,7 +14,8 @@
     "checkJs": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "ignoreDeprecations": "5.0"
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist"],
   "include": ["**/*.js", "**/*.ts"]

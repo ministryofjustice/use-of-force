@@ -19,6 +19,10 @@ const viewReportPage = () =>
 
     addInvolvedStaff: () => cy.get(`[data-qa="add-staff"]`),
 
+    prison: () => cy.get('[data-qa="prison"]'),
+
+    location: () => cy.get('[data-qa="location"]'),
+
     getReportId: () => {
       return cy.url().then(url => {
         const match = url.match(/.*\/(.*)\/view-report/)

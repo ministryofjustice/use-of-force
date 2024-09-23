@@ -65,7 +65,7 @@ context('Submitting incident details page', () => {
         expect(moment(incidentDate).valueOf()).to.equal(moment('2020-01-12T09:32:00.000').valueOf())
 
         expect(section).to.deep.equal({
-          locationId: 357591,
+          incidentLocationId: '00000000-1111-2222-3333-444444444444',
           plannedUseOfForce: true,
           authorisedBy: 'Eric Bloodaxe',
           witnesses: [{ name: 'jimmy-ray' }],
@@ -95,7 +95,7 @@ context('Submitting incident details page', () => {
 
     cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(({ section }) => {
       expect(section).to.deep.equal({
-        locationId: 357591,
+        incidentLocationId: '00000000-1111-2222-3333-444444444444',
         plannedUseOfForce: false,
         witnesses: [{ name: 'jimmy-ray' }],
       })

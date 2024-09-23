@@ -16,8 +16,46 @@ context('A reporter views their own report', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
+  it("A user's report should contain the incident location description even if DB record only contains the nomis format (i.e integer format) of the location's Id", () => {
+    cy.task('stubDpsLocationMapping', 123456)
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
+
+    cy.login()
+
+    cy.task('seedReport', {
+      payload: { ...expectedPayload, incidentDetails: { incidentLocationId: undefined, locationId: 123456 } },
+      status: ReportStatus.SUBMITTED,
+      submittedDate: '2019-09-04 11:27:52',
+      involvedStaff: [
+        {
+          username: 'MR_ZAGATO',
+          name: 'MR_ZAGATO name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'MRS_JONES',
+          name: 'MRS_JONES name',
+          email: 'MR_ZAGATO@gov.uk',
+        },
+        {
+          username: 'TEST_USER',
+          name: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
+        },
+      ],
+    })
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.yourReportsTab().click()
+    const yourReportsPage = YourReportsPage.verifyOnPage()
+    yourReportsPage.reports(0).action().click()
+    const yourReportPage = YourReportPage.verifyOnPage()
+    yourReportPage.location().contains('ASSO A Wing')
+  })
+
   it('A user can view their own report', () => {
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
+    cy.task('stubDpsLocationMapping', 123456)
 
     cy.login()
 
@@ -61,14 +99,14 @@ context('A reporter views their own report', () => {
       yourReportPage.incidentNumber().contains(reportId)
     })
     yourReportPage.verifyInputs()
-
+    yourReportPage.location().contains('ASSO A Wing')
     yourReportPage.returnToYourReports().click()
 
     YourReportsPage.verifyOnPage()
   })
 
   it('A user can view their own report when no authorisedBy field', () => {
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 
@@ -100,7 +138,7 @@ context('A reporter views their own report', () => {
   })
 
   it('A user can view their own report when location is not found', () => {
-    cy.task('stubLocationNotFound', '357591')
+    cy.task('stubLocationNotFound', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 
@@ -134,12 +172,12 @@ context('A reporter views their own report', () => {
 
     const yourReportPage = YourReportPage.verifyOnPage()
     yourReportPage.location().contains('–')
-    yourReportPage.batonDrawnAgainstPrisonerLabel().contains('Was a baton drawn against the prisoner?')
-    yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn against the prisoner?')
+    yourReportPage.batonDrawnAgainstPrisonerLabel().contains('Was a baton drawn by anyone against this prisoner?')
+    yourReportPage.pavaDrawnAgainstPrisonerLabel().contains('Was PAVA drawn by anyone against this prisoner?')
   })
 
   it('A user can view reports and it will show the old version of the Baton and PAVA questions', () => {
-    cy.task('stubLocationNotFound', '357591')
+    cy.task('stubLocationNotFound', '00000000-1111-2222-3333-444444444444')
 
     cy.login()
 

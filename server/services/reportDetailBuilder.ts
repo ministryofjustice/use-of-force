@@ -2,6 +2,7 @@ import { properCaseFullName } from '../utils/utils'
 import reportSummary from './reportSummary'
 import type { InvolvedStaffService } from './involvedStaffService'
 import type LocationService from './locationService'
+import type NomisMappingService from './nomisMappingService'
 import type OffenderService from './offenderService'
 import type { SystemToken } from '../types/uof'
 import { Report } from '../data/incidentClientTypes'
@@ -20,6 +21,7 @@ export default class ReportDataBuilder {
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly locationService: LocationService,
     private readonly offenderService: OffenderService,
+    private readonly nomisMappingService: NomisMappingService,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -33,12 +35,31 @@ export default class ReportDataBuilder {
     })
   }
 
+  async getLocationId(token, { incidentDetails }): Promise<string> {
+    if (incidentDetails.incidentLocationId) {
+      return incidentDetails.incidentLocationId
+    }
+
+    // if the report only contains the original locationId, use it to get the new associate dpsLocationId
+    const { dpsLocationId } = await this.nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
+      token,
+      incidentDetails.locationId
+    )
+    return dpsLocationId
+
+    // TODO: locationId is the original id that may already be in DB.
+    // consider adding the dpsLocationDetail as the incidentLocationId to the form_response.incidentDetails json in the DB
+    // when a user views an already submitted report.
+    // Do not delete the existing locationId already there (for safety!) as both locationId and incidentLocationId can exist together
+  }
+
   async build(currentUsername: string, report: Report): Promise<ReportDetail> {
     const token = await this.systemToken(currentUsername)
 
     const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
-    const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.locationId)
+    const incidentLocationId = await this.getLocationId(token, form)
+    const locationDescription = await this.locationService.getLocation(token, incidentLocationId)
     const involvedStaff = await this.involvedStaffService.getInvolvedStaff(id)
     const involvedStaffNameAndUsernames = involvedStaff.map(this.format(id, username))
 

@@ -21,6 +21,7 @@ const checkAnswersPage = () =>
     prison: reportDetails.prison,
     reasonsForUseOfForce: reportDetails.reasonsForUseOfForce,
     primaryReasonForUseOfForce: reportDetails.primaryReasonForUseOfForce,
+    location: () => cy.get('[data-qa="location"]'),
 
     clickSubmit,
     backToTasklist: () => cy.get('[data-qa="return-to-tasklist"]'),

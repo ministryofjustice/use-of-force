@@ -90,4 +90,8 @@ export default class UpdateDraftReportService {
     logger.info(`username: ${username} updating agencyId for booking: ${bookingId} to ${agencyId}`)
     await this.draftReportClient.updateAgencyId(agencyId, username, bookingId)
   }
+
+  public async updateLocationId(reportId, incidentDateValue, formValue) {
+    await this.incidentClient.update(reportId, incidentDateValue, formValue)
+  }
 }

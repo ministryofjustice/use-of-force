@@ -6,7 +6,7 @@ describe('statusCheck', () => {
   const validReport: UseOfForceDraftReport = {
     incidentDetails: {
       witnesses: [{ name: 'BOB BARRY' }, { name: 'JAMES JOHN' }],
-      locationId: -25,
+      incidentLocationId: 'incident-location-id',
       plannedUseOfForce: true,
       authorisedBy: 'Eric Bloodaxe',
     },

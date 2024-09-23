@@ -155,7 +155,7 @@
     {% if data.useOfForceDetails.reasonsForUseOfForce %}
       {{
       reportDetailsMacros.tableRow({
-          label: 'Why was use of force applied?',
+          label: 'Why was use of force applied against this prisoner?',
           'data-qa': 'reasonsForUseOfForce',
           dataValue: data.useOfForceDetails.reasonsForUseOfForce,
           print: print
@@ -165,7 +165,7 @@
     {% if data.useOfForceDetails.primaryReason %}
       {{
       reportDetailsMacros.tableRow({
-          label: 'What was the primary reason use of force was applied?',
+          label: 'What was the primary reason use of force was applied against this prisoner?',
           'data-qa': 'primaryReason',
           dataValue: data.useOfForceDetails.primaryReason,
           print: print
@@ -174,7 +174,7 @@
     {% endif %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was positive communication used to de-escalate the situation?',
+        label: 'Was positive communication used to de-escalate the situation with this prisoner?',
         'data-qa': 'positiveCommunication',
         dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo,
         print: print
@@ -192,7 +192,7 @@
 
     {{
       reportDetailsMacros.tableRow({
-        label: 'Were any personal protection techniques used?',
+        label: 'Were any personal protection techniques used against this prisoner?',
         'data-qa': 'personalProtection',
         dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo,
         print: print
@@ -211,7 +211,7 @@
   {% else %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was a baton drawn against the prisoner?',
+        label: 'Was a baton drawn by anyone against this prisoner?',
         'data-qa': 'batonDrawnAgainstPrisoner',
         dataValue: data.useOfForceDetails.batonDrawnAgainstPrisoner,
         print: print
@@ -231,7 +231,7 @@
   {% else %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was PAVA drawn against the prisoner?',
+        label: 'Was PAVA drawn by anyone against this prisoner?',
         'data-qa': 'pavaDrawnAgainstPrisoner',
         dataValue: data.useOfForceDetails.pavaDrawnAgainstPrisoner,
         print: print
@@ -252,7 +252,7 @@
 
     {{
       reportDetailsMacros.tableRow({
-        label: 'Was a guiding hold used?',
+        label: 'Was a guiding hold used against this prisoner?',
         'data-qa': 'guidingHold',
         dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize,
         print: print
@@ -261,7 +261,7 @@
     {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Was an escorting hold used?',
+          label: 'Was an escorting hold used against this prisoner?',
           'data-qa': 'escortingHold',
           dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo,
           print: print
@@ -270,7 +270,7 @@
     {% endif %}
     {{
       reportDetailsMacros.tableRow({
-        label: 'Which control and restraint techniques were used?',
+        label: 'Which control and restraint positions were used against this prisoner?',
         'data-qa': 'restraintUsed',
         dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
         print: print,
@@ -282,7 +282,7 @@
     {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Which pain inducing techniques were used?',
+          label: 'Which pain inducing techniques were used against this prisoner?',
           'data-qa': 'painInducingTechniques',
           dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
           print: print
@@ -291,7 +291,7 @@
     {% endif %}
       {{
       reportDetailsMacros.tableRow({
-        label: 'Were handcuffs applied?',
+        label: 'Were handcuffs applied against this prisoner?',
         'data-qa': 'handcuffsApplied',
         dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo,
         print: print

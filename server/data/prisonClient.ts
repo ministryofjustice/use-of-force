@@ -52,24 +52,6 @@ export default class PrisonClient {
     })
   }
 
-  getLocations(agencyId: string, occurrenceLocationsOnly = true): Promise<PrisonLocation[]> {
-    return this.restClient.get({
-      path: `/api/agencies/${agencyId}/locations${occurrenceLocationsOnly ? '?eventType=OCCUR' : ''}`,
-      headers: { 'Sort-Fields': 'userDescription' },
-    })
-  }
-
-  async getLocation(locationId: number): Promise<PrisonLocation> {
-    try {
-      return await this.restClient.get({ path: `/api/locations/${locationId}?includeInactive=true` })
-    } catch (error) {
-      if (error?.status !== 404) {
-        throw error
-      }
-      return undefined
-    }
-  }
-
   getOffenderImage(bookingId: number): Promise<Readable> {
     return this.restClient.stream({
       path: `/api/bookings/${bookingId}/image/data`,

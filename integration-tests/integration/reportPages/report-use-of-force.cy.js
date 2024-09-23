@@ -11,7 +11,7 @@ context('Report use of force page', () => {
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
-    cy.task('stubLocation', '357591')
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 

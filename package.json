@@ -103,6 +103,7 @@
     "agentkeepalive": "^4.3.0",
     "applicationinsights": "^2.7.3",
     "applicationinsights-native-metrics": "^0.0.9",
+    "axe-core": "^4.10.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "compression": "^1.7.4",
@@ -111,6 +112,7 @@
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",
     "csurf": "^1.11.0",
+    "cypress-axe": "^1.5.0",
     "escape-html": "^1.0.3",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
@@ -163,7 +165,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
-    "jest": "^29.5.0",
+    "jest": "^29.7.0",
     "jest-html-reporter": "^3.10.2",
     "jest-junit": "^15.0.0",
     "jsonwebtoken": "^9.0.0",
@@ -183,10 +185,15 @@
       "@babel/traverse": "7.23.2"
     },
     "notifications-node-client": {
-      "axios": "1.6.8"
+      "axios": "1.7.4"
     },
     "superagent": {
       "formidable": "3.5.1"
+    },
+    "jest": {
+      "jest-core": {
+        "micromatch": "4.0.8"
+      }
     }
   }
 }
