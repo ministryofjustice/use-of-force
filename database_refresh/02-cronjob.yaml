@@ -18,7 +18,7 @@
                 runAsUser: 999
               containers:
               - name: dbrefresh
-                image: "postgres:15.5"
+                image: "postgres:15.7"
                 command:
                 - /bin/entrypoint.sh
                 volumeMounts:
