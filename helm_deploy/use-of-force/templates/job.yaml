@@ -2,8 +2,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: send-reminders
-  labels:
-    {{- include "uof.labels" . | nindent 4 }}
 spec:
   schedule: "*/5 * * * *"
   concurrencyPolicy: Replace
