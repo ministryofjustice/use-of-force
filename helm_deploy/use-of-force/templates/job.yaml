@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: send-reminders
   labels:
-    {{- include "app.labels" . | nindent 4 }}
+    {{- include "uof.labels" . | nindent 4 }}
 spec:
   schedule: "*/5 * * * *"
   concurrencyPolicy: Replace
