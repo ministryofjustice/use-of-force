@@ -18,6 +18,6 @@ spec:
             args:
             - node
             - job/sendReminders
-{{ include "deployment.envs" . | nindent 12 }}
+{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }
           restartPolicy: Never
           activeDeadlineSeconds: 240
