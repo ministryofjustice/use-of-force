@@ -12,12 +12,12 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: Never
+          activeDeadlineSeconds: 240
           containers:
           - name: use-of-force
             image: {{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}
             args:
             - node
             - job/sendReminders
-{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }
-          restartPolicy: Never
-          activeDeadlineSeconds: 240
+{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }}
