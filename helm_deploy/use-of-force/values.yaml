@@ -16,11 +16,11 @@ generic-service:
   
   livenessProbe:
     httpGet:
-      path: /ping
+      path: /health
 
   readinessProbe:
     httpGet:
-      path: /ping
+      path: /health
 
   env:
     TOKENVERIFICATION_API_ENABLED: true
