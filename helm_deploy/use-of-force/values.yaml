@@ -13,6 +13,14 @@ generic-service:
     enabled: true
     tlsSecretName: use-of-force-cert
     path: /
+  
+  livenessProbe:
+    httpGet:
+      path: /ping
+
+  readinessProbe:
+    httpGet:
+      path: /ping
 
   env:
     TOKENVERIFICATION_API_ENABLED: true
