@@ -301,11 +301,10 @@ export default function createApp(services: Services): Express {
 
   app.use(populateCurrentUser(services.userService))
 
-  app.get('*', getFrontendComponents(services.feComponentsService))
-
   app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)
 
+  app.get('*', getFrontendComponents(services.feComponentsService))
   app.use(createRouter(authenticationMiddleware, services))
 
   app.use((req, res, next) => {
