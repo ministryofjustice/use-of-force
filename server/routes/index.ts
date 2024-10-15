@@ -4,6 +4,8 @@ import flash from 'connect-flash'
 import creatingReportsRoutes from './creatingReports'
 import maintainingReportsRoutes from './maintainingReports'
 import viewingReportsRoutes from './viewingReports'
+import adhocReportActionRoutes from './adhocReportActions'
+
 import apiRoutes from './api'
 import csrf from '../middleware/csrfMiddleware'
 
@@ -22,6 +24,7 @@ export default function Index(authenticationMiddleware: Handler, services: Servi
   router.use(creatingReportsRoutes(services))
   router.use(maintainingReportsRoutes(services))
   router.use(viewingReportsRoutes(services))
+  router.use(adhocReportActionRoutes(services))
 
   router.use('/api/', apiRoutes(authenticationMiddleware, services))
   return router
