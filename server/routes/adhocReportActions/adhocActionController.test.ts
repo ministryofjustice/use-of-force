@@ -60,9 +60,9 @@ describe('Adhoc actions', () => {
     it('calls the report service to get reports correctly', async () => {
       await controller.updateReport(req, res)
 
-      expect(reportService.getReportUsingReportIdOnly).toHaveBeenCalledTimes(2)
-      expect(reportService.getReportUsingReportIdOnly).toHaveBeenCalledWith(1)
-      expect(reportService.getReportUsingReportIdOnly).toHaveBeenCalledWith(2)
+      expect(reportService.getReport).toHaveBeenCalledTimes(2)
+      expect(reportService.getReport).toHaveBeenCalledWith('user_name', 1)
+      expect(reportService.getReport).toHaveBeenCalledWith('user_name', 2)
     })
 
     it('does not do update if incidentLocationId already exists', async () => {
@@ -75,7 +75,7 @@ describe('Adhoc actions', () => {
         },
       }
 
-      reportService.getReportUsingReportIdOnly.mockResolvedValue(report as any)
+      reportService.getReport.mockResolvedValue(report as any)
       await controller.updateReport(req, res)
 
       expect(reportService.update).not.toHaveBeenCalled()
@@ -95,8 +95,8 @@ describe('Adhoc actions', () => {
         },
       }
 
-      reportService.getReportUsingReportIdOnly.mockResolvedValueOnce(report as any)
-      reportService.getReportUsingReportIdOnly.mockRejectedValueOnce(Error(`Report does not exist: 2`))
+      reportService.getReport.mockResolvedValueOnce(report as any)
+      reportService.getReport.mockRejectedValueOnce(Error(`Report does not exist: 2`))
 
       nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId.mockResolvedValue({
         dpsLocationId: 'some-uuid',
@@ -143,7 +143,7 @@ describe('Adhoc actions', () => {
         },
       }
 
-      reportService.getReportUsingReportIdOnly.mockResolvedValue(report as any)
+      reportService.getReport.mockResolvedValue(report as any)
 
       nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId.mockResolvedValue({
         dpsLocationId: 'some-uuid',

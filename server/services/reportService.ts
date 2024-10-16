@@ -64,15 +64,6 @@ export default class ReportService {
     return report
   }
 
-  async getReportUsingReportIdOnly(reportId: number): Promise<Report> {
-    const report = await this.incidentClient.getReportForReviewer(reportId)
-
-    if (!report) {
-      throw new Error(`Report does not exist: ${reportId}`)
-    }
-    return report
-  }
-
   async getAnonReportSummary(token: string, statementId: number): Promise<AnonReportSummaryWithPrison | undefined> {
     const report = await this.incidentClient.getAnonReportSummary(statementId)
     if (!report) {

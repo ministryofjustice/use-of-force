@@ -19,7 +19,7 @@ export default class AddhocActionController {
 
     for (let reportId = fromId; reportId <= toId; reportId += 1) {
       try {
-        const report = await this.reportService.getReportUsingReportIdOnly(reportId)
+        const report = await this.reportService.getReport(req.user.username, reportId)
 
         const { locationId } = report.form.incidentDetails
 
