@@ -20,7 +20,7 @@ executors:
   integration-tests:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: cimg/postgres:15.7
+      - image: cimg/postgres:16.4
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
