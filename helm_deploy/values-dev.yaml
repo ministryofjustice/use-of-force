@@ -19,6 +19,7 @@ generic-service:
     ENVIRONMENT_NAME: 'DEV'
     HMPPS_MANAGE_USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
     INGRESS_URL: https://dev.use-of-force.service.justice.gov.uk
+    FEATURE_FLAG_OUTAGE_BANNER_ENABLED: true
 
 generic-data-analytics-extractor:
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && upload_data_file_to_data_platform.sh"
