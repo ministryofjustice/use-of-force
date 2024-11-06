@@ -5,7 +5,7 @@
   "repository": "git@github.com:ministryofjustice/use-of-force.git",
   "license": "MIT",
   "scripts": {
-    "postinstall": "husky install",
+    "prepare": "husky",
     "copy-views": "cp -R server/views dist/server/",
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-ts": "tsc -w",
@@ -164,7 +164,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.3",
+    "husky": "^9.1.6",
     "jest": "^29.7.0",
     "jest-html-reporter": "^3.10.2",
     "jest-junit": "^15.0.0",
