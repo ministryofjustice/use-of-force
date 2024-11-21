@@ -1,8 +1,3 @@
-exports.up = knex =>
-  Promise.all([
-    knex.schema.createTable('flyway_schema_history', table => {
-      table.increments('id').primary('pk_form')
-      table.string('version').nullable()
-      table.string('description').nullable()
-    }),
-  ])
+exports.up = async knex => {
+  await knex.raw(`CREATE VIEW flyway_schema_history AS SELECT name as view FROM knex_migrations ORDER BY id;`)
+}
