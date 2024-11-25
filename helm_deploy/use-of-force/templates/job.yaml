@@ -13,7 +13,7 @@ spec:
       template:
         spec:
           restartPolicy: Never
-          activeDeadlineSeconds: 240
+          activeDeadlineSeconds: 298
           containers:
           - name: use-of-force
             image: {{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}
