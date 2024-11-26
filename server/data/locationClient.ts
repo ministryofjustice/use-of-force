@@ -13,7 +13,7 @@ export default class LocationClient {
     }
     try {
       logger.info(`Location Client getting details for location: ${incidentLocationId}`)
-      const result = await this.restClient.get({ path: `/locations/${incidentLocationId}` })
+      const result = await this.restClient.get({ path: `/locations/${incidentLocationId}?formatLocalName=true` })
       return result as LocationInPrison
     } catch (error) {
       if (error?.status !== 404) throw error
@@ -27,8 +27,7 @@ export default class LocationClient {
   ): Promise<LocationInPrison[]> {
     logger.info(`getting locations for prison ${prisonId} and usageType ${usageType}`)
     return this.restClient.get({
-      path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}`,
-      headers: { 'Sort-Fields': 'userDescription' },
+      path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}?formatLocalName=true&sortByLocalName=true`,
     })
   }
 }
