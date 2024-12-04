@@ -7,6 +7,6 @@ export default class NomisMappingClient {
 
   async getDpsLocationMappingUsingNomisLocationId(nomisLocationId: number): Promise<LocationMapping> {
     logger.info(`Nomis mapping api client getting DPS location details using this nomisLocationId: ${nomisLocationId}`)
-    return this.restClient.get({ path: `/mapping/locations/nomis/${nomisLocationId}` })
+    return this.restClient.get({ path: `/api/locations/nomis/${nomisLocationId}` })
   }
 }

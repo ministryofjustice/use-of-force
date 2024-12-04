@@ -5,7 +5,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/nomis-mapping/mapping/locations/nomis/${nomisLocationId}`,
+        urlPattern: `/nomis-mapping/api/locations/nomis/${nomisLocationId}`,
       },
       response: {
         status: 200,
