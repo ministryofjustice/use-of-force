@@ -39,7 +39,7 @@ export default class ChangePrisonRoutes {
 
       const userInput = req.flash('userInputForIncidentDetails')
 
-      // this will create a new report record if it doesn't exist already (as will be the case for TRN and OUT)
+      // this will create a new report record if it doesn't exist already
       await this.draftReportService.process(
         res.locals.user,
         parseInt(bookingId, 10),
