@@ -17,9 +17,11 @@ const draftReportService = new DraftReportService(
 ) as jest.Mocked<DraftReportService>
 
 let app
+const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ locationService, draftReportService })
+  flash.mockReturnValue([])
+  app = appWithAllRoutes({ locationService, draftReportService }, undefined, false, flash)
   locationService.getPrisons.mockResolvedValue([
     {
       agencyId: 'BXI',
@@ -77,6 +79,35 @@ describe('POST /change-prison', () => {
       .expect(302)
       .expect(() => {
         expect(draftReportService.updateAgencyId).not.toHaveBeenCalled()
+      })
+  })
+
+  it('Should process user input', () => {
+    flash.mockReturnValue([{ plannedUseOfForce: true, authorisedBy: 'the authoriser' }])
+
+    return request(app)
+      .post('/report/-19/change-prison')
+      .send({ agencyId: 'MDI', submit: 'save-and-continue' })
+      .expect(302)
+      .expect(() => {
+        expect(draftReportService.process).toHaveBeenCalledWith(
+          {
+            activeCaseLoadId: 'MDI',
+            displayName: 'First Last',
+            firstName: 'first',
+            isReviewer: false,
+            lastName: 'last',
+            token: 'token',
+            userId: 'id',
+            username: 'user1',
+          },
+          -19,
+          'incidentDetails',
+          { authorisedBy: 'the authoriser', plannedUseOfForce: true, witnesses: undefined },
+          null
+        )
+        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', -19)
+        expect(flash).toHaveBeenCalledTimes(1)
       })
   })
 })

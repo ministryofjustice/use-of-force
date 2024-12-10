@@ -77,11 +77,18 @@ export default class IncidentDetailsRoutes {
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
+
+    // if prisoner is currently being transferred or has left the prison, redirect user to select prison where the incident occured
+    if (prisonId === 'TRN' || prisonId === 'OUT') {
+      return res.redirect(`/report/${bookingId}/change-prison`)
+    }
+
     const locations = await this.locationService.getIncidentLocations(token, prisonId)
 
     const { displayName, offenderNo } = offenderDetail
 
-    const input = firstItem(req.flash('userInput'))
+    const input = firstItem(req.flash('userInputForIncidentDetails'))
+
     const pageData = input || form[formName]
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
@@ -121,9 +128,11 @@ export default class IncidentDetailsRoutes {
 
     const updatedSection = payloadFields
 
+    // flashing so data can be accessed in 'change prison'
+    req.flash('userInputForIncidentDetails', { ...payloadFields, incidentDate }) // merge all fields back together!
+
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...payloadFields, incidentDate }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
@@ -136,6 +145,9 @@ export default class IncidentDetailsRoutes {
     )
 
     if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
+      // clear content in flash when not going to 'change the prison' page
+      req.flash('userInputForIncidentDetails')
+
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),
