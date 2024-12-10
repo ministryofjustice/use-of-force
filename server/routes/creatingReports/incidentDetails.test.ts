@@ -125,23 +125,23 @@ describe('GET /section/form', () => {
         expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
       })
   })
-  test('should redirect to /change-prison if agencyId is TRN', () => {
+  test('should redirect to /prison-of-incident if agencyId is TRN', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'TRN' })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect(302)
-      .expect('Location', '/report/1/change-prison')
+      .expect('Location', '/report/1/prison-of-incident')
       .expect(() => {
         expect(locationService.getIncidentLocations).not.toHaveBeenCalled()
       })
   })
 
-  test('should redirect to /change-prison if agencyId is OUT', () => {
+  test('should redirect to /prison-of-incident if agencyId is OUT', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'OUT' })
     return request(app)
       .get(`/report/1/incident-details`)
       .expect(302)
-      .expect('Location', '/report/1/change-prison')
+      .expect('Location', '/report/1/prison-of-incident')
       .expect(() => {
         expect(locationService.getIncidentLocations).not.toHaveBeenCalled()
       })
@@ -268,7 +268,7 @@ describe('POST save and return to tasklist', () => {
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
-      .expect('Location', '/report/1/change-prison')
+      .expect('Location', '/report/1/prison-of-incident')
       .expect(() => {
         expect(flash).toHaveBeenCalledTimes(1)
         expect(draftReportService.getPotentialDuplicates).not.toBeCalled()

@@ -34,10 +34,10 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /change-prison', () => {
+describe('GET /prison-of-incident', () => {
   test('should render content', () => {
     return request(app)
-      .get(`/report/-19/change-prison`)
+      .get(`/report/-19/prison-of-incident`)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('What prison did the use of force take place in?')
@@ -45,10 +45,10 @@ describe('GET /change-prison', () => {
       })
   })
 })
-describe('POST /change-prison', () => {
+describe('POST /prison-of-incident', () => {
   it('should redirect to incident-details page', () => {
     return request(app)
-      .post('/report/-19/change-prison')
+      .post('/report/-19/prison-of-incident')
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect('Location', '/report/-19/incident-details')
@@ -56,15 +56,15 @@ describe('POST /change-prison', () => {
 
   it('Not selecting a prison but selecting Continue should redirect to current page', () => {
     return request(app)
-      .post('/report/-19/change-prison')
+      .post('/report/-19/prison-of-incident')
       .send({ submit: 'save-and-continue' })
       .expect(302)
-      .expect('Location', '/report/-19/change-prison')
+      .expect('Location', '/report/-19/prison-of-incident')
   })
 
   it('Selecting a prison followed by Continue should call the location service', () => {
     return request(app)
-      .post('/report/-19/change-prison')
+      .post('/report/-19/prison-of-incident')
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect(() => {
@@ -74,7 +74,7 @@ describe('POST /change-prison', () => {
 
   it('Cancel should not call the location service', () => {
     return request(app)
-      .post('/report/-19/change-prison')
+      .post('/report/-19/prison-of-incident')
       .send({ agencyId: 'MDI', submit: 'cancel' })
       .expect(302)
       .expect(() => {
@@ -86,7 +86,7 @@ describe('POST /change-prison', () => {
     flash.mockReturnValue([{ plannedUseOfForce: true, authorisedBy: 'the authoriser' }])
 
     return request(app)
-      .post('/report/-19/change-prison')
+      .post('/report/-19/prison-of-incident')
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect(() => {

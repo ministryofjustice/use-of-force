@@ -40,7 +40,7 @@ export default class IncidentDetailsRoutes {
 
   private async getSubmitRedirectLocation(req: Request, bookingId: number, submitType) {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
-      return `/report/${bookingId}/change-prison`
+      return `/report/${bookingId}/prison-of-incident`
     }
 
     if (await this.draftReportService.isDraftComplete(req.user.username, bookingId)) {
@@ -80,7 +80,7 @@ export default class IncidentDetailsRoutes {
 
     // if prisoner is currently being transferred or has left the prison, redirect user to select prison where the incident occured
     if (prisonId === 'TRN' || prisonId === 'OUT') {
-      return res.redirect(`/report/${bookingId}/change-prison`)
+      return res.redirect(`/report/${bookingId}/prison-of-incident`)
     }
 
     const locations = await this.locationService.getIncidentLocations(token, prisonId)

@@ -64,8 +64,8 @@ export default function Index({
   get(reportPath('staff-member-not-found'), addInvolvedStaff.viewStaffMemberNotFound)
 
   const changePrison = new ChangePrisonRoutes(locationService, draftReportService, systemToken)
-  get(reportPath('change-prison'), changePrison.viewPrisons)
-  post(reportPath('change-prison'), changePrison.submit)
+  get(reportPath('prison-of-incident'), changePrison.viewPrisons)
+  post(reportPath('prison-of-incident'), changePrison.submit)
 
   const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(draftReportService)
   get(reportPath('why-was-uof-applied'), whyWasUoFApplied.view())
