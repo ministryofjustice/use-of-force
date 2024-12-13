@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: send-reminders
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "*/15 * * * *"
   concurrencyPolicy: Replace
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 300
