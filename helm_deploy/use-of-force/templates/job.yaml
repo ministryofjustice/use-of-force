@@ -3,17 +3,18 @@ kind: CronJob
 metadata:
   name: send-reminders
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "*/10 * * * *"
   concurrencyPolicy: Replace
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 300
   successfulJobsHistoryLimit: 5
   jobTemplate:
+    ttlSecondsAfterFinished: 100
     spec:
       template:
         spec:
           restartPolicy: Never
-          activeDeadlineSeconds: 298
+          activeDeadlineSeconds: 600
           containers:
           - name: use-of-force
             image: {{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}
