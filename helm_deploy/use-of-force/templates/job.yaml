@@ -9,8 +9,8 @@ spec:
   startingDeadlineSeconds: 300
   successfulJobsHistoryLimit: 5
   jobTemplate:
+    ttlSecondsAfterFinished: 100
     spec:
-      ttlSecondsAfterFinished: 100
       template:
         spec:
           restartPolicy: Never
