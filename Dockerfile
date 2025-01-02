@@ -1,4 +1,4 @@
-FROM node:20.15-bookworm-slim as builder
+FROM node:22.12-bookworm-slim as base
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -22,7 +22,7 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:20.15-bookworm-slim
+FROM node:22.12-bookworm-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 # Cache breaking
