@@ -133,7 +133,6 @@ export default function createApp(services: Services): Express {
   } else {
     store = new MemoryStore()
   }
-  //  const RedisStore = ConnectRedis(session)
   app.use(
     session({
       store,
