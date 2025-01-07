@@ -9,9 +9,10 @@ import compression from 'compression'
 import passport from 'passport'
 import crypto from 'crypto'
 import createError from 'http-errors'
-import session from 'express-session'
-import ConnectRedis from 'connect-redis'
-import { createRedisClient } from './data/redisClient'
+import session, { MemoryStore, Store } from 'express-session'
+import { RedisStore } from 'connect-redis'
+import { redisClient } from './data/redisClient'
+
 import RequestLogger from './middleware/requestLogger'
 
 import createRouter from './routes'
@@ -124,13 +125,17 @@ export default function createApp(services: Services): Express {
     next()
   })
 
-  const RedisStore = ConnectRedis(session)
-  const client = createRedisClient({ legacyMode: true })
-  client.connect()
-
+  let store: Store
+  if (config.redis.enabled) {
+    const client = redisClient
+    client.connect().catch((err: Error) => logger.error(`Error connecting to Redis`, err))
+    store = new RedisStore({ client })
+  } else {
+    store = new MemoryStore()
+  }
   app.use(
     session({
-      store: new RedisStore({ client }),
+      store,
       cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
