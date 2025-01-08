@@ -41,7 +41,7 @@ export const dataAccess = {
   telemetryClient,
   draftReportClient,
   reportLogClient,
-  systemToken: systemTokenBuilder(new TokenStore(createRedisClient())),
+  systemToken: systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false }))),
   authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
   prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
   locationClientBuilder: restClientBuilder<LocationClient>('locationApi', config.apis.location, LocationClient),

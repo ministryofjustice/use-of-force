@@ -29,7 +29,7 @@ const statementClient = new StatementsClient(db.query)
 const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 
-const systemToken = systemTokenBuilder(new TokenStore(createRedisClient()))
+const systemToken = systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false })))
 const emailResolver = new EmailResolver(token => new AuthClient(token), systemToken, statementClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 
