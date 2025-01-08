@@ -9,6 +9,7 @@ import type {
   PrisonerDetail,
   CaseLoad,
   Prison,
+  PrisonLocation,
 } from './prisonClientTypes'
 
 export default class PrisonClient {
