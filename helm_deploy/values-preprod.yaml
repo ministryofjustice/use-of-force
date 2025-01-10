@@ -4,6 +4,9 @@ generic-service:
   ingress:
     host: preprod.use-of-force.service.justice.gov.uk
 
+  scheduledDowntime:
+    enabled: true
+
   env:
     NOMIS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
