@@ -84,6 +84,10 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results/unit-test-reports.html
+          destination: test-report
+      - store_artifacts:
+          path: coverage/lcov-report
+          destination: coverage-report
 
   integration_test:
     executor: integration-tests

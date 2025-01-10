@@ -27,3 +27,6 @@ integration-tests/screenshots/
 *secrets*.yaml
 !secrets.yaml
 !secrets-example.yaml
+
+# Jest test-coverage folder output
+coverage/
