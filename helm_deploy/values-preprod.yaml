@@ -4,6 +4,8 @@ generic-service:
   ingress:
     host: preprod.use-of-force.service.justice.gov.uk
 
+  replicaCount: 2
+
   scheduledDowntime:
     enabled: true
 
