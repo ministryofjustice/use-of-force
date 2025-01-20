@@ -48,3 +48,8 @@ generic-prometheus-alerts:
 
 generic-data-analytics-extractor:
   serviceAccountName: use-of-force-prod-to-ap-s3
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 4G
