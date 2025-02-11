@@ -41,8 +41,7 @@ generic-service:
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
-  targetApplication: use-of-force
-  alertSeverity: elp_alerts
+  alertSeverity: move-a-prisoner-alerts-prod
 
 generic-data-analytics-extractor:
   serviceAccountName: use-of-force-prod-to-ap-s3

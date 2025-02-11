@@ -54,7 +54,7 @@ generic-service:
   # jobs will run at 9am, 1pm and 4pm
 generic-prometheus-alerts:
   targetApplication: use-of-force
-  alertSeverity: digital-prison-service-dev
+  alertSeverity: move-a-prisoner-alerts-nonprod
 
 generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output
