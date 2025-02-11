@@ -13,6 +13,14 @@ generic-service:
     enabled: true
     tlsSecretName: use-of-force-cert
     path: /
+  
+  livenessProbe:
+    httpGet:
+      path: /health
+
+  readinessProbe:
+    httpGet:
+      path: /health
 
   env:
     TOKENVERIFICATION_API_ENABLED: true
@@ -49,9 +57,6 @@ generic-service:
       - moj_cloud_platform
       - digital_staff_and_mojo
 
-  jobs:
-    cronspec: "0 8,12,15 * * *"
-  # jobs will run at 9am, 1pm and 4pm
 generic-prometheus-alerts:
   targetApplication: use-of-force
   alertSeverity: move-a-prisoner-alerts-nonprod

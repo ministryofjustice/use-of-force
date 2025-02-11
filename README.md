@@ -56,6 +56,14 @@ In config.js you can see all the required variables. These are set with defaults
 
 `npm run test`
 
+## Testing coverage report
+
+Run:
+
+```shell
+npm run test-coverage
+```
+
 ### Running integration tests
 
 For local running, start a test db, redis, and wiremock instance by:

@@ -7,7 +7,6 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "sourceMap": true,
-    "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
     "noEmit": false,
     "allowJs": true,
@@ -17,6 +16,6 @@
     "allowSyntheticDefaultImports": true,
     "ignoreDeprecations": "5.0"
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist"],
+  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist", "coverage"],
   "include": ["**/*.js", "**/*.ts"]
 }

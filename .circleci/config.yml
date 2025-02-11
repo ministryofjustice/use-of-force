@@ -20,7 +20,7 @@ executors:
   integration-tests:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: cimg/postgres:15.5
+      - image: cimg/postgres:16.4
         environment:
           POSTGRES_PASSWORD: use-of-force
           POSTGRES_USER: use-of-force
@@ -84,6 +84,10 @@ jobs:
           path: test-results
       - store_artifacts:
           path: test-results/unit-test-reports.html
+          destination: test-report
+      - store_artifacts:
+          path: coverage/lcov-report
+          destination: coverage-report
 
   integration_test:
     executor: integration-tests
@@ -196,26 +200,3 @@ workflows:
             - use-of-force-prod
           requires:
             - request-prod-approval
-
-  security:
-    triggers:
-      - schedule:
-          cron: "0 7 * * 1-5"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/npm_security_audit:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
-      - hmpps/trivy_latest_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
-      - hmpps/veracode_policy_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - veracode-credentials
-            - hmpps-common-vars

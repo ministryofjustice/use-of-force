@@ -29,7 +29,7 @@ describe('locationClient', () => {
         key: 'MDI-CELL-A',
       }
       fakeLocationApi
-        .get(`/locations/${locationId}`)
+        .get(`/locations/${locationId}?formatLocalName=true`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, location)
 
@@ -53,7 +53,10 @@ describe('locationClient', () => {
     })
 
     it('should throw for non-404 errors', async () => {
-      fakeLocationApi.get(`/locations/${locationId}`).matchHeader('authorization', `Bearer ${token}`).reply(400)
+      fakeLocationApi
+        .get(`/locations/${locationId}?formatLocalName=true`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(400)
       await expect(locationClient.getLocation(locationId)).rejects.toThrow('Bad Request')
     })
   })
@@ -61,7 +64,7 @@ describe('locationClient', () => {
     const locations = []
     it('should return data from api', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/OCCURRENCE')
+        .get('/locations/prison/MDI/non-residential-usage-type/OCCURRENCE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
@@ -70,7 +73,7 @@ describe('locationClient', () => {
     })
     it('can not search with incorrect usage-type filter', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/SOME-TYPE')
+        .get('/locations/prison/MDI/non-residential-usage-type/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 

@@ -19,25 +19,27 @@ generic-service:
     HMPPS_MANAGE_USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     INGRESS_URL: https://use-of-force.service.justice.gov.uk
 
-    allowlist:
-      quantum: "62.25.109.197/32"
-      quantum_alt: "212.137.36.230/32"
-      health-kick: "35.177.252.195/32"
-      digitalprisons1: "52.56.112.98/32"
-      digitalprisons2: "52.56.118.154/32"
-      j5-phones-1: "35.177.125.252/32"
-      j5-phones-2: "35.177.137.160/32"
-      durham-tees-valley: "51.179.197.1/32"
-      interservfls: "51.179.196.131/32"
-      crc-rrp: "62.253.83.37/32"
-      crc-pp-wwm: "5.153.255.210/32"
+  postgresDatabaseRestore:
+    enabled: true
+    namespace_secrets:
+      dps-rds-instance-output:
+        DB_NAME: "database_name"
+        DB_USER: "database_username"
+        DB_PASS: "database_password"
+        DB_HOST: "rds_instance_address"
+      dps-rds-instance-output-preprod:
+        DB_NAME_PREPROD: "database_name"
+        DB_USER_PREPROD: "database_username"
+        DB_PASS_PREPROD: "database_password"
+        DB_HOST_PREPROD: "rds_instance_address"
 
-      groups:
-        - prisons
-        - private_prisons
-        - probation
-        - moj_cloud_platform
-        - digital_staff_and_mojo
+  allowlist:
+    groups:
+      - prisons
+      - private_prisons
+      - probation
+      - moj_cloud_platform
+      - digital_staff_and_mojo
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
@@ -45,3 +47,8 @@ generic-prometheus-alerts:
 
 generic-data-analytics-extractor:
   serviceAccountName: use-of-force-prod-to-ap-s3
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 4G

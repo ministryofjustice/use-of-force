@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: send-reminders
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          activeDeadlineSeconds: 298
+          containers:
+          - name: use-of-force
+            image: {{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}
+            args:
+            - node
+            - job/sendReminders
+{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }}

@@ -2,6 +2,10 @@
 # Declare variables to be passed into your templates.
 generic-service:
   replicaCount: 2
+
+  scheduledDowntime:
+    enabled: true
+
   ingress:
     host: dev.use-of-force.service.justice.gov.uk
 
