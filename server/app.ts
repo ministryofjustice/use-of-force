@@ -2,7 +2,6 @@ import express, { Express, RequestHandler, Response, Request } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import noCache from 'nocache'
-import csurf from 'csurf'
 import path from 'path'
 import moment from 'moment'
 import compression from 'compression'
@@ -11,6 +10,7 @@ import crypto from 'crypto'
 import createError from 'http-errors'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
+import setUpCsrf from './middleware/setUpCsrf'
 import { createRedisClient } from './data/redisClient'
 import RequestLogger from './middleware/requestLogger'
 
@@ -40,7 +40,6 @@ const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
-const testMode = process.env.NODE_ENV === 'test'
 
 export default function createApp(services: Services): Express {
   const app = express()
@@ -232,9 +231,7 @@ export default function createApp(services: Services): Express {
   app.use(noCache())
 
   // CSRF protection
-  if (!testMode) {
-    app.use(csurf())
-  }
+  app.use(setUpCsrf())
 
   // JWT token refresh
   app.use(async (req, res, next) => {
