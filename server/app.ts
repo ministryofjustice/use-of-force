@@ -12,7 +12,6 @@ import session from 'express-session'
 import ConnectRedis from 'connect-redis'
 import setUpCsrf from './middleware/setUpCsrf'
 import { createRedisClient } from './data/redisClient'
-import RequestLogger from './middleware/requestLogger'
 
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -186,8 +185,6 @@ export default function createApp(services: Services): Express {
     '/assets/images/icons',
     express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
   )
-
-  app.use(RequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }))
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
