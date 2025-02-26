@@ -13,8 +13,6 @@ function get(name, fallback, options = {}) {
 const requiredInProduction = { requireInProduction: true }
 
 module.exports = {
-  buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),
