@@ -60,6 +60,8 @@ FROM base
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
         /app/package-lock.json \
+        /app/root.cert \
+        /app/build-info.json \
         ./
 
 COPY --from=build --chown=appuser:appgroup \
@@ -67,6 +69,12 @@ COPY --from=build --chown=appuser:appgroup \
 
 COPY --from=build --chown=appuser:appgroup \
         /app/node_modules ./node_modules
+
+COPY --from=build --chown=appuser:appgroup \
+        /app/assets ./assets
+
+COPY --from=build --chown=appuser:appgroup \
+        /app/server/views ./server/views
 
 ENV PORT=3000
 
