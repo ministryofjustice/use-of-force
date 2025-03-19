@@ -1,11 +1,11 @@
-const incidentDetails = require('./forms/incidentDetailsForm')
-const staffInvolved = require('./forms/staffInvolved')
-const useOfForceDetailsForm = require('./forms/useOfForceDetailsForm')
-const relocationAndInjuriesForm = require('./forms/relocationAndInjuriesForm')
-const evidenceForm = require('./forms/evidenceForm')
-const reasonsForUseOfForceForm = require('./forms/reasonsForUseOfForceForm')
+import incidentDetails from './forms/incidentDetailsForm'
+import staffInvolved from './forms/staffInvolved'
+import useOfForceDetailsForm from './forms/useOfForceDetailsForm'
+import relocationAndInjuriesForm from './forms/relocationAndInjuriesForm'
+import evidenceForm from './forms/evidenceForm'
+import reasonsForUseOfForceForm from './forms/reasonsForUseOfForceForm'
 
-const paths = {
+export const paths = {
   reportUseOfForce: bookingId => `/report/${bookingId}/report-use-of-force`,
   incidentDetails: bookingId => `/report/${bookingId}/incident-details`,
   staffInvolved: bookingId => `/report/${bookingId}/staff-involved`,
@@ -45,27 +45,26 @@ const paths = {
   editForm: (reportId, form) => `/${reportId}/edit-report/${form}`,
 }
 
-module.exports = {
-  paths,
-  nextPaths: {
-    incidentDetails: paths.staffInvolved,
-    involvedStaff: paths.whyWasUofApplied,
-    useOfForceDetails: paths.relocationAndInjuries,
-    relocationAndInjuries: paths.evidence,
-    evidence: paths.reportUseOfForce,
-  },
-  full: {
-    incidentDetails: incidentDetails.complete,
-    reasonsForUseOfForce: reasonsForUseOfForceForm.complete,
-    useOfForceDetails: useOfForceDetailsForm.complete,
-    relocationAndInjuries: relocationAndInjuriesForm.complete,
-    evidence: evidenceForm.complete,
-    involvedStaff: staffInvolved.complete,
-  },
-  partial: {
-    incidentDetails: incidentDetails.partial,
-    useOfForceDetails: useOfForceDetailsForm.partial,
-    relocationAndInjuries: relocationAndInjuriesForm.partial,
-    evidence: evidenceForm.partial,
-  },
+export const nextPaths = {
+  incidentDetails: paths.staffInvolved,
+  involvedStaff: paths.whyWasUofApplied,
+  useOfForceDetails: paths.relocationAndInjuries,
+  relocationAndInjuries: paths.evidence,
+  evidence: paths.reportUseOfForce,
+}
+
+export const full = {
+  incidentDetails: incidentDetails.complete,
+  reasonsForUseOfForce: reasonsForUseOfForceForm.complete,
+  useOfForceDetails: useOfForceDetailsForm.complete,
+  relocationAndInjuries: relocationAndInjuriesForm.complete,
+  evidence: evidenceForm.complete,
+  involvedStaff: staffInvolved.complete,
+}
+
+export const partial = {
+  incidentDetails: incidentDetails.partial,
+  useOfForceDetails: useOfForceDetailsForm.partial,
+  relocationAndInjuries: relocationAndInjuriesForm.partial,
+  evidence: evidenceForm.partial,
 }

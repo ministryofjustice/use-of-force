@@ -1,6 +1,6 @@
-const nock = require('nock')
-const config = require('../config')
-const signInService = require('./signInService')
+import nock from 'nock'
+import config from '../config'
+import signInService from './signInService'
 
 describe('signInService', () => {
   let service
@@ -10,6 +10,7 @@ describe('signInService', () => {
     service = signInService()
     realDateNow = Date.now.bind(global.Date)
     const time = new Date('May 31, 2018 12:00:00')
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     global.Date = jest.fn(() => time)
   })

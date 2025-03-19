@@ -1,10 +1,10 @@
-const passport = require('passport')
-const { Strategy } = require('passport-oauth2')
-const querystring = require('querystring')
-const config = require('../config')
-const { generateOauthClientToken } = require('./clientCredentials')
+import passport from 'passport'
+import { Strategy } from 'passport-oauth2'
+import querystring from 'querystring'
+import generateOauthClientToken from './clientCredentials'
+import config from '../config'
 
-function authenticationMiddlewareFactory(tokenVerifier) {
+export function authenticationMiddlewareFactory(tokenVerifier) {
   return async (req, res, next) => {
     if (req.isAuthenticated() && (await tokenVerifier.verify(res.locals.user.token))) {
       return next()
@@ -26,7 +26,7 @@ passport.deserializeUser((user, done) => {
   done(null, user)
 })
 
-function initialisePassportStrategy(signInService) {
+export function initialisePassportStrategy(signInService) {
   const strategy = new Strategy(
     {
       authorizationURL: `${config.apis.oauth2.externalUrl}/oauth/authorize`,
@@ -44,9 +44,4 @@ function initialisePassportStrategy(signInService) {
   )
 
   passport.use(strategy)
-}
-
-module.exports = {
-  initialisePassportStrategy,
-  authenticationMiddlewareFactory,
 }

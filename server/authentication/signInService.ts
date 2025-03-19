@@ -1,11 +1,10 @@
-const querystring = require('querystring')
-const superagent = require('superagent')
+import querystring from 'querystring'
+import superagent from 'superagent'
 /** @type {any} */
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
-const log = require('../../log')
-const config = require('../config')
-const fiveMinutesBefore = require('../utils/fiveMinutesBefore')
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import log from '../../log'
+import config from '../config'
+import fiveMinutesBefore from '../utils/fiveMinutesBefore'
 
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 const timeoutSpec = {
@@ -49,7 +48,7 @@ function getOauthToken(requestSpec) {
     .timeout(timeoutSpec)
 }
 
-function signInService() {
+export default function signInService() {
   return {
     getUser(token, refreshToken, expiresIn, username) {
       log.info(`User profile for: ${username}`)
@@ -73,5 +72,3 @@ function signInService() {
     },
   }
 }
-
-module.exports = signInService

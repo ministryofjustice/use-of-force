@@ -191,7 +191,7 @@ export default class CoordinatorRoutes {
       req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
       return removalRequest
         ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
-        : res.redirect(paths.confirmStatementDelete(reportId, statementId))
+        : res.redirect(paths.confirmStatementDelete(reportId, statementId, false))
     }
 
     if (confirm === 'yes') {
