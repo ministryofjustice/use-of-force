@@ -1,4 +1,4 @@
-const { generateOauthClientToken } = require('./clientCredentials')
+import generateOauthClientToken from './clientCredentials'
 
 describe('generateOauthClientToken', () => {
   it('Token can be generated', () => {

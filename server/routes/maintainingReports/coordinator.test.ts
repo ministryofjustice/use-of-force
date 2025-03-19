@@ -304,7 +304,7 @@ describe('coordinator', () => {
       involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'Bob' } as InvolvedStaff)
 
       await request(app)
-        .get(paths.confirmStatementDelete(1, 2))
+        .get(paths.confirmStatementDelete(1, 2, true))
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
@@ -316,7 +316,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       await request(app)
-        .get(paths.confirmStatementDelete(1, 2))
+        .get(paths.confirmStatementDelete(1, 2, false))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -329,7 +329,7 @@ describe('coordinator', () => {
       userSupplier.mockReturnValue(user)
 
       await request(app)
-        .get(paths.confirmStatementDelete(1, 2))
+        .get(paths.confirmStatementDelete(1, 2, false))
         .expect(401)
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
@@ -346,7 +346,7 @@ describe('coordinator', () => {
       await request(app)
         .post('/coordinator/report/123/statement/2/delete')
         .expect(302)
-        .expect('Location', paths.confirmStatementDelete(123, 2))
+        .expect('Location', paths.confirmStatementDelete(123, 2, false))
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
         })

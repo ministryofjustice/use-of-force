@@ -5,7 +5,7 @@ import querystring from 'querystring'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
 import config from '../config'
-import { generateOauthClientToken } from '../authentication/clientCredentials'
+import generateOauthClientToken from '../authentication/clientCredentials'
 import { SystemToken, FoundUserResult } from '../types/uof'
 import TokenStore from './tokenStore'
 

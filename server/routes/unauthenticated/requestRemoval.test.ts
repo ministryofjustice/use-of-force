@@ -82,7 +82,7 @@ describe('Request removal controller', () => {
 
     it('should successfully request removal from statement', () =>
       request(app)
-        .post(paths.requestRemoval(1))
+        .post(paths.requestRemoval(1, null))
         .send({ reason: 'reason', signature: validSignature })
         .expect(302)
         .expect('Location', paths.removalRequested())
@@ -92,7 +92,7 @@ describe('Request removal controller', () => {
 
     it('should fail to request removal from statement when no signature', () =>
       request(app)
-        .post(paths.requestRemoval(1))
+        .post(paths.requestRemoval(1, null))
         .send({ reason: 'reason', signature: invalidSignature })
         .expect(404)
         .expect(() => {
@@ -101,7 +101,7 @@ describe('Request removal controller', () => {
 
     it('request to be removed redirects when a reason is not provided', () =>
       request(app)
-        .post(paths.requestRemoval(1))
+        .post(paths.requestRemoval(1, null))
         .send({ signature: validSignature })
         .expect(302)
         .expect('Location', `/request-removal/1?signature=${encodeURIComponent(validSignature)}`)
