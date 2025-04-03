@@ -58,6 +58,12 @@
           }
         ]
       }
+    },
+    {
+      "files": ["esbuild/**/*"],
+      "rules": {
+        "no-console": "off"
+      }
     }
   ],
 
@@ -98,7 +104,7 @@
     ],
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "cypress.config.ts"] }
+      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "cypress.config.ts", "esbuild/**/*"] }
     ],
     "prettier/prettier": [
       "error",

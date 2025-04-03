@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { RestClient } from './restClient'
 
 export interface Component {

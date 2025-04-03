@@ -1,7 +1,7 @@
 import logger from '../../log'
 import { StatementStatus, ReportStatus, LabelledValue } from '../config/types'
 import statementConfig from '../config/forms/statementForm'
-import { processInput } from './validation'
+import validation from './validation'
 import type { InTransaction } from '../data/dataAccess/db'
 import type { StatementsClient, IncidentClient } from '../data'
 import { PageResponse } from '../utils/page'
@@ -33,7 +33,7 @@ export default class StatementService {
   async validateSavedStatement(username: string, reportId: number): Promise<Error[]> {
     const statement = await this.getStatementForUser(username, reportId, StatementStatus.PENDING)
 
-    const result = processInput({ validationSpec: statementConfig.complete, input: statement })
+    const result = validation.processInput({ validationSpec: statementConfig.complete, input: statement })
     return result.errors || []
   }
 

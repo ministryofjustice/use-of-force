@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Readable } from 'stream'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'

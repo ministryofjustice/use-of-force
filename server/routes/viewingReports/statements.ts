@@ -1,8 +1,8 @@
 import moment from 'moment'
 import { Request, RequestHandler } from 'express'
 import { isNilOrEmpty } from '../../utils/utils'
-import { complete } from '../../config/forms/statementForm'
-import { processInput } from '../../services/validation'
+import statementForm from '../../config/forms/statementForm'
+import validation from '../../services/validation'
 import { StatementStatus } from '../../config/types'
 import StatementService from '../../services/statementService'
 import { SystemToken } from '../../types/uof'
@@ -87,8 +87,8 @@ export default class StatementsRoutes {
 
     const saveAndContinue = req.body.submitType === 'save-and-continue'
 
-    const { extractedFields: statement, errors } = processInput({
-      validationSpec: complete,
+    const { extractedFields: statement, errors } = validation.processInput({
+      validationSpec: statementForm.complete,
       input: req.body,
     })
 

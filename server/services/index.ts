@@ -20,7 +20,7 @@ import EventPublisher from './eventPublisher'
 import * as db from '../data/dataAccess/db'
 import createSignInService from '../authentication/signInService'
 
-import { notificationServiceFactory } from './notificationService'
+import notificationServiceDefault from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 import FeComponentsService from './feComponentsService'
 
@@ -41,7 +41,7 @@ const {
 
 const eventPublisher = EventPublisher(telemetryClient)
 const userService = new UserService(prisonClientBuilder, authClientBuilder)
-const notificationService = notificationServiceFactory(eventPublisher)
+const notificationService = notificationServiceDefault.notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(
   incidentClient,
   statementsClient,

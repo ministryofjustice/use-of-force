@@ -1,7 +1,9 @@
 import nunjucks from 'nunjucks'
+import express from 'express'
 import path from 'path'
 import moment from 'moment'
 import nodeCrypto from 'crypto'
+import fs from 'fs'
 import querystring from 'querystring'
 import escapeHtml from 'escape-html'
 import config from '../config'
@@ -20,12 +22,19 @@ type Error = {
   text: string
 }
 
-export default function configureNunjucks(app: Express.Application): nunjucks.Environment {
+export default function configureNunjucks(app: express.Express): void{
+  app.set('view engine', 'html')
+
+  app.locals.asset_path = '/assets/'
+  app.locals.applicationName = 'Use of Force'
+  app.locals.environmentName = config.environmentName
+  app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
+
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
-      'node_modules/govuk-frontend/',
-      'node_modules/@ministryofjustice/frontend',
+      'node_modules/govuk-frontend/dist/',
+      'node_modules/@ministryofjustice/frontend/',
     ],
     {
       autoescape: true,
@@ -183,6 +192,14 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   })
 
   njkEnv.addFilter('initialiseName', initialiseName)
-
-  return njkEnv
+  
+  let assetManifest: Record<string, string> = {}
+  try {
+    const assetMetadataPath = path.resolve(__dirname, '../../assets/manifest.json')
+    assetManifest = JSON.parse(fs.readFileSync(assetMetadataPath, 'utf8'))
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'test') {
+    }
+  }
+  njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
 }

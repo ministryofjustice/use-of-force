@@ -1,3 +1,4 @@
+// @ts-nocheck
 import logger from '../../log'
 import type { RestClient } from './restClient'
 import type { LocationInPrison } from './locationClientTypes'

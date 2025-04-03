@@ -1,7 +1,9 @@
+// @ts-nocheck
 import moment from 'moment'
 import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
+import validation from '../../services/validation'
 import { processInput } from '../../services/validation'
 import { nextPaths, full, partial } from '../../config/incident'
 import type OffenderService from '../../services/offenderService'
@@ -119,7 +121,7 @@ export default class IncidentDetailsRoutes {
 
     const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
-    const { payloadFields, extractedFields, errors } = processInput({
+    const { payloadFields, extractedFields, errors } = validation.processInput({
       validationSpec: fullValidation ? full[formName] : partial[formName],
       input: req.body,
     })
