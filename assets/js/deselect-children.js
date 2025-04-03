@@ -1,6 +1,11 @@
-document.querySelectorAll('[id^=parent-]').forEach(parent => {
-  parent.addEventListener('change', deselectChildrenOnUncheck)
-})
+export default () => {
+  $(document).ready(function () {
+    document.querySelectorAll('[id^=parent-]').forEach(parent => {
+      parent.addEventListener('change', deselectChildrenOnUncheck)
+    })
+  })
+}
+
 function deselectChildrenOnUncheck(e) {
   const parent = e.srcElement
   if (!parent.checked) {

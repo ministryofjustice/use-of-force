@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
-import { processInput } from '../../services/validation'
+import validation from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
@@ -55,7 +55,7 @@ export default class CreateReport {
 
       const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
-      const { payloadFields: updatedSection, errors } = processInput({
+      const { payloadFields: updatedSection, errors } = validation.processInput({
         validationSpec: fullValidation ? full[formName] : partial[formName],
         input: req.body,
       })

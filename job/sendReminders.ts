@@ -12,7 +12,7 @@ import IncidentClient from '../server/data/incidentClient'
 import logger from '../log'
 import * as db from '../server/data/dataAccess/db'
 
-import { notificationServiceFactory } from '../server/services/notificationService'
+import notificationServiceDefault from '../server/services/notificationService'
 import { AuthClient, systemTokenBuilder } from '../server/data/authClient'
 
 import EmailResolver from './reminders/emailResolver'
@@ -31,7 +31,7 @@ const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogC
 
 const systemToken = systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false })))
 const emailResolver = new EmailResolver(token => new AuthClient(token), systemToken, statementClient)
-const notificationService = notificationServiceFactory(eventPublisher)
+const notificationService = notificationServiceDefault.notificationServiceFactory(eventPublisher)
 
 const reminderSender = new ReminderSender(notificationService)
 

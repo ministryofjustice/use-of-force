@@ -1,7 +1,8 @@
 import express, { Router } from 'express'
 
 import asyncMiddleware from '../../middleware/asyncMiddleware'
-import { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
+import roleCheck from '../../middleware/roleCheck'
+const { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } = roleCheck
 
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'

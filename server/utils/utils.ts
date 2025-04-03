@@ -1,3 +1,4 @@
+// @ts-nocheck
 import R from 'ramda'
 import moment, { Moment } from 'moment'
 

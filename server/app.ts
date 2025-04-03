@@ -32,6 +32,7 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpStaticResources from './middleware/setUpStaticResources'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -50,9 +51,6 @@ export default function createApp(services: Services): Express {
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
-
-  // View Engine Configuration
-  app.set('view engine', 'html')
 
   setUpEnvironmentName(app)
 
@@ -166,25 +164,7 @@ export default function createApp(services: Services): Express {
     })
   }
 
-  //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
-
-  ;[
-    '/assets',
-    '/assets/stylesheets',
-    '/assets/js',
-    `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
-    `/node_modules/@ministryofjustice/frontend/`,
-  ].forEach(dir => {
-    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-  app.use('/favicon.ico', express.static(path.join(process.cwd(), `/assets/images/favicon.ico`), cacheControl))
-
-  app.use(
-    '/assets/images/icons',
-    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
-  )
+  app.use(setUpStaticResources())
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,

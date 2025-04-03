@@ -1,6 +1,6 @@
 import logger from '../../log'
 import { properCaseName, forenameToInitial } from '../utils/utils'
-import { usernamePattern } from '../config/forms/validations'
+import validations from '../config/forms/validations'
 import type { RestClientBuilder, PrisonClient, AuthClient } from '../data'
 import { User, UserWithPrison, FoundUserResult } from '../types/uof'
 import { EmailResult } from '../data/authClient'
@@ -33,7 +33,7 @@ export default class UserService {
   }
 
   private async getEmailSafely(client: AuthClient, username: string): Promise<EmailResult> {
-    return usernamePattern.test(username) ? client.getEmail(username) : { username, exists: false, verified: false }
+    return validations.usernamePattern.test(username) ? client.getEmail(username) : { username, exists: false, verified: false }
   }
 
   public async getUser(token: string, username: string): Promise<FoundUserResult> {
