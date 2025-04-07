@@ -98,7 +98,7 @@
         <span class="govuk-visually-hidden">Error:</span>
         {{ primaryErrorMessageText}}
       </span>
-      
+      <div class ="float-left">
       <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
         <div class="govuk-radios__item">
           <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
@@ -115,6 +115,7 @@
           <label class="govuk-label govuk-radios__label" for="primary-question-no">
             No
           </label>
+        </div>
         </div>
         <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-input-for-{{question.primaryQuestion.questionSubject}}">
           <div class="add-another-{{question.primaryQuestion.questionSubject}}" id="{{question.followUpQuestion.name}}">
@@ -182,7 +183,7 @@
       {{ primaryErrorMessageText}}
     </span>
     <div class="govuk-!-margin-bottom-6">
-      <div class={{radio_button_orientation}} data-module="govuk-radios">
+      <div class="{{radio_button_orientation}} float-left" data-module="govuk-radios">
         {% set name1 = question.primaryQuestion.name %}
         {% for option in question.primaryQuestion.options %}
         <div class="govuk-radios__item">
@@ -207,6 +208,7 @@
           </label>
         </div>
         {% endfor %}
+      </div>
 
         <!-- followup-->
         {% if question.followUpQuestion %}
@@ -222,6 +224,7 @@
                   {% endif %}
 
                   {% set name2 = question.followUpQuestion.name %}
+                <div class={{radio_button_orientation}} data-module="govuk-radios">
                   {% for option in question.followUpQuestion.options %}
                     <div class="govuk-radios__item">
                       <input class="govuk-radios__input"
@@ -244,13 +247,13 @@
                       </label>
                     </div>
                   {% endfor %}
+                </div>
                 </fieldset>
               </div>
             </div>
         {% endif %}
         <!-- end of followup -->
       </div>
-    </div>
   </fieldset>
 </div>
 
@@ -448,33 +451,35 @@
       <span class="govuk-visually-hidden">Error:</span>
       {{ primaryErrorMessageText}}
     </span>
-    <div class="govuk-radios--inline" data-module="govuk-radios">
-      {% set name = question.primaryQuestion.name %}
-      {% for option in question.primaryQuestion.options %}
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input"
-                  {% if loop.index === 1 %}
-                    id={{ name }}
-                  {% else %}
-                    id="{{ name }}-{{ loop.index }}"
-                  {% endif %}
-                 name="{{ name }}"
-                 type="radio"
-                 value="{{ option.value }}"
-                  {% if option.value === true %}
-                    data-aria-controls="conditional-{{ name }}"
-                  {% endif %}
-                  {% if option.value === question.primaryQuestion.value %} checked="checked" {% endif %}>
-          <label class="govuk-label govuk-radios__label"
-                  {% if loop.index === 1 %}
-                    for={{ name }}
-                  {% else %}
-                    for="{{ name }}-{{ loop.index }}"
-                  {% endif %}>
-            {{ option.label }}
-          </label>
-        </div>
-      {% endfor %}
+    <div class="float-left">
+      <div class="govuk-radios--inline" data-module="govuk-radios">
+        {% set name = question.primaryQuestion.name %}
+        {% for option in question.primaryQuestion.options %}
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input"
+                    {% if loop.index === 1 %}
+                      id={{ name }}
+                    {% else %}
+                      id="{{ name }}-{{ loop.index }}"
+                    {% endif %}
+                  name="{{ name }}"
+                  type="radio"
+                  value="{{ option.value }}"
+                    {% if option.value === true %}
+                      data-aria-controls="conditional-{{ name }}"
+                    {% endif %}
+                    {% if option.value === question.primaryQuestion.value %} checked="checked" {% endif %}>
+            <label class="govuk-label govuk-radios__label"
+                    {% if loop.index === 1 %}
+                      for={{ name }}
+                    {% else %}
+                      for="{{ name }}-{{ loop.index }}"
+                    {% endif %}>
+              {{ option.label }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
 
       <!-- followup -->
         <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{ name }}">
