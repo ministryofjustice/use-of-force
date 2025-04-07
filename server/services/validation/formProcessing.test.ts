@@ -1,9 +1,12 @@
-const Joi = require('@hapi/joi')
-const R = require('ramda')
-const { processInput } = require('./formProcessing')
-const { EXTRACTED } = require('../../config/fieldType')
-const { validations, joi } = require('../../config/forms/validations')
-const { buildValidationSpec } = require('./index')
+import Joi from '@hapi/joi'
+import R from 'ramda'
+import { processInput } from './formProcessing'
+import { EXTRACTED } from '../../config/fieldType'
+import validationsDefault from '../../config/forms/validations'
+import index from './index'
+
+const { validations, joi } = validationsDefault
+const { buildValidationSpec } = index
 
 describe('processInput', () => {
   describe('checking dependentFields functionality', () => {

@@ -1,6 +1,9 @@
-const moment = require('moment')
-const { complete, partial } = require('./incidentDetailsForm')
-const { processInput } = require('../../services/validation')
+import  moment from 'moment'
+import incidentDetailsForm from './incidentDetailsForm'
+import validation from '../../services/validation'
+
+const { complete, partial } = incidentDetailsForm 
+const { processInput } = validation
 
 const buildCheck = schema => input => {
   const {

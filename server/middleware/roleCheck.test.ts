@@ -1,4 +1,4 @@
-const roleCheck = require('./roleCheck')
+import roleCheck from './roleCheck'
 
 describe('roleCheck', () => {
   let req

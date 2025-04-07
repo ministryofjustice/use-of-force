@@ -1,4 +1,4 @@
-const fiveMinutesBefore = require('./fiveMinutesBefore')
+import {fiveMinutesBefore} from './fiveMinutesBefore'
 
 let realDateNow
 

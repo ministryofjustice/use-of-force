@@ -3,8 +3,11 @@ jest.mock('moment', () => () => ({
   month: () => 9,
 }))
 
-const { validate } = require('../../services/validation/fieldValidation')
-const { buildValidationSpec } = require('../../services/validation')
+import { validate }  from '../../services/validation/fieldValidation'
+import validation from '../../services/validation'
+import validations  from './validations'
+
+const  { buildValidationSpec } = validation
 const {
   joi,
   caseInsensitiveComparator,
@@ -17,8 +20,7 @@ const {
     requiredStringMsg,
     requiredPatternMsg,
   },
-} = require('./validations')
-
+} = validations
 describe('requiredMonthIndexNotInFuture', () => {
   const formSchema = joi.object({
     year: requiredYearNotInFutureMsg('Year is required', 'Year out of range'),

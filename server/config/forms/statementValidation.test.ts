@@ -3,10 +3,12 @@ jest.mock('moment', () => () => ({
   month: () => 9,
 }))
 
-const moment = require('moment')
-const { complete } = require('./statementForm')
-const { processInput } = require('../../services/validation')
+import moment from'moment'
+import statementForm from'./statementForm'
+import validation from'../../services/validation'
 
+const { complete } =  statementForm
+const { processInput } = validation
 const check = input => {
   const { extractedFields: formResponse, errors } = processInput({ validationSpec: complete, input })
   return { formResponse, errors }

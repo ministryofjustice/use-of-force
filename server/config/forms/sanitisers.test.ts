@@ -1,5 +1,6 @@
-const { removeEmptyObjects } = require('./sanitisers')
+import sanitisers from './sanitisers'
 
+const { removeEmptyObjects } = sanitisers
 describe('removeEmptyObjects', () => {
   it('accepts an empty array', () => expect(removeEmptyObjects([])).toEqual([]))
   it('leaves a "non-empty" object', () => expect(removeEmptyObjects([{ a: 'a' }])).toEqual([{ a: 'a' }]))

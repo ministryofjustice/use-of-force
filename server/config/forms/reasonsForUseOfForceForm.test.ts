@@ -1,6 +1,9 @@
-const { complete } = require('./reasonsForUseOfForceForm')
-const { processInput } = require('../../services/validation')
-const { UofReasons } = require('../types')
+import reasonsForUseOfForceForm from './reasonsForUseOfForceForm'
+import validation from '../../services/validation'
+import { UofReasons } from '../types'
+const { processInput } = validation
+
+const { complete } = reasonsForUseOfForceForm
 
 const buildCheck = schema => input => {
   const {
