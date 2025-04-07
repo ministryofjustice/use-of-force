@@ -380,47 +380,46 @@
        {% for option in question.primaryQuestion.options %}
            {% if option.exclusive %}<div class="govuk-checkboxes__divider">or</div> {% endif %}
            {% if not option.parent %}
-               <div class="govuk-checkboxes__item">
-                   <input
-                           class="govuk-checkboxes__input"
-                           id="parent-{{option.value}}-{{question.primaryQuestion.name}}"
-                           name="{{question.primaryQuestion.name}}"
-                           type="checkbox"
-                           value="{{option.value}}"
-                           {% if option.exclusive %}
-                             data-behaviour="exclusive"
-                           {% endif %}
-                             data-aria-controls="conditional-{{option.value}}"
-                            {% if option.value in question.primaryQuestion.value %} checked {% endif %}
-                   >
-                   <label class="govuk-label govuk-checkboxes__label" for="parent-{{option.value}}-{{question.primaryQuestion.name}}">
-                       {{option.label}}
-                   </label>
-               </div>
-               {% if option.sub_options %}
-                   <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden clear-both" id="conditional-{{option.value}}">
-                       <div class="govuk-fieldset__legend">
-                           {{option.sub_options_label}}
-                       </div>
+              <div class="govuk-checkboxes__item">
+                  <input
+                          class="govuk-checkboxes__input"
+                          id="parent-{{option.value}}-{{question.primaryQuestion.name}}"
+                          name="{{question.primaryQuestion.name}}"
+                          type="checkbox"
+                          value="{{option.value}}"
+                          {% if option.exclusive %}
+                            data-behaviour="exclusive"
+                          {% endif %}
+                            data-aria-controls="conditional-{{option.value}}"
+                          {% if option.value in question.primaryQuestion.value %} checked {% endif %}
+                  >
+                  <label class="govuk-label govuk-checkboxes__label" for="parent-{{option.value}}-{{question.primaryQuestion.name}}">
+                      {{option.label}}
+                  </label>
+              </div>
+              <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden clear-both govuk-!-margin-bottom-0" id="conditional-{{option.value}}">
 
-                       {% for subopt in question.primaryQuestion.options %}
-                           {% if subopt.parent === option.value %}
-                               <div class="govuk-checkboxes__item">
-                                   <input
-                                           class="govuk-checkboxes__input"
-                                           id="child-{{subopt.value}}"
-                                           name="{{question.primaryQuestion.name}}"
-                                           type="checkbox"
-                                           value="{{subopt.value}}"
-                                   {% if subopt.value in question.primaryQuestion.value %} checked {% endif %}>
-                                   <label class="govuk-label govuk-checkboxes__label" for="child-{{subopt.value}}">
-                                       {{subopt.label}}
-                                   </label>
-                               </div>
-                           {% endif %}
-                       {% endfor %}
-                   </div>
-               {% endif %}
+                  <div class="govuk-fieldset__legend">
+                      {{option.sub_options_label}}
+                  </div>
+
+                  {% for subopt in question.primaryQuestion.options %}
+                      {% if subopt.parent === option.value %}
+                          <div class="govuk-checkboxes__item">
+                              <input
+                                      class="govuk-checkboxes__input"
+                                      id="child-{{subopt.value}}"
+                                      name="{{question.primaryQuestion.name}}"
+                                      type="checkbox"
+                                      value="{{subopt.value}}"
+                              {% if subopt.value in question.primaryQuestion.value %} checked {% endif %}>
+                              <label class="govuk-label govuk-checkboxes__label" for="child-{{subopt.value}}">
+                                  {{subopt.label}}
+                              </label>
+                          </div>
+                      {% endif %}
+                  {% endfor %}
+              </div>
            {% endif %}
        {% endfor %}
     </div>
