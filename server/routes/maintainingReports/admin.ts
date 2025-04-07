@@ -25,7 +25,7 @@ export default class AdminRoutes {
       bookingId
     )
 
-    return res.render('pages/admin/edit-form.html', {
+    return res.render('pages/admin/edit-form.njk', {
       errors: req.flash('errors'),
       data: {
         incidentId: reportId,

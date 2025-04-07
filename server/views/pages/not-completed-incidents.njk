@@ -1,0 +1,61 @@
+{% extends "../partials/incidentPage.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/table/macro.njk" import govukTable %} 
+{% from  "../macros.njk" import overdueBadge %}   
+{% from  "../macros.njk" import removalRequestedBadge %}    
+
+{% block tabContent %}
+<section class="govuk-tabs__panel">
+  
+  {% if reports.length %}
+<table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header date" scope="col">Incident date</th>
+      <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
+      <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
+      <th class="govuk-table__header reporter" scope="col">Reporter</th>
+      <th class="govuk-table__header report" scope="col"></th>
+      <th class="govuk-table__header report" scope="col"></th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+      {% for report in reports %}
+      <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>
+          <td class="govuk-table__cell">{{report.offenderName}}</td>
+          <td class="govuk-table__cell">{{report.offenderNo}}</td>
+          <td class="govuk-table__cell">{{report.staffMemberName}}</td>
+          <td class="govuk-table__cell"><a href="/{{ report.id }}/view-statements" draggable="false" class="govuk-link">View incident</a></td>
+    
+          <td class="govuk-table__cell">
+            {% if report.isOverdue %}
+            {{ 
+              overdueBadge({
+                text: 'OVERDUE', 
+                qa: 'overdue' 
+              }) 
+            }}     
+            <br>
+            {% endif %}
+            {% if report.isRemovalRequested %}
+              {{ 
+                removalRequestedBadge({
+                  text: 'REMOVAL REQUEST', 
+                  qa: 'removal-request' 
+                }) 
+              }}                  
+            {% endif %}
+          </td>
+      </tr>  
+      {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="govuk-body" data-qa="no-incidents-todo">There are no incomplete incidents</p>
+{% endif %}
+
+</section>
+{% endblock %}
