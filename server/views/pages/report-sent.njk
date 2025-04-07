@@ -1,0 +1,35 @@
+{% extends "../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+
+{% set pageTitle = 'This report has been sent to the use of force coordinator' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel info-panel">
+      <h1 class="govuk-panel__title"> {{ pageTitle }} </h1>
+    </div>
+
+    <p>You need to write your statement.</p>
+    <p>We will email all officers involved to ask them to write their statements.</p>
+
+    {{
+      govukButton({
+        text: 'Write your statement',
+        href: '/' + reportId + '/write-your-statement',
+        classes: 'govuk-button tableButton ',
+        attributes: { 'data-qa': 'continue-to-statement' }
+      })
+    }}
+
+    {{
+      govukButton({
+        text: 'Exit to Digital Prison Services',
+        href: links.exitUrl,
+        classes: 'govuk-button govuk-button--secondary govuk-!-margin-left-3 ',
+        attributes: { 'data-qa': 'exit' }
+      })
+    }}
+  </div>
+</div>
+{% endblock %}

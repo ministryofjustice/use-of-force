@@ -23,7 +23,7 @@ type Error = {
 }
 
 export default function configureNunjucks(app: express.Express): void{
-  app.set('view engine', 'html')
+  app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'Use of Force'

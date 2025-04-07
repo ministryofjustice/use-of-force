@@ -36,7 +36,7 @@ export default class RemovalRequest {
       return res.redirect(paths.removalAlreadyRequested())
     }
 
-    return res.render(`pages/statement/request-removal.html`, { errors: req.flash('errors'), report, signature })
+    return res.render(`pages/statement/request-removal.njk`, { errors: req.flash('errors'), report, signature })
   }
 
   submit: RequestHandler = async (req, res, next) => {
@@ -61,10 +61,10 @@ export default class RemovalRequest {
     return res.redirect(paths.removalRequested())
   }
 
-  viewConfirmation: RequestHandler = (req, res) => res.render(`pages/statement/removal-requested.html`)
+  viewConfirmation: RequestHandler = (req, res) => res.render(`pages/statement/removal-requested.njk`)
 
-  viewAlreadyRemoved: RequestHandler = (req, res) => res.render(`pages/statement/already-removed.html`)
+  viewAlreadyRemoved: RequestHandler = (req, res) => res.render(`pages/statement/already-removed.njk`)
 
   viewRemovalAlreadyRequested: RequestHandler = (req, res) =>
-    res.render('pages/statement/removal-already-requested.html')
+    res.render('pages/statement/removal-already-requested.njk')
 }

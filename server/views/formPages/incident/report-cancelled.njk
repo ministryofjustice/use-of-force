@@ -1,0 +1,17 @@
+{% extends "../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% set pageTitle = 'Your report has been cancelled' %} 
+
+{% block content %}
+  <div class="govuk-body">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+        <p>You may be asked to complete a statement if you are named as being involved in the incident.</p>
+        <p>
+          <a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Return to Digital Prison Services</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -26,7 +26,7 @@
     {% if params.errorMessage %}
         {{
         govukErrorMessage({
-        html: params.errorMessage.html,
+        html: params.errorMessage.njk,
         text: params.errorMessage.text
         })
         }}

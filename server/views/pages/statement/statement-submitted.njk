@@ -1,0 +1,25 @@
+{% extends "../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = 'Your statement has been submitted' %}
+
+{% block content %}
+
+{{
+    govukPanel({
+        classes: "govuk-!-width-one-half",
+        titleText:  pageTitle 
+    }) 
+}}  
+
+  {{ 
+    govukButton({
+      text: "Finish",
+      name: "submit",
+      href: '/your-statements',
+      classes: "govuk-button govuk-button govuk-!-margin-top-8",
+      attributes: {'data-qa': 'finish'}
+    })
+  }}
+{% endblock %} 
