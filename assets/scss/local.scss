@@ -373,3 +373,15 @@ dt.summary-list__key__wider {
 .govuk-notification-banner__content > * {
   max-width: 700px;
 }
+
+.moj-tag--blue {
+  border: 2px solid #1d70b8;
+  background-color: #1d70b8;
+  color: #ffffff;
+}
+
+.moj-tag--black {
+  border: 2px solid #0b0c0c;
+  background-color: #0b0c0c;
+  color: #ffffff;
+}
