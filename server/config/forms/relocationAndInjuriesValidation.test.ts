@@ -1,8 +1,9 @@
-const joi = require('@hapi/joi')
-const { complete, partial, f213CompletedBy } = require('./relocationAndInjuriesForm')
-const { processInput } = require('../../services/validation')
-const { isValid, validate } = require('../../services/validation')
-const { buildValidationSpec } = require('../../services/validation')
+import joi from'@hapi/joi'
+import relocationAndInjuriesForm from'./relocationAndInjuriesForm'
+import validation from'../../services/validation'
+
+const { complete, partial, f213CompletedBy } = relocationAndInjuriesForm
+const { processInput, isValid, validate, buildValidationSpec } = validation
 
 const buildCheck = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })

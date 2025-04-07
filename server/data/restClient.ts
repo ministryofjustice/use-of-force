@@ -1,6 +1,6 @@
 // @ts-nocheck
 import superagent from 'superagent'
-import Agent, { HttpsAgent } from 'agentkeepalive'
+import Agent, { HttpAgent, HttpsAgent } from 'agentkeepalive'
 import { Readable } from 'stream'
 import logger from '../../log'
 import sanitiseError from '../utils/errorSanitiser'

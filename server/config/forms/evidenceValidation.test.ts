@@ -1,5 +1,8 @@
-const { complete, partial } = require('./evidenceForm')
-const { processInput } = require('../../services/validation')
+import evidenceForm from './evidenceForm'
+import validation from '../../services/validation'
+
+const { complete, partial } = evidenceForm 
+const { processInput } = validation
 
 const buildCheck = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })

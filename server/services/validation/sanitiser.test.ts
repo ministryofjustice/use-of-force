@@ -1,22 +1,20 @@
-const R = require('ramda')
-const joi = require('@hapi/joi')
-const { trimmedString, toBoolean, toInteger, toSmallInt } = require('../../config/forms/sanitisers')
-const { simplifyDescription, buildSanitiser, getSanitiser } = require('./sanitiser')
-const {
-  complete: { schema: evidenceSchema },
-} = require('../../config/forms/evidenceForm')
-const {
-  complete: { schema: incidentDetailsSchema },
-} = require('../../config/forms/incidentDetailsForm')
-const {
-  complete: { schema: relocationAndInjuriesSchema },
-} = require('../../config/forms/relocationAndInjuriesForm')
-const {
-  complete: { schema: statementSchema },
-} = require('../../config/forms/statementForm')
-const {
-  complete: { schema: useOfForceDetailsSchema },
-} = require('../../config/forms/useOfForceDetailsForm')
+import R from 'ramda'
+import joi from '@hapi/joi'
+import sanitisers from '../../config/forms/sanitisers'
+import sanitiser from './sanitiser'
+import evidenceForm  from '../../config/forms/evidenceForm'
+import incidentDetailsForm  from '../../config/forms/incidentDetailsForm'
+import relocationAndInjuriesForm from '../../config/forms/relocationAndInjuriesForm'
+import statementForm  from '../../config/forms/statementForm'
+import useOfForceDetailsForm  from '../../config/forms/useOfForceDetailsForm'
+
+const { trimmedString, toBoolean, toInteger, toSmallInt } = sanitisers
+const { simplifyDescription, buildSanitiser, getSanitiser } = sanitiser
+const {  complete: { schema: evidenceSchema },} = evidenceForm 
+const {  complete: { schema: incidentDetailsSchema },}= incidentDetailsForm
+const {  complete: { schema: relocationAndInjuriesSchema },} = relocationAndInjuriesForm
+const {  complete: { schema: statementSchema },} = statementForm
+const {  complete: { schema: useOfForceDetailsSchema },} = useOfForceDetailsForm
 
 describe('using meta to specify sanitisers', () => {
   it('allows a sanitiser to be attached as metadata', () => {
