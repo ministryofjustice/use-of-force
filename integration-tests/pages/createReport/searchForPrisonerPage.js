@@ -24,7 +24,7 @@ const searchForPrisonerPage = () =>
               currentPrison: Cypress.$(tds[2]).text(),
               link: Cypress.$(tds[3]).find('a')[0],
             }
-          })
+          }),
         ),
   })
 

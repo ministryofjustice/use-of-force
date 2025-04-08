@@ -1,7 +1,9 @@
-const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
+/* eslint-disable @typescript-eslint/no-require-imports */
+import sanitisers from './sanitisers'
 const R = require('ramda')
 
-import sanitisers from './sanitisers'
+const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
+
 const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = sanitisers
 
 const caseInsensitiveComparator = key => R.eqBy(R.pipe(R.propOr('', key), R.trim, R.toUpper))

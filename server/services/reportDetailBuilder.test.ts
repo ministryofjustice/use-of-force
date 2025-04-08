@@ -34,7 +34,7 @@ beforeEach(() => {
     locationService,
     offenderService,
     nomisMappingService,
-    systemToken
+    systemToken,
   )
 })
 
@@ -167,7 +167,7 @@ describe('Build details', () => {
 
     expect(nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId).toHaveBeenCalledWith(
       'system-token-for-Bob',
-      locationId
+      locationId,
     )
   })
 

@@ -13,9 +13,9 @@ import {
 const { toDate } = sanitisers
 const { buildValidationSpec } = validation
 const { optionalForPartialValidation, requiredPatternMsg, requiredStringMsg, requiredBooleanMsg, arrayOfObjects } =
-validations.validations
+  validations.validations
 
-const {joi, namePattern, caseInsensitiveComparator} = validations
+const { joi, namePattern, caseInsensitiveComparator } = validations
 const requiredIncidentDate = joi
   .object({
     date: joi
@@ -55,7 +55,7 @@ const requiredIncidentDate = joi
         [ValidationError.isFuture]: 'Enter a time which is not in the future',
       }),
 
-    value:  joi.date().allow(null),
+    value: joi.date().allow(null),
   })
   .meta({ sanitiser: toDate })
 
@@ -67,7 +67,7 @@ const transientSchema = joi.object({
   locationId: joi.optional(),
 
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   authorisedBy: joi.when('plannedUseOfForce', {
@@ -81,7 +81,7 @@ const transientSchema = joi.object({
 
   witnesses: arrayOfObjects({
     name: requiredPatternMsg(namePattern)(
-      'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe'
+      'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe',
     ).alter(optionalForPartialValidation),
   })
     .ruleset.unique(caseInsensitiveComparator('name'))

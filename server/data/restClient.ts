@@ -1,11 +1,29 @@
-// @ts-nocheck
 import superagent from 'superagent'
 import Agent, { HttpAgent, HttpsAgent } from 'agentkeepalive'
 import { Readable } from 'stream'
 import logger from '../../log'
 import sanitiseError from '../utils/errorSanitiser'
+import type { UnsanitisedError } from '../sanitisedError'
 
-interface GetRequest {
+interface Request {
+  path: string
+  query?: object | string
+  headers?: Record<string, string>
+  responseType?: string
+  raw?: boolean
+}
+
+interface RequestWithBody extends Request {
+  data?: Record<string, unknown>
+  retry?: boolean
+}
+
+interface StreamRequest {
+  path?: string
+  headers?: Record<string, string>
+  errorLogger?: (e: UnsanitisedError) => void
+}
+export interface GetRequest {
   path?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query?: any
@@ -110,11 +128,9 @@ export class RestClient {
     }
   }
 
-
   async post<Response = unknown>(request: RequestWithBody): Promise<Response> {
     return this.requestWithBody('post', request)
   }
-
 
   async stream({ path = null, headers = {} }: StreamRequest = {}): Promise<Readable> {
     logger.info(`${this.name} streaming: ${path}`)

@@ -55,7 +55,7 @@ export default class ReviewService {
     private readonly incidentClient: IncidentClient,
     private readonly authClientBuilder: RestClientBuilder<AuthClient>,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   async getReport(reportId: number): Promise<Report> {
@@ -76,7 +76,7 @@ export default class ReviewService {
     username: string,
     agencyId: AgencyId,
     query: ReportQuery,
-    page: number
+    page: number,
   ): Promise<PageResponse<IncidentSummary>> {
     if (query.prisonerName) {
       // when searching by prisoner name, we can't filter paged results as we would end up with odd/empty shaped pages. So have to load all and page in memory

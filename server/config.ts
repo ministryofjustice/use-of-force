@@ -1,7 +1,6 @@
-// @ts-nocheck
 const production = process.env.NODE_ENV === 'production'
 
-function get(name, fallback, options = {}) {
+function get(name, fallback, options = { requireInProduction: false }) {
   if (process.env[name]) {
     return process.env[name]
   }
@@ -40,7 +39,7 @@ export default {
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
-    expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
+    expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120'),
   },
   email: {
     notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),
@@ -81,15 +80,15 @@ export default {
     hmppsManageUsersApi: {
       url: get('HMPPS_MANAGE_USERS_API_URL', 'http://localhost:8081', requiredInProduction),
       timeout: {
-        response:  Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000)),
       },
     },
     prison: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response:  Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('PRISON_API_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('PRISON_API_TIMEOUT_DEADLINE', 10000)),
       },
       agent: {
         maxSockets: 100,
@@ -100,8 +99,8 @@ export default {
     location: {
       url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response:  Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000)),
       },
       agent: {
         maxSockets: 100,
@@ -112,8 +111,8 @@ export default {
     nomisMapping: {
       url: get('NOMIS_MAPPING_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response:  Number(get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000)),
       },
       agent: {
         maxSockets: 100,
@@ -124,8 +123,8 @@ export default {
     prisonerSearch: {
       url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response:  Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000)),
       },
       agent: {
         maxSockets: 100,
@@ -136,8 +135,8 @@ export default {
     tokenVerification: {
       url: get('TOKENVERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       timeout: {
-        response:  Number(get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000)),
-        deadline:  Number(get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000)),
       },
       agent: {
         maxSockets: 100,
@@ -149,8 +148,8 @@ export default {
     frontendComponents: {
       url: String(get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction)),
       timeout: {
-        response:  Number(get('COMPONENT_API_TIMEOUT_SECONDS', 2000)),
-        deadline:  Number(get('COMPONENT_API_TIMEOUT_SECONDS', 2000)),
+        response: Number(get('COMPONENT_API_TIMEOUT_SECONDS', 2000)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_SECONDS', 2000)),
       },
       agent: {
         maxSockets: 100,

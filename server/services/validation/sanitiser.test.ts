@@ -1,20 +1,32 @@
-import R from 'ramda'
-import joi from '@hapi/joi'
-import sanitisers from '../../config/forms/sanitisers'
-import sanitiser from './sanitiser'
-import evidenceForm  from '../../config/forms/evidenceForm'
-import incidentDetailsForm  from '../../config/forms/incidentDetailsForm'
-import relocationAndInjuriesForm from '../../config/forms/relocationAndInjuriesForm'
-import statementForm  from '../../config/forms/statementForm'
-import useOfForceDetailsForm  from '../../config/forms/useOfForceDetailsForm'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 
-const { trimmedString, toBoolean, toInteger, toSmallInt } = sanitisers
-const { simplifyDescription, buildSanitiser, getSanitiser } = sanitiser
-const {  complete: { schema: evidenceSchema },} = evidenceForm 
-const {  complete: { schema: incidentDetailsSchema },}= incidentDetailsForm
-const {  complete: { schema: relocationAndInjuriesSchema },} = relocationAndInjuriesForm
-const {  complete: { schema: statementSchema },} = statementForm
-const {  complete: { schema: useOfForceDetailsSchema },} = useOfForceDetailsForm
+import joi from '@hapi/joi'
+import sanitisersDefault from '../../config/forms/sanitisers'
+import sanitiserDefault from './sanitiser'
+import evidenceForm from '../../config/forms/evidenceForm'
+import incidentDetailsForm from '../../config/forms/incidentDetailsForm'
+import relocationAndInjuriesForm from '../../config/forms/relocationAndInjuriesForm'
+import statementForm from '../../config/forms/statementForm'
+import useOfForceDetailsForm from '../../config/forms/useOfForceDetailsForm'
+
+const { trimmedString, toBoolean, toInteger, toSmallInt } = sanitisersDefault
+const { simplifyDescription, buildSanitiser, getSanitiser } = sanitiserDefault
+const {
+  complete: { schema: evidenceSchema },
+} = evidenceForm
+const {
+  complete: { schema: incidentDetailsSchema },
+} = incidentDetailsForm
+const {
+  complete: { schema: relocationAndInjuriesSchema },
+} = relocationAndInjuriesForm
+const {
+  complete: { schema: statementSchema },
+} = statementForm
+const {
+  complete: { schema: useOfForceDetailsSchema },
+} = useOfForceDetailsForm
 
 describe('using meta to specify sanitisers', () => {
   it('allows a sanitiser to be attached as metadata', () => {
@@ -141,7 +153,7 @@ describe('using meta to specify sanitisers', () => {
 
   it('allows multiple sanitisers to be attached as metadata', () => {
     expect(
-      joi.string().required().meta({ sanitiser: trimmedString }).meta({ sanitiser: toInteger }).describe()
+      joi.string().required().meta({ sanitiser: trimmedString }).meta({ sanitiser: toInteger }).describe(),
     ).toEqual({
       flags: {
         presence: 'required',
@@ -220,7 +232,7 @@ describe('simplifying descriptions', () => {
               })
               .min(1)
               .max(2)
-              .required()
+              .required(),
           )
           .required(),
       })
@@ -373,13 +385,13 @@ describe('building sanitisers', () => {
                 .min(1)
                 .max(2)
                 .required()
-                .meta(addTestFieldSanitiser)
+                .meta(addTestFieldSanitiser),
             )
             .required()
             .meta(addTestItemSanitiser),
         })
         .required()
-        .meta(addTestFieldSanitiser)
+        .meta(addTestFieldSanitiser),
     )
 
     it('sanitises absent object', () => expect(sanitiser(undefined)).toBeUndefined())
@@ -400,7 +412,7 @@ describe('building sanitisers', () => {
 
     it('sanitises populated composite', () =>
       expect(
-        sanitiser({ a: 'A', b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }], ignore: [{}] })
+        sanitiser({ a: 'A', b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }], ignore: [{}] }),
       ).toEqual({
         a: 'AA',
         b: [
@@ -429,11 +441,11 @@ describe('building sanitisers', () => {
                 })
                 .min(1)
                 .max(2)
-                .required()
+                .required(),
             )
             .required(),
         })
-        .required()
+        .required(),
     )
 
     it('sanitises absent object', () => expect(sanitiser(undefined)).toBeUndefined())
@@ -451,7 +463,7 @@ describe('building sanitisers', () => {
           a: 'A',
           b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }],
           ignore: [{}],
-        })
+        }),
       ).toEqual({
         a: 'A',
         b: [{ p: 1, q: false }, { p: 2 }, { q: true }, {}],

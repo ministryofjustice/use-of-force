@@ -102,7 +102,7 @@ describe('statmentService', () => {
       statementsClient.getStatementForUser.mockReturnValue(undefined)
 
       await expect(service.getStatementForUser('BOB', 1, StatementStatus.PENDING)).rejects.toThrow(
-        new Error("Report: '1' does not exist")
+        new Error("Report: '1' does not exist"),
       )
 
       expect(statementsClient.getStatementForUser).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
@@ -141,7 +141,7 @@ describe('statmentService', () => {
         'user1',
         ReportStatus.SUBMITTED,
         ReportStatus.COMPLETE,
-        client
+        client,
       )
     })
   })
@@ -171,7 +171,7 @@ describe('statmentService', () => {
 
       const errors = await service.validateSavedStatement('user-1', 1)
       expect(errors.map(error => error.href)).toEqual(
-        expect.arrayContaining(['#lastTrainingYear', '#jobStartYear', '#statement'])
+        expect.arrayContaining(['#lastTrainingYear', '#jobStartYear', '#statement']),
       )
     })
   })

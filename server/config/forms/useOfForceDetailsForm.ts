@@ -15,13 +15,13 @@ const {
 
 const completeSchema = joi.object({
   positiveCommunication: requiredBooleanMsg('Select yes if positive communication was used').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   bodyWornCamera: requiredOneOfMsg(
     'YES',
     'NO',
-    'NOT_KNOWN'
+    'NOT_KNOWN',
   )('Select yes if any part of the incident was captured on a body-worn camera').alter(optionalForPartialValidation),
 
   bodyWornCameraNumbers: joi
@@ -41,7 +41,7 @@ const completeSchema = joi.object({
     .meta({ firstFieldName: 'bodyWornCameraNumbers[0]' }),
 
   personalProtectionTechniques: requiredBooleanMsg('Select yes if any personal protection techniques were used').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   batonDrawnAgainstPrisoner: requiredBooleanMsg('Select yes if a baton was drawn').alter(optionalForPartialValidation),
@@ -62,7 +62,7 @@ const completeSchema = joi.object({
 
   weaponsObserved: requiredOneOfMsg(
     'YES',
-    'NO'
+    'NO',
   )('Select yes if any weapons were observed').alter(optionalForPartialValidation),
 
   weaponTypes: joi
@@ -85,7 +85,7 @@ const completeSchema = joi.object({
     is: true,
     then: requiredIntegerRangeMsg(
       1,
-      2
+      2,
     )('Select how many officers were involved in the guiding hold').alter(optionalForPartialValidation),
     otherwise: joi.any().strip(),
   }),
@@ -116,9 +116,9 @@ const completeSchema = joi.object({
             'FACE_DOWN__STRAIGHT_ARM_HOLD',
             'FACE_DOWN__CONVERSION_TO_RBH',
             'FACE_DOWN__WRIST_HOLD',
-            'KNEELING'
-          )('Select which control and restraint positions were used')
-        )
+            'KNEELING',
+          )('Select which control and restraint positions were used'),
+        ),
     )
     .messages({
       'alternatives.types': 'Select which control and restraint positions were used',
@@ -141,7 +141,7 @@ const completeSchema = joi.object({
           'THROUGH_RIGID_BAR_CUFFS',
           'THUMB_LOCK',
           'UPPER_ARM_CONTROL',
-          'NONE'
+          'NONE',
         )
         .messages({ 'any.only': 'Select if any pain inducing techniques were used' }),
       joi
@@ -155,9 +155,9 @@ const completeSchema = joi.object({
             'THROUGH_RIGID_BAR_CUFFS',
             'THUMB_LOCK',
             'UPPER_ARM_CONTROL',
-            'NONE'
-          )('Select if any pain inducing techniques were used').alter(optionalForPartialValidation)
-        )
+            'NONE',
+          )('Select if any pain inducing techniques were used').alter(optionalForPartialValidation),
+        ),
     )
     .required()
     .messages({ 'any.required': 'Select if any pain inducing techniques were used' })

@@ -1,12 +1,11 @@
-import {fiveMinutesBefore} from './fiveMinutesBefore'
+import fiveMinutesBefore from './fiveMinutesBefore'
 
 let realDateNow
 
 beforeEach(() => {
   realDateNow = Date.now.bind(global.Date)
   const time = new Date('May 31, 2018 12:00:00')
-  // @ts-ignore
-  global.Date = jest.fn(() => time)
+  global.Date = jest.fn(() => time) as any
 })
 
 afterEach(() => {

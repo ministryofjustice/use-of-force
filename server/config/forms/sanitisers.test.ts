@@ -25,6 +25,6 @@ describe('removeEmptyObjects', () => {
         { a: [] },
         { a: {} },
         { a: '', b: '', c: null, d: undefined },
-      ])
+      ]),
     ).toEqual([{ a: false }, { a: 0 }, { a: 'a' }]))
 })

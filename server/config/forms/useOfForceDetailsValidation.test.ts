@@ -1,16 +1,34 @@
-// @ts-nocheck
-import useOfForceDetailsForm from'./useOfForceDetailsForm'
-import validation from'../../services/validation'
+import useOfForceDetailsForm from './useOfForceDetailsForm'
+import validation from '../../services/validation'
 
 const { complete, partial } = useOfForceDetailsForm
-const { processInput }  = validation
+const { processInput } = validation
 
 const checkFactory = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })
   return { formResponse, errors }
 }
+type validInput = {    
+  positiveCommunication: string,
+  bodyWornCamera?: string,
+  bodyWornCameraNumbers?: {cameraNum: string}[],
+  personalProtectionTechniques?: string,
+  batonDrawnAgainstPrisoner?: string,
+  batonUsed?: string,
+  pavaDrawnAgainstPrisoner?: string,
+  pavaUsed?: string,
+  weaponsObserved?: string,
+  guidingHold?: string,
+  guidingHoldOfficersInvolved?: string,
+  escortingHold?: string,
+  restraintPositions?: string[],
+  handcuffsApplied?: string,
+  painInducingTechniques?: string,
+  painInducingTechniquesUsed?: string[],
+  weaponTypes?: { weaponType: string }[],
+}
 
-let validInput = {}
+  let validInput = {} as validInput
 
 beforeEach(() => {
   validInput = {
@@ -170,7 +188,7 @@ describe('complete schema', () => {
     it('Should trim empty-string body-worn camera identifiers', () => {
       validInput.bodyWornCamera = 'YES'
       validInput.bodyWornCameraNumbers = [
-        { cameraNum: '    AAA  ', age: '29' },
+        { cameraNum: '    AAA  ' },
         { cameraNum: '' },
         { cameraNum: 'BBB' },
       ]
@@ -373,7 +391,7 @@ describe('complete schema', () => {
 
     it('Should trim empty-string weapons observed identifiers', () => {
       validInput.weaponsObserved = 'YES'
-      validInput.weaponTypes = [{ weaponType: '    gun ', age: 'knife' }, { weaponType: '' }, { weaponType: 'GUN' }]
+      validInput.weaponTypes = [{ weaponType: '    gun ' }, { weaponType: '' }, { weaponType: 'GUN' }]
 
       const { errors, formResponse } = check(validInput)
 

@@ -1,9 +1,10 @@
-const { NotifyClient } = require('notifications-node-client')
-const moment = require('moment')
 import config from '../config'
 import { stringToHash } from '../utils/hash'
 
+import  notifyNodeClient from 'notifications-node-client'
+import moment from 'moment'
 
+const { NotifyClient } = notifyNodeClient
 const {
   links: { emailUrl },
   email: {
@@ -13,7 +14,7 @@ const {
   },
 } = config
 
-const logger = require('../../log')
+import logger from '../../log'
 
 const createNotificationService = (emailClient, eventPublisher) => {
   const asDate = date => moment(date).format('dddd D MMMM')
@@ -28,7 +29,7 @@ const createNotificationService = (emailClient, eventPublisher) => {
   const sendReporterStatementReminder = async (
     emailAddress,
     { reporterName, incidentDate, overdueDate, submittedDate },
-    context
+    context,
   ) =>
     emailClient
       .sendEmail(reporter.REMINDER, emailAddress, {
@@ -49,20 +50,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendReporterStatementReminderSuccess',
           properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementReminderFailure',
           properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   const sendInvolvedStaffRemovedFromReport = async (
     emailAddress,
     { involvedName, incidentDate, submittedDate },
-    context
+    context,
   ) =>
     emailClient
       .sendEmail(involvedStaff.REMOVED, emailAddress, {
@@ -77,20 +78,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendInvolvedStaffRemovedFromReportSuccess',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffRemovedFromReportFailure',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   const sendInvolvedStaffStatementReminder = async (
     emailAddress,
     { involvedName, incidentDate, submittedDate, overdueDate },
-    context
+    context,
   ) =>
     emailClient
       .sendEmail(involvedStaff.REMINDER, emailAddress, {
@@ -112,14 +113,14 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendInvolvedStaffStatementReminderSuccess',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementReminderFailure',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   const sendReporterStatementOverdue = async (emailAddress, { reporterName, incidentDate, submittedDate }, context) =>
@@ -140,20 +141,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendReporterStatementOverdueSuccess',
           properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendReporterStatementOverdueFailure',
           properties: { reporterName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   const sendInvolvedStaffStatementOverdue = async (
     emailAddress,
     { involvedName, incidentDate, submittedDate },
-    context
+    context,
   ) =>
     emailClient
       .sendEmail(involvedStaff.OVERDUE, emailAddress, {
@@ -173,20 +174,20 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendInvolvedStaffStatementOverdueSuccess',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendInvolvedStaffStatementOverdueFailure',
           properties: { involvedName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   const sendStatementRequest = async (
     emailAddress,
     { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
-    context
+    context,
   ) =>
     emailClient
       .sendEmail(involvedStaff.REQUEST, emailAddress, {
@@ -209,14 +210,14 @@ const createNotificationService = (emailClient, eventPublisher) => {
           name: 'SendStatementRequestSuccess',
           properties: { reporterName, involvedName, incidentDate, submittedDate, ...context },
           detail: body,
-        })
+        }),
       )
       .catch(({ message }) =>
         eventPublisher.publish({
           name: 'SendStatementRequestFailure',
           properties: { reporterName, involvedName, incidentDate, submittedDate, ...context },
           detail: message,
-        })
+        }),
       )
 
   return {

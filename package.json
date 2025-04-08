@@ -33,11 +33,8 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.(ts|tsx|js|jsx)$": [
-        "ts-jest",
-        {
-          "isolatedModules": true
-        }
+      "^.+\\.tsx?$": [
+        "ts-jest"
       ]
     },
     "collectCoverageFrom": [
@@ -133,7 +130,7 @@
     "pg": "^8.13.3",
     "pg-format": "^1.0.4",
     "querystring": "^0.2.1",
-    "ramda": "^0.29.0",
+    "ramda": "^0.30.1",
     "redis": "^4.6.13",
     "superagent": "^10.2.0",
     "uuid": "^9.0.0"
@@ -151,8 +148,7 @@
     "@types/node": "^18.16.12",
     "@types/nunjucks": "^3.2.2",
     "@types/pg": "^8.11.11",
-    "@types/ramda": "^0.30.2",
-    "@types/superagent": "^4.1.17",
+    "@types/superagent": "^8.1.9",
     "@types/supertest": "^6.0.2",
     "audit-ci": "^6.6.1",
     "concurrently": "^7.6.0",
@@ -166,8 +162,8 @@
     "glob": "^10.4.1",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
-    "jest-html-reporter": "^3.10.2",
-    "jest-junit": "^15.0.0",
+    "jest-html-reporter": "^4.1.0",
+    "jest-junit": "^16.0.0",
     "jsonwebtoken": "^9.0.0",
     "lint-staged": "^15.4.3",
     "mocha": "^10.4.0",
@@ -176,26 +172,15 @@
     "nodemon": "^3.1.9",
     "prettier": "^2.8.8",
     "supertest": "^6.3.3",
-    "ts-jest": "^29.2.6",
+    "ts-jest": "^29.3.0",
     "typescript": "^5.8.2"
   },
   "overrides": {
     "@jgoz/esbuild-plugin-typecheck": {
       "esbuild": "$esbuild"
     },
-    "jest-html-reporter": {
-      "@babel/traverse": "7.23.2"
-    },
     "notifications-node-client": {
       "axios": "1.7.4"
-    },
-    "superagent": {
-      "formidable": "3.5.1"
-    },
-    "jest": {
-      "jest-core": {
-        "micromatch": "4.0.8"
-      }
     }
   }
 }

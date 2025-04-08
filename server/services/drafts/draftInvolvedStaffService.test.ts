@@ -14,7 +14,7 @@ const userService = new UserService(null, null) as jest.Mocked<UserService>
 let service: DraftInvolvedStaffService
 
 const aUser = (username: string, activeCaseLoadId: string, staffId: number) =>
-  ({ username, activeCaseLoadId, staffId, exists: true } as FoundUserResult)
+  ({ username, activeCaseLoadId, staffId, exists: true }) as FoundUserResult
 
 beforeEach(() => {
   const prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)

@@ -14,7 +14,7 @@ const {
 
 const completeSchema = joi.object({
   baggedEvidence: requiredBooleanMsg('Select yes if any evidence was bagged and tagged').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   evidenceTagAndDescription: joi
@@ -39,7 +39,7 @@ const completeSchema = joi.object({
   cctvRecording: requiredOneOfMsg(
     'YES',
     'NO',
-    'NOT_KNOWN'
+    'NOT_KNOWN',
   )('Select yes if any part of the incident captured on CCTV').alter(optionalForPartialValidation),
 })
 

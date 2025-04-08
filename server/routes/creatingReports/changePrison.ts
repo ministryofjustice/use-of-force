@@ -7,7 +7,7 @@ export default class ChangePrisonRoutes {
   constructor(
     private readonly locationService: LocationService,
     private readonly draftReportService: DraftReportService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   public viewPrisons: RequestHandler = async (req: Request, res: Response): Promise<void> => {
@@ -49,7 +49,7 @@ export default class ChangePrisonRoutes {
           authorisedBy: userInput[0]?.authorisedBy,
           witnesses: userInput[0]?.witnesses,
         },
-        null
+        null,
       )
 
       await this.draftReportService.updateAgencyId(agencyId, username, Number(bookingId))

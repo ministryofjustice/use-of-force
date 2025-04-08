@@ -1,5 +1,7 @@
-const joi = require('@hapi/joi')
+/* eslint-disable @typescript-eslint/no-require-imports */
 import validation from '../../services/validation'
+
+const joi = require('@hapi/joi')
 
 const schema = joi.object({
   reasons: joi.array().items(joi.string()).min(1).required(),

@@ -50,7 +50,7 @@ describe('properCaseFullName', () => {
   })
   it('Hyphenated', () => {
     expect(properCaseFullName('JAMES robert MONTGOMERY-FOSTER-SMYTH-WALLACE-BOB')).toEqual(
-      'James Robert Montgomery-Foster-Smyth-Wallace-Bob'
+      'James Robert Montgomery-Foster-Smyth-Wallace-Bob',
     )
   })
 })

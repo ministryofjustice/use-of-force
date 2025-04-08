@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const R = require('ramda')
 import { isNilOrEmpty } from '../../utils/utils'
 
@@ -29,7 +30,7 @@ const buildWithReduceFn = reduceFn => input => {
  * 'payloadFields' and 'extractedFields' according to whether the schema metadata for that field has
  * a'fieldType' property matching the parameter above.
  */
-export const buildFieldTypeSplitter = (description, fieldType) => {
+const buildFieldTypeSplitter = (description, fieldType) => {
   if (description.type !== 'object') {
     throw Error('Expected an object schema')
   }
@@ -38,3 +39,5 @@ export const buildFieldTypeSplitter = (description, fieldType) => {
   const rfn = buildReduceFn(k)
   return buildWithReduceFn(rfn)
 }
+
+export default buildFieldTypeSplitter

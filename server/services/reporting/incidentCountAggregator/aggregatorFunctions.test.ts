@@ -25,7 +25,7 @@ describe('Aggregator Functions', () => {
           A: { codes: ['X'] },
           B: { codes: ['Y'] },
           C: { codes: ['Z'] },
-        })
+        }),
       ).toEqual({
         X: 'A',
         Y: 'B',
@@ -39,7 +39,7 @@ describe('Aggregator Functions', () => {
           A: { codes: ['X', 'Y'] },
           B: { codes: ['P'] },
           C: { codes: ['L', 'M', 'N'] },
-        })
+        }),
       ).toEqual({
         L: 'C',
         M: 'C',
@@ -98,7 +98,7 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O1', religionCode: 'X' },
           { offenderNo: 'O2', religionCode: 'X' },
           { offenderNo: 'O3', religionCode: 'X' },
-        ] as PrisonerDetail[])
+        ] as PrisonerDetail[]),
       ).toEqual({ A: 6 })
     })
 
@@ -125,7 +125,7 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O1', religionCode: 'X' },
           { offenderNo: 'O2', religionCode: 'P' },
           { offenderNo: 'O3', religionCode: 'L' },
-        ] as PrisonerDetail[])
+        ] as PrisonerDetail[]),
       ).toEqual({ ...DEFAULT_COUNTS, A: 1, B: 2, C: 3 })
     })
 
@@ -141,7 +141,7 @@ describe('Aggregator Functions', () => {
           { offenderNo: 'O6', religionCode: 'M' },
           { offenderNo: 'O7', religionCode: '-' },
           { offenderNo: 'O8', religionCode: null },
-        ] as PrisonerDetail[])
+        ] as PrisonerDetail[]),
       ).toEqual({ A: 11, B: 22, C: 33, [DEFAULT_GROUP_NAME]: 90 })
     })
   })

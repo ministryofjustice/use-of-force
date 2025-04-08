@@ -45,7 +45,7 @@ describe('roleCheck', () => {
       const res = createRes({})
 
       expect(() => roleCheck.reviewerOrCoordinatorOnly(req, res, next)).toThrow(
-        Error('Not authorised to access this resource')
+        Error('Not authorised to access this resource'),
       )
     })
 
@@ -69,7 +69,7 @@ describe('roleCheck', () => {
       const res = createRes({ isAdmin: true })
 
       expect(() => roleCheck.reviewerOrCoordinatorOnly(req, res, next)).toThrow(
-        Error('Not authorised to access this resource')
+        Error('Not authorised to access this resource'),
       )
     })
   })

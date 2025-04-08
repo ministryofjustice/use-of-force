@@ -1,11 +1,13 @@
-/* eslint-disable prefer-promise-reject-errors */
-const superagent = require('superagent')
+/* eslint-disable @typescript-eslint/no-require-imports */
+import * as db from './dataAccess/db'
+
+import logger from '../../log'
+import config from '../config'
+
+import superagent from 'superagent'
 /** @type {any} */
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
-import * as db from './dataAccess/db'
-import logger from '../../log'
-import config from '../config'
 
 function dbCheck() {
   return db.query('SELECT 1 AS ok')

@@ -7,7 +7,7 @@ import config from '../config'
 export default class LocationService {
   constructor(
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly locationClientBuilder: RestClientBuilder<LocationClient>
+    private readonly locationClientBuilder: RestClientBuilder<LocationClient>,
   ) {}
 
   mapLocationApiResponse(location) {
@@ -53,10 +53,10 @@ export default class LocationService {
       }))
 
       const prisonersCell = formattedIncidentLocations.find(
-        location => location.userDescription.toUpperCase() === "PRISONER'S CELL"
+        location => location.userDescription.toUpperCase() === "PRISONER'S CELL",
       )
       const otherCell = formattedIncidentLocations.find(
-        location => location.userDescription.toUpperCase() === 'OTHER CELL'
+        location => location.userDescription.toUpperCase() === 'OTHER CELL',
       )
       const inCell = formattedIncidentLocations.find(location => location.userDescription.toUpperCase() === 'IN CELL')
 
@@ -65,7 +65,7 @@ export default class LocationService {
           location =>
             location.userDescription.toUpperCase() !== 'OTHER CELL' &&
             location.userDescription.toUpperCase() !== "PRISONER'S CELL" &&
-            location.userDescription.toUpperCase() !== 'IN CELL'
+            location.userDescription.toUpperCase() !== 'IN CELL',
         )
         .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
       if (config.featureFlagRemoveCellLocationAgencies.includes(agencyId)) {

@@ -17,8 +17,8 @@ describe('Religious Grouping', () => {
             { offenderNo: 'X', religionCode: 'AGNO' },
             { offenderNo: 'Y', religionCode: 'ATHE' },
             { offenderNo: 'Z', religionCode: 'NIL' },
-          ] as PrisonerDetail[]
-        )
+          ] as PrisonerDetail[],
+        ),
       ).toEqual({
         BUDDHIST: 0,
         CHRISTIAN: 0,
@@ -46,8 +46,8 @@ describe('Religious Grouping', () => {
             { offenderNo: 'X', religionCode: 'XXXXXXX' },
             { offenderNo: 'Y', religionCode: 'NONP' },
             { offenderNo: 'Z', religionCode: 'OTH' },
-          ] as PrisonerDetail[]
-        )
+          ] as PrisonerDetail[],
+        ),
       ).toEqual({
         BUDDHIST: 0,
         CHRISTIAN: 0,
@@ -228,8 +228,8 @@ describe('Religious Grouping', () => {
             { offenderNo: 'J02', religionCode: 'OTH' },
             { offenderNo: 'J03' },
             { offenderNo: 'J04', religionCode: 'XXX' },
-          ] as PrisonerDetail[]
-        )
+          ] as PrisonerDetail[],
+        ),
       ).toEqual({
         BUDDHIST: 1,
         CHRISTIAN: 38,

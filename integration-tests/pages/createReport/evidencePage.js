@@ -8,12 +8,12 @@ const evidencePage = () =>
       cy.get('[name="baggedEvidence"]').check('true')
       cy.get('[name="evidenceTagAndDescription[0][evidenceTagReference]"]').type('Bagged evidence 1')
       cy.get('[name="evidenceTagAndDescription[0][description]"]').type(
-        'This evidence was collected from the prisoner 1'
+        'This evidence was collected from the prisoner 1',
       )
       cy.get('[data-qa-add-another-tag = true]').click()
       cy.get('[name="evidenceTagAndDescription[1][evidenceTagReference]"]').type('Bagged evidence 2')
       cy.get('[name="evidenceTagAndDescription[1][description]"]').type(
-        'This evidence was collected from the prisoner 2'
+        'This evidence was collected from the prisoner 2',
       )
       cy.get('[data-qa-add-another-tag = true]').click()
       cy.get('[name="evidenceTagAndDescription[2][evidenceTagReference]"]').type('Bagged evidence 3')

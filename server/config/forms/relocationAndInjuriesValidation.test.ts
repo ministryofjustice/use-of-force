@@ -1,6 +1,6 @@
-import joi from'@hapi/joi'
-import relocationAndInjuriesForm from'./relocationAndInjuriesForm'
-import validation from'../../services/validation'
+import joi from '@hapi/joi'
+import relocationAndInjuriesForm from './relocationAndInjuriesForm'
+import validation from '../../services/validation'
 
 const { complete, partial, f213CompletedBy } = relocationAndInjuriesForm
 const { processInput, isValid, validate, buildValidationSpec } = validation
@@ -490,8 +490,8 @@ describe("'complete' schema", () => {
         extract(
           validate(buildValidationSpec(joi.object({ f213CompletedBy })), {
             f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ',
-          })
-        )
+          }),
+        ),
       ).toEqual([])
     })
 

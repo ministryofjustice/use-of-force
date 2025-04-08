@@ -1,5 +1,5 @@
-// @ts-nocheck
-import R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 import moment, { Moment } from 'moment'
 
 export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)

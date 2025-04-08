@@ -1,6 +1,6 @@
 import { validate } from './fieldValidation'
 
-export const processInput = ({ validationSpec, input }) => {
+const processInput = ({ validationSpec, input }) => {
   const sanitisedInput = validationSpec.sanitiser(input)
   const validationResult = validate(validationSpec, sanitisedInput)
   const errors = validationResult.error ? validationResult.error.details : []
@@ -8,3 +8,4 @@ export const processInput = ({ validationSpec, input }) => {
   return { payloadFields, extractedFields, errors }
 }
 
+export default processInput

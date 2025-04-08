@@ -68,7 +68,7 @@ context('A use of force coordinator can add involved staff', () => {
       .then(result =>
         expect(result).to.deep.equal([
           { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
     viewStatementsPage.reportLink().click()
 
@@ -95,7 +95,7 @@ context('A use of force coordinator can add involved staff', () => {
         expect(result).to.deep.equal([
           { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
           { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
 
     cy.task('getReportCount', [ReportStatus.COMPLETE.value]).then(count => expect(count).to.equal(0))
@@ -162,7 +162,7 @@ context('A use of force coordinator can add involved staff', () => {
     addInvolvedStaffPage.saveAndContinue().click()
 
     const warningPage = AddInvolvedStaffResultPage.verifyOnPage(
-      'UNVERIFIED_USER name has not verified their email address'
+      'UNVERIFIED_USER name has not verified their email address',
     )
     warningPage.continue().click()
 
@@ -190,7 +190,7 @@ context('A use of force coordinator can add involved staff', () => {
       .then(result =>
         expect(result).to.deep.equal([
           { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
 
     viewStatementsPage.reportLink().click()

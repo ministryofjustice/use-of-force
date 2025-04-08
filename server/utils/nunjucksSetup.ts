@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
@@ -11,6 +12,8 @@ import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
 import { SectionStatus } from '../services/drafts/reportStatusChecker'
 import { initialiseName } from './utils'
+import log from '../../log'
+
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -22,7 +25,7 @@ type Error = {
   text: string
 }
 
-export default function configureNunjucks(app: express.Express): void{
+export default function configureNunjucks(app: express.Express): void {
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
@@ -39,7 +42,7 @@ export default function configureNunjucks(app: express.Express): void{
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
@@ -192,13 +195,14 @@ export default function configureNunjucks(app: express.Express): void{
   })
 
   njkEnv.addFilter('initialiseName', initialiseName)
-  
+
   let assetManifest: Record<string, string> = {}
   try {
     const assetMetadataPath = path.resolve(__dirname, '../../assets/manifest.json')
     assetManifest = JSON.parse(fs.readFileSync(assetMetadataPath, 'utf8'))
   } catch (e) {
     if (process.env.NODE_ENV !== 'test') {
+      log.error(e, 'Could not read asset manifest file')
     }
   }
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const R = require('ramda')
 
 // array -> string
@@ -31,7 +32,7 @@ const detailAdapterBuilder = firstFieldNameMap => {
 export const extractFirstFieldNameMap = R.pipe(
   R.propOr({}, 'keys'),
   R.map(R.pipe(R.prop('metas'), R.mergeAll, R.prop('firstFieldName'))),
-  R.reject(R.isNil)
+  R.reject(R.isNil),
 )
 
 /**

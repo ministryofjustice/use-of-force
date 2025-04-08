@@ -32,7 +32,7 @@ beforeEach(() => {
     statementsClient,
     userService,
     db.inTransaction,
-    notificationService
+    notificationService,
   )
 
   statementsClient.getInvolvedStaffToRemove.mockResolvedValue({
@@ -106,7 +106,7 @@ describe('update', () => {
         'SYSTEM',
         ReportStatus.COMPLETE,
         ReportStatus.SUBMITTED,
-        client
+        client,
       )
     })
 
@@ -200,7 +200,7 @@ describe('update', () => {
           involvedName: 'Some User',
           submittedDate: moment('2021-05-01 10:00:00').toDate(),
         },
-        { reportId: 1, statementId: 2 }
+        { reportId: 1, statementId: 2 },
       )
 
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
@@ -224,7 +224,7 @@ describe('update', () => {
           involvedName: 'Some User',
           submittedDate: moment('2021-05-01 10:00:00').toDate(),
         },
-        { reportId: 1, statementId: 2 }
+        { reportId: 1, statementId: 2 },
       )
 
       expect(incidentClient.changeStatus).toHaveBeenCalledWith(
@@ -232,7 +232,7 @@ describe('update', () => {
         'SYSTEM',
         ReportStatus.SUBMITTED,
         ReportStatus.COMPLETE,
-        client
+        client,
       )
     })
 
@@ -253,7 +253,7 @@ describe('update', () => {
           involvedName: 'Some User',
           submittedDate: moment('2021-05-01 10:00:00').toDate(),
         },
-        { reportId: 1, statementId: 2 }
+        { reportId: 1, statementId: 2 },
       )
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })

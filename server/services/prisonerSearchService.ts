@@ -22,7 +22,7 @@ export default class PrisonerSearchService {
   constructor(
     private readonly prisonerSearchClientBuilder: RestClientBuilder<PrisonerSearchClient>,
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {

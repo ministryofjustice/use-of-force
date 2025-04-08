@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { RestClient } from './restClient'
 
 export interface Component {
@@ -14,7 +13,7 @@ export default class FeComponentsClient {
 
   async getComponents<T extends AvailableComponent[]>(
     components: T,
-    token: string
+    token: string,
   ): Promise<Record<T[number], Component>> {
     return this.restClient.get({
       path: `/components`,

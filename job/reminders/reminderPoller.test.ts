@@ -69,12 +69,12 @@ describe('poll for reminders', () => {
     expect(incidentClient.setNextReminderDate).toHaveBeenCalledWith(
       1,
       moment('2019-01-11T10:30:43.122Z').toDate(),
-      client
+      client,
     )
     expect(incidentClient.setNextReminderDate).toHaveBeenCalledWith(
       2,
       moment('2019-01-11T10:32:43.122Z').toDate(),
-      client
+      client,
     )
   })
 
