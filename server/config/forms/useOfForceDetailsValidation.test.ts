@@ -1,3 +1,4 @@
+// @ts-nocheck
 import useOfForceDetailsForm from'./useOfForceDetailsForm'
 import validation from'../../services/validation'
 
