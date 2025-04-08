@@ -8,7 +8,7 @@ export default class AdminRoutes {
     private readonly reportService: ReportService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   viewEditReport: RequestHandler = async (req, res) =>
@@ -22,7 +22,7 @@ export default class AdminRoutes {
 
     const offenderDetail = await this.offenderService.getOffenderDetails(
       await this.systemToken(res.locals.user.username),
-      bookingId
+      bookingId,
     )
 
     return res.render('pages/admin/edit-form.njk', {

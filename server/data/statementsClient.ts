@@ -150,7 +150,7 @@ export default class StatementsClient {
   async saveAdditionalComment(
     statementId: number,
     additionalComment: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `insert into v_statement_amendments (statement_id, additional_comment)
@@ -163,7 +163,7 @@ export default class StatementsClient {
     userId: string,
     reportId: number,
     { lastTrainingMonth, lastTrainingYear, jobStartYear, statement }: StatementUpdate,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `update v_statement 
@@ -205,7 +205,7 @@ export default class StatementsClient {
     userId: string,
     reportId: number,
     emailAddress: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `update v_statement 
@@ -230,7 +230,7 @@ export default class StatementsClient {
     firstReminder: Date,
     overdueDate: Date,
     staff: DraftInvolvedStaff[],
-    query = this.query
+    query = this.query,
   ): Promise<UsernameToStatementIds> {
     const rows = staff.map(s => [
       reportId,
@@ -245,12 +245,12 @@ export default class StatementsClient {
     const results = await query<StatementCreationResult>({
       text: format(
         'insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
-        rows
+        rows,
       ),
     })
     return results.rows.reduce<UsernameToStatementIds>(
       (result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }),
-      {}
+      {},
     )
   }
 
@@ -268,7 +268,7 @@ export default class StatementsClient {
   async isStatementPresentForUser(
     reportId: number,
     username: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<boolean> {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,

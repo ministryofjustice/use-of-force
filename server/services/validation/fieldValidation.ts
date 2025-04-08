@@ -1,5 +1,6 @@
-const moment = require('moment')
 import { isNilOrEmpty } from '../../utils/utils'
+
+import moment from 'moment'
 
 const contextFactory = () => ({
   year: moment().year(),
@@ -15,14 +16,14 @@ const validatorConfig = stripUnknown => ({
 })
 
 export const validate = ({ errorDetailAdapter, schema }, input) => {
-    const validationResult = schema.validate(input, validatorConfig(true))
-    if (validationResult.error) {
-      validationResult.error.details = validationResult.error.details.map(errorDetailAdapter)
-    }
-    return validationResult
+  const validationResult = schema.validate(input, validatorConfig(true))
+  if (validationResult.error) {
+    validationResult.error.details = validationResult.error.details.map(errorDetailAdapter)
   }
+  return validationResult
+}
 
-  export const isValid = (schema, value, stripUnknown = false) => {
-    const joiErrors = schema.validate(value, { stripUnknown, abortEarly: false })
-    return isNilOrEmpty(joiErrors.error)
-  }
+export const isValid = (schema, value, stripUnknown = false) => {
+  const joiErrors = schema.validate(value, { stripUnknown, abortEarly: false })
+  return isNilOrEmpty(joiErrors.error)
+}

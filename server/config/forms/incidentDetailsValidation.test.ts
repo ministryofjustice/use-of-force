@@ -1,8 +1,8 @@
-import  moment from 'moment'
+import moment from 'moment'
 import incidentDetailsForm from './incidentDetailsForm'
 import validation from '../../services/validation'
 
-const { complete, partial } = incidentDetailsForm 
+const { complete, partial } = incidentDetailsForm
 const { processInput } = validation
 
 const buildCheck = schema => input => {

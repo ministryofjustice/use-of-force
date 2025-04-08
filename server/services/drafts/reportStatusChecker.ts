@@ -19,7 +19,7 @@ const getStatus = (validationSpec, sectionValues) => {
 export const check = (report: UseOfForceDraftReport): { complete: boolean } => {
   const result = Object.keys(full).reduce(
     (previous, key) => ({ ...previous, [key]: getStatus(full[key], report[key]) }),
-    {}
+    {},
   )
 
   const complete = !Object.values(result).some(value => value !== SectionStatus.COMPLETE)

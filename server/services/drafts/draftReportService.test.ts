@@ -23,7 +23,7 @@ const submitDraftReportService = new SubmitDraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<SubmitDraftReportService>
 const updateDraftReportService = new UpdateDraftReportService(
   null,
@@ -31,18 +31,18 @@ const updateDraftReportService = new UpdateDraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<UpdateDraftReportService>
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftInvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
-const aUser = username => ({ username } as FoundUserResult)
+const aUser = username => ({ username }) as FoundUserResult
 const isReportCompleteMock = isReportComplete as jest.Mock
 
 let service: DraftReportService
@@ -55,7 +55,7 @@ beforeEach(() => {
     submitDraftReportService,
     userService,
     locationService,
-    async username => `${username}-system-token`
+    async username => `${username}-system-token`,
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
 })
@@ -145,7 +145,7 @@ describe('getInvolvedStaff', () => {
       userService.findUsers.mockResolvedValue([])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.MISSING
+        AddStaffResult.MISSING,
       )
 
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
@@ -157,7 +157,7 @@ describe('getInvolvedStaff', () => {
       userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.NO_EXACT_MATCH
+        AddStaffResult.NO_EXACT_MATCH,
       )
 
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
@@ -170,7 +170,7 @@ describe('getInvolvedStaff', () => {
       userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.SUCCESS
+        AddStaffResult.SUCCESS,
       )
 
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
@@ -182,7 +182,7 @@ describe('getInvolvedStaff', () => {
       userService.findUsers.mockResolvedValue([aUser('user-2'), aUser('user-3')])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.ALREADY_EXISTS
+        AddStaffResult.ALREADY_EXISTS,
       )
 
       expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
@@ -194,7 +194,7 @@ describe('getInvolvedStaff', () => {
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.ALREADY_EXISTS
+        AddStaffResult.ALREADY_EXISTS,
       )
     })
 
@@ -204,7 +204,7 @@ describe('getInvolvedStaff', () => {
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([aUser('user-1')])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.ALREADY_EXISTS
+        AddStaffResult.ALREADY_EXISTS,
       )
     })
 
@@ -215,7 +215,7 @@ describe('getInvolvedStaff', () => {
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.SUCCESS
+        AddStaffResult.SUCCESS,
       )
 
       await expect(updateDraftReportService.process).toBeCalledWith(
@@ -223,7 +223,7 @@ describe('getInvolvedStaff', () => {
         2,
         'involvedStaff',
         [{ username: 'user-2' }],
-        undefined
+        undefined,
       )
     })
 
@@ -232,7 +232,7 @@ describe('getInvolvedStaff', () => {
       draftInvolvedStaffService.getInvolvedStaff.mockResolvedValue([{ username: 'user-3' }])
 
       await expect(service.addDraftStaffByName(loggedInUser, 2, 'bob', 'smith')).resolves.toStrictEqual(
-        AddStaffResult.SUCCESS
+        AddStaffResult.SUCCESS,
       )
 
       await expect(updateDraftReportService.process).toBeCalledWith(
@@ -240,7 +240,7 @@ describe('getInvolvedStaff', () => {
         2,
         'involvedStaff',
         [{ username: 'user-3' }, { username: 'user-2' }],
-        undefined
+        undefined,
       )
     })
   })
@@ -267,7 +267,7 @@ describe('deleteInvolvedStaff', () => {
       2,
       'involvedStaff',
       [{ username: 'user-3' }],
-      undefined
+      undefined,
     )
     expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('user-1-system-token', 'user-1', 2)
   })
@@ -282,7 +282,7 @@ describe('deleteInvolvedStaff', () => {
       2,
       'involvedStaff',
       [{ username: 'user-2' }, { username: 'user-3' }],
-      undefined
+      undefined,
     )
     expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('user-1-system-token', 'user-1', 2)
   })

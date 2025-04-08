@@ -45,7 +45,7 @@ describe('GET /your-report', () => {
 describe('GET /your-reports', () => {
   it('should render page', () => {
     reportService.getReports.mockResolvedValue(
-      new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 0 }, [])
+      new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 0 }, []),
     )
     return request(app)
       .get('/your-reports')

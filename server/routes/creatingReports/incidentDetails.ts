@@ -1,10 +1,8 @@
-// @ts-nocheck
 import moment from 'moment'
 import { Request, Response } from 'express'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
 import validation from '../../services/validation'
-import { processInput } from '../../services/validation'
 import { nextPaths, full, partial } from '../../config/incident'
 import type OffenderService from '../../services/offenderService'
 import type LocationService from '../../services/locationService'
@@ -26,7 +24,7 @@ export default class IncidentDetailsRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
   ) {}
 
   private loadForm = async req => {
@@ -143,7 +141,7 @@ export default class IncidentDetailsRoutes {
       parseInt(bookingId, 10),
       formName,
       updatedSection,
-      incidentDate?.value || null
+      incidentDate?.value || null,
     )
 
     if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
@@ -153,7 +151,7 @@ export default class IncidentDetailsRoutes {
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),
-        token
+        token,
       )
 
       if (duplicates.length) {

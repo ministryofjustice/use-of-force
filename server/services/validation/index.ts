@@ -1,7 +1,7 @@
-import { isValid, validate } from'./fieldValidation'
-import { processInput } from './formProcessing'
+import { isValid, validate } from './fieldValidation'
+import processInput from './formProcessing'
 import sanitiser from './sanitiser'
-import { buildFieldTypeSplitter } from './fieldTypeSplitter'
+import buildFieldTypeSplitter from './fieldTypeSplitter'
 import { buildErrorDetailAdapter } from './errorDetailAdapter'
 import { EXTRACTED } from '../../config/fieldType'
 

@@ -23,7 +23,7 @@ export default class CoordinatorRoutes {
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
     private readonly userService: UserService,
-    private readonly statementService: StatementService
+    private readonly statementService: StatementService,
   ) {}
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
@@ -72,7 +72,7 @@ export default class CoordinatorRoutes {
     const { reportId, statementId } = req.params
     const staffMember = await this.involvedStaffService.loadInvolvedStaff(
       parseInt(reportId, 10),
-      parseInt(statementId, 10)
+      parseInt(statementId, 10),
     )
 
     const data = { name: staffMember.name, email: staffMember.email, reportId }
@@ -103,7 +103,7 @@ export default class CoordinatorRoutes {
     const result = await this.involvedStaffService.addInvolvedStaff(
       await this.systemToken(res.locals.user.username),
       reportId,
-      username
+      username,
     )
 
     req.flash('username', username.toUpperCase())
@@ -141,7 +141,7 @@ export default class CoordinatorRoutes {
     const { bookingId, reporterName, submittedDate } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(
       await this.systemToken(res.locals.user.username),
-      bookingId
+      bookingId,
     )
     const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 

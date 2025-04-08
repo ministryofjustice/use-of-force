@@ -6,7 +6,7 @@ export default function ReportUseOfForceRoutes({ draftReportService, offenderSer
       const status = draftReportService.getReportStatus(form)
       const { displayName, offenderNo, dateOfBirth } = await offenderService.getOffenderDetails(
         await systemToken(res.locals.user.username),
-        bookingId
+        bookingId,
       )
       res.render('pages/report-use-of-force', {
         data: { ...res.locals.formObject, displayName, offenderNo, dateOfBirth },

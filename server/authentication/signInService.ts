@@ -4,7 +4,7 @@ import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import log from '../../log'
 import config from '../config'
-import { fiveMinutesBefore } from '../utils/fiveMinutesBefore'
+import fiveMinutesBefore from '../utils/fiveMinutesBefore'
 
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 const timeoutSpec = {

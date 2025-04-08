@@ -98,7 +98,7 @@ describe('reportSummary', () => {
       ]
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
       expect(result.useOfForceDetails.reasonsForUseOfForce).toEqual(
-        'Assault by a member of public, Concerted indiscipline'
+        'Assault by a member of public, Concerted indiscipline',
       )
     })
   })

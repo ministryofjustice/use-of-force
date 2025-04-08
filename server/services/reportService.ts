@@ -1,4 +1,5 @@
-import R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 import { IncidentClient } from '../data'
 
 import logger from '../../log'
@@ -46,7 +47,7 @@ export default class ReportService {
     private readonly locationService: LocationService,
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   private async getOffenderNames(username, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
@@ -93,7 +94,7 @@ export default class ReportService {
   private getUpdatedReport(
     existingReport: Record<string, unknown>,
     formName: string,
-    updatedSection
+    updatedSection,
   ): Record<string, unknown> | false {
     const updatedFormObject = {
       ...existingReport,
@@ -109,7 +110,7 @@ export default class ReportService {
     reportId: number,
     formName: string,
     updatedSection: unknown,
-    incidentDate?: Date | null
+    incidentDate?: Date | null,
   ): Promise<void> {
     const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
 

@@ -1,4 +1,4 @@
-import { toInteger, toDate } from'../../utils/dateSanitiser'
+import { toInteger, toDate } from '../../utils/dateSanitiser'
 import { isNilOrEmpty } from '../../utils/utils'
 
 const isBlankObject = o => (isNilOrEmpty(o) ? true : Object.values(o).every(isNilOrEmpty))

@@ -1,7 +1,7 @@
-import { AddAnother } from "./add-another"
+import { AddAnother } from './add-another'
 
 export default () => {
-   $(document).ready(function () {
+  $(document).ready(function () {
     new AddAnother($('.add-another-witness'), '.remove-button-container')
- })
+  })
 }

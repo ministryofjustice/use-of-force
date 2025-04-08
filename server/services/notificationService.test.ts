@@ -1,5 +1,5 @@
 import notificationService from './notificationService'
-import config  from '../config'
+import config from '../config'
 
 const { createNotificationService } = notificationService
 
@@ -41,7 +41,7 @@ describe('send reporter notifications', () => {
     await service.sendReporterStatementReminder(
       'user@email.com',
       { reporterName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(reporter.REMINDER, 'user@email.com', {
@@ -93,7 +93,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffStatementReminder(
       'user@email.com',
       { involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REMINDER, 'user@email.com', {
@@ -122,7 +122,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffStatementOverdue(
       'user@email.com',
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.OVERDUE, 'user@email.com', {
@@ -149,7 +149,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffRemovedFromReport(
       'user@email.com',
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REMOVED, 'user@email.com', {
@@ -170,7 +170,7 @@ describe('send involved staff notifications', () => {
     await service.sendStatementRequest(
       'user@email.com',
       { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {
@@ -202,7 +202,7 @@ describe('send involved staff notifications', () => {
     await service.sendStatementRequest(
       'user@email.com',
       { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {

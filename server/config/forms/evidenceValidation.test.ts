@@ -1,7 +1,7 @@
 import evidenceForm from './evidenceForm'
 import validation from '../../services/validation'
 
-const { complete, partial } = evidenceForm 
+const { complete, partial } = evidenceForm
 const { processInput } = validation
 
 const buildCheck = schema => input => {

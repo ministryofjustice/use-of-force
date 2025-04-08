@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import healthcheck from '../data/healthcheck'
 
-const { dbCheck, serviceCheckFactory } = healthcheck 
+const { dbCheck, serviceCheckFactory } = healthcheck
 const db = () =>
   dbCheck()
     .then(() => ({ name: 'db', status: 'ok', message: 'OK' }))
@@ -50,7 +51,6 @@ function addAppInfo(result) {
 
 function getBuild() {
   try {
-    // @ts-ignore
     // eslint-disable-next-line import/no-unresolved,global-require
     return require('../../build-info.json')
   } catch (ex) {

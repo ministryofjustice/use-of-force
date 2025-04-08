@@ -25,12 +25,15 @@ export default function setUpStaticResources(): Router {
 
   // Don't cache dynamic resources
   router.use(noCache())
-  router.use('/favicon.ico', express.static(path.join(process.cwd(), `/assets/images/favicon.ico`), staticResourcesConfig))
-  
   router.use(
-      '/assets/images/icons',
-      express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), staticResourcesConfig)
-    )
+    '/favicon.ico',
+    express.static(path.join(process.cwd(), `/assets/images/favicon.ico`), staticResourcesConfig),
+  )
+
+  router.use(
+    '/assets/images/icons',
+    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), staticResourcesConfig),
+  )
 
   return router
 }

@@ -1,3 +1,2 @@
-  export const PAYLOAD = 'payload'
-  export const  EXTRACTED = 'extracted'
-
+export const PAYLOAD = 'payload'
+export const EXTRACTED = 'extracted'

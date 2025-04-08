@@ -15,8 +15,8 @@ describe('Ethnic Grouping', () => {
             { offenderNo: 'W', ethnicityCode: 'X' },
             { offenderNo: 'X', ethnicityCode: 'Y' },
             { offenderNo: 'Y' },
-          ] as PrisonerDetail[]
-        )
+          ] as PrisonerDetail[],
+        ),
       ).toEqual({
         WHITE: 0,
         ASIAN: 0,
@@ -85,8 +85,8 @@ describe('Ethnic Grouping', () => {
             { offenderNo: 'G01', ethnicityCode: 'NS' },
             { offenderNo: 'G02', ethnicityCode: 'X1' },
             { offenderNo: 'G03' },
-          ] as PrisonerDetail[]
-        )
+          ] as PrisonerDetail[],
+        ),
       ).toEqual({
         WHITE: 4,
         ASIAN: 5,

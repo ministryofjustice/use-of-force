@@ -8,7 +8,7 @@ import { EmailResult } from '../data/authClient'
 export default class UserService {
   constructor(
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>
+    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
   ) {}
 
   public async getSelf(token: string): Promise<User> {
@@ -33,7 +33,9 @@ export default class UserService {
   }
 
   private async getEmailSafely(client: AuthClient, username: string): Promise<EmailResult> {
-    return validations.usernamePattern.test(username) ? client.getEmail(username) : { username, exists: false, verified: false }
+    return validations.usernamePattern.test(username)
+      ? client.getEmail(username)
+      : { username, exists: false, verified: false }
   }
 
   public async getUser(token: string, username: string): Promise<FoundUserResult> {
@@ -89,7 +91,7 @@ export default class UserService {
     token: string,
     agencyId: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<UserWithPrison[]> {
     try {
       const eliteClient = this.prisonClientBuilder(token)

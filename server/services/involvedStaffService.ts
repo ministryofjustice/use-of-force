@@ -20,7 +20,7 @@ export class InvolvedStaffService {
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
     private readonly inTransaction: InTransaction,
-    private readonly notificationService
+    private readonly notificationService,
   ) {}
 
   public getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
@@ -76,7 +76,7 @@ export class InvolvedStaffService {
         null,
         moment(report.submittedDate).add(3, 'day').toDate(),
         [foundUser],
-        client
+        client,
       )
 
       if (report.status === ReportStatus.COMPLETE.value) {
@@ -87,7 +87,7 @@ export class InvolvedStaffService {
           'SYSTEM',
           ReportStatus.COMPLETE,
           ReportStatus.SUBMITTED,
-          client
+          client,
         )
       }
       return foundUser.verified ? AddStaffResult.SUCCESS : AddStaffResult.SUCCESS_UNVERIFIED
@@ -118,7 +118,7 @@ export class InvolvedStaffService {
             'SYSTEM',
             ReportStatus.SUBMITTED,
             ReportStatus.COMPLETE,
-            client
+            client,
           )
         }
       }
@@ -131,7 +131,7 @@ export class InvolvedStaffService {
     await this.notificationService.sendInvolvedStaffRemovedFromReport(
       email,
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
   }
 }

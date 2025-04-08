@@ -2,15 +2,15 @@
  * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
  * In particular, applicationinsights automatically collects bunyan logs
  */
+import knex from 'knex'
 import { initialiseAppInsights } from './server/utils/azure-appinsights'
 
-initialiseAppInsights()
-
 /** @type {any} */
-import knex from'knex'
-import knexfile from'./knexfile'
-import app from'./server/index'
-import log from'./log'
+import knexfile from './knexfile'
+import app from './server/index'
+import log from './log'
+
+initialiseAppInsights()
 
 const selectSql = message => {
   if (message.sql) {

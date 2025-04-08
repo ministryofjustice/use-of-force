@@ -12,7 +12,7 @@ export default class RemovalRequest {
   constructor(
     private readonly reportService: ReportService,
     private readonly statementService: StatementService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   private isSignatureValid = (statementId: unknown, signature: unknown): boolean =>

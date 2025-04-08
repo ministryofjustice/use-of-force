@@ -1,13 +1,13 @@
+import { validate } from '../../services/validation/fieldValidation'
+import validation from '../../services/validation'
+import validations from './validations'
+
 jest.mock('moment', () => () => ({
   year: () => 2019,
   month: () => 9,
 }))
 
-import { validate }  from '../../services/validation/fieldValidation'
-import validation from '../../services/validation'
-import validations  from './validations'
-
-const  { buildValidationSpec } = validation
+const { buildValidationSpec } = validation
 const {
   joi,
   caseInsensitiveComparator,
@@ -161,7 +161,7 @@ describe('requiredBoolean', () => {
           'string.empty': 'Please supply a string',
           'any.required': 'The {#label} is required',
         })
-        .label('Thing')
+        .label('Thing'),
     )
 
     it('uses single message for a string that is too short', () => {

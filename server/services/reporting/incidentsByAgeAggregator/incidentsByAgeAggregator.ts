@@ -1,5 +1,5 @@
-// @ts-nocheck
-import * as R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 import moment from 'moment'
 import {
   buildCsvRendererConfiguration,
@@ -18,11 +18,11 @@ import { PrisonerDetail } from '../../../data/prisonClientTypes'
  * @return a function that maps from offenderNoWithIncidentDate to an age in years. Rounded down to nearest whole year.
  */
 export const buildIncidentToOffenderAge = (
-  prisonersDetails: Array<PrisonerDetail>
+  prisonersDetails: Array<PrisonerDetail>,
 ): ((onwid: OffenderNoWithIncidentDate) => number) => {
   const prisonerDetailMap = prisonersDetails.reduce(
     (map, prisonerDetail) => map.set(prisonerDetail.offenderNo, prisonerDetail),
-    new Map<string, PrisonerDetail>()
+    new Map<string, PrisonerDetail>(),
   )
 
   return ({ offenderNo, incidentDate }) => {
@@ -65,7 +65,7 @@ export const groupAges = (ages: number[]): IncidentCountByGroup => {
 }
 export const aggregateIncidentsByAgeGroup = (
   incidents: OffenderNoWithIncidentDate[],
-  prisonersDetails: PrisonerDetail[]
+  prisonersDetails: PrisonerDetail[],
 ): IncidentCountByGroup => {
   const incidentToOffenderAgeFn = buildIncidentToOffenderAge(prisonersDetails)
   const ages = incidents.map(incidentToOffenderAgeFn)

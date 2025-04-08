@@ -2,13 +2,14 @@ import express, { Router } from 'express'
 
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import roleCheck from '../../middleware/roleCheck'
-const { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } = roleCheck
 
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'
 import AdminRoutes from './admin'
 
 import { Services } from '../../services'
+
+const { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } = roleCheck
 
 export default function Index(services: Services): Router {
   const {
@@ -44,7 +45,7 @@ export default function Index(services: Services): Router {
       offenderService,
       systemToken,
       userService,
-      statementService
+      statementService,
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -64,7 +65,7 @@ export default function Index(services: Services): Router {
 
     get(
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
-      coordinator.viewStaffMemberNotRemoved
+      coordinator.viewStaffMemberNotRemoved,
     )
   }
 

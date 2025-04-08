@@ -61,7 +61,7 @@ context('Submitting use of force details page', () => {
             },
           ],
         })
-      }
+      },
     )
   })
 
@@ -95,7 +95,7 @@ context('Submitting use of force details page', () => {
             },
           ],
         })
-      }
+      },
     )
   })
 
@@ -130,7 +130,7 @@ context('Submitting use of force details page', () => {
             },
           ],
         })
-      }
+      },
     )
   })
 
@@ -164,7 +164,7 @@ context('Submitting use of force details page', () => {
             },
           ],
         })
-      }
+      },
     )
   })
 

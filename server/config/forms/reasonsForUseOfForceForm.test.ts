@@ -1,6 +1,7 @@
 import reasonsForUseOfForceForm from './reasonsForUseOfForceForm'
 import validation from '../../services/validation'
 import { UofReasons } from '../types'
+
 const { processInput } = validation
 
 const { complete } = reasonsForUseOfForceForm

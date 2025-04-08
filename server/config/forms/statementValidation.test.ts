@@ -1,13 +1,13 @@
+import moment from 'moment'
+import statementForm from './statementForm'
+import validation from '../../services/validation'
+
 jest.mock('moment', () => () => ({
   year: () => 2019,
   month: () => 9,
 }))
 
-import moment from'moment'
-import statementForm from'./statementForm'
-import validation from'../../services/validation'
-
-const { complete } =  statementForm
+const { complete } = statementForm
 const { processInput } = validation
 const check = input => {
   const { extractedFields: formResponse, errors } = processInput({ validationSpec: complete, input })
@@ -56,7 +56,7 @@ it('no values supplied', () => {
         href: '#statement',
         text: 'Enter your statement',
       },
-    ])
+    ]),
   )
 
   expect(formResponse).toEqual({})

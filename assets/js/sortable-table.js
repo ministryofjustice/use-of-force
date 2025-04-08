@@ -1,6 +1,6 @@
 // This is adapted from https://github.com/LJWatson/sortable-tables
 
-SortableTable = function(tableId) {
+SortableTable = function (tableId) {
   const sortableTable = document.getElementById(tableId)
   if (sortableTable) {
     sortTable(sortableTable)
@@ -18,7 +18,7 @@ function sortTable(table) {
 
   let cellIndex = 0 // track numeric cell index to simplify sort logic
   const headerCells = table.getElementsByClassName('govuk-table__header')
-  ;[].forEach.call(headerCells, function(th) {
+  ;[].forEach.call(headerCells, function (th) {
     th.setAttribute('aria-sort', 'none')
     th.dataset.index = cellIndex++
     if (th.classList.contains('sortableLink')) {
@@ -27,13 +27,13 @@ function sortTable(table) {
   })
 
   const options = document.getElementsByTagName('option')
-  ;[].forEach.call(options, function(option) {
+  ;[].forEach.call(options, function (option) {
     option.addEventListener('click', sortCol)
   })
 
   // Give the span 'buttons' within the table headers focus and keyboard handling
   const buttonSpans = table.getElementsByClassName('th-content')
-  ;[].forEach.call(buttonSpans, function(span) {
+  ;[].forEach.call(buttonSpans, function (span) {
     span.setAttribute('role', 'button')
     span.setAttribute('tabindex', '0')
   })
@@ -57,17 +57,18 @@ function getColumnFromEvent(e) {
   if (e.target.tagName === 'TH') {
     return e.target
     // The clicked on the span
-  } else if (e.target.parentNode.tagName === 'TH') {
+  }
+  if (e.target.parentNode.tagName === 'TH') {
     return e.target.parentNode
     // They clicked on the icon
-  } else if (e.target.parentNode.parentNode.tagName === 'TH') {
+  }
+  if (e.target.parentNode.parentNode.tagName === 'TH') {
     return e.target.parentNode.parentNode
     // They used the dropdown
-  } else {
-    let [colIndex, sortOrderOption] = e.target.value.split('_')
-    sortOrder = sortOrderOption
-    return document.querySelector(`[data-index="${colIndex}"]`)
   }
+  const [colIndex, sortOrderOption] = e.target.value.split('_')
+  sortOrder = sortOrderOption
+  return document.querySelector(`[data-index="${colIndex}"]`)
 }
 
 function sortCol(e) {
@@ -90,7 +91,7 @@ function sortCol(e) {
   //  val: (the String value of the corresponding td)
   // }
   const items = []
-  ;[].forEach.call(rows, function(row) {
+  ;[].forEach.call(rows, function (row) {
     const content = row.getElementsByTagName('td').item(thisIndex)
     items.push({ tr: row, val: content.innerText })
   })
@@ -99,7 +100,7 @@ function sortCol(e) {
 
   // Create a new table body, appending each row in the new, sorted order
   const newTbody = document.createElement('tbody')
-  ;[].forEach.call(items, function(item) {
+  ;[].forEach.call(items, function (item) {
     newTbody.appendChild(item.tr)
   })
 
@@ -136,7 +137,7 @@ function updateIcon(th) {
   th.setAttribute('aria-sort', state)
   // update all other rows with the neutral sort icon
   const allTh = th.parentNode.getElementsByClassName('govuk-table__header')
-  ;[].forEach.call(allTh, function(thisTh, thisIndex) {
+  ;[].forEach.call(allTh, function (thisTh, thisIndex) {
     // skip our sorted column
     if (thisIndex == ourIndex) {
       return

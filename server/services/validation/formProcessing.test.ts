@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import Joi from '@hapi/joi'
-import R from 'ramda'
-import { processInput } from './formProcessing'
+const R = require('ramda')
+import processInput from './formProcessing'
 import { EXTRACTED } from '../../config/fieldType'
 import validationsDefault from '../../config/forms/validations'
 import index from './index'
@@ -70,7 +71,7 @@ describe('processInput', () => {
           q2: outSchema,
           q3: inSchema,
           q4: outSchema,
-        })
+        }),
       ),
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })

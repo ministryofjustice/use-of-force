@@ -69,7 +69,7 @@ context('A use of force coordinator can remove involved staff', () => {
       expect(result).to.deep.equal([
         { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
         { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-      ])
+      ]),
     )
 
     viewStatementsPage.reportLink().click()
@@ -106,11 +106,11 @@ context('A use of force coordinator can remove involved staff', () => {
       .then(result =>
         expect(result).to.deep.equal([
           { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
 
     cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
-      expect(count).to.equal(0)
+      expect(count).to.equal(0),
     )
   })
 
@@ -148,7 +148,7 @@ context('A use of force coordinator can remove involved staff', () => {
     reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
 
     cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
-      expect(count).to.equal(0)
+      expect(count).to.equal(0),
     )
   })
 
@@ -173,7 +173,7 @@ context('A use of force coordinator can remove involved staff', () => {
       expect(result).to.deep.equal([
         { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
         { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
-      ])
+      ]),
     )
 
     viewStatementsPage.reportLink().click()

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import logger from '../../log'
 import type { RestClient } from './restClient'
 import type { LocationInPrison } from './locationClientTypes'
@@ -12,13 +11,13 @@ export default class LocationClient {
       logger.info(`locationId ${incidentLocationId} has invalid length for UUID`)
       return undefined
     }
-      logger.info(`Location Client getting details for location: ${incidentLocationId}`)
-      return this.restClient.get({ path: `/locations/${incidentLocationId}?formatLocalName=true` })
+    logger.info(`Location Client getting details for location: ${incidentLocationId}`)
+    return this.restClient.get({ path: `/locations/${incidentLocationId}?formatLocalName=true` })
   }
 
   async getLocations(
     prisonId: string,
-    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE
+    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE,
   ): Promise<LocationInPrison[]> {
     logger.info(`Location Client getting locations for prison ${prisonId} and usageType ${usageType}`)
     return this.restClient.get({
