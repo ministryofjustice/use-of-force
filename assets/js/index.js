@@ -6,6 +6,7 @@ import addAnotherDetail from './add-another-detail'
 import addAnotherEvidence from './add-another-evidence'
 import addAnotherStaff from './add-another-staff'
 import deselectChildren from './deselect-children'
+import sortableSearchResults from './sortable-search-results'
 
 govukFrontend.initAll()
 mojFrontend.initAll()
@@ -14,4 +15,5 @@ addAnotherDetail()
 addAnotherEvidence()
 addAnotherStaff()
 deselectChildren()
+sortableSearchResults()
 main()
