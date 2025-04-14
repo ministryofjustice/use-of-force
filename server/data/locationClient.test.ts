@@ -2,7 +2,6 @@ import nock from 'nock'
 import LocationClient from './locationClient'
 import config from '../config'
 import restClientBuilder from '.'
-import { NonResidentialUsageType } from '../config/types'
 
 describe('locationClient', () => {
   let fakeLocationApi
@@ -44,6 +43,28 @@ describe('locationClient', () => {
         .reply(404)
       const result = await locationClient.getLocation('00000000-1111-2222-3333')
       expect(result).toEqual(undefined)
+    })
+
+    it('should return undefined when api returns 404', async () => {
+      fakeLocationApi
+        .get(`/locations/${locationId}?formatLocalName=true`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(404)
+
+      const result = await locationClient.getLocation(locationId)
+      await expect(result).toEqual(undefined)
+    })
+
+    it('should throw for non-404 errors', async () => {
+      fakeLocationApi
+        .get(`/locations/${locationId}?formatLocalName=true`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(400)
+
+      await expect(locationClient.getLocation(locationId)).rejects.toMatchObject({
+        status: 400,
+        message: 'Bad Request',
+      })
     })
   })
   describe('getLocations', () => {

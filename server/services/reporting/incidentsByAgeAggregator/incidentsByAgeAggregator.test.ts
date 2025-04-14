@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import moment from 'moment'
-const R = require('ramda')
 import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import type { PrisonerDetail } from '../../../data/prisonClientTypes'
+
+const R = require('ramda')
 
 describe('incidentsByAgeAggregator', () => {
   const defaultValues = {

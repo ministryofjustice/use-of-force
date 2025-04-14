@@ -1,7 +1,7 @@
 import nock from 'nock'
-import healthcheck from './healthcheck'
+import Healthcheck from './healthcheck'
 
-const { serviceCheckFactory } = healthcheck
+const { serviceCheckFactory } = Healthcheck
 describe('service healthcheck', () => {
   const healthcheck = serviceCheckFactory('externalService', 'http://test-service.com/ping')
   let fakeServiceApi

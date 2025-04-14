@@ -18,7 +18,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
@@ -177,7 +177,7 @@ describe('POST save and continue /section/form', () => {
             plannedUseOfForce: false,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -249,7 +249,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -282,7 +282,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -311,7 +311,7 @@ describe('POST save and return to tasklist', () => {
             incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -336,7 +336,7 @@ describe('POST save and return to tasklist', () => {
             incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
-          null
+          null,
         )
       })
   })
@@ -383,7 +383,7 @@ describe('POST save and return to check-your-answers', () => {
             authorisedBy: 'Eric Bloodaxe',
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value,
         )
       })
   })

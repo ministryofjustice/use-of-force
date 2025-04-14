@@ -8,27 +8,27 @@ const checkFactory = schema => input => {
   const { payloadFields: formResponse, errors } = processInput({ validationSpec: schema, input })
   return { formResponse, errors }
 }
-type validInput = {    
-  positiveCommunication: string,
-  bodyWornCamera?: string,
-  bodyWornCameraNumbers?: {cameraNum: string}[],
-  personalProtectionTechniques?: string,
-  batonDrawnAgainstPrisoner?: string,
-  batonUsed?: string,
-  pavaDrawnAgainstPrisoner?: string,
-  pavaUsed?: string,
-  weaponsObserved?: string,
-  guidingHold?: string,
-  guidingHoldOfficersInvolved?: string,
-  escortingHold?: string,
-  restraintPositions?: string[],
-  handcuffsApplied?: string,
-  painInducingTechniques?: string,
-  painInducingTechniquesUsed?: string[],
-  weaponTypes?: { weaponType: string }[],
+type validInput = {
+  positiveCommunication: string
+  bodyWornCamera?: string
+  bodyWornCameraNumbers?: { cameraNum: string }[]
+  personalProtectionTechniques?: string
+  batonDrawnAgainstPrisoner?: string
+  batonUsed?: string
+  pavaDrawnAgainstPrisoner?: string
+  pavaUsed?: string
+  weaponsObserved?: string
+  guidingHold?: string
+  guidingHoldOfficersInvolved?: string
+  escortingHold?: string
+  restraintPositions?: string[]
+  handcuffsApplied?: string
+  painInducingTechniques?: string
+  painInducingTechniquesUsed?: string[]
+  weaponTypes?: { weaponType: string }[]
 }
 
-  let validInput = {} as validInput
+let validInput = {} as validInput
 
 beforeEach(() => {
   validInput = {
@@ -187,11 +187,7 @@ describe('complete schema', () => {
 
     it('Should trim empty-string body-worn camera identifiers', () => {
       validInput.bodyWornCamera = 'YES'
-      validInput.bodyWornCameraNumbers = [
-        { cameraNum: '    AAA  ' },
-        { cameraNum: '' },
-        { cameraNum: 'BBB' },
-      ]
+      validInput.bodyWornCameraNumbers = [{ cameraNum: '    AAA  ' }, { cameraNum: '' }, { cameraNum: 'BBB' }]
 
       const { errors, formResponse } = check(validInput)
 

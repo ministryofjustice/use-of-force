@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const R = require('ramda')
-
 import joi from '@hapi/joi'
 import sanitisersDefault from '../../config/forms/sanitisers'
 import sanitiserDefault from './sanitiser'
@@ -9,6 +7,8 @@ import incidentDetailsForm from '../../config/forms/incidentDetailsForm'
 import relocationAndInjuriesForm from '../../config/forms/relocationAndInjuriesForm'
 import statementForm from '../../config/forms/statementForm'
 import useOfForceDetailsForm from '../../config/forms/useOfForceDetailsForm'
+
+const R = require('ramda')
 
 const { trimmedString, toBoolean, toInteger, toSmallInt } = sanitisersDefault
 const { simplifyDescription, buildSanitiser, getSanitiser } = sanitiserDefault

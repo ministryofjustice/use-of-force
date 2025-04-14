@@ -1,4 +1,4 @@
-const bunyan = require('bunyan')
+import bunyan from 'bunyan'
 
 export default {
   err: bunyan.stdSerializers.err,
@@ -13,3 +13,4 @@ export default {
     return res1
   },
 }
+ 

@@ -11,17 +11,26 @@ export default class LocationClient {
       logger.info(`locationId ${incidentLocationId} has invalid length for UUID`)
       return undefined
     }
-    logger.info(`Location Client getting details for location: ${incidentLocationId}`)
-    return this.restClient.get({ path: `/locations/${incidentLocationId}?formatLocalName=true` })
+    try {
+      logger.info(`Location Client getting details for location: ${incidentLocationId}`)
+      const result = await this.restClient.get({ path: `/locations/${incidentLocationId}?formatLocalName=true` })
+      return result as LocationInPrison
+    } catch (error) {
+      if (error?.status !== 404) throw error
+    }
+    return undefined
   }
 
   async getLocations(
     prisonId: string,
     usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE,
   ): Promise<LocationInPrison[]> {
-    logger.info(`Location Client getting locations for prison ${prisonId} and usageType ${usageType}`)
+    logger.info(
+      `getting locations for prison ${prisonId} and usageType ${usageType}?formatLocalName=true&sortByLocalName=true`,
+    )
     return this.restClient.get({
       path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}?formatLocalName=true&sortByLocalName=true`,
+      headers: { 'Sort-Fields': 'userDescription' },
     })
   }
 }

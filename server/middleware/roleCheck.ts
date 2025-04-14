@@ -1,10 +1,10 @@
-const httpError = require('http-errors')
+import createError from 'http-errors'
 
 const check = userCheck => (req, res, next) => {
   if (userCheck(res.locals.user)) {
     return next()
   }
-  throw httpError(401, 'Not authorised to access this resource')
+  throw createError(401, 'Not authorised to access this resource')
 }
 
 export default {

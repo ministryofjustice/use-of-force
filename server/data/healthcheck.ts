@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+import superagent from 'superagent'
 import * as db from './dataAccess/db'
-
 import logger from '../../log'
 import config from '../config'
 
-import superagent from 'superagent'
 /** @type {any} */
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')

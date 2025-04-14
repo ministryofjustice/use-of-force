@@ -153,6 +153,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^7.6.0",
     "cypress": "^13.8.1",
+    "cypress-multi-reporters": "^1.6.4",
     "dotenv": "^16.4.7",
     "esbuild": "^0.25.1",
     "esbuild-plugin-clean": "^1.0.1",

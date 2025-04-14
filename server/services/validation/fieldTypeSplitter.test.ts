@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const joi = require('@hapi/joi')
 import buildFieldTypeSplitter from './fieldTypeSplitter'
+
+const joi = require('@hapi/joi')
 
 const buildSplitter = schema => buildFieldTypeSplitter(schema.describe(), 'X')
 
