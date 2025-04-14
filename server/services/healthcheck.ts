@@ -53,6 +53,7 @@ function getBuild() {
   try {
     // eslint-disable-next-line import/no-unresolved,global-require
     return require('../../build-info.json')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (ex) {
     return null
   }

@@ -1,8 +1,8 @@
+import notifyNodeClient from 'notifications-node-client'
+import moment from 'moment'
 import config from '../config'
 import { stringToHash } from '../utils/hash'
-
-import  notifyNodeClient from 'notifications-node-client'
-import moment from 'moment'
+import logger from '../../log'
 
 const { NotifyClient } = notifyNodeClient
 const {
@@ -13,8 +13,6 @@ const {
     templates: { involvedStaff, reporter },
   },
 } = config
-
-import logger from '../../log'
 
 const createNotificationService = (emailClient, eventPublisher) => {
   const asDate = date => moment(date).format('dddd D MMMM')

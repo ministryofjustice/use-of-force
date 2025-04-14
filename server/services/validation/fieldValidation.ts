@@ -1,6 +1,5 @@
-import { isNilOrEmpty } from '../../utils/utils'
-
 import moment from 'moment'
+import { isNilOrEmpty } from '../../utils/utils'
 
 const contextFactory = () => ({
   year: moment().year(),

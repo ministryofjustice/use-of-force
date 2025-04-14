@@ -14,7 +14,6 @@ import { SectionStatus } from '../services/drafts/reportStatusChecker'
 import { initialiseName } from './utils'
 import log from '../../log'
 
-
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
   links,

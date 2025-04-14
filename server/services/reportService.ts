@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const R = require('ramda')
 import { IncidentClient } from '../data'
-
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
@@ -9,8 +7,9 @@ import LocationService from './locationService'
 import ReportLogClient from '../data/reportLogClient'
 import { InTransaction } from '../data/dataAccess/db'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
-
 import type { LoggedInUser, SystemToken } from '../types/uof'
+
+const R = require('ramda')
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string

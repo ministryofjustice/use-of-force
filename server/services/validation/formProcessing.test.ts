@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import Joi from '@hapi/joi'
-const R = require('ramda')
 import processInput from './formProcessing'
 import { EXTRACTED } from '../../config/fieldType'
 import validationsDefault from '../../config/forms/validations'
 import index from './index'
+
+const R = require('ramda')
 
 const { validations, joi } = validationsDefault
 const { buildValidationSpec } = index

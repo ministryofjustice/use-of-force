@@ -1,6 +1,4 @@
-// @ts-ignore
-// eslint-disable import/no-unresolved,global-require
-const fs = require('fs')
+import fs from 'fs'
 
 const packageData = JSON.parse(fs.readFileSync('./package.json').toString())
 const buildNumber = fs.existsSync('./build-info.json')
