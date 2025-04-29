@@ -13,7 +13,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const REPORT_ID = -19
 
@@ -43,7 +43,7 @@ describe('staff involved page', () => {
         expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith(
           'user1-system-token',
           'user1',
-          REPORT_ID
+          REPORT_ID,
         )
       })
   })

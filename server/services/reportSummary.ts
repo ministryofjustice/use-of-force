@@ -168,7 +168,7 @@ const toParentChild = postions => {
     }
   })
   const parentChild: string[] = []
-  parents.forEach(function (p) {
+  parents.forEach(p => {
     const thesechildren = children
       .filter(pos => pos.parent === p.value)
       .map(child => child.label)
