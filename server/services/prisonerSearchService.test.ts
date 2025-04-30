@@ -4,21 +4,16 @@ import { Prison } from '../data/prisonClientTypes'
 
 jest.mock('../data')
 
-const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
-const prisonerSearchClient = new PrisonerSearchClient(null) as jest.Mocked<PrisonerSearchClient>
+const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const prisonerSearchClient = new PrisonerSearchClient() as jest.Mocked<PrisonerSearchClient>
 
-let prisonClientBuilder
-let prisonerSearchClientBuilder
 let systemToken
 
 let service: PrisonerSearchService
 
 beforeEach(() => {
-  prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)
-  prisonerSearchClientBuilder = jest.fn().mockReturnValue(prisonerSearchClient)
-
   systemToken = async (user: string): Promise<string> => `${user}-token-1`
-  service = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
+  service = new PrisonerSearchService(prisonerSearchClient, prisonClient, systemToken)
 })
 
 afterEach(() => {
@@ -48,7 +43,7 @@ describe('prisonerSearchService', () => {
           prisonNumber: 'AAA122AB',
         },
       ])
-      expect(prisonerSearchClientBuilder).toBeCalledWith('user1-token-1')
+      expect(prisonerSearchClient.search).toBeCalledWith({ prisonNumber: 'ABC123AA' }, 'user1-token-1')
     })
   })
 
@@ -58,7 +53,7 @@ describe('prisonerSearchService', () => {
       prisonClient.getPrisons.mockResolvedValue(expected)
       const results = await service.getPrisons('user1')
       expect(results).toStrictEqual(expected)
-      expect(prisonClientBuilder).toBeCalledWith('user1-token-1')
+      expect(prisonClient.getPrisons).toBeCalledWith('user1-token-1')
     })
 
     it('sorts lists of Prisons alphabetically', async () => {

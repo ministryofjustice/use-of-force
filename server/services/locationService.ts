@@ -37,11 +37,7 @@ export default class LocationService {
 
   async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {
     try {
-      const locations = await this.locationClient.getLocations(agencyId, undefined, token)
-      console.log(locations)
-      if (locations.length === 0) {
-        throw new Error(`No locations found for agencyId [${agencyId}]`)
-      }
+      const locations = await this.locationClient.getLocations(agencyId, token, undefined)
       const incidentLocations = locations.map(location => this.mapLocationApiResponse(location))
 
       const formattedIncidentLocations = incidentLocations.map(location => ({

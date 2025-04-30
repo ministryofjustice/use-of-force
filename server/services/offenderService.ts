@@ -1,4 +1,5 @@
 import type { Readable } from 'stream'
+import moment from 'moment/moment'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
 import type { PrisonClient } from '../data'
@@ -18,7 +19,7 @@ export default class OffenderService {
       }
 
       const displayName = `${properCaseName(result.firstName)} ${properCaseName(result.lastName)}`
-      const { dateOfBirth } = result
+      const dateOfBirth = moment(result.dateOfBirth).format('YYYY-MM-DD')
 
       return {
         displayName,

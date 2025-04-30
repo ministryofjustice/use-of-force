@@ -17,7 +17,7 @@ export default class PrisonClient extends BaseApiClient {
     return config.apis.prison
   }
 
-  async getOffenderDetails(bookingId: number, token: string): Promise<InmateDetail> {
+  async getOffenderDetails(bookingId: number, token: string): Promise<Partial<InmateDetail>> {
     return PrisonClient.restClient(token).get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
   }
 
