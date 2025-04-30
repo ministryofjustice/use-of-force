@@ -4,6 +4,7 @@ import { properCaseFullName } from '../../utils/utils'
 import { nextPaths, paths } from '../../config/incident'
 import { SystemToken } from '../../types/uof'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
+import { PrisonerSearchService } from '../../services'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -16,22 +17,29 @@ const getFromFlash = (req, name) => {
 }
 
 export default class AddInvolvedStaffRoutes {
-  constructor(private readonly draftReportService: DraftReportService, private readonly systemToken: SystemToken) {}
+  constructor(
+    private readonly draftReportService: DraftReportService,
+    private readonly systemToken: SystemToken,
+    private readonly searchService: PrisonerSearchService
+  ) {}
 
   public viewStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const errors = req.flash('errors')
+    const token = await this.systemToken(req.user.username)
     const staff = await this.draftReportService.getInvolvedStaffWithPrisons(
-      await this.systemToken(req.user.username),
+      token,
       req.user.username,
       parseInt(bookingId, 10)
     )
+    const offenderDetail = await this.searchService.getPrisonerDetails(bookingId, req.user.username)
+
     const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
     return res.render('formPages/addingStaff/staff-involved', {
       staff,
       errors,
       editMode: complete,
-      data: { staff, bookingId },
+      data: { staff, bookingId, offenderDetail },
     })
   }
 

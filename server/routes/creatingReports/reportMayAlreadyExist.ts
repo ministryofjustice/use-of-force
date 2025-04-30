@@ -14,7 +14,8 @@ export default class ReportMayAlreadyExistRoutes {
   public view: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const token = await this.systemToken(res.locals.user.username)
-    const { displayName: offenderName } = await this.offenderService.getOffenderDetails(token, parseInt(bookingId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(token, Number(bookingId))
+    const { displayName: offenderName } = offenderDetail
 
     const { id: formId, incidentDate } = await this.draftReportService.getCurrentDraft(
       req.user.username,
@@ -35,6 +36,7 @@ export default class ReportMayAlreadyExistRoutes {
       offenderName,
       reports,
       bookingId,
+      offenderDetail,
       errors: req.flash('errors'),
     }
 

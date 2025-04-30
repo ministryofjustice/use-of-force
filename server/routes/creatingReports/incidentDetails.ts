@@ -102,6 +102,7 @@ export default class IncidentDetailsRoutes {
       locations,
       prison,
       types,
+      offenderDetail,
     }
 
     return res.render(`formPages/incident/${formName}`, {

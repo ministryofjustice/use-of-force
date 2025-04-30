@@ -35,7 +35,7 @@ export default function Index({
   get('/search-for-prisoner-results', searchForPrisoner.showResults)
   post('/search-for-prisoner', searchForPrisoner.submit)
 
-  const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
+  const reportUseOfForce = new ReportUseOfForceRoutes(systemToken, draftReportService, offenderService)
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
   const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, systemToken, locationService)
@@ -52,7 +52,7 @@ export default function Index({
   const reportHasBeenDeleted = new ReportHasBeenDeletedRoutes()
   get(reportPath('report-has-been-deleted'), reportHasBeenDeleted.view)
 
-  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken)
+  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken, prisonerSearchService)
   get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)
   post(reportPath('staff-involved'), addInvolvedStaff.submitStaffInvolved)
   get(reportPath('delete-staff-member/:username'), addInvolvedStaff.viewDeleteStaffMember)
@@ -67,13 +67,13 @@ export default function Index({
   get(reportPath('prison-of-incident'), changePrison.viewPrisons)
   post(reportPath('prison-of-incident'), changePrison.submit)
 
-  const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(draftReportService)
+  const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(systemToken, draftReportService, offenderService)
   get(reportPath('why-was-uof-applied'), whyWasUoFApplied.view())
   post(reportPath('why-was-uof-applied'), whyWasUoFApplied.submit())
   get(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.viewPrimarySelection())
   post(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.submitPrimarySelection())
 
-  const createReport = new CreateReportRoutes(draftReportService)
+  const createReport = new CreateReportRoutes(systemToken, draftReportService, offenderService)
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))

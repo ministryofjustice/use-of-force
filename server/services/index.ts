@@ -25,22 +25,22 @@ import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 import FeComponentsService from './feComponentsService'
 
 const {
-  authClientBuilder,
+  hmppsAuthClient,
+  hmppsManageUsersApiClient,
   draftReportClient,
   incidentClient,
-  prisonClientBuilder,
-  locationClientBuilder,
+  prisonApiClient,
+  locationsApiClient,
   nomisMappingClientBuilder,
-  feComponentsClientBuilder,
-  prisonerSearchClientBuilder,
+  feComponentsClient,
+  prisonerSearchApiClient,
   statementsClient,
-  systemToken,
   telemetryClient,
   reportLogClient,
 } = dataAccess
 
 const eventPublisher = EventPublisher(telemetryClient)
-const userService = new UserService(prisonClientBuilder, authClientBuilder)
+const userService = new UserService(hmppsManageUsersApiClient, prisonApiClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(
   incidentClient,
@@ -49,8 +49,8 @@ const involvedStaffService = new InvolvedStaffService(
   db.inTransaction,
   notificationService
 )
-const offenderService = new OffenderService(prisonClientBuilder)
-const locationService = new LocationService(prisonClientBuilder, locationClientBuilder)
+const offenderService = new OffenderService(prisonApiClient)
+const locationService = new LocationService(prisonApiClient, locationsApiClient)
 const nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)
 const reportService = new ReportService(
   incidentClient,
@@ -58,7 +58,7 @@ const reportService = new ReportService(
   locationService,
   reportLogClient,
   db.inTransaction,
-  systemToken
+  hmppsAuthClient.getSystemClientToken
 )
 
 const submitDraftReportService = new SubmitDraftReportService(
@@ -73,12 +73,12 @@ const updateDraftReportService = new UpdateDraftReportService(
   incidentClient,
   reportLogClient,
   db.inTransaction,
-  prisonClientBuilder,
-  systemToken
+  prisonApiClient,
+  hmppsAuthClient.getSystemClientToken
 )
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
-  authClientBuilder,
-  prisonClientBuilder,
+  hmppsManageUsersApiClient,
+  prisonApiClient,
   draftReportClient,
   userService
 )
@@ -90,26 +90,30 @@ const draftReportService = new DraftReportService(
   submitDraftReportService,
   userService,
   locationService,
-  systemToken
+  hmppsAuthClient.getSystemClientToken
 )
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
 const reviewService = new ReviewService(
   statementsClient,
   incidentClient,
-  authClientBuilder,
+  hmppsManageUsersApiClient,
   offenderService,
-  systemToken
+  hmppsAuthClient.getSystemClientToken
 )
-const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
+const prisonerSearchService = new PrisonerSearchService(
+  prisonerSearchApiClient,
+  prisonApiClient,
+  hmppsAuthClient.getSystemClientToken
+)
 const reportDetailBuilder = new ReportDetailBuilder(
   involvedStaffService,
   locationService,
   offenderService,
   nomisMappingService,
-  systemToken
+  hmppsAuthClient.getSystemClientToken
 )
-const feComponentsService = new FeComponentsService(feComponentsClientBuilder)
+const feComponentsService = new FeComponentsService(feComponentsClient)
 
 export const services = {
   involvedStaffService,
@@ -120,7 +124,7 @@ export const services = {
   userService,
   prisonerSearchService,
   reviewService,
-  systemToken,
+  systemToken: hmppsAuthClient.getSystemClientToken,
   locationService,
   nomisMappingService,
   reportDetailBuilder,

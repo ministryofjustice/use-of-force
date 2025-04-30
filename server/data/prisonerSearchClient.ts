@@ -1,4 +1,6 @@
-import { RestClient } from './restClient'
+import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
+import BaseApiClient from './baseApiClient'
+import config from '../config'
 
 export type SearchForm = {
   prisonNumber?: string
@@ -7,18 +9,25 @@ export type SearchForm = {
   agencyId?: string
 }
 
-export default class PrisonerSearchClient {
-  constructor(private readonly restClient: RestClient) {}
+export default class PrisonerSearchClient extends BaseApiClient {
+  protected static config() {
+    return config.apis.prisonerSearch
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async search(form: SearchForm): Promise<any> {
-    return this.restClient.post({
-      path: `/prisoner-search/match`,
+  async getPrisonerDetails(identifier: string, token: string): Promise<PrisonerSearchApiPrisoner> {
+    return PrisonerSearchClient.restClient(token).get({
+      path: `/prisoner/${identifier}`,
+    }) as Promise<PrisonerSearchApiPrisoner>
+  }
+
+  async search(form: SearchForm, token: string): Promise<any> {
+    return PrisonerSearchClient.restClient(token).post({
+      path: `/prisoner-search/match-prisoners`,
       data: {
         prisonerIdentifier: form.prisonNumber,
         firstName: form.firstName,
         lastName: form.lastName,
-        prisonId: form.agencyId,
+        prisonIds: [form.agencyId],
         includeAliases: false,
       },
     })

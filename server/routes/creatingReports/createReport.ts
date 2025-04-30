@@ -5,6 +5,8 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
+import { SystemToken } from '../../types/uof'
+import { OffenderService } from '../../services'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',
@@ -12,7 +14,11 @@ enum SubmitType {
 }
 
 export default class CreateReport {
-  constructor(private readonly draftReportService: DraftReportService) {}
+  constructor(
+    private readonly systemToken: SystemToken,
+    private readonly draftReportService: DraftReportService,
+    private readonly offenderService: OffenderService
+  ) {}
 
   private async loadForm(req) {
     const { bookingId } = req.params
@@ -35,12 +41,15 @@ export default class CreateReport {
   public view(formName: string) {
     return async (req, res: Response): Promise<void> => {
       const { bookingId } = req.params
-
+      const offenderDetail = await this.offenderService.getOffenderDetails(
+        await this.systemToken(res.locals.user.username),
+        bookingId
+      )
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
       res.render(`formPages/incident/${formName}`, {
-        data: { bookingId, ...pageData, types },
+        data: { offenderDetail, bookingId, ...pageData, types },
         formName,
         errors,
         editMode: isComplete,

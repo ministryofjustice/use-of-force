@@ -1,12 +1,12 @@
 import logger from '../../log'
-import type { AuthClient, RestClientBuilder } from '../../server/data'
 import { QueryPerformer } from '../../server/data/dataAccess/db'
 import StatementsClient from '../../server/data/statementsClient'
 import { SystemToken } from '../../server/types/uof'
+import { ManageUsersApiClient } from '../../server/data'
 
 export default class EmailResolver {
   constructor(
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
+    private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly systemToken: SystemToken,
     private readonly statementsClient: StatementsClient
   ) {}
@@ -14,8 +14,8 @@ export default class EmailResolver {
   async resolveEmail(transactionalClient: QueryPerformer, userId: string, reportId: number): Promise<boolean> {
     logger.info(`Checking to see if previously unverified user: ${userId} now has verified email for statement`)
 
-    const authClient = this.authClientBuilder(await this.systemToken())
-    const { verified, email } = await authClient.getEmail(userId)
+    const token = await this.systemToken()
+    const { verified, email } = await this.manageUsersApiClient.getEmail(userId, token)
     if (verified) {
       logger.info('Found verified email')
       await this.statementsClient.setEmail(userId, reportId, email, transactionalClient)

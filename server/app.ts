@@ -16,7 +16,6 @@ import { createRedisClient } from './data/redisClient'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
-import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
@@ -123,7 +122,7 @@ export default function createApp(services: Services): Express {
   })
 
   const RedisStore = ConnectRedis(session)
-  const client = createRedisClient({ legacyMode: true })
+  const client = createRedisClient()
   client.connect()
 
   app.use(
@@ -167,14 +166,14 @@ export default function createApp(services: Services): Express {
   }
 
   //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
+  const cacheControl = { maxAge: config.staticResourceCacheDuration }
 
   ;[
     '/assets',
     '/assets/stylesheets',
     '/assets/js',
     `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
+    `/node_modules/govuk-frontend/dist`,
     `/node_modules/@ministryofjustice/frontend/`,
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))

@@ -2,7 +2,7 @@ import * as R from 'ramda'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
 
 import logger from '../../../log'
-import type { PrisonClient, RestClientBuilder, DraftReportClient, IncidentClient } from '../../data'
+import type { PrisonClient, DraftReportClient, IncidentClient } from '../../data'
 import ReportLogClient from '../../data/reportLogClient'
 import { InTransaction } from '../../data/dataAccess/db'
 
@@ -12,7 +12,7 @@ export default class UpdateDraftReportService {
     private readonly incidentClient: IncidentClient,
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
-    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
+    private readonly prisonClient: PrisonClient,
     private readonly systemToken: SystemToken
   ) {}
 
@@ -67,8 +67,7 @@ export default class UpdateDraftReportService {
     const { username: userId, displayName: reporterName } = currentUser
 
     const token = await this.systemToken(userId)
-    const prisonClient = this.prisonClientBuilder(token)
-    const { offenderNo, agencyId } = await prisonClient.getOffenderDetails(bookingId)
+    const { offenderNo, agencyId } = await this.prisonClient.getOffenderDetails(bookingId, token)
 
     return this.inTransaction(async client => {
       const id = await this.draftReportClient.create({

@@ -1,16 +1,17 @@
 import nock from 'nock'
+
 import config from '../config'
 import FeComponentsClient, { Component } from './feComponentsClient'
-import restClientBuilder from '.'
+
+const token = { access_token: 'token-1', expires_in: 300 }
 
 describe('feComponentsClient', () => {
-  let fakeComponentsApi
+  let fakeComponentsApi: nock.Scope
   let componentsClient: FeComponentsClient
-  const token = 'token-1'
 
   beforeEach(() => {
     fakeComponentsApi = nock(config.apis.frontendComponents.url)
-    componentsClient = restClientBuilder('feComponentApi', config.apis.frontendComponents, FeComponentsClient)(token)
+    componentsClient = new FeComponentsClient()
   })
 
   afterEach(() => {
@@ -20,15 +21,10 @@ describe('feComponentsClient', () => {
 
   describe('getComponents', () => {
     it('should return data from api', async () => {
-      const response: { data: { header: Component; footer: Component } } = {
+      const response: { data: { header: Component } } = {
         data: {
           header: {
             html: '<header></header>',
-            css: [],
-            javascript: [],
-          },
-          footer: {
-            html: '<footer></footer>',
             css: [],
             javascript: [],
           },
@@ -36,11 +32,11 @@ describe('feComponentsClient', () => {
       }
 
       fakeComponentsApi
-        .get('/components?component=header&component=footer')
-        .matchHeader('x-user-token', token)
+        .get('/components?component=header')
+        .matchHeader('x-user-token', token.access_token)
         .reply(200, response)
 
-      const output = await componentsClient.getComponents(['header', 'footer'], token)
+      const output = await componentsClient.getComponents(['header'], token.access_token)
       expect(output).toEqual(response)
     })
   })

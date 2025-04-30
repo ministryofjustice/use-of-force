@@ -1,7 +1,7 @@
 import type { AgencyId, SystemToken } from '../types/uof'
 import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
-import { IncidentClient, StatementsClient, RestClientBuilder, AuthClient } from '../data'
+import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import OffenderService from './offenderService'
 import { AdditionalComment, ReviewerStatement } from '../data/statementsClientTypes'
 
@@ -53,7 +53,7 @@ export default class ReviewService {
   constructor(
     private readonly statementsClient: StatementsClient,
     private readonly incidentClient: IncidentClient,
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
+    private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken
   ) {}
@@ -100,8 +100,7 @@ export default class ReviewService {
 
   async getStatements(token: string, reportId: number): Promise<ReviewerStatementWithComments[]> {
     const statements = await this.statementsClient.getStatementsForReviewer(reportId)
-    const authClient = this.authClientBuilder(token)
-    return Promise.all(statements.map(statement => this.decorateStatement(authClient, statement)))
+    return Promise.all(statements.map(statement => this.decorateStatement(statement, token)))
   }
 
   async getStatement(token: string, statementId: number): Promise<ReviewerStatementWithComments> {
@@ -109,14 +108,13 @@ export default class ReviewService {
     if (!statement) {
       throw new Error(`Statement: '${statementId}' does not exist`)
     }
-    const authClient = this.authClientBuilder(token)
-    return this.decorateStatement(authClient, statement)
+    return this.decorateStatement(statement, token)
   }
 
-  private async decorateStatement(authClient: AuthClient, statement: ReviewerStatement) {
+  private async decorateStatement(statement: ReviewerStatement, token: string) {
     return Promise.all([
       this.statementsClient.getAdditionalComments(statement.id),
-      authClient.getEmail(statement.userId),
+      this.manageUsersApiClient.getEmail(statement.userId, token),
     ]).then(([additionalComments, email]) => ({ ...statement, additionalComments, isVerified: email.verified }))
   }
 }

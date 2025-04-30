@@ -1,17 +1,16 @@
 import type { Readable } from 'stream'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import type { RestClientBuilder, PrisonClient } from '../data'
+import type { PrisonClient } from '../data'
 import { PrisonerDetail } from '../data/prisonClientTypes'
 
 export default class OffenderService {
-  constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
+  constructor(private readonly prisonClient: PrisonClient) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getOffenderDetails(token: string, bookingId: number): Promise<any> {
     try {
-      const prisonClient = this.prisonClientBuilder(token)
-      const result = await prisonClient.getOffenderDetails(bookingId)
+      const result = await this.prisonClient.getOffenderDetails(bookingId, token)
 
       if (isNilOrEmpty(result)) {
         logger.warn(`No details found for bookingId=${bookingId}`)
@@ -34,8 +33,7 @@ export default class OffenderService {
 
   async getPrisonersDetails(token: string, offenderNumbers: string[]): Promise<PrisonerDetail[]> {
     try {
-      const prisonClient = this.prisonClientBuilder(token)
-      const result = await prisonClient.getPrisoners(offenderNumbers)
+      const result = await this.prisonClient.getPrisoners(offenderNumbers, token)
 
       if (isNilOrEmpty(result)) {
         logger.warn(`No details found for offenderNumbers ${offenderNumbers}`)
@@ -49,8 +47,7 @@ export default class OffenderService {
   }
 
   async getOffenderImage(token: string, bookingId: number): Promise<Readable> {
-    const prisonClient = this.prisonClientBuilder(token)
-    return prisonClient.getOffenderImage(bookingId)
+    return this.prisonClient.getOffenderImage(bookingId, token)
   }
 
   private fullName({ firstName, lastName }): string {
@@ -62,7 +59,7 @@ export default class OffenderService {
       return {}
     }
     const uniqueNos = [...new Set(offenderNos)]
-    const offenders = await this.prisonClientBuilder(token).getOffenders(uniqueNos)
+    const offenders = await this.prisonClient.getOffenders(uniqueNos, token)
 
     return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: this.fullName(offender) }), {})
   }

@@ -1,7 +1,8 @@
 import { SearchForm } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
-import type { RestClientBuilder, PrisonClient, PrisonerSearchClient } from '../data'
+import { PrisonClient, PrisonerSearchClient } from '../data'
 import { SystemToken } from '../types/uof'
+import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
 
 export type Prison = {
   agencyId: string
@@ -20,14 +21,13 @@ const isFormComplete = (form: SearchForm): boolean =>
 
 export default class PrisonerSearchService {
   constructor(
-    private readonly prisonerSearchClientBuilder: RestClientBuilder<PrisonerSearchClient>,
-    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
+    private readonly prisonerSearchClient: PrisonerSearchClient,
+    private readonly prisonClient: PrisonClient,
     private readonly systemToken: SystemToken
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
-    const client = this.prisonClientBuilder(token)
-    const prisons = await client.getPrisons()
+    const prisons = await this.prisonClient.getPrisons(token)
     return prisons
       .map(({ agencyId, description }) => ({ agencyId, description }))
       .sort((a, b) => a.description.localeCompare(b.description))
@@ -46,8 +46,7 @@ export default class PrisonerSearchService {
       return []
     }
     const token = await this.systemToken(searchingUserName)
-    const client = this.prisonerSearchClientBuilder(token)
-    const results = await client.search(form)
+    const results = await this.prisonerSearchClient.search(form, token)
     const prisonNameLookup = await this.createPrisonNameLookup(token)
 
     return results.map(prisoner => ({
@@ -60,5 +59,10 @@ export default class PrisonerSearchService {
 
   async getPrisons(username: string): Promise<Prison[]> {
     return this.getPrisonsUsing(await this.systemToken(username))
+  }
+
+  async getPrisonerDetails(identifier: string, username: string): Promise<PrisonerSearchApiPrisoner> {
+    const token = await this.systemToken(username)
+    return this.prisonerSearchClient.getPrisonerDetails(identifier, token)
   }
 }

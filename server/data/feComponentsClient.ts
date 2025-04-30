@@ -1,4 +1,5 @@
-import type { RestClient } from './restClient'
+import config from '../config'
+import RestClient from './restClient'
 
 export interface Component {
   html: string
@@ -8,17 +9,43 @@ export interface Component {
 
 export type AvailableComponent = 'header' | 'footer'
 
-export default class FeComponentsClient {
-  constructor(private restClient: RestClient) {}
+type CaseLoad = {
+  caseLoadId: string
+  description: string
+  type: string
+  caseloadFunction: string
+  currentlyActive: boolean
+}
 
-  async getComponents<T extends AvailableComponent[]>(
-    components: T,
-    token: string
-  ): Promise<Record<T[number], Component>> {
-    return this.restClient.get({
+type Service = {
+  description: string
+  heading: string
+  href: string
+  id: string
+}
+
+export interface FeComponentsMeta {
+  activeCaseLoad: CaseLoad
+  caseLoads: CaseLoad[]
+  services: Service[]
+}
+
+export interface FeComponentsResponse {
+  header?: Component
+  footer?: Component
+  meta: FeComponentsMeta
+}
+
+export default class FeComponentsClient {
+  private static restClient(token: string): RestClient {
+    return new RestClient('HMPPS Components Client', config.apis.frontendComponents, token)
+  }
+
+  getComponents<T extends AvailableComponent[]>(components: T, userToken: string): Promise<FeComponentsResponse> {
+    return FeComponentsClient.restClient(userToken).get<FeComponentsResponse>({
       path: `/components`,
       query: `component=${components.join('&component=')}`,
-      headers: { 'x-user-token': token },
-    }) as Promise<Record<T[number], Component>>
+      headers: { 'x-user-token': userToken },
+    })
   }
 }

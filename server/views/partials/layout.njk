@@ -1,4 +1,5 @@
 {% extends "govuk/template.njk" %}
+
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 
 {% set pageTitle = pageTitle | default('GOV.UK - Use of force') %}
@@ -14,14 +15,8 @@
 {% block head %}
 {% include "../tagManager/headContent.html" %}
 
-<!--[if !IE 8]><!-->
 <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
-<!--<![endif]-->
 
-<!--[if lt IE 9]>
-<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
-  <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
-<![endif]-->	
 
 {% if feComponents.jsIncludes %}
     {% for js in feComponents.jsIncludes %}
@@ -52,8 +47,9 @@
 {% block bodyEnd %}
 {# Run JavaScript at end of the
 <body>, to avoid blocking the initial render. #}
-<script src="/assets/govuk/all.js"></script>
-<script src="/assets/govuk-frontend-init.js"></script>
+  <script src="/assets/govuk/all.js"></script>
+  <script type="module" src="/assets/js/govukFrontendInit.js"></script>
+
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"
   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
   crossorigin="anonymous"></script>

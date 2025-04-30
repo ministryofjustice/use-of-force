@@ -66,9 +66,9 @@ export default class CheckAnswerRoutes {
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
-    const data = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+    const summary = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
 
-    return res.render('pages/check-your-answers', { data, bookingId })
+    return res.render('pages/check-your-answers', { data: { summary, offenderDetail }, bookingId })
   }
 
   public submit = async (req: Request, res: Response): Promise<void> => {
