@@ -33,7 +33,7 @@ export interface FeComponentsMeta {
 export interface FeComponentsResponse {
   header?: Component
   footer?: Component
-  meta: FeComponentsMeta
+  meta?: FeComponentsMeta
 }
 
 export default class FeComponentsClient {
