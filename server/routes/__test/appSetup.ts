@@ -21,6 +21,7 @@ import {
   type PrisonerSearchService,
   type FeComponentsService,
   NomisMappingService,
+  AuthService,
 } from '../../services'
 import UserService from '../../services/userService'
 import unauthenticatedRoutes from '../unauthenticated'
@@ -133,6 +134,7 @@ export const appWithAllRoutes = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     signInService: {} as any,
     feComponentsService: {} as FeComponentsService,
+    authService: {} as AuthService,
     ...overrides,
   }
   const authenticated = authenticatedRoutes(authenticationMiddleware, services)

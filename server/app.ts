@@ -292,6 +292,7 @@ export default function createApp(services: Services): Express {
     })
   )
 
+  console.log('hello')
   app.use(populateCurrentUser(services.userService))
 
   app.use(unauthenticatedRoutes(services))

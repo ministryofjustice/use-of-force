@@ -1,13 +1,15 @@
 import request from 'supertest'
 import { appWithAllRoutes } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
-import { StatementService, OffenderService } from '../../services'
+import { StatementService, OffenderService, AuthService } from '../../services'
 
 jest.mock('../../services/statementService')
 jest.mock('../../services/offenderService')
+jest.mock('../../services/authService')
 
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app
 
@@ -31,7 +33,8 @@ beforeEach(() => {
     statement: 'Some initial statement',
   })
   offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jimmy Choo', offenderNo: '123456' })
-  app = appWithAllRoutes({ statementService, offenderService })
+  authService.getSystemClientToken.mockResolvedValue('a-token')
+  app = appWithAllRoutes({ statementService, offenderService, authService })
 })
 
 describe('GET /your-statements', () => {

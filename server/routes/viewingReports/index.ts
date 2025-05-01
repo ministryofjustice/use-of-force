@@ -5,20 +5,15 @@ import IncidentRoutes from './incidents'
 import StatementRoutes from './statements'
 
 import type { Services } from '../../services'
-import { dataAccess } from '../../data'
 
 export default function ViewingReportsRoutes(services: Services): Router {
-  const { statementService, offenderService, reportService, reportDetailBuilder } = services
+  const { statementService, offenderService, reportService, reportDetailBuilder, systemToken } = services
 
   const router = express.Router()
 
   const incidents = new IncidentRoutes(reportService, reportDetailBuilder)
 
-  const statements = new StatementRoutes(
-    statementService,
-    offenderService,
-    dataAccess.hmppsAuthClient.getSystemClientToken
-  )
+  const statements = new StatementRoutes(statementService, offenderService, systemToken)
 
   const get = (path, handler) => router.get(path, asyncMiddleware(handler))
   const post = (path, handler) => router.post(path, asyncMiddleware(handler))

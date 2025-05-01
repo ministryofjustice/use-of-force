@@ -23,6 +23,7 @@ import createSignInService from '../authentication/signInService'
 import { notificationServiceFactory } from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 import FeComponentsService from './feComponentsService'
+import AuthService from './authService'
 
 const {
   hmppsAuthClient,
@@ -40,6 +41,7 @@ const {
 } = dataAccess
 
 const eventPublisher = EventPublisher(telemetryClient)
+const authService = new AuthService(hmppsAuthClient)
 const userService = new UserService(hmppsManageUsersApiClient, prisonApiClient)
 const notificationService = notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(
@@ -58,7 +60,7 @@ const reportService = new ReportService(
   locationService,
   reportLogClient,
   db.inTransaction,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 
 const submitDraftReportService = new SubmitDraftReportService(
@@ -74,7 +76,7 @@ const updateDraftReportService = new UpdateDraftReportService(
   reportLogClient,
   db.inTransaction,
   prisonApiClient,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   hmppsManageUsersApiClient,
@@ -90,7 +92,7 @@ const draftReportService = new DraftReportService(
   submitDraftReportService,
   userService,
   locationService,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
@@ -99,19 +101,19 @@ const reviewService = new ReviewService(
   incidentClient,
   hmppsManageUsersApiClient,
   offenderService,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 const prisonerSearchService = new PrisonerSearchService(
   prisonerSearchApiClient,
   prisonApiClient,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 const reportDetailBuilder = new ReportDetailBuilder(
   involvedStaffService,
   locationService,
   offenderService,
   nomisMappingService,
-  hmppsAuthClient.getSystemClientToken
+  authService.getSystemClientToken
 )
 const feComponentsService = new FeComponentsService(feComponentsClient)
 
@@ -124,12 +126,13 @@ export const services = {
   userService,
   prisonerSearchService,
   reviewService,
-  systemToken: hmppsAuthClient.getSystemClientToken,
+  systemToken: authService.getSystemClientToken,
   locationService,
   nomisMappingService,
   reportDetailBuilder,
   draftReportService,
   feComponentsService,
+  authService,
 }
 
 export type Services = typeof services
@@ -147,4 +150,5 @@ export {
   ReportDetailBuilder,
   UserService,
   FeComponentsService,
+  AuthService,
 }
