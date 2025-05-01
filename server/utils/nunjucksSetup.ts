@@ -8,7 +8,7 @@ import config from '../config'
 import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
 import { SectionStatus } from '../services/drafts/reportStatusChecker'
-import { initialiseName } from './utils'
+import { initialiseName, personDateOfBirth, personProfileName } from './utils'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -183,6 +183,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   })
 
   njkEnv.addFilter('initialiseName', initialiseName)
+  njkEnv.addFilter('personProfileName', personProfileName)
+  njkEnv.addFilter('personDateOfBirth', personDateOfBirth)
 
   return njkEnv
 }
