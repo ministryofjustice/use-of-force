@@ -1,13 +1,14 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
 import { Report } from '../../data/incidentClientTypes'
-import { OffenderService, ReportService, ReviewService } from '../../services'
+import { AuthService, OffenderService, ReportService, ReviewService } from '../../services'
 import { appWithAllRoutes, adminUser, coordinatorUser, user } from '../__test/appSetup'
 
 jest.mock('../../services')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 
 let app
@@ -15,7 +16,8 @@ const flash = jest.fn()
 const userSupplier = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ reportService, reviewService, offenderService }, userSupplier, undefined, flash)
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+  app = appWithAllRoutes({ reportService, reviewService, offenderService, authService }, userSupplier, undefined, flash)
 })
 
 afterEach(() => {

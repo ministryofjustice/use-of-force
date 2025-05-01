@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { Prison } from '../../data/prisonClientTypes'
-import { LocationService, DraftReportService } from '../../services'
+import { LocationService, DraftReportService, AuthService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
 
 jest.mock('../../services')
@@ -15,13 +15,14 @@ const draftReportService = new DraftReportService(
   null,
   null
 ) as jest.Mocked<DraftReportService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app
 const flash = jest.fn()
 
 beforeEach(() => {
   flash.mockReturnValue([])
-  app = appWithAllRoutes({ locationService, draftReportService }, undefined, false, flash)
+  app = appWithAllRoutes({ locationService, draftReportService, authService }, undefined, false, flash)
   locationService.getPrisons.mockResolvedValue([
     {
       agencyId: 'BXI',

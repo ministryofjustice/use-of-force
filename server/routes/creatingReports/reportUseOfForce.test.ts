@@ -1,11 +1,13 @@
 import request from 'supertest'
-import { DraftReportService, OffenderService } from '../../services'
+import { AuthService, DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
 
 jest.mock('../../services/offenderService')
+jest.mock('../../services/authService')
 jest.mock('../../services/drafts/draftReportService')
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 const draftReportService = new DraftReportService(
   null,
   null,
@@ -19,9 +21,10 @@ const draftReportService = new DraftReportService(
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService })
+  app = appWithAllRoutes({ draftReportService, offenderService, authService })
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
 })
 
 afterEach(() => {

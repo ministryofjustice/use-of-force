@@ -106,17 +106,14 @@ describe('create', () => {
     await service.process(currentUser, 1, 'form', formObject, incidentDate)
 
     expect(draftReportClient.create).toBeCalledTimes(1)
-    expect(draftReportClient.create).toBeCalledWith(
-      {
-        userId: 'user1',
-        bookingId: 1,
-        agencyId: 'MDI',
-        offenderNo: 'AA123ABC',
-        reporterName: 'Bob Smith',
-        formResponse: { form: formObject },
-        incidentDate,
-      },
-      'system-token-1'
-    )
+    expect(draftReportClient.create).toBeCalledWith({
+      userId: 'user1',
+      bookingId: 1,
+      agencyId: 'MDI',
+      offenderNo: 'AA123ABC',
+      reporterName: 'Bob Smith',
+      formResponse: { form: formObject },
+      incidentDate,
+    })
   })
 })

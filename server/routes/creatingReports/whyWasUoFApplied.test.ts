@@ -1,7 +1,7 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
 import { UofReasons } from '../../config/types'
-import { DraftReportService, OffenderService } from '../../services'
+import { AuthService, DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 
 jest.mock('../../services')
@@ -17,12 +17,13 @@ const draftReportService = new DraftReportService(
 ) as jest.Mocked<DraftReportService>
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app
 const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService }, undefined, undefined, flash)
+  app = appWithAllRoutes({ draftReportService, offenderService, authService }, undefined, undefined, flash)
 })
 
 afterEach(() => {

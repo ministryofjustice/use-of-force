@@ -6,10 +6,12 @@ import DraftReportService from '../../services/drafts/draftReportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
+import { AuthService } from '../../services'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
+jest.mock('../../services/authService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -22,13 +24,14 @@ const draftReportService = new DraftReportService(
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app
 const flash = jest.fn()
 const incidentLocationId = 'incident-location-id'
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService, authService }, undefined, false, flash)
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({
     displayName: 'Bob Smith',
@@ -38,6 +41,7 @@ beforeEach(() => {
   locationService.getIncidentLocations.mockResolvedValue([])
   flash.mockReturnValue([])
   draftReportService.getPotentialDuplicates.mockResolvedValue([])
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
 })
 
 afterEach(() => {

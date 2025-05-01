@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { UofReasons } from '../../config/types'
 import { paths } from '../../config/incident'
-import { AuthService, OffenderService, Services, services } from '../../services'
+import { AuthService, OffenderService } from '../../services'
 
 const FORM = 'reasonsForUseOfForce'
 

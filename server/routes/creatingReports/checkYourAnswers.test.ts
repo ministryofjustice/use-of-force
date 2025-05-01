@@ -5,10 +5,12 @@ import OffenderService from '../../services/offenderService'
 import NomisMappingService from '../../services/nomisMappingService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
+import { AuthService } from '../../services'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
+jest.mock('../../services/authService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -22,13 +24,15 @@ const draftReportService = new DraftReportService(
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
+
 nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId = jest.fn()
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService, nomisMappingService })
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService, nomisMappingService, authService })
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
-
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue('')
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)

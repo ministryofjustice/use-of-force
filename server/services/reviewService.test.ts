@@ -21,6 +21,7 @@ let service: ReviewService
 
 describe('reviewService', () => {
   beforeEach(() => {
+    authService.getSystemClientToken.mockResolvedValue('userName-system-token')
     service = new ReviewService(statementsClient, incidentClient, manageUsersApiClient, offenderService, authService)
   })
 

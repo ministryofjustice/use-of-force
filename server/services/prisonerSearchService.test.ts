@@ -1,19 +1,20 @@
 import PrisonerSearchService from './prisonerSearchService'
 import { PrisonClient, PrisonerSearchClient } from '../data'
 import { Prison } from '../data/prisonClientTypes'
+import AuthService from './authService'
 
 jest.mock('../data')
+jest.mock('../services/authService')
 
 const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
 const prisonerSearchClient = new PrisonerSearchClient() as jest.Mocked<PrisonerSearchClient>
-
-let systemToken
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: PrisonerSearchService
 
 beforeEach(() => {
-  systemToken = async (user: string): Promise<string> => `${user}-token-1`
-  service = new PrisonerSearchService(prisonerSearchClient, prisonClient, systemToken)
+  authService.getSystemClientToken.mockResolvedValue('user1-token-1')
+  service = new PrisonerSearchService(prisonerSearchClient, prisonClient, authService)
 })
 
 afterEach(() => {

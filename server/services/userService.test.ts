@@ -10,8 +10,6 @@ jest.mock('../data')
 const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
 
-const authClientBuilder = jest.fn()
-
 let service: UserService
 
 beforeEach(() => {
@@ -130,8 +128,6 @@ describe('getUser', () => {
     manageUsersApiClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1, activeCaseLoadId: 'MDI' })
 
     await service.getUser(token, 'Bob')
-
-    expect(authClientBuilder).toBeCalledWith(token)
   })
 })
 

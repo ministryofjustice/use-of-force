@@ -61,6 +61,7 @@ beforeEach(() => {
     authService
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
+  authService.getSystemClientToken.mockResolvedValue('user-1-system-token')
 })
 
 afterEach(() => {
