@@ -1,7 +1,7 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
 import { UofReasons } from '../../config/types'
-import { DraftReportService } from '../../services'
+import { DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 
 jest.mock('../../services')
@@ -16,11 +16,13 @@ const draftReportService = new DraftReportService(
   null
 ) as jest.Mocked<DraftReportService>
 
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+
 let app
 const flash = jest.fn()
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService }, undefined, undefined, flash)
+  app = appWithAllRoutes({ draftReportService, offenderService }, undefined, undefined, flash)
 })
 
 afterEach(() => {
@@ -31,6 +33,7 @@ describe('/why-was-uof-applied', () => {
   describe('GET /why-was-uof-applied', () => {
     test('should render content', () => {
       draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
+      offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Prisoner, Bad', dateOfBirth: '2025-05-01' })
       return request(app)
         .get(paths.whyWasUofApplied(-19))
         .expect('Content-Type', /html/)
