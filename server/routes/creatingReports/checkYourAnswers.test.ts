@@ -5,12 +5,13 @@ import OffenderService from '../../services/offenderService'
 import NomisMappingService from '../../services/nomisMappingService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
 jest.mock('../../services/authService')
+jest.mock('../../services/nomisMappingService')
 
 const draftReportService = new DraftReportService(
   null,

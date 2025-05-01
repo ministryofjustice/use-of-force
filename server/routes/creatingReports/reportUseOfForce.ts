@@ -1,6 +1,6 @@
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type OffenderService from '../../services/offenderService'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 export default class ReportUseOfForceRoutes {
   constructor(

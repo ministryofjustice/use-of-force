@@ -1,9 +1,13 @@
 import request from 'supertest'
 import { Prison } from '../../data/prisonClientTypes'
-import { LocationService, DraftReportService, AuthService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
+import LocationService from '../../services/locationService'
+import DraftReportService from '../../services/drafts/draftReportService'
+import AuthService from '../../services/authService'
 
-jest.mock('../../services')
+jest.mock('../../services/drafts/draftReportService')
+jest.mock('../../services/authService')
+jest.mock('../../services/locationService')
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const draftReportService = new DraftReportService(

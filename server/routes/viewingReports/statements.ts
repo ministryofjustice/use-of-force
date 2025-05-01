@@ -7,7 +7,7 @@ import { StatementStatus } from '../../config/types'
 import StatementService from '../../services/statementService'
 import OffenderService from '../../services/offenderService'
 import { StatementSummary } from '../../data/statementsClientTypes'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 const toStatement = namesByOffenderNumber => (incident: StatementSummary) => ({
   id: incident.id,

@@ -1,10 +1,11 @@
 import request from 'supertest'
 import config from '../../config'
 import { paths } from '../../config/incident'
-import { AuthService, ReportService, StatementService } from '../../services'
-import type { AnonReportSummaryWithPrison } from '../../services/reportService'
+import ReportService, { AnonReportSummaryWithPrison } from '../../services/reportService'
 import { stringToHash } from '../../utils/hash'
 import { appWithAllRoutes } from '../__test/appSetup'
+import StatementService from '../../services/statementService'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/authService')
 jest.mock('../../services/reportService')

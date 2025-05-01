@@ -9,7 +9,7 @@ import type LocationService from '../../services/locationService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 const formName = 'incidentDetails'
 

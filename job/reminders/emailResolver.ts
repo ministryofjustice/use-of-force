@@ -2,7 +2,7 @@ import logger from '../../log'
 import { QueryPerformer } from '../../server/data/dataAccess/db'
 import StatementsClient from '../../server/data/statementsClient'
 import { ManageUsersApiClient } from '../../server/data'
-import { AuthService } from '../../server/services'
+import AuthService from '../../server/services/authService'
 
 export default class EmailResolver {
   constructor(

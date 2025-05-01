@@ -1,10 +1,15 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
 import { UofReasons } from '../../config/types'
-import { AuthService, DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes, user } from '../__test/appSetup'
+import DraftReportService from '../../services/drafts/draftReportService'
+import AuthService from '../../services/authService'
+import OffenderService from '../../services/offenderService'
 
-jest.mock('../../services')
+jest.mock('../../services/drafts/draftReportService')
+jest.mock('../../services/authService')
+jest.mock('../../services/locationService')
+jest.mock('../../services/offenderService')
 
 const draftReportService = new DraftReportService(
   null,

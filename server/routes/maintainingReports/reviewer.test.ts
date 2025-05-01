@@ -3,9 +3,11 @@ import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test
 import { parseDate } from '../../utils/utils'
 import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
-import { OffenderService, ReviewService, ReportDetailBuilder, AuthService } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
-import { ReviewerStatementWithComments } from '../../services/reviewService'
+import ReviewService, { ReviewerStatementWithComments } from '../../services/reviewService'
+import OffenderService from '../../services/offenderService'
+import AuthService from '../../services/authService'
+import ReportDetailBuilder from '../../services/reportDetailBuilder'
 
 const userSupplier = jest.fn()
 

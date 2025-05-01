@@ -25,7 +25,7 @@ import config from '../server/config'
 import RedisTokenStore from '../server/data/tokenStore/redisTokenStore'
 import { redisClient } from '../server/data/redisClient'
 import InMemoryTokenStore from '../server/data/tokenStore/inMemoryTokenStore'
-import { AuthService } from '../server/services'
+import AuthService from '../server/services/authService'
 
 const eventPublisher = eventPublisherFactory(
   buildAppInsightsClient(applicationInfoSupplier(), 'use-of-force-reminder-job')

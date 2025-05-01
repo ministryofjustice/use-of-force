@@ -3,7 +3,8 @@ import { paths } from '../../config/incident'
 import { StaffDetails } from '../../data/draftReportClientTypes'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
-import { AuthService, PrisonerSearchService } from '../../services'
+import AuthService from '../../services/authService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/authService')

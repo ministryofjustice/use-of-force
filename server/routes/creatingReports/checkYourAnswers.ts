@@ -5,7 +5,7 @@ import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { properCaseFullName } from '../../utils/utils'
 import reportSummary from '../../services/reportSummary'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 export default class CheckAnswerRoutes {
   constructor(

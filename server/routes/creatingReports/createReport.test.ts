@@ -1,7 +1,8 @@
 import request from 'supertest'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
-import { AuthService, OffenderService } from '../../services'
+import AuthService from '../../services/authService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/authService')

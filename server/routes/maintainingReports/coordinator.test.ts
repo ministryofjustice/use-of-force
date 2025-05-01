@@ -1,17 +1,14 @@
 import request from 'supertest'
 import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
-import {
-  InvolvedStaffService,
-  OffenderService,
-  ReportService,
-  ReviewService,
-  UserService,
-  StatementService,
-  AuthService,
-} from '../../services'
 import { paths } from '../../config/incident'
-import { AddStaffResult } from '../../services/involvedStaffService'
+import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
+import ReportService from '../../services/reportService'
+import OffenderService from '../../services/offenderService'
+import ReviewService from '../../services/reviewService'
+import UserService from '../../services/userService'
+import StatementService from '../../services/statementService'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')

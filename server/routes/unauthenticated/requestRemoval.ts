@@ -2,8 +2,10 @@ import type { Request, RequestHandler } from 'express'
 import createHttpError from 'http-errors'
 import { isHashOfString } from '../../utils/hash'
 import { paths } from '../../config/incident'
-import { AuthService, ReportService, StatementService } from '../../services'
 import config from '../../config'
+import ReportService from '../../services/reportService'
+import StatementService from '../../services/statementService'
+import AuthService from '../../services/authService'
 
 const extractStatementId = (req: Request): number => parseInt(req.params.statementId, 10)
 

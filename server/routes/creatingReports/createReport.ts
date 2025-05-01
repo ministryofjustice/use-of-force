@@ -5,7 +5,8 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
-import { AuthService, OffenderService } from '../../services'
+import AuthService from '../../services/authService'
+import OffenderService from '../../services/offenderService'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',

@@ -3,7 +3,9 @@ import { Request, Response } from 'express'
 import { removeKeysWithEmptyValues, parseDate } from '../../utils/utils'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import { ReportStatus } from '../../config/types'
-import { AuthService, OffenderService, ReviewService } from '../../services'
+import OffenderService from '../../services/offenderService'
+import ReviewService from '../../services/reviewService'
+import AuthService from '../../services/authService'
 
 export default class ReviewerRoutes {
   constructor(

@@ -8,23 +8,21 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 
 import { authenticationMiddleware } from './mockAuthentication'
-import {
-  type Services,
-  type StatementService,
-  type OffenderService,
-  type ReportService,
-  type ReportDetailBuilder,
-  type ReviewService,
-  type InvolvedStaffService,
-  type DraftReportService,
-  type LocationService,
-  type PrisonerSearchService,
-  type FeComponentsService,
-  NomisMappingService,
-  AuthService,
-} from '../../services'
 import UserService from '../../services/userService'
 import unauthenticatedRoutes from '../unauthenticated'
+import StatementService from '../../services/statementService'
+import OffenderService from '../../services/offenderService'
+import ReportService from '../../services/reportService'
+import { InvolvedStaffService } from '../../services/involvedStaffService'
+import ReviewService from '../../services/reviewService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
+import LocationService from '../../services/locationService'
+import NomisMappingService from '../../services/nomisMappingService'
+import DraftReportService from '../../services/drafts/draftReportService'
+import FeComponentsService from '../../services/feComponentsService'
+import AuthService from '../../services/authService'
+import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import { Services } from '../../services'
 
 export const user = {
   firstName: 'first',

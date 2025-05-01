@@ -1,9 +1,9 @@
 import { DraftReportClient, PrisonClient, ManageUsersApiClient } from '../../data'
 import { FoundUserResult } from '../../types/uof'
-import { UserService } from '..'
 import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
+import UserService from '../userService'
 
-jest.mock('../')
+jest.mock('../userService')
 jest.mock('../../data')
 
 const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>

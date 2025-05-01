@@ -1,7 +1,9 @@
 import request from 'supertest'
 import { appWithAllRoutes } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
-import { StatementService, OffenderService, AuthService } from '../../services'
+import StatementService from '../../services/statementService'
+import OffenderService from '../../services/offenderService'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/statementService')
 jest.mock('../../services/offenderService')

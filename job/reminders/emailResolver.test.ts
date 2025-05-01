@@ -1,7 +1,7 @@
 import StatementsClient from '../../server/data/statementsClient'
 import EmailResolver from './emailResolver'
 import { ManageUsersApiClient } from '../../server/data'
-import { AuthService } from '../../server/services'
+import AuthService from '../../server/services/authService'
 
 const client = { inTransaction: true }
 

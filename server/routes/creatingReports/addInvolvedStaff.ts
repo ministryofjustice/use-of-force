@@ -3,7 +3,8 @@ import { Request, Response } from 'express'
 import { properCaseFullName } from '../../utils/utils'
 import { nextPaths, paths } from '../../config/incident'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
-import { AuthService, PrisonerSearchService } from '../../services'
+import AuthService from '../../services/authService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',

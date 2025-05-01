@@ -1,6 +1,9 @@
 import type { RequestHandler } from 'express'
 import { paths } from '../../config/incident'
-import { AuthService, OffenderService, ReportService, ReviewService } from '../../services'
+import ReportService from '../../services/reportService'
+import OffenderService from '../../services/offenderService'
+import ReviewService from '../../services/reviewService'
+import AuthService from '../../services/authService'
 
 export default class AdminRoutes {
   constructor(

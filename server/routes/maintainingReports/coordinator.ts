@@ -1,17 +1,14 @@
 import type { Request, RequestHandler } from 'express'
-import {
-  InvolvedStaffService,
-  OffenderService,
-  ReportService,
-  ReviewService,
-  UserService,
-  StatementService,
-  AuthService,
-} from '../../services'
-import { AddStaffResult } from '../../services/involvedStaffService'
+import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
 import { paths } from '../../config/incident'
 import { ReportStatus } from '../../config/types'
+import ReportService from '../../services/reportService'
+import ReviewService from '../../services/reviewService'
+import OffenderService from '../../services/offenderService'
+import UserService from '../../services/userService'
+import StatementService from '../../services/statementService'
+import AuthService from '../../services/authService'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 

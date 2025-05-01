@@ -6,7 +6,7 @@ import DraftReportService from '../../services/drafts/draftReportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')

@@ -1,7 +1,7 @@
 import { Request, RequestHandler, Response } from 'express'
 import LocationService from '../../services/locationService'
 import DraftReportService from '../../services/drafts/draftReportService'
-import { AuthService } from '../../services'
+import AuthService from '../../services/authService'
 
 export default class ChangePrisonRoutes {
   constructor(
