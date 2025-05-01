@@ -1,6 +1,6 @@
 import { full } from '../../config/incident'
 import { UseOfForceDraftReport } from '../../data/UseOfForceReport'
-import { isValid } from '../validation'
+import validation from '../validation'
 
 export enum SectionStatus {
   NOT_STARTED = 'NOT_STARTED',
@@ -13,13 +13,13 @@ const getStatus = (validationSpec, sectionValues) => {
     return SectionStatus.NOT_STARTED
   }
 
-  return isValid(validationSpec.schema, sectionValues) ? SectionStatus.COMPLETE : SectionStatus.INCOMPLETE
+  return validation.isValid(validationSpec.schema, sectionValues) ? SectionStatus.COMPLETE : SectionStatus.INCOMPLETE
 }
 
 export const check = (report: UseOfForceDraftReport): { complete: boolean } => {
   const result = Object.keys(full).reduce(
     (previous, key) => ({ ...previous, [key]: getStatus(full[key], report[key]) }),
-    {}
+    {},
   )
 
   const complete = !Object.values(result).some(value => value !== SectionStatus.COMPLETE)

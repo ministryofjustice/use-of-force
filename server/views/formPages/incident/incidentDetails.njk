@@ -1,0 +1,189 @@
+{% extends "../formTemplate.njk" %}
+{% from  "../../macros.njk" import submitLink %}    
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% import "../incidentMacros.njk" as incidentMacro %}
+{% from "../../partials/datePicker.njk" import datePicker %}
+{% from "../incidentTimeMacro.njk"  import incidentTime %}
+{% set pageTitle = 'Incident details' %}
+{% set showCancelEditButton = data.locationId %}
+
+{% block formItems %}
+<div class="govuk-body">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+      <div class="govuk-!-margin-bottom-6">
+        <p class="govuk-!-margin-bottom-1">
+          <span class="govuk-label--s">Prisoner:&nbsp;</span>
+          <span data-qa="offender-name"> {{ data.displayName }}</span>
+        </p>
+      </div>
+
+      {% set isDateError = errors | isErrorPresent(['incidentDate[date]'])  %}
+      {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
+      {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
+
+      <p class="govuk-label--s">When did the incident happen?</p>
+      <div>
+        {{ datePicker({
+          id: 'incidentDate[date]',
+          label: 'Date',
+          name: 'incidentDate[date]',
+          date: data.incidentDate.date,
+          classes: 'date-picker-input-wide' if isDateError ,
+          attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy', 'placeholder': 'DD/MM/YYYY'},
+          errorMessage: errors | findErrors(['incidentDate[date]'])
+          })
+        }}
+      </div>
+
+        {{ incidentTime({
+          errorMessage: errors | concatErrors(["incidentDate[time][hour]", "incidentDate[time][minute]", "incidentDate[time]"]),
+          hour:  {
+              name: 'incidentDate[time][hour]',
+              id: 'incidentDate[time][hour]',
+              value: data.incidentDate.hour,
+              classes: ('govuk-input--error' if isHourError)
+            },
+          minutes:  {
+              name: 'incidentDate[time][minute]',
+              id: 'incidentDate[time][minute]',
+              value: data.incidentDate.minute,
+              classes: ('govuk-input--error' if isMinuteError)
+              }
+        }) }}
+        <hr>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-padding-bottom-3 govuk-!-padding-top-3">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-label--s">Prison:&nbsp;</span>
+      <span data-qa="prison" id='prison'>
+        {{ data.prison.description }} &nbsp;
+        {{
+          submitLink({
+            label: 'Change<span class="govuk-visually-hidden"> prison </span>',
+            qa: 'change-prison-link',
+            value: 'save-and-change-prison'
+          })
+        }}
+      </span>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{
+        govukSelect({
+          id: 'incidentLocationId',
+          name: 'incidentLocationId',
+          classes: 'govuk-!-width-one-third  govuk-!-margin-bottom-3',
+          errorMessage: errors | findError('incidentLocationId'),
+          label: {
+            text: 'Where in '+ data.prison.description + ' did the incident happen?',
+            isPageHeading: false,
+            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+          },
+          items: data.locations | toSelect('incidentLocationId', 'userDescription', data.incidentLocationId )
+        })
+      }}
+      <hr />
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-padding-top-3">
+    <div class="govuk-grid-column-two-thirds">
+      {{ incidentMacro.radiosWithNestedTextbox({
+        primaryQuestion: {
+          id: "plannedUseOfForce",
+          text: "Was the use of force planned?",
+          name: "plannedUseOfForce",
+          value: data.plannedUseOfForce,
+          errorMessage: errors | findError('plannedUseOfForce'),
+          options: [{
+              value: true,
+              label: "Yes"
+            },
+            {
+              value: false,
+              label: "No"
+          }]
+        },
+        followUpQuestion: {
+          legend: "Who authorised the use of force?",
+          name: "authorisedBy",
+          value: data.authorisedBy,
+          label: "Name",
+          errorMessage: errors | findError('authorisedBy')
+          }
+        })
+      }}
+      <hr />
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-!-margin-bottom-1 govuk-label--s">Witnesses to the incident</p>
+      <p class="govuk-!-margin-top  -1">These are not other staff members involved in the use of force</p>
+      <div class="add-another-witness">
+        {% macro addWitness(index, value, showRemove) %}
+        {% call govukFieldset({ classes: 'add-another__item' }) %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third" id="witnesses[{{index}}]">
+            {{
+                  govukInput({
+                    label: {
+                      html: 'Name'
+                    },
+                    id: 'witnesses[' + index + '][name]',
+                    name: 'witnesses[' + index + '][name]',
+                    value: value,
+                    errorMessage: errors | findErrors(['witnesses[' + index + ']' ,'witnesses[' + index + '][name]']),
+                    attributes: {
+                      'data-name': 'witnesses[%index%][name]',
+                      'data-id': 'witnesses[%index%][name]'
+                    }
+                  })
+            }}
+          </div>
+          <div class="govuk-grid-column-one-third remove-button-container govuk-!-margin-top-6">
+            {% if showRemove %}
+            <button type="button"
+              class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">
+              Remove
+            </button>
+            {% endif  %}
+          </div>
+        </div>
+        {% endcall %}
+        {% endmacro %}
+
+        {% for witness in data.witnesses %}
+        {{ addWitness(index = loop.index0, value = witness.name, showRemove = loop.length != 1)  }}
+        {% else %}
+        {{ addWitness(index = 0, value = null, showRemove = false) }}
+        {% endfor %}
+        <div class="button-action">
+          {{
+            govukButton({
+              text: 'Add another witness',
+              classes: 'govuk-button--secondary  add-another__add-button',
+              attributes: { 'data-qa-add-another-witness': true }
+            })
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/assets/add-another-witness.js"></script>
+{% endblock %}

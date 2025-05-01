@@ -1,0 +1,32 @@
+{% extends "../../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+
+
+{% set pageTitle = 'The username does not exist' %}
+
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    <p>
+        The username {{ username }} does not exist.
+    </p>
+    <p>You should check the username of the person you want to add and try again.
+</div>
+  <div class="govuk-grid-column-three-quarters">
+
+    <div>
+        {{
+          govukButton({
+            text: 'Continue',
+            classes: 'govuk-button',
+            href: '/coordinator/report/' + reportId + '/add-staff',
+            attributes: { 'data-qa': 'continue', 'data-submit': true }
+          })
+        }}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -107,8 +107,8 @@ context('Submit the incident report', () => {
           { name: 'TEST_USER name', email: 'TEST_USER@gov.uk', userid: 'TEST_USER', status: 'PENDING' },
           { name: 'Emily Jones', email: 'Emily@gov.uk', userid: 'EMILY_JONES', status: 'PENDING' },
           { name: 'Jo Zagato', email: 'Jo@gov.uk', userid: 'JO_ZAGATO', status: 'PENDING' },
-        ])
-      )
+        ]),
+      ),
     )
 
     reportSentPage

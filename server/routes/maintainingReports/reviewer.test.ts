@@ -26,7 +26,7 @@ beforeEach(() => {
   app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
   reviewService.getIncompleteReports.mockResolvedValue([])
   reviewService.getCompletedReports.mockResolvedValue(
-    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, [])
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, []),
   )
   offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jimmy Choo', offenderNo: '123456' })
   reportDetailBuilder.build.mockResolvedValue({} as ReportDetail)
@@ -54,7 +54,7 @@ describe(`GET /completed-incidents`, () => {
 
     return request(app)
       .get(
-        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&&dateFrom=09/01/2020&dateTo=15/01/2020&prisonerName=Jimmy Choo'
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&&dateFrom=09/01/2020&dateTo=15/01/2020&prisonerName=Jimmy Choo',
       )
       .expect(200)
       .expect('Content-Type', /html/)
@@ -70,7 +70,7 @@ describe(`GET /completed-incidents`, () => {
             reporter: 'Bob',
             prisonerName: 'Jimmy Choo',
           },
-          1
+          1,
         )
       })
   })
@@ -80,18 +80,18 @@ describe(`GET /completed-incidents`, () => {
     reviewService.getCompletedReports.mockResolvedValue(
       new PageResponse(
         { min: 1, max: 20, totalCount: 200, totalPages: 10, page: 1, nextPage: 2, previousPage: null },
-        []
-      )
+        [],
+      ),
     )
     return request(app)
       .get(
-        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo',
       )
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3'
+          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3',
         )
       })
   })
@@ -112,7 +112,7 @@ describe(`GET /completed-incidents`, () => {
             prisonNumber: 'A1234AA',
             reporter: 'Bob',
           },
-          1
+          1,
         )
       })
   })
@@ -282,7 +282,7 @@ describe('GET /view-statements', () => {
       isVerified: true,
       name: `User ${params.id}`,
       userId: `USER_${params.id}`,
-    } as ReviewerStatementWithComments)
+    }) as ReviewerStatementWithComments
 
   it('should only render submitted statements', async () => {
     userSupplier.mockReturnValue(coordinatorUser)

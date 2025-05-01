@@ -45,7 +45,7 @@ describe('submit', () => {
       moment(now).add(1, 'day').toDate(),
       moment(now).add(3, 'days').toDate(),
       staff,
-      client
+      client,
     )
 
     expect(draftReportClient.submit).toBeCalledTimes(1)

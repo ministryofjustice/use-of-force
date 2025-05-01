@@ -58,7 +58,7 @@ describe('send', () => {
           reporterName,
           submittedDate,
         },
-        expectedContext
+        expectedContext,
       )
     })
 
@@ -80,7 +80,7 @@ describe('send', () => {
           reporterName,
           submittedDate,
         },
-        expectedContext
+        expectedContext,
       )
     })
   })
@@ -104,7 +104,7 @@ describe('send', () => {
           submittedDate,
           involvedName,
         },
-        expectedContext
+        expectedContext,
       )
     })
 
@@ -125,7 +125,7 @@ describe('send', () => {
           submittedDate,
           involvedName,
         },
-        expectedContext
+        expectedContext,
       )
     })
   })

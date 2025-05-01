@@ -17,7 +17,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
@@ -57,7 +57,7 @@ describe('GET /check-your-answers', () => {
       .expect(res => {
         expect(nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId).toHaveBeenCalledWith(
           'user1-system-token',
-          123456
+          123456,
         )
       })
   })

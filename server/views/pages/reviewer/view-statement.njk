@@ -1,0 +1,32 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% import "../statementDetailMacro.njk" as statementDetail %}
+
+{% set pageTitle = 'Use of force statement' %}
+
+{% block content %}
+<div class="govuk-body">
+  <div class="govuk-grid-row">
+    <h1 class="govuk-heading-xl mainHeading">{{ data.name}}'s statement</h1>
+ 
+  {{ statementDetail.detail(data, false) }}
+
+  <p class="govuk-!-margin-top-5">
+    <a
+      href="/{{ data.reportId }}/view-statements"
+      draggable="false"
+      class="govuk-link"
+      data-qa="continue"
+    >
+      Return to incident overview
+    </a>
+  </p>
+
+</div>
+{% endblock %}

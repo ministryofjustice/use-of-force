@@ -23,7 +23,7 @@ export default class CoordinatorRoutes {
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
     private readonly userService: UserService,
-    private readonly statementService: StatementService
+    private readonly statementService: StatementService,
   ) {}
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
@@ -46,7 +46,7 @@ export default class CoordinatorRoutes {
     if (!removalRequest.isRemovalRequested) {
       return res.redirect(paths.viewStatements(parseInt(reportId, 10)))
     }
-    return res.render('pages/coordinator/view-removal-request.html', { data, errors })
+    return res.render('pages/coordinator/view-removal-request.njk', { data, errors })
   }
 
   submitRemovalRequest: RequestHandler = async (req, res) => {
@@ -72,12 +72,12 @@ export default class CoordinatorRoutes {
     const { reportId, statementId } = req.params
     const staffMember = await this.involvedStaffService.loadInvolvedStaff(
       parseInt(reportId, 10),
-      parseInt(statementId, 10)
+      parseInt(statementId, 10),
     )
 
     const data = { name: staffMember.name, email: staffMember.email, reportId }
 
-    return res.render('pages/coordinator/staff-member-not-removed.html', { data })
+    return res.render('pages/coordinator/staff-member-not-removed.njk', { data })
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
@@ -86,7 +86,7 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
     const data = { incidentId: reportId }
 
-    res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+    res.render('pages/coordinator/add-involved-staff/add-involved-staff.njk', { errors, data })
   }
 
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {
@@ -103,7 +103,7 @@ export default class CoordinatorRoutes {
     const result = await this.involvedStaffService.addInvolvedStaff(
       await this.systemToken(res.locals.user.username),
       reportId,
-      username
+      username,
     )
 
     req.flash('username', username.toUpperCase())
@@ -123,14 +123,14 @@ export default class CoordinatorRoutes {
 
     if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
       const user = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
-      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
+      return res.render(`pages/coordinator/add-involved-staff/${result}.njk`, {
         reportId,
         username,
         name: user.name,
       })
     }
 
-    return res.render(`pages/coordinator/add-involved-staff/${result}.html`, { reportId, username })
+    return res.render(`pages/coordinator/add-involved-staff/${result}.njk`, { reportId, username })
   }
 
   confirmDeleteReport: RequestHandler = async (req, res) => {
@@ -141,11 +141,11 @@ export default class CoordinatorRoutes {
     const { bookingId, reporterName, submittedDate } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(
       await this.systemToken(res.locals.user.username),
-      bookingId
+      bookingId,
     )
     const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 
-    res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
+    res.render('pages/coordinator/confirm-report-deletion.njk', { errors, data })
   }
 
   deleteReport: RequestHandler = async (req, res) => {
@@ -179,7 +179,7 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+    res.render('pages/coordinator/confirm-statement-deletion.njk', { errors, data })
   }
 
   deleteStatement: RequestHandler = async (req, res) => {

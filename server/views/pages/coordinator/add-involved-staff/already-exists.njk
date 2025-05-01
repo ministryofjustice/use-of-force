@@ -1,0 +1,30 @@
+{% extends "../../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+
+
+{% set pageTitle = name + ' has already been added to the report' %}
+
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    <p>
+        {{name}} will not be added to the report again. Their username is {{username}}. 
+    </p>
+  </div>
+  <div class="govuk-grid-column-three-quarters">
+    <div>
+        {{
+          govukButton({
+            text: 'Continue',
+            classes: 'govuk-button',
+            href: '/' + reportId + '/view-report',
+            attributes: { 'data-qa': 'continue', 'data-submit': true }
+          })
+        }}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -23,11 +23,14 @@ export default class LocationClient {
 
   async getLocations(
     prisonId: string,
-    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE
+    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE,
   ): Promise<LocationInPrison[]> {
-    logger.info(`getting locations for prison ${prisonId} and usageType ${usageType}`)
+    logger.info(
+      `getting locations for prison ${prisonId} and usageType ${usageType}?formatLocalName=true&sortByLocalName=true`,
+    )
     return this.restClient.get({
       path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}?formatLocalName=true&sortByLocalName=true`,
+      headers: { 'Sort-Fields': 'userDescription' },
     })
   }
 }

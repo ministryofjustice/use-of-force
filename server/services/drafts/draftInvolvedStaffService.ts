@@ -10,7 +10,7 @@ export class DraftInvolvedStaffService {
     private readonly authClientBuilder: RestClientBuilder<AuthClient>,
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
     private readonly draftReportClient: DraftReportClient,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   private async reporter(token: string, reporterUsername: string): Promise<DraftInvolvedStaff> {
@@ -30,7 +30,7 @@ export class DraftInvolvedStaffService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: number,
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     const prisonClient = this.prisonClientBuilder(token)
     const authClient = this.authClientBuilder(token)

@@ -31,7 +31,7 @@ const viewStatementsPage = () =>
               isOverdue: Cypress.$(tds[1]).find('[data-qa="overdue"]').length === 1,
               isUnverified: Cypress.$(tds[1]).find('[data-qa="unverified"]').length === 1,
             }
-          })
+          }),
         ),
 
     reportLink: () => cy.get('[data-qa="report-link"]'),

@@ -80,7 +80,7 @@ const appSetup = (
   unauthenticated: RequestHandler,
   userSupplier,
   isProduction,
-  flash
+  flash,
 ): Express => {
   const app = express()
 
@@ -115,7 +115,7 @@ export const appWithAllRoutes = (
   overrides: Partial<Services> = {},
   userSupplier = () => user,
   isProduction?: boolean,
-  flash = jest.fn().mockReturnValue([])
+  flash = jest.fn().mockReturnValue([]),
 ): Express => {
   const services = {
     statementService: {} as StatementService,

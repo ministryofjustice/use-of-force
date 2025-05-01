@@ -33,7 +33,7 @@ beforeEach(() => {
     locationService,
     reportLogClient,
     inTransaction,
-    systemToken
+    systemToken,
   )
 })
 
@@ -95,7 +95,7 @@ describe('reportService', () => {
             reporterName: 'BOB',
             status: 'IN_PROGRESS',
           },
-        ])
+        ]),
       )
       const result = await service.getReports('user1', 1)
       expect(result).toEqual(
@@ -109,7 +109,7 @@ describe('reportService', () => {
             staffMemberName: 'BOB',
             status: 'IN_PROGRESS',
           },
-        ])
+        ]),
       )
       expect(incidentClient.getReports).toBeCalledWith('user1', 1)
     })
@@ -147,7 +147,7 @@ describe('reportService', () => {
           1,
           undefined,
           { evidence: { baggedEvidence: true } },
-          transactionalClient
+          transactionalClient,
         )
       })
 
@@ -178,7 +178,7 @@ describe('reportService', () => {
           {
             baggedEvidence: true,
           },
-          incidentDate
+          incidentDate,
         )
 
         expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, false, transactionalClient)

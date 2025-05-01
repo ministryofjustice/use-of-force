@@ -30,7 +30,7 @@ describe('Request removal controller', () => {
       { reportService, statementService, systemToken: async _ => `system-token` },
       undefined,
       undefined,
-      flash
+      flash,
     )
   })
 

@@ -1,0 +1,57 @@
+{% extends "../../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageTitle = 'Add another member of staff' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+    {% if errors.length > 0 %}
+        {{
+        govukErrorSummary({
+            titleText: 'There is a problem',
+            errorList: errors,
+            attributes: { 'data-qa-errors': true }
+        })
+        }}
+    {% endif %}
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9">
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>  
+        <div class="govuk-grid-row govuk-!-margin-top-9">
+            <div class="govuk-grid-column-full">
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <div class="add-another-staff-member">
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-one-third">
+                            {{
+                                govukInput({
+                                    label: {
+                                    html: 'Username'
+                                    },
+                                    id: 'username',
+                                    name: 'username',
+                                    value: value,
+                                    errorMessage: errors | findError('usernam')
+                                })
+                            }}
+                            </div>
+                        </div>
+                        {{
+                        govukButton({
+                            text: 'Save and continue',
+                            name: 'continue',
+                            classes: 'govuk-button  govuk-!-margin-top-5',
+                            attributes: { 'data-qa': 'continue' }
+                            })
+                        }}
+                    </div>
+                    <a href="/{{ data.incidentId }}/view-report" draggable="false" class="govuk-link">Cancel</a>   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

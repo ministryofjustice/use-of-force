@@ -13,7 +13,7 @@ export default class SubmitDraftReportService {
     private readonly draftReportClient: DraftReportClient,
     private readonly statementsClient: StatementsClient,
     private readonly notificationService,
-    private readonly inTransaction: InTransaction
+    private readonly inTransaction: InTransaction,
   ) {}
 
   private async requestStatements(
@@ -22,7 +22,7 @@ export default class SubmitDraftReportService {
     incidentDate: Moment,
     overdueDate: Moment,
     submittedDate: Moment,
-    staffMembers: PersistedInvolvedStaff[]
+    staffMembers: PersistedInvolvedStaff[],
   ) {
     const staffExcludingReporter = staffMembers.filter(staff => !staff.isReporter)
     const staffExcludingUnverified = staffExcludingReporter.filter(staff => staff.email)
@@ -36,8 +36,8 @@ export default class SubmitDraftReportService {
           overdueDate: overdueDate.toDate(),
           submittedDate: submittedDate.toDate(),
         },
-        { reportId, statementId: staff.statementId }
-      )
+        { reportId, statementId: staff.statementId },
+      ),
     )
     return Promise.all(notifications)
   }
@@ -46,7 +46,7 @@ export default class SubmitDraftReportService {
     currentUser: LoggedInUser,
     bookingId: number,
     involvedStaff: DraftInvolvedStaff[],
-    now: () => Moment = () => moment()
+    now: () => Moment = () => moment(),
   ): Promise<number | false> {
     const { id: reportId, incidentDate } = await this.draftReportClient.get(currentUser.username, bookingId)
     if (reportId) {
@@ -59,7 +59,7 @@ export default class SubmitDraftReportService {
           moment(reportSubmittedDate).add(1, 'day').toDate(),
           overdueDate.toDate(),
           involvedStaff,
-          client
+          client,
         )
         const idFor = user => userNamesToStatementIds[user.username]
         const { username } = currentUser

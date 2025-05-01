@@ -2,56 +2,49 @@
  * Based on the "Add Another" Component from https://github.com/hmcts/frontend
  */
 
-if (typeof Array.prototype.forEach != 'function') {
-  Array.prototype.forEach = function(callback) {
-    for (var i = 0; i < this.length; i++) {
+if (typeof Array.prototype.forEach !== 'function') {
+  Array.prototype.forEach = function (callback) {
+    for (let i = 0; i < this.length; i++) {
       callback.apply(this, [this[i], i, this])
     }
   }
 }
 
-AddAnother = function(container, removeContainerSelector) {
+export const AddAnother = function (container, removeContainerSelector) {
   this.container = $(container)
   this.removeContainerSelector = removeContainerSelector
 
-  this.onAddButtonClick = function(e) {
-    var item = this.getNewItem()
+  this.onAddButtonClick = function (e) {
+    const item = this.getNewItem()
     this.updateAttributes(this.getItems().length, item)
     this.resetItem(item)
-    var firstItem = this.getItems().first()
+    const firstItem = this.getItems().first()
     if (!this.hasRemoveButton(firstItem)) {
       this.createRemoveButton(firstItem)
     }
-    this.getItems()
-      .last()
-      .after(item)
-    item
-      .find('input, textarea, select')
-      .first()
-      .focus()
+    this.getItems().last().after(item)
+    item.find('input, textarea, select').first().focus()
     e.preventDefault()
   }
 
-  this.hasRemoveButton = function(item) {
+  this.hasRemoveButton = function (item) {
     return item.find('.add-another__remove-button').length
   }
 
-  this.getItems = function() {
+  this.getItems = function () {
     return this.container.find('.add-another__item')
   }
 
-  this.getNewItem = function() {
-    var item = this.getItems()
-      .first()
-      .clone()
+  this.getNewItem = function () {
+    const item = this.getItems().first().clone()
     if (!this.hasRemoveButton(item)) {
       this.createRemoveButton(item)
     }
     return item
   }
 
-  this.updateAttributes = function(index, item) {
-    item.find('[data-name]').each(function(i, el) {
+  this.updateAttributes = function (index, item) {
+    item.find('[data-name]').each(function (i, el) {
       el.name = $(el)
         .attr('data-name')
         .replace(/%index%/, index)
@@ -62,16 +55,16 @@ AddAnother = function(container, removeContainerSelector) {
     })
   }
 
-  this.createRemoveButton = function(item) {
+  this.createRemoveButton = function (item) {
     item
       .find(this.removeContainerSelector)
       .append(
-        '<button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">Remove</button>'
+        '<button type="button" class="govuk-button govuk-button--secondary add-another__remove-button govuk-!-margin-left-3">Remove</button>',
       )
   }
 
-  this.resetItem = function(item) {
-    item.find('[data-name], [data-id]').each(function(index, el) {
+  this.resetItem = function (item) {
+    item.find('[data-name], [data-id]').each(function (index, el) {
       if (el.type == 'checkbox' || el.type == 'radio') {
         el.checked = false
       } else {
@@ -79,30 +72,28 @@ AddAnother = function(container, removeContainerSelector) {
       }
     })
     item.find('.govuk-error-message').remove()
-    var classesToReset = ['govuk-form-group--error', 'govuk-input--error', 'govuk-textarea--error']
-    classesToReset.forEach(function(c) {
-      item.find('.' + c).removeClass(c)
+    const classesToReset = ['govuk-form-group--error', 'govuk-input--error', 'govuk-textarea--error']
+    classesToReset.forEach(function (c) {
+      item.find(`.${c}`).removeClass(c)
     })
   }
 
-  this.onRemoveButtonClick = function(e) {
-    $(e.currentTarget)
-      .parents('.add-another__item')
-      .remove()
-    var items = this.getItems()
+  this.onRemoveButtonClick = function (e) {
+    $(e.currentTarget).parents('.add-another__item').remove()
+    const items = this.getItems()
     if (items.length === 1) {
       items.find('.add-another__remove-button').remove()
     }
     items.each(
-      $.proxy(function(index, el) {
+      $.proxy(function (index, el) {
         this.updateAttributes(index, $(el))
-      }, this)
+      }, this),
     )
     this.focusHeading()
     e.preventDefault()
   }
 
-  this.focusHeading = function() {
+  this.focusHeading = function () {
     this.container.find('.add-another__heading').focus()
   }
 

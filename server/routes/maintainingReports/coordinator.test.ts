@@ -41,7 +41,7 @@ describe('coordinator', () => {
         userService,
         statementService,
       },
-      userSupplier
+      userSupplier,
     )
   })
 
@@ -489,7 +489,7 @@ describe('coordinator', () => {
           },
           userSupplier,
           null,
-          flash
+          flash,
         )
 
         await request(app)

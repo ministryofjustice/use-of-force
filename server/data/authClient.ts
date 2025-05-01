@@ -34,7 +34,7 @@ async function getSystemClientToken(tokenStore: TokenStore, username?: string) {
 
   const clientTokenHeader = generateOauthClientToken(
     config.apis.oauth2.systemClientId,
-    config.apis.oauth2.systemClientSecret
+    config.apis.oauth2.systemClientSecret,
   )
 
   const oauthRequest = username ? { grant_type: 'client_credentials', username } : { grant_type: 'client_credentials' }

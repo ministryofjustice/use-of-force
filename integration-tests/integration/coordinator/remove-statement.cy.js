@@ -68,7 +68,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
     viewStatementsPage.statementLink(1).click()
 
@@ -90,7 +90,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
       .then(result =>
         expect(result).to.deep.equal([
           { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
   })
 
@@ -121,7 +121,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
     viewStatementsPage.statementLink(1).click()
 
@@ -148,7 +148,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
   })
 
@@ -179,7 +179,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
     viewStatementsPage.statementLink(1).click()
 
@@ -206,7 +206,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
   })
 
@@ -237,7 +237,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
           isOverdue: false,
           isUnverified: false,
         },
-      ])
+      ]),
     )
     viewStatementsPage.statementLink(1).click()
 

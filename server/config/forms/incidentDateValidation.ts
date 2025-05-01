@@ -1,6 +1,6 @@
 import moment from 'moment'
 import joi, { ErrorReport } from '@hapi/joi'
-import { toInteger } from './sanitisers'
+import sanitisers from './sanitisers'
 
 export enum ValidationError {
   missing = 'missing',
@@ -38,7 +38,7 @@ export function timeValidation(time: string, helpers: joi.CustomHelpers): ErrorR
 }
 
 export function minuteValidation(minute: string, helpers: joi.CustomHelpers): ErrorReport | string {
-  const parsedMinutes = toInteger(minute)
+  const parsedMinutes = sanitisers.toInteger(minute)
 
   if (!minute) {
     return helpers.error(ValidationError.missing)
@@ -63,7 +63,7 @@ export function minuteValidation(minute: string, helpers: joi.CustomHelpers): Er
 }
 
 export function hourValidation(hour: string, helpers: joi.CustomHelpers): ErrorReport | string {
-  const parsedHours = toInteger(hour)
+  const parsedHours = sanitisers.toInteger(hour)
 
   if (!hour) {
     return helpers.error(ValidationError.missing)
