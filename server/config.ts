@@ -50,7 +50,7 @@ export default {
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
   redis: {
-    enabled: true,
+    enabled: false,
     host: get('REDIS_HOST', 'localhost'),
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_AUTH_TOKEN,

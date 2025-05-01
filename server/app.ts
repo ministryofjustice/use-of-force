@@ -31,6 +31,7 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpWebSession from './middleware/setUpWebSession'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -110,40 +111,7 @@ export default function createApp(services: Services): Express {
       },
     })
   )
-
-  app.use((req, res, next) => {
-    const headerName = 'X-Request-Id'
-    const oldValue = req.get(headerName)
-    const id = oldValue === undefined ? uuidv4() : oldValue
-
-    res.set(headerName, id)
-    req.id = id
-
-    next()
-  })
-
-  const RedisStore = ConnectRedis(session)
-  const client = createRedisClient()
-  client.connect()
-
-  app.use(
-    session({
-      store: new RedisStore({ client }),
-      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
-      secret: config.session.secret,
-      resave: false, // redis implements touch so shouldn't need this
-      saveUninitialized: false,
-      rolling: true,
-    })
-  )
-
-  app.use(
-    asyncMiddleware((req, res, next) => {
-      req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-      next()
-    })
-  )
-
+  app.use(setUpWebSession())
   app.use(passport.initialize())
   app.use(passport.session())
 
