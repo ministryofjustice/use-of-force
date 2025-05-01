@@ -11,7 +11,7 @@ const restClient = new RestClient(
       response: 1000,
       deadline: 1000,
     },
-    agent: new AgentConfig(1000),
+    agent: new AgentConfig(),
   },
   'token-1'
 )

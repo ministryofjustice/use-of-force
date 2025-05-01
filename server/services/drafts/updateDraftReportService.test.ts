@@ -1,4 +1,4 @@
-import { RestClientBuilder, PrisonClient, DraftReportClient, IncidentClient } from '../../data'
+import { PrisonClient, DraftReportClient, IncidentClient } from '../../data'
 import { InmateDetail } from '../../data/prisonClientTypes'
 import ReportLogClient from '../../data/reportLogClient'
 import { LoggedInUser } from '../../types/uof'
@@ -8,7 +8,7 @@ jest.mock('../../data')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
-const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
+const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 
 const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
@@ -17,17 +17,15 @@ const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
 
 let service: UpdateDraftReportService
-let prisonClientBuilder: RestClientBuilder<PrisonClient>
 
 beforeEach(() => {
-  prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)
   const systemToken = jest.fn().mockResolvedValue('system-token-1')
   service = new UpdateDraftReportService(
     draftReportClient,
     incidentClient,
     reportLogClient,
     inTransaction,
-    prisonClientBuilder,
+    prisonClient,
     systemToken
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
@@ -105,15 +103,17 @@ describe('create', () => {
     await service.process(currentUser, 1, 'form', formObject, incidentDate)
 
     expect(draftReportClient.create).toBeCalledTimes(1)
-    expect(draftReportClient.create).toBeCalledWith({
-      userId: 'user1',
-      bookingId: 1,
-      agencyId: 'MDI',
-      offenderNo: 'AA123ABC',
-      reporterName: 'Bob Smith',
-      formResponse: { form: formObject },
-      incidentDate,
-    })
-    expect(prisonClientBuilder).toHaveBeenCalledWith('system-token-1')
+    expect(draftReportClient.create).toBeCalledWith(
+      {
+        userId: 'user1',
+        bookingId: 1,
+        agencyId: 'MDI',
+        offenderNo: 'AA123ABC',
+        reporterName: 'Bob Smith',
+        formResponse: { form: formObject },
+        incidentDate,
+      },
+      'system-token-1'
+    )
   })
 })
