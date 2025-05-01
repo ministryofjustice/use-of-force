@@ -2,7 +2,7 @@ import type { Request, RequestHandler } from 'express'
 import createHttpError from 'http-errors'
 import { isHashOfString } from '../../utils/hash'
 import { paths } from '../../config/incident'
-import { AuthService, ReportService, StatementService } from '../../services'
+import type { ReportService, StatementService } from '../../services'
 import { SystemToken } from '../../types/uof'
 import config from '../../config'
 
@@ -12,7 +12,7 @@ export default class RemovalRequest {
   constructor(
     private readonly reportService: ReportService,
     private readonly statementService: StatementService,
-    private readonly authService: AuthService
+    private readonly systemToken: SystemToken
   ) {}
 
   private isSignatureValid = (statementId: unknown, signature: unknown): boolean =>
@@ -26,10 +26,7 @@ export default class RemovalRequest {
       return next(createHttpError(404, 'Not found'))
     }
 
-    const report = await this.reportService.getAnonReportSummary(
-      await this.authService.getSystemClientToken(),
-      statementId
-    )
+    const report = await this.reportService.getAnonReportSummary(await this.systemToken(), statementId)
 
     if (!report) {
       return res.redirect(paths.alreadyRemoved())
