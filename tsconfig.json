@@ -16,6 +16,14 @@
     "allowSyntheticDefaultImports": true,
     "ignoreDeprecations": "5.0"
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist", "coverage"],
+  "exclude": [
+    "node_modules",
+    "assets/**/*.js",
+    "integration-tests",
+    "cypress.config.ts",
+    "dist",
+    "coverage",
+    "eslint.config.mjs"
+  ],
   "include": ["**/*.js", "**/*.ts"]
 }
