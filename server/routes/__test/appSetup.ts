@@ -125,7 +125,6 @@ export const appWithAllRoutes = (
     involvedStaffService: {} as InvolvedStaffService,
     reviewService: {} as ReviewService,
     prisonerSearchService: {} as PrisonerSearchService,
-    systemToken: async username => `${username}-system-token`,
     locationService: {} as LocationService,
     nomisMappingService: {} as NomisMappingService,
     reportDetailBuilder: {} as ReportDetailBuilder,

@@ -1,10 +1,10 @@
-import { SystemToken } from '../../types/uof'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type OffenderService from '../../services/offenderService'
+import { AuthService } from '../../services'
 
 export default class ReportUseOfForceRoutes {
   constructor(
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService
   ) {}
@@ -14,7 +14,7 @@ export default class ReportUseOfForceRoutes {
     const { form = {} } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
     const status = this.draftReportService.getReportStatus(form)
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       bookingId
     )
     const { displayName, offenderNo, dateOfBirth } = offenderDetail

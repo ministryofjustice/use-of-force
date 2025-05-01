@@ -5,9 +5,9 @@ import { complete } from '../../config/forms/statementForm'
 import { processInput } from '../../services/validation'
 import { StatementStatus } from '../../config/types'
 import StatementService from '../../services/statementService'
-import { SystemToken } from '../../types/uof'
 import OffenderService from '../../services/offenderService'
 import { StatementSummary } from '../../data/statementsClientTypes'
+import { AuthService } from '../../services'
 
 const toStatement = namesByOffenderNumber => (incident: StatementSummary) => ({
   id: incident.id,
@@ -27,7 +27,7 @@ export default class StatementsRoutes {
   constructor(
     private readonly statementService: StatementService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   private getOffenderNames = (token, incidents) => {
@@ -39,7 +39,10 @@ export default class StatementsRoutes {
     const page = parseInt(req.query.page as string, 10) || 1
     const { items: results, metaData: pageData } = await this.statementService.getStatements(req.user.username, page)
 
-    const namesByOffenderNumber = await this.getOffenderNames(await this.systemToken(res.locals.user.username), results)
+    const namesByOffenderNumber = await this.getOffenderNames(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      results
+    )
     const statements = results.map(toStatement(namesByOffenderNumber))
 
     return res.render('pages/your-statements', {
@@ -64,7 +67,7 @@ export default class StatementsRoutes {
       StatementStatus.PENDING
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       statement.bookingId
     )
     const { displayName, offenderNo } = offenderDetail
@@ -116,7 +119,7 @@ export default class StatementsRoutes {
       StatementStatus.PENDING
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       statement.bookingId
     )
     const { displayName, offenderNo } = offenderDetail
@@ -160,7 +163,7 @@ export default class StatementsRoutes {
     )
 
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       statement.bookingId
     )
     const { displayName, offenderNo } = offenderDetail
@@ -184,7 +187,7 @@ export default class StatementsRoutes {
       StatementStatus.SUBMITTED
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       statement.bookingId
     )
     const { displayName, offenderNo } = offenderDetail

@@ -2,9 +2,8 @@ import { Request, Response } from 'express'
 
 import { properCaseFullName } from '../../utils/utils'
 import { nextPaths, paths } from '../../config/incident'
-import { SystemToken } from '../../types/uof'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
-import { PrisonerSearchService } from '../../services'
+import { AuthService, PrisonerSearchService } from '../../services'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -19,14 +18,14 @@ const getFromFlash = (req, name) => {
 export default class AddInvolvedStaffRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly searchService: PrisonerSearchService
   ) {}
 
   public viewStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const errors = req.flash('errors')
-    const token = await this.systemToken(req.user.username)
+    const token = await this.authService.getSystemClientToken(req.user.username)
     const staff = await this.draftReportService.getInvolvedStaffWithPrisons(
       token,
       req.user.username,
@@ -77,7 +76,7 @@ export default class AddInvolvedStaffRoutes {
     const { bookingId, username } = req.params
     const errors = req.flash('errors')
     const involvedStaff = await this.draftReportService.getInvolvedStaff(
-      await this.systemToken(req.user.username),
+      await this.authService.getSystemClientToken(req.user.username),
       req.user.username,
       parseInt(bookingId, 10)
     )
@@ -186,7 +185,7 @@ export default class AddInvolvedStaffRoutes {
     const { agencyId } = await this.draftReportService.getCurrentDraft(res.locals.user.username, Number(bookingId))
 
     const staff = await this.draftReportService.findUsers(
-      await this.systemToken(req.user.username),
+      await this.authService.getSystemClientToken(req.user.username),
       agencyId,
       firstName,
       lastName

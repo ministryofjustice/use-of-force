@@ -1,14 +1,13 @@
 import type { RequestHandler } from 'express'
 import { paths } from '../../config/incident'
-import type { OffenderService, ReportService, ReviewService } from '../../services'
-import type { SystemToken } from '../../types/uof'
+import { AuthService, OffenderService, ReportService, ReviewService } from '../../services'
 
 export default class AdminRoutes {
   constructor(
     private readonly reportService: ReportService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   viewEditReport: RequestHandler = async (req, res) =>
@@ -21,7 +20,7 @@ export default class AdminRoutes {
     const { bookingId, reporterName, submittedDate, form } = report
 
     const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       bookingId
     )
 

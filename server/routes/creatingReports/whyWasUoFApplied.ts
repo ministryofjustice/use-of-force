@@ -2,8 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { UofReasons } from '../../config/types'
 import { paths } from '../../config/incident'
-import { OffenderService, Services, services } from '../../services'
-import { SystemToken } from '../../types/uof'
+import { AuthService, OffenderService, Services, services } from '../../services'
 
 const FORM = 'reasonsForUseOfForce'
 
@@ -14,7 +13,7 @@ enum SubmitType {
 
 export default class WhyWasUoFAppliedRoutes {
   constructor(
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService
   ) {}
@@ -23,7 +22,7 @@ export default class WhyWasUoFAppliedRoutes {
     return async (req: Request, res: Response): Promise<void> => {
       const { bookingId } = req.params
       const offenderDetail = await this.offenderService.getOffenderDetails(
-        await this.systemToken(res.locals.user.username),
+        await this.authService.getSystemClientToken(res.locals.user.username),
         Number(bookingId)
       )
       const { isComplete, reasons } = await this.draftReportService.getUoFReasonState(

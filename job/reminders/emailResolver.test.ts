@@ -1,19 +1,23 @@
 import StatementsClient from '../../server/data/statementsClient'
 import EmailResolver from './emailResolver'
 import { ManageUsersApiClient } from '../../server/data'
+import { AuthService } from '../../server/services'
 
 const client = { inTransaction: true }
 
 jest.mock('../../server/data/statementsClient')
 jest.mock('../../server/data/manageUsersApiClient')
+jest.mock('../../server/services/authService')
 
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let emailResolver
 
 beforeEach(() => {
-  emailResolver = new EmailResolver(manageUsersApiClient, async () => 'token-1', statementsClient)
+  authService.getSystemClientToken.mockResolvedValue('token-1')
+  emailResolver = new EmailResolver(manageUsersApiClient, authService, statementsClient)
 })
 
 afterEach(() => {

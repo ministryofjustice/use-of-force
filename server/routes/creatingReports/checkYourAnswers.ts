@@ -3,21 +3,21 @@ import LocationService from '../../services/locationService'
 import NomisMappingService from '../../services/nomisMappingService'
 import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'
-import { SystemToken } from '../../types/uof'
 import { properCaseFullName } from '../../utils/utils'
 import reportSummary from '../../services/reportSummary'
+import { AuthService } from '../../services'
 
 export default class CheckAnswerRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly locationService: LocationService,
     private readonly nomisMappingService: NomisMappingService
   ) {}
 
   public view = async (req: Request, res: Response): Promise<void> => {
-    const token = await this.systemToken(res.locals.user.username)
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
     const { bookingId } = req.params
     const {
       id,

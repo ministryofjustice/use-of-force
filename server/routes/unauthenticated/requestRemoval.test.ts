@@ -1,17 +1,19 @@
 import request from 'supertest'
 import config from '../../config'
 import { paths } from '../../config/incident'
-import { ReportService, StatementService } from '../../services'
+import { AuthService, ReportService, StatementService } from '../../services'
 import type { AnonReportSummaryWithPrison } from '../../services/reportService'
 import { stringToHash } from '../../utils/hash'
 import { appWithAllRoutes } from '../__test/appSetup'
 
+jest.mock('../../services/authService')
 jest.mock('../../services/reportService')
 jest.mock('../../services/statementService')
 
 describe('Request removal controller', () => {
   const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
   const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
+  const authService = new AuthService(null) as jest.Mocked<AuthService>
 
   let app
   let flash
@@ -26,12 +28,8 @@ describe('Request removal controller', () => {
 
   beforeEach(() => {
     flash = jest.fn().mockReturnValue([])
-    app = appWithAllRoutes(
-      { reportService, statementService, systemToken: async _ => `system-token` },
-      undefined,
-      undefined,
-      flash
-    )
+    authService.getSystemClientToken.mockResolvedValue('system-token')
+    app = appWithAllRoutes({ reportService, statementService, authService }, undefined, undefined, flash)
   })
 
   afterEach(() => {

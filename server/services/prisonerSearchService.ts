@@ -1,8 +1,8 @@
 import { SearchForm } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
 import { PrisonClient, PrisonerSearchClient } from '../data'
-import { SystemToken } from '../types/uof'
 import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
+import AuthService from './authService'
 
 export type Prison = {
   agencyId: string
@@ -23,7 +23,7 @@ export default class PrisonerSearchService {
   constructor(
     private readonly prisonerSearchClient: PrisonerSearchClient,
     private readonly prisonClient: PrisonClient,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
@@ -45,7 +45,7 @@ export default class PrisonerSearchService {
     if (!isFormComplete(form)) {
       return []
     }
-    const token = await this.systemToken(searchingUserName)
+    const token = await this.authService.getSystemClientToken(searchingUserName)
     const results = await this.prisonerSearchClient.search(form, token)
     const prisonNameLookup = await this.createPrisonNameLookup(token)
 
@@ -58,11 +58,11 @@ export default class PrisonerSearchService {
   }
 
   async getPrisons(username: string): Promise<Prison[]> {
-    return this.getPrisonsUsing(await this.systemToken(username))
+    return this.getPrisonsUsing(await this.authService.getSystemClientToken(username))
   }
 
   async getPrisonerDetails(identifier: string, username: string): Promise<PrisonerSearchApiPrisoner> {
-    const token = await this.systemToken(username)
+    const token = await this.authService.getSystemClientToken(username)
     return this.prisonerSearchClient.getPrisonerDetails(identifier, token)
   }
 }

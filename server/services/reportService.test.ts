@@ -7,18 +7,21 @@ import { Report } from '../data/incidentClientTypes'
 import { Prison } from '../data/prisonClientTypes'
 import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
+import AuthService from './authService'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/reportLogClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
 jest.mock('./locationService')
+jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
@@ -26,14 +29,14 @@ const inTransaction = callback => callback(transactionalClient)
 let service: ReportService
 
 beforeEach(() => {
-  const systemToken = jest.fn().mockResolvedValue('system-token-1')
+  authService.getSystemClientToken.mockResolvedValue('system-token-1')
   service = new ReportService(
     incidentClient,
     offenderService,
     locationService,
     reportLogClient,
     inTransaction,
-    systemToken
+    authService
   )
 })
 

@@ -1,9 +1,10 @@
-import type { AgencyId, SystemToken } from '../types/uof'
+import type { AgencyId } from '../types/uof'
 import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
 import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import OffenderService from './offenderService'
 import { AdditionalComment, ReviewerStatement } from '../data/statementsClientTypes'
+import AuthService from './authService'
 
 export interface IncidentSummary {
   id: number
@@ -55,7 +56,7 @@ export default class ReviewService {
     private readonly incidentClient: IncidentClient,
     private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   async getReport(reportId: number): Promise<Report> {
@@ -67,7 +68,7 @@ export default class ReviewService {
   }
 
   async getOffenderNames(username: string, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
-    const token = await this.systemToken(username)
+    const token = await this.authService.getSystemClientToken(username)
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return this.offenderService.getOffenderNames(token, offenderNos)
   }

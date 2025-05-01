@@ -7,11 +7,13 @@ import {
   ReviewService,
   UserService,
   StatementService,
+  AuthService,
 } from '../../services'
 import { paths } from '../../config/incident'
 import { AddStaffResult } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 
+jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
@@ -25,6 +27,7 @@ const involvedStaffService = new InvolvedStaffService(null, null, null, null, nu
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const userSupplier = jest.fn()
 
@@ -32,6 +35,7 @@ let app
 
 describe('coordinator', () => {
   beforeEach(() => {
+    authService.getSystemClientToken.mockResolvedValue('user1-system-token')
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -40,6 +44,7 @@ describe('coordinator', () => {
         reviewService,
         userService,
         statementService,
+        authService,
       },
       userSupplier
     )

@@ -4,8 +4,8 @@ import type { InvolvedStaffService } from './involvedStaffService'
 import type LocationService from './locationService'
 import type NomisMappingService from './nomisMappingService'
 import type OffenderService from './offenderService'
-import type { SystemToken } from '../types/uof'
 import { Report } from '../data/incidentClientTypes'
+import AuthService from './authService'
 
 export interface ReportDetail {
   incidentId: number
@@ -22,7 +22,7 @@ export default class ReportDataBuilder {
     private readonly locationService: LocationService,
     private readonly offenderService: OffenderService,
     private readonly nomisMappingService: NomisMappingService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   private format(reportId, reporterUsername) {
@@ -54,7 +54,7 @@ export default class ReportDataBuilder {
   }
 
   async build(currentUsername: string, report: Report): Promise<ReportDetail> {
-    const token = await this.systemToken(currentUsername)
+    const token = await this.authService.getSystemClientToken(currentUsername)
 
     const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
     const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)

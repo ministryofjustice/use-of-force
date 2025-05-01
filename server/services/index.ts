@@ -60,7 +60,7 @@ const reportService = new ReportService(
   locationService,
   reportLogClient,
   db.inTransaction,
-  authService.getSystemClientToken
+  authService
 )
 
 const submitDraftReportService = new SubmitDraftReportService(
@@ -76,7 +76,7 @@ const updateDraftReportService = new UpdateDraftReportService(
   reportLogClient,
   db.inTransaction,
   prisonApiClient,
-  authService.getSystemClientToken
+  authService
 )
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   hmppsManageUsersApiClient,
@@ -92,7 +92,7 @@ const draftReportService = new DraftReportService(
   submitDraftReportService,
   userService,
   locationService,
-  authService.getSystemClientToken
+  authService
 )
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
@@ -101,19 +101,15 @@ const reviewService = new ReviewService(
   incidentClient,
   hmppsManageUsersApiClient,
   offenderService,
-  authService.getSystemClientToken
+  authService
 )
-const prisonerSearchService = new PrisonerSearchService(
-  prisonerSearchApiClient,
-  prisonApiClient,
-  authService.getSystemClientToken
-)
+const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
 const reportDetailBuilder = new ReportDetailBuilder(
   involvedStaffService,
   locationService,
   offenderService,
   nomisMappingService,
-  authService.getSystemClientToken
+  authService
 )
 const feComponentsService = new FeComponentsService(feComponentsClient)
 
@@ -126,7 +122,6 @@ export const services = {
   userService,
   prisonerSearchService,
   reviewService,
-  systemToken: authService.getSystemClientToken,
   locationService,
   nomisMappingService,
   reportDetailBuilder,

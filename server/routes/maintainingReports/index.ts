@@ -24,12 +24,7 @@ export default function Index(services: Services): Router {
   const router = express.Router()
 
   {
-    const reviewer = new ReviewRoutes(
-      offenderService,
-      reportDetailBuilder,
-      reviewService,
-      authService.getSystemClientToken
-    )
+    const reviewer = new ReviewRoutes(offenderService, reportDetailBuilder, reviewService, authService)
 
     const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
 
@@ -46,9 +41,9 @@ export default function Index(services: Services): Router {
       involvedStaffService,
       reviewService,
       offenderService,
-      authService.getSystemClientToken,
       userService,
-      statementService
+      statementService,
+      authService
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -73,7 +68,7 @@ export default function Index(services: Services): Router {
   }
 
   {
-    const admin = new AdminRoutes(reportService, reviewService, offenderService, authService.getSystemClientToken)
+    const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)
     const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
 

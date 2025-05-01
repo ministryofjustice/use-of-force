@@ -1,10 +1,11 @@
 import * as R from 'ramda'
-import type { LoggedInUser, SystemToken } from '../../types/uof'
+import type { LoggedInUser } from '../../types/uof'
 
 import logger from '../../../log'
 import type { PrisonClient, DraftReportClient, IncidentClient } from '../../data'
 import ReportLogClient from '../../data/reportLogClient'
 import { InTransaction } from '../../data/dataAccess/db'
+import AuthService from '../authService'
 
 export default class UpdateDraftReportService {
   constructor(
@@ -13,7 +14,7 @@ export default class UpdateDraftReportService {
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
     private readonly prisonClient: PrisonClient,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   public async process(
@@ -66,7 +67,7 @@ export default class UpdateDraftReportService {
   private async startNewReport(bookingId: number, currentUser, incidentDateValue, formObject): Promise<void> {
     const { username: userId, displayName: reporterName } = currentUser
 
-    const token = await this.systemToken(userId)
+    const token = await this.authService.getSystemClientToken(userId)
     const { offenderNo, agencyId } = await this.prisonClient.getOffenderDetails(bookingId, token)
 
     return this.inTransaction(async client => {

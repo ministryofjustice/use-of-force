@@ -5,26 +5,23 @@ import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import { EmailResult } from '../data/manageUsersApiClient'
 import { ReviewerStatement } from '../data/statementsClientTypes'
+import AuthService from './authService'
 
 jest.mock('../data')
 jest.mock('./offenderService')
+jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
 const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: ReviewService
 
 describe('reviewService', () => {
   beforeEach(() => {
-    service = new ReviewService(
-      statementsClient,
-      incidentClient,
-      manageUsersApiClient,
-      offenderService,
-      async username => `${username}-system-token`
-    )
+    service = new ReviewService(statementsClient, incidentClient, manageUsersApiClient, offenderService, authService)
   })
 
   afterEach(() => {

@@ -5,8 +5,7 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
-import { SystemToken } from '../../types/uof'
-import { OffenderService } from '../../services'
+import { AuthService, OffenderService } from '../../services'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',
@@ -15,7 +14,7 @@ enum SubmitType {
 
 export default class CreateReport {
   constructor(
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService
   ) {}
@@ -42,7 +41,7 @@ export default class CreateReport {
     return async (req, res: Response): Promise<void> => {
       const { bookingId } = req.params
       const offenderDetail = await this.offenderService.getOffenderDetails(
-        await this.systemToken(res.locals.user.username),
+        await this.authService.getSystemClientToken(res.locals.user.username),
         bookingId
       )
       const { form, isComplete } = await this.loadForm(req)

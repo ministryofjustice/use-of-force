@@ -8,6 +8,7 @@ import SubmitDraftReportService from './submitDraftReportService'
 import UpdateDraftReportService from './updateDraftReportService'
 import LocationService from '../locationService'
 import { isReportComplete } from './reportStatusChecker'
+import AuthService from '../authService'
 
 jest.mock('./reportStatusChecker')
 jest.mock('../../data')
@@ -16,6 +17,7 @@ jest.mock('./draftInvolvedStaffService')
 jest.mock('./submitDraftReportService')
 jest.mock('./updateDraftReportService')
 jest.mock('../locationService')
+jest.mock('../authService')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
@@ -41,6 +43,7 @@ const draftInvolvedStaffService = new DraftInvolvedStaffService(
 ) as jest.Mocked<DraftInvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const aUser = username => ({ username } as FoundUserResult)
 const isReportCompleteMock = isReportComplete as jest.Mock
@@ -55,7 +58,7 @@ beforeEach(() => {
     submitDraftReportService,
     userService,
     locationService,
-    async username => `${username}-system-token`
+    authService
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
 })
