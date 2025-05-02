@@ -14,7 +14,7 @@ jest.mock('./authService')
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: ReviewService
@@ -99,7 +99,7 @@ describe('reviewService', () => {
   describe('getIncompletedReports', () => {
     const reportSummary = (id: number): ReportSummary => ({
       id,
-      bookingId: id + 1,
+      bookingId: String(id + 1),
       reporterName: `reporter-${id}`,
       offenderNo: `offender-${id}`,
       incidentDate: new Date(id),
@@ -107,7 +107,7 @@ describe('reviewService', () => {
 
     const incidentSummary = (id: number): IncidentSummary => ({
       id,
-      bookingId: id + 1,
+      bookingId: id.toString(),
       incidentdate: new Date(id),
       staffMemberName: `reporter-${id}`,
       isOverdue: false,
@@ -134,7 +134,7 @@ describe('reviewService', () => {
   describe('getCompletedReports', () => {
     const reportSummary = (id: number): ReportSummary => ({
       id,
-      bookingId: id + 1,
+      bookingId: String(id + 1),
       reporterName: `reporter-${id}`,
       offenderNo: `offender-${id}`,
       incidentDate: new Date(id),
@@ -142,7 +142,7 @@ describe('reviewService', () => {
 
     const incidentSummary = (id: number): IncidentSummary => ({
       id,
-      bookingId: id + 1,
+      bookingId: String(id + 1),
       incidentdate: new Date(id),
       staffMemberName: `reporter-${id}`,
       isOverdue: false,

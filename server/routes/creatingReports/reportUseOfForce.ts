@@ -13,10 +13,7 @@ export default class ReportUseOfForceRoutes {
     const { bookingId } = req.params
     const { form = {} } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
     const status = this.draftReportService.getReportStatus(form)
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
     const { displayName, offenderNo, dateOfBirth } = offenderDetail
     res.render('pages/report-use-of-force', {
       data: { ...res.locals.formObject, offenderDetail, displayName, offenderNo, dateOfBirth },

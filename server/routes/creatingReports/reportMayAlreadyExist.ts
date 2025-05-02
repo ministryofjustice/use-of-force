@@ -14,23 +14,16 @@ export default class ReportMayAlreadyExistRoutes {
   public view: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
-    const offenderDetail = await this.offenderService.getOffenderDetails(token, Number(bookingId))
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
     const { displayName: offenderName } = offenderDetail
 
-    const { id: formId, incidentDate } = await this.draftReportService.getCurrentDraft(
-      req.user.username,
-      Number(bookingId)
-    )
+    const { id: formId, incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
 
     if (!formId) {
       return res.redirect(`/report/${bookingId}/report-has-been-deleted`)
     }
 
-    const reports = await this.draftReportService.getPotentialDuplicates(
-      parseInt(bookingId, 10),
-      moment(incidentDate),
-      token
-    )
+    const reports = await this.draftReportService.getPotentialDuplicates(bookingId, moment(incidentDate), token)
 
     const data = {
       offenderName,
@@ -57,7 +50,7 @@ export default class ReportMayAlreadyExistRoutes {
     }
 
     if (cancelReport === 'true') {
-      await this.draftReportService.deleteReport(res.locals.user.username, Number(bookingId))
+      await this.draftReportService.deleteReport(res.locals.user.username, bookingId)
 
       return res.redirect(`/report/${bookingId}/report-cancelled`)
     }

@@ -18,7 +18,7 @@ interface NamesByOffenderNumber {
 
 export interface IncidentSummary {
   id: number
-  bookingId: number
+  bookingId: string
   incidentdate: Date
   staffMemberName: string
   offenderName: string

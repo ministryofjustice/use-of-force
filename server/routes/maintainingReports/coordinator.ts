@@ -136,10 +136,7 @@ export default class CoordinatorRoutes {
     const report = await this.reviewService.getReport(reportId)
 
     const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
     const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 
     res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })

@@ -41,7 +41,7 @@ export default class PrisonerSearchService {
     }
   }
 
-  async search(searchingUserName: string, form: SearchForm): Promise<SearchResult[]> {
+  async search(searchingUserName: string, form: SearchForm): Promise<PrisonerSearchApiPrisoner[]> {
     if (!isFormComplete(form)) {
       return []
     }
@@ -61,8 +61,7 @@ export default class PrisonerSearchService {
     return this.getPrisonsUsing(await this.authService.getSystemClientToken(username))
   }
 
-  async getPrisonerDetails(identifier: string, username: string): Promise<PrisonerSearchApiPrisoner> {
-    const token = await this.authService.getSystemClientToken(username)
+  async getPrisonerDetails(identifier: string, token: string): Promise<PrisonerSearchApiPrisoner> {
     return this.prisonerSearchClient.getPrisonerDetails(identifier, token)
   }
 }

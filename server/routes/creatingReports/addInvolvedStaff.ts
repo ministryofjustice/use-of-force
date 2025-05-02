@@ -5,6 +5,7 @@ import { nextPaths, paths } from '../../config/incident'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 import AuthService from '../../services/authService'
 import PrisonerSearchService from '../../services/prisonerSearchService'
+import OffenderService from '../../services/offenderService'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -20,21 +21,17 @@ export default class AddInvolvedStaffRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly authService: AuthService,
-    private readonly searchService: PrisonerSearchService
+    private readonly offenderService: OffenderService
   ) {}
 
   public viewStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const errors = req.flash('errors')
     const token = await this.authService.getSystemClientToken(req.user.username)
-    const staff = await this.draftReportService.getInvolvedStaffWithPrisons(
-      token,
-      req.user.username,
-      parseInt(bookingId, 10)
-    )
-    const offenderDetail = await this.searchService.getPrisonerDetails(bookingId, req.user.username)
+    const staff = await this.draftReportService.getInvolvedStaffWithPrisons(token, req.user.username, bookingId)
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, req.user.username)
 
-    const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
+    const complete = await this.draftReportService.isDraftComplete(req.user.username, bookingId)
     return res.render('formPages/addingStaff/staff-involved', {
       staff,
       errors,
@@ -48,7 +45,7 @@ export default class AddInvolvedStaffRoutes {
     const { addMore, submitType } = req.body
 
     if (addMore === 'no') {
-      await this.draftReportService.markInvolvedStaffComplete(res.locals.user, parseInt(bookingId, 10))
+      await this.draftReportService.markInvolvedStaffComplete(res.locals.user, bookingId)
     }
 
     if (submitType === SubmitType.SAVE_AND_RETURN) {
@@ -68,7 +65,7 @@ export default class AddInvolvedStaffRoutes {
     if (addMore === 'yes') {
       return res.redirect(paths.staffMemberName(bookingId))
     }
-    const complete = await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10))
+    const complete = await this.draftReportService.isDraftComplete(req.user.username, bookingId)
     const destination = complete ? paths.checkYourAnswers(bookingId) : nextPaths.involvedStaff(bookingId)
     return res.redirect(destination)
   }
@@ -79,7 +76,7 @@ export default class AddInvolvedStaffRoutes {
     const involvedStaff = await this.draftReportService.getInvolvedStaff(
       await this.authService.getSystemClientToken(req.user.username),
       req.user.username,
-      parseInt(bookingId, 10)
+      bookingId
     )
     const staffToDelete = involvedStaff.find(staff => staff.username === username)
     const name = properCaseFullName(staffToDelete.name)
@@ -101,7 +98,7 @@ export default class AddInvolvedStaffRoutes {
     }
 
     if (confirm === 'yes') {
-      await this.draftReportService.deleteInvolvedStaff(res.locals.user, parseInt(bookingId, 10), username)
+      await this.draftReportService.deleteInvolvedStaff(res.locals.user, bookingId, username)
     }
 
     return res.redirect(paths.staffInvolved(bookingId))
@@ -139,12 +136,7 @@ export default class AddInvolvedStaffRoutes {
       return res.redirect(paths.staffMemberName(bookingId))
     }
 
-    const result = await this.draftReportService.addDraftStaffByName(
-      res.locals.user,
-      parseInt(bookingId, 10),
-      firstName,
-      lastName
-    )
+    const result = await this.draftReportService.addDraftStaffByName(res.locals.user, bookingId, firstName, lastName)
 
     switch (result) {
       case AddStaffResult.MISSING: {
@@ -183,7 +175,7 @@ export default class AddInvolvedStaffRoutes {
       return res.redirect(paths.staffInvolved(bookingId))
     }
     const { firstName, lastName } = query
-    const { agencyId } = await this.draftReportService.getCurrentDraft(res.locals.user.username, Number(bookingId))
+    const { agencyId } = await this.draftReportService.getCurrentDraft(res.locals.user.username, bookingId)
 
     const staff = await this.draftReportService.findUsers(
       await this.authService.getSystemClientToken(req.user.username),
@@ -219,7 +211,7 @@ export default class AddInvolvedStaffRoutes {
 
     const result = await this.draftReportService.addDraftStaffByUsername(
       res.locals.user,
-      parseInt(bookingId, 10),
+      bookingId,
       selectedStaffUsername
     )
 

@@ -66,10 +66,7 @@ export default class StatementsRoutes {
       reportId,
       StatementStatus.PENDING
     )
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
 
     res.render('pages/statement/write-your-statement', {
@@ -118,10 +115,7 @@ export default class StatementsRoutes {
       reportId,
       StatementStatus.PENDING
     )
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
     const errors = req.flash('errors')
     res.render('pages/statement/check-your-statement', {
@@ -162,10 +156,7 @@ export default class StatementsRoutes {
       StatementStatus.SUBMITTED
     )
 
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
     res.render('pages/statement/your-statement', {
       data: {
@@ -186,10 +177,7 @@ export default class StatementsRoutes {
       reportId,
       StatementStatus.SUBMITTED
     )
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
 
     return res.render('pages/statement/add-comment-to-statement', {

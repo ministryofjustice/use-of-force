@@ -30,12 +30,12 @@ describe('getInvolvedStaff', () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2' }])
     userService.getUser.mockResolvedValue(aUser('user-1', 'MDI', 1))
 
-    await expect(service.getInvolvedStaff('token-1', 'user-1', 1)).resolves.toStrictEqual([
+    await expect(service.getInvolvedStaff('token-1', 'user-1', '1')).resolves.toStrictEqual([
       { username: 'user-1', isReporter: true, exists: true, activeCaseLoadId: 'MDI', staffId: 1 },
       { username: 'user-2' },
     ])
 
-    expect(userService.getUser).toBeCalledWith('token-1', 'user-1')
+    expect(userService.getUser).toHaveBeenCalledWith('token-1', 'user-1')
   })
 })
 
@@ -54,7 +54,7 @@ describe('getInvolvedStaffWithPrisons', () => {
       { agencyId: 'MDI', description: 'Moorland (HMP)', active: true, agencyType: 'INST' },
     ])
 
-    await expect(service.getInvolvedStaffWithPrisons('token-1', 'user-1', 1)).resolves.toStrictEqual([
+    await expect(service.getInvolvedStaffWithPrisons('token-1', 'user-1', '1')).resolves.toStrictEqual([
       {
         username: 'user-1',
         isReporter: true,
@@ -66,6 +66,6 @@ describe('getInvolvedStaffWithPrisons', () => {
       { username: 'user-2', prison: 'Moorland (HMP)', staffId: 2 },
     ])
 
-    expect(userService.getUser).toBeCalledWith('token-1', 'user-1')
+    expect(userService.getUser).toHaveBeenCalledWith('token-1', 'user-1')
   })
 })

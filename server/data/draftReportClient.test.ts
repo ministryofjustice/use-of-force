@@ -18,12 +18,12 @@ beforeEach(() => {
 
 describe('get', () => {
   test('it should call query on db', () => {
-    draftReportClient.get('user1', 1)
+    draftReportClient.get('user1', '1234')
     expect(query).toBeCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
-    draftReportClient.get('user1', -1)
+    draftReportClient.get('user1', '1234')
 
     expect(query).toBeCalledWith({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
@@ -31,7 +31,7 @@ describe('get', () => {
           and r.booking_id = $2
           and r.status = $3
           and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
-      values: ['user1', -1, ReportStatus.IN_PROGRESS.value],
+      values: ['user1', '1234', ReportStatus.IN_PROGRESS.value],
     })
   })
 })
@@ -41,7 +41,7 @@ test('create', async () => {
 
   const id = await draftReportClient.create({
     userId: 'user1',
-    bookingId: 'booking-1',
+    bookingId: '1234',
     agencyId: 'LEI',
     reporterName: 'Bob Smith',
     offenderNo: 'AA11ABC',
@@ -59,7 +59,7 @@ test('create', async () => {
       'user1',
       'Bob Smith',
       'AA11ABC',
-      'booking-1',
+      '1234',
       'LEI',
       ReportStatus.IN_PROGRESS.value,
       'date-1',
@@ -68,7 +68,7 @@ test('create', async () => {
 })
 
 test('updateAgencyId', () => {
-  draftReportClient.updateAgencyId('agencyId', 'username', 1)
+  draftReportClient.updateAgencyId('agencyId', 'username', '1')
 
   expect(query).toBeCalledWith({
     text: `update v_report r
@@ -77,7 +77,7 @@ test('updateAgencyId', () => {
                   where r.user_id = $2
                   and r.booking_id = $3
                   and r.sequence_no = (select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)`,
-    values: ['agencyId', 'username', 1],
+    values: ['agencyId', 'username', '1'],
   })
 })
 
@@ -114,12 +114,12 @@ test('getInvolvedStaff', async () => {
   ]
   query.mockReturnValue({ rows: expected })
 
-  const result = await draftReportClient.getInvolvedStaff('user-1', 1)
+  const result = await draftReportClient.getInvolvedStaff('user-1', '1')
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
   expect(query).toBeCalledWith({
     text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3`,
-    values: [1, 'user-1', ReportStatus.IN_PROGRESS.value],
+    values: ['1', 'user-1', ReportStatus.IN_PROGRESS.value],
   })
 })
 
@@ -127,7 +127,7 @@ test('getDuplicateReports', () => {
   const startDate = moment('2021-07-13')
   const endDate = moment('2021-07-13')
 
-  draftReportClient.getDuplicateReports(1, [startDate, endDate])
+  draftReportClient.getDuplicateReports('122334', [startDate, endDate])
 
   expect(query).toBeCalledWith({
     text: `select r.incident_date date
@@ -140,14 +140,14 @@ test('getDuplicateReports', () => {
               and r.incident_date <= $3
               and r.status != $4
               order by date asc`,
-    values: [1, startDate, endDate, ReportStatus.IN_PROGRESS.value],
+    values: ['1234', startDate, endDate, ReportStatus.IN_PROGRESS.value],
   })
 })
 
 test('deleteReport', () => {
   const now = new Date()
   const userId = 'USER-1'
-  const bookingId = 1
+  const bookingId = '12345'
   draftReportClient.deleteReport(userId, bookingId, now)
 
   expect(query).toBeCalledWith({

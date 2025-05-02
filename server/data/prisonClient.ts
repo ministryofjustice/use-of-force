@@ -17,7 +17,7 @@ export default class PrisonClient extends BaseApiClient {
     return config.apis.prison
   }
 
-  async getOffenderDetails(bookingId: number, token: string): Promise<Partial<InmateDetail>> {
+  async getOffenderDetails(bookingId: string, token: string): Promise<Partial<InmateDetail>> {
     return PrisonClient.restClient(token).get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
   }
 
@@ -54,7 +54,7 @@ export default class PrisonClient extends BaseApiClient {
     })
   }
 
-  getOffenderImage(bookingId: number, token: string): Promise<Readable> {
+  getOffenderImage(bookingId: string, token: string): Promise<Readable> {
     return PrisonClient.restClient(token).stream({
       path: `/api/bookings/${bookingId}/image/data`,
       errorLogger: error =>

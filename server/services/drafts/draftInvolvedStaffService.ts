@@ -21,7 +21,7 @@ export class DraftInvolvedStaffService {
     return user
   }
 
-  public async getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
+  public async getInvolvedStaff(token: string, username: string, bookingId: string): Promise<DraftInvolvedStaff[]> {
     const retrievedStaff = await this.draftReportClient.getInvolvedStaff(username, bookingId)
     const user = await this.reporter(token, username)
     return [{ ...user, isReporter: true }, ...retrievedStaff]
@@ -30,7 +30,7 @@ export class DraftInvolvedStaffService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: string
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     const [involvedStaff, prisons] = await Promise.all([
       this.getInvolvedStaff(token, username, bookingId),

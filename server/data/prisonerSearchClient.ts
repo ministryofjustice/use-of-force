@@ -1,3 +1,5 @@
+import { compact } from 'lodash'
+
 import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
 import BaseApiClient from './baseApiClient'
 import config from '../config'
@@ -14,22 +16,25 @@ export default class PrisonerSearchClient extends BaseApiClient {
     return config.apis.prisonerSearch
   }
 
-  async getPrisonerDetails(identifier: string, token: string): Promise<PrisonerSearchApiPrisoner> {
+  async getPrisonerDetails(nomisId: string, token: string): Promise<PrisonerSearchApiPrisoner> {
     return PrisonerSearchClient.restClient(token).get({
-      path: `/prisoner/${identifier}`,
+      path: `/prisoner/${nomisId}`,
     }) as Promise<PrisonerSearchApiPrisoner>
   }
 
   async search(form: SearchForm, token: string): Promise<any> {
+    const { prisonNumber, firstName, lastName, agencyId } = form
+
+    const data = {
+      prisonerIdentifier: prisonNumber,
+      includeAliases: false,
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(agencyId && { agencyId }),
+    }
     return PrisonerSearchClient.restClient(token).post({
       path: `/prisoner-search/match-prisoners`,
-      data: {
-        prisonerIdentifier: form.prisonNumber,
-        firstName: form.firstName,
-        lastName: form.lastName,
-        prisonIds: [form.agencyId],
-        includeAliases: false,
-      },
+      data,
     })
   }
 }

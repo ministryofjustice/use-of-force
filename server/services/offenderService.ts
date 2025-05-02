@@ -2,15 +2,16 @@ import type { Readable } from 'stream'
 import moment from 'moment/moment'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import type { PrisonClient } from '../data'
-import { PrisonerDetail } from '../data/prisonClientTypes'
+import { PrisonClient } from '../data'
+import AuthService from './authService'
 
 export default class OffenderService {
-  constructor(private readonly prisonClient: PrisonClient) {}
+  constructor(private readonly prisonClient: PrisonClient, private readonly authService: AuthService) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async getOffenderDetails(token: string, bookingId: number): Promise<any> {
+  async getOffenderDetails(bookingId: string, username: string): Promise<any> {
     try {
+      const token = await this.authService.getSystemClientToken(username)
       const result = await this.prisonClient.getOffenderDetails(bookingId, token)
 
       if (isNilOrEmpty(result)) {
@@ -20,7 +21,6 @@ export default class OffenderService {
 
       const displayName = `${properCaseName(result.firstName)} ${properCaseName(result.lastName)}`
       const dateOfBirth = moment(result.dateOfBirth).format('YYYY-MM-DD')
-
       return {
         displayName,
         ...result,
@@ -32,22 +32,7 @@ export default class OffenderService {
     }
   }
 
-  async getPrisonersDetails(token: string, offenderNumbers: string[]): Promise<PrisonerDetail[]> {
-    try {
-      const result = await this.prisonClient.getPrisoners(offenderNumbers, token)
-
-      if (isNilOrEmpty(result)) {
-        logger.warn(`No details found for offenderNumbers ${offenderNumbers}`)
-        return []
-      }
-      return result
-    } catch (error) {
-      logger.error(error, 'Error during getPrisonersDetails')
-      throw error
-    }
-  }
-
-  async getOffenderImage(token: string, bookingId: number): Promise<Readable> {
+  async getOffenderImage(token: string, bookingId: string): Promise<Readable> {
     return this.prisonClient.getOffenderImage(bookingId, token)
   }
 

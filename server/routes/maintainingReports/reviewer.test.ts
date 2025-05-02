@@ -17,7 +17,7 @@ jest.mock('../../services/authService')
 jest.mock('../../services/reportDetailBuilder')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
@@ -134,7 +134,7 @@ describe(`GET /completed-incidents`, () => {
 describe(`GET /not-completed-incidents`, () => {
   const commonReportData = {
     id: 1,
-    bookingId: 1,
+    bookingId: '1',
     incidentdate: new Date(),
     staffMemberName: 'Coordinator Use-Of-Force',
     isOverdue: true,
@@ -224,7 +224,7 @@ describe('GET /view-statements', () => {
     name: 'Mr Coordinator',
     userId: 'COORDINATOR_USER',
     isSubmitted: false,
-    bookingId: 1,
+    bookingId: '1',
     incidentDate: new Date(),
     lastTrainingMonth: null,
     lastTrainingYear: null,

@@ -8,7 +8,7 @@ jest.mock('../../services/offenderService')
 jest.mock('../../services/authService')
 jest.mock('../../services/drafts/draftReportService')
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const draftReportService = new DraftReportService(
   null,

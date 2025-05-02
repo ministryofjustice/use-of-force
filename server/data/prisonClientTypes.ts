@@ -11,7 +11,7 @@ export interface OffenderIdentifier {
   type: string
   value: string
   offenderNo: string
-  bookingId: number
+  bookingId: string
   issuedAuthorityText: string
   issuedDate: Date
   caseloadType: string
@@ -19,7 +19,7 @@ export interface OffenderIdentifier {
 
 export interface InmateDetail {
   offenderNo: string
-  bookingId: number
+  bookingId: string
   bookingNo: string
   offenderId: number
   rootOffenderId: number
@@ -53,7 +53,7 @@ export interface InmateDetail {
 }
 
 export interface InmateBasicDetails {
-  bookingId: number
+  bookingId: string
   bookingNo: string
   offenderNo: string
   firstName: string

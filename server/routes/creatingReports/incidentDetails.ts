@@ -38,7 +38,7 @@ export default class IncidentDetailsRoutes {
     return { formId, incidentDate, form, persistedAgencyId: agencyId, isComplete: isReportComplete(form) }
   }
 
-  private async getSubmitRedirectLocation(req: Request, bookingId: number, submitType) {
+  private async getSubmitRedirectLocation(req: Request, bookingId: string, submitType) {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
       return `/report/${bookingId}/prison-of-incident`
     }
@@ -73,7 +73,7 @@ export default class IncidentDetailsRoutes {
     const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
 
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
-    const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
@@ -139,7 +139,7 @@ export default class IncidentDetailsRoutes {
 
     await this.draftReportService.process(
       res.locals.user,
-      parseInt(bookingId, 10),
+      bookingId,
       formName,
       updatedSection,
       incidentDate?.value || null
@@ -150,7 +150,7 @@ export default class IncidentDetailsRoutes {
       req.flash('userInputForIncidentDetails')
 
       const duplicates = await this.draftReportService.getPotentialDuplicates(
-        parseInt(bookingId, 10),
+        bookingId,
         moment(incidentDate.value),
         token
       )

@@ -42,7 +42,7 @@ export default class ChangePrisonRoutes {
       // this will create a new report record if it doesn't exist already
       await this.draftReportService.process(
         res.locals.user,
-        parseInt(bookingId, 10),
+        bookingId,
         'incidentDetails',
         {
           plannedUseOfForce: userInput[0]?.plannedUseOfForce,
@@ -52,7 +52,7 @@ export default class ChangePrisonRoutes {
         null
       )
 
-      await this.draftReportService.updateAgencyId(agencyId, username, Number(bookingId))
+      await this.draftReportService.updateAgencyId(agencyId, username, bookingId)
     }
 
     return res.redirect(`/report/${bookingId}/incident-details`)

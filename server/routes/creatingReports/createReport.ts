@@ -26,7 +26,7 @@ export default class CreateReport {
     return { form, isComplete: isReportComplete(form) }
   }
 
-  private async getSubmitRedirectLocation(req: Request, formName: string, bookingId: number, submitType: SubmitType) {
+  private async getSubmitRedirectLocation(req: Request, formName: string, bookingId: string, submitType: SubmitType) {
     const { username } = req.user
 
     if (await this.draftReportService.isDraftComplete(username, bookingId)) {
@@ -41,10 +41,7 @@ export default class CreateReport {
   public view(formName: string) {
     return async (req, res: Response): Promise<void> => {
       const { bookingId } = req.params
-      const offenderDetail = await this.offenderService.getOffenderDetails(
-        await this.authService.getSystemClientToken(res.locals.user.username),
-        bookingId
-      )
+      const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
@@ -75,7 +72,7 @@ export default class CreateReport {
         return res.redirect(req.originalUrl)
       }
 
-      await this.draftReportService.process(res.locals.user, parseInt(bookingId, 10), formName, updatedSection)
+      await this.draftReportService.process(res.locals.user, bookingId, formName, updatedSection)
 
       const location = await this.getSubmitRedirectLocation(req, formName, bookingId, submitType)
       return res.redirect(location)

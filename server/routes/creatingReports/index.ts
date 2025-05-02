@@ -52,7 +52,7 @@ export default function Index({
   const reportHasBeenDeleted = new ReportHasBeenDeletedRoutes()
   get(reportPath('report-has-been-deleted'), reportHasBeenDeleted.view)
 
-  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, authService, prisonerSearchService)
+  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, authService, offenderService)
   get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)
   post(reportPath('staff-involved'), addInvolvedStaff.submitStaffInvolved)
   get(reportPath('delete-staff-member/:username'), addInvolvedStaff.viewDeleteStaffMember)

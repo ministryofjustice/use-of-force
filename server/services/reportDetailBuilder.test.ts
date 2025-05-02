@@ -19,7 +19,7 @@ const involvedStaffService = new InvolvedStaffService(null, null, null, null, nu
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
@@ -68,7 +68,7 @@ describe('Build details', () => {
       offenderNo: 'A1234AA',
       form: { incidentDetails: { locationId, incidentLocationId } } as UseOfForceReport,
       incidentDate: new Date('2015-03-26T12:00:00Z'),
-      bookingId: 33,
+      bookingId: '33',
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00Z'),
       agencyId: 'MDI',
@@ -166,7 +166,7 @@ describe('Build details', () => {
       offenderNo: 'A1234AA',
       form: { incidentDetails: { locationId } } as UseOfForceReport,
       incidentDate: new Date('2015-03-26T12:00:00Z'),
-      bookingId: 33,
+      bookingId: '33',
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00Z'),
       agencyId: 'MDI',
@@ -193,7 +193,7 @@ describe('Build details', () => {
       offenderNo: 'A1234AA',
       form: { incidentDetails: { locationId, incidentLocationId } } as UseOfForceReport,
       incidentDate: new Date('2015-03-26T12:00:00Z'),
-      bookingId: 33,
+      bookingId: '33',
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00Z'),
       agencyId: 'MDI',

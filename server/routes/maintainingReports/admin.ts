@@ -22,10 +22,7 @@ export default class AdminRoutes {
     const report = await this.reviewService.getReport(Number(reportId))
     const { bookingId, reporterName, submittedDate, form } = report
 
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     return res.render('pages/admin/edit-form.html', {
       errors: req.flash('errors'),

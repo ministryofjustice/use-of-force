@@ -58,10 +58,7 @@ export default class ReviewerRoutes {
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const { bookingId } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     const reportDetail = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
@@ -73,10 +70,7 @@ export default class ReviewerRoutes {
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
 
     const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     const statements = await this.reviewService.getStatements(
       await this.authService.getSystemClientToken(res.locals.user.username),
@@ -101,10 +95,7 @@ export default class ReviewerRoutes {
       parseInt(statementId, 10)
     )
 
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
 
     return res.render('pages/reviewer/view-statement', {

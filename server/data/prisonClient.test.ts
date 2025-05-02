@@ -25,7 +25,7 @@ describe('prisonClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenderResponse)
 
-      const output = await prisonClient.getOffenderDetails(12345, token)
+      const output = await prisonClient.getOffenderDetails('12345', token)
       expect(output).toEqual(offenderResponse)
     })
   })

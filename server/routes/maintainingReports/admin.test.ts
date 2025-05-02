@@ -13,7 +13,7 @@ jest.mock('../../services/offenderService')
 jest.mock('../../services/reportService')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 
@@ -62,7 +62,7 @@ describe('/:reportId/edit-report', () => {
     beforeEach(() => {
       offenderService.getOffenderDetails.mockResolvedValue({})
       reviewService.getReport.mockResolvedValue({
-        bookingId: 2,
+        bookingId: '2',
         form: { evidence: { baggedEvidence: true } },
       } as Report)
     })

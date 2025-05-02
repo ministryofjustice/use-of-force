@@ -52,7 +52,9 @@ export const services = () => {
     db.inTransaction,
     notificationService
   )
-  const offenderService = new OffenderService(prisonApiClient)
+  const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
+  const offenderService = new OffenderService(prisonApiClient, authService)
+
   const locationService = new LocationService(prisonApiClient, locationsApiClient)
   const nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)
   const reportService = new ReportService(
@@ -104,7 +106,6 @@ export const services = () => {
     offenderService,
     authService
   )
-  const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
   const reportDetailBuilder = new ReportDetailBuilder(
     involvedStaffService,
     locationService,

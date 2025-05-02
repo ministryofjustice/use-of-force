@@ -63,7 +63,7 @@ describe('statmentService', () => {
 
       const statement = {
         id: 1,
-        bookingId: 12,
+        bookingId: '12',
         incidentDate: date,
         lastTrainingMonth: 1,
         lastTrainingYear: 2009,
@@ -151,7 +151,7 @@ describe('statmentService', () => {
       const date = new Date()
       statementsClient.getStatementForUser.mockResolvedValue({
         id: 1223,
-        bookingId: 19,
+        bookingId: '19',
         incidentDate: date,
         lastTrainingMonth: 1,
         lastTrainingYear: 2000,
@@ -188,7 +188,7 @@ describe('statmentService', () => {
       const date = new Date()
       statementsClient.getStatementForReviewer.mockResolvedValue({
         id: 1,
-        bookingId: 19,
+        bookingId: '19',
         reportId: 1223,
         userId: 'user1',
         isOverdue: false,

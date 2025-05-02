@@ -18,7 +18,7 @@ jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
@@ -92,7 +92,7 @@ describe('reportService', () => {
         new PageResponse(metaData, [
           {
             id: 1,
-            bookingId: 2,
+            bookingId: '2',
             incidentDate: new Date(1),
             offenderNo: 'AA1234A',
             reporterName: 'BOB',

@@ -269,10 +269,6 @@ export default function createApp(services: Services): Express {
   app.get('*', getFrontendComponents(services.feComponentsService))
   app.use(createRouter(authenticationMiddleware, services))
 
-  app.use((req, res, next) => {
-    next(createError(404, 'Not found'))
-  })
-
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 
   return app
