@@ -61,13 +61,21 @@ context('view statements page', () => {
       viewStatementsPage.statements().then(result =>
         expect(result).to.deep.equal([
           {
-            username: 'Another user name',
+            username: 'Another user name (ANOTHER_USER)',
+            email: 'Anneother TEST_USER@gov.uk',
             badge: 'EMAIL NOT VERIFIED',
             link: '',
             isOverdue: false,
             isUnverified: true,
           },
-          { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
+          {
+            username: 'TEST_USER name (TEST_USER)',
+            email: 'TEST_USER@gov.uk',
+            badge: '',
+            link: '',
+            isOverdue: false,
+            isUnverified: false,
+          },
         ])
       )
 
@@ -116,13 +124,21 @@ context('view statements page', () => {
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
         {
-          username: 'Another user name',
+          username: 'Another user name (ANOTHER_USER)',
+          email: 'Anneother TEST_USER@gov.uk',
           badge: 'OVERDUE, EMAIL NOT VERIFIED',
           link: '',
           isOverdue: true,
           isUnverified: true,
         },
-        { username: 'TEST_USER name', badge: 'OVERDUE', link: '', isOverdue: true, isUnverified: false },
+        {
+          username: 'TEST_USER name (TEST_USER)',
+          email: 'TEST_USER@gov.uk',
+          badge: 'OVERDUE',
+          link: '',
+          isOverdue: true,
+          isUnverified: false,
+        },
       ])
     )
 
@@ -163,7 +179,7 @@ context('view statements page', () => {
 
       const viewStatementsPage = ViewStatementsPage.verifyOnPage()
 
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       ViewReportPage.verifyOnPage()
     }

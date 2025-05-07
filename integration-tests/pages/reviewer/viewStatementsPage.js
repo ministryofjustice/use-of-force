@@ -2,6 +2,8 @@ import page from '../page'
 
 const viewStatementsPage = () =>
   page('Use of force incident', {
+    reportTab: () => cy.get('[data-qa="report-tab"]'),
+
     reporterName: () => cy.get('[data-qa="reporter-name"]'),
 
     submittedDate: () => cy.get('[data-qa="submitted-date"]'),
@@ -26,15 +28,14 @@ const viewStatementsPage = () =>
             const tds = Cypress.$(element).find('td.govuk-table__cell')
             return {
               username: Cypress.$(tds[0]).text(),
-              badge: Cypress.$(tds[1]).text().trim().replace(/\s\s+/g, ', '),
-              link: Cypress.$(tds[2]).text().trim().replace(/\s\s+/g, ', '),
-              isOverdue: Cypress.$(tds[1]).find('[data-qa="overdue"]').length === 1,
-              isUnverified: Cypress.$(tds[1]).find('[data-qa="unverified"]').length === 1,
+              email: Cypress.$(tds[2]).text(),
+              badge: Cypress.$(tds[3]).text().trim().replace(/\s\s+/g, ', '),
+              link: Cypress.$(tds[5]).text().trim().replace(/\s\s+/g, ', '),
+              isOverdue: Cypress.$(tds[3]).find('[data-qa="overdue"]').length === 1,
+              isUnverified: Cypress.$(tds[3]).find('[data-qa="unverified"]').length === 1,
             }
           })
         ),
-
-    reportLink: () => cy.get('[data-qa="report-link"]'),
 
     statementLink: index => cy.get(`[data-qa="statements"]`).find('.govuk-table__body tr').eq(index).find('a'),
 
