@@ -30,10 +30,10 @@ export default class PrisonerSearchClient extends BaseApiClient {
       includeAliases: false,
       ...(firstName && { firstName }),
       ...(lastName && { lastName }),
-      ...(agencyId && { agencyId }),
+      prisonId: agencyId && { agencyId },
     }
     return PrisonerSearchClient.restClient(token).post({
-      path: `/prisoner-search/match-prisoners`,
+      path: `/prisoner-search/match`,
       data,
     })
   }

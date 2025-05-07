@@ -77,7 +77,7 @@ describe('Build details', () => {
     const result = await reportDetailBuilder.build('Bob', report)
 
     expect(result).toStrictEqual({
-      bookingId: 33,
+      bookingId: '33',
       evidence: {
         cctv: undefined,
         evidenceBaggedTagged: 'No',

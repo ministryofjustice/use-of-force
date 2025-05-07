@@ -236,7 +236,6 @@ export = (
 ) => {
   const { incidentDetails, reasonsForUseOfForce, useOfForceDetails, relocationAndInjuries, evidence } = form
   const details = createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence)
-  console.log(details)
   return {
     incidentDetails: createIncidentDetails(
       offenderDetail,

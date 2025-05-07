@@ -69,7 +69,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', '1')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('1', 'user1')
       })
   })
 
@@ -174,7 +174,7 @@ describe('POST save and continue /section/form', () => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
         expect(draftReportService.process).toHaveBeenCalledWith(
           user,
-          1,
+          '1',
           'incidentDetails',
           {
             incidentLocationId,
@@ -246,7 +246,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
         expect(draftReportService.process).toHaveBeenCalledWith(
           user,
-          1,
+          '1',
           'incidentDetails',
           {
             incidentLocationId,
@@ -279,7 +279,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
         expect(draftReportService.process).toHaveBeenCalledWith(
           user,
-          1,
+          '1',
           'incidentDetails',
           {
             incidentLocationId,
@@ -309,7 +309,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
         expect(draftReportService.process).toHaveBeenCalledWith(
           user,
-          1,
+          '1',
           'incidentDetails',
           {
             incidentLocationId,
@@ -334,7 +334,7 @@ describe('POST save and return to tasklist', () => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
         expect(draftReportService.process).toHaveBeenCalledWith(
           user,
-          1,
+          '1',
           'incidentDetails',
           {
             incidentLocationId,

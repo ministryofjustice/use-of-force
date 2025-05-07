@@ -4,7 +4,6 @@ import { properCaseFullName } from '../../utils/utils'
 import { nextPaths, paths } from '../../config/incident'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 import AuthService from '../../services/authService'
-import PrisonerSearchService from '../../services/prisonerSearchService'
 import OffenderService from '../../services/offenderService'
 
 const SubmitType = {

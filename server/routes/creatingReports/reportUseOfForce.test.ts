@@ -41,7 +41,7 @@ describe('GET /task-list', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1-system-token')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1')
       })
   })
 
@@ -52,7 +52,7 @@ describe('GET /task-list', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1-system-token')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1')
       })
   })
 

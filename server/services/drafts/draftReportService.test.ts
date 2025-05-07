@@ -307,7 +307,7 @@ describe('markInvolvedStaffComplete', () => {
     await service.markInvolvedStaffComplete(loggedInUser, '1')
 
     expect(draftReportClient.get).toHaveBeenCalledWith('user-1', '1')
-    expect(updateDraftReportService.process).toHaveBeenCalledWith(loggedInUser, 1, 'involvedStaff', [], undefined)
+    expect(updateDraftReportService.process).toHaveBeenCalledWith(loggedInUser, '1', 'involvedStaff', [], undefined)
   })
 
   it('Do not mark complete if staff already added', async () => {
@@ -315,7 +315,7 @@ describe('markInvolvedStaffComplete', () => {
 
     await service.markInvolvedStaffComplete(loggedInUser, '1')
 
-    expect(draftReportClient.get).toHaveBeenCalledWith('user-1', 1)
+    expect(draftReportClient.get).toHaveBeenCalledWith('user-1', '1')
     expect(updateDraftReportService.process).not.toBeCalled()
   })
 })

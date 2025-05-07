@@ -140,7 +140,7 @@ test('getDuplicateReports', () => {
               and r.incident_date <= $3
               and r.status != $4
               order by date asc`,
-    values: ['1234', startDate, endDate, ReportStatus.IN_PROGRESS.value],
+    values: ['122334', startDate, endDate, ReportStatus.IN_PROGRESS.value],
   })
 })
 

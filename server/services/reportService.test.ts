@@ -104,7 +104,7 @@ describe('reportService', () => {
       expect(result).toEqual(
         new PageResponse(metaData, [
           {
-            bookingId: 2,
+            bookingId: '2',
             id: 1,
             incidentdate: new Date(1),
             offenderName: 'James Stuart',

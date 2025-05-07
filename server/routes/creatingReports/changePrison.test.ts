@@ -111,7 +111,7 @@ describe('POST /prison-of-incident', () => {
           { authorisedBy: 'the authoriser', plannedUseOfForce: true, witnesses: undefined },
           null
         )
-        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', -19)
+        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', '-19')
         expect(flash).toHaveBeenCalledTimes(1)
       })
   })

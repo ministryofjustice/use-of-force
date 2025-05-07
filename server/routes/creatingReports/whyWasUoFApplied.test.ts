@@ -190,7 +190,7 @@ describe('/what-was-the-primary-reason-of-uof', () => {
         .expect(302)
         .expect('Location', paths.useOfForceDetails('-19'))
         .expect(() => {
-          expect(draftReportService.process).toHaveBeenCalledWith(user, -19, 'reasonsForUseOfForce', {
+          expect(draftReportService.process).toHaveBeenCalledWith(user, '-19', 'reasonsForUseOfForce', {
             primaryReason: UofReasons.ASSAULT_ON_ANOTHER_PRISONER.value,
             reasons: [UofReasons.ASSAULT_ON_ANOTHER_PRISONER.value, UofReasons.ASSAULT_ON_A_MEMBER_OF_STAFF.value],
           })

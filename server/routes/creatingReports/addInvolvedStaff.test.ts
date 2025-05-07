@@ -4,11 +4,11 @@ import { StaffDetails } from '../../data/draftReportClientTypes'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import AuthService from '../../services/authService'
-import PrisonerSearchService from '../../services/prisonerSearchService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/authService')
-jest.mock('../../services/prisonerSearchService')
+jest.mock('../../services/offenderService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -20,7 +20,7 @@ const draftReportService = new DraftReportService(
   null
 ) as jest.Mocked<DraftReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
-const prisonerSearchService = new PrisonerSearchService(null, null, authService) as jest.Mocked<PrisonerSearchService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 
 const BOOKING_ID = '-19'
 
@@ -29,7 +29,7 @@ const flash = jest.fn()
 
 beforeEach(() => {
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
-  app = appWithAllRoutes({ draftReportService, authService, prisonerSearchService }, undefined, false, flash)
+  app = appWithAllRoutes({ draftReportService, authService, offenderService }, undefined, false, flash)
 })
 
 afterEach(() => {
