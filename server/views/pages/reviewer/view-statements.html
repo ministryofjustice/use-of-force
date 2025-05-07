@@ -33,9 +33,11 @@
     </div>
     <div class="govuk-grid-column-two-thirds"> 
       <table class="govuk-table" data-qa="statements">
+        <caption class="govuk-table__caption govuk-table__caption--m">Staff members involved</caption>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Staff members involved</th>
+            <th class="govuk-table__header" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">Email</th>
             <th class="govuk-table__header" scope="col"></th>
             <th class="govuk-table__header" scope="col"></th>
           </tr>
@@ -44,7 +46,8 @@
         <tbody class="govuk-table__body">
           {% for statement in data.statements %}
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{statement.name }}</td>
+            <td class="govuk-table__cell govuk-table__header">{{statement.name}}</td>
+            <td class="govuk-table__cell">{{statement.email}}</td>
             <td class="govuk-table__cell">
 
               {% set removalRequested = statement.isRemovalRequested %}
