@@ -1,0 +1,106 @@
+{% macro relocationCompliancyAndRelocationType(question) %}
+
+    {% if question.relocationCompliancy.errorMessage %}
+        {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
+        {% set relocationCompliancyErrorMessageText = question.relocationCompliancy.errorMessage.text %}
+    {% endif %}
+
+    {% if not question.relocationCompliancy.errorMessage and question.relocationType.errorMessage.text %}
+        {% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
+        {% set relocationTypeErrorMessageText = question.relocationType.errorMessage.text %}
+    {% endif %}
+
+    {% if not question.relocationCompliancy.errorMessage and question.userSpecifiedReason.errorMessage.text %}
+        {% set govukFormGroupErrorInnerTextbox  =  'govuk-form-group--error' %}
+        {% set userSpecifiedReasonErrorMessageText = question.userSpecifiedReason.errorMessage.text %}
+    {% endif %}
+
+    <div class="govuk-form-group {{ govukFormGroupErrorOuter }}">
+        <fieldset class="govuk-fieldset">
+            <!-- primary  -->
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                Was the prisoner compliant?
+            </legend>
+            <span class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ relocationCompliancyErrorMessageText }}
+    </span>
+            <div class="govuk-!-margin-bottom-6">
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input"
+                               id="relocationCompliancy"
+                               name="relocationCompliancy"
+                               type="radio"
+                               value="true"
+                                {% if question.relocationCompliancy.value %} checked {% endif %}>
+                        <label class="govuk-label govuk-radios__label" for="relocationCompliancy">Yes</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input"
+                               id="id-relocationCompliancy-2"
+                               name="relocationCompliancy"
+                               type="radio"
+                               value="false"
+                                {% if question.relocationCompliancy.value === false %} checked {% endif %}
+                               data-aria-controls="conditional-relocationCompliancy">
+                        <label class="govuk-label govuk-radios__label" for="id-relocationCompliancy-2">No</label>
+                    </div>
+
+                    <!-- followup-->
+                    {% if question.relocationType %}
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both"
+                             id="conditional-relocationCompliancy">
+                            <div class="{{ govukFormGroupErrorInner }}">
+                                <fieldset class="govuk-fieldset">
+                                    <legend class="govuk-fieldset__legend govuk-fieldset__legend">What was the type of relocation?</legend>
+
+                                    {% if relocationTypeErrorMessageText %}
+                                        <span class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span>{{ relocationTypeErrorMessageText }}</span>
+                                    {% endif %}
+
+                                    {% for option in question.relocationType.options %}
+                                        <div class="govuk-radios__item">
+                                            <input class="govuk-radios__input"
+                                                    {% if loop.index === 1 %}
+                                                        id="relocationType"
+                                                    {% else %}
+                                                        id="id-relocationType-{{ loop.index }}"
+                                                    {% endif %}
+                                                   name="relocationType"
+                                                   type="radio"
+                                                   value="{{ option.value }}"
+                                                    {% if option.value === question.relocationType.value %} checked {% endif %}
+                                                    {% if option.value === "OTHER"  %} data-aria-controls="conditional-OTHER" {% endif %}>
+                                            <label class="govuk-label govuk-radios__label"
+                                                    {% if loop.index === 1 %}
+                                                for="relocationType"
+                                            {% else %}
+                                                for="id-relocationType-{{ loop.index }}"
+                                                    {% endif %}>
+                                                {{ option.label }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                                <div class="govuk-!-margin-top-2 govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-OTHER">
+                                    <div class="govuk-form-group {{ govukFormGroupErrorInnerTextbox }}">
+                                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ userSpecifiedReasonErrorMessageText }}</span>
+                                        <label class="govuk-label" for="userSpecifiedRelocationType">Type of relocation</label>
+                                        <input class="govuk-input govuk-!-width-one-third"
+                                               id="userSpecifiedRelocationType"
+                                               name="userSpecifiedRelocationType"
+                                               value="{{ question.userSpecifiedReason.value }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!-- end of followup -->
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+{% endmacro %}
