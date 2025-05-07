@@ -19,7 +19,8 @@
         {{ primaryErrorMessageText}}
       </span>
 
-            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios--inline">
                 <div class="govuk-radios__item">
                     <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
                            type="radio" value="YES" data-aria-controls="conditional-input-for-{{question.primaryQuestion.questionSubject}}"
@@ -35,6 +36,7 @@
                     <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}-no">
                         No
                     </label>
+                </div>
                 </div>
                 <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-input-for-{{question.primaryQuestion.questionSubject}}">
                     <div class="add-another-{{question.primaryQuestion.questionSubject}}" id="{{question.followUpQuestion.name}}">
