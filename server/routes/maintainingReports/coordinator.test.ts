@@ -97,7 +97,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', paths.addInvolvedStaffResult(1, 'success'))
 
-      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', 1, 'sally')
+      expect(involvedStaffService.addInvolvedStaff).toHaveBeenCalledWith('user1-system-token', 1, 'sally')
     })
 
     it('should not resolve for reviewer', async () => {
@@ -469,9 +469,9 @@ describe('coordinator', () => {
             expect(res.text).toContain('Request to be removed from use of force incident')
           })
 
-        expect(involvedStaffService.loadInvolvedStaff).toBeCalledWith(123, 2)
-        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toBeCalledWith(2)
-        expect(userService.getUserLocation).toBeCalledWith('user1-system-token', 'someUserId')
+        expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 2)
+        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toHaveBeenCalledWith(2)
+        expect(userService.getUserLocation).toHaveBeenCalledWith('user1-system-token', 'someUserId')
       })
     })
 
@@ -500,7 +500,7 @@ describe('coordinator', () => {
           .expect(302)
           .expect('Location', paths.viewRemovalRequest(123, 2))
           .expect(() => {
-            expect(flash).toBeCalledWith('errors', [
+            expect(flash).toHaveBeenCalledWith('errors', [
               {
                 text: 'Select yes if you want to remove this person from the incident',
                 href: '#confirm',
@@ -528,7 +528,7 @@ describe('coordinator', () => {
           .expect(302)
           .expect('Location', paths.staffMemberNotRemoved(123, 2))
 
-        expect(statementService.refuseRequest).toBeCalledWith(2)
+        expect(statementService.refuseRequest).toHaveBeenCalledWith(2)
       })
     })
 

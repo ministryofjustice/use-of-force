@@ -2,8 +2,6 @@ import { PassThrough } from 'stream'
 import OffenderService from './offenderService'
 import { PrisonClient } from '../data'
 import { InmateBasicDetails, InmateDetail } from '../data/prisonClientTypes'
-import PrisonerSearchService from './prisonerSearchService'
-import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
 import AuthService from './authService'
 
 const token = 'token-1'
@@ -16,6 +14,7 @@ const authService = new AuthService(null) as jest.Mocked<AuthService>
 let service
 
 beforeEach(() => {
+  authService.getSystemClientToken.mockResolvedValue(token)
   service = new OffenderService(prisonClient, authService)
 })
 
@@ -26,14 +25,10 @@ afterEach(() => {
 
 describe('getOffenderDetails', () => {
   it('should format display name', async () => {
-    const details: Partial<PrisonerSearchApiPrisoner> = {
-      firstName: 'SAM',
-      lastName: 'SMITH',
-      dateOfBirth: '1980-12-31',
-    }
+    const details: Partial<InmateDetail> = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: new Date('1980-12-31') }
+    prisonClient.getOffenderDetails.mockResolvedValue(details)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    prisonerSearchService.getPrisonerDetails.mockResolvedValue(details)
     const result = await service.getOffenderDetails('12345678', token)
 
     expect(result).toEqual({
@@ -46,7 +41,7 @@ describe('getOffenderDetails', () => {
   it('should use the token', async () => {
     const details: Partial<InmateDetail> = { firstName: 'SAM', lastName: 'SMITH' }
     prisonClient.getOffenderDetails.mockResolvedValue(details)
-    await service.getOffenderDetails(token, '12345')
+    await service.getOffenderDetails('12345', 'user1')
 
     expect(prisonClient.getOffenderDetails).toHaveBeenCalledWith('12345', token)
   })
@@ -56,9 +51,9 @@ describe('getOffenderImage', () => {
   it('Can retrieve image', () => {
     const image = new PassThrough()
     prisonClient.getOffenderImage.mockResolvedValue(image)
-    service.getOffenderImage(token, -5)
+    service.getOffenderImage('12345', token)
 
-    expect(prisonClient.getOffenderImage).toBeCalledWith('12345', token)
+    expect(prisonClient.getOffenderImage).toHaveBeenCalledWith(token, '12345')
   })
 })
 
@@ -76,6 +71,6 @@ describe('getOffenders', () => {
     const names = await service.getOffenderNames(token, offenderNos)
 
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
-    expect(prisonClient.getOffenders).toBeCalledWith(['AAA', 'BBB'], token)
+    expect(prisonClient.getOffenders).toHaveBeenCalledWith(['AAA', 'BBB'], token)
   })
 })

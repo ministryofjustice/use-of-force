@@ -61,7 +61,7 @@ const validUseOfForceDetailsRequest = {
 
 const validUseOfForceDetailUpdate = [
   user,
-  1,
+  '1',
   'useOfForceDetails',
   {
     bodyWornCamera: 'YES',
@@ -128,7 +128,7 @@ describe('POST save and return to tasklist', () => {
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
         expect(draftReportService.process).toHaveBeenCalledTimes(1)
-        expect(draftReportService.process).toHaveBeenCalledWith(user, 1, 'useOfForceDetails', {
+        expect(draftReportService.process).toHaveBeenCalledWith(user, '1', 'useOfForceDetails', {
           guidingHold: false,
           escortingHold: false,
           handcuffsApplied: false,
@@ -211,9 +211,9 @@ describe('Submitting evidence page', () => {
         .expect(302)
         .expect('Location', nextPath)
         .expect(() => {
-          expect(draftReportService.process).toBeCalledTimes(1)
+          expect(draftReportService.process).toHaveBeenCalledTimes(1)
 
-          expect(draftReportService.process).toBeCalledWith(user, 1, 'evidence', {
+          expect(draftReportService.process).toHaveBeenCalledWith(user, '1', 'evidence', {
             baggedEvidence: true,
             cctvRecording: 'YES',
             evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],

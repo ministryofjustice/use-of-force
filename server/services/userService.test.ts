@@ -55,7 +55,7 @@ describe('getSelf', () => {
 
     await service.getSelf(token)
 
-    expect(prisonClient.getUser).toBeCalledWith(token)
+    expect(prisonClient.getUser).toHaveBeenCalledWith(token)
   })
 })
 

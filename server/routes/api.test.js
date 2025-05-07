@@ -34,7 +34,7 @@ describe('api', () => {
         .get('/api/offender/1234/image')
         .expect('Content-Type', 'image/jpeg')
         .expect(() => {
-          expect(offenderService.getOffenderImage).toBeCalledWith('user1-system-token', '1234')
+          expect(offenderService.getOffenderImage).toHaveBeenCalledWith('user1-system-token', '1234')
         })
     })
   })

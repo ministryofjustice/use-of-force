@@ -40,8 +40,8 @@ describe('/report-may-already-exist', () => {
         .get('/report/2/report-may-already-exist')
         .expect('Content-Type', /html/)
         .expect(() => {
-          expect(offenderService.getOffenderDetails).toBeCalledTimes(1)
-          expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', 2)
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledTimes(1)
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('2', 'user1')
         })
     })
 
@@ -50,8 +50,8 @@ describe('/report-may-already-exist', () => {
         .get('/report/3/report-may-already-exist')
         .expect('Content-Type', /html/)
         .expect(() => {
-          expect(draftReportService.getCurrentDraft).toBeCalledTimes(1)
-          expect(draftReportService.getCurrentDraft).toBeCalledWith('user1', 3)
+          expect(draftReportService.getCurrentDraft).toHaveBeenCalledTimes(1)
+          expect(draftReportService.getCurrentDraft).toHaveBeenCalledWith('user1', '3')
         })
     })
 

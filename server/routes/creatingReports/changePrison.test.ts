@@ -73,7 +73,7 @@ describe('POST /prison-of-incident', () => {
       .send({ agencyId: 'MDI', submit: 'save-and-continue' })
       .expect(302)
       .expect(() => {
-        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', -19)
+        expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', '-19')
       })
   })
 
@@ -106,7 +106,7 @@ describe('POST /prison-of-incident', () => {
             userId: 'id',
             username: 'user1',
           },
-          -19,
+          '-19',
           'incidentDetails',
           { authorisedBy: 'the authoriser', plannedUseOfForce: true, witnesses: undefined },
           null

@@ -23,6 +23,7 @@ import FeComponentsService from '../../services/feComponentsService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
 import { Services } from '../../services'
+import { PrisonClient } from '../../data'
 
 export const user = {
   firstName: 'first',
@@ -132,6 +133,7 @@ export const appWithAllRoutes = (
     signInService: {} as any,
     feComponentsService: {} as FeComponentsService,
     authService: {} as AuthService,
+    prisonClient: {} as PrisonClient,
     ...overrides,
   }
   const authenticated = authenticatedRoutes(authenticationMiddleware, services)

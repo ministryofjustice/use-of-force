@@ -28,7 +28,7 @@ describe('statmentService', () => {
   describe('saveAdditionalComment', () => {
     test('save a new comment', async () => {
       await service.saveAdditionalComment(50, 'A new comment')
-      expect(statementsClient.saveAdditionalComment).toBeCalledWith(50, 'A new comment')
+      expect(statementsClient.saveAdditionalComment).toHaveBeenCalledWith(50, 'A new comment')
     })
   })
 
@@ -53,7 +53,7 @@ describe('statmentService', () => {
       const output = await service.getStatements('user1', 1)
 
       expect(output).toEqual(pageResponse)
-      expect(statementsClient.getStatements).toBeCalledWith('user1', 1)
+      expect(statementsClient.getStatements).toHaveBeenCalledWith('user1', 1)
     })
   })
 
@@ -95,7 +95,7 @@ describe('statmentService', () => {
         ],
       })
 
-      expect(statementsClient.getStatementForUser).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
+      expect(statementsClient.getStatementForUser).toHaveBeenCalledWith('BOB', 1, StatementStatus.PENDING)
     })
 
     test('retrieve details when statement is not present', async () => {
@@ -105,7 +105,7 @@ describe('statmentService', () => {
         new Error("Report: '1' does not exist")
       )
 
-      expect(statementsClient.getStatementForUser).toBeCalledWith('BOB', 1, StatementStatus.PENDING)
+      expect(statementsClient.getStatementForUser).toHaveBeenCalledWith('BOB', 1, StatementStatus.PENDING)
     })
   })
 
@@ -114,8 +114,8 @@ describe('statmentService', () => {
 
     await service.save('user1', 1, statement)
 
-    expect(statementsClient.saveStatement).toBeCalledTimes(1)
-    expect(statementsClient.saveStatement).toBeCalledWith('user1', 1, statement)
+    expect(statementsClient.saveStatement).toHaveBeenCalledTimes(1)
+    expect(statementsClient.saveStatement).toHaveBeenCalledWith('user1', 1, statement)
   })
 
   describe('submitStatement', () => {
@@ -123,8 +123,8 @@ describe('statmentService', () => {
       statementsClient.getNumberOfPendingStatements.mockResolvedValue(1)
       await service.submitStatement('user1', 1)
 
-      expect(statementsClient.submitStatement).toBeCalledTimes(1)
-      expect(statementsClient.submitStatement).toBeCalledWith('user1', 1, client)
+      expect(statementsClient.submitStatement).toHaveBeenCalledTimes(1)
+      expect(statementsClient.submitStatement).toHaveBeenCalledWith('user1', 1, client)
       expect(incidentClient.changeStatus).not.toHaveBeenCalled()
     })
 
@@ -133,8 +133,8 @@ describe('statmentService', () => {
 
       await service.submitStatement('user1', 1)
 
-      expect(statementsClient.submitStatement).toBeCalledTimes(1)
-      expect(statementsClient.submitStatement).toBeCalledWith('user1', 1, client)
+      expect(statementsClient.submitStatement).toHaveBeenCalledTimes(1)
+      expect(statementsClient.submitStatement).toHaveBeenCalledWith('user1', 1, client)
 
       expect(incidentClient.changeStatus).toHaveBeenCalledWith(
         1,
@@ -179,7 +179,7 @@ describe('statmentService', () => {
   describe('requestStatementRemoval', () => {
     test('request statement removal', async () => {
       await service.requestStatementRemoval(1, 'request reason')
-      expect(statementsClient.requestStatementRemoval).toBeCalledWith(1, 'request reason')
+      expect(statementsClient.requestStatementRemoval).toHaveBeenCalledWith(1, 'request reason')
     })
   })
 
@@ -204,7 +204,7 @@ describe('statmentService', () => {
       })
 
       await service.refuseRequest(1)
-      expect(statementsClient.refuseStatementRemoval).toBeCalledWith(1)
+      expect(statementsClient.refuseStatementRemoval).toHaveBeenCalledWith(1)
     })
   })
 })

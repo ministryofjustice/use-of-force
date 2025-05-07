@@ -63,7 +63,7 @@ describe('update', () => {
     await service.process(currentUser, '1', 'form', formObject, incidentDate)
 
     expect(incidentClient.update).toHaveBeenCalledTimes(1)
-    expect(incidentClient.update).toHaveBeenCalledWith('1', incidentDate, { form: formObject })
+    expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, { form: formObject })
   })
 
   test('doesnt call update if neither form or incident present', async () => {
@@ -80,7 +80,7 @@ describe('update', () => {
     await service.process(currentUser, '1', 'form', formObject)
 
     expect(incidentClient.update).toHaveBeenCalledTimes(1)
-    expect(incidentClient.update).toHaveBeenCalledWith('1', undefined, { form: formObject })
+    expect(incidentClient.update).toHaveBeenCalledWith(1, undefined, { form: formObject })
   })
 
   test('Still call update if incident date is present but form object isnt', async () => {
@@ -88,15 +88,14 @@ describe('update', () => {
 
     await service.process(currentUser, '1', 'incidentDetails', {}, incidentDate)
 
-    expect(incidentClient.update).toHaveBeenCalledWith('1', incidentDate, null)
+    expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, null)
   })
 
   test('Still call update if incident date is present when form object isnt', async () => {
     draftReportClient.get.mockResolvedValue({ id: 1, form: {} })
 
     await service.process(currentUser, '1', 'incidentDetails', {}, incidentDate)
-
-    expect(incidentClient.update).toHaveBeenCalledWith('1', incidentDate, { incidentDetails: {} })
+    expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, { incidentDetails: {} })
   })
 })
 
