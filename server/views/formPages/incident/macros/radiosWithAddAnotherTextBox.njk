@@ -29,10 +29,10 @@
                     </label>
                 </div>
                 <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="primary-question-no"
+                    <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}-no"
                            name="{{question.primaryQuestion.name}}" type="radio" value="NO"
                             {% if question.primaryQuestion.value === 'NO' %} checked="checked" {% endif %}>
-                    <label class="govuk-label govuk-radios__label" for="primary-question-no">
+                    <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}-no">
                         No
                     </label>
                 </div>

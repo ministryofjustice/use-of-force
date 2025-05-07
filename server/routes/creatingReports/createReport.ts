@@ -45,6 +45,7 @@ export default class CreateReport {
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
+      console.log(types)
       res.render(`formPages/incident/${formName}`, {
         data: { offenderDetail, bookingId, ...pageData, types },
         formName,

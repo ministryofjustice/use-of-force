@@ -35,7 +35,9 @@
                                     {% if option.exclusive %}
                                         data-behaviour="exclusive"
                                     {% endif %}
-                                    data-aria-controls="conditional-{{option.value}}"
+                                    {% if option.sub_options %}
+                                        data-aria-controls="conditional-{{option.value}}"
+                                    {% endif %}
                                     {% if option.value in question.primaryQuestion.value %} checked {% endif %}
                             >
                             <label class="govuk-label govuk-checkboxes__label" for="parent-{{option.value}}-{{question.primaryQuestion.name}}">
