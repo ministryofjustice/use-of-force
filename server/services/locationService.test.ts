@@ -104,7 +104,7 @@ describe('locationService', () => {
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([])
-      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token, undefined)
+      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token)
     })
 
     it('should assign locationPrefix as userDescription when userDescription value is absent', async () => {
@@ -210,7 +210,7 @@ describe('locationService', () => {
 
       await locationService.getIncidentLocations(token, 'WRI')
 
-      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token, undefined)
+      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token)
     })
 
     it('should remove cell location options for prisons that are in and out of the feature flag', async () => {

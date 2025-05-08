@@ -1,5 +1,3 @@
-import { compact } from 'lodash'
-
 import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
 import BaseApiClient from './baseApiClient'
 import config from '../config'
@@ -27,10 +25,10 @@ export default class PrisonerSearchClient extends BaseApiClient {
 
     const data = {
       prisonerIdentifier: prisonNumber,
-      includeAliases: false,
       ...(firstName && { firstName }),
       ...(lastName && { lastName }),
-      prisonId: agencyId && { agencyId },
+      ...(agencyId && { agencyId }),
+      includeAliases: false,
     }
     return PrisonerSearchClient.restClient(token).post({
       path: `/prisoner-search/match`,

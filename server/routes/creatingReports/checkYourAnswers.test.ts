@@ -299,7 +299,7 @@ describe('POST /check-your-answers', () => {
     draftReportService.submit.mockResolvedValue(2)
 
     await request(app).post('/report/-35/check-your-answers').expect(302).expect('Location', '/2/report-sent')
-    expect(draftReportService.submit).toHaveBeenCalledWith(user, -35)
+    expect(draftReportService.submit).toHaveBeenCalledWith(user, '-35')
   })
 
   it('An error is throw if the report is not complete', async () => {
