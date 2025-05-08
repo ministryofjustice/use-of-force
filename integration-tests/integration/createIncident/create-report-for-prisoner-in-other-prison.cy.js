@@ -68,7 +68,7 @@ context('Creating reports for prisoners in other prisons', () => {
       query: {
         equalToJson: {
           lastName: 'Smith',
-          agencyId: 'MDI',
+          prisonId: 'MDI',
           includeAliases: false,
         },
       },
