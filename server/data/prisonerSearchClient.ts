@@ -22,12 +22,12 @@ export default class PrisonerSearchClient extends BaseApiClient {
 
   async search(form: SearchForm, token: string): Promise<any> {
     const { prisonNumber, firstName, lastName, agencyId } = form
-
+    const prisonId = agencyId
     const data = {
       prisonerIdentifier: prisonNumber,
       ...(firstName && { firstName }),
       ...(lastName && { lastName }),
-      ...(agencyId && { agencyId }),
+      ...(prisonId && { prisonId }),
       includeAliases: false,
     }
     return PrisonerSearchClient.restClient(token).post({
