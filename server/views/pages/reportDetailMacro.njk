@@ -1,4 +1,3 @@
-
 {% import "./reportDetailSectionsMacros.njk" as reportDetailsMacros %} 
 
 {% macro fieldValue(name, value, dataQa) %}
@@ -53,7 +52,66 @@
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId, incidentId, user, print) %}
+{% macro detail(data, bookingId, incidentId, user, print, renderReportView) %}
+    {% if renderReportView %}
+      <div class="summary-card">
+          <div class="summary-card__title-wrapper">
+            {{
+              reportDetailsMacros.sectionHeading({
+                id: 'reportDetails', 
+                title: 'Report details'
+              })
+            }}
+          </div>
+          <div class="summary-card__content">
+            {{reportDetailsMacros.tableRow({
+                label: 'Incident number',  
+                'data-qa': 'incident-number',    
+                dataValue: data.incidentId
+              })
+            }}
+            {{reportDetailsMacros.tableRow({
+                label: 'Report created by',  
+                'data-qa': 'report-created-by',    
+                dataValue:  data.reporterName
+              })
+            }}
+            {{reportDetailsMacros.tableRow({
+                label: 'Date and time report created',  
+                'data-qa': 'report-submitted-date',    
+                dataValue: data.submittedDate | formatDate("D MMMM YYYY [at] HH:mm")
+              })
+            }}
+
+            {% if data.hasReportOwnerChanged %}
+              {{reportDetailsMacros.tableRow({
+                  label: 'Current report owner',  
+                  'data-qa': 'report-owner',    
+                  dataValue: data.reportOwner.newValuePrimary + ' as of ' + data.reportOwner.editDate | formatDate("D MMMM YYYY [at] HH:mm")
+                })
+              }}
+            {% endif %}
+
+            {% if data.hasReportBeenEdited %}
+              {{reportDetailsMacros.tableRow({
+                  label: 'Report last edited',  
+                  'data-qa': 'last-edited-date-time',    
+                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName
+                })
+              }}
+            {% endif %}  
+
+            {{reportDetailsMacros.tableRowWithBadge({
+                label: 'Report status',  
+                'data-qa': 'report-status',    
+                dataValue: data.reportStatus
+              })
+            }}
+        </div>
+      </div>    
+{% endif %}
+<div class="{% if renderReportView %} summary-card {% endif %}">
+  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
     {{
       reportDetailsMacros.sectionHeading({
         id: 'incidentDetails', 
@@ -61,6 +119,8 @@
         url:  '/report/' + bookingId + '/incident-details' if bookingId
       })
     }}
+  </div>
+  <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {{reportDetailsMacros.tableRow({
               label: 'Date of incident',  
               'data-qa': 'incidentDate',    
@@ -118,7 +178,11 @@
         print: print
       })
     }}
+  </div>
+</div>
 
+<div class="{% if renderReportView %} summary-card {% endif %}">
+  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
     {{
       reportDetailsMacros.sectionHeading({
         id: 'staffInvolved',
@@ -126,25 +190,51 @@
         url:  '/report/' + bookingId + '/staff-involved' if bookingId
       })  
     }}
-    <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
-   
-    {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-      <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
-      {{item.name}} ({{item.username}})
+  </div>
 
-      {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
-        <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
-          Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
-      {%- endif -%}  
-      </li>
-    {% endfor %} 
-    </ol>
-    {%- if not print and user.isCoordinator and incidentId -%}
-      <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
-        Add another member of staff
-      </a>
+  <div class="{% if renderReportView %} summary-card__content {% endif %}">
+    {% if renderReportView %}
+      <table class="govuk-table" data-module="moj-sortable-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">        
+            <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
+            <th scope="col" class="govuk-table__header" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+              <tr class="govuk-table__row" data-qa="staff-involved" >     
+                <td class="govuk-table__cell">{{item.name}} </td>
+                <td class="govuk-table__cell">{{item.email}}</td>
+              </tr>
+          {% endfor %} 
+        </tbody>
+      </table>
+
+    {% else %}
+      <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
+      {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+        <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
+        {{item.name}} ({{item.username}})
+
+        {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
+          <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
+            Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
+        {%- endif -%}  
+        </li>
+      {% endfor %} 
+      </ol>
+      {%- if not print and user.isCoordinator and incidentId -%}
+        <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
+          Add another member of staff
+        </a>
+      {%- endif -%}
     {%- endif -%}
-    
+  </div>
+</div>
+
+<div class="{% if renderReportView %} summary-card {% endif %}">
+  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
     {{
       reportDetailsMacros.sectionHeading({
         id: 'useOfForceDetails',
@@ -152,6 +242,8 @@
         url:  '/report/' + bookingId + '/why-was-uof-applied' if bookingId
       })
     }}
+  </div>
+  <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {% if data.useOfForceDetails.reasonsForUseOfForce %}
       {{
       reportDetailsMacros.tableRow({
@@ -297,6 +389,11 @@
         print: print
       })
     }}
+  </div>
+</div>
+
+<div class="{% if renderReportView %} summary-card {% endif %}">
+   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
     {{
       reportDetailsMacros.sectionHeading({
         id: 'relocationAndInjuries',
@@ -305,6 +402,8 @@
         print: print
       })
     }}
+  </div>
+  <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {{
       reportDetailsMacros.tableRow({
         label: 'Where was the prisoner relocated to?',
@@ -371,7 +470,11 @@
         print: print
       })
     }}
+  </div>
+</div>
 
+<div class="{% if renderReportView %} summary-card {% endif %}">
+   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
     {{
       reportDetailsMacros.sectionHeading({
         id: 'evidence',
@@ -379,6 +482,8 @@
         url:  '/report/' + bookingId + '/evidence' if bookingId
       })
     }}
+  </div>
+  <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {{
       reportDetailsMacros.tableRow({
         label: 'Evidence bagged and tagged',
@@ -404,4 +509,6 @@
         print: print
       })
     }}
+  </div>
+</div>
 {% endmacro %}

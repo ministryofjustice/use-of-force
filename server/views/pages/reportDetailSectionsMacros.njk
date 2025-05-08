@@ -12,6 +12,18 @@
 </h2>
 {% endmacro %}
 
+{% macro tableRowWithBadge(dataItem) %}
+<dl class="govuk-summary-list govuk-!-margin-0 ">  
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key summary-list__key__wider flex-basis-50"> {{dataItem.label}} </dt>
+    <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+      <span class="moj-badge moj-badge-blue moj-badge-large"> {{dataItem.dataValue}}</span>
+    </dd>
+    <dd class="govuk-summary-list__actions"></dd>
+  </div>
+</dl> 
+{% endmacro %}
+
 {% macro tableRow(dataItem) %}
 <dl class="govuk-summary-list govuk-!-margin-0">  
   <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
