@@ -18,12 +18,14 @@ context('Check your answers page', () => {
     cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
+    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'EMILY_JONES', 'JO_ZAGATO'])
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],

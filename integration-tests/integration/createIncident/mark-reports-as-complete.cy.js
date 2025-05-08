@@ -11,6 +11,7 @@ context('Marking a report as complete', () => {
     cy.task('reset')
     cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
+    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])

@@ -10,6 +10,7 @@ context('Submitting incident details page', () => {
     cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
+    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
