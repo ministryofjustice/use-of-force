@@ -73,7 +73,7 @@ export default function Index({
   get(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.viewPrimarySelection())
   post(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.submitPrimarySelection())
 
-  const createReport = new CreateReportRoutes(authService, draftReportService, offenderService)
+  const createReport = new CreateReportRoutes(draftReportService, offenderService)
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))

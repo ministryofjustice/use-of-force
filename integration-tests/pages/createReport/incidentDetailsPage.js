@@ -3,7 +3,7 @@ import StaffInvolvedPage from './staffInvolvedPage'
 
 const incidentDetailsPage = () =>
   page('Incident details', {
-    offenderName: () => cy.get('[data-qa=offender-name]'),
+    offenderName: () => cy.get('[data-qa=mini-profile-person-profile-link]'),
     location: () => cy.get('#incidentLocationId'),
     prison: () => cy.get('[data-qa=prison]'),
     clickChangePrison: () => cy.get('[data-qa=change-prison-link]').click(),

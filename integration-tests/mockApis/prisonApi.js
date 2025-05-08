@@ -55,6 +55,20 @@ module.exports = {
       },
     })
   },
+  stubOffenderImage: bookingId => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/api/bookings/${bookingId}/image/data`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/jpeg',
+        },
+      },
+    })
+  },
   stubOffenders: offenders => {
     return stubFor({
       request: {

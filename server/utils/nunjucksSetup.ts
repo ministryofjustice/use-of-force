@@ -123,7 +123,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   })
 
   njkEnv.addFilter('toOptions', (array, valueKey, textKey) => {
-    array.map(item => console.log(item))
     return array.map(item => ({
       value: item[valueKey],
       label: item[textKey],

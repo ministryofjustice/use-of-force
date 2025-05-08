@@ -22,6 +22,7 @@ export default class LocationClient extends BaseApiClient {
       })
       return result as LocationInPrison
     } catch (error) {
+      console.log(error)
       if (error?.status !== 404) throw error
     }
     return undefined

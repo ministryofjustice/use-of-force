@@ -5,7 +5,6 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
-import AuthService from '../../services/authService'
 import OffenderService from '../../services/offenderService'
 
 enum SubmitType {
@@ -15,7 +14,6 @@ enum SubmitType {
 
 export default class CreateReport {
   constructor(
-    private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService
   ) {}
@@ -45,7 +43,6 @@ export default class CreateReport {
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
-      console.log(types)
       res.render(`formPages/incident/${formName}`, {
         data: { offenderDetail, bookingId, ...pageData, types },
         formName,

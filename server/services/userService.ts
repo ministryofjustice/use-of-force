@@ -28,9 +28,12 @@ export default class UserService {
   }
 
   private async getEmailSafely(client: ManageUsersApiClient, username: string, token: string): Promise<EmailResult> {
+    const notFound = { username, exists: false, verified: false }
     return usernamePattern.test(username)
-      ? client.getEmail(username, token)
-      : { username, exists: false, verified: false }
+      ? client.getEmail(username, token).catch(() => {
+          return notFound
+        })
+      : notFound
   }
 
   public async getUser(token: string, username: string): Promise<FoundUserResult> {
@@ -56,9 +59,9 @@ export default class UserService {
 
   public async findUsers(token: string, firstName: string, lastName: string): Promise<FoundUserResult[]> {
     try {
-      const users = await this.manageUsersClient.findUsers(firstName, lastName, token)
-
-      return users
+      return await this.manageUsersClient.findUsers(firstName, lastName, token).catch(() => {
+        return []
+      })
     } catch (error) {
       logger.error('Error during findUsers: ', error.stack)
       throw error

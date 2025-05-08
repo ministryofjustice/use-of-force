@@ -8,17 +8,22 @@ const SelectUofReasonsPage = require('../../pages/createReport/selectUofReasonsP
 const DeleteStaffMemberPage = require('../../pages/createReport/deleteStaffMemberPage')
 const SelectStaffMemberPage = require('../../pages/createReport/selectStaffMemberPage')
 
+const dpsLocationId = '00000000-1111-2222-3333-444444444444'
+
 context('Adding involved staff', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
+    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
+    cy.task('stubLocation', dpsLocationId)
     cy.task('stubOffenders', [offender])
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
-    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['JO_JONES', 'TEST_USER'])
+    cy.task('stubLocation', dpsLocationId)
+    cy.task('stubUserDetailsRetrieval', ['JO_JONES', 'TEST_USER', 'BOB_SMITH', 'EMILY_JONES'])
     cy.login()
   })
 
@@ -38,7 +43,7 @@ context('Adding involved staff', () => {
     whatIsStaffMembersNamePage.firstName().type('Bob')
     whatIsStaffMembersNamePage.lastName().type('Smith')
 
-    cy.task('stubFindUsers', { firstName: 'Bob', lastName: 'Smith' })
+    cy.task('stubFindUsers', { userName: 'BOB_SMITH', firstName: 'Bob', lastName: 'Smith' })
 
     whatIsStaffMembersNamePage.clickContinue()
 
@@ -56,7 +61,7 @@ context('Adding involved staff', () => {
     whatIsStaffMembersNamePage.firstName().type('Emily')
     whatIsStaffMembersNamePage.lastName().type('Jones')
 
-    cy.task('stubFindUsers', { firstName: 'Emily', lastName: 'Jones' })
+    cy.task('stubFindUsers', { username: 'EMILY_JONES', firstName: 'Emily', lastName: 'Jones' })
 
     whatIsStaffMembersNamePage.clickContinue()
 

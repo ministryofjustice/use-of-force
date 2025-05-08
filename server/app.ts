@@ -42,7 +42,6 @@ const production = process.env.NODE_ENV === 'production'
 
 export default function createApp(services: Services): Express {
   const app = express()
-  console.log('Hello')
 
   initialisePassportStrategy(services.signInService)
 

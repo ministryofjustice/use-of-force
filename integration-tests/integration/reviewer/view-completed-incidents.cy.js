@@ -25,6 +25,7 @@ const offender3 = {
 context('A use of force reviewer can view completed incidents at the current agency', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubOffenderDetails', offender2)
     cy.task('stubOffenderDetails', offender3)
