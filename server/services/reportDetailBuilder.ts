@@ -13,6 +13,8 @@ export interface ReportDetail {
   submittedDate: Date
   bookingId: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  offenderDetail: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [reportSummaryKeys: string]: any
 }
 
@@ -71,6 +73,7 @@ export default class ReportDataBuilder {
       submittedDate,
       bookingId,
       ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
+      offenderDetail,
     }
   }
 }
