@@ -16,7 +16,6 @@ import { createRedisClient } from './data/redisClient'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
-import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
@@ -32,6 +31,7 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpWebSession from './middleware/setUpWebSession'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -110,40 +110,7 @@ export default function createApp(services: Services): Express {
       },
     })
   )
-
-  app.use((req, res, next) => {
-    const headerName = 'X-Request-Id'
-    const oldValue = req.get(headerName)
-    const id = oldValue === undefined ? uuidv4() : oldValue
-
-    res.set(headerName, id)
-    req.id = id
-
-    next()
-  })
-
-  const RedisStore = ConnectRedis(session)
-  const client = createRedisClient({ legacyMode: true })
-  client.connect()
-
-  app.use(
-    session({
-      store: new RedisStore({ client }),
-      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
-      secret: config.session.secret,
-      resave: false, // redis implements touch so shouldn't need this
-      saveUninitialized: false,
-      rolling: true,
-    })
-  )
-
-  app.use(
-    asyncMiddleware((req, res, next) => {
-      req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-      next()
-    })
-  )
-
+  app.use(setUpWebSession())
   app.use(passport.initialize())
   app.use(passport.session())
 
@@ -167,14 +134,14 @@ export default function createApp(services: Services): Express {
   }
 
   //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
+  const cacheControl = { maxAge: config.staticResourceCacheDuration }
 
   ;[
     '/assets',
     '/assets/stylesheets',
     '/assets/js',
     `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
+    `/node_modules/govuk-frontend/dist`,
     `/node_modules/@ministryofjustice/frontend/`,
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
@@ -300,10 +267,6 @@ export default function createApp(services: Services): Express {
 
   app.get('*', getFrontendComponents(services.feComponentsService))
   app.use(createRouter(authenticationMiddleware, services))
-
-  app.use((req, res, next) => {
-    next(createError(404, 'Not found'))
-  })
 
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 

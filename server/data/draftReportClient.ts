@@ -48,7 +48,7 @@ export default class DraftReportClient {
 
   async get(
     userId: string,
-    bookingId: number,
+    bookingId: string,
     query: QueryPerformer = this.query
   ): Promise<DraftReport | NoDraftReport> {
     const results = await query({
@@ -64,7 +64,7 @@ export default class DraftReportClient {
 
   async getInvolvedStaff(
     username: string,
-    bookingId: number,
+    bookingId: string,
     query: QueryPerformer = this.query
   ): Promise<StaffDetails[]> {
     const results = await query({
@@ -79,7 +79,7 @@ export default class DraftReportClient {
     return []
   }
 
-  async updateAgencyId(agencyId: AgencyId, username: string, bookingId: number): Promise<void> {
+  async updateAgencyId(agencyId: AgencyId, username: string, bookingId: string): Promise<void> {
     await this.query({
       text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
@@ -91,7 +91,7 @@ export default class DraftReportClient {
     })
   }
 
-  async getDuplicateReports(bookingId: number, [startDate, endDate]: DateRange): Promise<OffenderReport[]> {
+  async getDuplicateReports(bookingId: string, [startDate, endDate]: DateRange): Promise<OffenderReport[]> {
     const results = await this.query({
       text: `select r.incident_date date
               ,   r.form_response -> 'incidentDetails' ->> 'incidentLocationId' "incidentLocationId"
@@ -108,7 +108,7 @@ export default class DraftReportClient {
     return results.rows
   }
 
-  async deleteReport(userId: string, bookingId: number, now: Date = new Date()): Promise<void> {
+  async deleteReport(userId: string, bookingId: string, now: Date = new Date()): Promise<void> {
     await this.query({
       text: `update v_report r
               set deleted = $1 

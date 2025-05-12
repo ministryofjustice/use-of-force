@@ -36,11 +36,11 @@ describe('submit', () => {
 
     const now = moment('2019-09-06 21:26:18')
     const staff = [{ username: 'user-1', staffId: 1 } as DraftInvolvedStaff]
-    const result = await service.submit(currentUser, 2, staff, () => now)
+    const result = await service.submit(currentUser, '2', staff, () => now)
 
     expect(result).toEqual(1)
-    expect(statementsClient.createStatements).toBeCalledTimes(1)
-    expect(statementsClient.createStatements).toBeCalledWith(
+    expect(statementsClient.createStatements).toHaveBeenCalledTimes(1)
+    expect(statementsClient.createStatements).toHaveBeenCalledWith(
       1,
       moment(now).add(1, 'day').toDate(),
       moment(now).add(3, 'days').toDate(),
@@ -48,8 +48,8 @@ describe('submit', () => {
       client
     )
 
-    expect(draftReportClient.submit).toBeCalledTimes(1)
-    expect(draftReportClient.submit).toBeCalledWith(1, currentUser.username, now.toDate(), client)
+    expect(draftReportClient.submit).toHaveBeenCalledTimes(1)
+    expect(draftReportClient.submit).toHaveBeenCalledWith(1, currentUser.username, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {
@@ -70,9 +70,9 @@ describe('submit', () => {
 
     statementsClient.createStatements.mockResolvedValue({ USER_1: 1, [currentUser.username]: 2, USER_3: 3 })
 
-    await service.submit(currentUser, 1, [user1, user2, user3], () => now)
+    await service.submit(currentUser, '1', [user1, user2, user3], () => now)
 
-    expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
+    expect(notificationService.sendStatementRequest).toHaveBeenCalledTimes(2)
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
       [
         'user1@example.com',

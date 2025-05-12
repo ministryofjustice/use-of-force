@@ -1,4 +1,4 @@
-import type { PrisonClient, AuthClient, RestClientBuilder, DraftReportClient } from '../../data'
+import { PrisonClient, DraftReportClient, ManageUsersApiClient } from '../../data'
 import type { StaffDetails } from '../../data/draftReportClientTypes'
 import type UserService from '../userService'
 
@@ -7,8 +7,8 @@ export type DraftInvolvedStaffWithPrison = DraftInvolvedStaff & { prison?: strin
 
 export class DraftInvolvedStaffService {
   constructor(
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
-    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
+    private readonly manageUsersApiClient: ManageUsersApiClient,
+    private readonly prisonClient: PrisonClient,
     private readonly draftReportClient: DraftReportClient,
     private readonly userService: UserService
   ) {}
@@ -21,7 +21,7 @@ export class DraftInvolvedStaffService {
     return user
   }
 
-  public async getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
+  public async getInvolvedStaff(token: string, username: string, bookingId: string): Promise<DraftInvolvedStaff[]> {
     const retrievedStaff = await this.draftReportClient.getInvolvedStaff(username, bookingId)
     const user = await this.reporter(token, username)
     return [{ ...user, isReporter: true }, ...retrievedStaff]
@@ -30,17 +30,17 @@ export class DraftInvolvedStaffService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: string
   ): Promise<DraftInvolvedStaffWithPrison[]> {
-    const prisonClient = this.prisonClientBuilder(token)
-    const authClient = this.authClientBuilder(token)
-
     const [involvedStaff, prisons] = await Promise.all([
       this.getInvolvedStaff(token, username, bookingId),
-      prisonClient.getPrisons(),
+      this.prisonClient.getPrisons(token),
     ])
 
-    const users = await authClient.getUsers(involvedStaff.map(staff => staff.username))
+    const users = await this.manageUsersApiClient.getUsers(
+      involvedStaff.map(staff => staff.username),
+      token
+    )
 
     const prisonForStaff = (staff: StaffDetails) => {
       const caseLoad = users.find(u => u.staffId === staff.staffId)?.activeCaseLoadId

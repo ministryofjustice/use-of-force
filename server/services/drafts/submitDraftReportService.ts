@@ -44,7 +44,7 @@ export default class SubmitDraftReportService {
 
   public async submit(
     currentUser: LoggedInUser,
-    bookingId: number,
+    bookingId: string,
     involvedStaff: DraftInvolvedStaff[],
     now: () => Moment = () => moment()
   ): Promise<number | false> {

@@ -1,10 +1,13 @@
-const { createNotificationService } = require('./notificationService')
+import { createNotificationService } from './notificationService'
+
+import config from '../config'
+
 const {
   links: { emailUrl },
   email: {
     templates: { involvedStaff, reporter },
   },
-} = require('../config')
+} = config
 
 const reporterName = 'Jane Smith'
 const involvedName = 'Thelma Jones'
@@ -40,7 +43,7 @@ describe('send reporter notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(reporter.REMINDER, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(reporter.REMINDER, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Saturday 16 February',
         DEADLINE_TIME: '16:45',
@@ -54,7 +57,7 @@ describe('send reporter notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendReporterStatementReminderSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
@@ -64,7 +67,7 @@ describe('send reporter notifications', () => {
   test('sendReporterStatementOverdue', async () => {
     await service.sendReporterStatementOverdue('user@email.com', { reporterName, incidentDate, submittedDate }, context)
 
-    expect(client.sendEmail).toBeCalledWith(reporter.OVERDUE, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(reporter.OVERDUE, 'user@email.com', {
       personalisation: {
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '14:45',
@@ -76,7 +79,7 @@ describe('send reporter notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendReporterStatementOverdueSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, reporterName },
       detail: 'response 1',
@@ -92,7 +95,7 @@ describe('send involved staff notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(involvedStaff.REMINDER, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REMINDER, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Saturday 16 February',
         DEADLINE_TIME: '16:45',
@@ -107,7 +110,7 @@ describe('send involved staff notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendInvolvedStaffStatementReminderSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
@@ -121,7 +124,7 @@ describe('send involved staff notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(involvedStaff.OVERDUE, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.OVERDUE, 'user@email.com', {
       personalisation: {
         INCIDENT_DATE: 'Tuesday 12 February',
         INCIDENT_TIME: '14:45',
@@ -134,7 +137,7 @@ describe('send involved staff notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendInvolvedStaffStatementOverdueSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
@@ -148,7 +151,7 @@ describe('send involved staff notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(involvedStaff.REMOVED, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REMOVED, 'user@email.com', {
       personalisation: {
         INVOLVED_NAME: 'Thelma Jones',
         INCIDENT_DATE: 'Tuesday 12 February',
@@ -156,7 +159,7 @@ describe('send involved staff notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendInvolvedStaffRemovedFromReportSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, submittedDate, involvedName },
       detail: 'response 1',
@@ -169,7 +172,7 @@ describe('send involved staff notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REQUEST, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Saturday 16 February',
         DEADLINE_TIME: '16:45',
@@ -185,7 +188,7 @@ describe('send involved staff notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendStatementRequestSuccess',
       properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'response 1',
@@ -201,7 +204,7 @@ describe('send involved staff notifications', () => {
       context
     )
 
-    expect(client.sendEmail).toBeCalledWith(involvedStaff.REQUEST, 'user@email.com', {
+    expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REQUEST, 'user@email.com', {
       personalisation: {
         DEADLINE_DATE: 'Saturday 16 February',
         DEADLINE_TIME: '16:45',
@@ -217,7 +220,7 @@ describe('send involved staff notifications', () => {
       reference: null,
     })
 
-    expect(eventPublisher.publish).toBeCalledWith({
+    expect(eventPublisher.publish).toHaveBeenCalledWith({
       name: 'SendStatementRequestFailure',
       properties: { reportId: 1, statementId: 2, incidentDate, involvedName, submittedDate, reporterName },
       detail: 'message 1',

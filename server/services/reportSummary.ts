@@ -235,6 +235,7 @@ export = (
   incidentDate: Date
 ) => {
   const { incidentDetails, reasonsForUseOfForce, useOfForceDetails, relocationAndInjuries, evidence } = form
+  const details = createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence)
   return {
     incidentDetails: createIncidentDetails(
       offenderDetail,
@@ -245,7 +246,7 @@ export = (
       incidentDate
     ),
     offenderDetail,
-    useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence),
+    useOfForceDetails: details,
     relocationAndInjuries: createRelocation(relocationAndInjuries),
     evidence: createEvidence(evidence),
   }

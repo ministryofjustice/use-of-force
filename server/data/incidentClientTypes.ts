@@ -10,7 +10,7 @@ export interface IncidentSearchQuery {
 
 export interface ReportSummary {
   id: number
-  bookingId: number
+  bookingId: string
   reporterName: string
   offenderNo: string
   incidentDate: Date

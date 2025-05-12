@@ -52,7 +52,7 @@ afterEach(() => {
 describe('getInvolvedStaff', () => {
   test('it should call query on db', async () => {
     await service.getInvolvedStaff(1)
-    expect(incidentClient.getInvolvedStaff).toBeCalledTimes(1)
+    expect(incidentClient.getInvolvedStaff).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -68,7 +68,7 @@ describe('getInvolvedStaffRemovalRequest', () => {
       removalRequestedReason: 'Some reason',
     })
 
-    expect(statementsClient.getRemovalRequest).toBeCalledWith(1)
+    expect(statementsClient.getRemovalRequest).toHaveBeenCalledWith(1)
   })
 })
 
@@ -99,9 +99,9 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [staff], client)
+      expect(statementsClient.createStatements).toHaveBeenCalledWith(1, null, overdueDate, [staff], client)
 
-      expect(incidentClient.changeStatus).toBeCalledWith(
+      expect(incidentClient.changeStatus).toHaveBeenCalledWith(
         1,
         'SYSTEM',
         ReportStatus.COMPLETE,
@@ -118,7 +118,7 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [staff], client)
+      expect(statementsClient.createStatements).toHaveBeenCalledWith(1, null, overdueDate, [staff], client)
 
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
@@ -136,7 +136,7 @@ describe('update', () => {
       incidentClient.getReportForReviewer.mockResolvedValue({} as Report)
 
       await service.addInvolvedStaff('token1', 1, 'Bob')
-      expect(statementsClient.isStatementPresentForUser).toBeCalledWith(1, 'BOB')
+      expect(statementsClient.isStatementPresentForUser).toHaveBeenCalledWith(1, 'BOB')
     })
     test('when user already has a statement', async () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
@@ -176,7 +176,7 @@ describe('update', () => {
 
       await expect(service.addInvolvedStaff('token1', 1, 'Bob')).resolves.toBe(AddStaffResult.SUCCESS_UNVERIFIED)
 
-      expect(statementsClient.createStatements).toBeCalledWith(1, null, overdueDate, [unverifiedStaff], client)
+      expect(statementsClient.createStatements).toHaveBeenCalledWith(1, null, overdueDate, [unverifiedStaff], client)
       expect(incidentClient.changeStatus).not.toBeCalled()
     })
   })
@@ -187,13 +187,13 @@ describe('update', () => {
 
       await service.removeInvolvedStaff(1, 2)
 
-      expect(statementsClient.deleteStatement).toBeCalledWith({
+      expect(statementsClient.deleteStatement).toHaveBeenCalledWith({
         statementId: 2,
         query: client,
       })
 
-      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
-      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+      expect(statementsClient.getInvolvedStaffToRemove).toHaveBeenCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toHaveBeenCalledWith(
         'some.user@email.com',
         {
           incidentDate: moment('2021-04-01 10:00:00').toDate(),
@@ -211,13 +211,13 @@ describe('update', () => {
 
       await service.removeInvolvedStaff(1, 2)
 
-      expect(statementsClient.deleteStatement).toBeCalledWith({
+      expect(statementsClient.deleteStatement).toHaveBeenCalledWith({
         statementId: 2,
         query: client,
       })
 
-      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
-      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+      expect(statementsClient.getInvolvedStaffToRemove).toHaveBeenCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toHaveBeenCalledWith(
         'some.user@email.com',
         {
           incidentDate: moment('2021-04-01 10:00:00').toDate(),
@@ -241,12 +241,12 @@ describe('update', () => {
 
       await service.removeInvolvedStaff(1, 2)
 
-      expect(statementsClient.deleteStatement).toBeCalledWith({
+      expect(statementsClient.deleteStatement).toHaveBeenCalledWith({
         statementId: 2,
         query: client,
       })
-      expect(statementsClient.getInvolvedStaffToRemove).toBeCalledWith(2)
-      expect(notificationService.sendInvolvedStaffRemovedFromReport).toBeCalledWith(
+      expect(statementsClient.getInvolvedStaffToRemove).toHaveBeenCalledWith(2)
+      expect(notificationService.sendInvolvedStaffRemovedFromReport).toHaveBeenCalledWith(
         'some.user@email.com',
         {
           incidentDate: moment('2021-04-01 10:00:00').toDate(),

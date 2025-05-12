@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 
 module.exports = function Index(authenticationMiddleware, services) {
-  const { offenderService, systemToken } = services
+  const { offenderService, authService } = services
   const router = express.Router()
 
   router.use(authenticationMiddleware)
@@ -12,7 +12,7 @@ module.exports = function Index(authenticationMiddleware, services) {
   router.get('/offender/:bookingId/image', async (req, res) => {
     const { bookingId } = req.params
 
-    const token = await systemToken(req.user.username)
+    const token = await authService.getSystemClientToken(req.user.username)
 
     await offenderService
       .getOffenderImage(token, bookingId)

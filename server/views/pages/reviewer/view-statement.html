@@ -1,4 +1,4 @@
-{% extends "../../partials/layout.html" %}
+{% extends "../../partials/layout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
@@ -15,18 +15,18 @@
   <div class="govuk-grid-row">
     <h1 class="govuk-heading-xl mainHeading">{{ data.name}}'s statement</h1>
  
-  {{ statementDetail.detail(data, false) }}
+    {{ statementDetail.detail(data, false) }}
 
-  <p class="govuk-!-margin-top-5">
-    <a
-      href="/{{ data.reportId }}/view-statements"
-      draggable="false"
-      class="govuk-link"
-      data-qa="continue"
-    >
-      Return to incident overview
-    </a>
-  </p>
-
+    <p class="govuk-!-margin-top-5">
+      <a
+        href="/{{ data.reportId }}/view-statements"
+        draggable="false"
+        class="govuk-link"
+        data-qa="continue"
+      >
+        Return to incident overview
+      </a>
+    </p>
+  </div>
 </div>
 {% endblock %}

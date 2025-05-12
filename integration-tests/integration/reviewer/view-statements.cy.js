@@ -8,12 +8,14 @@ const { ReportStatus } = require('../../../server/config/types')
 context('view statements page', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubUnverifiedUserDetailsRetrieval', 'ANOTHER_USER')
   })
 
   it('A reviewer can view statements for a specific report', () => {

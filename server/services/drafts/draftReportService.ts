@@ -1,7 +1,7 @@
 import moment, { Moment } from 'moment'
 import type { DraftReportClient } from '../../data'
 import type SubmitDraftReportService from './submitDraftReportService'
-import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
+import type { FoundUserResult, LoggedInUser } from '../../types/uof'
 import type UserService from '../userService'
 import type { DraftReport, NoDraftReport, DuplicateReport } from '../../data/draftReportClientTypes'
 import { check as getReportStatus, isReportComplete } from './reportStatusChecker'
@@ -13,6 +13,7 @@ import {
   DraftInvolvedStaff,
   DraftInvolvedStaffWithPrison,
 } from './draftInvolvedStaffService'
+import AuthService from '../authService'
 
 const REASONS_FOR_USE_OF_FORCE_FORM = 'reasonsForUseOfForce'
 
@@ -32,20 +33,20 @@ export default class DraftReportService {
     private readonly submitDraftReport: SubmitDraftReportService,
     private readonly userService: UserService,
     private readonly locationService: LocationService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
-  public getCurrentDraft(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
+  public getCurrentDraft(userId: string, bookingId: string): Promise<DraftReport | NoDraftReport> {
     return this.draftReportClient.get(userId, bookingId)
   }
 
-  public getInvolvedStaff(token: string, username: string, bookingId: number): Promise<DraftInvolvedStaff[]> {
+  public getInvolvedStaff(token: string, username: string, bookingId: string): Promise<DraftInvolvedStaff[]> {
     return this.draftInvolvedStaffService.getInvolvedStaff(token, username, bookingId)
   }
 
   public async getUoFReasonState(
     userId: string,
-    bookingId: number
+    bookingId: string
   ): Promise<{ isComplete: boolean; primaryReason?: string; reasons: string[] }> {
     const { form } = await this.getCurrentDraft(userId, bookingId)
     const reasonForm = form?.[REASONS_FOR_USE_OF_FORCE_FORM]
@@ -56,7 +57,7 @@ export default class DraftReportService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: string
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     return this.draftInvolvedStaffService.getInvolvedStaffWithPrisons(token, username, bookingId)
   }
@@ -73,7 +74,7 @@ export default class DraftReportService {
   private async handleAddStaff(
     token: string,
     user: LoggedInUser,
-    bookingId: number,
+    bookingId: string,
     foundUsers: FoundUserResult[]
   ): Promise<AddStaffResult> {
     const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
@@ -103,27 +104,27 @@ export default class DraftReportService {
 
   public async addDraftStaffByName(
     user: LoggedInUser,
-    bookingId: number,
+    bookingId: string,
     firstName: string,
     lastName: string
   ): Promise<AddStaffResult> {
-    const token = await this.systemToken(user.username)
+    const token = await this.authService.getSystemClientToken(user.username)
     const users = await this.userService.findUsers(token, firstName, lastName)
     return this.handleAddStaff(token, user, bookingId, users)
   }
 
   public async addDraftStaffByUsername(
     user: LoggedInUser,
-    bookingId: number,
+    bookingId: string,
     username: string
   ): Promise<AddStaffResult> {
-    const token = await this.systemToken(user.username)
+    const token = await this.authService.getSystemClientToken(user.username)
     const userToAdd = await this.userService.getUser(token, username)
     return this.handleAddStaff(token, user, bookingId, [userToAdd])
   }
 
   async getPotentialDuplicates(
-    bookingId: number,
+    bookingId: string,
     incidentDate: Moment,
     token: string
   ): Promise<Partial<DuplicateReport[] | []>> {
@@ -142,12 +143,12 @@ export default class DraftReportService {
     )
   }
 
-  public deleteReport(userId: string, bookingId: number): Promise<void> {
+  public deleteReport(userId: string, bookingId: string): Promise<void> {
     return this.draftReportClient.deleteReport(userId, bookingId)
   }
 
-  public async deleteInvolvedStaff(user: LoggedInUser, bookingId: number, userToDelete: string): Promise<void> {
-    const token = await this.systemToken(user.username)
+  public async deleteInvolvedStaff(user: LoggedInUser, bookingId: string, userToDelete: string): Promise<void> {
+    const token = await this.authService.getSystemClientToken(user.username)
 
     const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
 
@@ -156,7 +157,7 @@ export default class DraftReportService {
     await this.process(user, bookingId, 'involvedStaff', newInvolvedStaff)
   }
 
-  public async markInvolvedStaffComplete(user: LoggedInUser, bookingId: number): Promise<void> {
+  public async markInvolvedStaffComplete(user: LoggedInUser, bookingId: string): Promise<void> {
     const { form = {} } = await this.draftReportClient.get(user.username, bookingId)
 
     if (form.involvedStaff) {
@@ -171,7 +172,7 @@ export default class DraftReportService {
     await this.process(user, bookingId, 'involvedStaff', [])
   }
 
-  public async isDraftComplete(username: string, bookingId: number): Promise<boolean> {
+  public async isDraftComplete(username: string, bookingId: string): Promise<boolean> {
     const { form = {} } = await this.getCurrentDraft(username, bookingId)
     const { complete } = getReportStatus(form)
     return complete
@@ -183,7 +184,7 @@ export default class DraftReportService {
 
   public process(
     currentUser: LoggedInUser,
-    bookingId: number,
+    bookingId: string,
     formName: string,
     updatedSection: unknown,
     incidentDate?: Date | null
@@ -191,7 +192,7 @@ export default class DraftReportService {
     return this.updateDraftReport.process(currentUser, bookingId, formName, updatedSection, incidentDate)
   }
 
-  public updateAgencyId(agencyId: string, username: string, bookingId: number): Promise<void> {
+  public updateAgencyId(agencyId: string, username: string, bookingId: string): Promise<void> {
     return this.updateDraftReport.updateAgencyId(agencyId, username, bookingId)
   }
 
@@ -199,9 +200,9 @@ export default class DraftReportService {
     await this.updateDraftReport.updateLocationId(reportId, incidentDateValue, formValue)
   }
 
-  public async submit(currentUser: LoggedInUser, bookingId: number): Promise<number | false> {
+  public async submit(currentUser: LoggedInUser, bookingId: string): Promise<number | false> {
     const involvedStaff = await this.getInvolvedStaff(
-      await this.systemToken(currentUser.username),
+      await this.authService.getSystemClientToken(currentUser.username),
       currentUser.username,
       bookingId
     )

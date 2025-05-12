@@ -2,6 +2,8 @@ import type { Request, RequestHandler, Response } from 'express'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { UofReasons } from '../../config/types'
 import { paths } from '../../config/incident'
+import AuthService from '../../services/authService'
+import OffenderService from '../../services/offenderService'
 
 const FORM = 'reasonsForUseOfForce'
 
@@ -11,21 +13,23 @@ enum SubmitType {
 }
 
 export default class WhyWasUoFAppliedRoutes {
-  constructor(private readonly draftReportService: DraftReportService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly draftReportService: DraftReportService,
+    private readonly offenderService: OffenderService
+  ) {}
 
   public view() {
     return async (req: Request, res: Response): Promise<void> => {
       const { bookingId } = req.params
-      const { isComplete, reasons } = await this.draftReportService.getUoFReasonState(
-        req.user.username,
-        Number(bookingId)
-      )
+      const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
+      const { isComplete, reasons } = await this.draftReportService.getUoFReasonState(req.user.username, bookingId)
 
       const selectedReasons = req.flash('clearingOutReasons')?.length ? [] : reasons
 
       return res.render('formPages/incident/select-uof-reasons', {
         errors: req.flash('errors'),
-        data: { bookingId, UofReasons, reasons: selectedReasons },
+        data: { offenderDetail, bookingId, UofReasons, reasons: selectedReasons },
         editMode: isComplete,
       })
     }
@@ -43,12 +47,12 @@ export default class WhyWasUoFAppliedRoutes {
       }
 
       if (submitType === SubmitType.SAVE_AND_RETURN) {
-        await this.draftReportService.process(res.locals.user, Number(bookingId), FORM, { reasons })
+        await this.draftReportService.process(res.locals.user, bookingId, FORM, { reasons })
         return res.redirect(paths.reportUseOfForce(bookingId))
       }
 
       if (reasons.length === 1) {
-        await this.draftReportService.process(res.locals.user, Number(bookingId), FORM, { reasons })
+        await this.draftReportService.process(res.locals.user, bookingId, FORM, { reasons })
         return res.redirect(paths.useOfForceDetails(bookingId))
       }
 
@@ -61,10 +65,7 @@ export default class WhyWasUoFAppliedRoutes {
     return async (req: Request, res: Response): Promise<void> => {
       const { bookingId } = req.params
 
-      const { primaryReason, reasons } = await this.draftReportService.getUoFReasonState(
-        req.user.username,
-        Number(bookingId)
-      )
+      const { primaryReason, reasons } = await this.draftReportService.getUoFReasonState(req.user.username, bookingId)
 
       const updatedReasons = req.flash('reasons')
       const reasonsToUse = updatedReasons.length ? updatedReasons : reasons
@@ -95,7 +96,7 @@ export default class WhyWasUoFAppliedRoutes {
         return res.redirect(req.originalUrl)
       }
 
-      await this.draftReportService.process(res.locals.user, Number(bookingId), FORM, { reasons, primaryReason })
+      await this.draftReportService.process(res.locals.user, bookingId, FORM, { reasons, primaryReason })
 
       return res.redirect(paths.useOfForceDetails(bookingId))
     }

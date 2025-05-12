@@ -1,0 +1,22 @@
+{% extends "./layout.njk" %}
+{% from "./miniProfile/macro.njk" import miniProfile %}
+
+{% block beforeContent %}
+    {% if data.offenderDetail %}
+            {% block banner %}
+                {% set person = {
+                    firstName: data.offenderDetail.firstName,
+                    lastName: data.offenderDetail.lastName,
+                    prisonerNumber: data.offenderDetail.offenderNo,
+                    dateOfBirth: data.offenderDetail.dateOfBirth,
+                    status: data.offenderDetail.status,
+                    prisonName: data.offenderDetail.assignedLivingUnit.agencyName,
+                    cellLocation: data.offenderDetail.assignedLivingUnit.description
+                } %}
+                {{ miniProfile(person, '/api/offender/' + data.offenderDetail.bookingId  + '/image', digitalPrisonServiceUrl + '/prisoner/' + data.offenderDetail.offenderNo) }}
+            {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}

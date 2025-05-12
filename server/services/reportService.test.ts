@@ -7,18 +7,21 @@ import { Report } from '../data/incidentClientTypes'
 import { Prison } from '../data/prisonClientTypes'
 import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
+import AuthService from './authService'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/reportLogClient')
 jest.mock('./offenderService')
 jest.mock('./involvedStaffService')
 jest.mock('./locationService')
+jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
@@ -26,14 +29,14 @@ const inTransaction = callback => callback(transactionalClient)
 let service: ReportService
 
 beforeEach(() => {
-  const systemToken = jest.fn().mockResolvedValue('system-token-1')
+  authService.getSystemClientToken.mockResolvedValue('system-token-1')
   service = new ReportService(
     incidentClient,
     offenderService,
     locationService,
     reportLogClient,
     inTransaction,
-    systemToken
+    authService
   )
 })
 
@@ -46,8 +49,8 @@ describe('reportService', () => {
     test('it should call query on db', async () => {
       incidentClient.getReport.mockResolvedValue({} as Report)
       await service.getReport('user1', 1)
-      expect(incidentClient.getReport).toBeCalledTimes(1)
-      expect(incidentClient.getReport).toBeCalledWith('user1', 1)
+      expect(incidentClient.getReport).toHaveBeenCalledTimes(1)
+      expect(incidentClient.getReport).toHaveBeenCalledWith('user1', 1)
     })
 
     test('it should throw an error if report doesnt exist', async () => {
@@ -68,8 +71,8 @@ describe('reportService', () => {
         prisonName: 'Moorland HMP',
         isRemovalRequested: true,
       })
-      expect(locationService.getPrisonById).toBeCalledWith('token-1', 'MDI')
-      expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
+      expect(locationService.getPrisonById).toHaveBeenCalledWith('token-1', 'MDI')
+      expect(incidentClient.getAnonReportSummary).toHaveBeenCalledWith(1)
     })
 
     test('should handle when report doesnt exist', async () => {
@@ -77,7 +80,7 @@ describe('reportService', () => {
 
       await expect(service.getAnonReportSummary('token-1', 1)).resolves.toStrictEqual(undefined)
       expect(locationService.getPrisonById).not.toBeCalled()
-      expect(incidentClient.getAnonReportSummary).toBeCalledWith(1)
+      expect(incidentClient.getAnonReportSummary).toHaveBeenCalledWith(1)
     })
   })
 
@@ -89,7 +92,7 @@ describe('reportService', () => {
         new PageResponse(metaData, [
           {
             id: 1,
-            bookingId: 2,
+            bookingId: '2',
             incidentDate: new Date(1),
             offenderNo: 'AA1234A',
             reporterName: 'BOB',
@@ -101,7 +104,7 @@ describe('reportService', () => {
       expect(result).toEqual(
         new PageResponse(metaData, [
           {
-            bookingId: 2,
+            bookingId: '2',
             id: 1,
             incidentdate: new Date(1),
             offenderName: 'James Stuart',
@@ -111,7 +114,7 @@ describe('reportService', () => {
           },
         ])
       )
-      expect(incidentClient.getReports).toBeCalledWith('user1', 1)
+      expect(incidentClient.getReports).toHaveBeenCalledWith('user1', 1)
     })
   })
 
@@ -121,7 +124,7 @@ describe('reportService', () => {
 
       await service.deleteReport('currentUser', 1)
 
-      expect(incidentClient.deleteReport).toBeCalledWith('currentUser', 1)
+      expect(incidentClient.deleteReport).toHaveBeenCalledWith('currentUser', 1)
     })
 
     test('when report does not exists', async () => {
@@ -182,7 +185,7 @@ describe('reportService', () => {
         )
 
         expect(incidentClient.update).toHaveBeenCalledWith(1, incidentDate, false, transactionalClient)
-        expect(reportLogClient.insert).toBeCalledWith(transactionalClient, 'USER-1', 12, 'REPORT_MODIFIED', {
+        expect(reportLogClient.insert).toHaveBeenCalledWith(transactionalClient, 'USER-1', 12, 'REPORT_MODIFIED', {
           formName: 'evidence',
           originalSection: {
             baggedEvidence: true,
