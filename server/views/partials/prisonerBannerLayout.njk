@@ -13,7 +13,7 @@
                     prisonName: data.offenderDetail.assignedLivingUnit.agencyName,
                     cellLocation: data.offenderDetail.assignedLivingUnit.description
                 } %}
-                {{ miniProfile(person, '/api/offender/' + data.offenderDetail.bookingId  + '/image', digitalPrisonServicesUrl + '/prisoner/' + data.offenderDetail.offenderNo) }}
+                {{ miniProfile(person, '/api/offender/' + data.offenderDetail.bookingId  + '/image', digitalPrisonServiceUrl + '/prisoner/' + data.offenderDetail.offenderNo) }}
             {% endblock %}
     {% endif %}
 {% endblock %}
