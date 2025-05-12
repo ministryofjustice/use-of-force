@@ -29,6 +29,7 @@ generic-service:
     DB_SSL_ENABLED: true
     REDIS_TLS_ENABLED: true
     NODE_ENV: production
+    PRODUCT_ID: 'DPS045'
 
   namespace_secrets:
     dps-rds-instance-output:
