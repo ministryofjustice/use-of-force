@@ -22,7 +22,6 @@ context('Adding involved staff', () => {
     cy.task('stubOffenders', [offender])
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubPrisons')
-    cy.task('stubLocation', dpsLocationId)
     cy.task('stubUserDetailsRetrieval', ['JO_JONES', 'TEST_USER', 'BOB_SMITH', 'EMILY_JONES'])
     cy.login()
   })
