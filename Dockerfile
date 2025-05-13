@@ -23,10 +23,22 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
 RUN npm prune --production
 
 FROM node:22.12-bookworm-slim
+
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-# Cache breaking
-ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+# Cache breaking and ensure required build / git args defined
+RUN test -n "$BUILD_NUMBER" || (echo "BUILD_NUMBER not set" && false)
+RUN test -n "$GIT_REF" || (echo "GIT_REF not set" && false)
+RUN test -n "$GIT_BRANCH" || (echo "GIT_BRANCH not set" && false)
+
+# Define env variables for runtime health / info
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV GIT_REF=${GIT_REF}
+ENV GIT_BRANCH=${GIT_BRANCH}
 
 RUN apt-get update && \
         apt-get upgrade -y && \
