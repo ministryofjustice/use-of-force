@@ -1,6 +1,7 @@
 {% extends "../../partials/prisonerBannerLayout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
 {% from  "../../macros.njk" import overdueBadge %}   
 {% from  "../../macros.njk" import removalRequestedBadge %}    
 {% import "../reportDetailMacro.njk" as reportDetail %} 
@@ -15,27 +16,26 @@
   <div class="govuk-grid-row no-print">     
     <div class="govuk-grid-column-full"> 
       <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-      <p class="govuk-!-padding-bottom-0">
-        <a href="/{{ data.incidentId }}/view-report" draggable="false" class="govuk-link" data-qa="report-link">
-          View report details
-        </a>
-      </p>
-  
-      <div class="flex-container-justified">
-        <div class="flex-basis-60">
-          {{ reportDetail.reportHeading(data) }}
-        </div>
-    
-        <div class="float-right">
-          <a href="#" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
-        </div>
-      </div> 
     </div>
-    <div class="govuk-grid-column-two-thirds"> 
+
+    <div class="govuk-grid-column-full"> 
+      {{ mojSubNavigation({
+        label: "Sub navigation",
+        items: [{
+          text: "Report",
+          href: "#1"
+        }, {
+          text: "Statements",
+          active: true
+        }]
+      }) }}
+
       <table class="govuk-table" data-qa="statements">
+        <caption class="govuk-table__caption govuk-table__caption--m">Staff members involved</caption>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Staff members involved</th>
+            <th class="govuk-table__header" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">Email</th>
             <th class="govuk-table__header" scope="col"></th>
             <th class="govuk-table__header" scope="col"></th>
           </tr>
@@ -44,7 +44,8 @@
         <tbody class="govuk-table__body">
           {% for statement in data.statements %}
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{statement.name }}</td>
+            <td class="govuk-table__cell govuk-table__header">{{statement.name}}</td>
+            <td class="govuk-table__cell">{{statement.email}}</td>
             <td class="govuk-table__cell">
 
               {% set removalRequested = statement.isRemovalRequested %}
