@@ -57,12 +57,24 @@ export default class ReviewerRoutes {
     const { reportId } = req.params
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
-    const { bookingId } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
-    const reportDetail = await this.reportDetailBuilder.build(res.locals.user.username, report)
+    const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
-    return res.render('pages/reviewer/view-report', { data: { ...reportDetail, offenderDetail } })
+    const reportEdits = await this.reviewService.getReportEdits(parseInt(reportId, 10))
+
+    const hasReportBeenEdited = reportEdits?.length > 0
+
+    const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+
+    const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
+
+    const hasReportOwnerChanged = newReportOwners?.length > 0
+
+    const reportOwner = newReportOwners?.at(-1)
+
+    const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
+
+    return res.render('pages/reviewer/view-report', { data: dataWithEdits })
   }
 
   reviewStatements = async (req: Request, res: Response): Promise<void> => {

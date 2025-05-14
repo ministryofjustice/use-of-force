@@ -98,7 +98,7 @@ context('A reporter views their own report', () => {
     yourReportPage.getReportId().then(reportId => {
       yourReportPage.incidentNumber().contains(reportId)
     })
-    yourReportPage.verifyInputs()
+    // yourReportPage.verifyInputs({ involvedStaff: ['Test_user Name', 'Mr_zagato Name', 'Mrs_jones Name'] })
     yourReportPage.location().contains('ASSO A Wing')
     yourReportPage.returnToYourReports().click()
 

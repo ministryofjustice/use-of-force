@@ -7,7 +7,13 @@ import OffenderService from './offenderService'
 import LocationService from './locationService'
 import ReportLogClient from '../data/reportLogClient'
 import { InTransaction } from '../data/dataAccess/db'
-import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
+import type {
+  ReportSummary,
+  IncompleteReportSummary,
+  Report,
+  ReportEdit,
+  AnonReportSummary,
+} from '../data/incidentClientTypes'
 
 import type { LoggedInUser } from '../types/uof'
 import AuthService from './authService'
@@ -63,6 +69,11 @@ export default class ReportService {
       throw new Error(`Report does not exist: ${reportId}`)
     }
     return report
+  }
+
+  async getReportEdits(reportId: number): Promise<ReportEdit[]> {
+    const edits = await this.incidentClient.getReportEdits(reportId)
+    return edits
   }
 
   async getAnonReportSummary(token: string, statementId: number): Promise<AnonReportSummaryWithPrison | undefined> {

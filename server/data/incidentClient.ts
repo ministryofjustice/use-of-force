@@ -7,6 +7,7 @@ import {
   IncompleteReportSummary,
   InvolvedStaff,
   Report,
+  ReportEdit,
   AnonReportSummary,
   NotificationReminder,
 } from './incidentClientTypes'
@@ -53,11 +54,37 @@ export default class IncidentClient {
           , reporter_name "reporterName"
           , form_response "form"
           , booking_id "bookingId"
+          , status "status"
           from v_report r
           where r.user_id = $1 and r.id = $2`,
       values: [userId, reportId],
     })
     return results.rows[0]
+  }
+
+  async getReportEdits(reportId: number): Promise<ReportEdit[]> {
+    const results = await this.query({
+      text: `select id
+          , edit_date "editDate"
+          , editor_user_id "editorUserId"
+          , editor_name "editorName"
+          , report_id "reportId"
+          , change_to "changeTo"
+          , old_value_primary "oldValuePrimary"
+          , old_value_secondary "oldValueSecondary"
+          , new_value_primary "newValuePrimary"
+          , new_value_secondary "newValueSecondary"
+          , reason "reason"
+          , additional_comments "additionalComments"
+          , report_owner_changed "reportOwnerChanged"
+          , new_report_owner_user_id "newReportOwnerUserId"
+          , new_report_owner_name "newReportOwnerName"
+          from report_edit r
+          where r.report_id = $1
+          ORDER BY edit_date ASC`,
+      values: [reportId],
+    })
+    return results.rows
   }
 
   async getAnonReportSummary(statementId: number): Promise<AnonReportSummary | undefined> {

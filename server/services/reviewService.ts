@@ -1,5 +1,11 @@
 import type { AgencyId } from '../types/uof'
-import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
+import type {
+  IncidentSearchQuery,
+  IncompleteReportSummary,
+  Report,
+  ReportEdit,
+  ReportSummary,
+} from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
 import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import OffenderService from './offenderService'
@@ -65,6 +71,11 @@ export default class ReviewService {
       throw new Error(`Report: '${reportId}' does not exist`)
     }
     return report
+  }
+
+  async getReportEdits(reportId: number): Promise<ReportEdit[]> {
+    const edits = await this.incidentClient.getReportEdits(reportId)
+    return edits
   }
 
   async getOffenderNames(username: string, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {

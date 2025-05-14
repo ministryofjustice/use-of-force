@@ -70,7 +70,7 @@ context('view review page', () => {
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
-      viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name (TEST_USER)'] })
+      viewReportPage.verifyInputs({ involvedStaff: ['Test_user Name'] })
       viewReportPage.getReportId().then(reportId => {
         viewReportPage.incidentNumber().contains(reportId)
       })
@@ -92,7 +92,7 @@ context('view review page', () => {
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')
-      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name (ANOTHER_USER)'] })
+      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name'] })
       viewReportPage.returnToIncidentOverview().click()
     }
   })

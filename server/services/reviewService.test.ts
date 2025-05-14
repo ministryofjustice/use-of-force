@@ -1,6 +1,7 @@
+import moment from 'moment'
 import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
-import { Report, ReportSummary } from '../data/incidentClientTypes'
+import { Report, ReportEdit, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
 import { EmailResult } from '../data/manageUsersApiClient'
@@ -93,6 +94,41 @@ describe('reviewService', () => {
       incidentClient.getReportForReviewer.mockReturnValue(null)
 
       await expect(service.getReport(1)).rejects.toThrow("Report: '1' does not exist")
+    })
+  })
+
+  describe('getReportEdits', () => {
+    test('it should call query on db', async () => {
+      incidentClient.getReportEdits.mockResolvedValue([{ id: 1, reportId: 1 }] as ReportEdit[])
+      await service.getReportEdits(1)
+      expect(incidentClient.getReportEdits).toHaveBeenCalledTimes(1)
+    })
+
+    test('no edits present', async () => {
+      incidentClient.getReportEdits.mockResolvedValue([] as ReportEdit[])
+      const result = await service.getReportEdits(1)
+      expect(result).toEqual([])
+    })
+
+    test('one edit present', async () => {
+      const reportEdit = [
+        {
+          id: 1,
+          editDate: moment('2025-05-13 10:30:43.122'),
+          editorUserId: 'TOM_ID',
+          editorName: 'TOM',
+          reportId: 1,
+          changeTo: 'PAVA',
+          oldValuePrimary: 'true',
+          newValuePrimary: 'false',
+          reason: 'chose wrong answer',
+          reportOwnerChanged: false,
+        },
+      ]
+
+      incidentClient.getReportEdits.mockResolvedValue(reportEdit)
+      const result = await service.getReportEdits(1)
+      expect(result).toEqual(reportEdit)
     })
   })
 

@@ -2,7 +2,7 @@ import page from '../page'
 import reportDetails from '../sections/reportDetails'
 
 const viewYourReportPage = () =>
-  page('Use of force report', {
+  page('Use of force incident', {
     reporterName: () => cy.get('[data-qa="reporter-name"]'),
 
     submittedDate: () => cy.get('[data-qa="submitted-date"]'),
