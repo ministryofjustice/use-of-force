@@ -30,6 +30,7 @@ generic-service:
     REDIS_TLS_ENABLED: true
     NODE_ENV: production
     PRODUCT_ID: 'DPS045'
+    WEB_SESSION_TIMEOUT_IN_MINUTES: 120
 
   namespace_secrets:
     dps-rds-instance-output:
