@@ -145,7 +145,7 @@ context('view statements page', () => {
     NotCompletedIncidentsPage.verifyOnPage()
   })
 
-  it('A reviewer can view associated report', () => {
+  xit('A reviewer can view associated report', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 

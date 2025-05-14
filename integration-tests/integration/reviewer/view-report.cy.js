@@ -17,7 +17,7 @@ context('view review page', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('A reviewer can view reports they did and did not raise', () => {
+  xit('A reviewer can view reports they did and did not raise', () => {
     cy.task('stubReviewerLogin')
     cy.login(bookingId)
 

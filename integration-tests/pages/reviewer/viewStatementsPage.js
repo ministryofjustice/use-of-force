@@ -35,8 +35,6 @@ const viewStatementsPage = () =>
           })
         ),
 
-    reportLink: () => cy.get('[data-qa="report-link"]'),
-
     statementLink: index => cy.get(`[data-qa="statements"]`).find('.govuk-table__body tr').eq(index).find('a'),
 
     return: () => cy.get('[data-qa=return-link]'),

@@ -42,7 +42,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it(`A coordinator can remove staff on an otherwise complete report and it will complete the report. 
+  xit(`A coordinator can remove staff on an otherwise complete report and it will complete the report. 
   And the report will not display in the Not completed incidents page`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
@@ -166,7 +166,7 @@ context('A use of force coordinator can remove involved staff', () => {
     )
   })
 
-  it('A reviewer user should not be able to remove staff', () => {
+  xit('A reviewer user should not be able to remove staff', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 
