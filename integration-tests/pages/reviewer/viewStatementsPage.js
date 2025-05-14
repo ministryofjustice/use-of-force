@@ -26,10 +26,11 @@ const viewStatementsPage = () =>
             const tds = Cypress.$(element).find('td.govuk-table__cell')
             return {
               username: Cypress.$(tds[0]).text(),
-              badge: Cypress.$(tds[1]).text().trim().replace(/\s\s+/g, ', '),
-              link: Cypress.$(tds[2]).text().trim().replace(/\s\s+/g, ', '),
-              isOverdue: Cypress.$(tds[1]).find('[data-qa="overdue"]').length === 1,
-              isUnverified: Cypress.$(tds[1]).find('[data-qa="unverified"]').length === 1,
+              email: Cypress.$(tds[1]).text(),
+              badge: Cypress.$(tds[2]).text().trim().replace(/\s\s+/g, ', '),
+              link: Cypress.$(tds[3]).text().trim().replace(/\s\s+/g, ', '),
+              isOverdue: Cypress.$(tds[2]).find('[data-qa="overdue"]').length === 1,
+              isUnverified: Cypress.$(tds[2]).find('[data-qa="unverified"]').length === 1,
             }
           })
         ),
