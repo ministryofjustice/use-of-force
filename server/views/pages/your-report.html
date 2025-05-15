@@ -11,14 +11,15 @@
   {% include "../partials/breadcrumbs.njk" %}
 {% endblock %}
 
-{% set renderReportView = true %}
-{% set print = false %}
-
 {% block content %}
 <div class="govuk-grid-row govuk-body">
+  {% if featureFlagReportEditingEnabled %}
+  {% set renderReportView = true %}
+  {% set print = false %}
+  
   <div class="{% if renderReportView %} govuk-grid-column-full {% else %} govuk-grid-column-three-quarters {% endif %} govuk-!-margin-bottom-9 no-print">
     <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
-
+    
     {{ mojSubNavigation({
       label: "Sub navigation",
       items: [{
@@ -29,10 +30,31 @@
       }]
     }) }}
 
-
     {{
       reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)
     }}
+
+    {% else %}
+
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-9 no-print">
+      <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {{
+            reportDetail.reportHeading(data, print=false)
+          }}
+        </div>
+  
+        <div class="govuk-grid-column-one-third">      
+          <a href="#" class="govuk-link govuk-link--no-visited-state print-link float-right">  Print report</a>
+        </div>
+      </div>
+      <hr>
+      {{
+        reportDetail.detail(data, null, data.incidentId, user)
+      }}
+
+    {% endif %}
 
     <div class="govuk-!-margin-top-5">
       <a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-your-reports">Return to your reports</a>

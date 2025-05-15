@@ -7,6 +7,7 @@ import ReportService from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import config from '../../config'
 
 jest.mock('../../services/reportService')
 jest.mock('../../services/authService')
@@ -76,6 +77,9 @@ describe('GET /your-report', () => {
   })
 
   it('should include report edits but not change owner', () => {
+    config.featureFlagReportEditingEnabled = true
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
+
     reportService.getReport.mockResolvedValue(report)
     reportService.getReportEdits.mockResolvedValue([reportEdit])
     return request(app)
@@ -90,9 +94,12 @@ describe('GET /your-report', () => {
   })
 
   it('should include report edits including new report owner', () => {
+    config.featureFlagReportEditingEnabled = true
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
+
     reportService.getReport.mockResolvedValue(report)
     reportService.getReportEdits.mockResolvedValue([
-      { ...reportEdit, reportOwnerChanged: true, newReportOwnerUserId: 'BOB_ID', newReportOwnerName: 'BOB' },
+      { ...reportEdit, reportOwnerChanged: true, newValuePrimary: 'BOB (BOB_ID)' },
     ])
     return request(app)
       .get('/1/your-report')
@@ -102,8 +109,7 @@ describe('GET /your-report', () => {
         expect(res.text).toContain('Use of force report')
         expect(res.text).toContain('Report last edited')
         expect(res.text).toContain('Current report owner')
-        expect(res.text).toContain('BOB_ID')
-        expect(res.text).toContain('BOB')
+        expect(res.text).toContain('BOB (BOB_ID)')
       })
   })
 })

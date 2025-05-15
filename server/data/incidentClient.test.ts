@@ -60,8 +60,6 @@ test('getReportEdits', () => {
           , reason "reason"
           , additional_comments "additionalComments"
           , report_owner_changed "reportOwnerChanged"
-          , new_report_owner_user_id "newReportOwnerUserId"
-          , new_report_owner_name "newReportOwnerName"
           from report_edit r
           where r.report_id = $1
           ORDER BY edit_date ASC`,

@@ -73,6 +73,4 @@ export interface ReportEdit {
   reason?: string
   additionalComments?: string
   reportOwnerChanged: boolean
-  newReportOwnerUserId?: string
-  newReportOwnerName?: string
 }

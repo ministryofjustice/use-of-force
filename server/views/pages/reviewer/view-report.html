@@ -11,11 +11,12 @@
   {% include "../../partials/breadcrumbs.njk" %}
 {% endblock %}
 
-{% set renderReportView = true %}
-{% set print = false %}
-
 {% block content %}
 <div class="govuk-grid-row govuk-body">
+  {% if featureFlagReportEditingEnabled %}
+  {% set renderReportView = true %}
+  {% set print = false %}
+  
   <div class="{% if renderReportView %} govuk-grid-column-full {% else %} govuk-grid-column-three-quarters {% endif %} govuk-!-margin-bottom-9">
     <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
 
@@ -32,6 +33,25 @@
     {{
       reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)
     }}
+
+    {% else %}
+
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
+      <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{
+            reportDetail.reportHeading(data, print=false)
+          }}
+        </div>
+      </div>
+  
+      {{
+        reportDetail.detail(data, null, data.incidentId, user)
+      }}
+
+    {% endif %}
+
     <div class="govuk-!-margin-top-5">
       <a href="/{{ data.incidentId }}/view-statements" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-incident-overview">Return to incident overview</a>
     </div>  
