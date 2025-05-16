@@ -4,16 +4,14 @@ import type { InvolvedStaffService } from './involvedStaffService'
 import type LocationService from './locationService'
 import type NomisMappingService from './nomisMappingService'
 import type OffenderService from './offenderService'
+import type { SystemToken } from '../types/uof'
 import { Report } from '../data/incidentClientTypes'
-import AuthService from './authService'
 
 export interface ReportDetail {
   incidentId: number
   reporterName: string
   submittedDate: Date
-  bookingId: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  offenderDetail: any
+  bookingId: number
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [reportSummaryKeys: string]: any
 }
@@ -24,7 +22,7 @@ export default class ReportDataBuilder {
     private readonly locationService: LocationService,
     private readonly offenderService: OffenderService,
     private readonly nomisMappingService: NomisMappingService,
-    private readonly authService: AuthService
+    private readonly systemToken: SystemToken
   ) {}
 
   private format(reportId, reporterUsername) {
@@ -56,10 +54,10 @@ export default class ReportDataBuilder {
   }
 
   async build(currentUsername: string, report: Report): Promise<ReportDetail> {
-    const token = await this.authService.getSystemClientToken(currentUsername)
+    const token = await this.systemToken(currentUsername)
 
     const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, currentUsername)
+    const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
     const incidentLocationId = await this.getLocationId(token, form)
     const locationDescription = await this.locationService.getLocation(token, incidentLocationId)
     const involvedStaff = await this.involvedStaffService.getInvolvedStaff(id)
@@ -73,7 +71,6 @@ export default class ReportDataBuilder {
       submittedDate,
       bookingId,
       ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
-      offenderDetail,
     }
   }
 }

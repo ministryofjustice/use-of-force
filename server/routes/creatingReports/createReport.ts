@@ -5,7 +5,6 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
-import OffenderService from '../../services/offenderService'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',
@@ -13,10 +12,7 @@ enum SubmitType {
 }
 
 export default class CreateReport {
-  constructor(
-    private readonly draftReportService: DraftReportService,
-    private readonly offenderService: OffenderService
-  ) {}
+  constructor(private readonly draftReportService: DraftReportService) {}
 
   private async loadForm(req) {
     const { bookingId } = req.params
@@ -24,7 +20,7 @@ export default class CreateReport {
     return { form, isComplete: isReportComplete(form) }
   }
 
-  private async getSubmitRedirectLocation(req: Request, formName: string, bookingId: string, submitType: SubmitType) {
+  private async getSubmitRedirectLocation(req: Request, formName: string, bookingId: number, submitType: SubmitType) {
     const { username } = req.user
 
     if (await this.draftReportService.isDraftComplete(username, bookingId)) {
@@ -39,12 +35,12 @@ export default class CreateReport {
   public view(formName: string) {
     return async (req, res: Response): Promise<void> => {
       const { bookingId } = req.params
-      const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
+
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
       res.render(`formPages/incident/${formName}`, {
-        data: { offenderDetail, bookingId, ...pageData, types },
+        data: { bookingId, ...pageData, types },
         formName,
         errors,
         editMode: isComplete,
@@ -70,7 +66,7 @@ export default class CreateReport {
         return res.redirect(req.originalUrl)
       }
 
-      await this.draftReportService.process(res.locals.user, bookingId, formName, updatedSection)
+      await this.draftReportService.process(res.locals.user, parseInt(bookingId, 10), formName, updatedSection)
 
       const location = await this.getSubmitRedirectLocation(req, formName, bookingId, submitType)
       return res.redirect(location)

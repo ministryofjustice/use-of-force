@@ -1,8 +1,9 @@
 import { NomisMappingClient } from '../data'
 import NomisMappingService from './nomisMappingService'
 
-const nomisMappingClient = new NomisMappingClient() as jest.Mocked<NomisMappingClient>
+const nomisMappingClient = new NomisMappingClient(null) as jest.Mocked<NomisMappingClient>
 nomisMappingClient.getDpsLocationMappingUsingNomisLocationId = jest.fn()
+const nomisMappingClientBuilder = jest.fn()
 let nomisMappingService
 
 const token = 'token'
@@ -13,7 +14,8 @@ const locationMappingDetail = {
 }
 
 beforeEach(() => {
-  nomisMappingService = new NomisMappingService(nomisMappingClient)
+  nomisMappingClientBuilder.mockReturnValue(nomisMappingClient)
+  nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)
   nomisMappingClient.getDpsLocationMappingUsingNomisLocationId.mockResolvedValue(locationMappingDetail)
 })
 
@@ -30,7 +32,7 @@ describe('nomisMappingService', () => {
       )
 
       expect(result).toEqual(locationMappingDetail)
-      expect(nomisMappingClient.getDpsLocationMappingUsingNomisLocationId).toHaveBeenCalledWith(nomisLocationId, token)
+      expect(nomisMappingClient.getDpsLocationMappingUsingNomisLocationId).toHaveBeenCalledWith(nomisLocationId)
     })
   })
 

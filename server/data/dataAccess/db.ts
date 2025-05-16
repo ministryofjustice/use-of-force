@@ -8,7 +8,7 @@ export const pool = new Pool({
   host: config.db.server,
   database: config.db.database,
   password: config.db.password,
-  port: config.db.port as number,
+  port: config.db.port,
   ssl:
     config.db.sslEnabled === 'true'
       ? {

@@ -1,13 +1,16 @@
-// Require app insights before anything else to allow for instrumentation of bunyan and express
-import 'applicationinsights'
+/*
+ * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
+ * In particular, applicationinsights automatically collects bunyan logs
+ */
+import { initialiseAppInsights } from './server/utils/azure-appinsights'
 
-import knex from 'knex'
-import knexfile from './knexfile'
+initialiseAppInsights()
 
-import app from './server/index'
 /** @type {any} */
-
-import log from './log'
+const knex = require('knex')
+const knexfile = require('./knexfile')
+const app = require('./server/index').default
+const log = require('./log')
 
 const selectSql = message => {
   if (message.sql) {

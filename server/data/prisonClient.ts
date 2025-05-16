@@ -1,6 +1,7 @@
 import type { Readable } from 'stream'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
+import type { RestClient } from './restClient'
 import type {
   InmateDetail,
   InmateBasicDetails,
@@ -8,54 +9,51 @@ import type {
   PrisonerDetail,
   CaseLoad,
   Prison,
+  PrisonLocation,
 } from './prisonClientTypes'
-import config from '../config'
-import BaseApiClient from './baseApiClient'
 
-export default class PrisonClient extends BaseApiClient {
-  protected static config() {
-    return config.apis.prison
+export default class PrisonClient {
+  constructor(private restClient: RestClient) {}
+
+  async getOffenderDetails(bookingId: number): Promise<InmateDetail> {
+    return this.restClient.get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
   }
 
-  async getOffenderDetails(bookingId: string, token: string): Promise<Partial<InmateDetail>> {
-    return PrisonClient.restClient(token).get({ path: `/api/bookings/${bookingId}?basicInfo=false` })
-  }
-
-  async getOffenders(offenderNos: string[], token: string): Promise<InmateBasicDetails[]> {
-    return PrisonClient.restClient(token).post({
+  async getOffenders(offenderNos: string[]): Promise<InmateBasicDetails[]> {
+    return this.restClient.post({
       path: '/api/bookings/offenders?activeOnly=false',
       data: offenderNos,
     })
   }
 
-  async getPrisoners(offenderNos: string[], token: string): Promise<PrisonerDetail[]> {
+  async getPrisoners(offenderNos: string[]): Promise<PrisonerDetail[]> {
     const query = { offenderNo: offenderNos }
     const headers = { 'Page-Limit': 5000 }
-    return PrisonClient.restClient(token).get({ path: '/api/prisoners', query, headers })
+    return this.restClient.get({ path: '/api/prisoners', query, headers })
   }
 
-  async getUser(token: string): Promise<UserDetail> {
-    return PrisonClient.restClient(token).get({ path: '/api/users/me' })
+  async getUser(): Promise<UserDetail> {
+    return this.restClient.get({ path: '/api/users/me' })
   }
 
-  getUserCaseLoads(token: string): Promise<CaseLoad[]> {
-    return PrisonClient.restClient(token).get({ path: '/api/users/me/caseLoads' })
+  getUserCaseLoads(): Promise<CaseLoad[]> {
+    return this.restClient.get({ path: '/api/users/me/caseLoads' })
   }
 
-  getPrisons(token: string): Promise<Prison[]> {
-    return PrisonClient.restClient(token).get({
+  getPrisons(): Promise<Prison[]> {
+    return this.restClient.get({
       path: `/api/agencies/type/INST?active=true`,
     })
   }
 
-  getPrisonById(agencyId: string, token: string): Promise<Prison> {
-    return PrisonClient.restClient(token).get({
+  getPrisonById(agencyId: string): Promise<Prison> {
+    return this.restClient.get({
       path: `/api/agencies/${agencyId}?activeOnly=false`,
     })
   }
 
-  getOffenderImage(bookingId: string, token: string): Promise<Readable> {
-    return PrisonClient.restClient(token).stream({
+  getOffenderImage(bookingId: number): Promise<Readable> {
+    return this.restClient.stream({
       path: `/api/bookings/${bookingId}/image/data`,
       errorLogger: error =>
         error.status === 404

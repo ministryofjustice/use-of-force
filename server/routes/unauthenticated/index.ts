@@ -6,11 +6,11 @@ import type { Services } from '../../services'
 import RemovalRequest from './requestRemoval'
 
 export default function UnauthenticatedRoutes(services: Services): Router {
-  const { reportService, statementService, authService } = services
+  const { reportService, statementService, systemToken } = services
 
   const router = express.Router()
 
-  const removalRequest = new RemovalRequest(reportService, statementService, authService)
+  const removalRequest = new RemovalRequest(reportService, statementService, systemToken)
   router.get('/request-removal/:statementId', flash(), asyncMiddleware(removalRequest.view))
   router.post('/request-removal/:statementId', flash(), asyncMiddleware(removalRequest.submit))
 

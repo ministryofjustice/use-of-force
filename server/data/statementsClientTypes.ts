@@ -12,7 +12,7 @@ export type StatementSummary = {
 
 export type Statement = {
   id: number
-  bookingId: string
+  bookingId: number
   incidentDate: Date
   lastTrainingMonth?: number
   lastTrainingYear?: number
@@ -51,7 +51,7 @@ export type ReviewerStatement = {
   isOverdue: boolean
   isSubmitted: boolean
   isRemovalRequested: boolean
-  bookingId: string
+  bookingId: number
   incidentDate: Date
   lastTrainingMonth: number
   lastTrainingYear: number

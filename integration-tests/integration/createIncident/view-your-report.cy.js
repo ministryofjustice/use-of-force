@@ -8,7 +8,6 @@ const { expectedPayload } = require('../seedData')
 context('A reporter views their own report', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)

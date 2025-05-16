@@ -1,15 +1,11 @@
 import request from 'supertest'
+import { DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
-import OffenderService from '../../services/offenderService'
-import AuthService from '../../services/authService'
-import DraftReportService from '../../services/drafts/draftReportService'
 
 jest.mock('../../services/offenderService')
-jest.mock('../../services/authService')
 jest.mock('../../services/drafts/draftReportService')
 
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const draftReportService = new DraftReportService(
   null,
   null,
@@ -23,10 +19,9 @@ const draftReportService = new DraftReportService(
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, authService })
+  app = appWithAllRoutes({ draftReportService, offenderService })
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({})
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
 })
 
 afterEach(() => {
@@ -41,7 +36,7 @@ describe('GET /task-list', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '-35')
       })
   })
 
@@ -52,7 +47,7 @@ describe('GET /task-list', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Report use of force')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1')
+        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '-35')
       })
   })
 

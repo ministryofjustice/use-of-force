@@ -5,10 +5,7 @@ module.exports = {
     firstName: 'NORMAN',
     lastName: 'SMITH',
     agencyId: 'MDI',
-    prisonName: 'IT Prison',
-    cellLocation: 'TST-01-01',
     dateOfBirth: '2000-12-26',
-    status: 'ACTIVE IN',
   },
   offender2: {
     bookingId: 1002,
@@ -16,8 +13,6 @@ module.exports = {
     firstName: 'JUNE',
     lastName: 'JONES',
     agencyId: 'MDI',
-    cellLocation: 'TST-01-02',
-    prisonName: 'IT Prison',
     dateOfBirth: '2000-12-26',
   },
   offender3: {
@@ -26,8 +21,6 @@ module.exports = {
     firstName: 'SIMON',
     lastName: 'SMITH',
     agencyId: 'MDI',
-    cellLocation: 'TST-01-03',
-    prisonName: 'IT Prison',
     dateOfBirth: '2000-12-26',
   },
 }

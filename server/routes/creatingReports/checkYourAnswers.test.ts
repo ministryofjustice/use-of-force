@@ -5,13 +5,10 @@ import OffenderService from '../../services/offenderService'
 import NomisMappingService from '../../services/nomisMappingService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
-import AuthService from '../../services/authService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
-jest.mock('../../services/authService')
-jest.mock('../../services/nomisMappingService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -22,18 +19,16 @@ const draftReportService = new DraftReportService(
   null,
   null
 ) as jest.Mocked<DraftReportService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
-
 nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId = jest.fn()
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService, nomisMappingService, authService })
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService, nomisMappingService })
   draftReportService.getCurrentDraft.mockResolvedValue({ id: 1, form: { incidentDetails: {} } })
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+
   offenderService.getOffenderDetails.mockResolvedValue({})
   locationService.getLocation.mockResolvedValue('')
   locationService.getPrisonById.mockResolvedValue({ description: 'prison name' } as Prison)
@@ -105,7 +100,7 @@ describe('GET /check-your-answers', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Check your answers')
-        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('-35', 'user1')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', -35)
       })
   })
 
@@ -299,7 +294,7 @@ describe('POST /check-your-answers', () => {
     draftReportService.submit.mockResolvedValue(2)
 
     await request(app).post('/report/-35/check-your-answers').expect(302).expect('Location', '/2/report-sent')
-    expect(draftReportService.submit).toHaveBeenCalledWith(user, '-35')
+    expect(draftReportService.submit).toBeCalledWith(user, -35)
   })
 
   it('An error is throw if the report is not complete', async () => {
@@ -307,6 +302,6 @@ describe('POST /check-your-answers', () => {
 
     await request(app).post('/report/-35/check-your-answers').expect(500)
 
-    expect(draftReportService.submit).not.toHaveBeenCalledWith()
+    expect(draftReportService.submit).not.toBeCalledWith()
   })
 })

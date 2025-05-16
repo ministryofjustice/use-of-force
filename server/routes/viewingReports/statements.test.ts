@@ -1,17 +1,13 @@
 import request from 'supertest'
 import { appWithAllRoutes } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
-import StatementService from '../../services/statementService'
-import OffenderService from '../../services/offenderService'
-import AuthService from '../../services/authService'
+import { StatementService, OffenderService } from '../../services'
 
 jest.mock('../../services/statementService')
 jest.mock('../../services/offenderService')
-jest.mock('../../services/authService')
 
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 
 let app
 
@@ -23,7 +19,7 @@ beforeEach(() => {
   const date = new Date('2019-03-05 01:03:28.000')
   statementService.getStatementForUser.mockResolvedValue({
     additionalComments: [{ additionalComment: 'An additional text', dateSubmitted: date }],
-    bookingId: '2',
+    bookingId: 2,
     incidentDate: new Date(),
     lastTrainingMonth: 1,
     lastTrainingYear: 1,
@@ -35,8 +31,7 @@ beforeEach(() => {
     statement: 'Some initial statement',
   })
   offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jimmy Choo', offenderNo: '123456' })
-  authService.getSystemClientToken.mockResolvedValue('a-token')
-  app = appWithAllRoutes({ statementService, offenderService, authService })
+  app = appWithAllRoutes({ statementService, offenderService })
 })
 
 describe('GET /your-statements', () => {
@@ -136,7 +131,7 @@ describe('POST /:reportId/add-comment-to-statement', () => {
       .expect(302)
       .expect('Location', '/your-statements')
       .expect(() => {
-        expect(statementService.saveAdditionalComment).toHaveBeenCalledWith(1, 'statement1')
+        expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
       }))
 })
 

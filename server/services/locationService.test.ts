@@ -1,23 +1,27 @@
 import { PrisonClient, LocationClient } from '../data'
 import type { Prison } from '../data/prisonClientTypes'
+import type { LocationInPrison } from '../data/locationClientTypes'
 import LocationService from './locationService'
 import config from '../config'
-import { LocationInPrison } from '../types/locationsApi/locationsInPrisonTypes'
 
 jest.mock('../data')
 jest.mock('../config')
 
+const prisonClientBuilder = jest.fn()
+const locationClientBuilder = jest.fn()
 const token = 'token'
 
-const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
-const locationClient = new LocationClient() as jest.Mocked<LocationClient>
+const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
+const locationClient = new LocationClient(null) as jest.Mocked<LocationClient>
 
 const locationUUID = 'some-uuid'
 
 let locationService
 
 beforeEach(() => {
-  locationService = new LocationService(prisonClient, locationClient)
+  prisonClientBuilder.mockReturnValue(prisonClient)
+  locationClientBuilder.mockReturnValue(locationClient)
+  locationService = new LocationService(prisonClientBuilder, locationClientBuilder)
 })
 
 afterEach(() => {
@@ -71,7 +75,7 @@ describe('locationService', () => {
       } as LocationInPrison)
 
       await locationService.getLocation(token, locationUUID)
-      expect(locationClient.getLocation).toHaveBeenCalledWith(locationUUID, token)
+      expect(locationClient.getLocation).toHaveBeenCalledWith(locationUUID)
     })
 
     it('should retrieve local name when one exists', async () => {
@@ -104,7 +108,7 @@ describe('locationService', () => {
       const result = await locationService.getIncidentLocations(token, 'WRI')
 
       expect(result).toEqual([])
-      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token)
+      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', undefined)
     })
 
     it('should assign locationPrefix as userDescription when userDescription value is absent', async () => {
@@ -210,7 +214,7 @@ describe('locationService', () => {
 
       await locationService.getIncidentLocations(token, 'WRI')
 
-      expect(locationClient.getLocations).toHaveBeenCalledWith('WRI', token)
+      expect(locationClientBuilder).toHaveBeenCalledWith(token)
     })
 
     it('should remove cell location options for prisons that are in and out of the feature flag', async () => {

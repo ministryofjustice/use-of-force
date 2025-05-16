@@ -1,6 +1,7 @@
 import nock from 'nock'
 import LocationClient from './locationClient'
 import config from '../config'
+import restClientBuilder from '.'
 import { NonResidentialUsageType } from '../config/types'
 
 describe('locationClient', () => {
@@ -11,7 +12,7 @@ describe('locationClient', () => {
   const locationId = '00000000-1111-2222-3333-444444444444'
   beforeEach(() => {
     fakeLocationApi = nock(config.apis.location.url)
-    locationClient = new LocationClient()
+    locationClient = restClientBuilder('locationClient', config.apis.location, LocationClient)(token)
   })
 
   afterEach(() => {
@@ -32,7 +33,7 @@ describe('locationClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, location)
 
-      const output = await locationClient.getLocation(locationId, token)
+      const output = await locationClient.getLocation(locationId)
       expect(output).toEqual(location)
     })
 
@@ -41,16 +42,13 @@ describe('locationClient', () => {
         .get(`/locations/00000000-1111-2222-3333`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(404)
-      const result = await locationClient.getLocation('00000000-1111-2222-3333', token)
+      const result = await locationClient.getLocation('00000000-1111-2222-3333')
       expect(result).toEqual(undefined)
     })
 
     it('should return undefined when api returns 404', async () => {
-      fakeLocationApi
-        .get(`/locations/${locationId}?formatLocalName=true`)
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(404)
-      const result = await locationClient.getLocation(locationId, token)
+      fakeLocationApi.get(`/locations/${locationId}`).matchHeader('authorization', `Bearer ${token}`).reply(404)
+      const result = await locationClient.getLocation(locationId)
       expect(result).toEqual(undefined)
     })
 
@@ -59,7 +57,7 @@ describe('locationClient', () => {
         .get(`/locations/${locationId}?formatLocalName=true`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
-      await expect(locationClient.getLocation(locationId, token)).rejects.toThrow('Bad Request')
+      await expect(locationClient.getLocation(locationId)).rejects.toThrow('Bad Request')
     })
   })
   describe('getLocations', () => {
@@ -70,7 +68,7 @@ describe('locationClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
-      const output = await locationClient.getLocations('MDI', token)
+      const output = await locationClient.getLocations('MDI')
       expect(output).toEqual(locations)
     })
     it('can not search with incorrect usage-type filter', async () => {
@@ -79,7 +77,7 @@ describe('locationClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 
-      await expect(locationClient.getLocations('MDI', token, 'SOME-TYPE' as NonResidentialUsageType)).rejects.toThrow(
+      await expect(locationClient.getLocations('MDI', 'SOME-TYPE' as NonResidentialUsageType)).rejects.toThrow(
         'Bad Request'
       )
     })

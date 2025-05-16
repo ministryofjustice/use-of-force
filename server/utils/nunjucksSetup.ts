@@ -8,7 +8,7 @@ import config from '../config'
 import { PageMetaData } from './page'
 import { LabelledValue } from '../config/types'
 import { SectionStatus } from '../services/drafts/reportStatusChecker'
-import { initialiseName, personDateOfBirth, personProfileName } from './utils'
+import { initialiseName } from './utils'
 
 const {
   googleTagManager: { key: tagManagerKey, environment: tagManagerEnvironment },
@@ -24,8 +24,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
-      'node_modules/govuk-frontend/dist/',
-      'node_modules/@ministryofjustice/frontend/',
+      'node_modules/govuk-frontend/',
+      'node_modules/@ministryofjustice/frontend',
     ],
     {
       autoescape: true,
@@ -183,8 +183,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   })
 
   njkEnv.addFilter('initialiseName', initialiseName)
-  njkEnv.addFilter('personProfileName', personProfileName)
-  njkEnv.addFilter('personDateOfBirth', personDateOfBirth)
 
   return njkEnv
 }

@@ -1,20 +1,13 @@
 import request from 'supertest'
 import { paths } from '../../config/incident'
 import { Report } from '../../data/incidentClientTypes'
+import { OffenderService, ReportService, ReviewService } from '../../services'
 import { appWithAllRoutes, adminUser, coordinatorUser, user } from '../__test/appSetup'
-import ReviewService from '../../services/reviewService'
-import OffenderService from '../../services/offenderService'
-import AuthService from '../../services/authService'
-import ReportService from '../../services/reportService'
 
-jest.mock('../../services/authService')
-jest.mock('../../services/reviewService')
-jest.mock('../../services/offenderService')
-jest.mock('../../services/reportService')
+jest.mock('../../services')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 
 let app
@@ -22,8 +15,7 @@ const flash = jest.fn()
 const userSupplier = jest.fn()
 
 beforeEach(() => {
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
-  app = appWithAllRoutes({ reportService, reviewService, offenderService, authService }, userSupplier, undefined, flash)
+  app = appWithAllRoutes({ reportService, reviewService, offenderService }, userSupplier, undefined, flash)
 })
 
 afterEach(() => {
@@ -62,7 +54,7 @@ describe('/:reportId/edit-report', () => {
     beforeEach(() => {
       offenderService.getOffenderDetails.mockResolvedValue({})
       reviewService.getReport.mockResolvedValue({
-        bookingId: '2',
+        bookingId: 2,
         form: { evidence: { baggedEvidence: true } },
       } as Report)
     })
@@ -75,7 +67,7 @@ describe('/:reportId/edit-report', () => {
         .expect('Content-Type', /text\/html/)
         .expect(200)
         .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('2', 'user1')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', 2)
           expect(reviewService.getReport).toHaveBeenCalledWith(-19)
 
           expect(res.text).toContain('Edit report')
@@ -92,7 +84,7 @@ describe('/:reportId/edit-report', () => {
         .expect('Content-Type', /text\/html/)
         .expect(200)
         .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('2', 'user1')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('user1-system-token', 2)
           expect(reviewService.getReport).toHaveBeenCalledWith(-19)
           expect(res.text).toContain('Problem parsing json')
         })

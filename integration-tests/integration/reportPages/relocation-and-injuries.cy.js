@@ -5,7 +5,6 @@ let relocationAndInjuries
 context('Submitting use of force details page', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)

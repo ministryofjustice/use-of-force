@@ -9,7 +9,6 @@ context('view statement page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)

@@ -1,15 +1,12 @@
 import logger from '../../log'
+import type { RestClient } from './restClient'
 import type { LocationMapping } from './nomisMappingClientTypes'
-import BaseApiClient from './baseApiClient'
-import config from '../config'
 
-export default class NomisMappingClient extends BaseApiClient {
-  protected static config() {
-    return config.apis.nomisMapping
-  }
+export default class NomisMappingClient {
+  constructor(private restClient: RestClient) {}
 
-  async getDpsLocationMappingUsingNomisLocationId(nomisLocationId: number, token: string): Promise<LocationMapping> {
+  async getDpsLocationMappingUsingNomisLocationId(nomisLocationId: number): Promise<LocationMapping> {
     logger.info(`Nomis mapping api client getting DPS location details using this nomisLocationId: ${nomisLocationId}`)
-    return NomisMappingClient.restClient(token).get({ path: `/api/locations/nomis/${nomisLocationId}` })
+    return this.restClient.get({ path: `/api/locations/nomis/${nomisLocationId}` })
   }
 }

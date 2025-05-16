@@ -7,12 +7,11 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% import "../incidentMacros.njk" as incidentMacro %}
 {% from "../../partials/datePicker.njk" import datePicker %}
 {% from "../incidentTimeMacro.njk"  import incidentTime %}
 {% set pageTitle = 'Incident details' %}
 {% set showCancelEditButton = data.locationId %}
-{% from "./macros/radiosWithNestedTextbox.njk" import radiosWithNestedTextbox %}
-
 
 {% block formItems %}
 <div class="govuk-body">
@@ -100,7 +99,7 @@
 
   <div class="govuk-grid-row govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
-      {{ radiosWithNestedTextbox({
+      {{ incidentMacro.radiosWithNestedTextbox({
         primaryQuestion: {
           id: "plannedUseOfForce",
           text: "Was the use of force planned?",

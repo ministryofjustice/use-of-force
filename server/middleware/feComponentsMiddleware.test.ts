@@ -43,6 +43,6 @@ describe('feComponentsMiddleware', () => {
     feComponentsService.getFeComponents.mockRejectedValue(error)
 
     await feComponentsMiddleware(feComponentsService as unknown as Services)(req, res, next)
-    expect(logger.error).toHaveBeenCalledWith(error, 'Failed to retrieve front end components')
+    expect(logger.error).toBeCalledWith(error, 'Failed to retrieve front end components')
   })
 })

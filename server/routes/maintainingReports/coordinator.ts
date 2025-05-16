@@ -1,14 +1,17 @@
 import type { Request, RequestHandler } from 'express'
-import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
+import type {
+  InvolvedStaffService,
+  OffenderService,
+  ReportService,
+  ReviewService,
+  UserService,
+  StatementService,
+} from '../../services'
+import type { SystemToken } from '../../types/uof'
+import { AddStaffResult } from '../../services/involvedStaffService'
 import { firstItem } from '../../utils/utils'
 import { paths } from '../../config/incident'
 import { ReportStatus } from '../../config/types'
-import ReportService from '../../services/reportService'
-import ReviewService from '../../services/reviewService'
-import OffenderService from '../../services/offenderService'
-import UserService from '../../services/userService'
-import StatementService from '../../services/statementService'
-import AuthService from '../../services/authService'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -18,14 +21,14 @@ export default class CoordinatorRoutes {
     private readonly involvedStaffService: InvolvedStaffService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
+    private readonly systemToken: SystemToken,
     private readonly userService: UserService,
-    private readonly statementService: StatementService,
-    private readonly authService: AuthService
+    private readonly statementService: StatementService
   ) {}
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
-    const token = await this.authService.getSystemClientToken(res.locals.user.username)
+    const token = await this.systemToken(res.locals.user.username)
     const [{ name, userId, email }, removalRequest] = await Promise.all([
       this.involvedStaffService.loadInvolvedStaff(parseInt(reportId, 10), parseInt(statementId, 10)),
       this.involvedStaffService.getInvolvedStaffRemovalRequest(parseInt(statementId, 10)),
@@ -98,7 +101,7 @@ export default class CoordinatorRoutes {
     }
 
     const result = await this.involvedStaffService.addInvolvedStaff(
-      await this.authService.getSystemClientToken(res.locals.user.username),
+      await this.systemToken(res.locals.user.username),
       reportId,
       username
     )
@@ -136,7 +139,10 @@ export default class CoordinatorRoutes {
     const report = await this.reviewService.getReport(reportId)
 
     const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(
+      await this.systemToken(res.locals.user.username),
+      bookingId
+    )
     const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
 
     res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
