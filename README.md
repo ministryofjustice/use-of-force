@@ -46,7 +46,7 @@ There are two ways of entering use-of-force from new-nomis:
 2.) Go to the new nomis homepage, search for an offender and click 'Report use of force' from the quick details page.
 
 #### Env variables
-In config.ts you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
+In config.js you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
 
 ### Run linter
 

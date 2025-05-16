@@ -23,6 +23,7 @@
         {%for item in dataItem.dataValue %}
           {%for value in item %}
             {{value}}
+            {% if not loop.last %}<br/>{% endif %}
           {% endfor%}
       <br/>
           {%if item.length > 1 and not loop.last %}
@@ -37,9 +38,10 @@
           {% endif %}
         {% endfor %}
       {% else %}
-        {{dataItem.dataValue}}
+      {{dataItem.dataValue}}
       {% endif %}
     </dd>
+    <dd class="govuk-summary-list__actions"></dd>
   </div>
 </dl> 
 {% endmacro %}

@@ -11,7 +11,6 @@ const { ReportStatus } = require('../../../server/config/types')
 context('Submitting duplicate report', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)

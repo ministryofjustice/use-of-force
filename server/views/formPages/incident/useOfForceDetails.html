@@ -3,10 +3,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "./macros/radio.njk" import radio %}
-{% from "./macros/radiosWithAddAnotherTextBox.njk" import radiosWithAddAnotherTextBox %}
-{% from "./macros/radiosWithNestedRadios.njk" import radiosWithNestedRadios %}
-{% from "./macros/checkboxesWithNestedCheckboxes.njk" import checkboxesWithNestedCheckboxes %}
+{% import "../incidentMacros.njk" as incidentMacro %}
 
 {% set pageTitle = 'Use of force details' %}
 
@@ -26,7 +23,7 @@
     %}
 
     <!-- Q1 -->
-    {{ radio( {
+    {{ incidentMacro.radio( {
       text: "Was positive communication used to de-escalate the situation with this prisoner?",
       name: "positiveCommunication",
       value: data.positiveCommunication,
@@ -35,7 +32,7 @@
     })}}
 
     <!-- Q2 new question body-worn camera question which was previously in the evidence page -->
-    {{ radiosWithAddAnotherTextBox({
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Was any part of the incident captured on a body-worn camera?",
         name: "bodyWornCamera",
@@ -52,7 +49,7 @@
     }) }}
 
     <!-- Q3 -->
-    {{ radio( {
+    {{ incidentMacro.radio( {
       text: "Were any personal protection techniques used against this prisoner?",
       name: "personalProtectionTechniques",
       value: data.personalProtectionTechniques,
@@ -61,7 +58,7 @@
     })}}
 
     <!-- Q4 -->
-    {{ radiosWithNestedRadios({
+    {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a baton drawn by anyone against this prisoner?",
         name: "batonDrawnAgainstPrisoner",
@@ -82,7 +79,7 @@
     )}}
 
     <!-- Q5 -->
-    {{ radiosWithNestedRadios({
+    {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was PAVA drawn by anyone against this prisoner?",
         name: "pavaDrawnAgainstPrisoner",
@@ -104,7 +101,7 @@
     )}}
 
     <!-- Q6 -->
-    {{ radiosWithAddAnotherTextBox({
+    {{ incidentMacro.radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Were any weapons observed?",
         name: "weaponsObserved",
@@ -121,7 +118,7 @@
     }) }}
 
     <!-- Q7 -->
-    {{ radiosWithNestedRadios({
+    {{ incidentMacro.radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a guiding hold used against this prisoner?",
         name: "guidingHold",
@@ -150,7 +147,7 @@
     )}}
 
     <!-- Q8 -->
-    {{ radio( {
+    {{ incidentMacro.radio( {
     text: "Was an escorting hold used against this prisoner?",
     name: "escortingHold",
     value: data.escortingHold,
@@ -160,7 +157,7 @@
 
     <!-- Q9 -->
     <div id="control-and-restraint">
-    {{ checkboxesWithNestedCheckboxes({
+    {{ incidentMacro.checkboxesWithNestedCheckboxes({
       primaryQuestion: {
         text: "Which control and restraint positions were used against this prisoner?",
         hint: "Select all that apply.",
@@ -175,7 +172,7 @@
 
   <!-- Q10 -->
     <div id="pain-inducing-techniques">
-      {{ checkboxesWithNestedCheckboxes({
+      {{ incidentMacro.checkboxesWithNestedCheckboxes({
         primaryQuestion: {
           text: "Which pain inducing techniques were used against this prisoner?",
           hint: "Select all that apply.",
@@ -189,7 +186,7 @@
     </div>
 
     <!-- 11 -->
-    {{ radio( {
+    {{ incidentMacro.radio( {
       text: "Were handcuffs applied against this prisoner?",
       name: "handcuffsApplied",
       value: data.handcuffsApplied,

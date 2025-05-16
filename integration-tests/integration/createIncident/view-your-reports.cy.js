@@ -7,7 +7,6 @@ const { ReportStatus } = require('../../../server/config/types')
 context('A reporter views their report list', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
@@ -71,6 +70,7 @@ context('A reporter views their report list', () => {
         relocationAndInjuries: 'NOT_STARTED',
         evidence: 'NOT_STARTED',
       })
+      inProgressReport.logout().click()
     }
   })
 

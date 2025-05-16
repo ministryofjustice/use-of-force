@@ -1,15 +1,11 @@
 import request from 'supertest'
+import { DraftReportService, OffenderService } from '../../services'
 import { appWithAllRoutes } from '../__test/appSetup'
-import DraftReportService from '../../services/drafts/draftReportService'
-import AuthService from '../../services/authService'
-import OffenderService from '../../services/offenderService'
 
 jest.mock('../../services/offenderService')
-jest.mock('../../services/authService')
 jest.mock('../../services/drafts/draftReportService')
 
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const draftReportService = new DraftReportService(
   null,
   null,
@@ -23,10 +19,9 @@ const draftReportService = new DraftReportService(
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, authService })
+  app = appWithAllRoutes({ draftReportService, offenderService })
   offenderService.getOffenderDetails.mockResolvedValue({})
   draftReportService.getCurrentDraft.mockResolvedValue(null)
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
 })
 
 afterEach(() => {
@@ -40,8 +35,8 @@ describe('/report-may-already-exist', () => {
         .get('/report/2/report-may-already-exist')
         .expect('Content-Type', /html/)
         .expect(() => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledTimes(1)
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('2', 'user1')
+          expect(offenderService.getOffenderDetails).toBeCalledTimes(1)
+          expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', 2)
         })
     })
 
@@ -50,8 +45,8 @@ describe('/report-may-already-exist', () => {
         .get('/report/3/report-may-already-exist')
         .expect('Content-Type', /html/)
         .expect(() => {
-          expect(draftReportService.getCurrentDraft).toHaveBeenCalledTimes(1)
-          expect(draftReportService.getCurrentDraft).toHaveBeenCalledWith('user1', '3')
+          expect(draftReportService.getCurrentDraft).toBeCalledTimes(1)
+          expect(draftReportService.getCurrentDraft).toBeCalledWith('user1', 3)
         })
     })
 

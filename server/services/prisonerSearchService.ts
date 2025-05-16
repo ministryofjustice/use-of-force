@@ -1,8 +1,7 @@
 import { SearchForm } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
-import { PrisonClient, PrisonerSearchClient } from '../data'
-import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
-import AuthService from './authService'
+import type { RestClientBuilder, PrisonClient, PrisonerSearchClient } from '../data'
+import { SystemToken } from '../types/uof'
 
 export type Prison = {
   agencyId: string
@@ -21,13 +20,14 @@ const isFormComplete = (form: SearchForm): boolean =>
 
 export default class PrisonerSearchService {
   constructor(
-    private readonly prisonerSearchClient: PrisonerSearchClient,
-    private readonly prisonClient: PrisonClient,
-    private readonly authService: AuthService
+    private readonly prisonerSearchClientBuilder: RestClientBuilder<PrisonerSearchClient>,
+    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
+    private readonly systemToken: SystemToken
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
-    const prisons = await this.prisonClient.getPrisons(token)
+    const client = this.prisonClientBuilder(token)
+    const prisons = await client.getPrisons()
     return prisons
       .map(({ agencyId, description }) => ({ agencyId, description }))
       .sort((a, b) => a.description.localeCompare(b.description))
@@ -41,12 +41,13 @@ export default class PrisonerSearchService {
     }
   }
 
-  async search(searchingUserName: string, form: SearchForm): Promise<PrisonerSearchApiPrisoner[]> {
+  async search(searchingUserName: string, form: SearchForm): Promise<SearchResult[]> {
     if (!isFormComplete(form)) {
       return []
     }
-    const token = await this.authService.getSystemClientToken(searchingUserName)
-    const results = await this.prisonerSearchClient.search(form, token)
+    const token = await this.systemToken(searchingUserName)
+    const client = this.prisonerSearchClientBuilder(token)
+    const results = await client.search(form)
     const prisonNameLookup = await this.createPrisonNameLookup(token)
 
     return results.map(prisoner => ({
@@ -58,10 +59,6 @@ export default class PrisonerSearchService {
   }
 
   async getPrisons(username: string): Promise<Prison[]> {
-    return this.getPrisonsUsing(await this.authService.getSystemClientToken(username))
-  }
-
-  async getPrisonerDetails(identifier: string, token: string): Promise<PrisonerSearchApiPrisoner> {
-    return this.prisonerSearchClient.getPrisonerDetails(identifier, token)
+    return this.getPrisonsUsing(await this.systemToken(username))
   }
 }

@@ -24,10 +24,9 @@ const tasklistPage = () =>
       return CheckAnswersPage.verifyOnPage()
     },
     offenderName: () => cy.get('[data-qa="offender-name"]'),
-    bannerOffenderName: () => cy.get('[data-qa="mini-profile-person-profile-link"]'),
-    nomisId: () => cy.get('[data-qa="mini-profile-prisoner-number"]'),
-    dob: () => cy.get('[data-qa="mini-profile-dob"]'),
-    offenderImage: () => cy.get('[data-qa="mini-profile-person-img"]'),
+    nomisId: () => cy.get('[data-qa="nomis-id"]'),
+    dob: () => cy.get('[data-qa="dob"]'),
+    offenderImage: () => cy.get('[data-qa="offender-image"]'),
 
     checkParts: state => {
       cy.get(`[data-qa-incident-details=${state.incidentDetails}]`).should('exist')

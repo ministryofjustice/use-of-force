@@ -10,7 +10,6 @@ const { ReportStatus } = require('../../../server/config/types')
 context('A use of force coordinator can accept or refuse removal statement requests', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)

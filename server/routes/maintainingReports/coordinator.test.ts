@@ -1,16 +1,17 @@
 import request from 'supertest'
 import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
+import {
+  InvolvedStaffService,
+  OffenderService,
+  ReportService,
+  ReviewService,
+  UserService,
+  StatementService,
+} from '../../services'
 import { paths } from '../../config/incident'
-import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
+import { AddStaffResult } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
-import ReportService from '../../services/reportService'
-import OffenderService from '../../services/offenderService'
-import ReviewService from '../../services/reviewService'
-import UserService from '../../services/userService'
-import StatementService from '../../services/statementService'
-import AuthService from '../../services/authService'
 
-jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
@@ -18,13 +19,12 @@ jest.mock('../../services/reviewService')
 jest.mock('../../services/userService')
 jest.mock('../../services/statementService')
 
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const userSupplier = jest.fn()
 
@@ -32,7 +32,6 @@ let app
 
 describe('coordinator', () => {
   beforeEach(() => {
-    authService.getSystemClientToken.mockResolvedValue('user1-system-token')
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -41,7 +40,6 @@ describe('coordinator', () => {
         reviewService,
         userService,
         statementService,
-        authService,
       },
       userSupplier
     )
@@ -97,7 +95,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', paths.addInvolvedStaffResult(1, 'success'))
 
-      expect(involvedStaffService.addInvolvedStaff).toHaveBeenCalledWith('user1-system-token', 1, 'sally')
+      expect(involvedStaffService.addInvolvedStaff).toBeCalledWith('user1-system-token', 1, 'sally')
     })
 
     it('should not resolve for reviewer', async () => {
@@ -469,9 +467,9 @@ describe('coordinator', () => {
             expect(res.text).toContain('Request to be removed from use of force incident')
           })
 
-        expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 2)
-        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toHaveBeenCalledWith(2)
-        expect(userService.getUserLocation).toHaveBeenCalledWith('user1-system-token', 'someUserId')
+        expect(involvedStaffService.loadInvolvedStaff).toBeCalledWith(123, 2)
+        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toBeCalledWith(2)
+        expect(userService.getUserLocation).toBeCalledWith('user1-system-token', 'someUserId')
       })
     })
 
@@ -500,7 +498,7 @@ describe('coordinator', () => {
           .expect(302)
           .expect('Location', paths.viewRemovalRequest(123, 2))
           .expect(() => {
-            expect(flash).toHaveBeenCalledWith('errors', [
+            expect(flash).toBeCalledWith('errors', [
               {
                 text: 'Select yes if you want to remove this person from the incident',
                 href: '#confirm',
@@ -528,7 +526,7 @@ describe('coordinator', () => {
           .expect(302)
           .expect('Location', paths.staffMemberNotRemoved(123, 2))
 
-        expect(statementService.refuseRequest).toHaveBeenCalledWith(2)
+        expect(statementService.refuseRequest).toBeCalledWith(2)
       })
     })
 
