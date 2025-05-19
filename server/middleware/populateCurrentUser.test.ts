@@ -74,7 +74,7 @@ describe('populateCurrentUser', () => {
     userService.getSelf.mockResolvedValue(null)
     await populateCurrentUser(userService)(req, res, next)
 
-    expect(logger.info).toHaveBeenCalledWith('No user available')
+    expect(logger.info).toBeCalledWith('No user available')
   })
 
   test('Should log any errors present', async () => {
@@ -93,6 +93,6 @@ describe('populateCurrentUser', () => {
     userService.getSelf.mockRejectedValue(error)
     await populateCurrentUser(userService)(req, res, next)
 
-    expect(logger.error).toHaveBeenCalledWith(error, `Failed to retrieve user for: ${res.locals.user}`)
+    expect(logger.error).toBeCalledWith(error, `Failed to retrieve user for: ${res.locals.user}`)
   })
 })

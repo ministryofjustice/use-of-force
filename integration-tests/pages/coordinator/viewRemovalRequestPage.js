@@ -9,7 +9,7 @@ const viewRemovalRequestPage = () =>
     removalReason: () => cy.get('[data-qa=removalReason]'),
     inlineError: () => cy.get('.govuk-error-message'),
 
-    errorSummaryTitle: () => cy.get('.govuk-error-summary__title'),
+    errorSummaryTitle: () => cy.get('#error-summary-title'),
     errorSummaryBody: () => cy.get('.govuk-error-summary__body'),
 
     continue: () => cy.get('[data-qa=continue]'),

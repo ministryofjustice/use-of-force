@@ -18,10 +18,10 @@ import type { Services } from '../../services'
 export default function Index({
   offenderService,
   draftReportService,
+  systemToken,
   locationService,
   prisonerSearchService,
   nomisMappingService,
-  authService,
 }: Services): Router {
   const router = express.Router()
 
@@ -35,14 +35,14 @@ export default function Index({
   get('/search-for-prisoner-results', searchForPrisoner.showResults)
   post('/search-for-prisoner', searchForPrisoner.submit)
 
-  const reportUseOfForce = new ReportUseOfForceRoutes(authService, draftReportService, offenderService)
+  const reportUseOfForce = ReportUseOfForceRoutes({ draftReportService, offenderService, systemToken })
   get(reportPath('report-use-of-force'), reportUseOfForce.view)
 
-  const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, authService, locationService)
+  const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, systemToken, locationService)
   get(reportPath('incident-details'), incidentDetails.view)
   post(reportPath('incident-details'), incidentDetails.submit)
 
-  const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(authService, draftReportService, offenderService)
+  const reportMayAlreadyExist = new ReportMayAlreadyExistRoutes(systemToken, draftReportService, offenderService)
   get(reportPath('report-may-already-exist'), reportMayAlreadyExist.view)
   post(reportPath('report-may-already-exist'), reportMayAlreadyExist.submit)
 
@@ -52,7 +52,7 @@ export default function Index({
   const reportHasBeenDeleted = new ReportHasBeenDeletedRoutes()
   get(reportPath('report-has-been-deleted'), reportHasBeenDeleted.view)
 
-  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, authService, offenderService)
+  const addInvolvedStaff = new AddInvolvedStaffRoutes(draftReportService, systemToken)
   get(reportPath('staff-involved'), addInvolvedStaff.viewStaffInvolved)
   post(reportPath('staff-involved'), addInvolvedStaff.submitStaffInvolved)
   get(reportPath('delete-staff-member/:username'), addInvolvedStaff.viewDeleteStaffMember)
@@ -63,17 +63,17 @@ export default function Index({
   post(reportPath('select-staff-member'), addInvolvedStaff.submitSelectStaffMember)
   get(reportPath('staff-member-not-found'), addInvolvedStaff.viewStaffMemberNotFound)
 
-  const changePrison = new ChangePrisonRoutes(locationService, draftReportService, authService)
+  const changePrison = new ChangePrisonRoutes(locationService, draftReportService, systemToken)
   get(reportPath('prison-of-incident'), changePrison.viewPrisons)
   post(reportPath('prison-of-incident'), changePrison.submit)
 
-  const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(authService, draftReportService, offenderService)
+  const whyWasUoFApplied = new WhyWasUoFAppliedRoutes(draftReportService)
   get(reportPath('why-was-uof-applied'), whyWasUoFApplied.view())
   post(reportPath('why-was-uof-applied'), whyWasUoFApplied.submit())
   get(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.viewPrimarySelection())
   post(reportPath('what-was-the-primary-reason-of-uof'), whyWasUoFApplied.submitPrimarySelection())
 
-  const createReport = new CreateReportRoutes(draftReportService, offenderService)
+  const createReport = new CreateReportRoutes(draftReportService)
   get(reportPath('use-of-force-details'), createReport.view('useOfForceDetails'))
   post(reportPath('use-of-force-details'), createReport.submit('useOfForceDetails'))
   get(reportPath('relocation-and-injuries'), createReport.view('relocationAndInjuries'))
@@ -84,7 +84,7 @@ export default function Index({
   const checkYourAnswers = new CheckYourAnswerRoutes(
     draftReportService,
     offenderService,
-    authService,
+    systemToken,
     locationService,
     nomisMappingService
   )

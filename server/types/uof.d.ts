@@ -37,6 +37,8 @@ export type FoundUserResult = {
 
 export type UserWithPrison = FoundUserResult & { prison?: string }
 
+export type SystemToken = (string?) => Promise<string>
+
 export type LoggedInUser = {
   username: string
   token: string

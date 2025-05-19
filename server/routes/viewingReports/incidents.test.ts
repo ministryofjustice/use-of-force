@@ -1,22 +1,17 @@
 import request from 'supertest'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
+import { ReportDetailBuilder, ReportService, OffenderService } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
-import ReportService from '../../services/reportService'
-import OffenderService from '../../services/offenderService'
-import AuthService from '../../services/authService'
-import ReportDetailBuilder from '../../services/reportDetailBuilder'
 
 jest.mock('../../services/reportService')
-jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/reportDetailBuilder')
 
 const userSupplier = jest.fn()
 
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
 
@@ -24,8 +19,7 @@ let app
 
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
-  app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+  app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
 })
 
 afterEach(() => {

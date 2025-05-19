@@ -3,9 +3,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "./macros/radio.njk" import radio %}
-{% from "./macros/relocationCompliancyAndRelocationType.njk" import relocationCompliancyAndRelocationType %}
-{% from "./macros/radiosWithNestedTextbox.njk" import radiosWithNestedTextbox %}
+{% import "../incidentMacros.njk" as incidentMacro %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
@@ -30,7 +28,7 @@
         errorMessage: errors | findError('prisonerRelocation')
       }) }}
 
-    {{ relocationCompliancyAndRelocationType({
+    {{ incidentMacro.relocationCompliancyAndRelocationType({
       relocationCompliancy: {
         value: data.relocationCompliancy,
         errorMessage: errors | findError('relocationCompliancy')
@@ -66,7 +64,7 @@
 
     }) }}
 
-  {{ radio( {
+  {{ incidentMacro.radio( {
       text: "Did the prisoner sustain any injuries at the time?",
       name: "prisonerInjuries",
       value: data.prisonerInjuries,
@@ -80,7 +78,7 @@
       errorMessage: errors | findError('prisonerInjuries')
     })}}
 
-  {{ radiosWithNestedTextbox({
+  {{ incidentMacro.radiosWithNestedTextbox({
       primaryQuestion: {
         id: "healthcareInvolved",
         text: "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
@@ -106,7 +104,7 @@
     }) 
   }}
 
-  {{ radio( {
+  {{ incidentMacro.radio( {
         text: "Did the prisoner need outside hospitalisation at the time?",
         name: "prisonerHospitalisation",
         value: data.prisonerHospitalisation,

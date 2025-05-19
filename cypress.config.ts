@@ -48,8 +48,6 @@ export default defineConfig({
 
         stubOffenderDetails: prisonApi.stubOffenderDetails,
 
-        stubOffenderImage: prisonApi.stubOffenderImage,
-
         stubOffenders: prisonApi.stubOffenders,
 
         stubLocation: locationApi.stubGetLocation,

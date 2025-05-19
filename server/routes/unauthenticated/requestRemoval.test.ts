@@ -1,20 +1,17 @@
 import request from 'supertest'
 import config from '../../config'
 import { paths } from '../../config/incident'
-import ReportService, { AnonReportSummaryWithPrison } from '../../services/reportService'
+import { ReportService, StatementService } from '../../services'
+import type { AnonReportSummaryWithPrison } from '../../services/reportService'
 import { stringToHash } from '../../utils/hash'
 import { appWithAllRoutes } from '../__test/appSetup'
-import StatementService from '../../services/statementService'
-import AuthService from '../../services/authService'
 
-jest.mock('../../services/authService')
 jest.mock('../../services/reportService')
 jest.mock('../../services/statementService')
 
 describe('Request removal controller', () => {
   const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
   const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
-  const authService = new AuthService(null) as jest.Mocked<AuthService>
 
   let app
   let flash
@@ -29,8 +26,12 @@ describe('Request removal controller', () => {
 
   beforeEach(() => {
     flash = jest.fn().mockReturnValue([])
-    authService.getSystemClientToken.mockResolvedValue('system-token')
-    app = appWithAllRoutes({ reportService, statementService, authService }, undefined, undefined, flash)
+    app = appWithAllRoutes(
+      { reportService, statementService, systemToken: async _ => `system-token` },
+      undefined,
+      undefined,
+      flash
+    )
   })
 
   afterEach(() => {
@@ -86,7 +87,7 @@ describe('Request removal controller', () => {
         .expect(302)
         .expect('Location', paths.removalRequested())
         .expect(() => {
-          expect(statementService.requestStatementRemoval).toHaveBeenCalledWith(1, 'reason')
+          expect(statementService.requestStatementRemoval).toBeCalledWith(1, 'reason')
         }))
 
     it('should fail to request removal from statement when no signature', () =>
@@ -106,7 +107,7 @@ describe('Request removal controller', () => {
         .expect('Location', `/request-removal/1?signature=${encodeURIComponent(validSignature)}`)
         .expect(() => {
           expect(statementService.requestStatementRemoval).not.toBeCalled()
-          expect(flash).toHaveBeenCalledWith('errors', [
+          expect(flash).toBeCalledWith('errors', [
             {
               text: 'Enter why you should be removed from this incident',
               href: '#reason',

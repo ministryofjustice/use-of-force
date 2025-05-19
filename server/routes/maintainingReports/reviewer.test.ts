@@ -3,22 +3,18 @@ import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test
 import { parseDate } from '../../utils/utils'
 import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
+import { OffenderService, ReviewService, ReportDetailBuilder } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
-import ReviewService, { ReviewerStatementWithComments } from '../../services/reviewService'
-import OffenderService from '../../services/offenderService'
-import AuthService from '../../services/authService'
-import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import { ReviewerStatementWithComments } from '../../services/reviewService'
 
 const userSupplier = jest.fn()
 
 jest.mock('../../services/reviewService')
 jest.mock('../../services/offenderService')
-jest.mock('../../services/authService')
 jest.mock('../../services/reportDetailBuilder')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
 
@@ -27,8 +23,7 @@ let app
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
   reviewService.getReport.mockResolvedValue({} as Report)
-  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
-  app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
+  app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
   reviewService.getIncompleteReports.mockResolvedValue([])
   reviewService.getCompletedReports.mockResolvedValue(
     new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, [])
@@ -134,7 +129,7 @@ describe(`GET /completed-incidents`, () => {
 describe(`GET /not-completed-incidents`, () => {
   const commonReportData = {
     id: 1,
-    bookingId: '1',
+    bookingId: 1,
     incidentdate: new Date(),
     staffMemberName: 'Coordinator Use-Of-Force',
     isOverdue: true,
@@ -224,7 +219,7 @@ describe('GET /view-statements', () => {
     name: 'Mr Coordinator',
     userId: 'COORDINATOR_USER',
     isSubmitted: false,
-    bookingId: '1',
+    bookingId: 1,
     incidentDate: new Date(),
     lastTrainingMonth: null,
     lastTrainingYear: null,

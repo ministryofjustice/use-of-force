@@ -1,5 +1,5 @@
 import UserService from './userService'
-import { PrisonClient, ManageUsersApiClient } from '../data'
+import { PrisonClient, AuthClient } from '../data'
 import { UserDetail, CaseLoad, Prison } from '../data/prisonClientTypes'
 import { UserWithPrison } from '../types/uof'
 
@@ -7,13 +7,19 @@ const token = 'token-1'
 
 jest.mock('../data')
 
-const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
-const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
+const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
+
+const prisonClientBuilder = jest.fn()
+const authClientBuilder = jest.fn()
 
 let service: UserService
 
 beforeEach(() => {
-  service = new UserService(manageUsersApiClient, prisonClient)
+  prisonClientBuilder.mockReturnValue(prisonClient)
+  authClientBuilder.mockReturnValue(authClient)
+
+  service = new UserService(prisonClientBuilder, authClientBuilder)
 })
 
 afterEach(() => {
@@ -55,7 +61,7 @@ describe('getSelf', () => {
 
     await service.getSelf(token)
 
-    expect(prisonClient.getUser).toHaveBeenCalledWith(token)
+    expect(prisonClientBuilder).toBeCalledWith(token)
   })
 })
 
@@ -63,8 +69,8 @@ describe('getUser', () => {
   it('Successfull', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
 
-    manageUsersApiClient.getEmail.mockResolvedValueOnce(user1)
-    manageUsersApiClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
 
     const result = await service.getUser(token, 'Bob')
 
@@ -82,8 +88,8 @@ describe('getUser', () => {
   it('User not verified', async () => {
     const user1 = { username: 'BOB', exists: true, verified: false }
 
-    manageUsersApiClient.getEmail.mockResolvedValueOnce(user1)
-    manageUsersApiClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
 
     const result = await service.getUser(token, 'Bob')
 
@@ -97,14 +103,14 @@ describe('getUser', () => {
       activeCaseLoadId: 'MDI',
     })
 
-    expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('BOB', token)
+    expect(authClient.getEmail).toHaveBeenCalledWith('BOB')
   })
 
   it('User not exists', async () => {
     const user1 = { username: 'BOB', exists: false, verified: false }
 
-    manageUsersApiClient.getEmail.mockResolvedValueOnce(user1)
-    manageUsersApiClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 123, activeCaseLoadId: 'MDI' })
 
     const result = await service.getUser(token, 'Bob')
 
@@ -118,16 +124,18 @@ describe('getUser', () => {
       activeCaseLoadId: undefined,
     })
 
-    expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('BOB', token)
+    expect(authClient.getEmail).toHaveBeenCalledWith('BOB')
   })
 
   it('should use the user token', async () => {
     const user1 = { username: 'Bob', email: 'an@email.com', exists: true, verified: true }
 
-    manageUsersApiClient.getEmail.mockResolvedValueOnce(user1)
-    manageUsersApiClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1, activeCaseLoadId: 'MDI' })
+    authClient.getEmail.mockResolvedValueOnce(user1)
+    authClient.getUser.mockResolvedValueOnce({ name: 'Bob Smith', staffId: 1, activeCaseLoadId: 'MDI' })
 
     await service.getUser(token, 'Bob')
+
+    expect(authClientBuilder).toBeCalledWith(token)
   })
 })
 
@@ -143,7 +151,7 @@ describe('findUsers', () => {
       activeCaseLoadId: 'MDI',
     }
 
-    manageUsersApiClient.findUsers.mockResolvedValue([user1])
+    authClient.findUsers.mockResolvedValue([user1])
 
     const result = await service.findUsers(token, 'Bob', 'Smith')
 
@@ -163,7 +171,7 @@ describe('findUsersWithPrisons', () => {
       activeCaseLoadId: 'MDI',
     }
 
-    manageUsersApiClient.findUsers.mockResolvedValue([user1])
+    authClient.findUsers.mockResolvedValue([user1])
     prisonClient.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
 
     const result = await service.findUsersWithPrisons(token, 'MDI', 'Bob', 'Smith')
@@ -230,7 +238,7 @@ describe('compareUsers', () => {
         active: true,
       }
 
-      manageUsersApiClient.getUser.mockResolvedValue({ name: 'Bob Smith', activeCaseLoadId: 'MDI', staffId: 485828 })
+      authClient.getUser.mockResolvedValue({ name: 'Bob Smith', activeCaseLoadId: 'MDI', staffId: 485828 })
       prisonClient.getPrisonById.mockResolvedValue(caseload)
       const result = await service.getUserLocation(token, 'Bob Smith')
       expect(result).toEqual('Moorland (HMP & YOI)')

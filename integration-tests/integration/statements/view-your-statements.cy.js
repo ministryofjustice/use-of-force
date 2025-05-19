@@ -6,7 +6,6 @@ const { ReportStatus } = require('../../../server/config/types')
 context('A user views their statements list', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubOffenderDetails', offender2)

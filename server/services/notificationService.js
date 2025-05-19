@@ -1,29 +1,24 @@
-import moment from 'moment'
-
-import { NotifyClient } from 'notifications-node-client'
-
-import { stringToHash } from '../utils/hash'
-
-import logger from '../../log'
-import config from '../config'
-
+const { NotifyClient } = require('notifications-node-client')
+const moment = require('moment')
+const { email } = require('../config')
+const { stringToHash } = require('../utils/hash')
 const {
   links: { emailUrl },
   email: {
     enabled,
     notifyKey,
     templates: { involvedStaff, reporter },
-    urlSigningSecret,
   },
-} = config
+} = require('../config')
+const logger = require('../../log')
 
-export const createNotificationService = (emailClient, eventPublisher) => {
+const createNotificationService = (emailClient, eventPublisher) => {
   const asDate = date => moment(date).format('dddd D MMMM')
 
   const asTime = date => moment(date).format('HH:mm')
 
   const getRemovalRequestLink = statementId => {
-    const hash = stringToHash(statementId.toString(), urlSigningSecret)
+    const hash = stringToHash(statementId.toString(), email.urlSigningSecret)
     return `${emailUrl}/request-removal/${statementId}?signature=${hash}`
   }
 
@@ -232,11 +227,15 @@ export const createNotificationService = (emailClient, eventPublisher) => {
   }
 }
 
-export const notificationServiceFactory = eventPublisher => {
-  const stubClient = {
-    sendEmail: async args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
-  }
+module.exports = {
+  createNotificationService,
 
-  const notifyClient = enabled === true ? new NotifyClient(notifyKey) : stubClient
-  return createNotificationService(notifyClient, eventPublisher)
+  notificationServiceFactory: eventPublisher => {
+    const stubClient = {
+      sendEmail: async args => logger.info(`sendEmail: ${JSON.stringify(args)}`),
+    }
+
+    const notifyClient = enabled === true ? new NotifyClient(notifyKey) : stubClient
+    return createNotificationService(notifyClient, eventPublisher)
+  },
 }

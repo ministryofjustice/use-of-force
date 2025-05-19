@@ -1,8 +1,7 @@
-import fs from 'fs'
+const fs = require('fs')
+const config = require('./server/config')
 
-import config from './server/config'
-
-export default {
+module.exports = {
   client: 'pg',
   connection: {
     host: config.db.server,

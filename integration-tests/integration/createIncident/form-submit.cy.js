@@ -13,16 +13,14 @@ const { expectedPayload } = require('../seedData')
 context('Submit the incident report', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
-    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubPrisons')
     cy.task('stubPrison', offender.agencyId)
-    cy.task('stubLocation', '00000000-1111-2222-3333-44444444444')
-    cy.task('stubUserDetailsRetrieval', ['JO_ZAGATO', 'TEST_USER', 'EMILY_JONES'])
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444440')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
   it('Submitting a form', () => {

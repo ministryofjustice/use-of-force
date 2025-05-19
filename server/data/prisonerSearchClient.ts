@@ -1,6 +1,4 @@
-import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
-import BaseApiClient from './baseApiClient'
-import config from '../config'
+import { RestClient } from './restClient'
 
 export type SearchForm = {
   prisonNumber?: string
@@ -9,30 +7,20 @@ export type SearchForm = {
   agencyId?: string
 }
 
-export default class PrisonerSearchClient extends BaseApiClient {
-  protected static config() {
-    return config.apis.prisonerSearch
-  }
+export default class PrisonerSearchClient {
+  constructor(private readonly restClient: RestClient) {}
 
-  async getPrisonerDetails(nomisId: string, token: string): Promise<PrisonerSearchApiPrisoner> {
-    return PrisonerSearchClient.restClient(token).get({
-      path: `/prisoner/${nomisId}`,
-    }) as Promise<PrisonerSearchApiPrisoner>
-  }
-
-  async search(form: SearchForm, token: string): Promise<any> {
-    const { prisonNumber, firstName, lastName, agencyId } = form
-    const prisonId = agencyId
-    const data = {
-      prisonerIdentifier: prisonNumber,
-      ...(firstName && { firstName }),
-      ...(lastName && { lastName }),
-      ...(prisonId && { prisonId }),
-      includeAliases: false,
-    }
-    return PrisonerSearchClient.restClient(token).post({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async search(form: SearchForm): Promise<any> {
+    return this.restClient.post({
       path: `/prisoner-search/match`,
-      data,
+      data: {
+        prisonerIdentifier: form.prisonNumber,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        prisonId: form.agencyId,
+        includeAliases: false,
+      },
     })
   }
 }

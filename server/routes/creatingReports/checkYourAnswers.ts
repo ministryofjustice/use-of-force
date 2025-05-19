@@ -3,28 +3,28 @@ import LocationService from '../../services/locationService'
 import NomisMappingService from '../../services/nomisMappingService'
 import OffenderService from '../../services/offenderService'
 import DraftReportService from '../../services/drafts/draftReportService'
+import { SystemToken } from '../../types/uof'
 import { properCaseFullName } from '../../utils/utils'
 import reportSummary from '../../services/reportSummary'
-import AuthService from '../../services/authService'
 
 export default class CheckAnswerRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
-    private readonly authService: AuthService,
+    private readonly systemToken: SystemToken,
     private readonly locationService: LocationService,
     private readonly nomisMappingService: NomisMappingService
   ) {}
 
   public view = async (req: Request, res: Response): Promise<void> => {
-    const token = await this.authService.getSystemClientToken(res.locals.user.username)
+    const token = await this.systemToken(res.locals.user.username)
     const { bookingId } = req.params
     const {
       id,
       form = {},
       incidentDate,
       agencyId: prisonId,
-    } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
+    } = await this.draftReportService.getCurrentDraft(req.user.username, parseInt(bookingId, 10))
 
     // At this point the reportStatus may be 'incomplete' (because of the validation rules) if only the nomis locationId is present.
     // This scenario would occur where a user is already at /check-your-answers when the new code to use incidentLocationId is deployed
@@ -49,11 +49,15 @@ export default class CheckAnswerRoutes {
       return res.redirect(`/`)
     }
 
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, req.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(token, parseInt(bookingId, 10))
 
     const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.incidentLocationId)
 
-    const draftInvolvedStaff = await this.draftReportService.getInvolvedStaff(token, req.user.username, bookingId)
+    const draftInvolvedStaff = await this.draftReportService.getInvolvedStaff(
+      token,
+      req.user.username,
+      parseInt(bookingId, 10)
+    )
 
     const involvedStaff = draftInvolvedStaff.map(staff => ({
       name: properCaseFullName(staff.name),
@@ -62,19 +66,19 @@ export default class CheckAnswerRoutes {
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
-    const summary = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+    const data = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
 
-    return res.render('pages/check-your-answers', { data: { summary, offenderDetail }, bookingId })
+    return res.render('pages/check-your-answers', { data, bookingId })
   }
 
   public submit = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
 
-    if (!(await this.draftReportService.isDraftComplete(req.user.username, bookingId))) {
+    if (!(await this.draftReportService.isDraftComplete(req.user.username, parseInt(bookingId, 10)))) {
       throw new Error('Report is not complete')
     }
 
-    const reportId = await this.draftReportService.submit(res.locals.user, bookingId)
+    const reportId = await this.draftReportService.submit(res.locals.user, parseInt(bookingId, 10))
     const location = reportId ? `/${reportId}/report-sent` : `/`
     return res.redirect(location)
   }
