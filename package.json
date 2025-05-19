@@ -138,7 +138,7 @@
     "ramda": "^0.29.0",
     "redis": "^4.6.13",
     "sass-middleware": "^0.0.3",
-    "superagent": "^8.0.9",
+    "superagent": "^10.2.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -187,9 +187,6 @@
     },
     "notifications-node-client": {
       "axios": "1.9.0"
-    },
-    "superagent": {
-      "formidable": "3.5.1"
     },
     "jest": {
       "jest-core": {
