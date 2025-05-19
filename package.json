@@ -186,7 +186,7 @@
       "@babel/traverse": "7.23.2"
     },
     "notifications-node-client": {
-      "axios": "1.7.4"
+      "axios": "1.9.0"
     },
     "superagent": {
       "formidable": "3.5.1"
