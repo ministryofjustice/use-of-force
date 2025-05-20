@@ -9,7 +9,6 @@ export default (userService: UserService) =>
       currentUrlPath: req.baseUrl + req.path,
       hostname: req.hostname,
     }
-    console.log(res.locals)
     try {
       const user = res.locals.user && (await userService.getSelf(res.locals.user.token))
 

@@ -51,7 +51,7 @@ export class RestClient {
   private defaultErrorLogger = error => logger.warn(sanitiseError(error), `Error calling ${this.name}`)
 
   async get<T>({ path = null, query = '', headers = {}, responseType = '' }: GetRequest = {}): Promise<T> {
-    logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
+    logger.info(`Calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
         .get(`${this.apiUrl}${path}`)

@@ -5,7 +5,6 @@ export default function getFrontendComponents(feComponentsService): RequestHandl
   return async (req, res, next) => {
     try {
       const { header, footer } = await feComponentsService.getFeComponents(['header', 'footer'], res.locals.user.token)
-      console.log('Got FE Components')
       res.locals.feComponents = {
         header: header.html,
         footer: footer.html,
