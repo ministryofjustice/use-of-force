@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import * as R from 'ramda'
 import sanitisers from './sanitisers'
 
+const R = require('ramda')
 const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
 
 const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = sanitisers

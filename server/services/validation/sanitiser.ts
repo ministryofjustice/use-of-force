@@ -1,4 +1,5 @@
-import * as R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 
 const compose = (acc, fn) => x => fn(acc(x))
 

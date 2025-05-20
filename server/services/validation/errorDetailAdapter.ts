@@ -1,4 +1,5 @@
-import * as R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
+const R = require('ramda')
 
 // array -> string
 const hrefFromPath = path => {

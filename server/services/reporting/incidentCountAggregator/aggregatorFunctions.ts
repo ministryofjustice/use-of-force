@@ -1,5 +1,7 @@
-import * as R from 'ramda'
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { PrisonerDetail } from '../../../data/prisonClientTypes'
+
+const R = require('ramda')
 
 export interface Groups {
   [group: string]: {
