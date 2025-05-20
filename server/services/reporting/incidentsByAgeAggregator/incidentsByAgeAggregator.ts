@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import * as R from 'ramda'
 import moment from 'moment'
 import {
   buildCsvRendererConfiguration,
@@ -9,7 +9,6 @@ import {
 import { OffenderNoWithIncidentDate } from '../../../types/uof'
 import { PrisonerDetail } from '../../../data/prisonClientTypes'
 
-const R = require('ramda')
 /**
  * Given a set of PrisonerDetail return a function that maps an OffenderNoWithDate to the age of the offender, in years,
  * on the date that the incident occurred.  An answer will only be provided when the offenderNo on a PrisonerDetails

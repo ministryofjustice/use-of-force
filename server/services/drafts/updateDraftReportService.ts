@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import * as R from 'ramda'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
 import logger from '../../../log'
 import type { PrisonClient, RestClientBuilder, DraftReportClient, IncidentClient } from '../../data'
 import ReportLogClient from '../../data/reportLogClient'
 import { InTransaction } from '../../data/dataAccess/db'
-
-const R = require('ramda')
 
 export default class UpdateDraftReportService {
   constructor(

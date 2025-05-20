@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import * as R from 'ramda'
 import { isNilOrEmpty } from '../../utils/utils'
-
-const R = require('ramda')
 
 const extractPropertyNamesForFieldType = (fieldTypeValue, description) => {
   const keys = R.propOr({}, 'keys', description)

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import validationsDefault from './validations'
 import { EXTRACTED } from '../fieldType'
 import validation from '../../services/validation'
+import sanitisers from './sanitisers'
 
-const { toSmallInt } = require('./sanitisers')
-
+const { toSmallInt } = sanitisers
 const { requiredStringMsg } = validationsDefault.validations
 const { joi, validations } = validationsDefault
 const completeSchema = joi.object({
