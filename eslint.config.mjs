@@ -24,7 +24,23 @@ export default [
       '@typescript-eslint/import/extensions': 'off',
       '@typescript-eslint/no-var-requires': 'off',
       'global-require': 'off',
-      'import/no-unresolved': 'off',
     },
   },
+  {
+    plugins: ['import'],
+    rules: {
+      'import/no-unresolved': 'error',
+      'import/extensions': ['error', 'ignorePackages', {
+        js: 'never',
+        ts: 'never'
+      }]
+    },
+    settings: {
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.ts', '.jsx', '.tsx']
+        }
+      }
+    }
+ }
 ]
