@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fiveMinutesBefore from './fiveMinutesBefore'
 
 let realDateNow

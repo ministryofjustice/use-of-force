@@ -1,5 +1,4 @@
 export interface AssignedLivingUnit {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   additionalProperties: { [key: string]: any }
   agencyId: string
   locationId: number
@@ -109,8 +108,6 @@ export interface UserDetail {
   expiryDate: Date
   lockedFlag: boolean
   expiredFlag: boolean
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   additionalProperties: { [key: string]: any }
 }
 

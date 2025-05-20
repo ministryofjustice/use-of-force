@@ -51,9 +51,7 @@ function addAppInfo(result) {
 
 function getBuild() {
   try {
-    // eslint-disable-next-line import/no-unresolved,global-require
-    return require('../../build-info.json')
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return require('../build-info.json')
   } catch (ex) {
     return null
   }

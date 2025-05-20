@@ -1,33 +1,30 @@
 import hmppsConfig from '@ministryofjustice/eslint-config-hmpps'
-
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
 
 export default [
   ...hmppsConfig({
     extraPathsAllowingDevDependencies: ['**/__testutils/**'],
-    extraIgnorePaths: ['integration-tests/', 'migrations/', 'assets/', '*.test.*'] 
+    extraIgnorePaths: ['integration-tests/', 'migrations/', 'assets/', '*.test.*'],
   }),
   {
-    rules: {
-      'no-param-reassign': 'off',
-      '@typescript-eslint/no-shadow': 'off',
-      'import/no-cycle': 'off',
-      'max-classes-per-file': 'off',
+    name: 'overrides',
+    files: ['**/*.ts'],
+    ignores: ['**/*.js'],
+    plugins: {
+      '@typescript-eslint': typescriptEslint,
     },
-  },
-  {
-    files: ['**/*.ts', '**/*.js'],
+    languageOptions: {
+      parser: tsParser,
+    },
     rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/import/no-unresolved': 'off',
+      '@typescript-eslint/import/extensions': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+      'global-require': 'off',
       'import/no-unresolved': 'off',
-      'import/extensions': 'off', 
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: 'res|next|^err|_',
-          ignoreRestSiblings: true,
-          caughtErrors: 'all',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
     },
   },
 ]
