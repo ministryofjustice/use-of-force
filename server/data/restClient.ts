@@ -128,7 +128,7 @@ export class RestClient {
     }
   }
 
-  async post<Response = unknown>(request: RequestWithBody): Promise<Response> {
+  async post<Response = unknown>(request): Promise<Response> {
     return this.requestWithBody('post', request)
   }
 

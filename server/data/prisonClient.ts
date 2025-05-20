@@ -27,7 +27,7 @@ export default class PrisonClient {
 
   async getPrisoners(offenderNos: string[]): Promise<PrisonerDetail[]> {
     const query = { offenderNo: offenderNos }
-    const headers = { 'Page-Limit': 5000 }
+    const headers = { 'Page-Limit': '5000' }
     return this.restClient.get({ path: '/api/prisoners', query, headers })
   }
 
