@@ -13,7 +13,7 @@ export default class CheckAnswerRoutes {
     private readonly offenderService: OffenderService,
     private readonly systemToken: SystemToken,
     private readonly locationService: LocationService,
-    private readonly nomisMappingService: NomisMappingService
+    private readonly nomisMappingService: NomisMappingService,
   ) {}
 
   public view = async (req: Request, res: Response): Promise<void> => {
@@ -34,7 +34,7 @@ export default class CheckAnswerRoutes {
     if (form.incidentDetails?.locationId && !form.incidentDetails?.incidentLocationId) {
       const { dpsLocationId } = await this.nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
         token,
-        form.incidentDetails.locationId
+        form.incidentDetails.locationId,
       )
 
       form.incidentDetails.incidentLocationId = dpsLocationId
@@ -56,7 +56,7 @@ export default class CheckAnswerRoutes {
     const draftInvolvedStaff = await this.draftReportService.getInvolvedStaff(
       token,
       req.user.username,
-      parseInt(bookingId, 10)
+      parseInt(bookingId, 10),
     )
 
     const involvedStaff = draftInvolvedStaff.map(staff => ({

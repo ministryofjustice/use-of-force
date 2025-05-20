@@ -20,7 +20,7 @@ const staffInvolvedPage = () =>
               emailAddress: Cypress.$(tds[2]).text().trim(),
               canDelete: Cypress.$(tds[3]).find('a').length === 1,
             }
-          })
+          }),
         ),
     saveAndReturn: () => {
       cy.get('[data-qa="save-and-return"]').click()

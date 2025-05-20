@@ -7,7 +7,6 @@ import { PrisonerDetail } from '../data/prisonClientTypes'
 export default class OffenderService {
   constructor(private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getOffenderDetails(token: string, bookingId: number): Promise<any> {
     try {
       const prisonClient = this.prisonClientBuilder(token)

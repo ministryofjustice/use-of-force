@@ -17,7 +17,7 @@ export default class IncidentClient {
   constructor(
     private readonly query: QueryPerformer,
     private readonly inTransaction: InTransaction,
-    private readonly reportLogClient: ReportLogClient
+    private readonly reportLogClient: ReportLogClient,
   ) {}
 
   async changeStatus(
@@ -25,7 +25,7 @@ export default class IncidentClient {
     userId: string,
     startState: LabelledValue,
     endState: LabelledValue,
-    query: QueryPerformer
+    query: QueryPerformer,
   ): Promise<void> {
     await query({
       text: `update v_report r
@@ -153,7 +153,7 @@ export default class IncidentClient {
   async getCompletedReportsForReviewer(
     agencyId: AgencyId,
     query: IncidentSearchQuery,
-    page: number
+    page: number,
   ): Promise<PageResponse<ReportSummary>> {
     const [offset, limit] = offsetAndLimitForPage(page)
     const results = await this.query<HasTotalCount<ReportSummary>>({
@@ -270,7 +270,7 @@ export default class IncidentClient {
     reportId: number,
     incidentDate: Date | null,
     formResponse: unknown | null,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `update v_report r

@@ -1,0 +1,257 @@
+{% extends "../formTemplate.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% import "../incidentMacros.njk" as incidentMacro %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% set pageTitle = 'Relocation and injuries' %}
+{% block formItems %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
+    <h1 class="govuk-heading-xl mainHeading">{{ pageTitle }}</h1>
+
+
+
+    {{ govukSelect({
+        id: "prisonerRelocation",
+        classes: "min-width-33",
+        name: "prisonerRelocation",
+        label: {
+          text: "Where was the prisoner relocated to?"
+        },
+        items: data.types.RelocationLocation | list | extractAttr('value') | toSelect('value', 'label', data.prisonerRelocation),
+        errorMessage: errors | findError('prisonerRelocation')
+      }) }}
+
+    {{ incidentMacro.relocationCompliancyAndRelocationType({
+      relocationCompliancy: {
+        value: data.relocationCompliancy,
+        errorMessage: errors | findError('relocationCompliancy')
+      },
+      relocationType: {
+        value: data.relocationType,
+        errorMessage: errors | findError('relocationType'),
+        options: data.types.RelocationType | list | extractAttr('value') | isActive  | toOptions('value', 'label')
+      },
+      userSpecifiedReason: {
+        value: data.userSpecifiedRelocationType,
+        errorMessage: errors | findError('userSpecifiedRelocationType')
+      }
+    })}}
+
+    <hr />
+
+
+  <h2 class="govuk-heading-l govuk-!-margin-top-9">Injuries sustained and healthcare involvement</h2>
+</div>
+<div class="govuk-grid-column-two-thirds">
+
+  {{ govukInput({
+      label: {
+        text: "Who completed the F213 form?",
+        classes: "govuk-!-margin-top-1"
+      },
+      id: "f213CompletedBy",
+      classes: "govuk-!-width-one-half govuk-!-margin-bottom-2",
+      value: data.f213CompletedBy,
+      "name": "f213CompletedBy",
+      errorMessage: errors | findError('f213CompletedBy')
+
+    }) }}
+
+  {{ incidentMacro.radio( {
+      text: "Did the prisoner sustain any injuries at the time?",
+      name: "prisonerInjuries",
+      value: data.prisonerInjuries,
+      options: [{
+        value: true,
+        label: "Yes"
+      }, {
+        value: false,
+        label: "No"
+      }],
+      errorMessage: errors | findError('prisonerInjuries')
+    })}}
+
+  {{ incidentMacro.radiosWithNestedTextbox({
+      primaryQuestion: {
+        id: "healthcareInvolved",
+        text: "Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?",
+        name: "healthcareInvolved",
+        value: data.healthcareInvolved,
+        errorMessage: errors | findError('healthcareInvolved'),
+        options: [{
+          value: true,
+          label: "Yes"
+        }, 
+        {
+          value: false,
+          label: "No"
+        }]
+      },
+      followUpQuestion: {
+        legend: "blank",
+        name: "healthcarePractionerName",
+        value: data.healthcarePractionerName,
+        label: "Name",
+        errorMessage: errors | findError('healthcarePractionerName')
+      }
+    }) 
+  }}
+
+  {{ incidentMacro.radio( {
+        text: "Did the prisoner need outside hospitalisation at the time?",
+        name: "prisonerHospitalisation",
+        value: data.prisonerHospitalisation,
+        options: [{
+          value: true,
+          label: "Yes"
+        }, {
+          value: false,
+          label: "No"
+        }],
+        errorMessage: errors | findError('prisonerHospitalisation')
+      })}}
+
+  <div class="govuk-!-margin-bottom-6 
+      {% if errors | findError('staffMedicalAttention') %}
+      govuk-form-group--error
+      {% set staffMedicalAttention =  errors | findError('staffMedicalAttention') %}
+      {% endif %}">
+
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend ">
+        Did a member of staff need medical attention at the time?
+      </legend>
+      <span class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ staffMedicalAttention.text}}
+      </span>
+
+      <div class="govuk-radios" data-module="govuk-radios">
+        <div class=" govuk-radios--inline govuk-!-margin-bottom-2">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="staffMedicalAttention" name="staffMedicalAttention" type="radio"
+              value="true" data-aria-controls="staff-medical-attention--conditional"
+              {% if data.staffMedicalAttention === true %} checked {% endif %}>
+            <label class="govuk-label govuk-radios__label" for="staffMedicalAttention">
+              Yes
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="staffMedicalAttention-2" name="staffMedicalAttention" type="radio"
+              value="false" {% if data.staffMedicalAttention === false %} checked {% endif %}>
+            <label class="govuk-label govuk-radios__label" for="staffMedicalAttention-2">
+              No
+            </label>
+          </div>
+        </div>
+
+        <!-- hidden panel starts here -->
+        <div class="govuk-radios__conditional govuk-radios__conditional--hidden"
+          id="staff-medical-attention--conditional">
+          <!-- add another starts here   -->
+
+          <div class="add-another-staff-needing-medical-attention list">
+          {% macro addStaffNeedingMedicalAttention(index, staffMember, showRemove) %}
+            {% call govukFieldset({ classes: 'add-another__item list-item' }) %}
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-half" id="staffNeedingMedicalAttention[{{index}}]">
+                {{ govukInput({
+                  label: {
+                    html: 'Name of who needed medical attention'
+                  },
+                  id: 'staffNeedingMedicalAttention[' + index + '][name]',
+                  name: 'staffNeedingMedicalAttention[' + index + '][name]',
+                  value: staffMember.name,
+                  errorMessage:  errors | findErrors(['staffNeedingMedicalAttention[' + index + ']', 'staffNeedingMedicalAttention[' + index + '][name]']),
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][name]'
+                  }
+                  })
+                }}
+              </div>
+              <div class="govuk-grid-column-one-half">
+                  <div class="govuk-!-margin-top-6 remove-button-container">
+                  {% if showRemove %}
+                    <button type="button" class="govuk-button govuk-button--secondary add-another__remove-button ">
+                    Remove
+                    </button>
+                  {% endif  %}
+                </div>
+              </div>
+            </div>
+            {{ govukRadios({
+              classes: "govuk-radios--inline",
+              name: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
+              fieldset: {
+                legend: {
+                  text: "Did they go to hospital?"
+                }
+              },
+              errorMessage:  errors | findError('staffNeedingMedicalAttention[' + index + '][hospitalisation]'),
+
+              items: [
+                {
+                  value: true,
+                  text: "Yes",
+                  checked: staffMember.hospitalisation === true,
+                  id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]',
+                  errorMessage: errorMsgHosp,
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-yes'
+                  }
+                },
+                {
+                  value: false,
+                  text: "No",
+                  checked: staffMember.hospitalisation === false,
+                  'data-name': 'staffNeedingMedicalAttention[%index%][name]',
+                  id: 'staffNeedingMedicalAttention[' + index + '][hospitalisation]-no',
+                  errorMessage: errors | findError("staffNeedingMedicalAttention[' + index + '][hospitalisation]"),
+                  attributes: {
+                    'data-name': 'staffNeedingMedicalAttention[%index%][hospitalisation]',
+                    'data-id': 'staffNeedingMedicalAttention[%index%][hospitalisation]-no'
+                  }
+                }]
+              })
+            }}
+            <hr class="govuk-grid-column-two-thirds"/>
+            {% endcall %}
+          {% endmacro %}
+
+          {%  for staffMember in  data.staffNeedingMedicalAttention %}
+            {{ addStaffNeedingMedicalAttention(index = loop.index0, staffMember = staffMember, showRemove = loop.length != 1) }}
+          {% else %}
+            {{ addStaffNeedingMedicalAttention(index = 0, staffMember = null, showRemove = false) }}
+          {% endfor %}
+            <div class="button-action">
+              {{
+                  govukButton({
+                    text: 'Add another',
+                    classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                    attributes: { 'data-qa-add-another-staff-needing-medical-attention': true }
+                  })
+                }}
+            </div>
+          </div> <!-- add another ends here -->
+        </div> <!-- hidden panel end -->
+      </div>
+      <!--end of radios -->
+    </fieldset>
+  </div> <!-- end of this component  -->
+</div> <!-- end of column two thirds -->
+</div> <!-- end of grid row-->
+
+{% endblock %}
+
+{% block script %}
+<script src="/assets/add-another-staff.js"></script>
+{% endblock %}

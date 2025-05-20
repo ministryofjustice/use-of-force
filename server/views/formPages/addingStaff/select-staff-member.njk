@@ -1,0 +1,101 @@
+{% extends "../../partials/layout.njk" %} 
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageTitle = 'There is more than 1 person with that name' %}
+
+{% block content %}
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+  <input type="hidden" name="firstName" value="{{ firstName }}" />
+  <input type="hidden" name="lastName" value="{{ lastName }}" />
+  <div class="govuk-grid-row govuk-body">
+    {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      })
+    }}
+    {% endif %}
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+      <p>
+        Select who you want to add.
+      </p>
+      <p>
+        You might need to contact the staff member to confirm which email address belongs to them.
+      </p>
+      {% set rows = [] %}
+      {% for item in staff %}
+      {% set rows = (rows.push(
+          {
+          html: item.name,
+          value: item.username,
+          username: item.username,
+          prison: item.prison | default('None', true),
+          email: item.email | default('No email address', true),
+          id: 'user-' + loop.index,
+          attributes: { 'data-qa': item.username }
+          }
+      ), rows) %}
+      {% endfor %}
+      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
+        <span class="user-heading govuk-label--s">Name</span>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
+        <span class="caseload govuk-label--s">Location</span>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
+        <span class="user-id govuk-label--s">User ID</span>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
+        <span class="email govuk-label--s">Email address</span>
+      </div>
+
+        <div class="govuk-grid-column-one-quarter" id="select-staff">  
+          
+          {{ govukRadios({
+            idPrefix: "select-staff",
+            name: "selectedStaffUsername",
+            items: rows
+          }) }}
+        </div>
+
+        <div class="govuk-grid-column-one-quarter">  
+          {% for item in rows %}
+            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
+              <label class="staff-match" data-qa="prison-{{loop.index0}}" for="{{item.id}}">{{item.prison}}</label>
+            </p>
+          {% endfor %}
+        </div>
+        <div class="govuk-grid-column-one-quarter">  
+          {% for item in rows %}
+            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
+              <label class="staff-match" data-qa="username-{{loop.index0}}" for="{{item.id}}">{{item.username}}</label>
+            </p>
+          {% endfor %}
+        </div>
+        <div class="govuk-grid-column-one-quarter">  
+          {% for item in rows %}
+            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
+              <label class="staff-match" data-qa="email-{{loop.index0}}" for="{{item.id}}">{{item.email}}</label>
+            </p>
+          {% endfor %}
+        </div>
+      <br/>
+    </div>
+  </div>
+      {{ 
+        govukButton({
+          text: "Continue",
+          value: 'continue',
+          attributes: {'data-qa': 'continue'}
+        }) 
+      }}
+</form>
+
+{% endblock %}

@@ -2,7 +2,6 @@ import express, { Express, RequestHandler, Response, Request } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import noCache from 'nocache'
-import path from 'path'
 import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
@@ -16,7 +15,6 @@ import { createRedisClient } from './data/redisClient'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
-import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
@@ -32,9 +30,10 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpStaticResources from './middleware/setUpStaticResources'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
-  tokenVerifierFactory(config.apis.tokenVerification)
+  tokenVerifierFactory(config.apis.tokenVerification),
 )
 
 const version = moment.now().toString()
@@ -50,9 +49,6 @@ export default function createApp(services: Services): Express {
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
-
-  // View Engine Configuration
-  app.set('view engine', 'html')
 
   setUpEnvironmentName(app)
 
@@ -108,7 +104,7 @@ export default function createApp(services: Services): Express {
           fontSrc,
         },
       },
-    })
+    }),
   )
 
   app.use((req, res, next) => {
@@ -134,14 +130,14 @@ export default function createApp(services: Services): Express {
       resave: false, // redis implements touch so shouldn't need this
       saveUninitialized: false,
       rolling: true,
-    })
+    }),
   )
 
   app.use(
     asyncMiddleware((req, res, next) => {
       req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
       next()
-    })
+    }),
   )
 
   app.use(passport.initialize())
@@ -166,30 +162,12 @@ export default function createApp(services: Services): Express {
     })
   }
 
-  //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
-
-  ;[
-    '/assets',
-    '/assets/stylesheets',
-    '/assets/js',
-    `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
-    `/node_modules/@ministryofjustice/frontend/`,
-  ].forEach(dir => {
-    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-  app.use('/favicon.ico', express.static(path.join(process.cwd(), `/assets/images/favicon.ico`), cacheControl))
-
-  app.use(
-    '/assets/images/icons',
-    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
-  )
+  app.use(setUpStaticResources())
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
     config.apis.prison.url,
-    config.apis.tokenVerification.url
+    config.apis.tokenVerification.url,
   )
 
   // Express Routing Configuration
@@ -243,7 +221,7 @@ export default function createApp(services: Services): Express {
           logger.info(
             `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
               newToken.refreshTime
-            }`
+            }`,
           )
           req.user.refreshTime = newToken.refreshTime
         } catch (error) {
@@ -279,8 +257,8 @@ export default function createApp(services: Services): Express {
       passport.authenticate('oauth2', {
         successReturnToOrRedirect: req.session.returnTo || '/',
         failureRedirect: '/autherror',
-      })(req, res, next)
-    )
+      })(req, res, next),
+    ),
   )
 
   app.use(
@@ -290,7 +268,7 @@ export default function createApp(services: Services): Express {
         req.logout(() => req.session.destroy())
       }
       res.redirect(authLogoutUrl)
-    })
+    }),
   )
 
   app.use(populateCurrentUser(services.userService))

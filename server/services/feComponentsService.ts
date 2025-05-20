@@ -6,7 +6,7 @@ export default class FeComponentsService {
 
   async getFeComponents<T extends AvailableComponent[]>(
     components: T,
-    token: string
+    token: string,
   ): Promise<Record<T[number], Component>> {
     const feComponentsClient = this.feComponentsClientBuilder(token)
     const allComponents = await feComponentsClient.getComponents(components, token)

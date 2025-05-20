@@ -1,6 +1,5 @@
-import * as R from 'ramda'
+import { equals } from 'ramda'
 import type { LoggedInUser, SystemToken } from '../../types/uof'
-
 import logger from '../../../log'
 import type { PrisonClient, RestClientBuilder, DraftReportClient, IncidentClient } from '../../data'
 import ReportLogClient from '../../data/reportLogClient'
@@ -13,7 +12,7 @@ export default class UpdateDraftReportService {
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
     private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   public async process(
@@ -21,7 +20,7 @@ export default class UpdateDraftReportService {
     bookingId: number,
     formName: string,
     updatedSection: unknown,
-    incidentDate?: Date | null
+    incidentDate?: Date | null,
   ): Promise<void> {
     const { id: formId, form: existingReport = {} } = await this.draftReportClient.get(currentUser.username, bookingId)
 
@@ -38,14 +37,14 @@ export default class UpdateDraftReportService {
   private getUpdatedReport(
     existingReport: Record<string, unknown>,
     formName: string,
-    updatedSection
+    updatedSection,
   ): Record<string, unknown> | false {
     const updatedFormObject = {
       ...existingReport,
       [formName]: updatedSection,
     }
 
-    const payloadChanged = !R.equals(existingReport, updatedFormObject)
+    const payloadChanged = !equals(existingReport, updatedFormObject)
     return payloadChanged ? updatedFormObject : false
   }
 
@@ -54,7 +53,7 @@ export default class UpdateDraftReportService {
     bookingId: number,
     currentUser: LoggedInUser,
     incidentDateValue,
-    formValue
+    formValue,
   ): Promise<void> {
     const { username } = currentUser
     if (incidentDateValue || formValue) {

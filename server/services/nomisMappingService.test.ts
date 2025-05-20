@@ -28,7 +28,7 @@ describe('nomisMappingService', () => {
     it('should call api client with correct details', async () => {
       const result = await nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
         token,
-        nomisLocationId
+        nomisLocationId,
       )
 
       expect(result).toEqual(locationMappingDetail)
@@ -39,7 +39,7 @@ describe('nomisMappingService', () => {
   it('should return correct location details', async () => {
     const result = await nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
       token,
-      nomisLocationId
+      nomisLocationId,
     )
 
     expect(result).toEqual(locationMappingDetail)

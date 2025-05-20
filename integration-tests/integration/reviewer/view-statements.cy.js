@@ -66,7 +66,7 @@ context('view statements page', () => {
             isUnverified: true,
           },
           { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        ])
+        ]),
       )
 
       viewStatementsPage.return().click()
@@ -121,7 +121,7 @@ context('view statements page', () => {
           isUnverified: true,
         },
         { username: 'TEST_USER name', badge: 'OVERDUE', link: '', isOverdue: true, isUnverified: false },
-      ])
+      ]),
     )
 
     viewStatementsPage.return().click()

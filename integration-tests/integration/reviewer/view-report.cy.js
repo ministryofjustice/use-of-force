@@ -52,7 +52,7 @@ context('view review page', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      })
+      }),
     )
 
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()

@@ -22,10 +22,9 @@ pool.on('error', error => {
   logger.error('Unexpected error on idle client', error)
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QueryPerformer = <R extends QueryResultRow = any, I extends any[] = any[]>(
   queryTextOrConfig: string | QueryConfig<I>,
-  values?: I
+  values?: I,
 ) => Promise<QueryResult<R>>
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -12,7 +12,6 @@ export interface ReportDetail {
   reporterName: string
   submittedDate: Date
   bookingId: number
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [reportSummaryKeys: string]: any
 }
 
@@ -22,7 +21,7 @@ export default class ReportDataBuilder {
     private readonly locationService: LocationService,
     private readonly offenderService: OffenderService,
     private readonly nomisMappingService: NomisMappingService,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   private format(reportId, reporterUsername) {
@@ -43,7 +42,7 @@ export default class ReportDataBuilder {
     // if the report only contains the original locationId, use it to get the new associate dpsLocationId
     const { dpsLocationId } = await this.nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId(
       token,
-      incidentDetails.locationId
+      incidentDetails.locationId,
     )
     return dpsLocationId
 

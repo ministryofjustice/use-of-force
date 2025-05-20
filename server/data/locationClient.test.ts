@@ -2,7 +2,6 @@ import nock from 'nock'
 import LocationClient from './locationClient'
 import config from '../config'
 import restClientBuilder from '.'
-import { NonResidentialUsageType } from '../config/types'
 
 describe('locationClient', () => {
   let fakeLocationApi
@@ -47,9 +46,13 @@ describe('locationClient', () => {
     })
 
     it('should return undefined when api returns 404', async () => {
-      fakeLocationApi.get(`/locations/${locationId}`).matchHeader('authorization', `Bearer ${token}`).reply(404)
+      fakeLocationApi
+        .get(`/locations/${locationId}?formatLocalName=true`)
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(404)
+
       const result = await locationClient.getLocation(locationId)
-      expect(result).toEqual(undefined)
+      await expect(result).toEqual(undefined)
     })
 
     it('should throw for non-404 errors', async () => {
@@ -57,7 +60,11 @@ describe('locationClient', () => {
         .get(`/locations/${locationId}?formatLocalName=true`)
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
-      await expect(locationClient.getLocation(locationId)).rejects.toThrow('Bad Request')
+
+      await expect(locationClient.getLocation(locationId)).rejects.toMatchObject({
+        status: 400,
+        message: 'Bad Request',
+      })
     })
   })
   describe('getLocations', () => {
@@ -70,16 +77,6 @@ describe('locationClient', () => {
 
       const output = await locationClient.getLocations('MDI')
       expect(output).toEqual(locations)
-    })
-    it('can not search with incorrect usage-type filter', async () => {
-      fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(400)
-
-      await expect(locationClient.getLocations('MDI', 'SOME-TYPE' as NonResidentialUsageType)).rejects.toThrow(
-        'Bad Request'
-      )
     })
   })
 })

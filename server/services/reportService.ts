@@ -1,6 +1,5 @@
-import R from 'ramda'
+import { equals } from 'ramda'
 import { IncidentClient } from '../data'
-
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
@@ -8,7 +7,6 @@ import LocationService from './locationService'
 import ReportLogClient from '../data/reportLogClient'
 import { InTransaction } from '../data/dataAccess/db'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
-
 import type { LoggedInUser, SystemToken } from '../types/uof'
 
 interface NamesByOffenderNumber {
@@ -46,7 +44,7 @@ export default class ReportService {
     private readonly locationService: LocationService,
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
-    private readonly systemToken: SystemToken
+    private readonly systemToken: SystemToken,
   ) {}
 
   private async getOffenderNames(username, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
@@ -93,14 +91,14 @@ export default class ReportService {
   private getUpdatedReport(
     existingReport: Record<string, unknown>,
     formName: string,
-    updatedSection
+    updatedSection,
   ): Record<string, unknown> | false {
     const updatedFormObject = {
       ...existingReport,
       [formName]: updatedSection,
     }
 
-    const payloadChanged = !R.equals(existingReport, updatedFormObject)
+    const payloadChanged = !equals(existingReport, updatedFormObject)
     return payloadChanged ? updatedFormObject : false
   }
 
@@ -109,7 +107,7 @@ export default class ReportService {
     reportId: number,
     formName: string,
     updatedSection: unknown,
-    incidentDate?: Date | null
+    incidentDate?: Date | null,
   ): Promise<void> {
     const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
 

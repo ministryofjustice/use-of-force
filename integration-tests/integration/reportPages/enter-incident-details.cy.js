@@ -70,7 +70,7 @@ context('Submitting incident details page', () => {
           authorisedBy: 'Eric Bloodaxe',
           witnesses: [{ name: 'jimmy-ray' }],
         })
-      }
+      },
     )
   })
 

@@ -1,0 +1,76 @@
+{% extends "govuk/template.njk" %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageTitle = pageTitle | default('GOV.UK - Use of force') %}
+
+{% block pageTitle %}
+  {{ pageTitle }}
+{% endblock %}
+
+{% block headIcons %}
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/assets/images/favicon.ico" type="image/x-icon" />
+{% endblock %}
+
+{% block head %}
+{% include "../tagManager/headContent.njk" %}
+
+<!--[if !IE 8]><!-->
+<link href="{{ '/assets/css/app.css' | assetMap }}" rel="stylesheet"/>
+<!--<![endif]-->
+
+<!--[if lt IE 9]>
+<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+  <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
+<![endif]-->	
+
+{% if feComponents.jsIncludes %}
+    {% for js in feComponents.jsIncludes %}
+      <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+    {% endfor %}
+{% endif %}
+
+{% if feComponents.cssIncludes %}
+  {% for css in feComponents.cssIncludes %}
+    <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
+  {% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block header %}
+  {% if feComponents.header %}
+    {{ feComponents.header | safe }}
+  {% else %}
+    {% include "./header.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block bodyStart %}
+  {% include "../tagManager/bodyContent.njk" %}
+{% endblock %}
+
+{% block bodyEnd %}
+{# Run JavaScript at end of the
+<body>, to avoid blocking the initial render. #}
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+<link href = "https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+
+<script type="module" src="{{ '/assets/js/app.js' | assetMap }}"></script>
+
+  {% block script %}
+  {% endblock %}
+
+{% endblock %}
+
+{% block footer %}
+  {% if feComponents.footer %}
+    {{ feComponents.footer | safe }}
+  {% else %}
+    {% include "./footer.njk" %}
+  {% endif %}
+{% endblock %}

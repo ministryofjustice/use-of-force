@@ -14,7 +14,7 @@ let app
 beforeEach(() => {
   statementService.validateSavedStatement.mockResolvedValue([])
   statementService.getStatements.mockResolvedValue(
-    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 }, [])
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 1, totalPages: 1 }, []),
   )
   const date = new Date('2019-03-05 01:03:28.000')
   statementService.getStatementForUser.mockResolvedValue({

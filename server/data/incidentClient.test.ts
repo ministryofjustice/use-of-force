@@ -132,7 +132,7 @@ test('getCompletedReportsForReviewer', async () => {
       dateFrom: moment('2020-01-29'),
       dateTo: moment('2020-01-30'),
     },
-    1
+    1,
   )
 
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))

@@ -29,7 +29,7 @@ type RestClientBuilder<T> = (token: string) => T
 export default function restClientBuilder<T>(
   name: string,
   options: ClientOptions,
-  constructor: new (client: RestClient) => T
+  constructor: new (client: RestClient) => T,
 ): RestClientBuilder<T> {
   const restClient = createRestClientBuilder(name, options)
   return token => new constructor(restClient(token))
@@ -48,12 +48,12 @@ export const dataAccess = {
   nomisMappingClientBuilder: restClientBuilder<NomisMappingClient>(
     'nomisMappingApi',
     config.apis.nomisMapping,
-    NomisMappingClient
+    NomisMappingClient,
   ),
   feComponentsClientBuilder: restClientBuilder<FeComponentsClient>(
     'feComponentApi',
     config.apis.frontendComponents,
-    FeComponentsClient
+    FeComponentsClient,
   ),
   prisonerSearchClientBuilder: restClientBuilder('prisonerSearchApi', config.apis.prisonerSearch, PrisonerSearchClient),
 }

@@ -1,3 +1,4 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
  {% macro sectionHeading(obj) %}
  <h2 class="govuk-heading-l govuk-!-margin-bottom-1 govuk-!-margin-top-7">
@@ -16,7 +17,7 @@
 <dl class="govuk-summary-list govuk-!-margin-0">  
   <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
     <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %} flex-basis-50"> {{dataItem.label}} </dt>
-    <dd class="govuk-summary-list__value  {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
+    <dd class="govuk-summary-list__value width-half {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
         &ndash;
       {% elif dataItem.dataValue | isArray and dataItem.type === 'itemPerLine' %}

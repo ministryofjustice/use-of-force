@@ -1,5 +1,5 @@
+import { range } from 'ramda'
 import moment from 'moment'
-import * as R from 'ramda'
 import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import type { PrisonerDetail } from '../../../data/prisonClientTypes'
 
@@ -65,7 +65,7 @@ describe('incidentsByAgeAggregator', () => {
     })
 
     it('Correctly assigns ages to groups', () => {
-      expect(groupAges(R.range(0, 100))).toEqual({
+      expect(groupAges(range(0, 100))).toEqual({
         '18-20': 3,
         '21-24': 4,
         '25-29': 5,
@@ -101,8 +101,8 @@ describe('incidentsByAgeAggregator', () => {
               incidentDate: new Date('December 17, 1995 03:24:00'),
             },
           ],
-          []
-        )
+          [],
+        ),
       ).toEqual({
         ...defaultValues,
         UNKNOWN: 1,
@@ -118,8 +118,8 @@ describe('incidentsByAgeAggregator', () => {
               incidentDate: new Date('April 17, 2019 03:24:00'),
             },
           ],
-          [{ offenderNo: 'ABC', dateOfBirth: '1981-03-24' }] as PrisonerDetail[]
-        )
+          [{ offenderNo: 'ABC', dateOfBirth: '1981-03-24' }] as PrisonerDetail[],
+        ),
       ).toEqual({ ...defaultValues, '30-39': 1 })
     })
 
@@ -132,8 +132,8 @@ describe('incidentsByAgeAggregator', () => {
               incidentDate: new Date('April 17, 2019 03:24:00'),
             },
           ],
-          [{ offenderNo: 'ABC' }] as PrisonerDetail[]
-        )
+          [{ offenderNo: 'ABC' }] as PrisonerDetail[],
+        ),
       ).toEqual({ ...defaultValues, UNKNOWN: 1 })
     })
   })

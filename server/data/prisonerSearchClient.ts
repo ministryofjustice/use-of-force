@@ -10,7 +10,6 @@ export type SearchForm = {
 export default class PrisonerSearchClient {
   constructor(private readonly restClient: RestClient) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async search(form: SearchForm): Promise<any> {
     return this.restClient.post({
       path: `/prisoner-search/match`,

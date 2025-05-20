@@ -90,7 +90,7 @@ context('A reporter views their report list', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const yourReportsPage = YourReportsPage.goTo()
@@ -106,7 +106,7 @@ context('A reporter views their report list', () => {
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=4', text: '4', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
     yourReportsPage.clickLinkWithText('Next page')
     yourReportsPage.pageLinks().then(pageLinks =>
@@ -117,7 +117,7 @@ context('A reporter views their report list', () => {
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=4', text: '4', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     yourReportsPage.clickLinkWithText('4')
@@ -128,7 +128,7 @@ context('A reporter views their report list', () => {
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
         { href: undefined, text: '4', selected: true },
-      ])
+      ]),
     )
 
     yourReportsPage.clickLinkWithText('Previous page')
@@ -140,7 +140,7 @@ context('A reporter views their report list', () => {
         { href: undefined, text: '3', selected: true },
         { href: '?page=4', text: '4', selected: false },
         { href: '?page=4', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 })

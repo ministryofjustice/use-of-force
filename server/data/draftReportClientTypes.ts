@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NoDraftReport = Record<string, any>
 
 export interface DraftReport {

@@ -17,7 +17,10 @@ export type HasTotalCount<T> = T & {
 }
 
 export class PageResponse<T> {
-  constructor(public readonly metaData: PageMetaData, public readonly items: T[]) {}
+  constructor(
+    public readonly metaData: PageMetaData,
+    public readonly items: T[],
+  ) {}
 
   map<R>(f: (t: T) => R): PageResponse<R> {
     return new PageResponse(this.metaData, this.items.map(f))
@@ -39,7 +42,7 @@ export function offsetAndLimitForPage(page: number, pageSize: number = PAGE_SIZE
 export function buildPageResponse<T>(
   results: HasTotalCount<T>[],
   page: number,
-  pageSize: number = PAGE_SIZE
+  pageSize: number = PAGE_SIZE,
 ): PageResponse<T> {
   assert(!results[0] || results[0].totalCount, 'Result set does not define a total count')
   const items = results.map(({ totalCount, ...rest }) => rest as T)

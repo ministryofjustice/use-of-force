@@ -43,7 +43,7 @@ export default class SearchForPrisonerRoutes {
           ...(lastName && { lastName }),
           ...(agencyId && { agencyId }),
         },
-      })
+      }),
     )
   }
 }

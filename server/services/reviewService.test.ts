@@ -26,7 +26,7 @@ describe('reviewService', () => {
       incidentClient,
       authClientBuilder,
       offenderService,
-      async username => `${username}-system-token`
+      async username => `${username}-system-token`,
     )
   })
 
@@ -164,7 +164,7 @@ describe('reviewService', () => {
         new PageResponse({ min: 1, max: 2, page: 1, totalCount: 2, totalPages: 1 }, [
           reportSummary(1),
           reportSummary(2),
-        ])
+        ]),
       )
       offenderService.getOffenderNames.mockResolvedValue({
         'offender-1': 'Prisoner prisoner-1',
@@ -176,7 +176,7 @@ describe('reviewService', () => {
         new PageResponse({ min: 1, max: 2, page: 1, totalCount: 2, totalPages: 1 }, [
           incidentSummary(1),
           incidentSummary(2),
-        ])
+        ]),
       )
       expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query, 1)
       expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
@@ -196,8 +196,8 @@ describe('reviewService', () => {
       expect(result).toEqual(
         new PageResponse(
           { min: 1, max: 1, page: 1, totalCount: 1, totalPages: 1, nextPage: null, previousPage: null },
-          [incidentSummary(2)]
-        )
+          [incidentSummary(2)],
+        ),
       )
       expect(incidentClient.getAllCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
       expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])

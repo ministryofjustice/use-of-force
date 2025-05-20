@@ -20,7 +20,7 @@ import EventPublisher from './eventPublisher'
 import * as db from '../data/dataAccess/db'
 import createSignInService from '../authentication/signInService'
 
-import { notificationServiceFactory } from './notificationService'
+import notificationServiceDefault from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 import FeComponentsService from './feComponentsService'
 
@@ -41,13 +41,13 @@ const {
 
 const eventPublisher = EventPublisher(telemetryClient)
 const userService = new UserService(prisonClientBuilder, authClientBuilder)
-const notificationService = notificationServiceFactory(eventPublisher)
+const notificationService = notificationServiceDefault.notificationServiceFactory(eventPublisher)
 const involvedStaffService = new InvolvedStaffService(
   incidentClient,
   statementsClient,
   userService,
   db.inTransaction,
-  notificationService
+  notificationService,
 )
 const offenderService = new OffenderService(prisonClientBuilder)
 const locationService = new LocationService(prisonClientBuilder, locationClientBuilder)
@@ -58,14 +58,14 @@ const reportService = new ReportService(
   locationService,
   reportLogClient,
   db.inTransaction,
-  systemToken
+  systemToken,
 )
 
 const submitDraftReportService = new SubmitDraftReportService(
   draftReportClient,
   statementsClient,
   notificationService,
-  db.inTransaction
+  db.inTransaction,
 )
 
 const updateDraftReportService = new UpdateDraftReportService(
@@ -74,13 +74,13 @@ const updateDraftReportService = new UpdateDraftReportService(
   reportLogClient,
   db.inTransaction,
   prisonClientBuilder,
-  systemToken
+  systemToken,
 )
 const draftInvolvedStaffService = new DraftInvolvedStaffService(
   authClientBuilder,
   prisonClientBuilder,
   draftReportClient,
-  userService
+  userService,
 )
 
 const draftReportService = new DraftReportService(
@@ -90,7 +90,7 @@ const draftReportService = new DraftReportService(
   submitDraftReportService,
   userService,
   locationService,
-  systemToken
+  systemToken,
 )
 
 const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
@@ -99,7 +99,7 @@ const reviewService = new ReviewService(
   incidentClient,
   authClientBuilder,
   offenderService,
-  systemToken
+  systemToken,
 )
 const prisonerSearchService = new PrisonerSearchService(prisonerSearchClientBuilder, prisonClientBuilder, systemToken)
 const reportDetailBuilder = new ReportDetailBuilder(
@@ -107,7 +107,7 @@ const reportDetailBuilder = new ReportDetailBuilder(
   locationService,
   offenderService,
   nomisMappingService,
-  systemToken
+  systemToken,
 )
 const feComponentsService = new FeComponentsService(feComponentsClientBuilder)
 

@@ -125,7 +125,7 @@ context('Submit statement', () => {
           name: 'TEST_USER name',
           reporterName: 'James Stuart',
         })
-      })
+      }),
     )
   })
 
