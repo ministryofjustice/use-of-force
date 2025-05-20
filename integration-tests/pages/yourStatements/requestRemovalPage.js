@@ -8,7 +8,7 @@ const requestRemovalPage = () =>
     reason: () => cy.get('[name=reason]'),
     inlineError: () => cy.get('.govuk-error-message'),
 
-    errorSummaryTitle: () => cy.get('#error-summary-title'),
+    errorSummaryTitle: () => cy.get('.govuk-error-summary__title'),
     errorSummaryBody: () => cy.get('.govuk-error-summary__body'),
 
     requestToBeRemoved: () => cy.get('[data-qa=submit]'),

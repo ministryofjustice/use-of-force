@@ -16,7 +16,6 @@ import { createRedisClient } from './data/redisClient'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
-import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
@@ -72,7 +71,7 @@ export default function createApp(services: Services): Express {
   const scriptSrc = [
     "'self'",
     'code.jquery.com',
-    "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+    "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='",
     (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
   ]
   const styleSrc = ["'self'", 'code.jquery.com', (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`]
@@ -171,11 +170,12 @@ export default function createApp(services: Services): Express {
 
   ;[
     '/assets',
-    '/assets/stylesheets',
+    '/assets/stylesheets/',
     '/assets/js',
-    `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
-    `/node_modules/@ministryofjustice/frontend/`,
+    '/node_modules/govuk-frontend/dist/govuk/assets',
+    '/node_modules/govuk-frontend/dist',
+    '/node_modules/@ministryofjustice/frontend/moj/assets',
+    '/node_modules/@ministryofjustice/frontend',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
