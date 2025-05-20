@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { toPairs, fromPairs, pipe, chain, map } from 'ramda'
 import { PrisonerDetail } from '../../../data/prisonClientTypes'
-
-const R = require('ramda')
 
 export interface Groups {
   [group: string]: {
@@ -27,10 +25,10 @@ export interface IncidentCountByGroup {
 /**
  * Invert a Groups object to yield a map of code -> groupName as an object
  */
-export const invertGroupings: (groups: Groups) => { [code: string]: string } = R.pipe(
-  R.toPairs,
-  R.chain(([groupName, { codes }]) => (codes ? codes.map(code => [code, groupName]) : [])),
-  R.fromPairs,
+export const invertGroupings: (groups: Groups) => { [code: string]: string } = pipe(
+  toPairs,
+  chain(([groupName, { codes }]) => (codes ? codes.map(code => [code, groupName]) : [])),
+  fromPairs,
   Object.freeze,
 )
 
@@ -57,7 +55,7 @@ export const aggregatorFactory = (
         accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
         return accumulator
       },
-      R.map(() => 0, codesByGroup),
+      map(() => 0, codesByGroup),
     )
 }
 

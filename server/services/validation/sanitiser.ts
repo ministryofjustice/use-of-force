@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-const R = require('ramda')
+import { propOr, isNil, identity, pick, map, mapObjIndexed, unless, path } from 'ramda'
 
 const compose = (acc, fn) => x => fn(acc(x))
 
 /**
- * extract all the 'sanitiser' functions from the metas array and return their composition or R.identity when there are none.
+ * extract all the 'sanitiser' functions from the metas array and return their composition or identity when there are none.
  */
 const getSanitiser = description => {
-  const metas = R.propOr([], 'metas', description)
-  const sanitisers = metas.map(m => m.sanitiser).filter(s => !R.isNil(s))
-  return sanitisers.length === 1 ? sanitisers[0] : sanitisers.reduce(compose, R.identity)
+  const metas = propOr([], 'metas', description)
+  const sanitisers = metas.map(m => m.sanitiser).filter(s => !isNil(s))
+  return sanitisers.length === 1 ? sanitisers[0] : sanitisers.reduce(compose, identity)
 }
 
 const simplifyDescription = description => {
@@ -26,7 +25,7 @@ const simplifyDescription = description => {
 const simplifyPrimitiveDescription = description => ({ type: 'primitive', sanitiser: getSanitiser(description) })
 
 const simplifyOtherDescription = description => {
-  const then = R.path(['whens', 0, 'then'], description)
+  const then = path(['whens', 0, 'then'], description)
   if (then) {
     return simplifyDescription(then)
   }
@@ -36,31 +35,31 @@ const simplifyOtherDescription = description => {
 const simplifyObjectDescription = description => ({
   type: 'object',
   sanitiser: getSanitiser(description),
-  keys: R.map(simplifyDescription, R.propOr({}, 'keys', description)),
+  keys: map(simplifyDescription, propOr({}, 'keys', description)),
 })
 
 const simplifyArrayDescription = description => ({
   type: 'array',
   sanitiser: getSanitiser(description),
-  items: R.map(simplifyDescription, R.propOr([], 'items', description)),
+  items: map(simplifyDescription, propOr([], 'items', description)),
 })
 
 const objectSanitiser =
   ({ keys, sanitiser }) =>
   object => {
-    const filteredKeys = R.pick(Object.keys(object), keys)
-    const sanitisers = R.map(sanitiserFor, filteredKeys)
-    return sanitiser(R.mapObjIndexed((s, key) => s(object[key]), sanitisers))
+    const filteredKeys = pick(Object.keys(object), keys)
+    const sanitisers = map(sanitiserFor, filteredKeys)
+    return sanitiser(mapObjIndexed((s, key) => s(object[key]), sanitisers))
   }
 
-const nilSafeObjectSanitiser = description => R.unless(R.isNil, objectSanitiser(description))
+const nilSafeObjectSanitiser = description => unless(isNil, objectSanitiser(description))
 
 const arraySanitiser =
   ({ sanitiser, items }) =>
   array =>
     sanitiser(array.map(sanitiserFor(items[0])))
 
-const nilSafeArraySanitiser = description => R.unless(R.isNil, arraySanitiser(description))
+const nilSafeArraySanitiser = description => unless(isNil, arraySanitiser(description))
 /**
  * Take a description and return a function that sanitises
  * objects using sanitisers attached to the schema as meta-data.

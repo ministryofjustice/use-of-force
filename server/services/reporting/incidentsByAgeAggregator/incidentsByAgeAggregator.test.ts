@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { range } from 'ramda'
 import moment from 'moment'
 import { buildIncidentToOffenderAge, groupAges, aggregateIncidentsByAgeGroup } from './incidentsByAgeAggregator'
 import type { PrisonerDetail } from '../../../data/prisonClientTypes'
-
-const R = require('ramda')
 
 describe('incidentsByAgeAggregator', () => {
   const defaultValues = {
@@ -67,7 +65,7 @@ describe('incidentsByAgeAggregator', () => {
     })
 
     it('Correctly assigns ages to groups', () => {
-      expect(groupAges(R.range(0, 100))).toEqual({
+      expect(groupAges(range(0, 100))).toEqual({
         '18-20': 3,
         '21-24': 4,
         '25-29': 5,

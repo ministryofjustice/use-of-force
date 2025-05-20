@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { propOr, map, mergeAll, filter, equals, assocPath, toPairs } from 'ramda'
 import { isNilOrEmpty } from '../../utils/utils'
 
-const R = require('ramda')
-
 const extractPropertyNamesForFieldType = (fieldTypeValue, description) => {
-  const keys = R.propOr({}, 'keys', description)
-  const descriptionsHavingFieldTypeMetas = R.map(d => R.mergeAll(d.metas).fieldType, keys)
-  const descriptionsHavingNamedFieldType = R.filter(R.equals(fieldTypeValue), descriptionsHavingFieldTypeMetas)
+  const keys = propOr({}, 'keys', description)
+  const descriptionsHavingFieldTypeMetas = map(d => mergeAll(d.metas).fieldType, keys)
+  const descriptionsHavingNamedFieldType = filter(equals(fieldTypeValue), descriptionsHavingFieldTypeMetas)
   return Object.keys(descriptionsHavingNamedFieldType)
 }
 
@@ -15,12 +13,12 @@ const buildReduceFn =
   keysToSplitOn =>
   (acc, [key, value]) => {
     const fieldSetKey = keysToSplitOn.includes(key) ? 'extractedFields' : 'payloadFields'
-    return isNilOrEmpty(value) ? acc : R.assocPath([fieldSetKey, key], value, acc)
+    return isNilOrEmpty(value) ? acc : assocPath([fieldSetKey, key], value, acc)
   }
 
 // ((accumulator, [key, value]) -> accumulator) -> input -> splitInput
 const buildWithReduceFn = reduceFn => input => {
-  const pairs = R.toPairs(input)
+  const pairs = toPairs(input)
   return pairs.reduce(reduceFn, { payloadFields: {}, extractedFields: {} })
 }
 /**

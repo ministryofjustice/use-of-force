@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-const R = require('ramda')
+import { pipe, prop, propOr, reject, isNil, map, mergeAll } from 'ramda'
 
 // array -> string
 const hrefFromPath = path => {
@@ -29,10 +28,10 @@ const detailAdapterBuilder = firstFieldNameMap => {
  * @param description A Joi schema description.
  * @return An object, where the keys are field names and the values are 'firstFieldName' metadata values
  */
-export const extractFirstFieldNameMap = R.pipe(
-  R.propOr({}, 'keys'),
-  R.map(R.pipe(R.prop('metas'), R.mergeAll, R.prop('firstFieldName'))),
-  R.reject(R.isNil),
+export const extractFirstFieldNameMap = pipe(
+  propOr({}, 'keys'),
+  map(pipe(prop('metas'), mergeAll, prop('firstFieldName'))),
+  reject(isNil),
 )
 
 /**
@@ -43,4 +42,4 @@ export const extractFirstFieldNameMap = R.pipe(
  * where 'text' is detail.message and href is an HTTP tag locator.
  * @type {Function|*}
  */
-export const buildErrorDetailAdapter = R.pipe(extractFirstFieldNameMap, detailAdapterBuilder)
+export const buildErrorDetailAdapter = pipe(extractFirstFieldNameMap, detailAdapterBuilder)

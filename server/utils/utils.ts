@@ -1,16 +1,13 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { head, either, path, pipe, values, isEmpty, isNil, keys } from 'ramda'
 import moment, { Moment } from 'moment'
 
-const R = require('ramda')
-
-export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
-export const { equals } = R
-export const firstItem = R.head
+export const isNilOrEmpty = either(isEmpty, isNil)
+export const firstItem = head
 
 export const getFieldDetail = (fieldPath: string, fieldConfig: string): string =>
-  R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
+  pipe(values, head, path(fieldPath))(fieldConfig)
 
-export const getFieldName = R.pipe(R.keys, R.head)
+export const getFieldName = pipe(keys, head)
 
 export const properCase = (word: string): string =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word

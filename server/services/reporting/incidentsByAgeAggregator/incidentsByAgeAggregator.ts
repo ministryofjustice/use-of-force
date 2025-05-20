@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-
+import { range, map } from 'ramda'
 import moment from 'moment'
 import {
   buildCsvRendererConfiguration,
@@ -9,8 +8,6 @@ import {
 } from '../incidentCountAggregator/aggregatorFunctions'
 import { OffenderNoWithIncidentDate } from '../../../types/uof'
 import { PrisonerDetail } from '../../../data/prisonClientTypes'
-
-const R = require('ramda')
 
 /**
  * Given a set of PrisonerDetail return a function that maps an OffenderNoWithDate to the age of the offender, in years,
@@ -23,7 +20,7 @@ export const buildIncidentToOffenderAge = (
   prisonersDetails: Array<PrisonerDetail>,
 ): ((onwid: OffenderNoWithIncidentDate) => number) => {
   const prisonerDetailMap = prisonersDetails.reduce(
-    (map, prisonerDetail) => map.set(prisonerDetail.offenderNo, prisonerDetail),
+    (acc, prisonerDetail) => acc.set(prisonerDetail.offenderNo, prisonerDetail),
     new Map<string, PrisonerDetail>(),
   )
 
@@ -39,22 +36,22 @@ export const buildIncidentToOffenderAge = (
 }
 
 const ageGroups: DescribedGroups = {
-  '18-20': { codes: R.range(18, 21), description: '18 - 20' },
-  '21-24': { codes: R.range(21, 25), description: '21 - 24' },
-  '25-29': { codes: R.range(25, 30), description: '25 - 29' },
-  '30-39': { codes: R.range(30, 40), description: '30 - 39' },
-  '40-49': { codes: R.range(40, 50), description: '40 - 49' },
-  '50-59': { codes: R.range(50, 60), description: '50 - 59' },
-  '60-69': { codes: R.range(60, 70), description: '60 - 69' },
-  '70-79': { codes: R.range(70, 80), description: '70 - 79' },
-  '80+': { codes: R.range(80, 130), description: '80+' },
+  '18-20': { codes: range(18, 21), description: '18 - 20' },
+  '21-24': { codes: range(21, 25), description: '21 - 24' },
+  '25-29': { codes: range(25, 30), description: '25 - 29' },
+  '30-39': { codes: range(30, 40), description: '30 - 39' },
+  '40-49': { codes: range(40, 50), description: '40 - 49' },
+  '50-59': { codes: range(50, 60), description: '50 - 59' },
+  '60-69': { codes: range(60, 70), description: '60 - 69' },
+  '70-79': { codes: range(70, 80), description: '70 - 79' },
+  '80+': { codes: range(80, 130), description: '80+' },
   UNKNOWN: { description: 'Unknown' },
 }
 
 const ageGroupsByAge = invertGroupings(ageGroups)
 
 export const groupAges = (ages: number[]): IncidentCountByGroup => {
-  const incidentCountsByAgeGroup = R.map(() => 0, ageGroups)
+  const incidentCountsByAgeGroup = map(() => 0, ageGroups)
 
   const assignToGroup = age => {
     const ageGroup = ageGroupsByAge[age] || 'UNKNOWN'

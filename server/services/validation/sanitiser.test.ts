@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { identity, isNil, assoc, append } from 'ramda'
 import joi from '@hapi/joi'
 import sanitisersDefault from '../../config/forms/sanitisers'
 import sanitiserDefault from './sanitiser'
@@ -7,8 +7,6 @@ import incidentDetailsForm from '../../config/forms/incidentDetailsForm'
 import relocationAndInjuriesForm from '../../config/forms/relocationAndInjuriesForm'
 import statementForm from '../../config/forms/statementForm'
 import useOfForceDetailsForm from '../../config/forms/useOfForceDetailsForm'
-
-const R = require('ramda')
 
 const { trimmedString, toBoolean, toInteger, toSmallInt } = sanitisersDefault
 const { simplifyDescription, buildSanitiser, getSanitiser } = sanitiserDefault
@@ -51,9 +49,9 @@ describe('using meta to specify sanitisers', () => {
         c: joi.boolean().meta({ sanitiser: toBoolean }),
         d: joi
           .array()
-          .meta({ sanitiser: R.identity })
+          .meta({ sanitiser: identity })
           .items(joi.string().meta({ sanitiser: trimmedString })),
-        e: joi.valid(1, 'a').meta({ sanitiser: R.identity }),
+        e: joi.valid(1, 'a').meta({ sanitiser: identity }),
         f: joi
           .when('c', {
             is: true,
@@ -62,9 +60,9 @@ describe('using meta to specify sanitisers', () => {
             }),
             otherwise: joi.any().strip(),
           })
-          .meta({ sanitiser: R.identity }),
+          .meta({ sanitiser: identity }),
       })
-      .meta({ sanitiser: R.identity })
+      .meta({ sanitiser: identity })
 
     expect(schema.describe()).toEqual({
       keys: {
@@ -82,7 +80,7 @@ describe('using meta to specify sanitisers', () => {
         },
         d: {
           items: [{ metas: [{ sanitiser: trimmedString }], type: 'string' }],
-          metas: [{ sanitiser: R.identity }],
+          metas: [{ sanitiser: identity }],
           type: 'array',
         },
         e: {
@@ -90,13 +88,13 @@ describe('using meta to specify sanitisers', () => {
           flags: {
             only: true,
           },
-          metas: [{ sanitiser: R.identity }],
+          metas: [{ sanitiser: identity }],
           type: 'any',
         },
         f: {
           metas: [
             {
-              sanitiser: R.identity,
+              sanitiser: identity,
             },
           ],
           type: 'any',
@@ -146,7 +144,7 @@ describe('using meta to specify sanitisers', () => {
           ],
         },
       },
-      metas: [{ sanitiser: R.identity }],
+      metas: [{ sanitiser: identity }],
       type: 'object',
     })
   })
@@ -218,7 +216,7 @@ describe('simplifying descriptions', () => {
     })
   })
 
-  it('simplifes a description with no sanitisers. (All sanitisers are R.identity)', () => {
+  it('simplifes a description with no sanitisers. (All sanitisers are identity)', () => {
     const schema = joi
       .object({
         a: joi.string().required(),
@@ -241,7 +239,7 @@ describe('simplifying descriptions', () => {
     expect(simplifyDescription(schema.describe())).toEqual({
       keys: {
         a: {
-          sanitiser: R.identity,
+          sanitiser: identity,
           type: 'primitive',
         },
         b: {
@@ -249,23 +247,23 @@ describe('simplifying descriptions', () => {
             {
               keys: {
                 p: {
-                  sanitiser: R.identity,
+                  sanitiser: identity,
                   type: 'primitive',
                 },
                 q: {
-                  sanitiser: R.identity,
+                  sanitiser: identity,
                   type: 'primitive',
                 },
               },
-              sanitiser: R.identity,
+              sanitiser: identity,
               type: 'object',
             },
           ],
-          sanitiser: R.identity,
+          sanitiser: identity,
           type: 'array',
         },
       },
-      sanitiser: R.identity,
+      sanitiser: identity,
       type: 'object',
     })
   })
@@ -296,7 +294,7 @@ describe('simplifying descriptions', () => {
       keys: {
         a: {
           type: 'primitive',
-          sanitiser: R.identity,
+          sanitiser: identity,
         },
         // Substitute the 'when' branch for content...
         b: {
@@ -308,7 +306,7 @@ describe('simplifying descriptions', () => {
                   type: 'primitive',
                 },
               },
-              sanitiser: R.identity,
+              sanitiser: identity,
               type: 'object',
             },
           ],
@@ -325,7 +323,7 @@ describe('simplifying descriptions', () => {
 describe('building sanitisers', () => {
   const sanitiserFor = schema => buildSanitiser(schema.describe())
 
-  const doublerSanitiser = { sanitiser: x => (R.isNil(x) ? x : x + x) }
+  const doublerSanitiser = { sanitiser: x => (isNil(x) ? x : x + x) }
 
   describe('a sanitiser for a string (primitive)', () => {
     const sanitiser = sanitiserFor(joi.string().meta(doublerSanitiser))
@@ -336,7 +334,7 @@ describe('building sanitisers', () => {
     it('sanitises undefined', () => expect(sanitiser(undefined)).toEqual(undefined))
   })
 
-  const addTestFieldSanitiser = { sanitiser: R.assoc('test', 'test') }
+  const addTestFieldSanitiser = { sanitiser: assoc('test', 'test') }
 
   it('sanitises an object that has no properties', () => {
     const sanitiser = sanitiserFor(joi.object().meta(addTestFieldSanitiser))
@@ -356,7 +354,7 @@ describe('building sanitisers', () => {
       expect(sanitiser({ b: 1, a: '' })).toEqual({ test: 'test', a: '' }))
   })
 
-  const addTestItemSanitiser = { sanitiser: R.append('test') }
+  const addTestItemSanitiser = { sanitiser: append('test') }
 
   describe('an array sanitiser', () => {
     const sanitiser = sanitiserFor(joi.array().items(joi.string().meta(doublerSanitiser)).meta(addTestItemSanitiser))
@@ -367,7 +365,7 @@ describe('building sanitisers', () => {
     it('sanitises an absent array', () => expect(sanitiser(null)).toEqual(null))
   })
 
-  const booleanToggleSanitiser = { sanitiser: x => (R.isNil(x) ? x : !x) }
+  const booleanToggleSanitiser = { sanitiser: x => (isNil(x) ? x : !x) }
 
   describe('sanitiser for composites', () => {
     const sanitiser = sanitiserFor(

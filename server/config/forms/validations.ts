@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+import { eqBy, pipe, propOr, trim, toUpper } from 'ramda'
+import baseJoi from '@hapi/joi'
+import joiDate from '@hapi/joi-date'
 import sanitisers from './sanitisers'
 
-const R = require('ramda')
-const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
-
+const joi = baseJoi.extend(joiDate)
 const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = sanitisers
-
-const caseInsensitiveComparator = key => R.eqBy(R.pipe(R.propOr('', key), R.trim, R.toUpper))
-
+const caseInsensitiveComparator = key => eqBy(pipe(propOr('', key), trim, toUpper))
 const namePattern = /^[a-zA-Z][a-zA-Z\s\-'.]{0,48}[a-zA-Z]$/
 const usernamePattern = /^[a-zA-Z0-9_]{2,50}$/
 
