@@ -1,13 +1,14 @@
-import { head, either, path, pipe, values, isEmpty, isNil, keys } from 'ramda'
+import * as R from 'ramda'
 import moment, { Moment } from 'moment'
 
-export const isNilOrEmpty = either(isEmpty, isNil)
-export const firstItem = head
+export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
+export const { equals } = R
+export const firstItem = R.head
 
 export const getFieldDetail = (fieldPath: string, fieldConfig: string): string =>
-  pipe(values, head, path(fieldPath))(fieldConfig)
+  R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
 
-export const getFieldName = pipe(keys, head)
+export const getFieldName = R.pipe(R.keys, R.head)
 
 export const properCase = (word: string): string =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
