@@ -46,7 +46,7 @@ describe('reviewService', () => {
       { id: 1, isVerified: false },
       { id: 2, isVerified: true },
     ])
-    expect(statementsClient.getStatementsForReviewer).toBeCalledWith(1)
+    expect(statementsClient.getStatementsForReviewer).toHaveBeenCalledWith(1)
   })
 
   describe('getStatement', () => {
@@ -75,9 +75,9 @@ describe('reviewService', () => {
         ],
       })
 
-      expect(authClientBuilder).toBeCalledWith('token-1')
-      expect(authClient.getEmail).toBeCalledWith('USER_1')
-      expect(statementsClient.getStatementForReviewer).toBeCalledWith(1)
+      expect(authClientBuilder).toHaveBeenCalledWith('token-1')
+      expect(authClient.getEmail).toHaveBeenCalledWith('USER_1')
+      expect(statementsClient.getStatementForReviewer).toHaveBeenCalledWith(1)
     })
 
     test('failed as no statement', async () => {
@@ -91,8 +91,8 @@ describe('reviewService', () => {
     test('it should call query on db', async () => {
       incidentClient.getReportForReviewer.mockResolvedValue({ id: 2 } as Report)
       await service.getReport(1)
-      expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
-      expect(incidentClient.getReportForReviewer).toBeCalledWith(1)
+      expect(incidentClient.getReportForReviewer).toHaveBeenCalledTimes(1)
+      expect(incidentClient.getReportForReviewer).toHaveBeenCalledWith(1)
     })
 
     test('report not present', async () => {
@@ -132,8 +132,11 @@ describe('reviewService', () => {
 
       const result = await service.getIncompleteReports('userName', 'agency-1')
       expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      expect(incidentClient.getIncompleteReportsForReviewer).toHaveBeenCalledWith('agency-1')
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
   })
 
@@ -178,8 +181,11 @@ describe('reviewService', () => {
           incidentSummary(2),
         ])
       )
-      expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query, 1)
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      expect(incidentClient.getCompletedReportsForReviewer).toHaveBeenCalledWith('agency-1', query, 1)
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
 
     test('it can filter on prisoner name', async () => {
@@ -199,8 +205,11 @@ describe('reviewService', () => {
           [incidentSummary(2)]
         )
       )
-      expect(incidentClient.getAllCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      expect(incidentClient.getAllCompletedReportsForReviewer).toHaveBeenCalledWith('agency-1', query)
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
 
     test('escapes regex characters when filtering by prisoner name', async () => {

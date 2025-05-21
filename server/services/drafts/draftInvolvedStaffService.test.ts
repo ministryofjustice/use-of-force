@@ -38,7 +38,7 @@ describe('getInvolvedStaff', () => {
       { username: 'user-2' },
     ])
 
-    expect(userService.getUser).toBeCalledWith('token-1', 'user-1')
+    expect(userService.getUser).toHaveBeenCalledWith('token-1', 'user-1')
   })
 })
 
@@ -69,6 +69,6 @@ describe('getInvolvedStaffWithPrisons', () => {
       { username: 'user-2', prison: 'Moorland (HMP)', staffId: 2 },
     ])
 
-    expect(userService.getUser).toBeCalledWith('token-1', 'user-1')
+    expect(userService.getUser).toHaveBeenCalledWith('token-1', 'user-1')
   })
 })

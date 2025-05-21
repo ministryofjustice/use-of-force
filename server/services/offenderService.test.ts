@@ -42,7 +42,7 @@ describe('getOffenderDetails', () => {
     prisonClient.getLocations.mockReturnValue([])
     await service.getOffenderDetails(token, -5)
 
-    expect(prisonClientBuilder).toBeCalledWith(token)
+    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
   })
 })
 
@@ -52,8 +52,8 @@ describe('getOffenderImage', () => {
     prisonClient.getOffenderImage.mockReturnValue(image)
     service.getOffenderImage(token, -5)
 
-    expect(prisonClientBuilder).toBeCalledWith(token)
-    expect(prisonClient.getOffenderImage).toBeCalledWith(-5)
+    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
+    expect(prisonClient.getOffenderImage).toHaveBeenCalledWith(-5)
   })
 })
 
@@ -69,7 +69,7 @@ describe('getOffenders', () => {
     const names = await service.getOffenderNames(token, offenderNos)
 
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
-    expect(prisonClientBuilder).toBeCalledWith(token)
-    expect(prisonClient.getOffenders).toBeCalledWith(['AAA', 'BBB'])
+    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
+    expect(prisonClient.getOffenders).toHaveBeenCalledWith(['AAA', 'BBB'])
   })
 })

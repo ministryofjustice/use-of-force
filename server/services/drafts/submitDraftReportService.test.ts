@@ -39,8 +39,8 @@ describe('submit', () => {
     const result = await service.submit(currentUser, 2, staff, () => now)
 
     expect(result).toEqual(1)
-    expect(statementsClient.createStatements).toBeCalledTimes(1)
-    expect(statementsClient.createStatements).toBeCalledWith(
+    expect(statementsClient.createStatements).toHaveBeenCalledTimes(1)
+    expect(statementsClient.createStatements).toHaveBeenCalledWith(
       1,
       moment(now).add(1, 'day').toDate(),
       moment(now).add(3, 'days').toDate(),
@@ -48,8 +48,8 @@ describe('submit', () => {
       client
     )
 
-    expect(draftReportClient.submit).toBeCalledTimes(1)
-    expect(draftReportClient.submit).toBeCalledWith(1, currentUser.username, now.toDate(), client)
+    expect(draftReportClient.submit).toHaveBeenCalledTimes(1)
+    expect(draftReportClient.submit).toHaveBeenCalledWith(1, currentUser.username, now.toDate(), client)
   })
 
   test('it should send statements requests out', async () => {
@@ -72,7 +72,7 @@ describe('submit', () => {
 
     await service.submit(currentUser, 1, [user1, user2, user3], () => now)
 
-    expect(notificationService.sendStatementRequest).toBeCalledTimes(2)
+    expect(notificationService.sendStatementRequest).toHaveBeenCalledTimes(2)
     expect(notificationService.sendStatementRequest.mock.calls).toEqual([
       [
         'user1@example.com',

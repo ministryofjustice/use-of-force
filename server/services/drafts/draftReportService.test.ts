@@ -67,7 +67,7 @@ afterEach(() => {
 describe('getCurrentDraft', () => {
   test('it should call client', async () => {
     const output = await service.getCurrentDraft('user1', 1)
-    expect(draftReportClient.get).toBeCalledTimes(1)
+    expect(draftReportClient.get).toHaveBeenCalledTimes(1)
     expect(output).toEqual({ id: 1, a: 'b', incidentDate: 'today' })
   })
 })
@@ -120,7 +120,7 @@ describe('submit', () => {
 
     await service.submit(loggedInUser, 1)
 
-    expect(submitDraftReportService.submit).toBeCalledWith(loggedInUser, 1, [
+    expect(submitDraftReportService.submit).toHaveBeenCalledWith(loggedInUser, 1, [
       { username: 'user-1' },
       { username: 'user-2' },
     ])
@@ -133,7 +133,7 @@ describe('getInvolvedStaff', () => {
 
     await expect(service.getInvolvedStaff('token-1', 'user-1', 1)).resolves.toStrictEqual([{ username: 'user-2' }])
 
-    expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('token-1', 'user-1', 1)
+    expect(draftInvolvedStaffService.getInvolvedStaff).toHaveBeenCalledWith('token-1', 'user-1', 1)
   })
 
   describe('addDraftStaffByName', () => {
@@ -148,7 +148,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.MISSING
       )
 
-      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+      expect(userService.findUsers).toHaveBeenCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
     test('multiple matches when none added', async () => {
@@ -160,7 +160,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.NO_EXACT_MATCH
       )
 
-      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+      expect(userService.findUsers).toHaveBeenCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
     test('found multiple matches when all but one added', async () => {
@@ -173,7 +173,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.SUCCESS
       )
 
-      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+      expect(userService.findUsers).toHaveBeenCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
     test('found multiple matches when all added', async () => {
@@ -185,7 +185,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.ALREADY_EXISTS
       )
 
-      expect(userService.findUsers).toBeCalledWith('user-1-system-token', 'bob', 'smith')
+      expect(userService.findUsers).toHaveBeenCalledWith('user-1-system-token', 'bob', 'smith')
     })
 
     test('staff already exists', async () => {
@@ -218,7 +218,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.SUCCESS
       )
 
-      await expect(updateDraftReportService.process).toBeCalledWith(
+      await expect(updateDraftReportService.process).toHaveBeenCalledWith(
         loggedInUser,
         2,
         'involvedStaff',
@@ -235,7 +235,7 @@ describe('getInvolvedStaff', () => {
         AddStaffResult.SUCCESS
       )
 
-      await expect(updateDraftReportService.process).toBeCalledWith(
+      await expect(updateDraftReportService.process).toHaveBeenCalledWith(
         loggedInUser,
         2,
         'involvedStaff',
@@ -253,8 +253,8 @@ describe('deleteInvolvedStaff', () => {
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-2')
 
-    await expect(updateDraftReportService.process).toBeCalledWith(loggedInUser, 2, 'involvedStaff', [], undefined)
-    expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('user-1-system-token', 'user-1', 2)
+    await expect(updateDraftReportService.process).toHaveBeenCalledWith(loggedInUser, 2, 'involvedStaff', [], undefined)
+    expect(draftInvolvedStaffService.getInvolvedStaff).toHaveBeenCalledWith('user-1-system-token', 'user-1', 2)
   })
 
   test('delete staff member when multiple members', async () => {
@@ -262,14 +262,14 @@ describe('deleteInvolvedStaff', () => {
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-2')
 
-    await expect(updateDraftReportService.process).toBeCalledWith(
+    await expect(updateDraftReportService.process).toHaveBeenCalledWith(
       loggedInUser,
       2,
       'involvedStaff',
       [{ username: 'user-3' }],
       undefined
     )
-    expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('user-1-system-token', 'user-1', 2)
+    expect(draftInvolvedStaffService.getInvolvedStaff).toHaveBeenCalledWith('user-1-system-token', 'user-1', 2)
   })
 
   test('attempt to delete the reporter', async () => {
@@ -277,14 +277,14 @@ describe('deleteInvolvedStaff', () => {
 
     await service.deleteInvolvedStaff(loggedInUser, 2, 'user-1')
 
-    await expect(updateDraftReportService.process).toBeCalledWith(
+    await expect(updateDraftReportService.process).toHaveBeenCalledWith(
       loggedInUser,
       2,
       'involvedStaff',
       [{ username: 'user-2' }, { username: 'user-3' }],
       undefined
     )
-    expect(draftInvolvedStaffService.getInvolvedStaff).toBeCalledWith('user-1-system-token', 'user-1', 2)
+    expect(draftInvolvedStaffService.getInvolvedStaff).toHaveBeenCalledWith('user-1-system-token', 'user-1', 2)
   })
 })
 
@@ -296,8 +296,8 @@ describe('markInvolvedStaffComplete', () => {
 
     await service.markInvolvedStaffComplete(loggedInUser, 1)
 
-    expect(draftReportClient.get).toBeCalledWith('user-1', 1)
-    expect(updateDraftReportService.process).toBeCalledWith(loggedInUser, 1, 'involvedStaff', [], undefined)
+    expect(draftReportClient.get).toHaveBeenCalledWith('user-1', 1)
+    expect(updateDraftReportService.process).toHaveBeenCalledWith(loggedInUser, 1, 'involvedStaff', [], undefined)
   })
 
   it('Do not mark complete if staff already added', async () => {
@@ -305,8 +305,8 @@ describe('markInvolvedStaffComplete', () => {
 
     await service.markInvolvedStaffComplete(loggedInUser, 1)
 
-    expect(draftReportClient.get).toBeCalledWith('user-1', 1)
-    expect(updateDraftReportService.process).not.toBeCalled()
+    expect(draftReportClient.get).toHaveBeenCalledWith('user-1', 1)
+    expect(updateDraftReportService.process).not.toHaveBeenCalled()
   })
 })
 
@@ -322,7 +322,7 @@ describe('getPotentialDuplicates', () => {
     ]
     draftReportClient.getDuplicateReports.mockResolvedValue(dbMock)
     await service.getPotentialDuplicates(1, moment('2021-10-07'), 'USER-1')
-    await expect(draftReportClient.getDuplicateReports).toBeCalledWith(1, [
+    await expect(draftReportClient.getDuplicateReports).toHaveBeenCalledWith(1, [
       moment('2021-10-07').startOf('d'),
       moment('2021-10-07').endOf('d'),
     ])

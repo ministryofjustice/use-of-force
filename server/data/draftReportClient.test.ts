@@ -19,13 +19,13 @@ beforeEach(() => {
 describe('get', () => {
   test('it should call query on db', () => {
     draftReportClient.get('user1', 1)
-    expect(query).toBeCalledTimes(1)
+    expect(query).toHaveBeenCalledTimes(1)
   })
 
   test('it should pass om the correct sql', () => {
     draftReportClient.get('user1', -1)
 
-    expect(query).toBeCalledWith({
+    expect(query).toHaveBeenCalledWith({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
           where r.user_id = $1
           and r.booking_id = $2
@@ -50,7 +50,7 @@ test('create', async () => {
   })
 
   expect(id).toEqual(id)
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `insert into report (form_response, user_id, reporter_name, offender_no, booking_id, agency_id, status, incident_date, sequence_no, created_date)
               values ($1, CAST($2 AS VARCHAR), $3, $4, $5, $6, $7, $8, (select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2), CURRENT_TIMESTAMP)
               returning id`,
@@ -70,7 +70,7 @@ test('create', async () => {
 test('updateAgencyId', () => {
   draftReportClient.updateAgencyId('agencyId', 'username', 1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_report r
                   set agency_id = COALESCE($1,   r.agency_id)
                   ,   form_response = jsonb_set(form_Response, '{incidentDetails,incidentLocationId}', 'null'::jsonb)
@@ -85,7 +85,7 @@ test('submit', async () => {
   const date = new Date()
   await draftReportClient.submit(1, 'user1', date, transactionalQuery)
 
-  expect(transactionalQuery).toBeCalledWith({
+  expect(transactionalQuery).toHaveBeenCalledWith({
     text: `update v_report r
             set status = $1
             ,   submitted_date = $2
@@ -117,7 +117,7 @@ test('getInvolvedStaff', async () => {
   const result = await draftReportClient.getInvolvedStaff('user-1', 1)
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3`,
     values: [1, 'user-1', ReportStatus.IN_PROGRESS.value],
   })
@@ -129,7 +129,7 @@ test('getDuplicateReports', () => {
 
   draftReportClient.getDuplicateReports(1, [startDate, endDate])
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.incident_date date
               ,   r.form_response -> 'incidentDetails' ->> 'incidentLocationId' "incidentLocationId"
               ,   r.reporter_name reporter
@@ -150,7 +150,7 @@ test('deleteReport', () => {
   const bookingId = 1
   draftReportClient.deleteReport(userId, bookingId, now)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_report r
               set deleted = $1 
               where r.user_id = $2

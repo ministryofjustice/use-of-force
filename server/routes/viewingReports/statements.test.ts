@@ -131,7 +131,7 @@ describe('POST /:reportId/add-comment-to-statement', () => {
       .expect(302)
       .expect('Location', '/your-statements')
       .expect(() => {
-        expect(statementService.saveAdditionalComment).toBeCalledWith(1, 'statement1')
+        expect(statementService.saveAdditionalComment).toHaveBeenCalledWith(1, 'statement1')
       }))
 })
 
