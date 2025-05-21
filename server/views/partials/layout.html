@@ -15,6 +15,7 @@
 {% include "../tagManager/headContent.html" %}
 
 <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
+<link href="/assets/moj/moj-frontend.min.css" rel="stylesheet"/>
 
 {% if feComponents.jsIncludes %}
     {% for js in feComponents.jsIncludes %}
@@ -46,6 +47,8 @@
 {# Run JavaScript at end of the
 <body>, to avoid blocking the initial render. #}
 <script type="module" src="/assets/js/govuk-frontend-init.js"></script>
+<script type="module" src="/assets/js/moj-frontend-init.js"></script>
+
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"
   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
   crossorigin="anonymous"></script>
