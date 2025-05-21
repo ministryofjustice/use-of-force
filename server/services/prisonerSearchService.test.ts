@@ -48,7 +48,7 @@ describe('prisonerSearchService', () => {
           prisonNumber: 'AAA122AB',
         },
       ])
-      expect(prisonerSearchClientBuilder).toBeCalledWith('user1-token-1')
+      expect(prisonerSearchClientBuilder).toHaveBeenCalledWith('user1-token-1')
     })
   })
 
@@ -58,7 +58,7 @@ describe('prisonerSearchService', () => {
       prisonClient.getPrisons.mockResolvedValue(expected)
       const results = await service.getPrisons('user1')
       expect(results).toStrictEqual(expected)
-      expect(prisonClientBuilder).toBeCalledWith('user1-token-1')
+      expect(prisonClientBuilder).toHaveBeenCalledWith('user1-token-1')
     })
 
     it('sorts lists of Prisons alphabetically', async () => {

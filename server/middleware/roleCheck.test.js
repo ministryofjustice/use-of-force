@@ -30,7 +30,7 @@ describe('roleCheck', () => {
 
       roleCheck.coordinatorOnly(req, res, next)
 
-      expect(next).toBeCalled()
+      expect(next).toHaveBeenCalled()
     })
 
     test('will reject admin role access', () => {
@@ -54,7 +54,7 @@ describe('roleCheck', () => {
 
       roleCheck.reviewerOrCoordinatorOnly(req, res, next)
 
-      expect(next).toBeCalled()
+      expect(next).toHaveBeenCalled()
     })
 
     test('will accept coordinator access', () => {
@@ -62,7 +62,7 @@ describe('roleCheck', () => {
 
       roleCheck.reviewerOrCoordinatorOnly(req, res, next)
 
-      expect(next).toBeCalled()
+      expect(next).toHaveBeenCalled()
     })
 
     test('will reject admin role access', () => {
@@ -98,7 +98,7 @@ describe('roleCheck', () => {
 
       roleCheck.adminOnly(req, res, next)
 
-      expect(next).toBeCalled()
+      expect(next).toHaveBeenCalled()
     })
   })
 })

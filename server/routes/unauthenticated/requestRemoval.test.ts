@@ -87,7 +87,7 @@ describe('Request removal controller', () => {
         .expect(302)
         .expect('Location', paths.removalRequested())
         .expect(() => {
-          expect(statementService.requestStatementRemoval).toBeCalledWith(1, 'reason')
+          expect(statementService.requestStatementRemoval).toHaveBeenCalledWith(1, 'reason')
         }))
 
     it('should fail to request removal from statement when no signature', () =>
@@ -96,7 +96,7 @@ describe('Request removal controller', () => {
         .send({ reason: 'reason', signature: invalidSignature })
         .expect(404)
         .expect(() => {
-          expect(statementService.requestStatementRemoval).not.toBeCalled()
+          expect(statementService.requestStatementRemoval).not.toHaveBeenCalled()
         }))
 
     it('request to be removed redirects when a reason is not provided', () =>
@@ -106,8 +106,8 @@ describe('Request removal controller', () => {
         .expect(302)
         .expect('Location', `/request-removal/1?signature=${encodeURIComponent(validSignature)}`)
         .expect(() => {
-          expect(statementService.requestStatementRemoval).not.toBeCalled()
-          expect(flash).toBeCalledWith('errors', [
+          expect(statementService.requestStatementRemoval).not.toHaveBeenCalled()
+          expect(flash).toHaveBeenCalledWith('errors', [
             {
               text: 'Enter why you should be removed from this incident',
               href: '#reason',

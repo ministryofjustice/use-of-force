@@ -27,7 +27,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.send).toBeCalledTimes(0)
+    expect(reminderSender.send).toHaveBeenCalledTimes(0)
   })
 
   test('successfully poll one reminder', async () => {
@@ -39,7 +39,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(reminderSender.send).toBeCalledTimes(1)
+    expect(reminderSender.send).toHaveBeenCalledTimes(1)
   })
 
   test('process reminders for unverified user', async () => {
@@ -63,7 +63,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(1)
-    expect(reminderSender.send).toBeCalledTimes(1)
+    expect(reminderSender.send).toHaveBeenCalledTimes(1)
 
     expect(emailResolver.resolveEmail).toHaveBeenCalledWith(client, 'BOB', 2)
     expect(incidentClient.setNextReminderDate).toHaveBeenCalledWith(
@@ -92,7 +92,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.send).toBeCalledTimes(0)
+    expect(reminderSender.send).toHaveBeenCalledTimes(0)
 
     expect(emailResolver.resolveEmail).toHaveBeenCalledWith(client, 'BOB', 2)
     expect(incidentClient.setNextReminderDate).toHaveBeenCalledWith(1, null, client)
@@ -112,7 +112,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.send).toBeCalledTimes(0)
+    expect(reminderSender.send).toHaveBeenCalledTimes(0)
 
     expect(emailResolver.resolveEmail).toHaveBeenCalledWith(client, 'BOB', 2)
     expect(incidentClient.setNextReminderDate).not.toHaveBeenCalled()
@@ -129,7 +129,7 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(0)
-    expect(reminderSender.send).toBeCalledTimes(0)
+    expect(reminderSender.send).toHaveBeenCalledTimes(0)
     expect(emailResolver.resolveEmail).toHaveBeenCalledWith(client, 'BOB', 2)
     expect(incidentClient.setNextReminderDate).not.toHaveBeenCalled()
   })
@@ -143,6 +143,6 @@ describe('poll for reminders', () => {
     const count = await poll()
 
     expect(count).toEqual(50)
-    expect(reminderSender.send).toBeCalledTimes(50)
+    expect(reminderSender.send).toHaveBeenCalledTimes(50)
   })
 })

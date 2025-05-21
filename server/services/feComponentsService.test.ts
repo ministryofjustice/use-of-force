@@ -25,7 +25,7 @@ describe('feComponentsService', () => {
       feComponentsClient.getComponents.mockResolvedValue({} as Record<AvailableComponent, Component>)
 
       await feComponentsService.getFeComponents(components, token)
-      expect(FeComponentsClientBuilder).toBeCalledWith(token)
+      expect(FeComponentsClientBuilder).toHaveBeenCalledWith(token)
     })
     it('should call upstream client correctly', async () => {
       const response = {

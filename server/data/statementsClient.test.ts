@@ -15,7 +15,7 @@ test('getStatements', async () => {
   const results = await statementsClient.getStatements('user1', 1)
 
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.id, count(*) OVER() AS "totalCount"
             , r.reporter_name                        "reporterName"
             , r.offender_no                          "offenderNo"
@@ -39,7 +39,7 @@ test('getStatements', async () => {
 test('getStatementForUser', () => {
   statementsClient.getStatementForUser('user-1', 19, StatementStatus.PENDING)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.id
             ,      r.booking_id             "bookingId"
             ,      r.incident_date          "incidentDate"
@@ -64,7 +64,7 @@ test('getStatementForUser', () => {
 test('getAdditionalComments', () => {
   statementsClient.getAdditionalComments(48)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select  
     s.additional_comment "additionalComment",
     s.date_submitted     "dateSubmitted" 
@@ -76,7 +76,7 @@ test('getAdditionalComments', () => {
 
 test('saveAdditionalComment', () => {
   statementsClient.saveAdditionalComment(50, 'Another comment made')
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `insert into v_statement_amendments (statement_id, additional_comment)
             values ($1, $2)`,
     values: [50, 'Another comment made'],
@@ -100,7 +100,7 @@ test('createStatements', async () => {
   ])
 
   expect(ids).toEqual({ a: 1, b: 2 })
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text:
       `insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES ` +
       `('1', '0', 'user-1', 'aaaa', 'aaaa@gov.uk', '1970-01-01 00:00:00.001+00', '1970-01-01 00:00:00.002+00', 'PENDING'), ` +
@@ -114,11 +114,11 @@ test('deleteStatement', async () => {
   const date = new Date()
   await statementsClient.deleteStatement({ statementId: -1, query, now: date })
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: 'update statement set deleted = $1 where id = $2',
     values: [date, -1],
   })
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: 'update statement_amendments set deleted = $1 where statement_id = $2',
     values: [date, -1],
   })
@@ -132,7 +132,7 @@ test('saveStatement', () => {
     statement: 'A long time ago...',
   })
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_statement 
     set last_training_month = $1
     ,   last_training_year = $2
@@ -150,7 +150,7 @@ test('saveStatement', () => {
 test('submitStatement', () => {
   statementsClient.submitStatement('user1', 1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_statement 
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
@@ -165,7 +165,7 @@ test('submitStatement', () => {
 test('setEmail', () => {
   statementsClient.setEmail('user1', 1, 'user@gov.uk')
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_statement 
     set email = $3
     ,   updated_date = CURRENT_TIMESTAMP
@@ -180,7 +180,7 @@ test('getNumberOfPendingStatements', async () => {
   const count = await statementsClient.getNumberOfPendingStatements(1)
 
   expect(count).toBe(10)
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select count(*) from v_statement where report_id = $1 AND statement_status = $2`,
     values: [1, StatementStatus.PENDING.value],
   })
@@ -189,7 +189,7 @@ test('getNumberOfPendingStatements', async () => {
 test('getStatementsForReviewer', () => {
   statementsClient.getStatementsForReviewer(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.id
             ,      r.id                                   "reportId"
             ,      s.name
@@ -216,7 +216,7 @@ test('getStatementsForReviewer', () => {
 test('getInvolvedStaffToRemove', () => {
   statementsClient.getInvolvedStaffToRemove(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.id
             ,      s.user_id                                 "userId"
             ,      s.name                                    "name" 
@@ -232,7 +232,7 @@ test('getInvolvedStaffToRemove', () => {
 test('getStatementForReviewer', () => {
   statementsClient.getStatementForReviewer(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.id
             ,      r.id                                      "reportId"
             ,      s.name
@@ -261,7 +261,7 @@ test('isStatementPresentForUser', async () => {
   const result = await statementsClient.isStatementPresentForUser(1, 'user-1')
 
   expect(result).toEqual(true)
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
     values: [1, 'user-1'],
   })
@@ -270,7 +270,7 @@ test('isStatementPresentForUser', async () => {
 test('requestStatementRemoval', async () => {
   await statementsClient.requestStatementRemoval(1, 'removal reason')
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update "statement"
               set removal_requested_date = now()
               ,   removal_requested_reason = $1
@@ -283,7 +283,7 @@ test('requestStatementRemoval', async () => {
 test('refuseStatementRemoval', async () => {
   await statementsClient.refuseStatementRemoval(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update "statement"
               set removal_requested_date = null
               ,   removal_requested_reason = null
@@ -296,7 +296,7 @@ test('refuseStatementRemoval', async () => {
 test('getRemovalRequest', async () => {
   statementsClient.getRemovalRequest(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.removal_requested_reason "removalRequestedReason"
               , s.removal_requested_date is not null "isRemovalRequested"
               from v_statement s 
