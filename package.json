@@ -151,8 +151,6 @@
     "@types/pg": "^8.11.11",
     "@types/superagent": "^8.1.9",
     "@types/supertest": "^6.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
     "audit-ci": "^6.6.1",
     "concurrently": "^7.6.0",
     "cypress": "^13.8.1",
