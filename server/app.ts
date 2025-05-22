@@ -32,6 +32,7 @@ import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
 import setUpWebSession from './middleware/setUpWebSession'
+import refreshSystemToken from './middleware/refreshSystemToken'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -275,6 +276,7 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(populateCurrentUser(services.userService))
+  app.use(refreshSystemToken(services))
 
   app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)

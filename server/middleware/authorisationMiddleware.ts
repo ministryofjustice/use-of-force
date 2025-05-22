@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 export const COORDINATOR = 'ROLE_USE_OF_FORCE_COORDINATOR'
 export const REVIEWER = 'ROLE_USE_OF_FORCE_REVIEWER'
