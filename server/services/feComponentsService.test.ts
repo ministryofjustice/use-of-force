@@ -1,48 +1,59 @@
-import { FeComponentsClient } from '../data'
-import { AvailableComponent, Component } from '../data/feComponentsClient'
 import FeComponentsService from './feComponentsService'
+import { FeComponentsClient } from '../data'
+import { FeComponentsResponse } from '../data/feComponentsClient'
 
-jest.mock('../data')
+jest.mock('../data/feComponentsClient')
 
-const FeComponentsClientBuilder = jest.fn()
-const token = 'token'
-const components = ['header', 'footer']
-const feComponentsClient = new FeComponentsClient(null) as jest.Mocked<FeComponentsClient>
-let feComponentsService
+const token = 'some token'
 
-beforeEach(() => {
-  FeComponentsClientBuilder.mockReturnValue(feComponentsClient)
-  feComponentsService = new FeComponentsService(FeComponentsClientBuilder)
-})
+describe('Components service', () => {
+  let componentsClient: jest.Mocked<FeComponentsClient>
+  let componentsService: FeComponentsService
 
-afterEach(() => {
-  jest.resetAllMocks()
-})
-
-describe('feComponentsService', () => {
-  describe('getFeComponents', () => {
-    it('should use token', async () => {
-      feComponentsClient.getComponents.mockResolvedValue({} as Record<AvailableComponent, Component>)
-
-      await feComponentsService.getFeComponents(components, token)
-      expect(FeComponentsClientBuilder).toHaveBeenCalledWith(token)
+  describe('getComponent', () => {
+    beforeEach(() => {
+      componentsClient = jest.mocked(new FeComponentsClient())
+      componentsService = new FeComponentsService(componentsClient)
     })
-    it('should call upstream client correctly', async () => {
-      const response = {
+
+    it('Retrieves and returns requested component', async () => {
+      const caseLoad = {
+        caseLoadId: 'TST',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      }
+
+      const componentValue: FeComponentsResponse = {
         header: {
-          html: '',
+          html: '<header></header>',
           css: [],
           javascript: [],
         },
         footer: {
-          html: '',
+          html: '<footer></footer>',
           css: [],
           javascript: [],
         },
+        meta: {
+          activeCaseLoad: caseLoad,
+          caseLoads: [caseLoad],
+          services: [],
+        },
       }
-      feComponentsClient.getComponents.mockResolvedValue(response)
-      const result = await feComponentsService.getFeComponents(components, token)
-      expect(result).toEqual(response)
+
+      componentsClient.getComponents.mockResolvedValue(componentValue)
+
+      const result = await componentsService.getFeComponents(['header'], token)
+
+      expect(result).toEqual(componentValue)
+    })
+
+    it('Propagates error', async () => {
+      componentsClient.getComponents.mockRejectedValue(new Error('some error'))
+
+      await expect(componentsService.getFeComponents(['header'], token)).rejects.toEqual(new Error('some error'))
     })
   })
 })

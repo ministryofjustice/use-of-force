@@ -1,0 +1,53 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% macro radio(question) %}
+    {% if question.errorMessage.text %}
+        {% set govukFormGroupError =  'govuk-form-group--error' %}
+        {% set errorMessageText = question.errorMessage.text %}
+    {% endif %}
+
+    <div class="govuk-form-group  {{govukFormGroupError}} ">
+        <fieldset class="govuk-fieldset">
+            <!-- primary  -->
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                {{question.text}}
+            </legend>
+
+            <span class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ errorMessageText}}
+    </span>
+
+            <div class="govuk-!-margin-bottom-2">
+                <div class="{% if question.options | length < 3 %} govuk-radios--inline{% endif %}" data-module="govuk-radios">
+                    {% set name1 = question.name %}
+                    {% for option in question.options %}
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input"
+                                    {% if loop.index === 1 %}
+                                        id={{name1}}
+                                    {% else %}
+                                        id="id-{{name1}}-{{loop.index}}"
+                                    {% endif %}
+                                   name="{{name1}}"
+                                   type="radio"
+                                   value="{{option.value}}"
+                                    {% if option.value === question.value %} checked {% endif %}>
+                            <label class="govuk-label govuk-radios__label"
+                                    {% if loop.index === 1 %}
+                            for={{name1}}
+                                    {% else %}
+                                        for="id-{{name1}}-{{loop.index}}"
+                                    {% endif %}>
+                                {{option.label}}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </fieldset>
+    </div>
+{% endmacro %}

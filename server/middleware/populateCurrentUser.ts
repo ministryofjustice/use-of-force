@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import logger from '../../log'
-import type { UserService } from '../services'
+import UserService from '../services/userService'
 
 export default (userService: UserService) =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {

@@ -1,33 +1,28 @@
-import { IncidentClient, StatementsClient, AuthClient, RestClientBuilder } from '../data'
+import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
-import { EmailResult } from '../data/authClient'
+import { EmailResult } from '../data/manageUsersApiClient'
 import { ReviewerStatement } from '../data/statementsClientTypes'
+import AuthService from './authService'
 
 jest.mock('../data')
 jest.mock('./offenderService')
+jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
-const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: ReviewService
-let authClientBuilder: RestClientBuilder<AuthClient>
 
 describe('reviewService', () => {
   beforeEach(() => {
-    authClientBuilder = jest.fn().mockReturnValue(authClient)
-
-    service = new ReviewService(
-      statementsClient,
-      incidentClient,
-      authClientBuilder,
-      offenderService,
-      async username => `${username}-system-token`
-    )
+    authService.getSystemClientToken.mockResolvedValue('userName-system-token')
+    service = new ReviewService(statementsClient, incidentClient, manageUsersApiClient, offenderService, authService)
   })
 
   afterEach(() => {
@@ -35,7 +30,7 @@ describe('reviewService', () => {
   })
 
   test('getStatements', async () => {
-    authClient.getEmail
+    manageUsersApiClient.getEmail
       .mockResolvedValueOnce({ verified: false } as EmailResult)
       .mockResolvedValueOnce({ verified: true } as EmailResult)
     statementsClient.getStatementsForReviewer.mockResolvedValue([{ id: 1 }, { id: 2 }] as ReviewerStatement[])
@@ -53,7 +48,7 @@ describe('reviewService', () => {
     test('success', async () => {
       const date = new Date('2019-03-05 01:03:28')
       statementsClient.getStatementForReviewer.mockResolvedValue({ userId: 'USER_1', id: 2 } as ReviewerStatement)
-      authClient.getEmail.mockResolvedValue({ verified: true } as EmailResult)
+      manageUsersApiClient.getEmail.mockResolvedValue({ verified: true } as EmailResult)
       statementsClient.getAdditionalComments.mockResolvedValue([
         {
           additionalComment: 'comment1',
@@ -75,8 +70,7 @@ describe('reviewService', () => {
         ],
       })
 
-      expect(authClientBuilder).toHaveBeenCalledWith('token-1')
-      expect(authClient.getEmail).toHaveBeenCalledWith('USER_1')
+      expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('USER_1', 'token-1')
       expect(statementsClient.getStatementForReviewer).toHaveBeenCalledWith(1)
     })
 

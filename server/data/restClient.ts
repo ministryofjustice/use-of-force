@@ -1,125 +1,165 @@
-import superagent from 'superagent'
-import Agent, { HttpsAgent } from 'agentkeepalive'
 import { Readable } from 'stream'
+
+import { HttpAgent, HttpsAgent } from 'agentkeepalive'
+import superagent from 'superagent'
+
 import logger from '../../log'
-import sanitiseError from '../utils/errorSanitiser'
+import sanitiseError from '../sanitisedError'
+import type { ApiConfig } from '../config'
+import type { UnsanitisedError } from '../sanitisedError'
 
-interface GetRequest {
-  path?: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  query?: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  headers?: any
+interface Request {
+  path: string
+  query?: object | string
+  headers?: Record<string, string | number>
   responseType?: string
+  raw?: boolean
 }
 
-export interface ClientOptions {
-  url: string
-  timeout: {
-    response: number
-    deadline: number
-  }
-  agent: {
-    maxSockets: number
-    maxFreeSockets: number
-    freeSocketTimeout: number
-  }
+interface RequestWithBody extends Request {
+  data?: Record<string, unknown> | Record<string, unknown>[] | object | string[] | string
+  retry?: boolean
 }
 
-export default function RestClientBuilder(name: string, config: ClientOptions) {
-  return (token: string): RestClient => new RestClient(name, config, token)
+interface StreamRequest {
+  path?: string
+  headers?: Record<string, string>
+  errorLogger?: (e: UnsanitisedError) => void
 }
 
-export class RestClient {
-  constructor(private readonly name: string, private readonly config: ClientOptions, private readonly token: string) {}
+export default class RestClient {
+  agent: HttpAgent
 
-  private timeoutSpec = {
-    response: this.config.timeout.response,
-    deadline: this.config.timeout.deadline,
+  constructor(private readonly name: string, private readonly config: ApiConfig, private readonly token: string) {
+    this.agent = config.url.startsWith('https') ? new HttpsAgent(config.agent) : new HttpAgent(config.agent)
   }
 
-  private apiUrl = this.config.url
-
-  private agentOptions = {
-    maxSockets: this.config.agent.maxSockets,
-    maxFreeSockets: this.config.agent.maxFreeSockets,
-    freeSocketTimeout: this.config.agent.freeSocketTimeout,
+  private apiUrl() {
+    return this.config.url
   }
 
-  private agent = this.apiUrl.startsWith('https') ? new HttpsAgent(this.agentOptions) : new Agent(this.agentOptions)
+  private timeoutConfig() {
+    return this.config.timeout
+  }
 
-  private defaultErrorLogger = error => logger.warn(sanitiseError(error), `Error calling ${this.name}`)
-
-  async get<T>({ path = null, query = '', headers = {}, responseType = '' }: GetRequest = {}): Promise<T> {
-    logger.info(`Calling ${this.name}: ${path} ${query}`)
+  async get<Response = unknown>({
+    path,
+    query = {},
+    headers = {},
+    responseType = '',
+    raw = false,
+  }: Request): Promise<Response> {
+    logger.info(`${this.name} GET: ${path}`)
     try {
       const result = await superagent
-        .get(`${this.apiUrl}${path}`)
+        .get(`${this.apiUrl()}${path}`)
+        .query(query)
         .agent(this.agent)
         .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
+          if (err) logger.info(`Retry handler found ${this.name} API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
-        .query(query)
         .auth(this.token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
-        .timeout(this.timeoutSpec)
+        .timeout(this.timeoutConfig())
 
-      return result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
-      const response = error.response && error.response.text
-      logger.warn(
-        `Error calling ${this.name}, path: '${path}', verb: 'GET', query: '${query}', response: '${response}'`,
-        error.stack
-      )
-      throw error
+      const sanitisedError = sanitiseError(error)
+      logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: 'GET'`)
+      throw sanitisedError
     }
   }
 
-  async post<T>({ path = null, headers = {}, responseType = '', data = {}, raw = false } = {}): Promise<T> {
-    logger.info(`Post using user credentials: calling ${this.name}: ${path}`)
+  private async requestWithBody<Response = unknown>(
+    method: 'patch' | 'post' | 'put',
+    { path, query = {}, headers = {}, responseType = '', data = {}, raw = false, retry = false }: RequestWithBody
+  ): Promise<Response> {
+    logger.info(`${this.name} ${method.toUpperCase()}: ${path}`)
     try {
-      const result = await superagent
-        .post(`${this.apiUrl}${path}`)
+      const result = await superagent[method](`${this.apiUrl()}${path}`)
+        .query(query)
         .send(data)
         .agent(this.agent)
         .retry(2, (err, res) => {
+          if (retry === false) {
+            return false
+          }
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
         .auth(this.token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
-        .timeout(this.timeoutSpec)
+        .timeout(this.timeoutConfig())
 
-      return raw ? result : result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
-      const response = error.response && error.response.text
-      logger.warn(
-        `Error calling ${this.name}, path: '${path}', verb: 'GET', query: 'POST', response: '${response}'`,
-        error.stack
-      )
-      throw error
+      const sanitisedError = sanitiseError(error)
+      logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: '${method.toUpperCase()}'`)
+      throw sanitisedError
     }
   }
 
-  stream({ path, headers = {}, errorLogger = this.defaultErrorLogger }): Promise<Readable> {
-    logger.info(`Get using user credentials: calling ${this.name}: ${path}`)
+  async patch<Response = unknown>(request: RequestWithBody): Promise<Response> {
+    return this.requestWithBody('patch', request)
+  }
+
+  async post<Response = unknown>(request: RequestWithBody): Promise<Response> {
+    return this.requestWithBody('post', request)
+  }
+
+  async put<Response = unknown>(request: RequestWithBody): Promise<Response> {
+    return this.requestWithBody('put', request)
+  }
+
+  async delete<Response = unknown>({
+    path,
+    query = {},
+    headers = {},
+    responseType = '',
+    raw = false,
+  }: Request): Promise<Response> {
+    logger.info(`${this.name} DELETE: ${path}`)
+    try {
+      const result = await superagent
+        .delete(`${this.apiUrl()}${path}`)
+        .query(query)
+        .agent(this.agent)
+        .retry(2, (err, res) => {
+          if (err) logger.info(`Retry handler found ${this.name} API error with ${err.code} ${err.message}`)
+          return undefined // retry handler only for logging retries, not to influence retry logic
+        })
+        .auth(this.token, { type: 'bearer' })
+        .set(headers)
+        .responseType(responseType)
+        .timeout(this.timeoutConfig())
+
+      return raw ? (result as Response) : result.body
+    } catch (error) {
+      const sanitisedError = sanitiseError(error)
+      logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: 'DELETE'`)
+      throw sanitisedError
+    }
+  }
+
+  async stream({ path = null, headers = {} }: StreamRequest = {}): Promise<Readable> {
+    logger.info(`${this.name} streaming: ${path}`)
     return new Promise((resolve, reject) => {
       superagent
-        .get(`${this.apiUrl}${path}`)
+        .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
         .auth(this.token, { type: 'bearer' })
         .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
+          if (err) logger.info(`Retry handler found ${this.name} API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
-        .timeout(this.timeoutSpec)
+        .timeout(this.timeoutConfig())
         .set(headers)
         .end((error, response) => {
           if (error) {
-            errorLogger(error)
+            logger.warn(sanitiseError(error), `Error calling ${this.name}`)
             reject(error)
           } else if (response) {
             const s = new Readable()

@@ -12,7 +12,7 @@ context('Creating reports for prisoners in other prisons', () => {
     cy.task('stubOffenders', [offender])
     cy.task('stubPrisons')
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
   })
 
   it('A user can create a report for a prisoner in another prison using prison number', () => {

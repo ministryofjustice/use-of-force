@@ -1,14 +1,17 @@
 /* eslint-disable prefer-promise-reject-errors */
-const superagent = require('superagent')
+
+import superagent from 'superagent'
+
 /** @type {any} */
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
-const db = require('./dataAccess/db')
-const logger = require('../../log')
-const config = require('../config')
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import config from '../config'
+
+import { query } from './dataAccess/db'
+
+import logger from '../../log'
 
 function dbCheck() {
-  return db.query('SELECT 1 AS ok')
+  return query('SELECT 1 AS ok')
 }
 
 const agentOptions = {
@@ -46,7 +49,4 @@ function serviceCheckFactory(name, url) {
     })
 }
 
-module.exports = {
-  dbCheck,
-  serviceCheckFactory,
-}
+export { dbCheck, serviceCheckFactory }

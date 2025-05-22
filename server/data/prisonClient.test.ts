@@ -1,7 +1,6 @@
 import nock from 'nock'
 import PrisonClient from './prisonClient'
 import config from '../config'
-import restClientBuilder from '.'
 
 describe('prisonClient', () => {
   let fakePrisonApi
@@ -11,7 +10,7 @@ describe('prisonClient', () => {
 
   beforeEach(() => {
     fakePrisonApi = nock(config.apis.prison.url)
-    prisonClient = restClientBuilder('prisonClient', config.apis.prison, PrisonClient)(token)
+    prisonClient = new PrisonClient()
   })
 
   afterEach(() => {
@@ -26,7 +25,7 @@ describe('prisonClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenderResponse)
 
-      const output = await prisonClient.getOffenderDetails(12345)
+      const output = await prisonClient.getOffenderDetails(12345, token)
       expect(output).toEqual(offenderResponse)
     })
   })
@@ -36,7 +35,7 @@ describe('prisonClient', () => {
     it('should return data from api', async () => {
       fakePrisonApi.get('/api/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
 
-      const output = await prisonClient.getUser()
+      const output = await prisonClient.getUser(token)
       expect(output).toEqual(userResponse)
     })
   })
@@ -46,7 +45,7 @@ describe('prisonClient', () => {
     it('should return data from api', async () => {
       fakePrisonApi.get('/api/users/me/caseLoads').matchHeader('authorization', `Bearer ${token}`).reply(200, caseloads)
 
-      const output = await prisonClient.getUserCaseLoads()
+      const output = await prisonClient.getUserCaseLoads(token)
       expect(output).toEqual(caseloads)
     })
   })
@@ -59,7 +58,7 @@ describe('prisonClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
-      const output = await prisonClient.getPrisons()
+      const output = await prisonClient.getPrisons(token)
       expect(output).toEqual(locations)
     })
   })
@@ -74,7 +73,7 @@ describe('prisonClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, offenders)
 
-      const output = await prisonClient.getOffenders(offenderNos)
+      const output = await prisonClient.getOffenders(offenderNos, token)
       expect(output).toEqual(offenders)
     })
   })
@@ -83,7 +82,7 @@ describe('prisonClient', () => {
     it('should format query string', async () => {
       fakePrisonApi.get('/api/prisoners?offenderNo=A123&offenderNo=B123').matchHeader('page-limit', 5000).reply(200, [])
 
-      const output = await prisonClient.getPrisoners(['A123', 'B123'])
+      const output = await prisonClient.getPrisoners(['A123', 'B123'], token)
       expect(output).toEqual([])
     })
   })
@@ -98,7 +97,7 @@ describe('prisonClient', () => {
     it('should return prison details from its id', async () => {
       fakePrisonApi.get('/api/agencies/MDI?activeOnly=false').reply(200, mockPrison)
 
-      const output = await prisonClient.getPrisonById('MDI')
+      const output = await prisonClient.getPrisonById('MDI', token)
       expect(output).toEqual(mockPrison)
     })
   })

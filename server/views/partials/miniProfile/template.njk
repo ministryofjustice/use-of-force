@@ -1,0 +1,21 @@
+<div class="mini-profile govuk-!-margin-top-7" data-qa="mini-profile">
+    <div class="mini-profile-inner">
+        <div class="mini-profile-left">
+            <img class="mini-profile-person-img" src="{{ personImgUrl }}" alt="Image of {{ person | personProfileName }}" loading="lazy" data-qa="mini-profile-person-img">
+        </div>
+        <div class="mini-profile-right">
+            <ul class="mini-profile-info">
+                <li>
+                    <p class="govuk-heading-s govuk-!-margin-bottom-1">
+                        <a id="mini-profile-link" class="govuk-link--no-visited-state" href="{{ personProfileUrl }}" target="_blank" data-qa="mini-profile-person-profile-link">{{ person | personProfileName }}</a>
+                    </p>
+                    <span class="govuk-body" data-qa="mini-profile-prisoner-number">{{ person.prisonerNumber }}</span>
+                </li>
+                <li><span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Date of birth</span><span class="govuk-body" data-qa="mini-profile-dob">{{ person.dateOfBirth | personDateOfBirth }}</span></li>
+                <li><span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</span><span class="govuk-body" data-qa="mini-profile-prison-name">{{ person.prisonName }}</span></li>
+                <li><span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</span><span class="govuk-body" data-qa="mini-profile-cell-location">{{ person.cellLocation }}</span></li>
+                <li><span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Status</span><span class="govuk-body" data-qa="mini-profile-status">{{ person.status }}</span></li>
+            </ul>
+        </div>
+    </div>
+</div>

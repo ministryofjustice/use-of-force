@@ -1,12 +1,11 @@
 import logger from '../../log'
-import { RestClientBuilder, NomisMappingClient } from '../data'
+import { NomisMappingClient } from '../data'
 
 export default class NomisMappingService {
-  constructor(private readonly nomisMappingClientBuilder: RestClientBuilder<NomisMappingClient>) {}
+  constructor(private readonly nomisMappingClient: NomisMappingClient) {}
 
-  getDpsLocationDetailsHavingCorrespondingNomisLocationId(token, nomisLocationId: number) {
-    const nomisMappingClient = this.nomisMappingClientBuilder(token)
+  getDpsLocationDetailsHavingCorrespondingNomisLocationId(token: string, nomisLocationId: number) {
     logger.info(`Service getting DpsLocationId associated with nomisLocationId: ${nomisLocationId}`)
-    return nomisMappingClient.getDpsLocationMappingUsingNomisLocationId(nomisLocationId)
+    return this.nomisMappingClient.getDpsLocationMappingUsingNomisLocationId(nomisLocationId, token)
   }
 }

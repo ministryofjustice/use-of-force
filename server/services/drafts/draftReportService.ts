@@ -1,7 +1,7 @@
 import moment, { Moment } from 'moment'
 import type { DraftReportClient } from '../../data'
 import type SubmitDraftReportService from './submitDraftReportService'
-import type { FoundUserResult, LoggedInUser, SystemToken } from '../../types/uof'
+import type { FoundUserResult, LoggedInUser } from '../../types/uof'
 import type UserService from '../userService'
 import type { DraftReport, NoDraftReport, DuplicateReport } from '../../data/draftReportClientTypes'
 import { check as getReportStatus, isReportComplete } from './reportStatusChecker'
@@ -13,6 +13,7 @@ import {
   DraftInvolvedStaff,
   DraftInvolvedStaffWithPrison,
 } from './draftInvolvedStaffService'
+import AuthService from '../authService'
 
 const REASONS_FOR_USE_OF_FORCE_FORM = 'reasonsForUseOfForce'
 
@@ -32,7 +33,7 @@ export default class DraftReportService {
     private readonly submitDraftReport: SubmitDraftReportService,
     private readonly userService: UserService,
     private readonly locationService: LocationService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   public getCurrentDraft(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
@@ -107,7 +108,7 @@ export default class DraftReportService {
     firstName: string,
     lastName: string
   ): Promise<AddStaffResult> {
-    const token = await this.systemToken(user.username)
+    const token = await this.authService.getSystemClientToken(user.username)
     const users = await this.userService.findUsers(token, firstName, lastName)
     return this.handleAddStaff(token, user, bookingId, users)
   }
@@ -117,7 +118,7 @@ export default class DraftReportService {
     bookingId: number,
     username: string
   ): Promise<AddStaffResult> {
-    const token = await this.systemToken(user.username)
+    const token = await this.authService.getSystemClientToken(user.username)
     const userToAdd = await this.userService.getUser(token, username)
     return this.handleAddStaff(token, user, bookingId, [userToAdd])
   }
@@ -147,7 +148,7 @@ export default class DraftReportService {
   }
 
   public async deleteInvolvedStaff(user: LoggedInUser, bookingId: number, userToDelete: string): Promise<void> {
-    const token = await this.systemToken(user.username)
+    const token = await this.authService.getSystemClientToken(user.username)
 
     const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
 
@@ -201,7 +202,7 @@ export default class DraftReportService {
 
   public async submit(currentUser: LoggedInUser, bookingId: number): Promise<number | false> {
     const involvedStaff = await this.getInvolvedStaff(
-      await this.systemToken(currentUser.username),
+      await this.authService.getSystemClientToken(currentUser.username),
       currentUser.username,
       bookingId
     )

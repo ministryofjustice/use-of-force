@@ -1,0 +1,83 @@
+{% macro radiosWithNestedTextbox(question) %}
+
+    {% if question.primaryQuestion.errorMessage.text %}
+        {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
+        {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
+    {% endif %}
+
+    {% if not question.primaryQuestion.errorMessage and question.followUpQuestion.errorMessage.text %}
+        {% set govukFormGroupErrorInner  =  'govuk-form-group--error' %}
+        {% set followUpErrorMessageText = question.followUpQuestion.errorMessage.text %}
+    {% endif %}
+
+    <div class="govuk-form-group {{govukFormGroupErrorOuter}}">
+        <fieldset class="govuk-fieldset">
+            <!-- primary -->
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend">
+                {{question.primaryQuestion.text}}
+            </legend>
+            <span class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ primaryErrorMessageText}}
+    </span>
+        <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios--inline">
+                {% set name = question.primaryQuestion.name %}
+                {% for option in question.primaryQuestion.options %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input"
+                                {% if loop.index === 1 %}
+                                    id={{ name }}
+                                {% else %}
+                                    id="{{ name }}-{{ loop.index }}"
+                                {% endif %}
+                               name="{{ name }}"
+                               type="radio"
+                               value="{{ option.value }}"
+                                {% if option.value === true %}
+                                    data-aria-controls="conditional-{{ name }}"
+                                {% endif %}
+                                {% if option.value === question.primaryQuestion.value %} checked="checked" {% endif %}>
+                        <label class="govuk-label govuk-radios__label"
+                                {% if loop.index === 1 %}
+                        for={{ name }}
+                                {% else %}
+                                    for="{{ name }}-{{ loop.index }}"
+                                {% endif %}>
+                            {{ option.label }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+                <!-- followup -->
+                <div class="govuk-radios__conditional clear-both" id="conditional-{{ name }}">
+                    <div class="{{ govukFormGroupErrorInner }}">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend
+                      {% if question.followUpQuestion.legend==='blank' %} govuk-visually-hidden {% endif %}">
+                                {{ question.followUpQuestion.legend }}
+                            </legend>
+
+                            {% if followUpErrorMessageText %}
+                                <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ followUpErrorMessageText }}</span>
+                            {% endif %}
+
+                            {% set followUpQuestion = question.followUpQuestion %}
+                            <div class="govuk-textboxes__item">
+                                <label class="govuk-label" for="{{ followUpQuestion.name }}">
+                                    {{ followUpQuestion.label }}
+                                </label>
+                                <input class="govuk-input govuk-!-width-one-third"
+                                       id="{{ followUpQuestion.name }}"
+                                       name="{{ followUpQuestion.name }}"
+                                       type="text"
+                                       value="{{ followUpQuestion.value }}">
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+{% endmacro %}

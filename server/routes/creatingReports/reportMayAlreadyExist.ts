@@ -2,19 +2,20 @@ import { Request, Response, RequestHandler } from 'express'
 import moment from 'moment'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type OffenderService from '../../services/offenderService'
-import { SystemToken } from '../../types/uof'
+import AuthService from '../../services/authService'
 
 export default class ReportMayAlreadyExistRoutes {
   constructor(
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService
   ) {}
 
   public view: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const token = await this.systemToken(res.locals.user.username)
-    const { displayName: offenderName } = await this.offenderService.getOffenderDetails(token, parseInt(bookingId, 10))
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), res.locals.user.username)
+    const { displayName: offenderName } = offenderDetail
 
     const { id: formId, incidentDate } = await this.draftReportService.getCurrentDraft(
       req.user.username,
@@ -35,6 +36,7 @@ export default class ReportMayAlreadyExistRoutes {
       offenderName,
       reports,
       bookingId,
+      offenderDetail,
       errors: req.flash('errors'),
     }
 

@@ -63,13 +63,17 @@ context('A use of force coordinator can add involved staff', () => {
     completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
 
     let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
-      )
+    viewStatementsPage.statements().then(result =>
+      expect(result).to.deep.equal([
+        {
+          username: 'TEST_USER name',
+          badge: '',
+          link: 'View statement',
+          isOverdue: false,
+          isUnverified: false,
+        },
+      ])
+    )
     viewStatementsPage.reportLink().click()
 
     ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()

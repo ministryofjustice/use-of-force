@@ -5,6 +5,7 @@ import { processInput } from '../../services/validation'
 import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
+import OffenderService from '../../services/offenderService'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',
@@ -12,7 +13,10 @@ enum SubmitType {
 }
 
 export default class CreateReport {
-  constructor(private readonly draftReportService: DraftReportService) {}
+  constructor(
+    private readonly draftReportService: DraftReportService,
+    private readonly offenderService: OffenderService
+  ) {}
 
   private async loadForm(req) {
     const { bookingId } = req.params
@@ -35,12 +39,13 @@ export default class CreateReport {
   public view(formName: string) {
     return async (req, res: Response): Promise<void> => {
       const { bookingId } = req.params
-
+      const bookingIdNumber = Number(bookingId)
+      const offenderDetail = await this.offenderService.getOffenderDetails(bookingIdNumber, res.locals.user.username)
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
       res.render(`formPages/incident/${formName}`, {
-        data: { bookingId, ...pageData, types },
+        data: { offenderDetail, bookingId: bookingIdNumber, ...pageData, types },
         formName,
         errors,
         editMode: isComplete,
@@ -66,9 +71,9 @@ export default class CreateReport {
         return res.redirect(req.originalUrl)
       }
 
-      await this.draftReportService.process(res.locals.user, parseInt(bookingId, 10), formName, updatedSection)
+      await this.draftReportService.process(res.locals.user, Number(bookingId), formName, updatedSection)
 
-      const location = await this.getSubmitRedirectLocation(req, formName, bookingId, submitType)
+      const location = await this.getSubmitRedirectLocation(req, formName, Number(bookingId), submitType)
       return res.redirect(location)
     }
   }

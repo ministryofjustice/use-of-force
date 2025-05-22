@@ -1,21 +1,23 @@
-import { AuthClient } from '../../server/data/authClient'
 import StatementsClient from '../../server/data/statementsClient'
 import EmailResolver from './emailResolver'
+import { ManageUsersApiClient } from '../../server/data'
+import AuthService from '../../server/services/authService'
 
 const client = { inTransaction: true }
 
 jest.mock('../../server/data/statementsClient')
-jest.mock('../../server/data/authClient')
+jest.mock('../../server/data/manageUsersApiClient')
+jest.mock('../../server/services/authService')
 
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
-const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
+const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
-let authClientBuilder
 let emailResolver
 
 beforeEach(() => {
-  authClientBuilder = jest.fn().mockReturnValue(authClient)
-  emailResolver = new EmailResolver(authClientBuilder, async () => 'token-1', statementsClient)
+  authService.getSystemClientToken.mockResolvedValue('token-1')
+  emailResolver = new EmailResolver(manageUsersApiClient, authService, statementsClient)
 })
 
 afterEach(() => {
@@ -24,26 +26,29 @@ afterEach(() => {
 
 describe('resolve emails', () => {
   test('not verified', async () => {
-    authClient.getEmail.mockResolvedValue({ username: 'BOB', exists: true, verified: false })
+    manageUsersApiClient.getEmail.mockResolvedValue({ username: 'BOB', exists: true, verified: false })
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 
     expect(email).toEqual(false)
 
-    expect(authClientBuilder).toHaveBeenCalledWith('token-1')
-    expect(authClient.getEmail).toHaveBeenCalledWith('user1')
+    expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('user1', 'token-1')
     expect(statementsClient.setEmail).not.toHaveBeenCalled()
   })
 
   test('verified', async () => {
-    authClient.getEmail.mockResolvedValue({ username: 'BOB', exists: true, verified: true, email: 'user@gov.uk' })
+    manageUsersApiClient.getEmail.mockResolvedValue({
+      username: 'BOB',
+      exists: true,
+      verified: true,
+      email: 'user@gov.uk',
+    })
 
     const email = await emailResolver.resolveEmail(client, 'user1', 'report1')
 
     expect(email).toEqual(true)
 
-    expect(authClientBuilder).toHaveBeenCalledWith('token-1')
-    expect(authClient.getEmail).toHaveBeenCalledWith('user1')
+    expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('user1', 'token-1')
     expect(statementsClient.setEmail).toHaveBeenCalledWith('user1', 'report1', 'user@gov.uk', client)
   })
 })
