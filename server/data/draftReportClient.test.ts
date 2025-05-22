@@ -41,7 +41,7 @@ test('create', async () => {
 
   const id = await draftReportClient.create({
     userId: 'user1',
-    bookingId: 'booking-1',
+    bookingId: '1234',
     agencyId: 'LEI',
     reporterName: 'Bob Smith',
     offenderNo: 'AA11ABC',
@@ -59,7 +59,7 @@ test('create', async () => {
       'user1',
       'Bob Smith',
       'AA11ABC',
-      'booking-1',
+      '1234',
       'LEI',
       ReportStatus.IN_PROGRESS.value,
       'date-1',
@@ -152,10 +152,10 @@ test('deleteReport', () => {
 
   expect(query).toHaveBeenCalledWith({
     text: `update v_report r
-              set deleted = $1 
-              where r.user_id = $2
-              and r.booking_id = $3
-              and r.status = $4`,
+           set deleted = $1
+           where r.user_id = $2
+             and r.booking_id = $3
+             and r.status = $4`,
     values: [now, userId, bookingId, ReportStatus.IN_PROGRESS.value],
   })
 })

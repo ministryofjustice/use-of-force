@@ -1,5 +1,4 @@
-import { buildAppInsightsClient } from '../utils/azure-appinsights'
-import createRestClientBuilder, { RestClient, ClientOptions } from './restClient'
+import { buildAppInsightsClient, initialiseAppInsights } from '../utils/azureAppInsights'
 
 import ReportLogClient from './reportLogClient'
 import PrisonerSearchClient from './prisonerSearchClient'
@@ -13,63 +12,55 @@ import NomisMappingClient from './nomisMappingClient'
 import FeComponentsClient from './feComponentsClient'
 import config from '../config'
 
-import { AuthClient, systemTokenBuilder } from './authClient'
 import * as db from './dataAccess/db'
-import TokenStore from './tokenStore'
-import { createRedisClient } from './redisClient'
+import { redisClient } from './redisClient'
+import RedisTokenStore from './tokenStore/redisTokenStore'
+import HmppsAuthClient from './hmppsAuthClient'
+import applicationInfoSupplier from '../applicationInfo'
+import ManageUsersApiClient from './manageUsersApiClient'
+import InMemoryTokenStore from './tokenStore/inMemoryTokenStore'
+
+const applicationInfo = applicationInfoSupplier()
+initialiseAppInsights()
+const telemetryClient = buildAppInsightsClient(applicationInfo)
 
 const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 const draftReportClient = new DraftReportClient(db.query, reportLogClient)
 const statementsClient = new StatementsClient(db.query)
-const telemetryClient = buildAppInsightsClient()
-
-type RestClientBuilder<T> = (token: string) => T
-
-export default function restClientBuilder<T>(
-  name: string,
-  options: ClientOptions,
-  constructor: new (client: RestClient) => T
-): RestClientBuilder<T> {
-  const restClient = createRestClientBuilder(name, options)
-  return token => new constructor(restClient(token))
-}
 
 export const dataAccess = {
+  applicationInfo,
   statementsClient,
   incidentClient,
   telemetryClient,
   draftReportClient,
   reportLogClient,
-  systemToken: systemTokenBuilder(new TokenStore(createRedisClient({ legacyMode: false }))),
-  authClientBuilder: ((token: string) => new AuthClient(token)) as RestClientBuilder<AuthClient>,
-  prisonClientBuilder: restClientBuilder<PrisonClient>('prisonApi', config.apis.prison, PrisonClient),
-  locationClientBuilder: restClientBuilder<LocationClient>('locationApi', config.apis.location, LocationClient),
-  nomisMappingClientBuilder: restClientBuilder<NomisMappingClient>(
-    'nomisMappingApi',
-    config.apis.nomisMapping,
-    NomisMappingClient
+  hmppsAuthClient: new HmppsAuthClient(
+    config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore()
   ),
-  feComponentsClientBuilder: restClientBuilder<FeComponentsClient>(
-    'feComponentApi',
-    config.apis.frontendComponents,
-    FeComponentsClient
-  ),
-  prisonerSearchClientBuilder: restClientBuilder('prisonerSearchApi', config.apis.prisonerSearch, PrisonerSearchClient),
+  prisonApiClient: new PrisonClient(),
+  locationsApiClient: new LocationClient(),
+  nomisMappingClientBuilder: new NomisMappingClient(),
+  feComponentsClient: new FeComponentsClient(),
+  prisonerSearchApiClient: new PrisonerSearchClient(),
+  hmppsManageUsersApiClient: new ManageUsersApiClient(),
+  redisClient,
 }
 
 export type DataAccess = typeof dataAccess
 
 export {
   StatementsClient,
-  RestClientBuilder,
   IncidentClient,
   PrisonClient,
   LocationClient,
   NomisMappingClient,
   FeComponentsClient,
   PrisonerSearchClient,
-  AuthClient,
+  HmppsAuthClient,
   DraftReportClient,
   reportLogClient,
+  ManageUsersApiClient,
+  redisClient,
 }

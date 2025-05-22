@@ -1,28 +1,37 @@
 import { Prison } from '../data/prisonClientTypes'
 import { InvolvedStaff, Report } from '../data/incidentClientTypes'
-import { LocationService, OffenderService, InvolvedStaffService, NomisMappingService } from '.'
 import ReportDetailBuilder from './reportDetailBuilder'
 import { UseOfForceReport } from '../data/UseOfForceReport'
+import AuthService from './authService'
+import { InvolvedStaffService } from './involvedStaffService'
+import LocationService from './locationService'
+import OffenderService from './offenderService'
+import NomisMappingService from './nomisMappingService'
 
 jest.mock('.')
+jest.mock('./authService')
+jest.mock('./locationService')
+jest.mock('./involvedStaffService')
+jest.mock('./offenderService')
+jest.mock('./nomisMappingService')
 
 const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let reportDetailBuilder
-
-const systemToken = async username => `system-token-for-${username}`
 
 const locationId = 123456
 const incidentLocationId = 'location-uuid'
 const dpsLocationId = 'location-uuid'
 
 beforeEach(() => {
+  authService.getSystemClientToken.mockResolvedValue(`system-token-for-Bob`)
   locationService.getPrisonById = jest.fn()
   locationService.getPrisonById.mockResolvedValue({
     agencyId: 'MDI',
@@ -34,7 +43,7 @@ beforeEach(() => {
     locationService,
     offenderService,
     nomisMappingService,
-    systemToken
+    authService
   )
 })
 

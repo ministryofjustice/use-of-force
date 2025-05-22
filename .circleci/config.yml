@@ -165,6 +165,7 @@ workflows:
             branches:
               only:
                 - main
+                - tech-debt-2
           requires:
             - helm_lint
             - unit_test

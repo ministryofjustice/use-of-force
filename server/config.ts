@@ -1,6 +1,6 @@
 const production = process.env.NODE_ENV === 'production'
 
-function get(name, fallback, options = {}) {
+function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
   if (process.env[name]) {
     return process.env[name]
   }
@@ -11,17 +11,45 @@ function get(name, fallback, options = {}) {
 }
 
 const requiredInProduction = { requireInProduction: true }
+export class AgentConfig {
+  maxSockets?: number
 
-module.exports = {
+  maxFreeSockets: number
+
+  freeSocketTimeout: number
+}
+
+export interface ApiConfig {
+  url: string
+  timeout:
+    | number
+    | {
+        // sets maximum time to wait for the first byte to arrive from the server, but it does not limit how long the
+        // entire download can take.
+        response: number
+        // sets a deadline for the entire request (including all uploads, redirects, server processing time) to complete.
+        // If the response isn't fully downloaded within that time, the request will be aborted.
+        deadline: number
+      }
+  agent: AgentConfig
+}
+
+export default {
+  buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
+  productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
+  gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
+  branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
+  staticResourceCacheDuration: '1h',
   db: {
     username: get('DB_USER', 'use-of-force'),
     password: get('DB_PASS', 'use-of-force'),
     server: get('DB_SERVER', 'localhost'),
     database: get('DB_NAME', 'use-of-force'),
-    port: get('DB_PORT', 5432),
+    port: get('DB_PORT', 5432) as number,
     sslEnabled: get('DB_SSL_ENABLED', 'false'),
   },
   redis: {
+    enabled: get('REDIS_ENABLED', 'false', requiredInProduction) === 'true',
     host: get('REDIS_HOST', 'localhost'),
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
@@ -29,7 +57,7 @@ module.exports = {
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
-    expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
+    expiryMinutes: get<number>('WEB_SESSION_TIMEOUT_IN_MINUTES', 120, requiredInProduction) as number,
   },
   email: {
     notifyKey: get('NOTIFY_API_KEY', 'invalid-token', requiredInProduction),
@@ -54,8 +82,8 @@ module.exports = {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
       externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
-        response: get('AUTH_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('AUTH_API_TIMEOUT_DEADLINE', 10000),
+        response: get('AUTH_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('AUTH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -70,15 +98,20 @@ module.exports = {
     hmppsManageUsersApi: {
       url: get('HMPPS_MANAGE_USERS_API_URL', 'http://localhost:8081', requiredInProduction),
       timeout: {
-        response: get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000),
+        response: get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000) as number,
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
       },
     },
     prison: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('PRISON_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('PRISON_API_TIMEOUT_DEADLINE', 10000),
+        response: get('PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -89,8 +122,8 @@ module.exports = {
     location: {
       url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000),
+        response: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -101,8 +134,8 @@ module.exports = {
     nomisMapping: {
       url: get('NOMIS_MAPPING_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000),
+        response: get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -113,8 +146,8 @@ module.exports = {
     prisonerSearch: {
       url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
       timeout: {
-        response: get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000),
-        deadline: get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000),
+        response: get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -125,8 +158,8 @@ module.exports = {
     tokenVerification: {
       url: get('TOKENVERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       timeout: {
-        response: get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000),
-        deadline: get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000),
+        response: get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000) as number,
       },
       agent: {
         maxSockets: 100,
@@ -138,8 +171,8 @@ module.exports = {
     frontendComponents: {
       url: get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction),
       timeout: {
-        response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000),
-        deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000),
+        response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
+        deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
       },
       agent: {
         maxSockets: 100,

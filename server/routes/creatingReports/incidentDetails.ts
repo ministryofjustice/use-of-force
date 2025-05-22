@@ -8,8 +8,8 @@ import type OffenderService from '../../services/offenderService'
 import type LocationService from '../../services/locationService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
-import type { SystemToken } from '../../types/uof'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
+import AuthService from '../../services/authService'
 
 const formName = 'incidentDetails'
 
@@ -23,7 +23,7 @@ export default class IncidentDetailsRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly locationService: LocationService
   ) {}
 
@@ -72,8 +72,8 @@ export default class IncidentDetailsRoutes {
     const { bookingId } = req.params
     const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
 
-    const token = await this.systemToken(res.locals.user.username)
-    const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
@@ -102,6 +102,7 @@ export default class IncidentDetailsRoutes {
       locations,
       prison,
       types,
+      offenderDetail,
     }
 
     return res.render(`formPages/incident/${formName}`, {
@@ -115,7 +116,7 @@ export default class IncidentDetailsRoutes {
   public submit = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { submitType } = req.body
-    const token = await this.systemToken(res.locals.user.username)
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
 
     const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 

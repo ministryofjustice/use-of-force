@@ -9,7 +9,8 @@ import ReportLogClient from '../data/reportLogClient'
 import { InTransaction } from '../data/dataAccess/db'
 import type { ReportSummary, IncompleteReportSummary, Report, AnonReportSummary } from '../data/incidentClientTypes'
 
-import type { LoggedInUser, SystemToken } from '../types/uof'
+import type { LoggedInUser } from '../types/uof'
+import AuthService from './authService'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -46,11 +47,11 @@ export default class ReportService {
     private readonly locationService: LocationService,
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   private async getOffenderNames(username, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
-    const token = await this.systemToken(username)
+    const token = await this.authService.getSystemClientToken(username)
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return this.offenderService.getOffenderNames(token, offenderNos)
   }

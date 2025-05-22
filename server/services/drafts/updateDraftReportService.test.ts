@@ -1,15 +1,19 @@
-import { RestClientBuilder, PrisonClient, DraftReportClient, IncidentClient } from '../../data'
+import { PrisonClient, DraftReportClient, IncidentClient } from '../../data'
 import { InmateDetail } from '../../data/prisonClientTypes'
 import ReportLogClient from '../../data/reportLogClient'
 import { LoggedInUser } from '../../types/uof'
 import UpdateDraftReportService from './updateDraftReportService'
+import AuthService from '../authService'
 
 jest.mock('../../data')
+jest.mock('../authService')
+jest.mock('../prisonerSearchService')
 
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
-const prisonClient = new PrisonClient(null) as jest.Mocked<PrisonClient>
+const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const currentUser = { username: 'user1', displayName: 'Bob Smith' } as LoggedInUser
 const incidentDate = new Date()
@@ -17,18 +21,16 @@ const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
 
 let service: UpdateDraftReportService
-let prisonClientBuilder: RestClientBuilder<PrisonClient>
 
 beforeEach(() => {
-  prisonClientBuilder = jest.fn().mockReturnValue(prisonClient)
-  const systemToken = jest.fn().mockResolvedValue('system-token-1')
+  authService.getSystemClientToken.mockResolvedValue('system-token-1')
   service = new UpdateDraftReportService(
     draftReportClient,
     incidentClient,
     reportLogClient,
     inTransaction,
-    prisonClientBuilder,
-    systemToken
+    prisonClient,
+    authService
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   prisonClient.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' } as InmateDetail)
@@ -114,6 +116,5 @@ describe('create', () => {
       formResponse: { form: formObject },
       incidentDate,
     })
-    expect(prisonClientBuilder).toHaveBeenCalledWith('system-token-1')
   })
 })

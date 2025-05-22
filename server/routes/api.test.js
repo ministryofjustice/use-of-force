@@ -7,13 +7,18 @@ const userSupplier = jest.fn()
 const offenderService = {
   getOffenderImage: jest.fn(),
 }
+/** @type {any} */
+const authService = {
+  getSystemClientToken: jest.fn(),
+}
 
 describe('api', () => {
   let app
 
   beforeEach(() => {
+    authService.getSystemClientToken.mockResolvedValue('user1-system-token')
     offenderService.getOffenderImage.mockResolvedValue('')
-    app = appWithAllRoutes({ offenderService }, userSupplier)
+    app = appWithAllRoutes({ offenderService, authService }, userSupplier)
   })
 
   afterEach(() => {

@@ -2,7 +2,7 @@ import url from 'url'
 import { Request, Response } from 'express'
 import validateForm from './searchForPrisonerValidation'
 import { SearchForm } from '../../data/prisonerSearchClient'
-import { PrisonerSearchService } from '../../services'
+import PrisonerSearchService from '../../services/prisonerSearchService'
 
 const extractForm = ({ prisonNumber, firstName, lastName, agencyId }): { form: SearchForm; openDetails: boolean } => ({
   form: { prisonNumber, firstName, lastName, agencyId },
