@@ -14,7 +14,7 @@ context('view review page', () => {
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
   })
 
   it('A reviewer can view reports they did and did not raise', () => {

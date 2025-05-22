@@ -208,6 +208,7 @@ const stubEmail = username =>
       jsonBody: {
         username,
         email: `${username}@gov.uk`,
+        verified: true,
       },
     },
   })

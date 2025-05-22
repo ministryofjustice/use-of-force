@@ -20,7 +20,7 @@ context('Submit the incident report', () => {
     cy.task('stubPrisons')
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444440')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubUserDetailsRetrieval', ['JO_ZAGATO', 'TEST_USER', 'EMILY_JONES'])
   })
 
   it('Submitting a form', () => {
