@@ -448,7 +448,8 @@
       <span class="govuk-visually-hidden">Error:</span>
       {{ primaryErrorMessageText}}
     </span>
-    <div class="govuk-radios--inline" data-module="govuk-radios">
+    <div  class="govuk-radios" data-module="govuk-radios">
+    <div class="govuk-radios--inline">
       {% set name = question.primaryQuestion.name %}
       {% for option in question.primaryQuestion.options %}
         <div class="govuk-radios__item">
@@ -475,9 +476,9 @@
           </label>
         </div>
       {% endfor %}
-
+    </div>
       <!-- followup -->
-        <div class="govuk-radios govuk-radios__conditional clear-both" id="conditional-{{ name }}">
+        <div class="govuk-radios__conditional clear-both" id="conditional-{{ name }}">
           <div class="{{ govukFormGroupErrorInner }}">
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend
