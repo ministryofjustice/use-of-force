@@ -146,7 +146,6 @@ workflows:
             branches:
               only:
                 - main
-                - tech-debt-2
       - hmpps/build_docker:
           name: test_build_docker
           publish: false
@@ -156,7 +155,6 @@ workflows:
             branches:
               ignore:
                 - main
-                - tech-debt-2
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -167,7 +165,6 @@ workflows:
             branches:
               only:
                 - main
-                - tech-debt-2
           requires:
             - helm_lint
             - unit_test
