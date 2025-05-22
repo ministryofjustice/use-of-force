@@ -92,7 +92,7 @@ describe('/:reportId/edit-report', () => {
         .expect('Content-Type', /text\/html/)
         .expect(200)
         .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('2', 'user1')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(2, 'user1')
           expect(reviewService.getReport).toHaveBeenCalledWith(-19)
           expect(res.text).toContain('Problem parsing json')
         })

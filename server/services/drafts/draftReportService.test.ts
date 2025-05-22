@@ -241,7 +241,7 @@ describe('getInvolvedStaff', () => {
 
       await expect(updateDraftReportService.process).toHaveBeenCalledWith(
         loggedInUser,
-        '2',
+        2,
         'involvedStaff',
         [{ username: 'user-3' }, { username: 'user-2' }],
         undefined

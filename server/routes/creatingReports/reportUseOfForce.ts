@@ -17,7 +17,7 @@ export default class ReportUseOfForceRoutes {
     const { displayName, offenderNo, dateOfBirth } = offenderDetail
     res.render('pages/report-use-of-force', {
       data: { ...res.locals.formObject, offenderDetail, displayName, offenderNo, dateOfBirth },
-      bookingId: req.params.bookingId,
+      bookingId: Number(req.params.bookingId),
       status,
     })
   }

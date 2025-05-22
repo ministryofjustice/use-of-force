@@ -73,7 +73,7 @@ export default class IncidentDetailsRoutes {
     const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
 
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), res.locals.user.username)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
