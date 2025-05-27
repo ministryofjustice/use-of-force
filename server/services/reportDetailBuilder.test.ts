@@ -56,8 +56,8 @@ describe('Build details', () => {
     locationService.getLocation.mockResolvedValue('Wing A')
 
     involvedStaffService.getInvolvedStaff.mockResolvedValue([
-      { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22 },
-      { name: 'MAUREEN TYLER', userId: 'M_TYLER', statementId: 24 },
+      { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22, email: 'janet@gmail.com' },
+      { name: 'MAUREEN TYLER', userId: 'M_TYLER', statementId: 24, email: 'maureen@gmail.com' },
     ] as InvolvedStaff[])
 
     offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jim Burgler', offenderNo: 'A1234AA' })
@@ -72,6 +72,7 @@ describe('Build details', () => {
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00Z'),
       agencyId: 'MDI',
+      status: 'SUBMITTED',
     }
 
     const result = await reportDetailBuilder.build('Bob', report)
@@ -101,6 +102,7 @@ describe('Build details', () => {
             reportId: 1,
             statementId: 22,
             username: 'J_SMITH',
+            email: 'janet@gmail.com',
           },
           {
             isReporter: false,
@@ -108,6 +110,7 @@ describe('Build details', () => {
             reportId: 1,
             statementId: 24,
             username: 'M_TYLER',
+            email: 'maureen@gmail.com',
           },
         ],
         witnesses: 'None',
@@ -146,6 +149,7 @@ describe('Build details', () => {
         primaryReason: undefined,
         reasonsForUseOfForce: undefined,
       },
+      reportStatus: 'SUBMITTED',
     })
   })
 

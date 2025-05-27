@@ -1,9 +1,10 @@
+import moment from 'moment'
 import IncidentClient from '../data/incidentClient'
 import ReportService from './reportService'
 import OffenderService from './offenderService'
 import LocationService from './locationService'
 import { PageResponse } from '../utils/page'
-import { Report } from '../data/incidentClientTypes'
+import { Report, ReportEdit } from '../data/incidentClientTypes'
 import { Prison } from '../data/prisonClientTypes'
 import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
@@ -58,6 +59,14 @@ describe('reportService', () => {
     })
   })
 
+  describe('getReportEdits', () => {
+    test('it should call query on db', async () => {
+      incidentClient.getReportEdits.mockResolvedValue([{}] as ReportEdit[])
+      await service.getReportEdits(1)
+      expect(incidentClient.getReportEdits).toHaveBeenCalledTimes(1)
+      expect(incidentClient.getReportEdits).toHaveBeenCalledWith(1)
+    })
+  })
   describe('getAnonReportSummary', () => {
     test('it should call query on db', async () => {
       const report = { statementId: 1, incidentDate: new Date(1), agencyId: 'MDI', isRemovalRequested: true }

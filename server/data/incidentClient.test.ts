@@ -43,6 +43,30 @@ test('getReports', async () => {
   })
 })
 
+test('getReportEdits', () => {
+  incidentClient.getReportEdits(1)
+
+  expect(query).toBeCalledWith({
+    text: `select id
+          , edit_date "editDate"
+          , editor_user_id "editorUserId"
+          , editor_name "editorName"
+          , report_id "reportId"
+          , change_to "changeTo"
+          , old_value_primary "oldValuePrimary"
+          , old_value_secondary "oldValueSecondary"
+          , new_value_primary "newValuePrimary"
+          , new_value_secondary "newValueSecondary"
+          , reason "reason"
+          , additional_comments "additionalComments"
+          , report_owner_changed "reportOwnerChanged"
+          from report_edit r
+          where r.report_id = $1
+          ORDER BY edit_date ASC`,
+    values: [1],
+  })
+})
+
 test('getReportForReviewer', () => {
   incidentClient.getReportForReviewer(1)
 
@@ -176,6 +200,7 @@ test('getReport', () => {
           , reporter_name "reporterName"
           , form_response "form"
           , booking_id "bookingId"
+          , status "status"
           from v_report r
           where r.user_id = $1 and r.id = $2`,
     values: ['user1', 1],

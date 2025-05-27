@@ -27,6 +27,20 @@ export default class IncidentsRoutes {
 
     const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
-    return res.render('pages/your-report', { data })
+    const reportEdits = await this.reportService.getReportEdits(parseInt(reportId, 10))
+
+    const hasReportBeenEdited = reportEdits?.length > 0
+
+    const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+
+    const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
+
+    const hasReportOwnerChanged = newReportOwners?.length > 0
+
+    const reportOwner = newReportOwners?.at(-1)
+
+    const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
+
+    return res.render('pages/your-report', { data: dataWithEdits })
   }
 }

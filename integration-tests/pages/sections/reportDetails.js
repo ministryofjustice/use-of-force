@@ -40,9 +40,23 @@ module.exports = {
     authorisedBy().contains('Eric Bloodaxe')
 
     // eslint-disable-next-line cypress/unsafe-to-chain-command
-    cy.get(`[data-qa="staffInvolved"]`)
-      .first()
-      .find('li')
+    cy.get('body').then($body => {
+      if ($body.find('[data-qa="staffInvolved"]').length > 0) {
+        cy.get('[data-qa="staffInvolved"]')
+          .first()
+          .find('li')
+          .then($listItems => {
+            const staffPresent = $listItems.toArray().map(el => Cypress.$(el).text().trim())
+            involvedStaff.forEach(staff => {
+              expect(staffPresent).to.contain(staff)
+            })
+          })
+      }
+    })
+
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.get(`[data-qa="staff-involved"]`)
+      .find('td')
       .spread((...rest) => rest.map(element => Cypress.$(element).text().trim()))
       .then(staffPresent => {
         involvedStaff.forEach(staff => {

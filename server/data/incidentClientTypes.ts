@@ -58,3 +58,19 @@ export interface NotificationReminder {
   isOverdue?: boolean
   reminder: number
 }
+
+export interface ReportEdit {
+  id: number
+  editDate: Moment
+  editorUserId: string
+  editorName: string
+  reportId: number
+  changeTo: string
+  oldValuePrimary: string
+  oldValueSecondary?: string
+  newValuePrimary: string
+  newValueSecondary?: string
+  reason?: string
+  additionalComments?: string
+  reportOwnerChanged: boolean
+}

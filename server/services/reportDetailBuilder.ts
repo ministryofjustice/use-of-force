@@ -31,6 +31,7 @@ export default class ReportDataBuilder {
     return staff => ({
       name: properCaseFullName(staff.name),
       username: staff.userId,
+      email: staff.email,
       reportId,
       isReporter: reporterUsername === staff.userId,
       statementId: staff.statementId,
@@ -58,8 +59,18 @@ export default class ReportDataBuilder {
   async build(currentUsername: string, report: Report): Promise<ReportDetail> {
     const token = await this.authService.getSystemClientToken(currentUsername)
 
-    const { id, form, username, incidentDate, bookingId, reporterName, submittedDate, agencyId: prisonId } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, currentUsername)
+    const {
+      id,
+      form,
+      username,
+      incidentDate,
+      bookingId,
+      reporterName,
+      submittedDate,
+      agencyId: prisonId,
+      status,
+    } = report
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, token)
     const incidentLocationId = await this.getLocationId(token, form)
     const locationDescription = await this.locationService.getLocation(token, incidentLocationId)
     const involvedStaff = await this.involvedStaffService.getInvolvedStaff(id)
@@ -73,7 +84,7 @@ export default class ReportDataBuilder {
       submittedDate,
       bookingId,
       ...reportSummary(form, offenderDetail, prison, locationDescription, involvedStaffNameAndUsernames, incidentDate),
-      offenderDetail,
+      reportStatus: status,
     }
   }
 }
