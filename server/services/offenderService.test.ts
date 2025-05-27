@@ -1,21 +1,21 @@
+import { PassThrough } from 'stream'
 import OffenderService from './offenderService'
+import { PrisonClient } from '../data'
+import { InmateBasicDetails, InmateDetail } from '../data/prisonClientTypes'
+import AuthService from './authService'
 
 const token = 'token-1'
+jest.mock('../data')
+jest.mock('../services/authService')
 
-const prisonClient = {
-  getOffenderDetails: jest.fn(),
-  getLocations: jest.fn(),
-  getOffenderImage: jest.fn(),
-  getOffenders: jest.fn(),
-}
-
-const prisonClientBuilder = jest.fn()
+const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service
 
 beforeEach(() => {
-  prisonClientBuilder.mockReturnValue(prisonClient)
-  service = new OffenderService(prisonClientBuilder)
+  authService.getSystemClientToken.mockResolvedValue(token)
+  service = new OffenderService(prisonClient, authService)
 })
 
 afterEach(() => {
@@ -25,9 +25,11 @@ afterEach(() => {
 
 describe('getOffenderDetails', () => {
   it('should format display name', async () => {
-    const details = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: '1980-12-31' }
-    prisonClient.getOffenderDetails.mockReturnValue(details)
-    const result = await service.getOffenderDetails(token, -5)
+    const details: Partial<InmateDetail> = { firstName: 'SAM', lastName: 'SMITH', dateOfBirth: new Date('1980-12-31') }
+    prisonClient.getOffenderDetails.mockResolvedValue(details)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const result = await service.getOffenderDetails('12345678', token)
 
     expect(result).toEqual({
       ...details,
@@ -37,39 +39,38 @@ describe('getOffenderDetails', () => {
   })
 
   it('should use the token', async () => {
-    const details = { firstName: 'SAM', lastName: 'SMITH' }
-    prisonClient.getOffenderDetails.mockReturnValue(details)
-    prisonClient.getLocations.mockReturnValue([])
-    await service.getOffenderDetails(token, -5)
+    const details: Partial<InmateDetail> = { firstName: 'SAM', lastName: 'SMITH' }
+    prisonClient.getOffenderDetails.mockResolvedValue(details)
+    await service.getOffenderDetails('12345', 'user1')
 
-    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
+    expect(prisonClient.getOffenderDetails).toHaveBeenCalledWith('12345', token)
   })
 })
 
 describe('getOffenderImage', () => {
   it('Can retrieve image', () => {
-    const image = 'a stream'
-    prisonClient.getOffenderImage.mockReturnValue(image)
-    service.getOffenderImage(token, -5)
+    const image = new PassThrough()
+    prisonClient.getOffenderImage.mockResolvedValue(image)
+    service.getOffenderImage('12345', token)
 
-    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
-    expect(prisonClient.getOffenderImage).toHaveBeenCalledWith(-5)
+    expect(prisonClient.getOffenderImage).toHaveBeenCalledWith(token, '12345')
   })
 })
 
 describe('getOffenders', () => {
   it('Can retrieve offenders', async () => {
-    const offenders = [
-      { offenderNo: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
-      { offenderNo: 'BBB', firstName: 'BEN', lastName: 'SMITH' },
-    ]
-    prisonClient.getOffenders.mockReturnValue(offenders)
+    const off1 = { offenderNo: 'AAA', firstName: 'SAM', lastName: 'SMITH' }
+    const off2 = { offenderNo: 'BBB', firstName: 'BEN', lastName: 'SMITH' }
+    const offenders: Partial<InmateBasicDetails>[] = [off1, off2]
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    prisonClient.getOffenders.mockResolvedValue(offenders)
 
     const offenderNos = ['AAA', 'BBB', 'AAA']
     const names = await service.getOffenderNames(token, offenderNos)
 
     expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
-    expect(prisonClientBuilder).toHaveBeenCalledWith(token)
-    expect(prisonClient.getOffenders).toHaveBeenCalledWith(['AAA', 'BBB'])
+    expect(prisonClient.getOffenders).toHaveBeenCalledWith(['AAA', 'BBB'], token)
   })
 })

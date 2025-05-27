@@ -1,10 +1,13 @@
-const { createNotificationService } = require('./notificationService')
+import { createNotificationService } from './notificationService'
+
+import config from '../config'
+
 const {
   links: { emailUrl },
   email: {
     templates: { involvedStaff, reporter },
   },
-} = require('../config')
+} = config
 
 const reporterName = 'Jane Smith'
 const involvedName = 'Thelma Jones'

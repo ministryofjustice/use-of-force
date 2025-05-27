@@ -22,7 +22,8 @@ context('Check your answers page', () => {
     cy.task('stubPrisons')
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubLocation', '00000000-1111-2222-3333-444444444')
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'EMILY_JONES', 'JO_ZAGATO'])
     cy.task('seedReport', {
       status: ReportStatus.IN_PROGRESS,
       involvedStaff: [],

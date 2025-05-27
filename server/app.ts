@@ -11,7 +11,7 @@ import createError from 'http-errors'
 import session from 'express-session'
 import ConnectRedis from 'connect-redis'
 import setUpCsrf from './middleware/setUpCsrf'
-import { createRedisClient } from './data/redisClient'
+import { createRedisClient, redisClient } from './data/redisClient'
 
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -31,6 +31,8 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpWebSession from './middleware/setUpWebSession'
+import refreshSystemToken from './middleware/refreshSystemToken'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -121,27 +123,7 @@ export default function createApp(services: Services): Express {
     next()
   })
 
-  const RedisStore = ConnectRedis(session)
-  const client = createRedisClient({ legacyMode: true })
-  client.connect()
-
-  app.use(
-    session({
-      store: new RedisStore({ client }),
-      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
-      secret: config.session.secret,
-      resave: false, // redis implements touch so shouldn't need this
-      saveUninitialized: false,
-      rolling: true,
-    })
-  )
-
-  app.use(
-    asyncMiddleware((req, res, next) => {
-      req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-      next()
-    })
-  )
+  app.use(setUpWebSession())
 
   app.use(passport.initialize())
   app.use(passport.session())
@@ -166,7 +148,7 @@ export default function createApp(services: Services): Express {
   }
 
   //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
+  const cacheControl = { maxAge: config.staticResourceCacheDuration }
 
   ;[
     '/assets',
@@ -294,16 +276,13 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(populateCurrentUser(services.userService))
+  app.use(refreshSystemToken(services))
 
   app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)
 
   app.get('*', getFrontendComponents(services.feComponentsService))
   app.use(createRouter(authenticationMiddleware, services))
-
-  app.use((req, res, next) => {
-    next(createError(404, 'Not found'))
-  })
 
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 
