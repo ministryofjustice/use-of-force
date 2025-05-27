@@ -14,7 +14,7 @@
 
 {% macro tableRowWithBadge(dataItem) %}
 <dl class="govuk-summary-list govuk-!-margin-0 ">  
-  <div class="govuk-summary-list__row">
+  <div class="govuk-summary-list__row {{dataItem.addedClasses}}">
     <dt class="govuk-summary-list__key summary-list__key__wider flex-basis-50"> {{dataItem.label}} </dt>
     <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
       <span class="moj-badge moj-badge-blue moj-badge-large"> {{dataItem.dataValue}}</span>
@@ -26,7 +26,7 @@
 
 {% macro tableRow(dataItem) %}
 <dl class="govuk-summary-list govuk-!-margin-0">  
-  <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
+  <div class="govuk-summary-list__row {{dataItem.addedClasses}}{% if dataItem.print %} flex-container {% endif %}">
     <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %} flex-basis-50"> {{dataItem.label}} </dt>
     <dd class="govuk-summary-list__value  {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
