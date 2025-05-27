@@ -56,6 +56,21 @@
 </dl> 
 {% endmacro %}
 
+{% macro tableRowWithEditHistoryLink(dataItem) %}
+<dl class="govuk-summary-list  govuk-!-margin-bottom-0">  
+  <div class="govuk-summary-list__row {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}">
+    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}"> {{dataItem.label}} </dt>
+    <dd class="govuk-summary-list__value {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
+      {{dataItem.dataValue}}
+    </dd>
+   <dd class= "govuk-summary-list__actions">
+    <a class="govuk-link govuk-link--no-visited-state" data-qa='history-link' href='/{{dataItem.incidentId}}/view-history'>History
+    <span class="govuk-visually-hidden"> History</span></a>
+   </dd>
+  </div>
+</dl> 
+{% endmacro %}
+
 {% macro tableRowWithContent(dataItem) %}
 <dl class="govuk-summary-list govuk-!-margin-0">  
   <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">

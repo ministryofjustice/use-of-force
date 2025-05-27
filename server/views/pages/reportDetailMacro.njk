@@ -93,10 +93,11 @@
             {% endif %}
 
             {% if data.hasReportBeenEdited %}
-              {{reportDetailsMacros.tableRow({
+              {{reportDetailsMacros.tableRowWithEditHistoryLink({
                   label: 'Report last edited',  
                   'data-qa': 'last-edited-date-time',    
-                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName
+                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName,
+                  incidentId: data.incidentId
                 })
               }}
             {% endif %}  
