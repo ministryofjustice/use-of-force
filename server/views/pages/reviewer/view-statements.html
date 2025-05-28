@@ -67,9 +67,9 @@
               {% endif %}
 
               {% if not statement.isVerified and (removalRequested or statement.isOverdue) %}
-              <span data-qa="unverified" class="govuk-tag govuk-tag--grey govuk-!-margin-right-3 govuk-!-margin-top-1">Email not verified</span>
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3 govuk-!-margin-top-1">EMAIL NOT VERIFIED</span>
               {% elif not statement.isVerified %}
-              <span data-qa="unverified" class="govuk-tag govuk-tag--grey govuk-!-margin-right-3">Email not verified</span>
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
               {% endif %}
 
             </td>
