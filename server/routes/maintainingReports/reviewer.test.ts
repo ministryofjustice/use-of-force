@@ -8,6 +8,7 @@ import ReviewService, { ReviewerStatementWithComments } from '../../services/rev
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import config from '../../config'
 
 const userSupplier = jest.fn()
 
@@ -204,6 +205,8 @@ describe(`GET /not-completed-incidents`, () => {
 
 describe('GET /view-report', () => {
   it('should render page for reviewer', () => {
+    config.featureFlagReportEditingEnabled = true
+    app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
     userSupplier.mockReturnValue(reviewerUser)
     reviewService.getReport.mockResolvedValue(report)
     return request(app)
@@ -211,8 +214,26 @@ describe('GET /view-report', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Use of force report')
-        expect(res.text).not.toContain('Delete report')
+        expect(res.text).toContain('Use of force incident')
+        expect(res.text).not.toContain('Delete incident')
+        expect(res.text).not.toContain('Edit report')
+      })
+  })
+
+  it('should render page for coordinator', () => {
+    config.featureFlagReportEditingEnabled = true
+    app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
+
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getReport.mockResolvedValue(report)
+    return request(app)
+      .get('/1/view-report')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Use of force incident')
+        expect(res.text).toContain('Delete incident')
+        expect(res.text).toContain('Edit report')
       })
   })
 })

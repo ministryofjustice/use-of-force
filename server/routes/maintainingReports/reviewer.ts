@@ -74,7 +74,9 @@ export default class ReviewerRoutes {
 
     const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
 
-    return res.render('pages/reviewer/view-report', { data: dataWithEdits })
+    const user = { isCoordinator: res.locals.user.isCoordinator, isReviewer: res.locals.user.isReviewer }
+
+    return res.render('pages/reviewer/view-report', { data: dataWithEdits, user })
   }
 
   reviewStatements = async (req: Request, res: Response): Promise<void> => {
