@@ -54,6 +54,7 @@
 
 {% macro detail(data, bookingId, incidentId, user, print, renderReportView) %}
     {% if renderReportView %}
+    {% set addedClasses = 'border-bottom-none' %}
       <div class="summary-card">
           <div class="summary-card__title-wrapper">
             {{
@@ -93,10 +94,11 @@
             {% endif %}
 
             {% if data.hasReportBeenEdited %}
-              {{reportDetailsMacros.tableRow({
+              {{reportDetailsMacros.tableRowWithEditHistoryLink({
                   label: 'Report last edited',  
                   'data-qa': 'last-edited-date-time',    
-                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName
+                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName,
+                  incidentId: data.incidentId
                 })
               }}
             {% endif %}  
@@ -104,7 +106,8 @@
             {{reportDetailsMacros.tableRowWithBadge({
                 label: 'Report status',  
                 'data-qa': 'report-status',    
-                dataValue: data.reportStatus
+                dataValue: data.reportStatus,
+                addedClasses: addedClasses
               })
             }}
         </div>
@@ -122,16 +125,16 @@
   </div>
   <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {{reportDetailsMacros.tableRow({
-              label: 'Date of incident',  
-              'data-qa': 'incidentDate',    
-              dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY'),
+        label: 'Date of incident',  
+        'data-qa': 'incidentDate',    
+        dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY'),
         print: print
       })
     }}
     {{reportDetailsMacros.tableRow({
-              label: 'Time of incident',  
-              'data-qa': 'incidentTime',    
-              dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm'),
+        label: 'Time of incident',  
+        'data-qa': 'incidentTime',    
+        dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm'),
         print: print 
       })
     }}
@@ -175,7 +178,8 @@
         'data-qa': 'witnesses',
         dataValue: data.incidentDetails.witnesses,
         type: 'itemPerLine',
-        print: print
+        print: print,
+        addedClasses:addedClasses
       })
     }}
   </div>
@@ -196,7 +200,7 @@
     {% if renderReportView %}
       <table class="govuk-table" data-module="moj-sortable-table">
         <thead class="govuk-table__head">
-          <tr class="govuk-table__row">        
+          <tr class="govuk-table__row  {{addedClasses}}">        
             <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
             <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
           </tr>
@@ -386,7 +390,8 @@
         label: 'Were handcuffs applied against this prisoner?',
         'data-qa': 'handcuffsApplied',
         dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo,
-        print: print
+        print: print,
+        addedClasses: addedClasses
       })
     }}
   </div>
@@ -467,7 +472,8 @@
         'data-qa': 'staffHospitalisation',
         dataValue: data.relocationAndInjuries.staffHospitalisation,
         type: 'itemPerLine',
-        print: print
+        print: print,
+        addedClasses: addedClasses
       })
     }}
   </div>
@@ -506,7 +512,8 @@
         label: 'Was any part of the incident captured on CCTV?',
         'data-qa': 'cctv',
         dataValue: data.evidence.cctv | capitalize,
-        print: print
+        print: print,
+        addedClasses: addedClasses
       })
     }}
   </div>

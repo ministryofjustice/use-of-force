@@ -23,6 +23,8 @@ const viewReportPage = () =>
 
     location: () => cy.get('[data-qa="location"]'),
 
+    historyLink: () => cy.get('[data-qa="history-link"]'),
+
     getReportId: () => {
       return cy.url().then(url => {
         const match = url.match(/.*\/(.*)\/view-report/)
