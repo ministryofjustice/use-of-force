@@ -1,4 +1,4 @@
-{% extends "../../partials/layout.html" %} 
+{% extends "../../partials/prisonerBannerLayout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
@@ -17,7 +17,7 @@
     })
   }}
   {% endif %}
-  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 no-print">
+  <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-9 no-print">
     <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
       <p>You have been named as being involved in a use of force incident. If you believe you have been incorrectly named in this incident, you can request to be removed.</p>
       <p>Your request will be sent to the use of force coordinator to review.</p>
