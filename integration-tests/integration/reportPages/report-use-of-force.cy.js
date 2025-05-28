@@ -21,8 +21,8 @@ context('Report use of force page', () => {
     cy.login()
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    reportUseOfForcePage.offenderName().contains('Norman Smith')
-    reportUseOfForcePage.dob().contains('26 December 2000')
+    reportUseOfForcePage.bannerOffenderName().contains('Smith, Norman')
+    reportUseOfForcePage.dob().contains('26/12/2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')
     reportUseOfForcePage.offenderImage().should('be.visible')
 
