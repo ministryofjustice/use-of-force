@@ -6,6 +6,7 @@ const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetail
 context('Enter use of force details page', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
