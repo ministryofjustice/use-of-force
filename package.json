@@ -107,7 +107,7 @@
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.7.3",
     "applicationinsights-native-metrics": "^0.0.9",
-    "axe-core": "^4.10.2",
+    "axe-core": "^4.10.3",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "compression": "^1.8.0",
@@ -115,7 +115,7 @@
     "connect-redis": "^8.0.3",
     "cookie-parser": "^1.4.7",
     "cookie-session": "^2.1.0",
-    "csrf-sync": "^4.0.3",
+    "csrf-sync": "^4.2.1",
     "cypress-axe": "^1.6.0",
     "date-fns": "^3.2.0",
     "escape-html": "^1.0.3",
@@ -137,7 +137,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.8.0",
-    "pg": "^8.13.3",
+    "pg": "^8.16.0",
     "pg-format": "^1.0.4",
     "querystring": "^0.2.1",
     "ramda": "^0.29.0",
@@ -154,7 +154,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^18.16.12",
     "@types/nunjucks": "^3.2.2",
-    "@types/pg": "^8.11.11",
+    "@types/pg": "^8.15.2",
     "@types/superagent": "^4.1.17",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
@@ -162,7 +162,7 @@
     "concurrently": "^7.6.0",
     "cypress": "^13.8.1",
     "cypress-multi-reporters": "^1.6.4",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "eslint": "^8.40.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -180,24 +180,16 @@
     "mocha-junit-reporter": "^2.2.0",
     "nock": "^13.5.4",
     "node-sass": "^9.0.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "openapi-typescript": "^7.6.1",
     "prettier": "^2.8.8",
     "supertest": "^7.1.1",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.3.4",
     "typescript": "^5.8.3"
   },
   "overrides": {
-    "jest-html-reporter": {
-      "@babel/traverse": "7.23.2"
-    },
     "notifications-node-client": {
       "axios": "1.9.0"
-    },
-    "jest": {
-      "jest-core": {
-        "micromatch": "4.0.8"
-      }
     }
   }
 }
