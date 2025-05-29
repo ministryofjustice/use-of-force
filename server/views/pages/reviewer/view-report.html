@@ -9,10 +9,11 @@
 
 {% block beforeContent %}
   {% include "../../partials/breadcrumbs.njk" %}
+  {{ super() }}
 {% endblock %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-body">
+<div class="govuk-grid-row govuk-body negative-margin-top-7">
   {% if featureFlagReportEditingEnabled %}
     {% set renderReportView = true %}
     {% set print = false %}
