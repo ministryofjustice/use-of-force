@@ -1,4 +1,4 @@
-{% extends "../../partials/layout.html" %} 
+{% extends "../../partials/prisonerBannerLayout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from  "../../macros.njk" import overdueBadge %}   
@@ -67,9 +67,9 @@
               {% endif %}
 
               {% if not statement.isVerified and (removalRequested or statement.isOverdue) %}
-              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3 govuk-!-margin-top-1">EMAIL NOT VERIFIED </span>
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3 govuk-!-margin-top-1">EMAIL NOT VERIFIED</span>
               {% elif not statement.isVerified %}
-              <span data-qa="unverified" class="govuk-tag moj-tag--black govuk-!-margin-right-3">EMAIL NOT VERIFIED </span>
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
               {% endif %}
 
             </td>

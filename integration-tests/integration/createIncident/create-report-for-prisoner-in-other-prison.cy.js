@@ -6,8 +6,10 @@ const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForceP
 context('Creating reports for prisoners in other prisons', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
+    cy.task('stubOffenderImage', offender.bookingId)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubPrisons')
@@ -53,11 +55,10 @@ context('Creating reports for prisoners in other prisons', () => {
     })
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    reportUseOfForcePage.offenderName().contains('Norman Smith')
-    reportUseOfForcePage.dob().contains('26 December 2000')
+    reportUseOfForcePage.bannerOffenderName().contains('Smith, Norman')
+    reportUseOfForcePage.dob().contains('26/12/2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')
     reportUseOfForcePage.offenderImage().should('be.visible')
-    reportUseOfForcePage.logout().click()
   })
 
   it('A user can create a report for a prisoner in another prison using last name', () => {
@@ -114,8 +115,8 @@ context('Creating reports for prisoners in other prisons', () => {
     })
 
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
-    reportUseOfForcePage.offenderName().contains('Norman Smith')
-    reportUseOfForcePage.dob().contains('26 December 2000')
+    reportUseOfForcePage.bannerOffenderName().contains('Smith, Norman')
+    reportUseOfForcePage.dob().contains('26/12/2000')
     reportUseOfForcePage.nomisId().contains('A1234AC')
     reportUseOfForcePage.offenderImage().should('be.visible')
   })

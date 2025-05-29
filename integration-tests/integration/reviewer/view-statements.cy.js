@@ -8,6 +8,7 @@ const { ReportStatus } = require('../../../server/config/types')
 context('view statements page', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)

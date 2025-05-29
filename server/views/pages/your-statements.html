@@ -39,7 +39,7 @@
                   href="/{{ statement.id }}/write-your-statement"
                   role="button"
                   draggable="false"
-                  class="govuk-button {{'govuk-button--secondary' if statement.inProgress else 'govuk-button' }} govuk-!-width-three-quarters">
+                  class="govuk-button {{'govuk-button--secondary' if statement.inProgress else 'govuk-button' }} govuk-!-width-two-thirds">
                   {{- 'Continue' if statement.inProgress else 'Start' -}}<span class="govuk-visually-hidden"> statement</span>
                 </a>
               {% case 'SUBMITTED' %}

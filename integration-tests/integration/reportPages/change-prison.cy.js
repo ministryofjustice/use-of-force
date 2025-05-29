@@ -9,6 +9,7 @@ const { ReportStatus } = require('../../../server/config/types')
 context('Submitting details page form', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
