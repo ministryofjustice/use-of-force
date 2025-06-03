@@ -9,16 +9,39 @@
 
 {% block beforeContent %}
   {% include "../../partials/breadcrumbs.njk" %}
+  {{ super() }}
 {% endblock %}
 
 {% block content %}
 {% if featureFlagReportEditingEnabled %}
 <div class="govuk-body">
-  <div class="govuk-grid-row no-print">     
+  <div class="govuk-grid-row no-print negative-margin-top-7">     
     <div class="govuk-grid-column-full"> 
-      <h1 class="govuk-heading-xl">{{ pageTitle }} {{ data.incidentId }}</h1>
-    </div>
-    <div class="govuk-grid-column-full"> 
+      {% if user.isCoordinator %}
+        <div class="flex-container-space-between">
+          <div>
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">Use of force incident {{ data.incidentId }} </h1>
+          </div>
+
+          <div class="govuk-button-group govuk-!-margin-top-4">
+              {{ govukButton({
+                text: "Edit report",
+                href: "edit-report",
+                attributes: {'data-qa':'button-edit-report'}
+              }) }}
+
+              {{ govukButton({
+                classes: "govuk-button--warning",
+                text: "Delete incident",
+                href: "delete-incident",
+                attributes: {'data-qa':'button-delete-incident'}
+              }) }}
+          </div>
+      </div>
+      {% else %}
+          <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
+      {% endif %}
+
       {{ mojSubNavigation({
         label: "Sub navigation",
         attributes: { 'data-qa': 'report-tab' },
