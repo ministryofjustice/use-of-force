@@ -123,14 +123,6 @@
         </tbody>
       </table>
 
-      <div class="govuk-!-margin-bottom-2">
-        {% if user.isCoordinator %}
-            <td class="govuk-table__cell">
-                <a href="/coordinator/report/{{ data.incidentId }}/confirm-delete" class="govuk-link" data-qa='delete'> Delete incident </a>
-            </td>
-        {% endif %}  
-      </div>
-
       <a
         href={{data.tab}}
         draggable="false"
