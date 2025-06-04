@@ -179,7 +179,7 @@ context('view statements page', () => {
 
       const viewStatementsPage = ViewStatementsPage.verifyOnPage()
 
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       ViewReportPage.verifyOnPage()
     }

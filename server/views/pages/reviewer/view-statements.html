@@ -44,10 +44,10 @@
 
       {{ mojSubNavigation({
         label: "Sub navigation",
-        attributes: { 'data-qa': 'report-tab' },
         items: [{
           text: "Report",
-          href: '/' + data.incidentId + '/view-report'
+          href: '/' + data.incidentId + '/view-report',
+          attributes: { 'data-qa': 'report-tab' }
         }, {
           text: "Statements",
           active: true
