@@ -18,7 +18,7 @@ context('view review page', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
   })
 
-  xit('A reviewer can view reports they did and did not raise', () => {
+  it('A reviewer can view reports they did and did not raise', () => {
     cy.task('stubReviewerLogin')
     cy.login(bookingId)
 
@@ -67,7 +67,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
@@ -89,7 +89,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')
