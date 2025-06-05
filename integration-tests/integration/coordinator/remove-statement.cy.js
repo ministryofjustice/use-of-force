@@ -61,9 +61,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: 'REMOVAL REQUEST',
           link: 'View removal request',
           isOverdue: false,
@@ -86,13 +94,18 @@ context('A use of force coordinator can accept or refuse removal statement reque
     confirmStatementDeletePage.confirm()
     confirmStatementDeletePage.continue().click()
 
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        ])
-      )
+    viewStatementsPage.statements().then(result =>
+      expect(result).to.deep.equal([
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
+      ])
+    )
   })
 
   it(`A coordinator can refuse a statment removal request`, () => {
@@ -114,9 +127,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: 'REMOVAL REQUEST',
           link: 'View removal request',
           isOverdue: false,
@@ -141,9 +162,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
 
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: '',
           link: '',
           isOverdue: false,
@@ -172,9 +201,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: 'REMOVAL REQUEST',
           link: 'View removal request',
           isOverdue: false,
@@ -199,9 +236,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
 
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: 'REMOVAL REQUEST',
           link: 'View removal request',
           isOverdue: false,
@@ -230,9 +275,17 @@ context('A use of force coordinator can accept or refuse removal statement reque
     const viewStatementsPage = ViewStatementsPage.verifyOnPage()
     viewStatementsPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
+        {
+          username: 'MRS_JONES name',
+          email: 'MRS_JONES@gov.uk',
+          badge: '',
+          link: '',
+          isOverdue: false,
+          isUnverified: false,
+        },
         {
           username: 'TEST_USER name',
+          email: 'TEST_USER@gov.uk',
           badge: 'REMOVAL REQUEST',
           link: 'View removal request',
           isOverdue: false,
