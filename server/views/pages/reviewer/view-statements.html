@@ -110,27 +110,32 @@
                 {% endif %}
               </td>
 
-              <td class="govuk-table__cell">
-                {% if statement.isSubmitted %}
-                  <a
-                    href= {{ '/' + statement.id + '/view-statement' }}
+            
+              {% if statement.isSubmitted or removalRequested %}
+                <td class="govuk-table__cell">
+                  {% if statement.isSubmitted %}
+                    <a
+                      href= {{ '/' + statement.id + '/view-statement' }}
+                      draggable="false"
+                      class="govuk-link"
+                      aria-label="View report for {{statement.name}} ({{statement.userId}})">
+                        View statement
+                    </a>
+
+                  {% elif removalRequested %}
+                    <a
+                    href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
                     draggable="false"
                     class="govuk-link"
-                    aria-label="View report for {{statement.name}} ({{statement.userId}})">
-                      View statement
-                  </a>
-
-                {% elif removalRequested %}
-                  <a
-                  href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
-                  draggable="false"
-                  class="govuk-link"
-                  data-qa="view-removal-request"
-                  aria-label="View removal request for {{statement.name}} ({{statement.userId}})">
-                  View removal request
-                  </a>
-                {% endif %}
-              </td>
+                    data-qa="view-removal-request"
+                    aria-label="View removal request for {{statement.name}} ({{statement.userId}})">
+                    View removal request
+                    </a>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td class="govuk-table__cell" aria-label="No actions available"></td>
+              {% endif %}
             </tr>  
           {% endfor %}
         </tbody>
