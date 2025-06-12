@@ -1,11 +1,11 @@
 import express, { Router } from 'express'
-
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
 
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'
 import AdminRoutes from './admin'
+import config from '../../config'
 
 import { Services } from '../../services'
 
@@ -43,10 +43,15 @@ export default function Index(services: Services): Router {
       offenderService,
       userService,
       statementService,
-      authService
+      authService,
+      reportDetailBuilder
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
+
+    if (config.featureFlagReportEditingEnabled) {
+      get('/:reportId/edit-report', coordinator.viewEditReport)
+    }
 
     get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
     post('/coordinator/report/:reportId/delete', coordinator.deleteReport)

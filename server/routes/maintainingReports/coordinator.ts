@@ -9,6 +9,7 @@ import OffenderService from '../../services/offenderService'
 import UserService from '../../services/userService'
 import StatementService from '../../services/statementService'
 import AuthService from '../../services/authService'
+import type ReportDataBuilder from '../../services/reportDetailBuilder'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -20,8 +21,37 @@ export default class CoordinatorRoutes {
     private readonly offenderService: OffenderService,
     private readonly userService: UserService,
     private readonly statementService: StatementService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly reportDetailBuilder: ReportDataBuilder
   ) {}
+
+  viewEditReport: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+
+    const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
+
+    const reportEdits = await this.reviewService.getReportEdits(parseInt(reportId, 10))
+
+    const hasReportBeenEdited = reportEdits?.length > 0
+
+    const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+
+    const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
+
+    const hasReportOwnerChanged = newReportOwners?.length > 0
+
+    const reportOwner = newReportOwners?.at(-1)
+
+    data.bookingId = null
+
+    const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
+
+    const user = { isCoordinator: res.locals.user.isCoordinator, isReviewer: res.locals.user.isReviewer }
+
+    return res.render('pages/coordinator/edit-report.njk', { data: dataWithEdits, user })
+  }
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
