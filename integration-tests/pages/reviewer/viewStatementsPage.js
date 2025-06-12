@@ -32,7 +32,7 @@ const viewStatementsPage = () =>
               badge: Cypress.$(tds[3]).text().trim().replace(/\s\s+/g, ', '),
               link: Cypress.$(tds[5]).text().trim().replace(/\s\s+/g, ', '),
               isOverdue: Cypress.$(tds[3]).find('[data-qa="overdue"]').length === 1,
-              isUnverified: Cypress.$(tds[3]).find('[data-qa="unverified"]').length === 1,
+              isUnverified: Cypress.$(tds[2]).find('[data-qa="unverified"]').length === 1,
             }
           })
         ),

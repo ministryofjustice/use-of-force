@@ -2,7 +2,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
-{% from  "../../macros.njk" import overdueBadge %}   
+{% from  "../../macros.njk" import overdueBadge %} 
+{% from "../../macros.njk" import submittedBadge %}  
 {% from  "../../macros.njk" import removalRequestedBadge %}    
 {% import "../reportDetailMacro.njk" as reportDetail %} 
 {% set pageTitle = 'Use of force incident' %}
@@ -68,59 +69,67 @@
 
         <tbody class="govuk-table__body">
           {% for statement in data.statements %}
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{statement.name}} ({{statement.userId}})</td>
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell">{{statement.email}}</td>
-            <td class="govuk-table__cell">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{statement.name}} ({{statement.userId}})</td>
+              <td class="govuk-table__cell"></td>
+              <td class="govuk-table__cell">
+                {{statement.email}}
+                
+                {% set removalRequested = statement.isRemovalRequested %}
 
-              {% set removalRequested = statement.isRemovalRequested %}
+                {% if removalRequested %}
+                  {{ 
+                    removalRequestedBadge({
+                      text: 'REMOVAL REQUEST', 
+                      qa: 'removal-request' 
+                    }) 
+                  }}     
+                {% endif %}
 
-              {% if removalRequested %}
-                {{ 
-                  removalRequestedBadge({
-                    text: 'REMOVAL REQUEST', 
-                    qa: 'removal-request' 
-                  }) 
-                }}     
+                {% if not statement.isVerified and removalRequested %}
+                  <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
+                {% elif not statement.isVerified %}
+                  <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
+                {% endif %}
+              
+              <td class="govuk-table__cell">
+                {% if statement.isOverdue %}
+                  {{ 
+                    overdueBadge({
+                      text: 'OVERDUE', 
+                      qa: 'overdue' 
+                    }) 
+                  }}    
+                {% elif statement.isSubmitted %}   
+                  {{ 
+                    submittedBadge({
+                      text: 'SUBMITTED',
+                      gq: 'submitted'
+                    })
+                  }}           
+                {% endif %}
+              </td>
 
-              {% elif statement.isOverdue %}
-                {{ 
-                  overdueBadge({
-                    text: 'OVERDUE', 
-                    qa: 'overdue' 
-                  }) 
-                }}                  
-              {% endif %}
+              <td class="govuk-table__cell">
+                {% if statement.isSubmitted %}
+                  <a
+                    href= {{ '/' + statement.id + '/view-statement' }}
+                    draggable="false"
+                    class="govuk-link">
+                      View statement
+                  </a>
 
-              {% if not statement.isVerified and (removalRequested or statement.isOverdue) %}
-              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
-              {% elif not statement.isVerified %}
-              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
-              {% endif %}
-
-            </td>
-
-            <td class="govuk-table__cell">
-              {% if statement.isSubmitted %}
-                <a
-                  href= {{ '/' + statement.id + '/view-statement' }}
+                {% elif removalRequested %}
+                  <a
+                  href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
                   draggable="false"
-                  class="govuk-link">
-                    View statement
-                </a>
-
-              {% elif removalRequested %}
-                <a
-                href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
-                draggable="false"
-                class="govuk-link float-right"
-                data-qa="view-removal-request">
-                View removal request
-                </a>
-              {% endif %}
-            </td>
-          </tr>  
+                  class="govuk-link float-right"
+                  data-qa="view-removal-request">
+                  View removal request
+                  </a>
+                {% endif %}
+              </td>
+            </tr>  
           {% endfor %}
         </tbody>
       </table>
