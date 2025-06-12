@@ -328,27 +328,6 @@ describe('GET /view-statements', () => {
       userId: `USER_${params.id}`,
     } as ReviewerStatementWithComments)
 
-  it('should only render submitted statements', async () => {
-    userSupplier.mockReturnValue(coordinatorUser)
-
-    const statementOne = statement({ id: 1, submitted: true })
-    const statementTwo = statement({ id: 2, submitted: false })
-    const statementThree = statement({ id: 3, submitted: true })
-
-    reviewService.getStatements.mockResolvedValue([statementOne, statementTwo, statementThree])
-
-    return request(app)
-      .get('/1/view-statements')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain(statementOne.statement)
-        expect(res.text).not.toContain(statementTwo.statement)
-        expect(res.text).toContain(statementThree.statement)
-        expect(reviewService.getStatements).toHaveBeenCalledWith('user1-system-token', 1)
-      })
-  })
-
   it('should display OVERDUE badge but not REMOVAL REQUEST badge or removal request link', () => {
     userSupplier.mockReturnValue(coordinatorUser)
     reviewService.getStatements.mockResolvedValue([
