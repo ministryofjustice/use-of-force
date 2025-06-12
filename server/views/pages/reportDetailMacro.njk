@@ -52,7 +52,7 @@
   </div>
 {% endmacro %}
 
-{% macro detail(data, bookingId, incidentId, user, print, renderReportView) %}
+{% macro detail(data, bookingId, incidentId, user, print, renderReportView, isEditReport) %}
     {% if renderReportView %}
     {% set addedClasses = 'border-bottom-none' %}
       <div class="summary-card">
@@ -115,11 +115,17 @@
 {% endif %}
 <div class="{% if renderReportView %} summary-card {% endif %}">
   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+    {% if isEditReport %}
+      {% set url = '/' + data.incidentId + '/edit-report/incident-details' %}
+    {% elseif bookingId %}
+      {% set url = '/report/' + bookingId + '/incident-details' %}
+    {% endif %}
+
     {{
       reportDetailsMacros.sectionHeading({
         id: 'incidentDetails', 
         title: 'Incident details',
-        url:  '/report/' + bookingId + '/incident-details' if bookingId
+        url: url
       })
     }}
   </div>
@@ -187,11 +193,17 @@
 
 <div class="{% if renderReportView %} summary-card {% endif %}">
   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+    {% if isEditReport %}
+      {% set url = '' %}
+    {% elseif bookingId %}
+      {% set url = '/report/' + bookingId + '/staff-involved'%}
+    {% endif %}
+
     {{
       reportDetailsMacros.sectionHeading({
         id: 'staffInvolved',
         title: 'Staff involved',
-        url:  '/report/' + bookingId + '/staff-involved' if bookingId
+        url:  url
       })  
     }}
   </div>
@@ -239,11 +251,17 @@
 
 <div class="{% if renderReportView %} summary-card {% endif %}">
   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+    {% if isEditReport %}
+      {% set url = '/' + data.incidentId + '/edit-report/why-was-uof-applied' %}
+    {% elseif bookingId %}
+      {% set url = '/report/' + bookingId + '/why-was-uof-applied' %}
+    {% endif %}
+
     {{
       reportDetailsMacros.sectionHeading({
         id: 'useOfForceDetails',
         title: 'Use of force details',
-        url:  '/report/' + bookingId + '/why-was-uof-applied' if bookingId
+        url: url
       })
     }}
   </div>
@@ -421,11 +439,16 @@
 
 <div class="{% if renderReportView %} summary-card {% endif %}">
    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+    {% if isEditReport %}
+      {% set url = '/' + data.incidentId + '/edit-report/relocation-and-injuries' %}
+    {% elseif bookingId %}
+      {% set url = '/report/' + bookingId + '/relocation-and-injuries' %}
+    {% endif %}
     {{
       reportDetailsMacros.sectionHeading({
         id: 'relocationAndInjuries',
         title: 'Relocation and injuries',
-        url:  '/report/' + bookingId + '/relocation-and-injuries' if bookingId,
+        url: url,
         print: print
       })
     }}
@@ -503,11 +526,16 @@
 
 <div class="{% if renderReportView %} summary-card {% endif %}">
    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+    {% if isEditReport %}
+      {% set url = '/' + data.incidentId + '/edit-report/evidence' %}
+    {% elseif bookingId %}
+      {% set url = '/report/' + bookingId + '/evidence' %}
+    {% endif %}
     {{
       reportDetailsMacros.sectionHeading({
         id: 'evidence',
         title: 'Evidence',
-        url:  '/report/' + bookingId + '/evidence' if bookingId
+        url: url
       })
     }}
   </div>
