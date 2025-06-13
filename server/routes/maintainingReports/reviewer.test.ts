@@ -249,6 +249,7 @@ describe('GET /view-report', () => {
     config.featureFlagReportEditingEnabled = true
     reviewService.getReportEdits.mockResolvedValue([{ reportOwnerChanged: true }] as unknown as ReportEdit[])
     reviewService.getReport.mockResolvedValue(report)
+    reviewService.getStatements.mockResolvedValue([])
     app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
     userSupplier.mockReturnValue(coordinatorUser)
     return request(app)

@@ -234,14 +234,14 @@
         {{item.name}} ({{item.username}})
 
         {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
-          <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class="govuk-link float-right">
+          <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class=" govuk-!-display-none-print govuk-link float-right">
             Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
         {%- endif -%}  
         </li>
       {% endfor %} 
       </ol>
       {%- if not print and user.isCoordinator and incidentId -%}
-        <a data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
+        <a class= 'govuk-!-display-none-print' data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
           Add another member of staff
         </a>
       {%- endif -%}

@@ -28,6 +28,7 @@
 {% block content %}
 <div class="govuk-grid-row govuk-body negative-margin-top-7">
   {% if featureFlagReportEditingEnabled %}
+  <!-- render new page layout -->
     {% set renderReportView = true %}
     {% set print = false %}
 
@@ -54,9 +55,9 @@
                 attributes: {'data-qa':'button-delete-incident'}
               }) }}
           </div>
-      </div>
+        </div>
       {% else %}
-          <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
+        <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
       {% endif %}
 
       {{ mojSubNavigation({
@@ -90,7 +91,7 @@
       </div> 
 
     {% else %}
-
+    <!-- otherwise render the old page layout -->
       <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
         <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
         <div class="govuk-grid-row">
@@ -119,7 +120,5 @@
 >>>>>>> 17bc078 (MAP-2849 add breadcrumbs and print link to view-report)
       <a href="/{{ data.incidentId }}/view-statements" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-incident-overview">Return to incident overview</a>
     </div>  
-  </div>    
-</div>
-
+</div>    
 {% endblock %}
