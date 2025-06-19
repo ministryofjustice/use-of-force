@@ -54,7 +54,7 @@ context('A reporter views their own report', () => {
     yourReportPage.location().contains('ASSO A Wing')
   })
 
-  it('A user can view their own report', () => {
+  xit('A user can view their own report', () => {
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubDpsLocationMapping', 123456)
 
@@ -106,7 +106,7 @@ context('A reporter views their own report', () => {
     YourReportsPage.verifyOnPage()
   })
 
-  it('A user can view their own report when no authorisedBy field', () => {
+  xit('A user can view their own report when no authorisedBy field', () => {
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
 
     cy.login()

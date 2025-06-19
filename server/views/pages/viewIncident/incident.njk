@@ -1,0 +1,53 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% import ".././reportDetailMacro.njk" as reportDetail %} 
+{% import "./navigationTabMacro.njk" as macro %}
+
+{% set pageTitle = 'Use of force report' %}
+
+{% block beforeContent %}
+  <div class="flex-container-space-between govuk-!-display-none-print">
+      {{ govukBreadcrumbs({
+        items: [
+          {
+            text: "Digital Prison Services",
+            href: links.exitUrl
+          },
+          {
+            text: "Use of force incidents",
+            href: "/"
+          }
+        ]
+      }) }}
+
+    {% if data.isReviewer or data.isCoordinator%}
+      <div class="float-right">
+        <a href="" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body negative-margin-top-7">
+  {% set print = false %}
+
+  <div class=" govuk-grid-column-full govuk-!-margin-bottom-9">  
+    {% if data.tab == 'report' %}
+      {% set renderReportView = true %}
+      {% include "./report.njk" %}
+    {% elif data.tab == 'statements' %}
+      {% include "./statements.njk" %}
+    {% else %}
+      {% include "./edit-history.njk" %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

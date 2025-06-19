@@ -63,7 +63,7 @@
     <dd class="govuk-summary-list__value {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
       {{dataItem.dataValue}}
     </dd>
-   <dd class= "govuk-summary-list__actions">
+   <dd class= "govuk-summary-list__actions govuk-!-display-none-print">
     <a class="govuk-link govuk-link--no-visited-state" data-qa='history-link' href='/{{dataItem.incidentId}}/view-history'>Edit history
     <span class="govuk-visually-hidden"> Edit history</span></a>
    </dd>

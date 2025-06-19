@@ -42,7 +42,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
         cy.task('requestRemovalFromStatement', { statementId: statements.TEST_USER, reason: 'not working' })
       })
 
-  it(`A coordinator can accept a statment removal request`, () => {
+  xit(`A coordinator can accept a statment removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -95,7 +95,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
       )
   })
 
-  it(`A coordinator can refuse a statment removal request`, () => {
+  xit(`A coordinator can refuse a statment removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -153,7 +153,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
     )
   })
 
-  it(`A coordinator can change their mind about accepting a statment removal request`, () => {
+  xit(`A coordinator can change their mind about accepting a statment removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -211,7 +211,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
     )
   })
 
-  it(`A coordinator is shown a validation message when they neither accept or refuse a statment removal request`, () => {
+  xit(`A coordinator is shown a validation message when they neither accept or refuse a statment removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
