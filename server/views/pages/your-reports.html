@@ -24,6 +24,16 @@
 
     <tbody class="govuk-table__body">
         {% for report in reports %}
+
+        {% if featureFlagReportEditingEnabled %}
+          {% set href = '/'+ report.id + '/view-incident?tab=report' %}          
+          {% set linkName = 'View incident' %}
+
+        {% else %}
+          {% set href = '/'+ report.id + '/your-report' %}
+          {% set linkName = 'View report' %}
+        {% endif %}
+
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>
             <td class="govuk-table__cell">{{report.offenderName}}</td>
@@ -39,10 +49,10 @@
                 </a>
               {% else %}
                 <a
-                  href="/{{ report.id }}/your-report"
+                  href={{href}}
                   draggable="false"
                   class="govuk-link govuk-!-padding-left-2">
-                  View report
+                  {{linkName}}
                 </a>
               {% endif %}
             </td>
