@@ -27,7 +27,7 @@ const viewReportPage = () =>
 
     getReportId: () => {
       return cy.url().then(url => {
-        const match = url.match(/.*\/(.*)\/view-report/)
+        const match = url.match(/.*\/(.*)\/view-incident/)
         return match[1]
       })
     },
