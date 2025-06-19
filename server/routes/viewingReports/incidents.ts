@@ -13,11 +13,12 @@ export default class IncidentsRoutes {
   viewYourReports: RequestHandler = async (req, res): Promise<void> => {
     const page = parseInt(req.query.page as string, 10) || 1
     const { items: reports, metaData: pageData } = await this.reportService.getReports(req.user.username, page)
-
+    const { user } = res.locals
     res.render('pages/your-reports', {
       reports,
       pageData,
       selectedTab: 'your-reports',
+      user,
     })
   }
 

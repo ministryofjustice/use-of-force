@@ -24,14 +24,16 @@
 
     <tbody class="govuk-table__body">
         {% for report in reports %}
-
         {% if featureFlagReportEditingEnabled %}
-          {% set href = '/'+ report.id + '/view-incident?tab=report' %}          
-          {% set linkName = 'View incident' %}
-
+          {% set href = '/'+ report.id + '/view-incident?tab=report' %}       
+          {% if user.isReviewer or user.isCoordinator %}   
+            {% set linkText = 'View incident' %}
+              {% else %}
+            {% set linkText = 'View report' %}
+          {% endif %}
         {% else %}
           {% set href = '/'+ report.id + '/your-report' %}
-          {% set linkName = 'View report' %}
+          {% set linkText = 'View report' %}
         {% endif %}
 
         <tr class="govuk-table__row">
@@ -52,13 +54,12 @@
                   href={{href}}
                   draggable="false"
                   class="govuk-link govuk-!-padding-left-2">
-                  {{linkName}}
+                  {{linkText}}
                 </a>
               {% endif %}
             </td>
         </tr>  
         {% endfor %}
-
     </tbody>
   </table>
   {% else %}
