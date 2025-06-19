@@ -23,17 +23,15 @@
     </thead>
 
     <tbody class="govuk-table__body">
-        {% for report in reports %}
+      {% for report in reports %}
+        {% set linkText = 'View report' %}
+        {% set href = '/'+ report.id + '/your-report' %}
+
         {% if featureFlagReportEditingEnabled %}
-          {% set href = '/'+ report.id + '/view-incident?tab=report' %}       
+          {% set href = '/'+ report.id + '/view-incident?tab=report' %}   
           {% if user.isReviewer or user.isCoordinator %}   
             {% set linkText = 'View incident' %}
-              {% else %}
-            {% set linkText = 'View report' %}
-          {% endif %}
-        {% else %}
-          {% set href = '/'+ report.id + '/your-report' %}
-          {% set linkText = 'View report' %}
+          {% endif %}    
         {% endif %}
 
         <tr class="govuk-table__row">
@@ -59,7 +57,7 @@
               {% endif %}
             </td>
         </tr>  
-        {% endfor %}
+      {% endfor %}
     </tbody>
   </table>
   {% else %}
