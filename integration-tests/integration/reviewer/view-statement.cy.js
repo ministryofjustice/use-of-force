@@ -32,9 +32,9 @@ context('view statement page', () => {
       bookingId,
       involvedStaff: [
         {
-          username: 'TEST_USER',
-          name: 'TEST_USER name',
+          username: 'TEST_USER (TEST_USER)',
           email: 'TEST_USER@gov.uk',
+          name: 'TEST_USER name',
         },
       ],
     })
@@ -59,7 +59,14 @@ context('view statement page', () => {
 
       viewStatementsPage.statements().then(result => {
         expect(result).to.deep.equal([
-          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
+          {
+            username: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+            badge: 'EMAIL NOT VERIFIED',
+            link: 'View statement',
+            isOverdue: false,
+            isUnverified: true,
+          },
         ])
       })
 

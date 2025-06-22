@@ -67,7 +67,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
@@ -89,7 +89,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('Anne OtherUser')
