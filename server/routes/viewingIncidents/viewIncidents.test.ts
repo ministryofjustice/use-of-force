@@ -5,7 +5,7 @@ import { Report } from '../../data/incidentClientTypes'
 import ReviewService from '../../services/reviewService'
 import ReportService from '../../services/reportService'
 import AuthService from '../../services/authService'
-import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
 import config from '../../config'
 
 jest.mock('../../services/reviewService')
@@ -43,6 +43,12 @@ beforeEach(() => {
   reportService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
   reviewService.getStatements.mockResolvedValue([])
+  reportDetailBuilder.build.mockResolvedValue({
+    offenderDetail: {
+      displayName: 'John Smith',
+    },
+  } as ReportDetail)
+
   app = appWithAllRoutes({ reportService, reportDetailBuilder, authService, reviewService }, userSupplier)
 })
 
