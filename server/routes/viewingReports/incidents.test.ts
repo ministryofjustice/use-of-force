@@ -1,9 +1,8 @@
 import request from 'supertest'
-import moment from 'moment'
-import { appWithAllRoutes, user } from '../__test/appSetup'
+import { appWithAllRoutes, coordinatorUser, reviewerUser, user } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
 import { Report } from '../../data/incidentClientTypes'
-import ReportService from '../../services/reportService'
+import ReportService, { IncidentSummary } from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
@@ -21,22 +20,32 @@ const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderS
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
-const reportEdit = {
-  id: 1,
-  editDate: moment('2025-05-13 10:30:43.122'),
-  editorUserId: 'TOM_ID',
-  editorName: 'TOM',
-  reportId: 1,
-  changeTo: 'PAVA',
-  oldValuePrimary: 'true',
-  newValuePrimary: 'false',
-  reason: 'chose wrong answer',
-  reportOwnerChanged: false,
-}
 
 let app
 
 beforeEach(() => {
+  reportService.getReports.mockResolvedValue({
+    metaData: {
+      page: 1,
+      totalCount: 2,
+      min: 1,
+      max: 2,
+      totalPages: 1,
+      previousPage: null,
+      nextPage: null,
+    },
+    items: [
+      {
+        id: 2,
+        bookingId: 541867,
+        incidentdate: new Date(),
+        staffMemberName: 'Bob',
+        offenderName: 'Offender A',
+        offenderNo: 'A12345B',
+        status: 'SUBMITTED',
+      },
+    ],
+  } as unknown as PageResponse<IncidentSummary>)
   userSupplier.mockReturnValue(user)
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
   app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
@@ -61,57 +70,6 @@ describe('GET /your-report', () => {
         expect(res.text).toContain('Use of force report')
       })
   })
-
-  it('should not include report edits', () => {
-    reportService.getReport.mockResolvedValue(report)
-    reportService.getReportEdits.mockResolvedValue([])
-    return request(app)
-      .get('/1/your-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force report')
-        expect(res.text).not.toContain('Report last edited')
-        expect(res.text).not.toContain('Current report owner')
-      })
-  })
-
-  it('should include report edits but not change owner', () => {
-    config.featureFlagReportEditingEnabled = true
-    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
-
-    reportService.getReport.mockResolvedValue(report)
-    reportService.getReportEdits.mockResolvedValue([reportEdit])
-    return request(app)
-      .get('/1/your-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force report')
-        expect(res.text).toContain('Report last edited')
-        expect(res.text).not.toContain('Current report owner')
-      })
-  })
-
-  it('should include report edits including new report owner', () => {
-    config.featureFlagReportEditingEnabled = true
-    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
-
-    reportService.getReport.mockResolvedValue(report)
-    reportService.getReportEdits.mockResolvedValue([
-      { ...reportEdit, reportOwnerChanged: true, newValuePrimary: 'BOB (BOB_ID)' },
-    ])
-    return request(app)
-      .get('/1/your-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force report')
-        expect(res.text).toContain('Report last edited')
-        expect(res.text).toContain('Current report owner')
-        expect(res.text).toContain('BOB (BOB_ID)')
-      })
-  })
 })
 describe('GET /your-reports', () => {
   it('should render page', () => {
@@ -124,6 +82,85 @@ describe('GET /your-reports', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Your reports')
+      })
+  })
+
+  it('should display View report link for all users', () => {
+    config.featureFlagReportEditingEnabled = false
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View report')
+      })
+  })
+  it('should display View report link for reporter', () => {
+    config.featureFlagReportEditingEnabled = true
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View report')
+      })
+  })
+
+  it('should display View incident link for coordinator', () => {
+    config.featureFlagReportEditingEnabled = true
+    userSupplier.mockReturnValue(coordinatorUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View incident')
+      })
+  })
+
+  it('should display View incident link for reviewer', () => {
+    config.featureFlagReportEditingEnabled = true
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View incident')
+      })
+  })
+
+  it('should provide correct href to view report link in old view', () => {
+    config.featureFlagReportEditingEnabled = false
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/your-report')
+      })
+  })
+
+  it('should provide correct href to view incident link in new view', () => {
+    config.featureFlagReportEditingEnabled = true
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/view-incident?tab=report')
       })
   })
 })

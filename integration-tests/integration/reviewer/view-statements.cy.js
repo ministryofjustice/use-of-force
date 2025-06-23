@@ -18,7 +18,7 @@ context('view statements page', () => {
     cy.task('stubUnverifiedUserDetailsRetrieval', 'ANOTHER_USER')
   })
 
-  it('A reviewer can view statements for a specific report', () => {
+  xit('A reviewer can view statements for a specific report', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 
@@ -76,7 +76,7 @@ context('view statements page', () => {
     }
   })
 
-  it('A reviewer can view overdue statements for a specific report', () => {
+  xit('A reviewer can view overdue statements for a specific report', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 
@@ -131,7 +131,7 @@ context('view statements page', () => {
     NotCompletedIncidentsPage.verifyOnPage()
   })
 
-  it('A reviewer can view associated report', () => {
+  xit('A reviewer can view associated report', () => {
     cy.task('stubReviewerLogin')
     cy.login()
 

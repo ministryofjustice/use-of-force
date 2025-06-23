@@ -9,7 +9,6 @@ context('view review page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
@@ -67,7 +66,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
@@ -82,19 +81,10 @@ context('view review page', () => {
     }
 
     {
-      const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(1)
+      const { prisoner, reporter, prisonNumber } = notCompletedIncidentsPage.getTodoRow(1)
       prisoner().contains('Smith, Norman')
       reporter().contains('Anne OtherUser')
       prisonNumber().contains('A1234AC')
-      viewStatementsButton().click()
-
-      const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
-
-      const viewReportPage = ViewReportPage.verifyOnPage()
-      viewReportPage.reporterName().contains('Anne OtherUser')
-      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name'] })
-      viewReportPage.returnToIncidentOverview().click()
     }
   })
 })

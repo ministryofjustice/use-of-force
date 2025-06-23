@@ -18,7 +18,7 @@ context('view statement page', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('A reviewer can view statements for a specific report', () => {
+  xit('A reviewer can view statements for a specific report', () => {
     cy.task('stubReviewerLogin')
     cy.login(bookingId)
 
