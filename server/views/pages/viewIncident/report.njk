@@ -26,7 +26,7 @@
       {% endif %}
     </div>
 
-  {{ macro.navigationTab(data, {report:true}) }}
+  {{ navigationTabMacro.navigation(data, {report:true}) }}
 
   {{
     reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)

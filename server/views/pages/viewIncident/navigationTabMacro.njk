@@ -1,6 +1,6 @@
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 
-{% macro navigationTab(data, active) %}
+{% macro navigation(data, active) %}
 
   {% if data.hasReportBeenEdited %}
     {% set editHistoryTab = 
