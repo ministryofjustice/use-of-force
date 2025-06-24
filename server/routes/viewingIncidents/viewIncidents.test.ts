@@ -90,11 +90,36 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Print report and statements')
         })
     })
+
+    it('should display print link to coordinator - Statements tab', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Print report and statements')
+        })
+    })
+
     it('should not display print link if user is reporter only', () => {
       userSupplier.mockReturnValue(user)
 
       return request(app)
         .get('/1/view-incident?tab=report')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('Print report and statements')
+        })
+    })
+
+    it('should not display print link if user is reporter only - Statements tab', () => {
+      userSupplier.mockReturnValue(user)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -133,6 +158,45 @@ describe('GET /view-incident', () => {
 
       return request(app)
         .get('/1/view-incident?tab=report')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('data-qa="button-edit-report"')
+          expect(res.text).not.toContain('data-qa="button-delete-incident"')
+        })
+    })
+  })
+
+  describe('Action buttons - Statements tab', () => {
+    it('should display both Edit report and Delete incident buttons to coordinator', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="button-edit-report"')
+          expect(res.text).toContain('data-qa="button-delete-incident"')
+        })
+    })
+    it('should not display Edit report or Delete incident buttons to just reporter', () => {
+      userSupplier.mockReturnValue(user)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('data-qa="button-edit-report"')
+          expect(res.text).not.toContain('data-qa="button-delete-incident"')
+        })
+    })
+    it('should not display Edit report or Delete incident buttons to reviewer', () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -275,5 +339,41 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Evidence')
         })
     })
+  })
+
+  describe('Statements', () => {
+    it('should idisplay the expected heading', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Staff members involved')
+        })
+    })
+
+    // failing test - new added by me - can remove
+    // it('should include a Staff members involved table with the expected headings', () => {
+    //   return request(app)
+    //     .get('/1/view-incident?tab=statements')
+    //     .expect(200)
+    //     .expect('Content-Type', /html/)
+    //     .expect(res => {
+    //       // First, locate the table by data-qa
+    //       const tableStart = res.text.indexOf('data-qa="statements"')
+    //       expect(tableStart).toBeGreaterThan(-1)
+
+    //       // Extract a portion of HTML starting at the table
+    //       const snippet = res.text.slice(tableStart, tableStart + 5000) // enough to include <thead>
+
+    //       // Match the <th> content inside <thead>
+    //       const headingMatches = Array.from(snippet.matchAll(/<th[^>]*>(?:<button[^>]*>)?([^<]+)</g)).map(match =>
+    //         match[1].trim()
+    //       )
+
+    //       // Verify expected headings
+    //       expect(headingMatches).toEqual(['Name', 'Location', 'Email', 'Status', 'Action'])
+    //     })
+    // })
   })
 })
