@@ -19,13 +19,14 @@ export default class ViewIncidentsRoutes {
     const report = await this.reportService.getReport(req.user.username, parseInt(incidentId, 10))
     const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
     const hasReportBeenEdited = reportEdits?.length > 0
+    const reportData = await this.reportDetailBuilder.build(username, report)
+    const { offenderDetail } = reportData
 
     if (tab === 'report') {
       const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
       const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
       const hasReportOwnerChanged = newReportOwners?.length > 0
       const reportOwner = newReportOwners?.at(-1)
-      const reportData = await this.reportDetailBuilder.build(username, report)
       const systemToken = await this.authService.getSystemClientToken(username)
       const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
       const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
@@ -45,12 +46,26 @@ export default class ViewIncidentsRoutes {
     }
 
     if (tab === 'statements') {
-      const dataForStatements = { tab: 'statements', incidentId, hasReportBeenEdited, isReviewer, isCoordinator }
+      const dataForStatements = {
+        tab: 'statements',
+        incidentId,
+        hasReportBeenEdited,
+        isReviewer,
+        isCoordinator,
+        offenderDetail,
+      }
       return res.render('pages/viewIncident/incident.njk', { data: dataForStatements })
     }
 
     if (tab === 'edit-history') {
-      const dataForEditHistory = { tab: 'edit-history', incidentId, hasReportBeenEdited, isReviewer, isCoordinator }
+      const dataForEditHistory = {
+        tab: 'edit-history',
+        incidentId,
+        hasReportBeenEdited,
+        isReviewer,
+        isCoordinator,
+        offenderDetail,
+      }
       return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
     }
 
