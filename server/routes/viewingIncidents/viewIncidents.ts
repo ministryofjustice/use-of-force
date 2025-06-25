@@ -3,6 +3,7 @@ import type AuthService from 'server/services/authService'
 import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import type ReviewService from '../../services/reviewService'
+import logger from '../../../log'
 
 export default class ViewIncidentsRoutes {
   constructor(
@@ -47,6 +48,9 @@ export default class ViewIncidentsRoutes {
         }
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
+      logger.info(
+        `${username} attempted to access report ${incidentId} even though they are not the reporter (or coordinator/reviewer)`
+      )
       return res.render('pages/userError.njk', { message: `You can not access report ${incidentId}` })
     }
 
