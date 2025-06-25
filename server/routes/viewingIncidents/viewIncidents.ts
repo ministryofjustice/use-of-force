@@ -15,34 +15,39 @@ export default class ViewIncidentsRoutes {
   viewIncident: RequestHandler = async (req, res) => {
     const { incidentId } = req.params
     const { tab } = req.query
+    const yourReport = req.query['your-report']
     const { isReviewer, isCoordinator, username } = res.locals.user
-    const report = await this.reportService.getReport(req.user.username, parseInt(incidentId, 10))
+    const report = await this.reviewService.getReport(parseInt(incidentId, 10))
     const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
     const hasReportBeenEdited = reportEdits?.length > 0
     const reportData = await this.reportDetailBuilder.build(username, report)
     const { offenderDetail } = reportData
 
     if (tab === 'report') {
-      const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
-      const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
-      const hasReportOwnerChanged = newReportOwners?.length > 0
-      const reportOwner = newReportOwners?.at(-1)
-      const systemToken = await this.authService.getSystemClientToken(username)
-      const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
-      const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
+      const userIsAccesingOwnReport = yourReport && username === report.username
+      if (userIsAccesingOwnReport || isReviewer || isCoordinator) {
+        const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+        const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
+        const hasReportOwnerChanged = newReportOwners?.length > 0
+        const reportOwner = newReportOwners?.at(-1)
+        const systemToken = await this.authService.getSystemClientToken(username)
+        const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
+        const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
 
-      const dataForReport = {
-        ...reportData,
-        hasReportBeenEdited,
-        lastEdit,
-        hasReportOwnerChanged,
-        reportOwner,
-        isReviewer,
-        isCoordinator,
-        incidentId,
-        tab: 'report',
+        const dataForReport = {
+          ...reportData,
+          hasReportBeenEdited,
+          lastEdit,
+          hasReportOwnerChanged,
+          reportOwner,
+          isReviewer,
+          isCoordinator,
+          incidentId,
+          tab: 'report',
+        }
+        return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
-      return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
+      return res.render('pages/userError.njk', { message: `You can not access report ${incidentId}` })
     }
 
     if (tab === 'statements') {
