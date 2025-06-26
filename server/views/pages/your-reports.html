@@ -28,7 +28,7 @@
         {% set href = '/'+ report.id + '/your-report' %}
 
         {% if featureFlagReportEditingEnabled %}
-          {% set href = '/'+ report.id + '/view-incident?tab=report' %}   
+          {% set href = '/'+ report.id + '/view-incident?tab=report&your-report=true' %}   
           {% if user.isReviewer or user.isCoordinator %}   
             {% set linkText = 'View incident' %}
           {% endif %}    

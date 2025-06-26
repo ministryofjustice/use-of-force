@@ -19,7 +19,7 @@ const reviewService = new ReviewService(null, null, null, null, null) as jest.Mo
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
+let report = { id: 1, username: 'user1', form: { incidentDetails: {} } } as unknown as Report
 
 const reportEdit = {
   id: 1,
@@ -63,7 +63,7 @@ beforeEach(() => {
   userSupplier.mockReturnValue(user)
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
   config.featureFlagReportEditingEnabled = true
-  reportService.getReport.mockResolvedValue(report)
+  reviewService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
   reviewService.getStatements.mockResolvedValue(statements)
   reportDetailBuilder.build.mockResolvedValue({
@@ -82,7 +82,7 @@ afterEach(() => {
 describe('GET /view-incident', () => {
   it('should render page', () => {
     return request(app)
-      .get('/1/view-incident?tab=report')
+      .get('/1/view-incident?tab=report&your-report=true')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -130,7 +130,7 @@ describe('GET /view-incident', () => {
       userSupplier.mockReturnValue(user)
 
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -169,7 +169,7 @@ describe('GET /view-incident', () => {
       userSupplier.mockReturnValue(user)
 
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -235,6 +235,8 @@ describe('GET /view-incident', () => {
 
   describe('Tabs', () => {
     it('should display report tab ', () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
       return request(app)
         .get('/1/view-incident?tab=report')
         .expect(200)
@@ -246,7 +248,7 @@ describe('GET /view-incident', () => {
 
     it('should not display statements tab if user is reporter only', () => {
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -279,6 +281,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should display edit History tab if report has been edited', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
       reportService.getReportEdits.mockResolvedValue([reportEdit])
 
       return request(app)
@@ -291,6 +294,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display edit History tab if report has not been edited', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
       reportService.getReportEdits.mockResolvedValue([])
 
       return request(app)
@@ -304,7 +308,7 @@ describe('GET /view-incident', () => {
 
     it('should redirect to report tab if user tries to access unknown tab', () => {
       return request(app)
-        .get('/1/view-incident?tab=xyz')
+        .get('/1/view-incident?tab=xyz&your-report=true')
         .expect('Content-Type', /text\/plain/)
         .expect(302)
         .expect('Location', '/1/view-incident?tab=report')
@@ -314,7 +318,7 @@ describe('GET /view-incident', () => {
   describe('Report body', () => {
     it('should not include report edited row', () => {
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -327,7 +331,7 @@ describe('GET /view-incident', () => {
     it('should include report edited row but not current owner row', () => {
       reportService.getReportEdits.mockResolvedValue([reportEdit])
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -342,7 +346,7 @@ describe('GET /view-incident', () => {
         { ...reportEdit, reportOwnerChanged: true, newValuePrimary: 'BOB (BOB_ID)' },
       ])
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -355,7 +359,7 @@ describe('GET /view-incident', () => {
 
     it('should include all the six main sections of report', () => {
       return request(app)
-        .get('/1/view-incident?tab=report')
+        .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -365,6 +369,19 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Use of force details')
           expect(res.text).toContain('Relocation and injuries')
           expect(res.text).toContain('Evidence')
+        })
+    })
+
+    it("should prevent user accessing reports they didn't create from /your-reports", () => {
+      report = { id: 2, username: 'user2', form: { incidentDetails: {} } } as unknown as Report
+      reviewService.getReport.mockResolvedValue(report)
+
+      return request(app)
+        .get(`/999/view-incident?tab=report&your-report=true`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.status).toBe(200)
+          expect(res.text).toContain('You are not the reporter for report 999')
         })
     })
   })

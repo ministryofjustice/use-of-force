@@ -3,6 +3,7 @@ import type AuthService from 'server/services/authService'
 import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import type ReviewService from '../../services/reviewService'
+import logger from '../../../log'
 
 export default class ViewIncidentsRoutes {
   constructor(
@@ -16,7 +17,7 @@ export default class ViewIncidentsRoutes {
     const { incidentId } = req.params
     const { tab } = req.query
     const { isReviewer, isCoordinator, username } = res.locals.user
-    const report = await this.reportService.getReport(req.user.username, parseInt(incidentId, 10))
+    const report = await this.reviewService.getReport(parseInt(incidentId, 10))
     const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
     const hasReportBeenEdited = reportEdits?.length > 0
     const reportData = await this.reportDetailBuilder.build(username, report)
@@ -31,19 +32,27 @@ export default class ViewIncidentsRoutes {
       const hasReportOwnerChanged = newReportOwners?.length > 0
       const reportOwner = newReportOwners?.at(-1)
       const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
+      const accessingFromYourReportTab = req.query['your-report']
+      const isUsersOwnReport = username === report.username
+      const isReviewerOrCoodinator = isReviewer || isCoordinator
 
-      const dataForReport = {
-        ...reportData,
-        hasReportBeenEdited,
-        lastEdit,
-        hasReportOwnerChanged,
-        reportOwner,
-        isReviewer,
-        isCoordinator,
-        incidentId,
-        tab: 'report',
+      if ((accessingFromYourReportTab && isUsersOwnReport) || (!accessingFromYourReportTab && isReviewerOrCoodinator)) {
+        const dataForReport = {
+          ...reportData,
+          hasReportBeenEdited,
+          lastEdit,
+          hasReportOwnerChanged,
+          reportOwner,
+          isReviewer,
+          isCoordinator,
+          incidentId,
+          tab: 'report',
+        }
+        return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
-      return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
+
+      logger.info(`${username} attempted to access report ${incidentId} even though they are not the reporter`)
+      return res.render('pages/userError.njk', { message: `You are not the reporter for report ${incidentId}` })
     }
 
     if (tab === 'statements') {
