@@ -34,6 +34,29 @@ const reportEdit = {
   reportOwnerChanged: false,
 }
 
+const statements = [
+  {
+    id: 1,
+    reportId: 1,
+    name: 'Test User',
+    email: 'test.user@justice.gov.uk',
+    userId: 'TUSER_GEN',
+    isOverdue: false,
+    isSubmitted: true,
+    isRemovalRequested: false,
+    bookingId: 159466,
+    incidentDate: new Date('2025-06-23T07:00:00.000Z'),
+    lastTrainingMonth: 1,
+    lastTrainingYear: 2025,
+    jobStartYear: 2000,
+    statement: 'abc test test test.',
+    submittedDate: new Date('2025-06-24T14:11:03.986Z'),
+    additionalComments: [],
+    isVerified: true,
+    location: '',
+  },
+]
+
 let app
 
 beforeEach(() => {
@@ -42,7 +65,7 @@ beforeEach(() => {
   config.featureFlagReportEditingEnabled = true
   reportService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
-  reviewService.getStatements.mockResolvedValue([])
+  reviewService.getStatements.mockResolvedValue(statements)
   reportDetailBuilder.build.mockResolvedValue({
     offenderDetail: {
       displayName: 'John Smith',
@@ -342,7 +365,7 @@ describe('GET /view-incident', () => {
   })
 
   describe('Statements', () => {
-    it('should idisplay the expected heading', () => {
+    it('should display the expected heading', () => {
       return request(app)
         .get('/1/view-incident?tab=statements')
         .expect(200)
@@ -352,28 +375,68 @@ describe('GET /view-incident', () => {
         })
     })
 
-    // failing test - new added by me - can remove
-    // it('should include a Staff members involved table with the expected headings', () => {
-    //   return request(app)
-    //     .get('/1/view-incident?tab=statements')
-    //     .expect(200)
-    //     .expect('Content-Type', /html/)
-    //     .expect(res => {
-    //       // First, locate the table by data-qa
-    //       const tableStart = res.text.indexOf('data-qa="statements"')
-    //       expect(tableStart).toBeGreaterThan(-1)
+    it('should include a table of statements', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="statements"')
+        })
+    })
 
-    //       // Extract a portion of HTML starting at the table
-    //       const snippet = res.text.slice(tableStart, tableStart + 5000) // enough to include <thead>
+    it('should include a link to return to use of force incidents', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="return-link"')
+        })
+    })
 
-    //       // Match the <th> content inside <thead>
-    //       const headingMatches = Array.from(snippet.matchAll(/<th[^>]*>(?:<button[^>]*>)?([^<]+)</g)).map(match =>
-    //         match[1].trim()
-    //       )
+    it('should show the expected name value, including (user id) in the Name field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="name"')
+          expect(res.text).toContain(`${statements[0].name} (${statements[0].userId})`)
+        })
+    })
 
-    //       // Verify expected headings
-    //       expect(headingMatches).toEqual(['Name', 'Location', 'Email', 'Status', 'Action'])
-    //     })
-    // })
+    it('should show the expected location value in the Location field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="location"')
+          expect(res.text).toContain(`${statements[0].location}`)
+        })
+    })
+
+    it('should show the expected email address value in the Email field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="email"')
+          expect(res.text).toContain(`${statements[0].email}`)
+        })
+    })
+
+    it('should show a SUBMITTED badge in the status column when a statement is submitted', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="submitted"')
+          expect(res.text).toContain('SUBMITTED')
+        })
+    })
   })
 })
