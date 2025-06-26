@@ -280,7 +280,7 @@ describe('GET /view-incident', () => {
         })
     })
 
-    it("should render user error page if user (who is reporter only), manually changes report id in url to one he didn't create", () => {
+    it("should prevent reporter-only user accessing reports they didn't create", () => {
       report = { id: 2, username: 'user2', form: { incidentDetails: {} } } as unknown as Report
       reviewService.getReport.mockResolvedValue(report)
 
