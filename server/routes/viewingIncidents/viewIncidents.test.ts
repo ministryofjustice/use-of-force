@@ -164,6 +164,7 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to just reporter', () => {
       userSupplier.mockReturnValue(user)
 
@@ -176,6 +177,7 @@ describe('GET /view-incident', () => {
           expect(res.text).not.toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to reviewer', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
@@ -203,6 +205,7 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to just reporter', () => {
       userSupplier.mockReturnValue(user)
 
@@ -215,6 +218,7 @@ describe('GET /view-incident', () => {
           expect(res.text).not.toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to reviewer', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
@@ -249,6 +253,7 @@ describe('GET /view-incident', () => {
           expect(res.text).not.toContain('data-qa="statements-tab"')
         })
     })
+
     it('should display statements tab to reviewer', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
