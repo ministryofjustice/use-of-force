@@ -16,7 +16,6 @@ export default class ViewIncidentsRoutes {
   viewIncident: RequestHandler = async (req, res) => {
     const { incidentId } = req.params
     const { tab } = req.query
-    const yourReport = req.query['your-report']
     const { isReviewer, isCoordinator, username } = res.locals.user
     const report = await this.reviewService.getReport(parseInt(incidentId, 10))
     const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
@@ -25,16 +24,18 @@ export default class ViewIncidentsRoutes {
     const { offenderDetail } = reportData
 
     if (tab === 'report') {
-      const userIsAccesingOwnReport = yourReport && username === report.username
-      if (userIsAccesingOwnReport || isReviewer || isCoordinator) {
-        const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
-        const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
-        const hasReportOwnerChanged = newReportOwners?.length > 0
-        const reportOwner = newReportOwners?.at(-1)
-        const systemToken = await this.authService.getSystemClientToken(username)
-        const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
-        const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
+      const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+      const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
+      const hasReportOwnerChanged = newReportOwners?.length > 0
+      const reportOwner = newReportOwners?.at(-1)
+      const systemToken = await this.authService.getSystemClientToken(username)
+      const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
+      const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
+      const accessingFromYourReportTab = req.query['your-report']
+      const isUsersOwnReport = username === report.username
+      const isReviewerOrCoodinator = isReviewer || isCoordinator
 
+      if ((accessingFromYourReportTab && isUsersOwnReport) || (!accessingFromYourReportTab && isReviewerOrCoodinator)) {
         const dataForReport = {
           ...reportData,
           hasReportBeenEdited,
@@ -48,10 +49,9 @@ export default class ViewIncidentsRoutes {
         }
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
-      logger.info(
-        `${username} attempted to access report ${incidentId} even though they are not the reporter (or coordinator/reviewer)`
-      )
-      return res.render('pages/userError.njk', { message: `You can not access report ${incidentId}` })
+
+      logger.info(`${username} attempted to access report ${incidentId} even though they are not the reporter`)
+      return res.render('pages/userError.njk', { message: `You are not the reporter for report ${incidentId}` })
     }
 
     if (tab === 'statements') {

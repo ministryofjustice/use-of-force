@@ -280,7 +280,7 @@ describe('GET /view-incident', () => {
         })
     })
 
-    it("should prevent reporter-only user accessing reports they didn't create", () => {
+    it("should prevent user accessing reports they didn't create from /your-reports", () => {
       report = { id: 2, username: 'user2', form: { incidentDetails: {} } } as unknown as Report
       reviewService.getReport.mockResolvedValue(report)
 
@@ -289,7 +289,7 @@ describe('GET /view-incident', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.status).toBe(200)
-          expect(res.text).toContain('You can not access report 999')
+          expect(res.text).toContain('You are not the reporter for report 999')
         })
     })
   })
