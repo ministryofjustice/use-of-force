@@ -34,6 +34,29 @@ const reportEdit = {
   reportOwnerChanged: false,
 }
 
+const statements = [
+  {
+    id: 1,
+    reportId: 1,
+    name: 'Test User',
+    email: 'test.user@justice.gov.uk',
+    userId: 'TUSER_GEN',
+    isOverdue: false,
+    isSubmitted: true,
+    isRemovalRequested: false,
+    bookingId: 159466,
+    incidentDate: new Date('2025-06-23T07:00:00.000Z'),
+    lastTrainingMonth: 1,
+    lastTrainingYear: 2025,
+    jobStartYear: 2000,
+    statement: 'abc test test test.',
+    submittedDate: new Date('2025-06-24T14:11:03.986Z'),
+    additionalComments: [],
+    isVerified: true,
+    location: '',
+  },
+]
+
 let app
 
 beforeEach(() => {
@@ -42,7 +65,7 @@ beforeEach(() => {
   config.featureFlagReportEditingEnabled = true
   reviewService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
-  reviewService.getStatements.mockResolvedValue([])
+  reviewService.getStatements.mockResolvedValue(statements)
   reportDetailBuilder.build.mockResolvedValue({
     offenderDetail: {
       displayName: 'John Smith',
@@ -90,11 +113,36 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Print report and statements')
         })
     })
+
+    it('should display print link to coordinator - Statements tab', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Print report and statements')
+        })
+    })
+
     it('should not display print link if user is reporter only', () => {
       userSupplier.mockReturnValue(user)
 
       return request(app)
         .get('/1/view-incident?tab=report&your-report=true')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('Print report and statements')
+        })
+    })
+
+    it('should not display print link if user is reporter only - Statements tab', () => {
+      userSupplier.mockReturnValue(user)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -116,6 +164,7 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to just reporter', () => {
       userSupplier.mockReturnValue(user)
 
@@ -128,11 +177,53 @@ describe('GET /view-incident', () => {
           expect(res.text).not.toContain('data-qa="button-delete-incident"')
         })
     })
+
     it('should not display Edit report or Delete incident buttons to reviewer', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
       return request(app)
         .get('/1/view-incident?tab=report')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('data-qa="button-edit-report"')
+          expect(res.text).not.toContain('data-qa="button-delete-incident"')
+        })
+    })
+  })
+
+  describe('Action buttons - Statements tab', () => {
+    it('should display both Edit report and Delete incident buttons to coordinator', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="button-edit-report"')
+          expect(res.text).toContain('data-qa="button-delete-incident"')
+        })
+    })
+
+    it('should not display Edit report or Delete incident buttons to just reporter', () => {
+      userSupplier.mockReturnValue(user)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('data-qa="button-edit-report"')
+          expect(res.text).not.toContain('data-qa="button-delete-incident"')
+        })
+    })
+
+    it('should not display Edit report or Delete incident buttons to reviewer', () => {
+      userSupplier.mockReturnValue(reviewerUser)
+
+      return request(app)
+        .get('/1/view-incident?tab=statements')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
@@ -164,6 +255,7 @@ describe('GET /view-incident', () => {
           expect(res.text).not.toContain('data-qa="statements-tab"')
         })
     })
+
     it('should display statements tab to reviewer', () => {
       userSupplier.mockReturnValue(reviewerUser)
 
@@ -290,6 +382,82 @@ describe('GET /view-incident', () => {
         .expect(res => {
           expect(res.status).toBe(200)
           expect(res.text).toContain('You are not the reporter for report 999')
+        })
+    })
+  })
+
+  describe('Statements', () => {
+    it('should display the expected heading', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Staff members involved')
+        })
+    })
+
+    it('should include a table of statements', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="statements"')
+        })
+    })
+
+    it('should include a link to return to use of force incidents', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="return-link"')
+        })
+    })
+
+    it('should show the expected name value, including (user id) in the Name field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="name"')
+          expect(res.text).toContain(`${statements[0].name} (${statements[0].userId})`)
+        })
+    })
+
+    it('should show the expected location value in the Location field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="location"')
+          expect(res.text).toContain(`${statements[0].location}`)
+        })
+    })
+
+    it('should show the expected email address value in the Email field', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="email"')
+          expect(res.text).toContain(`${statements[0].email}`)
+        })
+    })
+
+    it('should show a SUBMITTED badge in the status column when a statement is submitted', () => {
+      return request(app)
+        .get('/1/view-incident?tab=statements')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="submitted"')
+          expect(res.text).toContain('SUBMITTED')
         })
     })
   })

@@ -23,13 +23,14 @@ export default class ViewIncidentsRoutes {
     const reportData = await this.reportDetailBuilder.build(username, report)
     const { offenderDetail } = reportData
 
+    const systemToken = await this.authService.getSystemClientToken(username)
+    const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
+
     if (tab === 'report') {
       const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
       const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
       const hasReportOwnerChanged = newReportOwners?.length > 0
       const reportOwner = newReportOwners?.at(-1)
-      const systemToken = await this.authService.getSystemClientToken(username)
-      const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
       const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
       const accessingFromYourReportTab = req.query['your-report']
       const isUsersOwnReport = username === report.username
@@ -62,6 +63,7 @@ export default class ViewIncidentsRoutes {
         isReviewer,
         isCoordinator,
         offenderDetail,
+        allStatements,
       }
       return res.render('pages/viewIncident/incident.njk', { data: dataForStatements })
     }
