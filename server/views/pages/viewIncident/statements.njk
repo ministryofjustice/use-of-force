@@ -1,5 +1,6 @@
 {% from  "../../macros.njk" import overdueBadge %} 
 {% from "../../macros.njk" import submittedBadge %}  
+{% from "../../macros.njk" import removalRequestedBadge %}  
 
 <div class = 'govuk-!-display-none-print'>
   <div class="flex-container-space-between">
@@ -91,7 +92,7 @@
                   href= {{ '/' + statement.id + '/view-statement' }}
                   draggable="false"
                   class="govuk-link"
-                  aria-label="View report for {{statement.name}} ({{statement.userId}})">
+                  aria-label="View statement for {{statement.name}} ({{statement.userId}})">
                     View statement
                 </a>
 
