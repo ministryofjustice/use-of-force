@@ -51,228 +51,224 @@
     </div>
   </div>
 {% endmacro %}
-
-{% macro detail(data, bookingId, incidentId, user, print, renderReportView, isEditReport) %}
-    {% if renderReportView %}
+{# renderReportView used to display reports excluding check-your-answers page #}
+{% macro detail(data, bookingId, incidentId, user, print, renderReportView, isEditReport) %}  
+  {% if renderReportView %}
     {% set addedClasses = 'border-bottom-none' %}
-      <div class="summary-card">
-          <div class="summary-card__title-wrapper">
-            {{
-              reportDetailsMacros.sectionHeading({
-                id: 'reportDetails', 
-                title: 'Report details'
-              })
-            }}
-          </div>
-          <div class="summary-card__content">
-            {{reportDetailsMacros.tableRow({
-                label: 'Incident number',  
-                'data-qa': 'incident-number',    
-                dataValue: data.incidentId
-              })
-            }}
-            {{reportDetailsMacros.tableRow({
-                label: 'Report created by',  
-                'data-qa': 'report-created-by',    
-                dataValue:  data.reporterName
-              })
-            }}
-            {{reportDetailsMacros.tableRow({
-                label: 'Date and time report created',  
-                'data-qa': 'report-submitted-date',    
-                dataValue: data.submittedDate | formatDate("D MMMM YYYY [at] HH:mm")
-              })
-            }}
+    <div class="summary-card">
+      <div class="summary-card__title-wrapper">
+        {{
+          reportDetailsMacros.sectionHeading({
+            id: 'reportDetails', 
+            title: 'Report details'
+          })
+        }}
+      </div>
+      <div class="summary-card__content">
+          {{reportDetailsMacros.tableRow({
+              label: 'Incident number',  
+              'data-qa': 'incident-number',    
+              dataValue: data.incidentId
+            })
+          }}
+          {{reportDetailsMacros.tableRow({
+              label: 'Report created by',  
+              'data-qa': 'report-created-by',    
+              dataValue:  data.reporterName
+            })
+          }}
 
-            {% if data.hasReportOwnerChanged %}
-              {{reportDetailsMacros.tableRow({
-                  label: 'Current report owner',  
-                  'data-qa': 'report-owner',    
-                  dataValue: data.reportOwner.newValuePrimary + ' as of ' + data.reportOwner.editDate | formatDate("D MMMM YYYY [at] HH:mm")
-                })
-              }}
-            {% endif %}
+          {{reportDetailsMacros.tableRow({
+              label: 'Date and time report created',  
+              'data-qa': 'report-submitted-date',    
+              dataValue: data.submittedDate | formatDate("D MMMM YYYY [at] HH:mm")
+            })
+          }}
 
-            {% if data.hasReportBeenEdited %}
-              {{reportDetailsMacros.tableRowWithEditHistoryLink({
-                  label: 'Report last edited',  
-                  'data-qa': 'last-edited-date-time',    
-                  dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName,
-                  incidentId: data.incidentId
-                })
-              }}
-            {% endif %}  
-
-            {{reportDetailsMacros.tableRowWithBadge({
-                label: 'Report status',  
-                'data-qa': 'report-status',    
-                dataValue: data.reportStatus,
-                addedClasses: addedClasses
+          {% if data.hasReportOwnerChanged %}
+            {{reportDetailsMacros.tableRowWithLink({
+                label: 'Current report owner',  
+                'data-qa': 'report-owner',    
+                'data-qa-link': 'change-owner-link',
+                dataValue: data.reportOwner.newValuePrimary + ' as of ' + data.reportOwner.editDate | formatDate("D MMMM YYYY [at] HH:mm"),
+                linkName: 'Change owner',
+                href: data.incidentId + '/change-owner'
               })
             }}
-        </div>
-      </div>    
-{% endif %}
-<div class="{% if renderReportView %} summary-card {% endif %}">
-  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
-    {% if isEditReport %}
-      {% set url = '/' + data.incidentId + '/edit-report/incident-details' %}
-    {% elseif bookingId %}
-      {% set url = '/report/' + bookingId + '/incident-details' %}
-    {% endif %}
+          {% endif %}
 
-    {{
-      reportDetailsMacros.sectionHeading({
-        id: 'incidentDetails', 
-        title: 'Incident details',
-        url: url
-      })
-    }}
-  </div>
-  <div class="{% if renderReportView %} summary-card__content {% endif %}">
-    {{reportDetailsMacros.tableRow({
-        label: 'Date of incident',  
-        'data-qa': 'incidentDate',    
-        dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY'),
-        print: print
-      })
-    }}
-    {{reportDetailsMacros.tableRow({
-        label: 'Time of incident',  
-        'data-qa': 'incidentTime',    
-        dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm'),
-        print: print 
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Prison',
-        'data-qa': 'prison',
-        dataValue: data.incidentDetails.prison.description,
-        print: print
-      })
-    }}  
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Location',
-        'data-qa': 'location',
-        dataValue: data.incidentDetails.location,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was the use of force planned?',
-        'data-qa': 'incidentType',
-        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo,
-        print: print
-      })
-    }}
-    {% if data.incidentDetails.authorisedBy %}
+          {% if data.hasReportBeenEdited %}
+            {{reportDetailsMacros.tableRowWithLink({
+                label: 'Report last edited',  
+                'data-qa': 'last-edited-date-time',    
+                'data-qa-link': 'edit-history-link',
+                dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName,
+                linkName: 'Edit history',
+                href: data.incidentId + '/edit-history'
+              })
+            }}
+          {% endif %}  
+
+          {{reportDetailsMacros.tableRowWithBadge({
+              label: 'Report status',  
+              'data-qa': 'report-status',    
+              dataValue: data.reportStatus,
+              addedClasses: addedClasses
+            })
+          }}
+      </div>
+    </div>    
+  {% endif %}
+
+  <div class="{% if renderReportView %} summary-card {% endif %}">
+    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+      {% if isEditReport %}
+        {% set url = '/' + data.incidentId + '/edit-report/incident-details' %}
+      {% elseif bookingId %}
+        {% set url = '/report/' + bookingId + '/incident-details' %}
+      {% endif %}
+
       {{
-      reportDetailsMacros.tableRow({
-          label: 'Authorised by',
-          'data-qa': 'authorisedBy',
-          dataValue: data.incidentDetails.authorisedBy,
+        reportDetailsMacros.sectionHeading({
+          id: 'incidentDetails', 
+          title: 'Incident details',
+          url: url
+        })
+      }}
+    </div>
+    <div class="{% if renderReportView %} summary-card__content {% endif %}">
+      {{reportDetailsMacros.tableRow({
+          label: 'Date of incident',  
+          'data-qa': 'incidentDate',    
+          dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY'),
           print: print
         })
       }}
-    {% endif %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Witnesses',
-        'data-qa': 'witnesses',
-        dataValue: data.incidentDetails.witnesses,
-        type: 'itemPerLine',
-        print: print,
-        addedClasses:addedClasses
-      })
-    }}
-  </div>
-</div>
-
-<div class="{% if renderReportView %} summary-card {% endif %}">
-  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
-    {% if isEditReport %}
-      {% set url = '' %}
-    {% elseif bookingId %}
-      {% set url = '/report/' + bookingId + '/staff-involved'%}
-    {% endif %}
-
-    {{
-      reportDetailsMacros.sectionHeading({
-        id: 'staffInvolved',
-        title: 'Staff involved',
-        url:  url
-      })  
-    }}
-  </div>
-
-  <div class="{% if renderReportView %} summary-card__content {% endif %}">
-    {% if renderReportView %}
-      <table class="govuk-table" data-module="moj-sortable-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row  {{addedClasses}}">        
-            <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
-            <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-              <tr class="govuk-table__row" data-qa="staff-involved" >     
-                <td class="govuk-table__cell">{{item.name}} </td>
-                <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
-              </tr>
-          {% endfor %} 
-        </tbody>
-      </table>
-
-    {% else %}
-      <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
-      {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-        <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
-        {{item.name}} ({{item.username}})
-
-        {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
-          <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class=" govuk-!-display-none-print govuk-link float-right">
-            Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
-        {%- endif -%}  
-        </li>
-      {% endfor %} 
-      </ol>
-      {%- if not print and user.isCoordinator and incidentId -%}
-        <a class= 'govuk-!-display-none-print' data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
-          Add another member of staff
-        </a>
-      {%- endif -%}
-    {%- endif -%}
-  </div>
-</div>
-
-<div class="{% if renderReportView %} summary-card {% endif %}">
-  <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
-    {% if isEditReport %}
-      {% set url = '/' + data.incidentId + '/edit-report/why-was-uof-applied' %}
-    {% elseif bookingId %}
-      {% set url = '/report/' + bookingId + '/why-was-uof-applied' %}
-    {% endif %}
-
-    {{
-      reportDetailsMacros.sectionHeading({
-        id: 'useOfForceDetails',
-        title: 'Use of force details',
-        url: url
-      })
-    }}
-  </div>
-  <div class="{% if renderReportView %} summary-card__content {% endif %}">
-    {% if data.useOfForceDetails.reasonsForUseOfForce %}
+      {{reportDetailsMacros.tableRow({
+          label: 'Time of incident',  
+          'data-qa': 'incidentTime',    
+          dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm'),
+          print: print 
+        })
+      }}
       {{
-      reportDetailsMacros.tableRow({
-          label: 'Why was use of force applied against this prisoner?',
-          'data-qa': 'reasonsForUseOfForce',
-          dataValue: data.useOfForceDetails.reasonsForUseOfForce,
+        reportDetailsMacros.tableRow({
+          label: 'Prison',
+          'data-qa': 'prison',
+          dataValue: data.incidentDetails.prison.description,
           print: print
+        })
+      }}  
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Location',
+          'data-qa': 'location',
+          dataValue: data.incidentDetails.location,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was the use of force planned?',
+          'data-qa': 'incidentType',
+          dataValue: data.incidentDetails.plannedUseOfForce | toYesNo,
+          print: print
+        })
+      }}
+      {% if data.incidentDetails.authorisedBy %}
+        {{
+        reportDetailsMacros.tableRow({
+            label: 'Authorised by',
+            'data-qa': 'authorisedBy',
+            dataValue: data.incidentDetails.authorisedBy,
+            print: print
+          })
+        }}
+      {% endif %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Witnesses',
+          'data-qa': 'witnesses',
+          dataValue: data.incidentDetails.witnesses,
+          type: 'itemPerLine',
+          print: print,
+          addedClasses:addedClasses
+        })
+      }}
+    </div>
+  </div>
+
+  <div class="{% if renderReportView %} summary-card {% endif %}">
+    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+      {% if isEditReport %}
+        {% set url = '/' + data.incidentId + '/edit-report/staff-involved' %}
+      {% elseif bookingId %}
+        {% set url = '/report/' + bookingId + '/staff-involved'%}
+      {% endif %}
+
+      {{
+        reportDetailsMacros.sectionHeading({
+          id: 'staffInvolved',
+          title: 'Staff involved',
+          url:  url
+        })  
+      }}
+    </div>
+
+    <div class="{% if renderReportView %} summary-card__content {% endif %}">
+      {% if renderReportView %}
+        <table class="govuk-table" data-module="moj-sortable-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row  {{addedClasses}}">        
+              <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
+              <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+                <tr class="govuk-table__row" data-qa="staff-involved" >     
+                  <td class="govuk-table__cell">{{item.name}} </td>
+                  <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
+                </tr>
+            {% endfor %} 
+          </tbody>
+        </table>
+
+      {% else %}
+        <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
+        {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+          <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
+          {{item.name}} ({{item.username}})
+
+          {%- if not print and user.isCoordinator and not item.isReporter and item.statementId -%}      
+            <a data-qa="delete-staff-{{item.username}}" href="{{'/coordinator/report/' + item.reportId + '/statement/' + item.statementId + '/confirm-delete'}}" class=" govuk-!-display-none-print govuk-link float-right">
+              Delete <span class="govuk-visually-hidden">{{item.name}}</span></a>
+          {%- endif -%}  
+          </li>
+        {% endfor %} 
+        </ol>
+        {%- if not print and user.isCoordinator and incidentId -%}
+          <a class= 'govuk-!-display-none-print' data-qa="add-staff" href="{{'/coordinator/report/' + incidentId + '/add-staff'}}" class="govuk-link">
+            Add another member of staff
+          </a>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="{% if renderReportView %} summary-card {% endif %}">
+    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+      {% if isEditReport %}
+        {% set url = '/' + data.incidentId + '/edit-report/why-was-uof-applied' %}
+      {% elseif bookingId %}
+        {% set url = '/report/' + bookingId + '/why-was-uof-applied' %}
+      {% endif %}
+
+      {{
+        reportDetailsMacros.sectionHeading({
+          id: 'useOfForceDetails',
+          title: 'Use of force details',
+          url: url
         })
       }}
     {% endif %}
@@ -376,196 +372,286 @@
   {% endif %}
   
     {% if data.useOfForceDetails.weaponsObserved != undefined  %}
+    </div>
+    <div class="{% if renderReportView %} summary-card__content {% endif %}">
+      {% if data.useOfForceDetails.reasonsForUseOfForce %}
+        {{
+        reportDetailsMacros.tableRow({
+            label: 'Why was use of force applied against this prisoner?',
+            'data-qa': 'reasonsForUseOfForce',
+            dataValue: data.useOfForceDetails.reasonsForUseOfForce,
+            print: print
+          })
+        }}
+      {% endif %}
+      {% if data.useOfForceDetails.primaryReason %}
+        {{
+        reportDetailsMacros.tableRow({
+            label: 'What was the primary reason use of force was applied against this prisoner?',
+            'data-qa': 'primaryReason',
+            dataValue: data.useOfForceDetails.primaryReason,
+            print: print
+          })
+        }}
+      {% endif %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Were any weapons observed?',
-          'data-qa': 'weaponTypes',
-          dataValue: data.useOfForceDetails.weaponsObserved | capitalize,
+          label: 'Was positive communication used to de-escalate the situation with this prisoner?',
+          'data-qa': 'positiveCommunication',
+          dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo,
           print: print
         })
       }}
-    {% endif %}
 
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was a guiding hold used against this prisoner?',
-        'data-qa': 'guidingHold',
-        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize,
-        print: print
-      })
-    }}
-    {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Was an escorting hold used against this prisoner?',
-          'data-qa': 'escortingHold',
-          dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo,
+          label: 'Was any part of the incident captured on a body-worn camera?',
+          'data-qa': 'bodyCameras',
+          dataValue: data.useOfForceDetails.bodyCameras | capitalize,
+          print: print
+        })
+      }}
+
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were any personal protection techniques used against this prisoner?',
+          'data-qa': 'personalProtection',
+          dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo,
+          print: print
+        })
+      }}
+
+    {% if data.useOfForceDetails.batonDrawn %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was a baton drawn by anyone during this incident?',
+          'data-qa': 'batonDrawn',
+          dataValue: data.useOfForceDetails.batonDrawn,
+          print: print
+        })
+      }}
+    {% else %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was a baton drawn by anyone against this prisoner?',
+          'data-qa': 'batonDrawnAgainstPrisoner',
+          dataValue: data.useOfForceDetails.batonDrawnAgainstPrisoner,
           print: print
         })
       }}
     {% endif %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Which control and restraint positions were used against this prisoner?',
-        'data-qa': 'restraintUsed',
-        dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
-        print: print,
-        type: 'parentChild'
-      })
-    }}
     
-    {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
-    {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
+    {% if data.useOfForceDetails.pavaDrawn %}
       {{
         reportDetailsMacros.tableRow({
-          label: 'Which pain inducing techniques were used against this prisoner?',
-          'data-qa': 'painInducingTechniques',
-          dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
+          label: 'Was PAVA drawn by anyone during this incident?',
+          'data-qa': 'pavaDrawn',
+          dataValue: data.useOfForceDetails.pavaDrawn,
+          print: print
+        })
+      }}
+    {% else %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was PAVA drawn by anyone against this prisoner?',
+          'data-qa': 'pavaDrawnAgainstPrisoner',
+          dataValue: data.useOfForceDetails.pavaDrawnAgainstPrisoner,
           print: print
         })
       }}
     {% endif %}
+
+      {% if data.useOfForceDetails.weaponsObserved != undefined  %}
+        {{
+          reportDetailsMacros.tableRow({
+            label: 'Were any weapons observed?',
+            'data-qa': 'weaponTypes',
+            dataValue: data.useOfForceDetails.weaponsObserved | capitalize,
+            print: print
+          })
+        }}
+      {% endif %}
+
       {{
-      reportDetailsMacros.tableRow({
-        label: 'Were handcuffs applied against this prisoner?',
-        'data-qa': 'handcuffsApplied',
-        dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo,
-        print: print,
-        addedClasses: addedClasses
-      })
-    }}
+        reportDetailsMacros.tableRow({
+          label: 'Was a guiding hold used against this prisoner?',
+          'data-qa': 'guidingHold',
+          dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize,
+          print: print
+        })
+      }}
+      {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
+        {{
+          reportDetailsMacros.tableRow({
+            label: 'Was an escorting hold used against this prisoner?',
+            'data-qa': 'escortingHold',
+            dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo,
+            print: print
+          })
+        }}
+      {% endif %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Which control and restraint positions were used against this prisoner?',
+          'data-qa': 'restraintUsed',
+          dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray,
+          print: print,
+          type: 'parentChild'
+        })
+      }}
+      
+      {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
+      {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
+        {{
+          reportDetailsMacros.tableRow({
+            label: 'Which pain inducing techniques were used against this prisoner?',
+            'data-qa': 'painInducingTechniques',
+            dataValue: data.useOfForceDetails.painInducingTechniques | capitalize,
+            print: print
+          })
+        }}
+      {% endif %}
+        {{
+        reportDetailsMacros.tableRow({
+          label: 'Were handcuffs applied against this prisoner?',
+          'data-qa': 'handcuffsApplied',
+          dataValue: data.useOfForceDetails.handcuffsApplied | toYesNo,
+          print: print,
+          addedClasses: addedClasses
+        })
+      }}
+    </div>
   </div>
-</div>
 
-<div class="{% if renderReportView %} summary-card {% endif %}">
-   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
-    {% if isEditReport %}
-      {% set url = '/' + data.incidentId + '/edit-report/relocation-and-injuries' %}
-    {% elseif bookingId %}
-      {% set url = '/report/' + bookingId + '/relocation-and-injuries' %}
-    {% endif %}
-    {{
-      reportDetailsMacros.sectionHeading({
-        id: 'relocationAndInjuries',
-        title: 'Relocation and injuries',
-        url: url,
-        print: print
-      })
-    }}
+  <div class="{% if renderReportView %} summary-card {% endif %}">
+    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+      {% if isEditReport %}
+        {% set url = '/' + data.incidentId + '/edit-report/relocation-and-injuries' %}
+      {% elseif bookingId %}
+        {% set url = '/report/' + bookingId + '/relocation-and-injuries' %}
+      {% endif %}
+      {{
+        reportDetailsMacros.sectionHeading({
+          id: 'relocationAndInjuries',
+          title: 'Relocation and injuries',
+          url: url,
+          print: print
+        })
+      }}
+    </div>
+    <div class="{% if renderReportView %} summary-card__content {% endif %}">
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Where was the prisoner relocated to?',
+          'data-qa': 'prisonerRelocation',
+          dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was the prisoner compliant?',
+          'data-qa': 'compliancy',
+          dataValue: data.relocationAndInjuries.relocationCompliancy,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Who completed the F213 form?',
+          'data-qa': 'f213',
+          dataValue: data.relocationAndInjuries.f213CompletedBy | title,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Healthcare staff present',
+          'data-qa': 'healthcareStaffPresent',
+          dataValue: data.relocationAndInjuries.healthcareStaffPresent | title,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Did the prisoner sustain any injuries at the time?',
+          'data-qa': 'prisonerInjuries',
+          dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Did the prisoner need outside hospitalisation at the time?',
+          'data-qa': 'prisonerHospitalisation',
+          dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Staff who needed medical attention',
+          'data-qa': 'staffMedicalAttention',
+          dataValue: data.relocationAndInjuries.staffMedicalAttention,
+          type: 'itemPerLine',
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Staff taken to hospital',
+          'data-qa': 'staffHospitalisation',
+          dataValue: data.relocationAndInjuries.staffHospitalisation,
+          type: 'itemPerLine',
+          print: print,
+          addedClasses: addedClasses
+        })
+      }}
+    </div>
   </div>
-  <div class="{% if renderReportView %} summary-card__content {% endif %}">
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Where was the prisoner relocated to?',
-        'data-qa': 'prisonerRelocation',
-        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was the prisoner compliant?',
-        'data-qa': 'compliancy',
-        dataValue: data.relocationAndInjuries.relocationCompliancy,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Who completed the F213 form?',
-        'data-qa': 'f213',
-        dataValue: data.relocationAndInjuries.f213CompletedBy | title,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Healthcare staff present',
-        'data-qa': 'healthcareStaffPresent',
-        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Did the prisoner sustain any injuries at the time?',
-        'data-qa': 'prisonerInjuries',
-        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Did the prisoner need outside hospitalisation at the time?',
-        'data-qa': 'prisonerHospitalisation',
-        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Staff who needed medical attention',
-        'data-qa': 'staffMedicalAttention',
-        dataValue: data.relocationAndInjuries.staffMedicalAttention,
-        type: 'itemPerLine',
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Staff taken to hospital',
-        'data-qa': 'staffHospitalisation',
-        dataValue: data.relocationAndInjuries.staffHospitalisation,
-        type: 'itemPerLine',
-        print: print,
-        addedClasses: addedClasses
-      })
-    }}
-  </div>
-</div>
 
-<div class="{% if renderReportView %} summary-card {% endif %}">
-   <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
-    {% if isEditReport %}
-      {% set url = '/' + data.incidentId + '/edit-report/evidence' %}
-    {% elseif bookingId %}
-      {% set url = '/report/' + bookingId + '/evidence' %}
-    {% endif %}
-    {{
-      reportDetailsMacros.sectionHeading({
-        id: 'evidence',
-        title: 'Evidence',
-        url: url
-      })
-    }}
+  <div class="{% if renderReportView %} summary-card {% endif %}">
+    <div class="{% if renderReportView %} summary-card__title-wrapper {% endif %} ">
+      {% if isEditReport %}
+        {% set url = '/' + data.incidentId + '/edit-report/evidence' %}
+      {% elseif bookingId %}
+        {% set url = '/report/' + bookingId + '/evidence' %}
+      {% endif %}
+      {{
+        reportDetailsMacros.sectionHeading({
+          id: 'evidence',
+          title: 'Evidence',
+          url: url
+        })
+      }}
+    </div>
+    <div class="{% if renderReportView %} summary-card__content {% endif %}">
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Evidence bagged and tagged',
+          'data-qa': 'evidenceBaggedTagged',
+          dataValue: data.evidence.evidenceBaggedTagged,
+          type: 'itemPerLine',
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were any photographs taken?',
+          'data-qa': 'photographs',
+          dataValue: data.evidence.photographs | toYesNo,
+          print: print
+        })
+      }}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was any part of the incident captured on CCTV?',
+          'data-qa': 'cctv',
+          dataValue: data.evidence.cctv | capitalize,
+          print: print,
+          addedClasses: addedClasses
+        })
+      }}
+    </div>
   </div>
-  <div class="{% if renderReportView %} summary-card__content {% endif %}">
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Evidence bagged and tagged',
-        'data-qa': 'evidenceBaggedTagged',
-        dataValue: data.evidence.evidenceBaggedTagged,
-        type: 'itemPerLine',
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Were any photographs taken?',
-        'data-qa': 'photographs',
-        dataValue: data.evidence.photographs | toYesNo,
-        print: print
-      })
-    }}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was any part of the incident captured on CCTV?',
-        'data-qa': 'cctv',
-        dataValue: data.evidence.cctv | capitalize,
-        print: print,
-        addedClasses: addedClasses
-      })
-    }}
-  </div>
-</div>
 {% endmacro %}

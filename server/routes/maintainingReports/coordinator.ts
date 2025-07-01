@@ -27,30 +27,21 @@ export default class CoordinatorRoutes {
 
   viewEditReport: RequestHandler = async (req, res) => {
     const { reportId } = req.params
-
+    const { user } = res.locals
+    const systemToken = await this.authService.getSystemClientToken(user.username)
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
-
     const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
-
     const reportEdits = await this.reviewService.getReportEdits(parseInt(reportId, 10))
-
     const hasReportBeenEdited = reportEdits?.length > 0
-
     const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
-
     const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
-
     const hasReportOwnerChanged = newReportOwners?.length > 0
-
     const reportOwner = newReportOwners?.at(-1)
-
     data.bookingId = null
-
     const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
+    const statements = await this.reviewService.getStatements(systemToken, parseInt(reportId, 10))
 
-    const user = { isCoordinator: res.locals.user.isCoordinator, isReviewer: res.locals.user.isReviewer }
-
-    return res.render('pages/coordinator/edit-report.njk', { data: dataWithEdits, user })
+    return res.render('pages/coordinator/edit-report.njk', { data: dataWithEdits, user, statements })
   }
 
   viewRemovalRequest: RequestHandler = async (req, res) => {

@@ -16,109 +16,19 @@
     <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-  <div class="flex-container-space-between govuk-!-display-none-print">
-    {% include "../../partials/breadcrumbs.njk" %}
-    <div class="float-right">
-      <a href="" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
-    </div>
-  </div>
-  {{ super() }}
-{% endblock %}
-
-{% block content %}
-<div class="govuk-grid-row govuk-body negative-margin-top-7">
-  {% if featureFlagReportEditingEnabled %}
-  <!-- render new page layout -->
-    {% set renderReportView = true %}
-    {% set print = false %}
-
-    <div class="{% if renderReportView %} govuk-grid-column-full {% else %} govuk-grid-column-three-quarters {% endif %} govuk-!-margin-bottom-9">
-      
-      {% if user.isCoordinator %}
-        <div class="flex-container-space-between">
-          <div>
-            <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">Use of force incident {{ data.incidentId }} </h1>
-          </div>
-
-          <div class="govuk-button-group govuk-!-margin-top-4">
-              {{ govukButton({
-                classes: "govuk-!-display-none-print",
-                text: "Edit report",
-                href: "edit-report",
-                attributes: {'data-qa':'button-edit-report'}
-              }) }}
-
-              {{ govukButton({
-                classes: "govuk-button--warning govuk-!-display-none-print",
-                text: "Delete incident",
-                href: "delete-incident",
-                attributes: {'data-qa':'button-delete-incident'}
-              }) }}
-          </div>
-        </div>
-      {% else %}
-        <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
-      {% endif %}
-
-      {{ mojSubNavigation({
-          classes: 'govuk-!-display-none-print',
-          label: "Sub navigation",
-          items: [{
-            text: "Report",
-            href: '/' + data.incidentId + '/view-report',
-            active: true,
-            attributes: {'data-qa':'report-tab'}
-          }]
-        }) }}
-
-      {{
-        reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)
-      }}
-
-      <!-- only show statements when printing --> 
-      <div class="print page-break-before">
-        {% for statement in statements %}
-          <h2 class="govuk-heading-l">{{ statement.name }}'s statement</h2>
-          <p> <span class="govuk-label--s"> Submitted: </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p>
-          <p class="pre-wrapped">{{ statement.statement }}</p>
-          {% for additionalComments in statement.additionalComments %}
-            <hr/>
-            <p> <span class="govuk-label--s"> Additional comment submitted: </span> {{additionalComments.dateSubmitted | formatDate('D MMMM YYYY - HH:mm')}}</p>
-            <p class="pre-wrapped">{{ additionalComments.additionalComment}}</p>
-          {% endfor %}
-        <hr>
-        {% endfor %}
-      </div> 
-
-    {% else %}
-    <!-- otherwise render the old page layout -->
-      <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
-        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            {{
-              reportDetail.reportHeading(data, print=false)
-            }}
-          </div>
-        </div>
-
         {{
           reportDetail.reportHeading(data, print=false)
         }}
       </div>
     </div>
 
-<<<<<<< HEAD
     {{
       reportDetail.detail(data, null, data.incidentId, user)
     }}
     <div class="govuk-!-margin-top-5">
-=======
-    {% endif %}
-
-    <div class="govuk-!-margin-top-5 govuk-!-display-none-print">
->>>>>>> 17bc078 (MAP-2849 add breadcrumbs and print link to view-report)
       <a href="/{{ data.incidentId }}/view-statements" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-incident-overview">Return to incident overview</a>
     </div>  
-</div>    
+  </div>    
+</div>
+
 {% endblock %}
