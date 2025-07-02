@@ -335,6 +335,17 @@
     }}
   {% endif %}
 
+  {% if data.useOfForceDetails.bittenByPrisonDog != undefined  %}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was the prisoner bitten by a prison dog?',
+        'data-qa': 'bittenByPrisonDog',
+        dataValue: data.useOfForceDetails.bittenByPrisonDog | toYesNo,
+        print: print
+      })
+    }}
+  {% endif %}
+  
     {% if data.useOfForceDetails.weaponsObserved != undefined  %}
       {{
         reportDetailsMacros.tableRow({

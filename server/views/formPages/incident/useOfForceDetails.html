@@ -104,6 +104,16 @@
     )}}
 
     <!-- Q6 -->
+
+    {{ radio( {
+      text: "Was the prisoner bitten by a prison dog?",
+      name: "bittenByPrisonDog",
+      value: data.bittenByPrisonDog,
+      options: yesNoOptions,
+      errorMessage: errors | findError('bittenByPrisonDog')
+    })}}
+
+    <!-- Q7 -->
     {{ radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Were any weapons observed?",
@@ -120,7 +130,7 @@
       }
     }) }}
 
-    <!-- Q7 -->
+    <!-- Q8 -->
     {{ radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a guiding hold used against this prisoner?",
@@ -149,7 +159,7 @@
     }
     )}}
 
-    <!-- Q8 -->
+    <!-- Q9 -->
     {{ radio( {
     text: "Was an escorting hold used against this prisoner?",
     name: "escortingHold",
@@ -158,7 +168,7 @@
     errorMessage: errors | findError('escortingHold')
     })}}
 
-    <!-- Q9 -->
+    <!-- Q10 -->
     <div id="control-and-restraint">
     {{ checkboxesWithNestedCheckboxes({
       primaryQuestion: {
@@ -173,7 +183,7 @@
   }}
   </div>
 
-  <!-- Q10 -->
+  <!-- Q11 -->
     <div id="pain-inducing-techniques">
       {{ checkboxesWithNestedCheckboxes({
         primaryQuestion: {
@@ -188,7 +198,7 @@
     }}
     </div>
 
-    <!-- 11 -->
+    <!-- 12 -->
     {{ radio( {
       text: "Were handcuffs applied against this prisoner?",
       name: "handcuffsApplied",

@@ -59,6 +59,10 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
+  bittenByPrisonDog: requiredBooleanMsg('Select yes if the prisoner was bitten by a prison dog').alter(
+    optionalForPartialValidation
+  ),
+
   weaponsObserved: requiredOneOfMsg(
     'YES',
     'NO'
