@@ -72,6 +72,7 @@ const createUseOfForceDetails = (
     pavaDrawnAgainstPrisoner: whenPresent(details.pavaDrawnAgainstPrisoner, value =>
       value ? wasWeaponUsed(details.pavaUsed) : NO
     ),
+    bittenByPrisonDog: details.bittenByPrisonDog,
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
