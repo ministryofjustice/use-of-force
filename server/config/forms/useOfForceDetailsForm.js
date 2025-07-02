@@ -1,6 +1,7 @@
 const joi = require('@hapi/joi')
 const { validations } = require('./validations')
 const { buildValidationSpec } = require('../../services/validation')
+const config = require('../../config')
 
 const {
   requiredBooleanMsg,
@@ -59,9 +60,18 @@ const completeSchema = joi.object({
     otherwise: joi.any().strip(),
   }),
 
-  bittenByPrisonDog: requiredBooleanMsg('Select yes if the prisoner was bitten by a prison dog').alter(
-    optionalForPartialValidation
-  ),
+  bittenByPrisonDog: config.default.featureFlagDisplayDogAndTaserQuestions
+    ? requiredBooleanMsg('Select yes if the prisoner was bitten by a prison dog').alter(optionalForPartialValidation)
+    : joi.any(),
+
+  /** 
+   * when featureFlagDisplayDogAndTaserQuestions no longer needed replace above with: 
+  
+   bittenByPrisonDog: requiredBooleanMsg('Select yes if the prisoner was bitten by a prison dog').alter(
+     optionalForPartialValidation
+   ),
+
+  */
 
   weaponsObserved: requiredOneOfMsg(
     'YES',

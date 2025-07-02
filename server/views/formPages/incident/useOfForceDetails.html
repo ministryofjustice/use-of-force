@@ -104,14 +104,15 @@
     )}}
 
     <!-- Q6 -->
-
-    {{ radio( {
-      text: "Was the prisoner bitten by a prison dog?",
-      name: "bittenByPrisonDog",
-      value: data.bittenByPrisonDog,
-      options: yesNoOptions,
-      errorMessage: errors | findError('bittenByPrisonDog')
-    })}}
+    {% if featureFlagDisplayDogAndTaserQuestions %}
+      {{ radio( {
+        text: "Was the prisoner bitten by a prison dog?",
+        name: "bittenByPrisonDog",
+        value: data.bittenByPrisonDog,
+        options: yesNoOptions,
+        errorMessage: errors | findError('bittenByPrisonDog')
+      })}}
+    {% endif %}
 
     <!-- Q7 -->
     {{ radiosWithAddAnotherTextBox({
