@@ -2,6 +2,11 @@ import { UofReasons } from '../../config/types'
 import { UseOfForceDraftReport } from '../../data/UseOfForceReport'
 import { SectionStatus, check, isReportComplete } from './reportStatusChecker'
 
+// remove mock once featureFlagDisplayDogAndTaserQuestions feature flag no longer needed
+jest.mock('../../config', () => ({
+  default: { featureFlagDisplayDogAndTaserQuestions: true },
+}))
+
 describe('statusCheck', () => {
   const validReport: UseOfForceDraftReport = {
     incidentDetails: {
