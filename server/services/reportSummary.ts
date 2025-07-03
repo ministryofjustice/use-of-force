@@ -72,7 +72,6 @@ const createUseOfForceDetails = (
     pavaDrawnAgainstPrisoner: whenPresent(details.pavaDrawnAgainstPrisoner, value =>
       value ? wasWeaponUsed(details.pavaUsed) : NO
     ),
-    bittenByPrisonDog: details.bittenByPrisonDog,
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
@@ -95,7 +94,30 @@ const createUseOfForceDetails = (
         ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
         : toLabel(WeaponsObserved, value)
     ),
+    bittenByPrisonDog: details.bittenByPrisonDog,
+    taserDrawn: whenPresent(details.taserDrawn, value =>
+      value === true ? `${YES} - ${getTaserDetails(details)}` : `${NO}`
+    ),
   }
+}
+const getTaserDetails = details => {
+  let str = ''
+  const taserOperativePresent = details.taserOperativePresent ? ' prisoner warned,' : ' prisoner not warned,'
+  const redDotWarning = details.redDotWarning ? ' red-dot warning used,' : ' red-dot warning not used,'
+  const arcWarningUsed = details.arcWarningUsed ? ' arc warning used,' : ' arc warning not used,'
+  const taserDeployed = details.taserDeployed ? ' Taser deployed,' : ' Taser not deployed,'
+  const taserCycleExtended = details.taserCycleExtended ? ' Taser cycle extended,' : ' Taser cycle not extended,'
+  const taserReenergised = details.taserReenergised ? ' Taser re-energised,' : ' Taser not re-energised,'
+
+  str = str
+    .concat(taserOperativePresent)
+    .concat(redDotWarning)
+    .concat(arcWarningUsed)
+    .concat(taserDeployed)
+    .concat(taserCycleExtended)
+    .concat(taserReenergised)
+
+  return str.slice(0, -1) // slice to remove final comma
 }
 
 const getRelocationType = relocationType => {

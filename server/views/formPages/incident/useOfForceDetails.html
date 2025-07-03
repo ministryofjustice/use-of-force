@@ -104,17 +104,18 @@
     )}}
 
     <!-- Q6 -->
-    {% if featureFlagDisplayDogAndTaserQuestions %}
-      {{ radio( {
-        text: "Was the prisoner bitten by a prison dog?",
-        name: "bittenByPrisonDog",
-        value: data.bittenByPrisonDog,
-        options: yesNoOptions,
-        errorMessage: errors | findError('bittenByPrisonDog')
-      })}}
-    {% endif %}
+    {% include "./partials/taser.njk" %}
 
     <!-- Q7 -->
+    {{ radio( {
+      text: "Was the prisoner bitten by a prison dog?",
+      name: "bittenByPrisonDog",
+      value: data.bittenByPrisonDog,
+      options: yesNoOptions,
+      errorMessage: errors | findError('bittenByPrisonDog')
+    })}}
+
+    <!-- Q8 -->
     {{ radiosWithAddAnotherTextBox({
       primaryQuestion:{
         text: "Were any weapons observed?",
@@ -131,7 +132,7 @@
       }
     }) }}
 
-    <!-- Q8 -->
+    <!-- Q9 -->
     {{ radiosWithNestedRadios({
       primaryQuestion: {
         text: "Was a guiding hold used against this prisoner?",
@@ -160,7 +161,7 @@
     }
     )}}
 
-    <!-- Q9 -->
+    <!-- Q10 -->
     {{ radio( {
     text: "Was an escorting hold used against this prisoner?",
     name: "escortingHold",
@@ -169,7 +170,7 @@
     errorMessage: errors | findError('escortingHold')
     })}}
 
-    <!-- Q10 -->
+    <!-- Q11 -->
     <div id="control-and-restraint">
     {{ checkboxesWithNestedCheckboxes({
       primaryQuestion: {
@@ -184,7 +185,7 @@
   }}
   </div>
 
-  <!-- Q11 -->
+  <!-- Q12 -->
     <div id="pain-inducing-techniques">
       {{ checkboxesWithNestedCheckboxes({
         primaryQuestion: {
@@ -199,7 +200,7 @@
     }}
     </div>
 
-    <!-- 12 -->
+    <!-- 13 -->
     {{ radio( {
       text: "Were handcuffs applied against this prisoner?",
       name: "handcuffsApplied",
