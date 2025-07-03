@@ -103,17 +103,19 @@
     }
     )}}
 
-    <!-- Q6 -->
-    {% include "./partials/taser.njk" %}
+    {% if featureFlagDisplayDogAndTaserQuestions %}
+      <!-- Q6 -->
+      {% include "./partials/taser.njk" %}
 
-    <!-- Q7 -->
-    {{ radio( {
-      text: "Was the prisoner bitten by a prison dog?",
-      name: "bittenByPrisonDog",
-      value: data.bittenByPrisonDog,
-      options: yesNoOptions,
-      errorMessage: errors | findError('bittenByPrisonDog')
-    })}}
+      <!-- Q7 -->
+      {{ radio( {
+        text: "Was the prisoner bitten by a prison dog?",
+        name: "bittenByPrisonDog",
+        value: data.bittenByPrisonDog,
+        options: yesNoOptions,
+        errorMessage: errors | findError('bittenByPrisonDog')
+      })}}
+    {% endif %}
 
     <!-- Q8 -->
     {{ radiosWithAddAnotherTextBox({
