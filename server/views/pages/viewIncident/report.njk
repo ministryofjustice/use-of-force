@@ -1,0 +1,63 @@
+{% import ".././reportDetailMacro.njk" as reportDetail %} 
+
+<div class = 'govuk-!-display-none-print'>
+
+    <div class="flex-container-space-between">
+      <div>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
+      </div>
+
+      {% if data.isCoordinator %}
+        <div class="govuk-button-group">
+            {{ govukButton({
+              classes: 'govuk-!-display-none-print',
+              text: "Edit report",
+              href: "edit-report",
+              attributes: {'data-qa':'button-edit-report'}
+            }) }}
+
+            {{ govukButton({
+              classes: "govuk-button--warning govuk-!-display-none-print",
+              text: "Delete incident",
+              href: "delete-incident",
+              attributes: {'data-qa':'button-delete-incident'}
+            }) }}
+        </div>
+      {% endif %}
+    </div>
+
+  {{ navigationTabMacro.navigation(data, {report:true}) }}
+
+  {{
+    reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)
+  }}
+
+  <div class="govuk-!-margin-top-5">
+    <a href="/{{ data.incidentId }}/view-statements" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-incident-overview">Return to incident overview</a>
+  </div>  
+</div>
+
+<div class="print"> 
+  {%  set printReport = true %}
+  <h1>Use of force incident number {{ data.incidentId }}</h1>
+  
+  <!-- report body  -->
+  {{
+    reportDetail.detail(data, null, data.incidentId, user, printReport, renderReportView)
+  }}
+
+  <!-- statement narrative and additional comments --> 
+  <div class="page-break-before">
+    {% for statement in statements %}
+      <h2 class="govuk-heading-l">{{ statement.name }}'s statement</h2>
+      <p> <span class="govuk-label--s"> Submitted: </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p>
+      <p class="pre-wrapped">{{ statement.statement }}</p>
+      {% for additionalComments in statement.additionalComments %}
+        <hr/>
+        <p> <span class="govuk-label--s"> Additional comment submitted: </span> {{additionalComments.dateSubmitted | formatDate('D MMMM YYYY - HH:mm')}}</p>
+        <p class="pre-wrapped">{{ additionalComments.additionalComment}}</p>
+      {% endfor %}
+    <hr>
+    {% endfor %}
+  </div> 
+</div>

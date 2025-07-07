@@ -114,6 +114,7 @@ export default class StatementsClient {
       text: `select s.id
             ,      r.id                                   "reportId"
             ,      s.name
+            ,      s.email
             ,      s.user_id                              "userId"
             ,      (s.overdue_date <= now()) and
                    (s.statement_status != $1)             "isOverdue"

@@ -8,6 +8,11 @@ const checkFactory = schema => input => {
 
 let validInput = {}
 
+// remove mock when featureFlagDisplayDogAndTaserQuestions feature flag no longer needed
+jest.mock('../../config', () => ({
+  default: { featureFlagDisplayDogAndTaserQuestions: true },
+}))
+
 beforeEach(() => {
   validInput = {
     positiveCommunication: 'true',
@@ -17,6 +22,7 @@ beforeEach(() => {
     batonUsed: 'true',
     pavaDrawnAgainstPrisoner: 'true',
     pavaUsed: 'true',
+    bittenByPrisonDog: 'true',
     weaponsObserved: 'NO',
     guidingHold: 'true',
     guidingHoldOfficersInvolved: '2',
@@ -45,6 +51,7 @@ describe('complete schema', () => {
         batonUsed: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,
@@ -55,7 +62,7 @@ describe('complete schema', () => {
       })
     })
 
-    it('Should return 10 error messages if no input field is completed', () => {
+    it('Should return 12 error messages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -80,6 +87,10 @@ describe('complete schema', () => {
           href: '#pavaDrawnAgainstPrisoner',
           text: 'Select yes if PAVA was drawn',
         },
+        {
+          href: '#bittenByPrisonDog',
+          text: 'Select yes if the prisoner was bitten by a prison dog',
+        },
         { href: '#weaponsObserved', text: 'Select yes if any weapons were observed' },
         {
           href: '#guidingHold',
@@ -103,13 +114,21 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(11)
+      expect(errors.length).toEqual(12)
 
       expect(formResponse).toEqual({})
     })
   })
 
   describe('Details page inputs', () => {
+    it("Not selecting an option for 'bitten by prison dog' returns a validation error messager", () => {
+      validInput.bittenByPrisonDog = undefined
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([
+        { href: '#bittenByPrisonDog', text: 'Select yes if the prisoner was bitten by a prison dog' },
+      ])
+    })
     it("Not selecting an option for 'positive communication' returns a validation error message", () => {
       const input = {
         ...validInput,
@@ -193,6 +212,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -219,6 +239,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -249,6 +270,7 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
         personalProtectionTechniques: true,
@@ -338,6 +360,21 @@ describe('complete schema', () => {
       expect(formResponse.pavaUsed).toBe(undefined)
     })
 
+    it("Not selecting an option for 'bitten by prison dog' returns a validation error message", () => {
+      const input = {
+        ...validInput,
+        bittenByPrisonDog: undefined,
+      }
+      const { errors, formResponse } = check(input)
+
+      expect(errors).toEqual([
+        {
+          href: '#bittenByPrisonDog',
+          text: 'Select yes if the prisoner was bitten by a prison dog',
+        },
+      ])
+      expect(formResponse.bittenByPrisonDog).toBe(undefined)
+    })
     it("Not selecting an option for 'weapons observed' returns a validation error message", () => {
       const input = {
         ...validInput,
@@ -386,6 +423,7 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        bittenByPrisonDog: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -421,6 +459,7 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        bittenByPrisonDog: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: ['STANDING', 'FACE_DOWN'],
@@ -623,6 +662,7 @@ describe('partial schema', () => {
         batonUsed: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         guidingHold: true,
         guidingHoldOfficersInvolved: 2,

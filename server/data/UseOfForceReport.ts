@@ -17,6 +17,7 @@ export type UseOfForceDetails = {
   pavaDrawn?: boolean
   pavaDrawnAgainstPrisoner?: boolean
   pavaUsed: boolean
+  bittenByPrisonDog?: boolean
   weaponsObserved: string
   weaponTypes: { weaponType: string }[]
   guidingHold: boolean

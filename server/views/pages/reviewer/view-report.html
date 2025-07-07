@@ -1,82 +1,30 @@
-{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% extends "../../partials/layout.html" %} 
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% import "../reportDetailMacro.njk" as reportDetail %} 
 
 {% set pageTitle = 'Use of force report' %}
 
 {% block beforeContent %}
   {% include "../../partials/breadcrumbs.njk" %}
-  {{ super() }}
 {% endblock %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-body negative-margin-top-7">
-  {% if featureFlagReportEditingEnabled %}
-    {% set renderReportView = true %}
-    {% set print = false %}
-
-    <div class="{% if renderReportView %} govuk-grid-column-full {% else %} govuk-grid-column-three-quarters {% endif %} govuk-!-margin-bottom-9">
-      
-      {% if user.isCoordinator %}
-        <div class="flex-container-space-between">
-          <div>
-            <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">Use of force incident {{ data.incidentId }} </h1>
-          </div>
-
-          <div class="govuk-button-group govuk-!-margin-top-4">
-              {{ govukButton({
-                text: "Edit report",
-                href: "edit-report",
-                attributes: {'data-qa':'button-edit-report'}
-              }) }}
-
-              {{ govukButton({
-                classes: "govuk-button--warning",
-                text: "Delete incident",
-                href: "delete-incident",
-                attributes: {'data-qa':'button-delete-incident'}
-              }) }}
-          </div>
-      </div>
-      {% else %}
-          <h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
-      {% endif %}
-
-      {{ mojSubNavigation({
-          label: "Sub navigation",
-          items: [{
-            text: "Report",
-            href: '/' + data.incidentId + '/view-report',
-            active: true,
-            attributes: {'data-qa':'report-tab'}
-          }]
-        }) }}
-
-      {{
-        reportDetail.detail(data, null, data.incidentId, user, print, renderReportView)
-      }}
-
-    {% else %}
-
-      <div class="govuk-grid-column-full govuk-!-margin-bottom-9 ">
-        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            {{
-              reportDetail.reportHeading(data, print=false)
-            }}
-          </div>
-        </div>
-
+<div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-9 ">
+    <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
         {{
-          reportDetail.detail(data, null, data.incidentId, user)
+          reportDetail.reportHeading(data, print=false)
         }}
+      </div>
+    </div>
 
-    {% endif %}
-
+    {{
+      reportDetail.detail(data, null, data.incidentId, user)
+    }}
     <div class="govuk-!-margin-top-5">
       <a href="/{{ data.incidentId }}/view-statements" class="govuk-link govuk-link--no-visited-state" data-qa="return-to-incident-overview">Return to incident overview</a>
     </div>  

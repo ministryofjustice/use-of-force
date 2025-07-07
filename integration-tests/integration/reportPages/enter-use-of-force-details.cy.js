@@ -32,6 +32,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.batonUsed().check('true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.bittenByPrisonDog().check('true')
     useOfForceDetailsPage.weaponsObserved().check('NO')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
@@ -60,6 +61,7 @@ context('Enter use of force details page', () => {
         handcuffsApplied: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -87,6 +89,7 @@ context('Enter use of force details page', () => {
         pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
+        bittenByPrisonDog: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: 'STANDING',
@@ -135,6 +138,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.bittenByPrisonDog().check('true')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
     useOfForceDetailsPage.escortingHold().check('true')
@@ -162,6 +166,7 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.bittenByPrisonDog().check('true')
     useOfForceDetailsPage.weaponsObserved().check('YES')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')

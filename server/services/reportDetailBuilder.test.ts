@@ -138,6 +138,7 @@ describe('Build details', () => {
         batonDrawnAgainstPrisoner: undefined,
         pavaDrawn: undefined,
         pavaDrawnAgainstPrisoner: undefined,
+        bittenByPrisonDog: undefined,
         controlAndRestraintUsed: undefined,
         guidingHoldUsed: undefined,
         escortingHoldUsed: undefined,

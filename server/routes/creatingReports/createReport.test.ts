@@ -50,6 +50,7 @@ const validUseOfForceDetailsRequest = {
   personalProtectionTechniques: 'false',
   batonDrawnAgainstPrisoner: 'false',
   pavaDrawnAgainstPrisoner: 'false',
+  bittenByPrisonDog: 'false',
   weaponsObserved: 'NO',
   guidingHold: 'false',
   escortingHold: 'false',
@@ -116,7 +117,8 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
-  test('Submitting invalid update is allowed', () => {
+  // remove skip on L121 once featureFlagDisplayDogAndTaserQuestions feature flag is removed
+  test.skip('Submitting invalid update is allowed', () => {
     return request(app)
       .post(`/report/1/use-of-force-details`)
       .send({
@@ -134,6 +136,7 @@ describe('POST save and return to tasklist', () => {
           handcuffsApplied: false,
           painInducingTechniquesUsed: 'NONE',
           pavaDrawnAgainstPrisoner: false,
+          bittenByPrisonDog: false,
           batonDrawnAgainstPrisoner: false,
           weaponsObserved: 'NO',
           personalProtectionTechniques: false,

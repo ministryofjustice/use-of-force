@@ -2,7 +2,7 @@ import page from '../page'
 
 const viewStatementsPage = () =>
   page('Use of force incident', {
-    reporterName: () => cy.get('[data-qa="reporter-name"]'),
+    reporterName: () => cy.get('[data-qa="report-created-by"]'),
 
     submittedDate: () => cy.get('[data-qa="submitted-date"]'),
 
@@ -34,7 +34,7 @@ const viewStatementsPage = () =>
           })
         ),
 
-    reportLink: () => cy.get('[data-qa="report-link"]'),
+    reportTab: () => cy.get('[data-qa="report-tab"]'),
 
     statementLink: index => cy.get(`[data-qa="statements"]`).find('.govuk-table__body tr').eq(index).find('a'),
 

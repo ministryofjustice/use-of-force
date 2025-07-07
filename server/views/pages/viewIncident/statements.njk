@@ -1,0 +1,126 @@
+{% from  "../../macros.njk" import overdueBadge %} 
+{% from "../../macros.njk" import submittedBadge %}  
+{% from "../../macros.njk" import removalRequestedBadge %}  
+
+<div class = 'govuk-!-display-none-print'>
+  <div class="flex-container-space-between">
+    <div>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
+    </div>
+
+    {% if data.isCoordinator %}
+      <div class="govuk-button-group">
+          {{ govukButton({
+            classes: 'govuk-!-display-none-print',
+            text: "Edit report",
+            href: "edit-report",
+            attributes: {'data-qa':'button-edit-report'}
+          }) }}
+
+          {{ govukButton({
+            classes: "govuk-button--warning govuk-!-display-none-print",
+            text: "Delete incident",
+            href: "delete-incident",
+            attributes: {'data-qa':'button-delete-incident'}
+          }) }}
+      </div>
+    {% endif %}
+  </div>
+
+  {{ navigationTabMacro.navigation(data, {statements:true}) }}
+
+  <table class="govuk-table" data-qa="statements" data-module="moj-sortable-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Staff members involved</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col" aria-sort="none">Name</th>
+        <th class="govuk-table__header" scope="col" aria-sort="none">Location</th>
+        <th class="govuk-table__header" scope="col" aria-sort="none">Email</th>
+        <th class="govuk-table__header" scope="col" aria-sort="none">Status</th>
+        <th class="govuk-table__header" scope="col">Action</th>
+      </tr>
+    </thead>
+
+    <tbody class="govuk-table__body">
+      {% for statement in data.allStatements %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell" data-qa="name">{{statement.name}} ({{statement.userId}})</td>
+          <td class="govuk-table__cell" data-qa="location"></td>
+          <td class="govuk-table__cell" data-qa="email">
+            {{statement.email}}
+            
+            {% set removalRequested = statement.isRemovalRequested %}
+
+            {% if removalRequested %}
+              {{ 
+                removalRequestedBadge({
+                  text: 'REMOVAL REQUEST', 
+                  qa: 'removal-request' 
+                }) 
+              }}     
+            {% endif %}
+
+            {% if not statement.isVerified and removalRequested %}
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
+            {% elif not statement.isVerified %}
+              <span data-qa="unverified" class="moj-badge moj-badge--black govuk-!-margin-right-3">EMAIL NOT VERIFIED</span>
+            {% endif %}
+          
+          <td class="govuk-table__cell">
+            {% if statement.isOverdue %}
+              {{ 
+                overdueBadge({
+                  text: 'OVERDUE', 
+                  qa: 'overdue' 
+                }) 
+              }}    
+            {% elif statement.isSubmitted %}   
+              {{ 
+                submittedBadge({
+                  text: 'SUBMITTED',
+                  qa: 'submitted'
+                })
+              }}           
+            {% endif %}
+          </td>
+
+        
+          {% if statement.isSubmitted or removalRequested %}
+            <td class="govuk-table__cell" data-qa="action">
+              {% if statement.isSubmitted %}
+                <a
+                  href= {{ '/' + statement.id + '/view-statement' }}
+                  draggable="false"
+                  class="govuk-link"
+                  aria-label="View statement for {{statement.name}} ({{statement.userId}})">
+                    View statement
+                </a>
+
+              {% elif removalRequested %}
+                <a
+                href= {{ '/coordinator/report/'+ data.incidentId +'/statement/' + statement.id + '/view-removal-request' }}  
+                draggable="false"
+                class="govuk-link"
+                data-qa="view-removal-request"
+                aria-label="View removal request for {{statement.name}} ({{statement.userId}})">
+                View removal request
+                </a>
+              {% endif %}
+            </td>
+          {% else %}
+            <td class="govuk-table__cell" aria-label="No actions available"></td>
+          {% endif %}
+        </tr>  
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a
+    href={{data.tab}}
+    draggable="false"
+    class="govuk-link"
+    data-qa="return-link"
+    >
+    Return to use of force incidents
+  </a>
+</div>
