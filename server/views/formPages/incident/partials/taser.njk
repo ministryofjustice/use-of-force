@@ -1,14 +1,13 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% set secondaryQuestions = 
   [
-    { label:  "Was the prisoner warned that a Taser operative was present?", name: "taserOperativePresent", qaName: "taser-operative-present"},
-    { label:  "Was there a red-dot warning used? ", name: "redDotWarning", qaName: "red-dot-warning" },
-    { label:  "Was there an arc warning used?", name: "arcWarningUsed", qaName: "arc-warning-used" },
-    { label:  "Was the Taser deployed? ", name: "taserDeployed", qaName: "taser-deployed"},
-    { label:  "Was the Taser cycle extended?", name: "taserCycleExtended", qaName:"taser-cycle-extended" },
-    { label:  "Was the Taser re-energised? ", name: "taserReenergised", qaName: "taser-reenergised" }
+    { label:  "Was the prisoner warned that a Taser operative was present?", name: "taserOperativePresent" },
+    { label:  "Was there a red-dot warning used? ", name: "redDotWarning"},
+    { label:  "Was there an arc warning used?", name: "arcWarningUsed" },
+    { label:  "Was the Taser deployed? ", name: "taserDeployed" },
+    { label:  "Was the Taser cycle extended?", name: "taserCycleExtended" },
+    { label:  "Was the Taser re-energised? ", name: "taserReenergised" }
   ]
 %}
 
@@ -52,17 +51,15 @@
             <h1 class="govuk-fieldset__heading"> {{question.label}} </h1>
           </legend>
           {% if secondaryQuestionError %}
-            <p class="govuk-error-message" data-qa="error-{{question.qaName}}" ><span class="govuk-visually-hidden">Error:</span>{{ secondaryQuestionError.text }}</p>
+            <p class="govuk-error-message" ><span class="govuk-visually-hidden">Error:</span>{{ secondaryQuestionError.text }}</p>
           {% endif %}
           <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id={{question.name}} name={{question.name}} type="radio" value=true data-qa="radio-yes-{{question.qaName}}"
-              {% if data[question.name] === true %} checked {% endif %}>
+              <input class="govuk-radios__input" id={{question.name}} name={{question.name}} type="radio" value=true {% if data[question.name] === true %} checked {% endif %}>
               <label class="govuk-label govuk-radios__label" for={{question.name}}> Yes </label>
             </div>
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id={{question.name}}No name={{question.name}} type="radio" value=false data-qa="radio-no-{{question.qaName}}"
-              {% if data[question.name] === false %} checked {% endif %}>
+              <input class="govuk-radios__input" id={{question.name}}No name={{question.name}} type="radio" value=false {% if data[question.name] === false %} checked {% endif %}>
               <label class="govuk-label govuk-radios__label" for={{question.name}}No> No </label>
             </div>
           </div>
