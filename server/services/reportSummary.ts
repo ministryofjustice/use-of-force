@@ -101,23 +101,19 @@ const createUseOfForceDetails = (
   }
 }
 const getTaserDetails = details => {
-  let str = ''
-  const taserOperativePresent = details.taserOperativePresent ? ' prisoner warned,' : ' prisoner not warned,'
-  const redDotWarning = details.redDotWarning ? ' red-dot warning used,' : ' red-dot warning not used,'
-  const arcWarningUsed = details.arcWarningUsed ? ' arc warning used,' : ' arc warning not used,'
-  const taserDeployed = details.taserDeployed ? ' Taser deployed,' : ' Taser not deployed,'
-  const taserCycleExtended = details.taserCycleExtended ? ' Taser cycle extended,' : ' Taser cycle not extended,'
-  const taserReenergised = details.taserReenergised ? ' Taser re-energised,' : ' Taser not re-energised,'
+  const messageOptionsForEachInput = [
+    ['taserOperativePresent', 'prisoner warned', 'prisoner not warned'],
+    ['redDotWarning', 'red-dot warning used', 'red-dot warning not used'],
+    ['arcWarningUsed', 'arc warning used', 'arc warning not used'],
+    ['taserDeployed', 'Taser deployed', 'Taser not deployed'],
+    ['taserCycleExtended', 'Taser cycle extended', 'Taser cycle not extended'],
+    ['taserReenergised', 'Taser re-energised', 'Taser not re-energised'],
+  ]
 
-  str = str
-    .concat(taserOperativePresent)
-    .concat(redDotWarning)
-    .concat(arcWarningUsed)
-    .concat(taserDeployed)
-    .concat(taserCycleExtended)
-    .concat(taserReenergised)
-
-  return str.slice(0, -1) // slice to remove final comma
+  return messageOptionsForEachInput
+    .map(([key, selectedMsg, notSelectedMsg]) => (details[key] ? ` ${selectedMsg}` : ` ${notSelectedMsg}`))
+    .join(',')
+    .trimEnd()
 }
 
 const getRelocationType = relocationType => {
