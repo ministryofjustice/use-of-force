@@ -60,7 +60,9 @@ const schemaObjectIncludingDogAndTaserValidation = {
     otherwise: joi.any().strip(),
   }),
 
-  taserDrawn: requiredBooleanMsg('Select yes if Taser was drawn').alter(optionalForPartialValidation),
+  taserDrawn: requiredBooleanMsg('Select yes if a Taser was drawn against the prisoner').alter(
+    optionalForPartialValidation
+  ),
 
   taserOperativePresent: joi.when('taserDrawn', {
     is: true,
