@@ -26,6 +26,7 @@ const expectedPayload = {
     bodyWornCamera: 'YES',
     bodyWornCameraNumbers: [{ cameraNum: '123' }, { cameraNum: '789' }, { cameraNum: '456' }],
     pavaUsed: true,
+    taserDrawn: false,
     bittenByPrisonDog: true,
     batonUsed: true,
     weaponsObserved: 'YES',

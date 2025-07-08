@@ -335,6 +335,17 @@
     }}
   {% endif %}
 
+  {% if data.useOfForceDetails.taserDrawn != undefined  %}
+    {{
+      reportDetailsMacros.tableRow({
+        label: ' Was a Taser drawn by anyone against this prisoner? ',
+        'data-qa': 'taserDrawn',
+        dataValue: data.useOfForceDetails.taserDrawn,
+        print: print
+      })
+    }}
+  {% endif %}
+
   {% if data.useOfForceDetails.bittenByPrisonDog != undefined  %}
     {{
       reportDetailsMacros.tableRow({

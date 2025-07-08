@@ -238,6 +238,61 @@ describe('GET /check-your-answers', () => {
       })
   })
 
+  it('Should not contain secondary answers for taser usage', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          taserDrawn: false,
+        },
+        evidence: {},
+        relocationAndInjuries: {
+          relocationCompliancy: true,
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('No')
+      })
+  })
+  it('Should contain correct secondary taser usage answers', () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {},
+        useOfForceDetails: {
+          taserDrawn: true,
+          taserOperativePresent: true,
+          redDotWarning: true,
+          arcWarningUsed: true,
+          taserDeployed: false,
+          taserCycleExtended: false,
+          taserReenergised: false,
+        },
+        evidence: {},
+        relocationAndInjuries: {
+          relocationCompliancy: true,
+        },
+      },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Yes -  prisoner warned, red-dot warning used, arc warning used, Taser not deployed, Taser cycle not extended, Taser not re-energised'
+        )
+      })
+  })
+
   it('Should contain NTRG in correct case', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
     draftReportService.getCurrentDraft.mockResolvedValue({

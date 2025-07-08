@@ -60,6 +60,45 @@ const schemaObjectIncludingDogAndTaserValidation = {
     otherwise: joi.any().strip(),
   }),
 
+  taserDrawn: requiredBooleanMsg('Select yes if Taser was drawn').alter(optionalForPartialValidation),
+
+  taserOperativePresent: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if the prisoner was warned a Taser operative was present').alter(
+      optionalForPartialValidation
+    ),
+    otherwise: joi.any().strip(),
+  }),
+
+  redDotWarning: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if a red-dot warning was used').alter(optionalForPartialValidation),
+    otherwise: joi.any().strip(),
+  }),
+
+  arcWarningUsed: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if an arc warning was used').alter(optionalForPartialValidation),
+    otherwise: joi.any().strip(),
+  }),
+
+  taserDeployed: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if the Taser was deployed').alter(optionalForPartialValidation),
+    otherwise: joi.any().strip(),
+  }),
+  taserCycleExtended: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if the Taser cycle was extended').alter(optionalForPartialValidation),
+    otherwise: joi.any().strip(),
+  }),
+
+  taserReenergised: joi.when('taserDrawn', {
+    is: true,
+    then: requiredBooleanMsg('Select yes if the Taser was re-energised').alter(optionalForPartialValidation),
+    otherwise: joi.any().strip(),
+  }),
+
   bittenByPrisonDog: requiredBooleanMsg('Select yes if the prisoner was bitten by a prison dog').alter(
     optionalForPartialValidation
   ),
