@@ -19,6 +19,13 @@ describe('statusCheck', () => {
     reasonsForUseOfForce: { reasons: [UofReasons.FIGHT_BETWEEN_PRISONERS.value] },
     useOfForceDetails: {
       pavaDrawnAgainstPrisoner: false,
+      taserDrawn: false,
+      taserOperativePresent: false,
+      redDotWarning: false,
+      arcWarningUsed: false,
+      taserDeployed: false,
+      taserCycleExtended: false,
+      taserReenergised: false,
       bittenByPrisonDog: false,
       batonDrawnAgainstPrisoner: false,
       guidingHold: false,

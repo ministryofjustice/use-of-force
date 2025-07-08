@@ -1,0 +1,71 @@
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% set secondaryQuestions = 
+  [
+    { label:  "Was the prisoner warned that a Taser operative was present?", name: "taserOperativePresent" },
+    { label:  "Was there a red-dot warning used? ", name: "redDotWarning"},
+    { label:  "Was there an arc warning used?", name: "arcWarningUsed" },
+    { label:  "Was the Taser deployed? ", name: "taserDeployed" },
+    { label:  "Was the Taser cycle extended?", name: "taserCycleExtended" },
+    { label:  "Was the Taser re-energised? ", name: "taserReenergised" }
+  ]
+%}
+
+{% set primaryQuestionError =  errors | findError('taserDrawn') %}
+
+<div class="govuk-form-group {% if primaryQuestionError %} govuk-form-group--error {% endif %}">
+  <fieldset class="govuk-fieldset">
+    {# primary question #}
+    <legend class="govuk-fieldset__legend govuk-body">
+      <h1 class="govuk-fieldset__heading"> Was a Taser drawn by anyone against this prisoner? </h1>
+    </legend>
+    <span id="mainQuestionErrMsg" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ primaryQuestionError.text}}
+    </span>
+    <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="taserDrawn" name="taserDrawn" type="radio" value=true  
+        data-aria-controls="conditional-taserDrawn" {% if data.taserDrawn === true %} checked {% endif %}>
+        <label class="govuk-label govuk-radios__label" for="taserDrawn">
+          Yes
+        </label>
+      </div>
+
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="taserDrawnNo" name="taserDrawn" type="radio" value=false 
+        {% if data.taserDrawn === false %} checked {% endif %}>
+        <label class="govuk-label govuk-radios__label" for="taserDrawnNo">
+          No
+        </label>
+      </div>  
+    </div>
+
+    {# secondary questions #}
+    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-taserDrawn">
+      {% for question in secondaryQuestions %}
+        {% set secondaryQuestionError =  errors | findError(question.name) %}
+
+        <div class = "{% if secondaryQuestionError %} govuk-form-group--error {% endif %}">
+          <legend class="govuk-fieldset__legend govuk-body">
+            <h1 class="govuk-fieldset__heading"> {{question.label}} </h1>
+          </legend>
+          {% if secondaryQuestionError %}
+            <p class="govuk-error-message" ><span class="govuk-visually-hidden">Error:</span>{{ secondaryQuestionError.text }}</p>
+          {% endif %}
+          <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id={{question.name}} name={{question.name}} type="radio" value=true {% if data[question.name] === true %} checked {% endif %}>
+              <label class="govuk-label govuk-radios__label" for={{question.name}}> Yes </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id={{question.name}}No name={{question.name}} type="radio" value=false {% if data[question.name] === false %} checked {% endif %}>
+              <label class="govuk-label govuk-radios__label" for={{question.name}}No> No </label>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </fieldset>
+</div>
+

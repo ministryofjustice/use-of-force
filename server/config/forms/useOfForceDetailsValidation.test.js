@@ -22,6 +22,13 @@ beforeEach(() => {
     batonUsed: 'true',
     pavaDrawnAgainstPrisoner: 'true',
     pavaUsed: 'true',
+    taserDrawn: 'true',
+    taserOperativePresent: 'true',
+    redDotWarning: 'true',
+    arcWarningUsed: 'true',
+    taserDeployed: 'true',
+    taserCycleExtended: 'true',
+    taserReenergised: 'true',
     bittenByPrisonDog: 'true',
     weaponsObserved: 'NO',
     guidingHold: 'true',
@@ -51,6 +58,13 @@ describe('complete schema', () => {
         batonUsed: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         guidingHold: true,
@@ -62,7 +76,7 @@ describe('complete schema', () => {
       })
     })
 
-    it('Should return 12 error messages if no input field is completed', () => {
+    it('Should return 13 error messages if no input field is completed', () => {
       const input = {}
       const { errors, formResponse } = check(input)
 
@@ -86,6 +100,10 @@ describe('complete schema', () => {
         {
           href: '#pavaDrawnAgainstPrisoner',
           text: 'Select yes if PAVA was drawn',
+        },
+        {
+          href: '#taserDrawn',
+          text: 'Select yes if Taser was drawn',
         },
         {
           href: '#bittenByPrisonDog',
@@ -114,7 +132,7 @@ describe('complete schema', () => {
         },
       ])
 
-      expect(errors.length).toEqual(12)
+      expect(errors.length).toEqual(13)
 
       expect(formResponse).toEqual({})
     })
@@ -212,6 +230,13 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
@@ -239,6 +264,13 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
@@ -270,6 +302,13 @@ describe('complete schema', () => {
         handcuffsApplied: true,
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
@@ -341,6 +380,54 @@ describe('complete schema', () => {
       ])
       expect(formResponse.pavaDrawnAgainstPrisoner).toEqual(undefined)
       expect(formResponse.pavaUsed).toBe(undefined)
+    })
+
+    it("Not selecting an option for 'Taser drawn' returns a validation error messager", () => {
+      validInput.taserDrawn = undefined
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([{ href: '#taserDrawn', text: 'Select yes if Taser was drawn' }])
+    })
+
+    it("Not selecting any follow up option for 'Taser drawn' returns 6 validation error messages", () => {
+      validInput.taserDrawn = 'true'
+      validInput.taserOperativePresent = undefined
+      validInput.redDotWarning = undefined
+      validInput.arcWarningUsed = undefined
+      validInput.taserDeployed = undefined
+      validInput.taserCycleExtended = undefined
+      validInput.taserReenergised = undefined
+
+      const { errors } = check(validInput)
+
+      expect(errors).toEqual([
+        {
+          href: '#taserOperativePresent',
+          text: 'Select yes if the prisoner was warned a Taser operative was present',
+        },
+        {
+          href: '#redDotWarning',
+          text: 'Select yes if a red-dot warning was used',
+        },
+        {
+          href: '#arcWarningUsed',
+          text: 'Select yes if an arc warning was used',
+        },
+        {
+          href: '#taserDeployed',
+          text: 'Select yes if the Taser was deployed',
+        },
+        {
+          href: '#taserCycleExtended',
+          text: 'Select yes if the Taser cycle was extended',
+        },
+        {
+          href: '#taserReenergised',
+          text: 'Select yes if the Taser was re-energised',
+        },
+      ])
+
+      expect(errors.length).toBe(6)
     })
 
     it("Selecting Yes to 'pava drawn' but nothing for 'pava used' returns a validation error message", () => {
@@ -423,6 +510,13 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -459,6 +553,13 @@ describe('complete schema', () => {
         painInducingTechniquesUsed: ['FINAL_LOCK_FLEXION', 'THUMB_LOCK'],
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -662,6 +763,13 @@ describe('partial schema', () => {
         batonUsed: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        taserDrawn: true,
+        taserOperativePresent: true,
+        redDotWarning: true,
+        arcWarningUsed: true,
+        taserDeployed: true,
+        taserCycleExtended: true,
+        taserReenergised: true,
         bittenByPrisonDog: true,
         weaponsObserved: 'NO',
         guidingHold: true,

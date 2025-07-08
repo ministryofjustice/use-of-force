@@ -77,6 +77,19 @@ describe('reportSummary', () => {
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
       expect(result.useOfForceDetails.bodyCameras).toEqual('Yes - 1, 2')
     })
+    it('should return true for bitten by prison dog question', () => {
+      form.useOfForceDetails.bittenByPrisonDog = true
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.bittenByPrisonDog).toEqual(true)
+    })
+    it('should return correct string when main taser drawn question and secondary red-dot question is Yes', () => {
+      form.useOfForceDetails.taserDrawn = true
+      form.useOfForceDetails.redDotWarning = true
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.taserDrawn).toEqual(
+        'Yes -  prisoner not warned, red-dot warning used, arc warning not used, Taser not deployed, Taser cycle not extended, Taser not re-energised'
+      )
+    })
   })
   describe('Use of force reasons', () => {
     it('should return undefined', () => {

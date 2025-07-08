@@ -72,7 +72,6 @@ const createUseOfForceDetails = (
     pavaDrawnAgainstPrisoner: whenPresent(details.pavaDrawnAgainstPrisoner, value =>
       value ? wasWeaponUsed(details.pavaUsed) : NO
     ),
-    bittenByPrisonDog: details.bittenByPrisonDog,
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
       value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
     ),
@@ -95,7 +94,26 @@ const createUseOfForceDetails = (
         ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
         : toLabel(WeaponsObserved, value)
     ),
+    bittenByPrisonDog: details.bittenByPrisonDog,
+    taserDrawn: whenPresent(details.taserDrawn, value =>
+      value === true ? `${YES} - ${getTaserDetails(details)}` : `${NO}`
+    ),
   }
+}
+const getTaserDetails = details => {
+  const messageOptionsForEachInput = [
+    ['taserOperativePresent', 'prisoner warned', 'prisoner not warned'],
+    ['redDotWarning', 'red-dot warning used', 'red-dot warning not used'],
+    ['arcWarningUsed', 'arc warning used', 'arc warning not used'],
+    ['taserDeployed', 'Taser deployed', 'Taser not deployed'],
+    ['taserCycleExtended', 'Taser cycle extended', 'Taser cycle not extended'],
+    ['taserReenergised', 'Taser re-energised', 'Taser not re-energised'],
+  ]
+
+  return messageOptionsForEachInput
+    .map(([key, selectedMsg, notSelectedMsg]) => (details[key] ? ` ${selectedMsg}` : ` ${notSelectedMsg}`))
+    .join(',')
+    .trimEnd()
 }
 
 const getRelocationType = relocationType => {
