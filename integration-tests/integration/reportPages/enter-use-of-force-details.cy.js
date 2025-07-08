@@ -154,7 +154,7 @@ context('Enter use of force details page', () => {
       .contains('Select yes if any part of the incident was captured on a body-worn camera')
     useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
     useOfForceDetailsPage.errorSummary().contains('Select yes if any weapons were observed')
-    useOfForceDetailsPage.errorSummary().contains('Select yes if Taser was drawn')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a Taser was drawn against the prisoner')
     useOfForceDetailsPage.errorSummary().contains('Select yes if the prisoner was bitten by a prison dog')
   })
 

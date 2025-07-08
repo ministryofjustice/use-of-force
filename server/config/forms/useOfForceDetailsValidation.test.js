@@ -103,7 +103,7 @@ describe('complete schema', () => {
         },
         {
           href: '#taserDrawn',
-          text: 'Select yes if Taser was drawn',
+          text: 'Select yes if a Taser was drawn against the prisoner',
         },
         {
           href: '#bittenByPrisonDog',
@@ -386,7 +386,7 @@ describe('complete schema', () => {
       validInput.taserDrawn = undefined
       const { errors } = check(validInput)
 
-      expect(errors).toEqual([{ href: '#taserDrawn', text: 'Select yes if Taser was drawn' }])
+      expect(errors).toEqual([{ href: '#taserDrawn', text: 'Select yes if a Taser was drawn against the prisoner' }])
     })
 
     it("Not selecting any follow up option for 'Taser drawn' returns 6 validation error messages", () => {
