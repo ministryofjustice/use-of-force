@@ -208,7 +208,7 @@
         <tbody class="govuk-table__body">
           {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
               <tr class="govuk-table__row" data-qa="staff-involved" >     
-                <td class="govuk-table__cell">{{item.name}} </td>
+                <td class="govuk-table__cell">{{item.name}} ({{item.username}})</td>
                 <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
               </tr>
           {% endfor %} 
