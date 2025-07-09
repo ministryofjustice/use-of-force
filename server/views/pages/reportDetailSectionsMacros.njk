@@ -4,7 +4,7 @@
  {{obj.title}}
  {% if obj.url %}  
    <span class="govuk-body govuk-!-margin-top-1 float-right">
-     <a class="govuk-link govuk-link--no-visited-state" data-qa='{{obj.id}}-link' href='{{obj.url}}' >
+     <a class="govuk-link govuk-link--no-visited-state govuk-!-display-none-print" data-qa='{{obj.id}}-link' href='{{obj.url}}' >
        Change<span class="govuk-visually-hidden"> {{obj.title}} </span>
      </a>
    </span>
@@ -56,7 +56,7 @@
 </dl> 
 {% endmacro %}
 
-{% macro tableRowWithEditHistoryLink(dataItem) %}
+{% macro tableRowWithLink(dataItem) %}
 <dl class="govuk-summary-list  govuk-!-margin-bottom-0">  
   <div class="govuk-summary-list__row {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}">
     <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}"> {{dataItem.label}} </dt>
@@ -64,8 +64,8 @@
       {{dataItem.dataValue}}
     </dd>
    <dd class= "govuk-summary-list__actions govuk-!-display-none-print">
-    <a class="govuk-link govuk-link--no-visited-state" data-qa='history-link' href='/{{dataItem.incidentId}}/view-history'>Edit history
-    <span class="govuk-visually-hidden"> Edit history</span></a>
+    <a class="govuk-link govuk-link--no-visited-state" data-qa-link="{{dataItem['data-qa-link']}}" href='/{{dataItem.href}}'>{{dataItem.linkName}}
+    <span class="govuk-visually-hidden"> {{dataItem.linkName}}</span></a>
    </dd>
   </div>
 </dl> 
