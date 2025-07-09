@@ -9,7 +9,7 @@
     </div>
 
     {% if data.isCoordinator %}
-      <div class="govuk-button-group">
+      <div class="govuk-button-group govuk-!-margin-top-6">
           {{ govukButton({
             classes: 'govuk-!-display-none-print',
             text: "Edit report",
@@ -123,4 +123,29 @@
     >
     Return to use of force incidents
   </a>
+</div>
+
+{# print output #}
+<div class="print"> 
+  {% set printReport = true %}
+  {% set renderReportView = true %} {# renderReportView means a layout that is not used for the check-your-answers page #}
+  <h1>Use of force incident number {{ data.incidentId }}</h1>
+
+    {{
+      reportDetail.detail(data, null, data.incidentId, user, printReport, renderReportView)
+    }}
+
+  <div class="page-break-before">
+    {% for statement in data.statements %}
+      <h2 class="govuk-heading-l">{{ statement.name }}'s statement</h2>
+      <p> <span class="govuk-label--s"> Submitted: </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p>
+      <p class="pre-wrapped">{{ statement.statement }}</p>
+      {% for additionalComments in statement.additionalComments %}
+        <hr/>
+        <p> <span class="govuk-label--s"> Additional comment submitted: </span> {{additionalComments.dateSubmitted | formatDate('D MMMM YYYY - HH:mm')}}</p>
+        <p class="pre-wrapped">{{ additionalComments.additionalComment}}</p>
+      {% endfor %}
+    <hr>
+    {% endfor %}
+  </div> 
 </div>
