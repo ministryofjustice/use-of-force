@@ -40,8 +40,13 @@ export default class CoordinatorRoutes {
     data.bookingId = null
     const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
     const statements = await this.reviewService.getStatements(systemToken, parseInt(reportId, 10))
+    const submittedStatements = statements.filter(stmnt => stmnt.isSubmitted)
 
-    return res.render('pages/coordinator/edit-report.njk', { data: dataWithEdits, user, statements })
+    return res.render('pages/coordinator/edit-report.njk', {
+      data: dataWithEdits,
+      user,
+      statements: submittedStatements,
+    })
   }
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
