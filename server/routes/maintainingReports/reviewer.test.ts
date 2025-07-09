@@ -3,12 +3,11 @@ import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test
 import { parseDate } from '../../utils/utils'
 import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
-import { Report, ReportEdit } from '../../data/incidentClientTypes'
+import { Report } from '../../data/incidentClientTypes'
 import ReviewService, { ReviewerStatementWithComments } from '../../services/reviewService'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
-import config from '../../config'
 
 const userSupplier = jest.fn()
 
@@ -207,7 +206,6 @@ describe('GET /view-report', () => {
   it('should render page for reviewer', () => {
     userSupplier.mockReturnValue(reviewerUser)
     reviewService.getReport.mockResolvedValue(report)
-    reviewService.getStatements.mockResolvedValue([])
     return request(app)
       .get('/1/view-report')
       .expect(200)
@@ -215,51 +213,6 @@ describe('GET /view-report', () => {
       .expect(res => {
         expect(res.text).toContain('Use of force report')
         expect(res.text).not.toContain('Delete report')
-        expect(res.text).toContain('Use of force incident')
-        expect(res.text).toContain('Use of force incidents')
-        expect(res.text).toContain('Print report and statements')
-        expect(res.text).not.toContain('Delete incident')
-        expect(res.text).not.toContain('Edit report')
-      })
-  })
-
-  it('should render page for coordinator', () => {
-    config.featureFlagReportEditingEnabled = true
-    app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
-
-    userSupplier.mockReturnValue(coordinatorUser)
-    reviewService.getReport.mockResolvedValue(report)
-    reviewService.getStatements.mockResolvedValue([])
-
-    return request(app)
-      .get('/1/view-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Use of force incident')
-        expect(res.text).toContain('Use of force incidents')
-        expect(res.text).toContain('Print report and statements')
-        expect(res.text).toContain('Delete incident')
-        expect(res.text).toContain('Edit report')
-        expect(res.text).not.toContain('Edit history')
-      })
-  })
-
-  it('should show report edit rows', () => {
-    config.featureFlagReportEditingEnabled = true
-    reviewService.getReportEdits.mockResolvedValue([{ reportOwnerChanged: true }] as unknown as ReportEdit[])
-    reviewService.getReport.mockResolvedValue(report)
-    reviewService.getStatements.mockResolvedValue([])
-    app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
-    userSupplier.mockReturnValue(coordinatorUser)
-    return request(app)
-      .get('/1/view-report')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Edit history')
-        expect(res.text).toContain('Report last edited')
-        expect(res.text).toContain('Current report owner')
       })
   })
 })

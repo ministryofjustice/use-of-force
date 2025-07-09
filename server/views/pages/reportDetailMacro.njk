@@ -271,107 +271,6 @@
           url: url
         })
       }}
-    {% endif %}
-    {% if data.useOfForceDetails.primaryReason %}
-      {{
-      reportDetailsMacros.tableRow({
-          label: 'What was the primary reason use of force was applied against this prisoner?',
-          'data-qa': 'primaryReason',
-          dataValue: data.useOfForceDetails.primaryReason,
-          print: print
-        })
-      }}
-    {% endif %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was positive communication used to de-escalate the situation with this prisoner?',
-        'data-qa': 'positiveCommunication',
-        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo,
-        print: print
-      })
-    }}
-
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was any part of the incident captured on a body-worn camera?',
-        'data-qa': 'bodyCameras',
-        dataValue: data.useOfForceDetails.bodyCameras | capitalize,
-        print: print
-      })
-    }}
-
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Were any personal protection techniques used against this prisoner?',
-        'data-qa': 'personalProtection',
-        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo,
-        print: print
-      })
-    }}
-
-  {% if data.useOfForceDetails.batonDrawn %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was a baton drawn by anyone during this incident?',
-        'data-qa': 'batonDrawn',
-        dataValue: data.useOfForceDetails.batonDrawn,
-        print: print
-      })
-    }}
-  {% else %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was a baton drawn by anyone against this prisoner?',
-        'data-qa': 'batonDrawnAgainstPrisoner',
-        dataValue: data.useOfForceDetails.batonDrawnAgainstPrisoner,
-        print: print
-      })
-    }}
-  {% endif %}
-  
-  {% if data.useOfForceDetails.pavaDrawn %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was PAVA drawn by anyone during this incident?',
-        'data-qa': 'pavaDrawn',
-        dataValue: data.useOfForceDetails.pavaDrawn,
-        print: print
-      })
-    }}
-  {% else %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was PAVA drawn by anyone against this prisoner?',
-        'data-qa': 'pavaDrawnAgainstPrisoner',
-        dataValue: data.useOfForceDetails.pavaDrawnAgainstPrisoner,
-        print: print
-      })
-    }}
-  {% endif %}
-
-  {% if data.useOfForceDetails.taserDrawn != undefined  %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: ' Was a Taser drawn by anyone against this prisoner? ',
-        'data-qa': 'taserDrawn',
-        dataValue: data.useOfForceDetails.taserDrawn,
-        print: print
-      })
-    }}
-  {% endif %}
-
-  {% if data.useOfForceDetails.bittenByPrisonDog != undefined  %}
-    {{
-      reportDetailsMacros.tableRow({
-        label: 'Was the prisoner bitten by a prison dog?',
-        'data-qa': 'bittenByPrisonDog',
-        dataValue: data.useOfForceDetails.bittenByPrisonDog | toYesNo,
-        print: print
-      })
-    }}
-  {% endif %}
-  
-    {% if data.useOfForceDetails.weaponsObserved != undefined  %}
     </div>
     <div class="{% if renderReportView %} summary-card__content {% endif %}">
       {% if data.useOfForceDetails.reasonsForUseOfForce %}
@@ -461,6 +360,28 @@
       }}
     {% endif %}
 
+    {% if data.useOfForceDetails.taserDrawn != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: ' Was a Taser drawn by anyone against this prisoner? ',
+          'data-qa': 'taserDrawn',
+          dataValue: data.useOfForceDetails.taserDrawn,
+          print: print
+        })
+      }}
+    {% endif %}
+
+    {% if data.useOfForceDetails.bittenByPrisonDog != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was the prisoner bitten by a prison dog?',
+          'data-qa': 'bittenByPrisonDog',
+          dataValue: data.useOfForceDetails.bittenByPrisonDog | toYesNo,
+          print: print
+        })
+      }}
+    {% endif %}
+    
       {% if data.useOfForceDetails.weaponsObserved != undefined  %}
         {{
           reportDetailsMacros.tableRow({

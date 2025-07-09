@@ -40,7 +40,7 @@
 
   <div class=" govuk-grid-column-full govuk-!-margin-bottom-9">  
     {% if data.tab == 'report' %}
-      {% set renderReportView = true %}
+      {% set renderReportView = true %} {# renderReportView means a layout that is not used for the check-your-answers page #}
       {% include "./report.njk" %}
     {% elif data.tab == 'statements' %}
       {% include "./statements.njk" %}
