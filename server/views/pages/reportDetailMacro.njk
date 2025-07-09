@@ -205,9 +205,9 @@
             <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
           </tr>
         </thead>
-        <tbody class="govuk-table__body">
+        <tbody class="govuk-table__body" data-qa="staff-involved">
           {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-              <tr class="govuk-table__row" data-qa="staff-involved" >     
+              <tr class="govuk-table__row">     
                 <td class="govuk-table__cell">{{item.name}} ({{item.username}})</td>
                 <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
               </tr>
