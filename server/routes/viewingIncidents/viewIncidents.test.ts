@@ -366,6 +366,8 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Report details')
           expect(res.text).toContain('Incident details')
           expect(res.text).toContain('Staff involved')
+          expect(res.text).toContain('Name')
+          expect(res.text).toContain('Email address')
           expect(res.text).toContain('Use of force details')
           expect(res.text).toContain('Relocation and injuries')
           expect(res.text).toContain('Evidence')
