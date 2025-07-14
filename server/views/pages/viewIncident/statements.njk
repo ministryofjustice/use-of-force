@@ -34,7 +34,6 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col" aria-sort="none">Name</th>
-        <th class="govuk-table__header" scope="col" aria-sort="none">Location</th>
         <th class="govuk-table__header" scope="col" aria-sort="none">Email</th>
         <th class="govuk-table__header" scope="col" aria-sort="none">Status</th>
         <th class="govuk-table__header" scope="col">Action</th>
@@ -45,7 +44,6 @@
       {% for statement in data.allStatements %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell" data-qa="name">{{statement.name}} ({{statement.userId}})</td>
-          <td class="govuk-table__cell" data-qa="location"></td>
           <td class="govuk-table__cell" data-qa="email">
             {{statement.email}}
             
