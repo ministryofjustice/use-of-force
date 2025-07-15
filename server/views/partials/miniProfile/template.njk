@@ -29,22 +29,22 @@
         </div>
         
         <div class="flex-basis-80">
-                <div class="govuk-grid-column-one-third">
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Offender name</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Prison number</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0"> Date of birth</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Establishment</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Cell number</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Status</p>
-                </div>
-                <div class="govuk-grid-column-two-thirds">
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person | personProfileName }}</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.prisonerNumber }} </p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.dateOfBirth | personDateOfBirth }}</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.prisonName }}</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.cellLocation }}</p>
-                    <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.status }}</p>
-                </div>
+            <div class="govuk-grid-column-one-third">
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Prisoner name</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Prison number</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Date of birth</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Establishment</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Cell number</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">Status</p>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person | personProfileName }}</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.prisonerNumber }} </p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.dateOfBirth | personDateOfBirth }}</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.prisonName }}</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.cellLocation }}</p>
+                <p class = "govuk-!-margin-top-0 govuk-!-margin-bottom-0">{{ person.status }}</p>
+            </div>
         </div>
     </div>
 </div>
