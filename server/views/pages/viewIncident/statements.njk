@@ -127,7 +127,7 @@
 <div class="print"> 
   {% set printReport = true %}
   {% set renderReportView = true %} {# renderReportView means a layout that is not used for the check-your-answers page #}
-  <h1>Use of force incident number {{ data.incidentId }}</h1>
+  <h1>Use of force incident {{ data.incidentId }}</h1>
 
     {{
       reportDetail.detail(data, null, data.incidentId, user, printReport, renderReportView)
