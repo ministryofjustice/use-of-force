@@ -217,22 +217,22 @@
 
   <div class="{% if renderReportView %} summary-card__content {% endif %}">
     {% if renderReportView %}
-      <table class="govuk-table" data-module="moj-sortable-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row  {{addedClasses}}">        
-            <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
-            <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body" data-qa="staff-involved">
-          {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
-              <tr class="govuk-table__row">     
-                <td class="govuk-table__cell">{{item.name}} ({{item.username}})</td>
-                <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
-              </tr>
-          {% endfor %} 
-        </tbody>
-      </table>
+      <table class="govuk-table" {% if not print %}data-module="moj-sortable-table"{% endif %}>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row  {{addedClasses}}">        
+              <th scope="col" class="govuk-table__header" aria-sort="ascending"><button type="button" data-index="0">Name</button></th>        
+              <th scope="col" class="govuk-table__header width-half govuk-!-padding-left-4" aria-sort="none"><button type="button" data-index="1">Email address</button></th>        
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body" data-qa="staff-involved">
+            {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+                <tr class="govuk-table__row">     
+                  <td class="govuk-table__cell">{{item.name}} ({{item.username}})</td>
+                  <td class="govuk-table__cell width-half govuk-!-padding-left-4">{{item.email}}</td>
+                </tr>
+            {% endfor %} 
+          </tbody>
+        </table>
 
       {% else %}
         <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
