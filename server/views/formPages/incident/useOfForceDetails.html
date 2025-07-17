@@ -103,7 +103,6 @@
     }
     )}}
 
-    {% if featureFlagDisplayDogAndTaserQuestions %}
       <!-- Q6 -->
       {% include "./partials/taser.njk" %}
 
@@ -115,7 +114,6 @@
         options: yesNoOptions,
         errorMessage: errors | findError('bittenByPrisonDog')
       })}}
-    {% endif %}
 
     <!-- Q8 -->
     {{ radiosWithAddAnotherTextBox({

@@ -8,11 +8,6 @@ const checkFactory = schema => input => {
 
 let validInput = {}
 
-// remove mock when featureFlagDisplayDogAndTaserQuestions feature flag no longer needed
-jest.mock('../../config', () => ({
-  default: { featureFlagDisplayDogAndTaserQuestions: true },
-}))
-
 beforeEach(() => {
   validInput = {
     positiveCommunication: 'true',

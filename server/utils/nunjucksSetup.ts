@@ -41,7 +41,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   njkEnv.addGlobal('featureFlagOutageBannerEnabled', config.featureFlagOutageBannerEnabled)
   njkEnv.addGlobal('digitalPrisonServiceUrl', config.apis.digitalPrisonServiceUrl)
   njkEnv.addGlobal('featureFlagReportEditingEnabled', config.featureFlagReportEditingEnabled)
-  njkEnv.addGlobal('featureFlagDisplayDogAndTaserQuestions', config.featureFlagDisplayDogAndTaserQuestions)
 
   // eslint-disable-next-line default-param-last
   njkEnv.addFilter('findError', (array: Error[] = [], formFieldId: string) => {

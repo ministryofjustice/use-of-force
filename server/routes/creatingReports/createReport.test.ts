@@ -51,6 +51,7 @@ const validUseOfForceDetailsRequest = {
   batonDrawnAgainstPrisoner: 'false',
   pavaDrawnAgainstPrisoner: 'false',
   bittenByPrisonDog: 'false',
+  taserDrawn: 'false',
   weaponsObserved: 'NO',
   guidingHold: 'false',
   escortingHold: 'false',
@@ -69,6 +70,8 @@ const validUseOfForceDetailUpdate = [
     bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
     batonDrawnAgainstPrisoner: false,
     pavaDrawnAgainstPrisoner: false,
+    taserDrawn: false,
+    bittenByPrisonDog: false,
     guidingHold: false,
     escortingHold: false,
     handcuffsApplied: false,
@@ -117,12 +120,12 @@ describe('POST save and return to tasklist', () => {
       })
   })
 
-  // remove skip on L121 once featureFlagDisplayDogAndTaserQuestions feature flag is removed
-  test.skip('Submitting invalid update is allowed', () => {
+  test('Submitting invalid update is allowed', () => {
     return request(app)
       .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
+        taserDrawn: undefined,
         bodyWornCamera: null,
         submitType: 'save-and-return',
       })
