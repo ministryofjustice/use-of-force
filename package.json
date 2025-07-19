@@ -103,7 +103,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@hapi/joi-date": "^2.0.1",
-    "@ministryofjustice/frontend": "^5.1.3",
+    "@ministryofjustice/frontend": "^5.1.4",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.7.3",
     "applicationinsights-native-metrics": "^0.0.9",
