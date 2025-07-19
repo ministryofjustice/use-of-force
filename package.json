@@ -137,7 +137,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.8.0",
-    "pg": "^8.16.0",
+    "pg": "^8.16.3",
     "pg-format": "^1.0.4",
     "querystring": "^0.2.1",
     "ramda": "^0.29.0",
