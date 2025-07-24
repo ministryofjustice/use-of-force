@@ -158,23 +158,24 @@ context('A user views their statements list', () => {
       ])
     )
 
-    yourStatementsPage.clickLinkWithText('4')
-    yourStatementsPage.pageLinks().then(pageLinks =>
-      expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous page', selected: false },
-        { href: '?page=1', text: '1', selected: false },
-        { href: '?page=2', text: '2', selected: false },
-        { href: '?page=3', text: '3', selected: false },
-      ])
-    )
-
-    yourStatementsPage.clickLinkWithText('Previous page')
+    yourStatementsPage.clickLinkWithText('3')
     yourStatementsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
+      ])
+    )
+
+    yourStatementsPage.clickLinkWithText('Previous page')
+    yourStatementsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
   })

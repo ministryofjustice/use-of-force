@@ -176,7 +176,7 @@ context('A use of force reviewer can view completed incidents at the current age
 
     cy.task(
       'seedReports',
-      Array.from(Array(62)).map((_, i) => ({
+      Array.from(Array(60)).map((_, i) => ({
         status: ReportStatus.COMPLETE,
         bookingId: i,
         involvedStaff: [
@@ -195,17 +195,17 @@ context('A use of force reviewer can view completed incidents at the current age
 
     completedIncidentsPage
       .pageResults()
-      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 62 results'))
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 60 results'))
 
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: undefined, text: '1', selected: true },
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
       ])
     )
+
     completedIncidentsPage.clickLinkWithText('Next page')
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
@@ -213,31 +213,28 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=1', text: '1', selected: false },
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
 
-    completedIncidentsPage.clickLinkWithText('4')
-    completedIncidentsPage.pageLinks().then(pageLinks =>
-      expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous page', selected: false },
-        { href: '?page=1', text: '1', selected: false },
-        { href: '?page=2', text: '2', selected: false },
-        { href: '?page=3', text: '3', selected: false },
-        { href: undefined, text: '4', selected: true },
-      ])
-    )
-
-    completedIncidentsPage.clickLinkWithText('Previous page')
+    completedIncidentsPage.clickLinkWithText('3')
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-        { href: '?page=4', text: '4', selected: false },
-        { href: '?page=4', text: 'Next page', selected: false },
+      ])
+    )
+
+    completedIncidentsPage.clickLinkWithText('Previous page')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
   })
