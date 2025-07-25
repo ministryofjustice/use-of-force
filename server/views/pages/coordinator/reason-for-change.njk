@@ -1,0 +1,23 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl mainHeading">Reason for change page</h1>
+
+    WIP {{ changesToDisplay | dump }}
+
+  </div>
+</div>
+{% endblock %}

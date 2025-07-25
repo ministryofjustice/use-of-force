@@ -1,14 +1,21 @@
 import request from 'supertest'
-import { InvolvedStaff, Report } from '../../data/incidentClientTypes'
+import { PrisonLocation, Prison } from '../../data/prisonClientTypes'
+import { Report, ReportEdit } from '../../data/incidentClientTypes'
 import { paths } from '../../config/incident'
-import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
+import { InvolvedStaffService } from '../../services/involvedStaffService'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 import ReportService from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
-import ReviewService from '../../services/reviewService'
+import ReviewService, { ReviewerStatementWithComments } from '../../services/reviewService'
 import UserService from '../../services/userService'
 import StatementService from '../../services/statementService'
 import AuthService from '../../services/authService'
+import LocationService from '../../services/locationService'
+import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
+import config from '../../config'
+import logger from '../../../log'
+
+config.featureFlagReportEditingEnabled = true
 
 jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
@@ -17,6 +24,9 @@ jest.mock('../../services/involvedStaffService')
 jest.mock('../../services/reviewService')
 jest.mock('../../services/userService')
 jest.mock('../../services/statementService')
+jest.mock('../../services/locationService')
+jest.mock('../../services/ReportDetailBuilder')
+jest.mock('../../../log')
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
@@ -25,14 +35,83 @@ const reviewService = new ReviewService(null, null, null, null, null) as jest.Mo
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
-
+const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
+const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const userSupplier = jest.fn()
 
 let app
+const flash = jest.fn()
+
+const basicPersistedReport = {
+  incidentDate: new Date('2025-05-12T10:00:00'),
+  agencyId: 'WRI',
+  form: {
+    incidentDetails: {
+      witnesses: [
+        {
+          name: 'jimmy',
+        },
+        {
+          name: 'another person',
+        },
+      ],
+      plannedUseOfForce: false,
+      incidentLocationId: 'aaaa-2222',
+    },
+  },
+}
+
+const reportDetailBuilderResponse = {
+  incidentId: 1,
+  reporterName: 'Staff Member',
+  submittedDate: new Date('2025-05-13T10:00:00'),
+  bookingId: null,
+  offenderDetail: {},
+  useOfForceDetails: {},
+  relocationAndInjuries: {},
+  evidence: {},
+  incidentDetails: {
+    incidentDate: new Date('2025-05-12T10:00:00'),
+    offenderName: 'Joe Bloggs',
+    prison: {
+      agencyId: 'NMI',
+      description: 'Nottingham (HMP)',
+      longDescription: 'HMP NOTTINGHAM',
+      agencyType: 'INST',
+      active: true,
+    },
+  },
+}
+
+const locations = [
+  {
+    incidentLocationId: 'abcd-1111',
+    description: 'RES-AWING-ONE',
+    agencyId: 'NMI',
+    locationPrefix: 'NMI-RES-AWING-TWO',
+    userDescription: 'Room 1',
+  },
+  {
+    incidentLocationId: 'abcd-2222',
+    description: 'RES-AWING-TWO',
+    agencyId: 'NMI',
+    locationPrefix: 'NMI-RES-AWING-TWO',
+    userDescription: 'Room 2',
+  },
+]
 
 describe('coordinator', () => {
   beforeEach(() => {
+    flash.mockReturnValue([])
     authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+    userSupplier.mockReturnValue(coordinatorUser)
+    reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+    reportDetailBuilder.build.mockResolvedValue(reportDetailBuilderResponse as ReportDetail)
+    locationService.getIncidentLocations.mockResolvedValue(locations as PrisonLocation[])
+    reviewService.getReportEdits.mockResolvedValue([] as ReportEdit[])
+    reviewService.getStatements.mockResolvedValue([] as ReviewerStatementWithComments[])
+    locationService.getPrisonById.mockResolvedValue({} as Prison)
+
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -42,8 +121,12 @@ describe('coordinator', () => {
         userService,
         statementService,
         authService,
+        locationService,
+        reportDetailBuilder,
       },
-      userSupplier
+      userSupplier,
+      false,
+      flash
     )
   })
 
@@ -51,296 +134,226 @@ describe('coordinator', () => {
     jest.resetAllMocks()
   })
 
-  describe('view add involved staff', () => {
-    it('should resolve for coordinator', async () => {
+  describe('viewEditReport', () => {
+    it('should allow coordinator to access page', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
+      await request(app).get('/1/edit-report').expect(200).expect('Content-Type', 'text/html; charset=utf-8')
+    })
 
+    it('should not allow reviewer to access page', async () => {
+      userSupplier.mockReturnValue(reviewerUser)
       await request(app)
-        .get(paths.addInvolvedStaff(1))
+        .get('/1/edit-report')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('should not allow user (i.e not coordinator) to access page', async () => {
+      userSupplier.mockReturnValue(user)
+      await request(app)
+        .get('/1/edit-report')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('should render essential page structure', async () => {
+      await request(app)
+        .get('/1/edit-report')
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.text).toContain('Add another member of staff')
-        })
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .get(paths.addInvolvedStaff(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .get(paths.addInvolvedStaff(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
+          expect(res.text).toContain('Edit Use of force report 1')
+          expect(res.text).toContain('Return to use of force incident')
+          expect(res.text).toContain('Report details')
+          expect(res.text).toContain('Incident details')
+          expect(res.text).toContain('Staff involved')
+          expect(res.text).toContain('Use of force details')
+          expect(res.text).toContain('Relocation and injuries')
+          expect(res.text).toContain('Evidence')
+          expect(res.text).toContain('Print report and statements')
+          expect(res.text).not.toContain('Back')
         })
     })
   })
 
-  describe('submit add involved staff', () => {
-    it('should resolve for coordinator', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
+  describe('viewEditIncidentDetails', () => {
+    it('should render page', async () => {
       await request(app)
-        .post(paths.addInvolvedStaff(1))
-        .send({ username: 'sally' })
-        .expect(302)
-        .expect('Location', paths.addInvolvedStaffResult(1, 'success'))
-
-      expect(involvedStaffService.addInvolvedStaff).toHaveBeenCalledWith('user1-system-token', 1, 'sally')
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .post(paths.addInvolvedStaff(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .post(paths.addInvolvedStaff(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
-  })
-
-  describe('view add involved staff results', () => {
-    it('should resolve for coordinator', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
-      await request(app)
-        .get(paths.addInvolvedStaffResult(1, 'success'))
-        .expect(302)
-        .expect('Location', '/1/view-report')
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .get(paths.addInvolvedStaffResult(1, 'success'))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .get(paths.addInvolvedStaffResult(1, 'success'))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-    })
-  })
-
-  describe('Confirm delete report', () => {
-    it('should resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      offenderService.getOffenderDetails.mockResolvedValue({})
-      reviewService.getReport.mockResolvedValue({} as Report)
-
-      await request(app)
-        .get(paths.confirmReportDelete(1))
+        .get('/1/edit-report/incident-details')
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.text).toContain('Are you sure you want to delete this report?')
+          expect(res.text).toContain('Incident details')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(res.text).toContain('Back')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'WRI')
+          expect(reportDetailBuilder.build).toHaveBeenCalledWith('user1', {
+            agencyId: 'WRI',
+            form: {
+              incidentDetails: {
+                incidentLocationId: 'aaaa-2222',
+                plannedUseOfForce: false,
+                witnesses: [{ name: 'jimmy' }, { name: 'another person' }],
+              },
+            },
+            incidentDate: new Date('2025-05-12T10:00:00'),
+          })
+          expect(flash).toHaveBeenCalledWith('changes')
+          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails')
+          expect(flash).toHaveBeenCalledWith('errors')
         })
     })
 
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
+    it('should render error messages when partial data submitted', async () => {
+      flash.mockReturnValue([
+        {
+          text: 'Select the location of the incident',
+          href: '#incidentLocationId',
+        },
+        {
+          text: 'Select yes if the use of force was planned',
+          href: '#plannedUseOfForce',
+        },
+      ])
 
       await request(app)
-        .get(paths.confirmReportDelete(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .get(paths.confirmReportDelete(1))
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
-  })
-
-  describe('Delete report', () => {
-    it('not confirming deletion triggers validation', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .expect(302)
-        .expect('Location', paths.confirmReportDelete(123))
-        .expect(() => {
-          expect(reportService.deleteReport).not.toHaveBeenCalled()
-        })
-    })
-
-    it('when report status is SUBMITTED and confirming to delete', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' } as Report)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .send({ confirm: 'yes' })
-        .expect(302)
-        .expect('Location', '/not-completed-incidents')
-        .expect(() => {
-          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', 123)
-        })
-    })
-
-    it('when report status is SUBMITTED and confirming not to delete', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'SUBMITTED' } as Report)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .send({ confirm: 'no' })
-        .expect(302)
-        .expect('Location', '/not-completed-incidents')
-        .expect(() => {
-          expect(reportService.deleteReport).not.toHaveBeenCalled()
-        })
-    })
-
-    it('when report status is COMPLETE and confirming to delete', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' } as Report)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .send({ confirm: 'yes' })
-        .expect(302)
-        .expect('Location', '/completed-incidents')
-        .expect(() => {
-          expect(reportService.deleteReport).toHaveBeenCalledWith('user1', 123)
-        })
-    })
-
-    it('when report status is COMPLETE and confirming not to delete', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      reviewService.getReport.mockResolvedValue({ status: 'COMPLETE' } as Report)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .send({ confirm: 'no' })
-        .expect(302)
-        .expect('Location', '/completed-incidents')
-        .expect(() => {
-          expect(reportService.deleteReport).not.toHaveBeenCalled()
-        })
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(reportService.deleteReport).not.toBeCalled()
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .post('/coordinator/report/123/delete')
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.addInvolvedStaff).not.toBeCalled()
-    })
-  })
-
-  describe('Confirm delete statement', () => {
-    it('should resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-      offenderService.getOffenderDetails.mockResolvedValue({})
-      reviewService.getReport.mockResolvedValue({} as Report)
-      involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'Bob' } as InvolvedStaff)
-
-      await request(app)
-        .get(paths.confirmStatementDelete(1, 2, true))
+        .get('/1/edit-report/incident-details')
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.text).toContain('Are you sure you want to delete Bob?')
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Select the location of the incident')
+          expect(res.text).toContain('Select yes if the use of force was planned')
         })
     })
 
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
+    it('should get new prison and location details when prison has changed', async () => {
       await request(app)
-        .get(paths.confirmStatementDelete(1, 2, false))
-        .expect(401)
+        .get('/1/edit-report/incident-details?new-prison=WRI')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
+          expect(locationService.getPrisonById).toHaveBeenCalledWith('user1-system-token', 'WRI')
+          expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'WRI')
         })
-
-      expect(involvedStaffService.removeInvolvedStaff).not.toBeCalled()
     })
 
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
+    it('should log error if new prison not recognised (eg if user manually changed query string)', async () => {
+      locationService.getPrisonById.mockRejectedValue(new Error('an error occurred'))
       await request(app)
-        .get(paths.confirmStatementDelete(1, 2, false))
-        .expect(401)
+        .get('/1/edit-report/incident-details?new-prison=XYZ')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
+          expect(logger.error).toHaveBeenCalledWith('User attempted to obtain details for prison XYZ')
         })
-
-      expect(involvedStaffService.removeInvolvedStaff).not.toBeCalled()
     })
   })
 
+  describe('submitEditIncidentDetails', () => {
+    it('should get the correct current report', async () => {
+      await request(app)
+        .post('/1/edit-report/incident-details')
+        .expect(() => {
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+        })
+    })
+
+    it('Validation error redirects back to current page with errors', async () => {
+      await request(app)
+        .post('/1/edit-report/incident-details')
+        .send({})
+        .expect(302)
+        .expect('Location', '/1/edit-report/incident-details')
+        .expect(res => {
+          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails', {
+            incidentDate: undefined,
+            reportId: '1',
+          })
+          expect(flash).toHaveBeenCalledWith('errors', [
+            { href: '#incidentLocationId', text: 'Select the location of the incident' },
+            { href: '#plannedUseOfForce', text: 'Select yes if the use of force was planned' },
+          ])
+        })
+    })
+
+    it('Should continue to next page', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      const incidentDetailsBody = {
+        newAgencyId: '',
+        incidentDate: {
+          date: '22/05/2025',
+          time: {
+            hour: '02',
+            minute: '10',
+          },
+        },
+        incidentLocationId: 'aaaa-2222',
+        plannedUseOfForce: 'false',
+        authorisedBy: '',
+        witnesses: [],
+        submitType: 'continue-coordinator-edit',
+      }
+
+      await request(app)
+        .post('/1/edit-report/incident-details')
+        .send(incidentDetailsBody)
+        .expect(302)
+        .expect('Location', 'reason-for-changing-incident-details')
+        .expect(() => {
+          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails', {
+            incidentDate: {
+              date: '22/05/2025',
+              time: {
+                hour: '02',
+                minute: '10',
+              },
+              value: new Date('2025-05-22T02:10:00'),
+            },
+            incidentLocationId: 'aaaa-2222',
+            plannedUseOfForce: false,
+            reportId: '1',
+          })
+
+          expect(flash).toHaveBeenCalledWith(
+            'changes',
+
+            {
+              incidentdate: {
+                hasChanged: true,
+                newValue: '2025-05-22T01:10:00.000Z',
+                oldValue: new Date('2025-05-12T10:00:00'),
+              },
+              witnesses: {
+                hasChanged: true,
+                newValue: [],
+                oldValue: [
+                  {
+                    name: 'jimmy',
+                  },
+                  {
+                    name: 'another person',
+                  },
+                ],
+              },
+            }
+          )
+        })
+    })
+  })
+
+  // all the following are existing tests and will be changed in the future
   describe('Delete statement', () => {
     it('Validation error redirects back to current page', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
@@ -378,198 +391,6 @@ describe('coordinator', () => {
         .expect(() => {
           expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(123, 2)
         })
-    })
-
-    it('On removal request, redirects to view statements page after confirmation of yes', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-
-      await request(app)
-        .post('/coordinator/report/123/statement/2/delete')
-        .send({ confirm: 'yes', removalRequest: 'true' })
-        .expect(302)
-        .expect('Location', paths.viewStatements(123))
-        .expect(() => {
-          expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(123, 2)
-        })
-    })
-
-    it('when confirming not to delete statement', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-
-      await request(app)
-        .post('/coordinator/report/123/statement/2/delete')
-        .send({ confirm: 'no' })
-        .expect(302)
-        .expect('Location', '/123/view-report')
-        .expect(() => {
-          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
-        })
-    })
-
-    it('On removal request, redirects to view statements page after confirmation of no', async () => {
-      userSupplier.mockReturnValue(coordinatorUser)
-
-      await request(app)
-        .post('/coordinator/report/123/statement/2/delete')
-        .send({ confirm: 'no', removalRequest: 'true' })
-        .expect(302)
-        .expect('Location', paths.viewStatements(123))
-        .expect(() => {
-          expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
-        })
-    })
-
-    it('should not resolve for reviewer', async () => {
-      userSupplier.mockReturnValue(reviewerUser)
-
-      await request(app)
-        .post('/coordinator/report/123/statement/2/delete')
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.removeInvolvedStaff).not.toBeCalled()
-    })
-
-    it('should not resolve for user', async () => {
-      userSupplier.mockReturnValue(user)
-
-      await request(app)
-        .post('/coordinator/report/123/statement/2/delete')
-        .expect(401)
-        .expect(res => {
-          expect(res.text).toContain('Not authorised to access this resource')
-        })
-
-      expect(involvedStaffService.removeInvolvedStaff).not.toBeCalled()
-    })
-  })
-
-  describe('Removal request', () => {
-    describe('view removal request', () => {
-      it('should call involvedStaffService and userService', async () => {
-        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
-          statementId: 1,
-          name: '',
-          userId: 'someUserId',
-          email: '',
-        })
-        involvedStaffService.getInvolvedStaffRemovalRequest.mockResolvedValue({
-          isRemovalRequested: true,
-          removalRequestedReason: 'I was not there',
-        })
-        userService.getUserLocation.mockResolvedValue('Leeds')
-        userSupplier.mockReturnValue(coordinatorUser)
-
-        await request(app)
-          .get(paths.viewRemovalRequest(123, 2))
-          .expect(200)
-          .expect(res => {
-            expect(res.text).toContain('Request to be removed from use of force incident')
-          })
-
-        expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 2)
-        expect(involvedStaffService.getInvolvedStaffRemovalRequest).toHaveBeenCalledWith(2)
-        expect(userService.getUserLocation).toHaveBeenCalledWith('user1-system-token', 'someUserId')
-      })
-    })
-
-    describe('submit removal request', () => {
-      it('should redirect to itself if yes no not selected', async () => {
-        userSupplier.mockReturnValue(coordinatorUser)
-        const flash = jest.fn().mockReturnValue([])
-
-        app = appWithAllRoutes(
-          {
-            involvedStaffService,
-            reportService,
-            offenderService,
-            reviewService,
-            userService,
-            statementService,
-          },
-          userSupplier,
-          null,
-          flash
-        )
-
-        await request(app)
-          .post(paths.viewRemovalRequest(123, 2))
-          .send({ confirm: undefined })
-          .expect(302)
-          .expect('Location', paths.viewRemovalRequest(123, 2))
-          .expect(() => {
-            expect(flash).toHaveBeenCalledWith('errors', [
-              {
-                text: 'Select yes if you want to remove this person from the incident',
-                href: '#confirm',
-              },
-            ])
-          })
-      })
-
-      it('should redirect to confirm-delete if yes selected', async () => {
-        userSupplier.mockReturnValue(coordinatorUser)
-        await request(app)
-          .post(paths.viewRemovalRequest(123, 2))
-          .send({ confirm: 'yes' })
-          .expect(302)
-          .expect('Location', paths.confirmStatementDelete(123, 2, true))
-      })
-
-      it('should call refuseRequest and redirect to staff-member-not-removed if no selected', async () => {
-        userSupplier.mockReturnValue(coordinatorUser)
-        statementService.refuseRequest.mockResolvedValue()
-
-        await request(app)
-          .post(paths.viewRemovalRequest(123, 2))
-          .send({ confirm: 'no' })
-          .expect(302)
-          .expect('Location', paths.staffMemberNotRemoved(123, 2))
-
-        expect(statementService.refuseRequest).toHaveBeenCalledWith(2)
-      })
-    })
-
-    describe('staff member not removed', () => {
-      it('should display name and email', async () => {
-        userSupplier.mockReturnValue(coordinatorUser)
-        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
-          statementId: 2,
-          name: 'Bob Smith',
-          userId: 'someUserId',
-          email: 'bob@gmail.com',
-        })
-        await request(app)
-          .get(paths.staffMemberNotRemoved(123, 2))
-          .expect(200)
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(res => {
-            expect(res.text).toContain('Staff member not removed')
-            expect(res.text).toContain('Bob Smith')
-            expect(res.text).toContain('bob@gmail.com')
-          })
-      })
-      it('should redirect to view-statements because removal_requested_date is null', async () => {
-        userSupplier.mockReturnValue(coordinatorUser)
-        involvedStaffService.loadInvolvedStaff.mockResolvedValue({
-          statementId: 2,
-          name: 'Bob Smith',
-          userId: 'someUserId',
-          email: 'bob@gmail.com',
-        })
-
-        involvedStaffService.getInvolvedStaffRemovalRequest.mockResolvedValue({
-          isRemovalRequested: false,
-          removalRequestedReason: '',
-        })
-
-        await request(app)
-          .get(paths.viewRemovalRequest(123, 2))
-          .expect(302)
-          .expect('Location', paths.viewStatements(123))
-      })
     })
   })
 })

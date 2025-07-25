@@ -6,6 +6,10 @@ const {
   isNilOrEmpty,
   removeKeysWithEmptyValues,
   parseDate,
+  trimAllValuesInObjectArray,
+  hasValueChanged,
+  getChangedValues,
+  convertToUTC,
 } = require('./utils')
 
 describe('properCaseName', () => {
@@ -112,5 +116,110 @@ describe('parseDate', () => {
   })
   it('just wrong', () => {
     expect(parseDate('this is not a date', 'D MMM YYYY')).toEqual(null)
+  })
+})
+
+describe('hasValueChanged', () => {
+  it('Should return true for new value empty string', () => {
+    const result = hasValueChanged('Hello', '')
+    expect(result).toBe(true)
+  })
+
+  it('Should return true for old value empty string', () => {
+    const result = hasValueChanged('', 'Hello')
+    expect(result).toBe(true)
+  })
+  it('Should return true if values different', () => {
+    const result = hasValueChanged('Hello', 'Bye')
+    expect(result).toBe(true)
+  })
+  it('Should return false if both values same', () => {
+    const result = hasValueChanged('Hello', 'Hello')
+    expect(result).toBe(false)
+  })
+
+  it('Should return false for different case', () => {
+    const result = hasValueChanged('hello', 'HeLLo')
+    expect(result).toBe(false)
+  })
+  it('Should return false if only difference is spacing', () => {
+    const result = hasValueChanged('hello', 'Hello ')
+    expect(result).toBe(false)
+  })
+})
+
+describe('trimAllValuesInObjectArray', () => {
+  test('handles undefined inputs', () => {
+    const actualResult = trimAllValuesInObjectArray()
+    const expectedResult = undefined
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+  test('returns correct response when one value is padded', () => {
+    const actualResult = trimAllValuesInObjectArray([{ name: 'x' }, { name: 'y ' }])
+    const expectedResult = [{ name: 'x' }, { name: 'y' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+  test('handles inputs that dont have padding', () => {
+    const actualResult = trimAllValuesInObjectArray([{ name: 'x' }, { name: 'y' }])
+    const expectedResult = [{ name: 'x' }, { name: 'y' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('handles inputs with empty strings', () => {
+    const actualResult = trimAllValuesInObjectArray([{ name: '' }, { name: 'y' }])
+    const expectedResult = [{ name: 'y' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('handles inputs with gaps', () => {
+    const actualResult = trimAllValuesInObjectArray([{ name: 'hello there' }, { name: 'y' }])
+    const expectedResult = [{ name: 'hello there' }, { name: 'y' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('handles single object array', () => {
+    const actualResult = trimAllValuesInObjectArray([{ name: 'x ' }])
+    const expectedResult = [{ name: 'x' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+})
+
+describe('getChangedValues', () => {
+  const dataComparison = {
+    useOfForcePlanned: {
+      oldValue: 'bill',
+      newValue: 'harry',
+      hasChanged: true,
+    },
+    authorisedBy: {
+      oldValue: 'tom',
+      newValue: 'tom',
+      hasChanged: false,
+    },
+  }
+  it('Should return objects that have changed', () => {
+    const result = getChangedValues(dataComparison, value => value.hasChanged === true)
+    const expectedResult = { useOfForcePlanned: { hasChanged: true, newValue: 'harry', oldValue: 'bill' } }
+    expect(result).toEqual(expectedResult)
+  })
+
+  it('Should return no objects as none have changed', () => {
+    dataComparison.useOfForcePlanned.hasChanged = false
+    const result = getChangedValues(dataComparison, value => value.hasChanged === true)
+    const expectedResult = {}
+    expect(result).toEqual(expectedResult)
+  })
+})
+
+describe('convertToUTC', () => {
+  it('should convert date to utc', () => {
+    const dateToConvert = {
+      date: '23/07/2025',
+      time: {
+        hour: '03',
+        minute: '10',
+      },
+    }
+    expect(convertToUTC(dateToConvert)).toEqual('2025-07-23T02:10:00.000Z')
   })
 })

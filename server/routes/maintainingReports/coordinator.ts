@@ -1,7 +1,16 @@
+import R from 'ramda'
 import type { Request, RequestHandler } from 'express'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
-import { firstItem } from '../../utils/utils'
-import { paths } from '../../config/incident'
+import {
+  isNilOrEmpty,
+  firstItem,
+  trimAllValuesInObjectArray,
+  hasValueChanged,
+  getChangedValues,
+  convertToUTC,
+} from '../../utils/utils'
+import getIncidentDate from '../../utils/getIncidentDate'
+import { paths, full } from '../../config/incident'
 import { ReportStatus } from '../../config/types'
 import ReportService from '../../services/reportService'
 import ReviewService from '../../services/reviewService'
@@ -10,6 +19,9 @@ import UserService from '../../services/userService'
 import StatementService from '../../services/statementService'
 import AuthService from '../../services/authService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
+import LocationService from '../../services/locationService'
+import { processInput } from '../../services/validation'
+import log from '../../../log'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -22,6 +34,7 @@ export default class CoordinatorRoutes {
     private readonly userService: UserService,
     private readonly statementService: StatementService,
     private readonly authService: AuthService,
+    private readonly locationService: LocationService,
     private readonly reportDetailBuilder: ReportDataBuilder
   ) {}
 
@@ -47,6 +60,167 @@ export default class CoordinatorRoutes {
       user,
       statements: submittedStatements,
     })
+  }
+
+  viewEditIncidentDetails: RequestHandler = async (req, res) => {
+    req.flash('changes') // clear out any cross-contaminatng data
+    const { reportId } = req.params
+    const newPrison = req.query['new-prison']
+    const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const incidentLocationsInPersistedPrison = await this.locationService.getIncidentLocations(
+      systemToken,
+      report.agencyId
+    )
+    const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
+    const userInput = req.flash('coordinatorInputForEditIncidentDetails')
+    const input = firstItem(userInput)
+    const incidentDate = getIncidentDate(incidentDetails.incidentDate, input?.incidentDate)
+    const pageData = input || incidentDetails
+
+    let newPrisonDetails = null // newPrison refers to the one selected via the /edit-prison page
+    let incidentLocationsInNewPrison = null
+
+    if (newPrison) {
+      try {
+        newPrisonDetails = await this.locationService.getPrisonById(systemToken, newPrison.toString())
+        incidentLocationsInNewPrison = await this.locationService.getIncidentLocations(
+          systemToken,
+          newPrison.toString()
+        )
+      } catch (error) {
+        log.error(`User attempted to obtain details for prison ${newPrison}`)
+      }
+    }
+
+    const data = {
+      ...pageData,
+      reportId,
+      witnesses: input?.witnesses || report.form.incidentDetails.witnesses,
+      displayName: incidentDetails.offenderName,
+      incidentDate,
+      locations: incidentLocationsInNewPrison || incidentLocationsInPersistedPrison,
+      prison: newPrisonDetails || incidentDetails.prison,
+      newAgencyId: newPrison,
+    }
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/incident-details.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+    })
+  }
+
+  submitEditIncidentDetails: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { payloadFields, extractedFields, errors } = processInput({
+      validationSpec: full.incidentDetails,
+      input: req.body,
+    })
+
+    req.flash('coordinatorInputForEditIncidentDetails', {
+      ...payloadFields,
+      incidentDate: extractedFields.incidentDate,
+      reportId,
+    })
+
+    if (!isNilOrEmpty(errors)) {
+      req.flash('errors', errors)
+      return res.redirect(req.originalUrl)
+    }
+
+    const inputData = {
+      useOfForcePlanned: {
+        oldValue: report.form.incidentDetails.plannedUseOfForce,
+        newValue: req.body.plannedUseOfForce,
+        hasChanged: hasValueChanged(
+          report.form.incidentDetails.plannedUseOfForce.toString(),
+          req.body.plannedUseOfForce
+        ),
+      },
+      authorisedBy: {
+        oldValue: report.form.incidentDetails.authorisedBy,
+        newValue: req.body.authorisedBy,
+        hasChanged: hasValueChanged(report.form.incidentDetails.authorisedBy, req.body.authorisedBy),
+      },
+      incidentLocation: {
+        oldValue: report.form.incidentDetails.incidentLocationId,
+        newValue: req.body.incidentLocationId,
+        hasChanged: hasValueChanged(report.form.incidentDetails.incidentLocationId, req.body.incidentLocationId),
+      },
+      witnesses: {
+        oldValue: trimAllValuesInObjectArray(report.form.incidentDetails.witnesses) || [],
+        newValue: trimAllValuesInObjectArray(req.body.witnesses?.filter(witness => witness.name !== '')),
+        hasChanged: !R.equals(
+          trimAllValuesInObjectArray(this.handleUndefinedWitnesses(report.form.incidentDetails.witnesses)),
+          trimAllValuesInObjectArray(req.body.witnesses)
+        ),
+      },
+      incidentdate: {
+        oldValue: report.incidentDate,
+        newValue: convertToUTC(req.body.incidentDate),
+        hasChanged: hasValueChanged(report.incidentDate.toISOString(), convertToUTC(req.body.incidentDate)),
+      },
+      agencyId: {
+        oldValue: report.agencyId,
+        newValue: req.body.newAgencyId,
+        hasChanged: hasValueChanged(report.agencyId, req.body.newAgencyId || report.agencyId),
+      },
+    } as object
+
+    const changedValues = getChangedValues(inputData, (value: { hasChanged: boolean }) => value.hasChanged === true)
+
+    req.flash('changes', changedValues)
+
+    return res.redirect('reason-for-changing-incident-details')
+  }
+
+  handleUndefinedWitnesses = witnesses => (!witnesses ? [] : witnesses)
+
+  viewEditPrison: RequestHandler = async (req, res) => {
+    const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+    const prisons = await this.locationService.getPrisons(systemToken)
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/prison.njk', { errors, prisons })
+  }
+
+  submitEditPrison: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const { agencyId, submit } = req.body
+    const error = [
+      {
+        text: 'What prison did the use of force take place in?',
+        href: '#agencyId',
+      },
+    ]
+
+    if (submit === 'cancel') {
+      return res.redirect(`/${reportId}/edit-report/incident-details`)
+    }
+
+    if (!agencyId) {
+      req.flash('errors', error)
+      return res.redirect(req.originalUrl)
+    }
+
+    req.flash('newPrison', [{ agencyId: req.body.agencyId }])
+
+    return res.redirect(`/${reportId}/edit-report/incident-details?new-prison=${req.body.agencyId}`)
+  }
+
+  viewReasonForChange: RequestHandler = async (req, res) => {
+    const errors = req.flash('errors')
+    const reportSection = 'incident details'
+    const changesToDisplay = req.flash('changes')[0]
+
+    const userInput = { question: '', changedFrom: '', changedTo: '', reason: '', addtionalInformation: '' }
+    return res.render('pages/coordinator/reason-for-change.njk', { errors, reportSection, userInput, changesToDisplay })
   }
 
   viewRemovalRequest: RequestHandler = async (req, res) => {

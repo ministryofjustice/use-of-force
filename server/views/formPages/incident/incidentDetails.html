@@ -15,6 +15,7 @@
 
 
 {% block formItems %}
+<input type="hidden" name="newAgencyId" value="{{ data.newAgencyId }}" />
 <div class="govuk-body">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -68,13 +69,17 @@
       <span class="govuk-label--s">Prison:&nbsp;</span>
       <span data-qa="prison" id='prison'>
         {{ data.prison.description }} &nbsp;
-        {{
+        {% if coordinatorEditJourney %}
+            <a href="/{{data.reportId}}/edit-report/prison" class="govuk-link govuk-link--no-visited-state">Change <span class="govuk-visually-hidden"> prison </span></a>
+         {% else %}
+          {{
           submitLink({
             label: 'Change<span class="govuk-visually-hidden"> prison </span>',
             qa: 'change-prison-link',
             value: 'save-and-change-prison'
           })
         }}
+        {% endif %}
       </span>
     </div>
   </div>

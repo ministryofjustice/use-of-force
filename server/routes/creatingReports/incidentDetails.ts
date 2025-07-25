@@ -10,6 +10,7 @@ import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 import AuthService from '../../services/authService'
+import getIncidentDate from '../../utils/getIncidentDate'
 
 const formName = 'incidentDetails'
 
@@ -52,22 +53,6 @@ export default class IncidentDetailsRoutes {
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
-  private getIncidentDate = (savedValue: Date, userProvidedValue) => {
-    if (userProvidedValue) {
-      const {
-        date,
-        time: { hour, minute },
-      } = userProvidedValue
-      return { date, hour, minute }
-    }
-    if (savedValue) {
-      const date = moment(savedValue)
-      return { date: date.format('DD/MM/YYYY'), hour: date.format('HH'), minute: date.format('mm') }
-    }
-
-    return null
-  }
-
   public view = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
@@ -98,7 +83,7 @@ export default class IncidentDetailsRoutes {
       ...pageData,
       displayName,
       offenderNo,
-      incidentDate: this.getIncidentDate(incidentDate, input?.incidentDate),
+      incidentDate: getIncidentDate(incidentDate, input?.incidentDate),
       locations,
       prison,
       types,

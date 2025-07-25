@@ -19,6 +19,7 @@ export default function Index(services: Services): Router {
     userService,
     statementService,
     authService,
+    locationService,
   } = services
 
   const router = express.Router()
@@ -44,6 +45,7 @@ export default function Index(services: Services): Router {
       userService,
       statementService,
       authService,
+      locationService,
       reportDetailBuilder
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
@@ -51,6 +53,11 @@ export default function Index(services: Services): Router {
 
     if (config.featureFlagReportEditingEnabled) {
       get('/:reportId/edit-report', coordinator.viewEditReport)
+      get('/:reportId/edit-report/incident-details', coordinator.viewEditIncidentDetails)
+      post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
+      get('/:reportId/edit-report/prison', coordinator.viewEditPrison)
+      post('/:reportId/edit-report/prison', coordinator.submitEditPrison)
+      get('/:reportId/edit-report/reason-for-changing-incident-details', coordinator.viewReasonForChange)
     }
 
     get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
@@ -71,6 +78,10 @@ export default function Index(services: Services): Router {
       coordinator.viewStaffMemberNotRemoved
     )
   }
+
+  // the admin routes will not be needed once all the coordinator routes are complete
+  // because coordinator will be able to amend everything an admin currently does.
+  // Note, admin is not a prison staff member but a dev with the admin role
 
   {
     const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)

@@ -86,3 +86,36 @@ export const initialiseName = (fullName?: string): string | null => {
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
 }
+
+export const hasValueChanged = (oldValue, newValue) => {
+  if (!oldValue && newValue === '') return false
+
+  const newVal = newValue?.toUpperCase().trim()
+  const oldVal = oldValue?.toUpperCase().trim()
+  return newVal !== oldVal
+}
+
+export const trimAllValuesInObjectArray = arr => {
+  return arr?.filter(obj => obj.name !== '').map(obj => ({ name: obj.name?.trim() }))
+}
+
+export const getChangedValues = (obj, predicate) => {
+  return Object.fromEntries(Object.entries(obj).filter(([key, value]) => predicate(value, key)))
+}
+
+export const convertToUTC = (input, timeZone = 'Europe/London') => {
+  const {
+    date,
+    time: { hour, minute },
+  } = input
+  const [day, month, year] = date.split('/')
+
+  // Build ISO-style local datetime string
+  const localISO = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${hour.padStart(
+    2,
+    '0'
+  )}:${minute.padStart(2, '0')}:00`
+
+  // Convert from specified timezone to UTC
+  return new Date(new Date(localISO).toLocaleString('en-US', { timeZone })).toISOString()
+}

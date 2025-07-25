@@ -36,6 +36,7 @@ const createIncidentDetails = (
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
     prison,
+    incidentLocationId: incidentDetails.incidentLocationId,
     location: description,
     plannedUseOfForce: incidentDetails.plannedUseOfForce,
     authorisedBy: incidentDetails.authorisedBy,
