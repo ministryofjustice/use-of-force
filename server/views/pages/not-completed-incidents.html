@@ -36,7 +36,7 @@
           <td class="govuk-table__cell">{{report.offenderName}}</td>
           <td class="govuk-table__cell">{{report.offenderNo}}</td>
           <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell"><a href= {{href}} draggable="false" class="govuk-link">View incident</a></td>
+          <td class="govuk-table__cell"><a href= {{href}} draggable="false" class="govuk-link" data-qa="view-incident-link">View incident</a></td>
     
           <td class="govuk-table__cell">
             {% if report.isOverdue %}
