@@ -45,7 +45,8 @@ const draftInvolvedStaffService = new DraftInvolvedStaffService(
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
-const aUser = username => ({ username } as FoundUserResult)
+// eslint-disable-next-line
+const aUser = username => ({ username }) as FoundUserResult
 const isReportCompleteMock = isReportComplete as jest.Mock
 
 let service: DraftReportService
