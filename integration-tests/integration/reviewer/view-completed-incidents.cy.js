@@ -176,7 +176,7 @@ context('A use of force reviewer can view completed incidents at the current age
 
     cy.task(
       'seedReports',
-      Array.from(Array(62)).map((_, i) => ({
+      Array.from(Array(60)).map((_, i) => ({
         status: ReportStatus.COMPLETE,
         bookingId: i,
         involvedStaff: [
@@ -195,17 +195,17 @@ context('A use of force reviewer can view completed incidents at the current age
 
     completedIncidentsPage
       .pageResults()
-      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 62 results'))
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 60 results'))
 
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: undefined, text: '1', selected: true },
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
       ])
     )
+
     completedIncidentsPage.clickLinkWithText('Next page')
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
@@ -213,31 +213,104 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=1', text: '1', selected: false },
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
 
-    completedIncidentsPage.clickLinkWithText('4')
-    completedIncidentsPage.pageLinks().then(pageLinks =>
-      expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous page', selected: false },
-        { href: '?page=1', text: '1', selected: false },
-        { href: '?page=2', text: '2', selected: false },
-        { href: '?page=3', text: '3', selected: false },
-        { href: undefined, text: '4', selected: true },
-      ])
-    )
-
-    completedIncidentsPage.clickLinkWithText('Previous page')
+    completedIncidentsPage.clickLinkWithText('3')
     completedIncidentsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-        { href: '?page=4', text: '4', selected: false },
-        { href: '?page=4', text: 'Next page', selected: false },
+      ])
+    )
+
+    completedIncidentsPage.clickLinkWithText('Previous page')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
+      ])
+    )
+  })
+
+  it('A user can view expected pagination elements when there are more than 3 pages of results', () => {
+    cy.task('stubReviewerLogin')
+    cy.task('stubOffenders', [offender])
+    cy.login()
+
+    cy.task(
+      'seedReports',
+      Array.from(Array(220)).map((_, i) => ({
+        status: ReportStatus.COMPLETE,
+        bookingId: i,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      }))
+    )
+
+    const completedIncidentsPage = CompletedIncidentsPage.goTo()
+    completedIncidentsPage.selectedTab().contains('Completed')
+    completedIncidentsPage.pagination().should('be.visible')
+
+    completedIncidentsPage
+      .pageResults()
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 220 results'))
+
+    // [1] 2 3 ... 11 Next >
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: undefined, text: '1', selected: true },
+        { href: '?page=2', text: '2', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '', text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=2', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … 3 [4] 5 Next >
+    completedIncidentsPage.clickLinkWithText('3')
+    completedIncidentsPage.clickLinkWithText('Next page')
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=3', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: '', text: '…', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '4', selected: true },
+        { href: '?page=5', text: '5', selected: false },
+        { href: '', text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=5', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … [9] 10 11 Next >
+    completedIncidentsPage.clickLinkWithText('5')
+    completedIncidentsPage.clickLinkWithText('Next page') // 6
+    completedIncidentsPage.clickLinkWithText('Next page') // 7
+    completedIncidentsPage.clickLinkWithText('Next page') // 8
+    completedIncidentsPage.clickLinkWithText('Next page') // 9
+    completedIncidentsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=8', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: '', text: '…', selected: false },
+        { href: undefined, text: '9', selected: true },
+        { href: '?page=10', text: '10', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=10', text: 'Next page', selected: false },
       ])
     )
   })
