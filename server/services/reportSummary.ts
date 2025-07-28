@@ -174,7 +174,9 @@ const getRestraintPositions = positions => {
 
 const toParentChild = postions => {
   const positionObjects = postions.map(p => findEnum(ControlAndRestraintPosition, p))
+  // eslint-disable-next-line
   const parents: any[] = []
+  // eslint-disable-next-line
   const children: any[] = []
   positionObjects.forEach(obj => {
     if (obj.parent == null) {
@@ -184,7 +186,7 @@ const toParentChild = postions => {
     }
   })
   const parentChild: string[] = []
-  parents.forEach(function (p) {
+  parents.forEach(p => {
     const thesechildren = children
       .filter(pos => pos.parent === p.value)
       .map(child => child.label)

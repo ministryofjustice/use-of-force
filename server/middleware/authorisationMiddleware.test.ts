@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Response } from 'express'
 import jwt from 'jsonwebtoken'
 
@@ -28,7 +29,7 @@ describe('authorisationMiddleware', () => {
           token: createToken(authorities),
         },
       },
-    } as unknown as Response)
+    }) as unknown as Response
 
   describe('isReviewer', () => {
     test('Should populate isReviewer for reviewer', () => {
