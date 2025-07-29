@@ -1,15 +1,15 @@
-import { offender } from '../../mockApis/data'
-import NotCompletedIncidentsPage from '../../pages/reviewer/notCompletedIncidentsPage'
-import CompletedIncidentsPage from '../../pages/reviewer/completedIncidentsPage'
-import ViewIncidentPage from '../../pages/coordinator/viewIncidentPage'
-import EditReportPage from '../../pages/coordinator/editReportPage'
-import IncidentDetailsPage from '../../pages/coordinator/incidentDetailsPage'
-import PrisonPage from '../../pages/coordinator/prisonPage'
-import { ReportStatus } from '../../../server/config/types'
+import { offender } from '../../../mockApis/data'
+import NotCompletedIncidentsPage from '../../../pages/reviewer/notCompletedIncidentsPage'
+import CompletedIncidentsPage from '../../../pages/reviewer/completedIncidentsPage'
+import ViewIncidentPage from '../../../pages/coordinator/viewIncidentPage'
+import EditReportPage from '../../../pages/coordinator/editReportPage'
+import IncidentDetailsPage from '../../../pages/coordinator/incidentDetailsPage'
+import PrisonPage from '../../../pages/coordinator/prisonPage'
+import { ReportStatus } from '../../../../server/config/types'
 
 const moment = require('moment')
 
-context('A use of force coordinator needs to edit reports', () => {
+context('A use of force coordinator needs to edit incident-details', () => {
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
@@ -52,6 +52,7 @@ context('A use of force coordinator needs to edit reports', () => {
 
       const editReportPage = EditReportPage.verifyOnPage()
       editReportPage.changeIncidentDetailsLink().click()
+      IncidentDetailsPage.verifyOnPage()
     })
 
     it('A coordinator can cancel out of the edit incident details page and return to edit report page', () => {
@@ -132,7 +133,9 @@ context('A use of force coordinator needs to edit reports', () => {
       const viewIncidentPage = ViewIncidentPage.verifyOnPage()
       viewIncidentPage.editReportButton().click()
 
-      EditReportPage.verifyOnPage()
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+      IncidentDetailsPage.verifyOnPage()
     })
   })
 })
