@@ -103,19 +103,7 @@ export const getChangedValues = (obj, predicate) => {
   return Object.fromEntries(Object.entries(obj).filter(([key, value]) => predicate(value, key)))
 }
 
-export const convertToUTC = (input, timeZone = 'Europe/London') => {
-  const {
-    date,
-    time: { hour, minute },
-  } = input
-  const [day, month, year] = date.split('/')
-
-  // Build ISO-style local datetime string
-  const localISO = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${hour.padStart(
-    2,
-    '0'
-  )}:${minute.padStart(2, '0')}:00`
-
-  // Convert from specified timezone to UTC
-  return new Date(new Date(localISO).toLocaleString('en-US', { timeZone })).toISOString()
+export const toJSDate = ({ date, time: { hour, minute } }) => {
+  const [day, month, year] = date.split('/').map(Number)
+  return new Date(year, month - 1, day, Number(hour), Number(minute))
 }

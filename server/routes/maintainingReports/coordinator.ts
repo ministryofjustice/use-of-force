@@ -7,7 +7,7 @@ import {
   trimAllValuesInObjectArray,
   hasValueChanged,
   getChangedValues,
-  convertToUTC,
+  toJSDate,
 } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
 import { paths, full } from '../../config/incident'
@@ -162,8 +162,8 @@ export default class CoordinatorRoutes {
       },
       incidentdate: {
         oldValue: report.incidentDate,
-        newValue: convertToUTC(req.body.incidentDate),
-        hasChanged: hasValueChanged(report.incidentDate.toISOString(), convertToUTC(req.body.incidentDate)),
+        newValue: toJSDate(req.body.incidentDate), // need to persist JS Date object jin th same format as as in the create report journey
+        hasChanged: report.incidentDate.toISOString() !== toJSDate(req.body.incidentDate).toISOString(),
       },
       agencyId: {
         oldValue: report.agencyId,

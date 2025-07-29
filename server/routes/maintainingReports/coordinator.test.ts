@@ -332,7 +332,7 @@ describe('coordinator', () => {
             {
               incidentdate: {
                 hasChanged: true,
-                newValue: '2025-05-22T01:10:00.000Z',
+                newValue: new Date('2025-05-22T02:10:00'),
                 oldValue: new Date('2025-05-12T10:00:00'),
               },
               witnesses: {

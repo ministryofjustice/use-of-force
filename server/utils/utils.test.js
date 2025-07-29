@@ -9,7 +9,7 @@ const {
   trimAllValuesInObjectArray,
   hasValueChanged,
   getChangedValues,
-  convertToUTC,
+  toJSDate,
 } = require('./utils')
 
 describe('properCaseName', () => {
@@ -211,15 +211,67 @@ describe('getChangedValues', () => {
   })
 })
 
-describe('convertToUTC', () => {
-  it('should convert date to utc', () => {
-    const dateToConvert = {
-      date: '23/07/2025',
-      time: {
-        hour: '03',
-        minute: '10',
-      },
+describe('toJSDate', () => {
+  test('converts a standard DD/MM/YYYY date and time to JS Date', () => {
+    const input = {
+      date: '02/03/2020',
+      time: { hour: '14', minute: '17' },
     }
-    expect(convertToUTC(dateToConvert)).toEqual('2025-07-23T02:10:00.000Z')
+
+    const result = toJSDate(input)
+    expect(result.getFullYear()).toBe(2020)
+    expect(result.getMonth()).toBe(2) // March
+    expect(result.getDate()).toBe(2)
+    expect(result.getHours()).toBe(14)
+    expect(result.getMinutes()).toBe(17)
+    expect(result.toISOString()).toBe('2020-03-02T14:17:00.000Z')
+  })
+
+  test('handles single-digit day and month correctly', () => {
+    const input = {
+      date: '5/7/2025',
+      time: { hour: '8', minute: '5' },
+    }
+    const result = toJSDate(input)
+    expect(result.getFullYear()).toBe(2025)
+    expect(result.getMonth()).toBe(6) // July
+    expect(result.getDate()).toBe(5)
+    expect(result.getHours()).toBe(8)
+    expect(result.getMinutes()).toBe(5)
+  })
+
+  test('returns correct Date object for end of year', () => {
+    const input = {
+      date: '31/12/2024',
+      time: { hour: '23', minute: '59' },
+    }
+    const result = toJSDate(input)
+    expect(result.getFullYear()).toBe(2024)
+    expect(result.getMonth()).toBe(11) // December
+    expect(result.getDate()).toBe(31)
+    expect(result.getHours()).toBe(23)
+    expect(result.getMinutes()).toBe(59)
+  })
+
+  test('gracefully handles zero-padded inputs', () => {
+    const input = {
+      date: '01/01/2022',
+      time: { hour: '09', minute: '00' },
+    }
+    const result = toJSDate(input)
+    expect(result.getFullYear()).toBe(2022)
+    expect(result.getMonth()).toBe(0) // January
+    expect(result.getDate()).toBe(1)
+    expect(result.getHours()).toBe(9)
+    expect(result.getMinutes()).toBe(0)
+  })
+
+  test('invalid date format (missing parts) should produce NaN date', () => {
+    const input = {
+      date: '2020-03-02', // wrong format
+      time: { hour: '14', minute: '17' },
+    }
+    const result = toJSDate(input)
+    expect(result.toString()).toBe('Invalid Date')
   })
 })

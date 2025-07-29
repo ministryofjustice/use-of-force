@@ -67,7 +67,7 @@
   <div class="govuk-grid-row govuk-!-padding-bottom-3 govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-label--s">Prison:&nbsp;</span>
-      <span id='prison'>
+      <span id='prison' data-qa="prison">
         {{ data.prison.description }} &nbsp;
         {% if coordinatorEditJourney %}
             <a href="/{{data.reportId}}/edit-report/prison" class="govuk-link govuk-link--no-visited-state"  data-qa="change-prison">Change <span class="govuk-visually-hidden"> prison </span></a>

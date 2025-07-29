@@ -1,5 +1,6 @@
-import { offender } from '../../mockApis/data'
+import { offender, offender2 } from '../../mockApis/data'
 import NotCompletedIncidentsPage from '../../pages/reviewer/notCompletedIncidentsPage'
+import CompletedIncidentsPage from '../../pages/reviewer/completedIncidentsPage'
 import ViewIncidentPage from '../../pages/coordinator/viewIncidentPage'
 import EditReportPage from '../../pages/coordinator/editReportPage'
 import IncidentDetailsPage from '../../pages/coordinator/incidentDetailsPage'
@@ -13,6 +14,7 @@ context('A use of force coordinator needs to edit reports', () => {
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
+      incidentDate: moment('2019-09-10 09:57:00.000').toDate(),
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -38,73 +40,99 @@ context('A use of force coordinator needs to edit reports', () => {
     seedReport()
   })
 
-  // need to to completed report and own reports, just at top level
+  context('incomplete reports', () => {
+    it('A coordinator can access the edit incident details page for a submitted but incomplete report', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-  it('A coordinator can access the edit incident details page for a submitted but incomplete report', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+      notCompletedIncidentsPage.viewIncidentLink().click()
 
-    const { reportId } = notCompletedIncidentsPage.getTodoRow(0)
-    notCompletedIncidentsPage.viewIncidentLink().click()
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
 
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+    })
 
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeIncidentDetailsLink().click()
+    it('A coordinator can cancel out of the edit incident details page and return to edit report page', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.cancelLink().click()
+      EditReportPage.verifyOnPage()
+    })
+
+    it('A coordinator can change prison where incident occured', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.changePrisonLink().click()
+
+      cy.task('stubPrison', 'LEI')
+      const prisonPage = PrisonPage.verifyOnPage()
+      prisonPage.selectPrison().select('HMP Leeds')
+      prisonPage.continueButton().click()
+
+      IncidentDetailsPage.verifyOnPage()
+      cy.url().should('include', '?new-prison=LEI')
+      incidentDetailsPage.prisonName().should('contain', 'Leeds')
+      incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
+    })
+
+    it('Will navigate to the Reason for changing the incident details page', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+
+      incidentDetailsPage.continueButton().click()
+    })
   })
 
-  it('A coordinator can cancel out of the edit incident details page and return to edit report page', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
+  context('complete reports', () => {
+    it('A coordinator can access the edit incident details page for a complete report', () => {
+      cy.task('seedReport', {
+        status: ReportStatus.COMPLETE,
+        submittedDate: moment().toDate(),
+        incidentDate: moment('2019-01-22 09:57:00.000'),
+        agencyId: offender.agencyId,
+        bookingId: offender.bookingId,
+        sequenceNumber: 1,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
 
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
+      const completedIncidentsPage = CompletedIncidentsPage.goTo()
+      completedIncidentsPage.viewIncidentLink().click()
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
 
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeIncidentDetailsLink().click()
-
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-    incidentDetailsPage.cancelLink().click()
-    EditReportPage.verifyOnPage()
-  })
-
-  it('A coordinator can change prison where incident occured', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeIncidentDetailsLink().click()
-
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-    incidentDetailsPage.changePrisonLink().click()
-
-    cy.task('stubPrison', 'LEI')
-    const prisonPage = PrisonPage.verifyOnPage()
-    prisonPage.selectPrison().select('HMP Leeds')
-    prisonPage.continueButton().click()
-
-    IncidentDetailsPage.verifyOnPage()
-    cy.url().should('include', '?new-prison=LEI')
-    incidentDetailsPage.prisonName().should('contain', 'Leeds')
-    incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
-  })
-
-  it('Will navigate to the Reason for changing the incident details page', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeIncidentDetailsLink().click()
-
-    const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-
-    incidentDetailsPage.continueButton().click()
+      const editReportPage = EditReportPage.verifyOnPage()
+    })
   })
 })
