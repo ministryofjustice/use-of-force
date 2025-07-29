@@ -1,4 +1,4 @@
-import { offender, offender2 } from '../../mockApis/data'
+import { offender } from '../../mockApis/data'
 import NotCompletedIncidentsPage from '../../pages/reviewer/notCompletedIncidentsPage'
 import CompletedIncidentsPage from '../../pages/reviewer/completedIncidentsPage'
 import ViewIncidentPage from '../../pages/coordinator/viewIncidentPage'
@@ -132,7 +132,7 @@ context('A use of force coordinator needs to edit reports', () => {
       const viewIncidentPage = ViewIncidentPage.verifyOnPage()
       viewIncidentPage.editReportButton().click()
 
-      const editReportPage = EditReportPage.verifyOnPage()
+      EditReportPage.verifyOnPage()
     })
   })
 })
