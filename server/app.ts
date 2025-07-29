@@ -8,7 +8,6 @@ import compression from 'compression'
 import passport from 'passport'
 import crypto from 'crypto'
 import setUpCsrf from './middleware/setUpCsrf'
-
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
