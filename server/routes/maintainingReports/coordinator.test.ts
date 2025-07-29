@@ -25,7 +25,7 @@ jest.mock('../../services/reviewService')
 jest.mock('../../services/userService')
 jest.mock('../../services/statementService')
 jest.mock('../../services/locationService')
-jest.mock('../../services/ReportDetailBuilder')
+jest.mock('../../services/reportDetailBuilder')
 jest.mock('../../../log')
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
