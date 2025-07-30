@@ -310,7 +310,7 @@ describe('coordinator', () => {
         .post('/1/edit-report/incident-details')
         .send(incidentDetailsBody)
         .expect(302)
-        .expect('Location', 'reason-for-changing-incident-details')
+        .expect('Location', 'reason-for-change')
         .expect(() => {
           expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails', {
             incidentDate: {

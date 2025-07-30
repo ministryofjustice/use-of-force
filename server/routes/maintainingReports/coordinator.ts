@@ -176,7 +176,7 @@ export default class CoordinatorRoutes {
 
     req.flash('changes', changedValues)
 
-    return res.redirect('reason-for-changing-incident-details')
+    return res.redirect('reason-for-change')
   }
 
   handleUndefinedWitnesses = witnesses => (!witnesses ? [] : witnesses)
