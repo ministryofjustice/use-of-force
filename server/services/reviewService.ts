@@ -104,10 +104,12 @@ export default class ReviewService {
     return reports.map(toIncidentSummary(namesByOffenderNumber))
   }
 
-  async getIncompleteReports(username: string, agencyId: AgencyId): Promise<IncidentSummary[]> {
+  // async getIncompleteReports(username: string, agencyId: AgencyId): Promise<IncidentSummary[]> {
+  async getIncompleteReports(username: string, agencyId: AgencyId): Promise<PageResponse<IncidentSummary>> {
     const incomplete = await this.incidentClient.getIncompleteReportsForReviewer(agencyId)
     const namesByOffenderNumber = await this.getOffenderNames(username, incomplete)
-    return incomplete.map(toIncidentSummary(namesByOffenderNumber))
+    // return incomplete.map(toIncidentSummary(namesByOffenderNumber))
+    return toPage(1, incomplete.map(toIncidentSummary(namesByOffenderNumber)))
   }
 
   async getStatements(token: string, reportId: number): Promise<ReviewerStatementWithComments[]> {
