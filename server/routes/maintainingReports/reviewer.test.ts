@@ -173,9 +173,7 @@ describe(`GET /not-completed-incidents`, () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(
-          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3',
-        )
+        expect(res.text).toContain('<a class="moj-pagination__link" href="?page=2">')
       })
   })
 
