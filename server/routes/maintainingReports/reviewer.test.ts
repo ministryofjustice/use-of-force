@@ -156,7 +156,7 @@ describe(`GET /not-completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getIncompleteReports).toHaveBeenCalledWith('user1', 'LEI')
+        expect(reviewService.getIncompleteReports).toHaveBeenCalledWith('user1', 'LEI', 1)
       })
   })
 
