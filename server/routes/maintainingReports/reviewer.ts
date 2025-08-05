@@ -19,7 +19,8 @@ export default class ReviewerRoutes {
     const page = parseInt(req.query.page as string, 10) || 1
     const { items: reports, metaData: pageData } = await this.reviewService.getIncompleteReports(
       res.locals.user.username,
-      res.locals.user.activeCaseLoadId
+      res.locals.user.activeCaseLoadId,
+      page
     )
 
     return res.render('pages/not-completed-incidents', {

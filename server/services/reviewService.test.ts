@@ -160,7 +160,7 @@ describe('reviewService', () => {
         'offender-2': 'Prisoner prisoner-2',
       })
 
-      const result = await service.getIncompleteReports('userName', 'agency-1')
+      const result = await service.getIncompleteReports('userName', 'agency-1', 1)
       expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
       expect(incidentClient.getIncompleteReportsForReviewer).toHaveBeenCalledWith('agency-1')
       expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
