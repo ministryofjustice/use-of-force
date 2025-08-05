@@ -132,43 +132,6 @@ describe('reviewService', () => {
     })
   })
 
-  // describe('getIncompletedReports', () => {
-  //   const reportSummary = (id: number): ReportSummary => ({
-  //     id,
-  //     bookingId: id + 1,
-  //     reporterName: `reporter-${id}`,
-  //     offenderNo: `offender-${id}`,
-  //     incidentDate: new Date(id),
-  //   })
-
-  //   const incidentSummary = (id: number): IncidentSummary => ({
-  //     id,
-  //     bookingId: id + 1,
-  //     incidentdate: new Date(id),
-  //     staffMemberName: `reporter-${id}`,
-  //     isOverdue: false,
-  //     isRemovalRequested: false,
-  //     offenderName: `Prisoner prisoner-${id}`,
-  //     offenderNo: `offender-${id}`,
-  //   })
-
-  //   test('retrieve and include offender names', async () => {
-  //     incidentClient.getIncompleteReportsForReviewer.mockResolvedValue([reportSummary(1), reportSummary(2)])
-
-  //     offenderService.getOffenderNames.mockResolvedValue({
-  //       'offender-1': 'Prisoner prisoner-1',
-  //       'offender-2': 'Prisoner prisoner-2',
-  //     })
-
-  //     const result = await service.getIncompleteReports('userName', 'agency-1', 1)
-  //     expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
-  //     expect(incidentClient.getIncompleteReportsForReviewer).toHaveBeenCalledWith('agency-1')
-  //     expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
-  //       'offender-1',
-  //       'offender-2',
-  //     ])
-  //   })
-  // })
   describe('getIncompletedReports', () => {
     const reportSummary = (id: number): ReportSummary => ({
       id,
@@ -196,19 +159,6 @@ describe('reviewService', () => {
         'offender-1': 'Prisoner prisoner-1',
         'offender-2': 'Prisoner prisoner-2',
       })
-
-      // const expected = new PageResponse(
-      //   {
-      //     min: 1,
-      //     max: 2,
-      //     page: 1,
-      //     totalCount: 2,
-      //     totalPages: 1,
-      //     nextPage: null,
-      //     previousPage: null,
-      //   },
-      //   [incidentSummary(1), incidentSummary(2)]
-      // )
 
       const expected = new PageResponse(
         {
