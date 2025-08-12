@@ -65,7 +65,6 @@ export default class CoordinatorRoutes {
   }
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
-    req.flash('changes') // clear out any cross-contaminatng data
     const { reportId } = req.params
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)

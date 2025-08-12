@@ -214,7 +214,6 @@ describe('coordinator', () => {
             },
             incidentDate: new Date('2025-05-12T10:00:00'),
           })
-          expect(flash).toHaveBeenCalledWith('changes')
           expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails')
           expect(flash).toHaveBeenCalledWith('errors')
         })
