@@ -28,11 +28,11 @@
                 attributes: {'data-qa': 'question'}
               },
               {
-                text: change.oldValue | toYesNoIfBoolean,
+                text: change.oldValue | toYesNoIfTrueFalse,
                 attributes: {'data-qa': 'old-value'}
               },
               {
-                text: change.newValue | toYesNoIfBoolean,
+                text: change.newValue | toYesNoIfTrueFalse,
                 attributes: {'data-qa': 'new-value'}
               }]
             ), rowData) %}

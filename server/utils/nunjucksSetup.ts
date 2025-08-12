@@ -210,7 +210,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return value ? 'Yes' : 'No'
   })
 
-  njkEnv.addFilter('toYesNoIfBoolean', value => {
+  njkEnv.addFilter('toYesNoIfTrueFalse', value => {
     if (value == null) return '\u2013'
     if (value === 'true' || value === true) return 'Yes'
     if (value === 'false' || value === false) return 'No'
