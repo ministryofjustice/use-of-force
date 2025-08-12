@@ -6,6 +6,7 @@ const incidentDetailsPage = () =>
     changePrisonLink: () => cy.get('[data-qa="change-prison"]'),
     prisonName: () => cy.get('#prison'),
     whereInPrisonLabelText: () => cy.get('[data-qa="prison-label"]'),
+    plannedUseOfForceRadioNo: () => cy.get('#plannedUseOfForce-2'),
     continueButton: () => cy.get('[data-qa="continue-coordinator-edit"]'),
   })
 

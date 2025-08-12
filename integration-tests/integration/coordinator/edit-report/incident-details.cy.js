@@ -5,6 +5,7 @@ import ViewIncidentPage from '../../../pages/coordinator/viewIncidentPage'
 import EditReportPage from '../../../pages/coordinator/editReportPage'
 import IncidentDetailsPage from '../../../pages/coordinator/incidentDetailsPage'
 import PrisonPage from '../../../pages/coordinator/prisonPage'
+import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
 import { ReportStatus } from '../../../../server/config/types'
 
 const moment = require('moment')
@@ -55,7 +56,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       IncidentDetailsPage.verifyOnPage()
     })
 
-    it('A coordinator can cancel out of the edit incident details page and return to edit report page', () => {
+    it('A coordinator can cancel out of the edit incident details page and return to incident details page', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -67,7 +68,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
 
       const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
       incidentDetailsPage.cancelLink().click()
-      EditReportPage.verifyOnPage()
+      ViewIncidentPage.verifyOnPage()
     })
 
     it('A coordinator can change prison where incident occured', () => {
@@ -94,7 +95,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
     })
 
-    it('Will navigate to the Reason for changing the incident details page', () => {
+    it('Will display edits in the Reason for changing the incident details page and allow user to continue', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -105,8 +106,17 @@ context('A use of force coordinator needs to edit incident-details', () => {
       editReportPage.changeIncidentDetailsLink().click()
 
       const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-
+      incidentDetailsPage.plannedUseOfForceRadioNo().click()
       incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.question().should('contain', 'Was use of force planned')
+      reasonForChangePage.oldValue().should('contain', 'Yes')
+      reasonForChangePage.newValue().should('contain', 'No')
+      reasonForChangePage.errorInReportRadio().click()
+      reasonForChangePage.saveButton().click()
+
+      ViewIncidentPage.verifyOnPage()
     })
   })
 

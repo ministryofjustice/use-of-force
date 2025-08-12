@@ -12,6 +12,8 @@ import StatementService from '../../services/statementService'
 import AuthService from '../../services/authService'
 import LocationService from '../../services/locationService'
 import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
+import ReportEditService from '../../services/reportEditService'
+
 import config from '../../config'
 import logger from '../../../log'
 
@@ -26,6 +28,7 @@ jest.mock('../../services/userService')
 jest.mock('../../services/statementService')
 jest.mock('../../services/locationService')
 jest.mock('../../services/reportDetailBuilder')
+jest.mock('../../services/reportEditService')
 jest.mock('../../../log')
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
@@ -37,6 +40,7 @@ const statementService = new StatementService(null, null, null) as jest.Mocked<S
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
+const reportEditService = new ReportEditService(null, null) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
 let app
@@ -111,7 +115,8 @@ describe('coordinator', () => {
     reviewService.getReportEdits.mockResolvedValue([] as ReportEdit[])
     reviewService.getStatements.mockResolvedValue([] as ReviewerStatementWithComments[])
     locationService.getPrisonById.mockResolvedValue({} as Prison)
-
+    reportEditService.constructChangesToView.mockResolvedValue([])
+    reportEditService.validateReasonForChangeInput.mockReturnValue([])
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -123,6 +128,7 @@ describe('coordinator', () => {
         authService,
         locationService,
         reportDetailBuilder,
+        reportEditService,
       },
       userSupplier,
       false,
@@ -209,7 +215,7 @@ describe('coordinator', () => {
             incidentDate: new Date('2025-05-12T10:00:00'),
           })
           expect(flash).toHaveBeenCalledWith('changes')
-          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails')
+          expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails')
           expect(flash).toHaveBeenCalledWith('errors')
         })
     })
@@ -276,7 +282,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', '/1/edit-report/incident-details')
         .expect(res => {
-          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails', {
+          expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails', {
             incidentDate: undefined,
             reportId: '1',
           })
@@ -312,7 +318,7 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', 'reason-for-change')
         .expect(() => {
-          expect(flash).toHaveBeenCalledWith('coordinatorInputForEditIncidentDetails', {
+          expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails', {
             incidentDate: {
               date: '22/05/2025',
               time: {
@@ -330,7 +336,7 @@ describe('coordinator', () => {
             'changes',
 
             {
-              incidentdate: {
+              incidentDate: {
                 hasChanged: true,
                 newValue: new Date('2025-05-22T02:10:00'),
                 oldValue: new Date('2025-05-12T10:00:00'),
@@ -353,7 +359,309 @@ describe('coordinator', () => {
     })
   })
 
-  // all the following are existing tests and will be changed in the future
+  describe('viewReasonForChange', () => {
+    it('should render page', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+      reportEditService.constructChangesToView.mockResolvedValue([])
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Reason for changing the incident details')
+          expect(res.text).toContain('Save change')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('Changes you are making')
+          expect(res.text).toContain('Why are you changing the incident details?')
+          expect(res.text).toContain('Somebody reported an error in the report')
+          expect(res.text).toContain('Something was missing from the report')
+          expect(res.text).toContain('New evidence emerged after the report was submitted')
+          expect(res.text).toContain('Another reason')
+          expect(res.text).toContain('Add additional information to explain this change')
+          expect(reportEditService.constructChangesToView).toHaveBeenCalledWith(
+            'user1',
+            { section: 'incidentDetails', text: 'the incident details' },
+            {}
+          )
+        })
+    })
+    it('should render the required edits, changing booleans to Yes or No', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([
+        {
+          plannedUseOfForce: {
+            oldValue: false,
+            newValue: 'true',
+            hasChanged: true,
+          },
+          authorisedBy: {
+            newValue: 'Joe bloggs',
+            hasChanged: true,
+          },
+        },
+      ])
+
+      reportEditService.constructChangesToView.mockResolvedValue([
+        {
+          question: 'Was use of force planned',
+          oldValue: false,
+          newValue: 'true',
+        },
+        {
+          question: 'Who authorised use of force',
+          oldValue: undefined,
+          newValue: 'Joe bloggs',
+        },
+      ])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Joe bloggs')
+          expect(res.text).toContain('Yes')
+          expect(res.text).toContain('No')
+        })
+    })
+    it('should render correct error when no radio button is selected', async () => {
+      flash.mockReturnValueOnce([
+        {
+          href: '#reason',
+          text: 'Select the reason for changing the incident details',
+        },
+      ])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+      reportEditService.constructChangesToView.mockResolvedValue([])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Select the reason for changing the incident details')
+        })
+    })
+
+    it('should render correct error when Another reason radio selected but no reason ext entered', async () => {
+      flash.mockReturnValueOnce([
+        {
+          href: '#anotherReasonForEdit',
+          text: 'Please specify the reason',
+        },
+      ])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+      reportEditService.constructChangesToView.mockResolvedValue([])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Please specify the reason')
+        })
+    })
+  })
+
+  describe('submitReasonForChange', () => {
+    it('should render reason-for-change page', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+      reportEditService.constructChangesToView.mockResolvedValue([])
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Reason for changing the incident details')
+          expect(res.text).toContain('Save change')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('Changes you are making')
+          expect(res.text).toContain('Why are you changing the incident details?')
+          expect(res.text).toContain('Somebody reported an error in the report')
+          expect(res.text).toContain('Something was missing from the report')
+          expect(res.text).toContain('New evidence emerged after the report was submitted')
+          expect(res.text).toContain('Another reason')
+          expect(res.text).toContain('Add additional information to explain this change')
+          expect(reportEditService.constructChangesToView).toHaveBeenCalledWith(
+            'user1',
+            { section: 'incidentDetails', text: 'the incident details' },
+            {}
+          )
+        })
+    })
+
+    it('should display the changes, replacing booleans with Yes or No', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([
+        {
+          plannedUseOfForce: {
+            oldValue: false,
+            newValue: 'true',
+            hasChanged: true,
+          },
+          authorisedBy: {
+            newValue: 'Joe bloggs',
+            hasChanged: true,
+          },
+        },
+      ])
+
+      reportEditService.constructChangesToView.mockResolvedValue([
+        {
+          question: 'Was use of force planned',
+          oldValue: false,
+          newValue: 'true',
+        },
+        {
+          question: 'Who authorised use of force',
+          oldValue: undefined,
+          newValue: 'Joe bloggs',
+        },
+      ])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Joe bloggs')
+          expect(res.text).toContain('Yes')
+          expect(res.text).toContain('No')
+        })
+    })
+
+    it('should display correct error when no radio button is selected', async () => {
+      flash.mockReturnValueOnce([
+        {
+          href: '#reason',
+          text: 'Select the reason for changing the incident details',
+        },
+      ])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+
+      reportEditService.constructChangesToView.mockResolvedValue([])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Select the reason for changing the incident details')
+        })
+    })
+
+    it("should display correct error when 'Another reason' radio selected but no text entered", async () => {
+      flash.mockReturnValueOnce([
+        {
+          href: '#anotherReasonForEdit',
+          text: 'Please specify the reason',
+        },
+      ])
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+      flash.mockReturnValueOnce([{}])
+      flash.mockReturnValueOnce([])
+      reportEditService.constructChangesToView.mockResolvedValue([])
+
+      await request(app)
+        .get('/1/edit-report/reason-for-change')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Please specify the reason')
+        })
+    })
+
+    it('Validates the input, calls persist and redirects to correct page', async () => {
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+
+      await request(app)
+        .post('/1/edit-report/reason-for-change')
+        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some addiitonal text' })
+        .expect(302)
+        .expect('Location', '/1/view-incident')
+        .expect(() => {
+          expect(reportEditService.validateReasonForChangeInput).toHaveBeenCalledWith({
+            reason: 'someReason',
+            reasonText: 'Some text',
+            reportSection: { section: 'incidentDetails', text: 'the incident details' },
+          })
+          expect(reportEditService.persistChanges).toHaveBeenCalledWith({
+            changes: [],
+            reason: 'someReason',
+            reasonAdditionalInfo: 'Some addiitonal text',
+            reasonText: 'Some text',
+            reportSection: { section: 'incidentDetails', text: 'the incident details' },
+          })
+        })
+    })
+  })
+
+  // all the below are existing tests and will be changed in the future
   describe('Delete statement', () => {
     it('Validation error redirects back to current page', async () => {
       userSupplier.mockReturnValue(coordinatorUser)
