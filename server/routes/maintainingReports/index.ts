@@ -20,6 +20,7 @@ export default function Index(services: Services): Router {
     statementService,
     authService,
     locationService,
+    reportEditService,
   } = services
 
   const router = express.Router()
@@ -46,7 +47,8 @@ export default function Index(services: Services): Router {
       statementService,
       authService,
       locationService,
-      reportDetailBuilder
+      reportDetailBuilder,
+      reportEditService
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -57,7 +59,8 @@ export default function Index(services: Services): Router {
       post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
       get('/:reportId/edit-report/prison', coordinator.viewEditPrison)
       post('/:reportId/edit-report/prison', coordinator.submitEditPrison)
-      get('/:reportId/edit-report/reason-for-changing-incident-details', coordinator.viewReasonForChange)
+      get('/:reportId/edit-report/reason-for-change', coordinator.viewReasonForChange)
+      post('/:reportId/edit-report/reason-for-change', coordinator.submitReasonForChange)
     }
 
     get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)

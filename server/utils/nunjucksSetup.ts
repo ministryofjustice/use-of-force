@@ -210,6 +210,13 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return value ? 'Yes' : 'No'
   })
 
+  njkEnv.addFilter('toYesNoIfTrueFalse', value => {
+    if (value == null) return '\u2013'
+    if (value === 'true' || value === true) return 'Yes'
+    if (value === 'false' || value === false) return 'No'
+    return value
+  })
+
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
 
   njkEnv.addFilter('isActive', (types: LabelledValue[]) => {

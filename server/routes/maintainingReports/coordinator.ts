@@ -21,6 +21,7 @@ import AuthService from '../../services/authService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import LocationService from '../../services/locationService'
 import { processInput } from '../../services/validation'
+import ReportEditService from '../../services/reportEditService'
 import log from '../../../log'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
@@ -35,7 +36,8 @@ export default class CoordinatorRoutes {
     private readonly statementService: StatementService,
     private readonly authService: AuthService,
     private readonly locationService: LocationService,
-    private readonly reportDetailBuilder: ReportDataBuilder
+    private readonly reportDetailBuilder: ReportDataBuilder,
+    private readonly reportEditService: ReportEditService
   ) {}
 
   viewEditReport: RequestHandler = async (req, res) => {
@@ -63,7 +65,6 @@ export default class CoordinatorRoutes {
   }
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
-    req.flash('changes') // clear out any cross-contaminatng data
     const { reportId } = req.params
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -73,7 +74,7 @@ export default class CoordinatorRoutes {
       report.agencyId
     )
     const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
-    const userInput = req.flash('coordinatorInputForEditIncidentDetails')
+    const userInput = req.flash('inputsForEditIncidentDetails')
     const input = firstItem(userInput)
     const incidentDate = getIncidentDate(incidentDetails.incidentDate, input?.incidentDate)
     const pageData = input || incidentDetails
@@ -122,7 +123,7 @@ export default class CoordinatorRoutes {
       input: req.body,
     })
 
-    req.flash('coordinatorInputForEditIncidentDetails', {
+    req.flash('inputsForEditIncidentDetails', {
       ...payloadFields,
       incidentDate: extractedFields.incidentDate,
       reportId,
@@ -134,7 +135,22 @@ export default class CoordinatorRoutes {
     }
 
     const inputData = {
-      useOfForcePlanned: {
+      incidentDate: {
+        oldValue: report.incidentDate,
+        newValue: toJSDate(req.body.incidentDate), // need to persist JS Date object in the same format as as in the create report journey
+        hasChanged: report.incidentDate.toISOString() !== toJSDate(req.body.incidentDate).toISOString(),
+      },
+      agencyId: {
+        oldValue: report.agencyId,
+        newValue: req.body.newAgencyId,
+        hasChanged: hasValueChanged(report.agencyId, req.body.newAgencyId || report.agencyId),
+      },
+      incidentLocation: {
+        oldValue: report.form.incidentDetails.incidentLocationId,
+        newValue: req.body.incidentLocationId,
+        hasChanged: hasValueChanged(report.form.incidentDetails.incidentLocationId, req.body.incidentLocationId),
+      },
+      plannedUseOfForce: {
         oldValue: report.form.incidentDetails.plannedUseOfForce,
         newValue: req.body.plannedUseOfForce,
         hasChanged: hasValueChanged(
@@ -147,28 +163,13 @@ export default class CoordinatorRoutes {
         newValue: req.body.authorisedBy,
         hasChanged: hasValueChanged(report.form.incidentDetails.authorisedBy, req.body.authorisedBy),
       },
-      incidentLocation: {
-        oldValue: report.form.incidentDetails.incidentLocationId,
-        newValue: req.body.incidentLocationId,
-        hasChanged: hasValueChanged(report.form.incidentDetails.incidentLocationId, req.body.incidentLocationId),
-      },
       witnesses: {
         oldValue: trimAllValuesInObjectArray(report.form.incidentDetails.witnesses) || [],
         newValue: trimAllValuesInObjectArray(req.body.witnesses?.filter(witness => witness.name !== '')),
         hasChanged: !R.equals(
-          trimAllValuesInObjectArray(this.handleUndefinedWitnesses(report.form.incidentDetails.witnesses)),
+          trimAllValuesInObjectArray(this.handleZeroWitnessesInExistingReport(report.form.incidentDetails.witnesses)),
           trimAllValuesInObjectArray(req.body.witnesses)
         ),
-      },
-      incidentdate: {
-        oldValue: report.incidentDate,
-        newValue: toJSDate(req.body.incidentDate), // need to persist JS Date object jin th same format as as in the create report journey
-        hasChanged: report.incidentDate.toISOString() !== toJSDate(req.body.incidentDate).toISOString(),
-      },
-      agencyId: {
-        oldValue: report.agencyId,
-        newValue: req.body.newAgencyId,
-        hasChanged: hasValueChanged(report.agencyId, req.body.newAgencyId || report.agencyId),
       },
     } as object
 
@@ -176,10 +177,13 @@ export default class CoordinatorRoutes {
 
     req.flash('changes', changedValues)
 
-    return res.redirect('reason-for-changing-incident-details')
+    const sectionDetails = { text: 'the incident details', section: 'incidentDetails' }
+    req.flash('sectionDetails', sectionDetails)
+
+    return res.redirect('reason-for-change')
   }
 
-  handleUndefinedWitnesses = witnesses => (!witnesses ? [] : witnesses)
+  handleZeroWitnessesInExistingReport = witnesses => (!witnesses ? [] : witnesses)
 
   viewEditPrison: RequestHandler = async (req, res) => {
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -214,15 +218,62 @@ export default class CoordinatorRoutes {
     return res.redirect(`/${reportId}/edit-report/incident-details?new-prison=${req.body.agencyId}`)
   }
 
+  // viewReasonForChange will be used for changes to all parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
     const errors = req.flash('errors')
-    const reportSection = 'incident details'
-    const changesToDisplay = req.flash('changes')[0]
+    const sectionDetails = req.flash('sectionDetails')
+    const reportSection = sectionDetails[0]
+    const changes = req.flash('changes')
 
-    const userInput = { question: '', changedFrom: '', changedTo: '', reason: '', addtionalInformation: '' }
-    return res.render('pages/coordinator/reason-for-change.njk', { errors, reportSection, userInput, changesToDisplay })
+    const changesToView = await this.reportEditService.constructChangesToView(
+      res.locals.user.username,
+      reportSection,
+      changes[0]
+    )
+    const reason = req.flash('reason')[0]
+    // flash again as needed when persisting
+    req.flash('changes', changes)
+    req.flash('sectionDetails', sectionDetails)
+
+    return res.render('pages/coordinator/reason-for-change.njk', {
+      errors,
+      reportSection,
+      reportId,
+      changes: changesToView,
+      reason,
+    })
   }
 
+  // submitReasonForChange will also be used for changes to all parts of the report
+  submitReasonForChange: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const { reason, reasonText, reasonAdditionalInfo } = req.body
+    const sectionDetails = req.flash('sectionDetails')
+    const reportSection = sectionDetails[0]
+    req.flash('sectionDetails', sectionDetails)
+
+    const validationError = this.reportEditService.validateReasonForChangeInput({ reason, reasonText, reportSection })
+    if (validationError.length > 0) {
+      req.flash('reason', reason)
+      req.flash('errors', validationError)
+      return res.redirect(`/${reportId}/edit-report/reason-for-change`)
+    }
+
+    try {
+      const changes = req.flash('changes')
+      await this.reportEditService.persistChanges({ reportSection, changes, reason, reasonText, reasonAdditionalInfo })
+    } catch (err) {
+      log.error(`Could not persist changes for reportId=${reportId}`, err)
+    }
+
+    // clear flash to prevent any values being carried over
+    req.session.flash = {}
+
+    return res.redirect(`/${reportId}/view-incident`)
+  }
+
+  // existing code below which will be removed at some point
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
     const token = await this.authService.getSystemClientToken(res.locals.user.username)

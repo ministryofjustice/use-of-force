@@ -1,0 +1,15 @@
+import page from '../page'
+
+const reasonForChangePage = () =>
+  page('Reason for changing', {
+    question: () => cy.get('[data-qa="question"]'),
+    oldValue: () => cy.get('[data-qa="old-value"]'),
+    newValue: () => cy.get('[data-qa="new-value"]'),
+    errorInReportRadio: () => cy.get('[data-qa="error-in-report"]'),
+    saveButton: () => cy.get('[data-qa="save-and-continue"]'),
+    cancelLink: () => cy.get('[data-qa="cancel-edit-reason-link"]'),
+  })
+
+module.exports = {
+  verifyOnPage: reasonForChangePage,
+}

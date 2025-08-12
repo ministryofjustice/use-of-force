@@ -26,7 +26,7 @@
   {% endblock %}
 
   {% if coordinatorEditJourney %}
-  
+    <div class="flex-container">
     {{ govukButton({
       text: "Continue",
       name: "submitType",
@@ -34,14 +34,12 @@
       attributes: {'data-qa': 'continue-coordinator-edit'}
     }) }}
 
-    {{ govukButton({
-      text: "Cancel",
-      name: "submitType",
-      href:  '/' + data.reportId + '/edit-report',
-      classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
-      attributes: {'data-qa': 'cancel-coordinator-edit'}
-    }) }}
-  
+    <a href="/{{data.reportId}}/view-incident" 
+      class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-3 govuk-!-margin-top-1 govuk-body-m" 
+      data-qa="cancel-coordinator-edit">
+      Cancel <span class="govuk-visually-hidden"> Cancel </span>
+    </a>
+  </div>
   {% else %}
 
   {% if editMode %}
