@@ -35,7 +35,7 @@ export default class ReportEditService {
       return [
         {
           href: '#reason',
-          text: `Select the reason for changing ${input.reportSection.text}`,
+          text: `Provide a reason for changing ${input.reportSection.text}`,
         },
       ]
     }
@@ -43,7 +43,7 @@ export default class ReportEditService {
       return [
         {
           href: '#reasonText',
-          text: `Please specify the reason`,
+          text: `Specify the reason for changing ${input.reportSection.text}`,
         },
       ]
     }

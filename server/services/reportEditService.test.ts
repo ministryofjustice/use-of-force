@@ -146,22 +146,22 @@ describe('constructChangesToView', () => {
 
 describe('validateReasonForChangeInput', () => {
   it('Should return error when no reason provided', () => {
-    const input = { reportSection: { text: 'incident details' } }
+    const input = { reportSection: { text: 'the incident details' } }
 
     const result = reportEditService.validateReasonForChangeInput(input)
     expect(result).toEqual([
       {
         href: '#reason',
-        text: `Select the reason for changing ${input.reportSection.text}`,
+        text: `Provide a reason for changing the incident details`,
       },
     ])
   })
 
   it("Should return correct error when 'anotherReasonForEdit' provided but no accompanying explanation text", () => {
-    const input = { reason: 'anotherReasonForEdit' }
+    const input = { reason: 'anotherReasonForEdit', reportSection: { text: 'the incident details' } }
 
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([{ href: '#reasonText', text: 'Please specify the reason' }])
+    expect(result).toEqual([{ href: '#reasonText', text: 'Specify the reason for changing the incident details' }])
   })
 
   it('should return no validation errors', () => {
