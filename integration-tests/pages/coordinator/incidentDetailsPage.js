@@ -11,6 +11,8 @@ const incidentDetailsPage = () =>
     authorisedByTextInput: () => cy.get('#authorisedBy'),
     oldValue: () => cy.get('[data-qa="old-value"]'),
     newValue: () => cy.get('[data-qa="new-value"]'),
+    errorSummary: () => cy.get('.govuk-error-summary__body'),
+    errorMessage: () => cy.get('.govuk-error-message'),
   })
 
 module.exports = {

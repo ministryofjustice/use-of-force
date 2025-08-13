@@ -95,7 +95,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
     })
 
-    it('Will display edits in the Reason for changing the incident details page and allow user to continue', () => {
+    it('The coordinator can view their edits prior to completing the process', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -119,7 +119,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       ViewIncidentPage.verifyOnPage()
     })
 
-    it.only('Moving on to edit a report without fully completing an edit process on another report will not leave residual cross-contaminating data', () => {
+    it('A coordinator can edit another report without completing current edit without the risk of data cross-contamination', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -169,6 +169,24 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.continueButton().click()
       reasonForChangePage.oldValue().should('not.contain', 'Eric Bloodaxe')
       reasonForChangePage.newValue().should('not.contain', 'Eric Bloodaxe-Smith')
+    })
+
+    it('A coordinator will be prevented from completing the proess if there are no changes', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.continueButton().click()
+      incidentDetailsPage
+        .errorSummary()
+        .should('contain', "You must change something or select 'Cancel' to return to the use of force incident page")
+      incidentDetailsPage.errorMessage().should('contain', 'Cancel to return to the use of force incident page')
     })
   })
 

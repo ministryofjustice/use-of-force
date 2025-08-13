@@ -141,3 +141,14 @@ export default class ReportEditService {
     return location
   }
 }
+function toJSDate(incidentDate: any) {
+  throw new Error('Function not implemented.')
+}
+
+function hasValueChanged(agencyId: any, arg1: any) {
+  throw new Error('Function not implemented.')
+}
+
+function trimAllValuesInObjectArray(witnesses: any) {
+  throw new Error('Function not implemented.')
+}

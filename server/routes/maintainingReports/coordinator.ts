@@ -118,6 +118,7 @@ export default class CoordinatorRoutes {
       errors,
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
     })
   }
 
@@ -183,6 +184,19 @@ export default class CoordinatorRoutes {
     } as object
 
     const changedValues = getChangedValues(inputData, (value: { hasChanged: boolean }) => value.hasChanged === true)
+
+    if (R.isEmpty(changedValues)) {
+      const errorSummary = [
+        {
+          href: '#cancelCoordinatorEdit',
+          text: "You must change something or select 'Cancel' to return to the use of force incident page",
+        },
+      ]
+      req.flash('errors', errorSummary)
+      req.flash('noChangeError', 'true')
+      return res.redirect('incident-details')
+    }
+
     req.flash('changes') // clear out first
     req.flash('changes', changedValues)
 
