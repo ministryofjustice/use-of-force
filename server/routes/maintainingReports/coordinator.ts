@@ -75,8 +75,13 @@ export default class CoordinatorRoutes {
       report.agencyId
     )
     const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
-    const userInput = req.flash('inputsForEditIncidentDetails')
+
+    // use reportId to determine the user inputs to be displayed
+    // this will prevent user-input carry-over if user starts edit on new report prior to completing edit of last report
+    const flashedReportId = req.flash('reportId')
+    const userInput = flashedReportId[0] === reportId ? req.flash('inputsForEditIncidentDetails') : []
     const input = firstItem(userInput)
+
     const incidentDate = getIncidentDate(incidentDetails.incidentDate, input?.incidentDate)
     const pageData = input || incidentDetails
 
@@ -118,6 +123,9 @@ export default class CoordinatorRoutes {
 
   submitEditIncidentDetails: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    req.flash('reportId') // clear out any old values
+    req.flash('reportId', reportId)
+
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const { payloadFields, extractedFields, errors } = processInput({
       validationSpec: full.incidentDetails,
