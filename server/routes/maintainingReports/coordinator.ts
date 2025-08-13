@@ -65,6 +65,7 @@ export default class CoordinatorRoutes {
   }
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
+    req.flash('changes') // clear out any old data
     const { reportId } = req.params
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -174,10 +175,11 @@ export default class CoordinatorRoutes {
     } as object
 
     const changedValues = getChangedValues(inputData, (value: { hasChanged: boolean }) => value.hasChanged === true)
-
+    req.flash('changes') // clear out first
     req.flash('changes', changedValues)
 
     const sectionDetails = { text: 'the incident details', section: 'incidentDetails' }
+    req.flash('sectionDetails') // clear out first
     req.flash('sectionDetails', sectionDetails)
 
     return res.redirect('reason-for-change')
@@ -232,6 +234,7 @@ export default class CoordinatorRoutes {
       changes[0]
     )
     const reason = req.flash('reason')[0]
+
     // flash again as needed when persisting
     req.flash('changes', changes)
     req.flash('sectionDetails', sectionDetails)
@@ -255,6 +258,7 @@ export default class CoordinatorRoutes {
 
     const validationError = this.reportEditService.validateReasonForChangeInput({ reason, reasonText, reportSection })
     if (validationError.length > 0) {
+      req.flash('reason') // clear any old values first
       req.flash('reason', reason)
       req.flash('errors', validationError)
       return res.redirect(`/${reportId}/edit-report/reason-for-change`)
@@ -267,7 +271,7 @@ export default class CoordinatorRoutes {
       log.error(`Could not persist changes for reportId=${reportId}`, err)
     }
 
-    // clear flash to prevent any values being carried over
+    // fully clear flash to prevent any values being carried over
     req.session.flash = {}
 
     return res.redirect(`/${reportId}/view-incident`)
