@@ -171,6 +171,32 @@ context('A use of force coordinator needs to edit incident-details', () => {
       reasonForChangePage.newValue().should('not.contain', 'Eric Bloodaxe-Smith')
     })
 
+    it('A coordinator can see their edits when using back link in the /reason-for-change page', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().type('-Smith') // edit changes the name
+      incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.question().should('contain', 'Who authorised use of force')
+      reasonForChangePage.oldValue().should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.newValue().should('contain', 'Eric Bloodaxe-Smith')
+
+      reasonForChangePage.backLink().click()
+
+      IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().should('not.have.value', 'Eric Bloodaxe')
+      incidentDetailsPage.authorisedByTextInput().should('have.value', 'Eric Bloodaxe-Smith')
+    })
+
     it('A coordinator will be prevented from completing the proess if there are no changes', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()

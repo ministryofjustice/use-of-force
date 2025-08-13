@@ -204,6 +204,9 @@ export default class CoordinatorRoutes {
     req.flash('sectionDetails') // clear out first
     req.flash('sectionDetails', sectionDetails)
 
+    req.flash('backlinkHref') // clear out first
+    req.flash('backlinkHref', 'incident-details')
+
     return res.redirect('reason-for-change')
   }
 
@@ -267,6 +270,8 @@ export default class CoordinatorRoutes {
       reportId,
       changes: changesToView,
       reason,
+      showBacklink: true,
+      backlinkHref: req.flash('backlinkHref'),
     })
   }
 
