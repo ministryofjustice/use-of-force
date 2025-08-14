@@ -95,7 +95,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
     })
 
-    it('Will display edits in the Reason for changing the incident details page and allow user to continue', () => {
+    it('The coordinator can view their edits prior to completing the process', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -117,6 +117,102 @@ context('A use of force coordinator needs to edit incident-details', () => {
       reasonForChangePage.saveButton().click()
 
       ViewIncidentPage.verifyOnPage()
+    })
+
+    it('A coordinator can edit another report without completing current edit without the risk of data cross-contamination', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().type('-Smith') // edit changes the name
+      incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.question().should('contain', 'Who authorised use of force')
+      reasonForChangePage.oldValue().should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.newValue().should('contain', 'Eric Bloodaxe-Smith')
+
+      cy.task('seedReport', {
+        sequenceNumber: 1,
+        reporterName: 'Tom Jones',
+        incidentDate: moment('2024-01-25 09:57:40.000').toDate(),
+        submittedDate: moment('2024-01-29 10:30:43.122').toDate(),
+        status: ReportStatus.SUBMITTED,
+        agencyId: 'MDI',
+        bookingId: 1001,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
+
+      NotCompletedIncidentsPage.goTo()
+      cy.get(':nth-child(2) > :nth-child(5) > [data-qa="view-incident-link"]').click()
+      viewIncidentPage.editReportButton().click()
+
+      EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().should('have.value', 'Eric Bloodaxe')
+      incidentDetailsPage.authorisedByTextInput().should('not.have.value', 'Eric Bloodaxe-Smith')
+
+      incidentDetailsPage.continueButton().click()
+      reasonForChangePage.oldValue().should('not.contain', 'Eric Bloodaxe')
+      reasonForChangePage.newValue().should('not.contain', 'Eric Bloodaxe-Smith')
+    })
+
+    it('A coordinator can see their edits when using back link in the /reason-for-change page', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().type('-Smith') // edit changes the name
+      incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.question().should('contain', 'Who authorised use of force')
+      reasonForChangePage.oldValue().should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.newValue().should('contain', 'Eric Bloodaxe-Smith')
+
+      reasonForChangePage.backLink().click()
+
+      IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.authorisedByTextInput().should('not.have.value', 'Eric Bloodaxe')
+      incidentDetailsPage.authorisedByTextInput().should('have.value', 'Eric Bloodaxe-Smith')
+    })
+
+    it('A coordinator will be prevented from completing the proess if there are no changes', () => {
+      const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+      notCompletedIncidentsPage.viewIncidentLink().click()
+
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.continueButton().click()
+      incidentDetailsPage
+        .errorSummary()
+        .should('contain', "You must change something or select 'Cancel' to return to the use of force incident page")
+      incidentDetailsPage.errorMessage().should('contain', 'Cancel to return to the use of force incident page')
     })
   })
 

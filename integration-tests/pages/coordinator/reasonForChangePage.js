@@ -8,6 +8,7 @@ const reasonForChangePage = () =>
     errorInReportRadio: () => cy.get('[data-qa="error-in-report"]'),
     saveButton: () => cy.get('[data-qa="save-and-continue"]'),
     cancelLink: () => cy.get('[data-qa="cancel-edit-reason-link"]'),
+    backLink: () => cy.get('[data-qa="back-link"]'),
   })
 
 module.exports = {

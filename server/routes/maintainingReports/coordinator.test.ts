@@ -214,7 +214,7 @@ describe('coordinator', () => {
             },
             incidentDate: new Date('2025-05-12T10:00:00'),
           })
-          expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails')
+          expect(flash).toHaveBeenCalledWith('reportId')
           expect(flash).toHaveBeenCalledWith('errors')
         })
     })
@@ -310,6 +310,47 @@ describe('coordinator', () => {
         witnesses: [],
         submitType: 'continue-coordinator-edit',
       }
+      const comparisonResult = {
+        incidentDate: {
+          newValue: new Date('2025-05-22T02:10:00'),
+          oldValue: new Date('2025-05-12T10:00:00'),
+          hasChanged: true,
+        },
+        agencyId: {
+          oldValue: 'WRI',
+          newValue: '',
+          hasChanged: false,
+        },
+        incidentLocation: {
+          oldValue: 'aaaa-2222',
+          newValue: 'aaaa-2222',
+          hasChanged: false,
+        },
+        plannedUseOfForce: {
+          oldValue: false,
+          newValue: 'false',
+          hasChanged: false,
+        },
+        authorisedBy: {
+          oldValue: undefined,
+          newValue: '',
+          hasChanged: false,
+        },
+        witnesses: {
+          oldValue: [
+            {
+              name: 'jimmy',
+            },
+            {
+              name: 'another person',
+            },
+          ],
+          newValue: [],
+          hasChanged: false,
+        },
+      }
+
+      reportEditService.compareEditsWithReport.mockReturnValue(comparisonResult)
 
       await request(app)
         .post('/1/edit-report/incident-details')
@@ -317,6 +358,8 @@ describe('coordinator', () => {
         .expect(302)
         .expect('Location', 'reason-for-change')
         .expect(() => {
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('reportId', '1')
           expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails', {
             incidentDate: {
               date: '22/05/2025',
@@ -330,30 +373,13 @@ describe('coordinator', () => {
             plannedUseOfForce: false,
             reportId: '1',
           })
-
-          expect(flash).toHaveBeenCalledWith(
-            'changes',
-
-            {
-              incidentDate: {
-                hasChanged: true,
-                newValue: new Date('2025-05-22T02:10:00'),
-                oldValue: new Date('2025-05-12T10:00:00'),
-              },
-              witnesses: {
-                hasChanged: true,
-                newValue: [],
-                oldValue: [
-                  {
-                    name: 'jimmy',
-                  },
-                  {
-                    name: 'another person',
-                  },
-                ],
-              },
-            }
-          )
+          expect(flash).toHaveBeenCalledWith('sectionDetails')
+          expect(flash).toHaveBeenCalledWith('sectionDetails', {
+            text: 'the incident details',
+            section: 'incidentDetails',
+          })
+          expect(flash).toHaveBeenCalledWith('backlinkHref')
+          expect(flash).toHaveBeenCalledWith('backlinkHref', 'incident-details')
         })
     })
   })
