@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import type LocationService from './locationService'
 import AuthService from './authService'
+import { compareIncidentDetailsEditWithReport } from './editReports/incidentDetails'
 
 export default class ReportEditService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -20,6 +21,14 @@ export default class ReportEditService {
     }
 
     return response
+  }
+
+  compareEditsWithReport({ report, valuesToCompareWithReport: valuesFromRequestBody, reportSection }) {
+    if (reportSection === 'incidentDetails') {
+      return compareIncidentDetailsEditWithReport(report, valuesFromRequestBody)
+    }
+    // other report sections to be similarly compared here
+    return {}
   }
 
   async persistChanges(data) {
@@ -140,15 +149,4 @@ export default class ReportEditService {
     const location = await this.locationService.getLocation(token, uuid)
     return location
   }
-}
-function toJSDate(incidentDate: any) {
-  throw new Error('Function not implemented.')
-}
-
-function hasValueChanged(agencyId: any, arg1: any) {
-  throw new Error('Function not implemented.')
-}
-
-function trimAllValuesInObjectArray(witnesses: any) {
-  throw new Error('Function not implemented.')
 }
