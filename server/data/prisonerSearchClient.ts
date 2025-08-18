@@ -20,6 +20,7 @@ export default class PrisonerSearchClient extends BaseApiClient {
     }) as Promise<PrisonerSearchApiPrisoner>
   }
 
+  // eslint-disable-next-line
   async search(form: SearchForm, token: string): Promise<any> {
     const { prisonNumber, firstName, lastName, agencyId } = form
     const prisonId = agencyId

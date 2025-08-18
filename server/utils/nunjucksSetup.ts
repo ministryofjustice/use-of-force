@@ -136,25 +136,69 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
 
   njkEnv.addFilter('toPagination', (pageData: PageMetaData, query: Record<string, unknown> = {}) => {
     const urlForPage = n => `?${querystring.stringify({ ...query, page: n })}`
-    const items = [...Array(pageData.totalPages).keys()].map(n => ({
-      text: n + 1,
-      href: urlForPage(n + 1),
-      selected: n + 1 === pageData.page,
-    }))
+
+    const { page, totalPages, previousPage, nextPage, totalCount, min, max } = pageData
+    const items: { text: string; href?: string; selected?: boolean }[] = []
+
+    const addPage = (n: number) => {
+      items.push({
+        text: `${n}`,
+        href: urlForPage(n),
+        selected: n === page,
+      })
+    }
+
+    const addEllipsis = () => {
+      items.push({
+        text: '…',
+      })
+    }
+
+    if (totalPages <= 3) {
+      for (let i = 1; i <= totalPages; i += 1) {
+        addPage(i)
+      }
+    } else {
+      const isNearStart = page <= 3
+      const isNearEnd = page >= totalPages - 2
+
+      if (isNearStart) {
+        // e.g. [1] 2 3 … 10
+        for (let i = 1; i <= 3; i += 1) addPage(i)
+        addEllipsis()
+        addPage(totalPages)
+      } else if (isNearEnd) {
+        // e.g. 1 … 8 9 [10]
+        addPage(1)
+        addEllipsis()
+        for (let i = totalPages - 2; i <= totalPages; i += 1) addPage(i)
+      } else {
+        // e.g. 1 … 4 [5] 6 … 10
+        addPage(1)
+        addEllipsis()
+        addPage(page - 1)
+        addPage(page)
+        addPage(page + 1)
+        addEllipsis()
+        addPage(totalPages)
+      }
+    }
+
     return {
       results: {
-        from: pageData.min,
-        to: pageData.max,
-        count: pageData.totalCount,
+        from: min,
+        to: max,
+        count: totalCount,
       },
-      previous: pageData.previousPage && {
+      previous: previousPage && {
         text: 'Previous',
-        href: urlForPage(pageData.previousPage),
+        href: urlForPage(previousPage),
       },
-      next: pageData.nextPage && {
-        text: 'Next',
-        href: urlForPage(pageData.nextPage),
-      },
+      next: nextPage &&
+        !(totalPages <= 3 && page === totalPages) && {
+          text: 'Next',
+          href: urlForPage(nextPage),
+        },
       items,
     }
   })
@@ -164,6 +208,13 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
       return '\u2013'
     }
     return value ? 'Yes' : 'No'
+  })
+
+  njkEnv.addFilter('toYesNoIfTrueFalse', value => {
+    if (value == null) return '\u2013'
+    if (value === 'true' || value === true) return 'Yes'
+    if (value === 'false' || value === false) return 'No'
+    return value
   })
 
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))

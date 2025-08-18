@@ -14,8 +14,41 @@ const prison: Prison = { agencyId: 'MDI', description: 'Moorland HMP', active: t
 const locationDescription = ''
 const involvedStaff = []
 const incidentDate = new Date()
+const partialData = {
+  incidentDate,
+  location: '',
+  prison: {
+    active: true,
+    agencyId: 'MDI',
+    agencyType: 'INST',
+    description: 'Moorland HMP',
+  },
+  staffInvolved: [],
+  witnesses: 'None',
+}
 
 describe('reportSummary', () => {
+  describe('createIncidentDetails', () => {
+    it('should return the minimum data correctly', () => {
+      form.incidentDetails = {}
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.incidentDetails).toEqual(partialData)
+    })
+
+    it('should return incidentLocationId if included in the form.incidentDetails object', () => {
+      form.incidentDetails = { incidentLocationId: 'abcd-1234' }
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.incidentDetails).toEqual({
+        ...partialData,
+        incidentLocationId: 'abcd-1234',
+      })
+    })
+    it('should return the correct incidentDetails', () => {
+      form.incidentDetails = { incidentLocationId: 'abcd-1234' }
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.painInducingTechniques).toEqual(undefined)
+    })
+  })
   describe('getPainInducingTechniques', () => {
     it('should return undefined', () => {
       form.useOfForceDetails.painInducingTechniques = undefined

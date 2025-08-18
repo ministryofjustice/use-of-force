@@ -5,7 +5,11 @@ import config from '../config'
 import { LocationClient, PrisonClient } from '../data'
 
 export default class LocationService {
-  constructor(private readonly prisonClient: PrisonClient, private readonly locationClient: LocationClient) {}
+  // eslint-disable-next-line
+  constructor(
+    private readonly prisonClient: PrisonClient,
+    private readonly locationClient: LocationClient
+  ) {}
 
   mapLocationApiResponse(location) {
     return {

@@ -6,7 +6,10 @@ import { User, UserWithPrison, FoundUserResult } from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
-  constructor(private readonly manageUsersClient: ManageUsersApiClient, private readonly prisonClient: PrisonClient) {}
+  constructor(
+    private readonly manageUsersClient: ManageUsersApiClient,
+    private readonly prisonClient: PrisonClient
+  ) {}
 
   public async getSelf(token: string): Promise<User> {
     try {

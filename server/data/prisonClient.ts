@@ -28,12 +28,6 @@ export default class PrisonClient extends BaseApiClient {
     })
   }
 
-  async getPrisoners(offenderNos: string[], token: string): Promise<PrisonerDetail[]> {
-    const query = { offenderNo: offenderNos }
-    const headers = { 'Page-Limit': 5000 }
-    return PrisonClient.restClient(token).get({ path: '/api/prisoners', query, headers })
-  }
-
   async getUser(token: string): Promise<UserDetail> {
     return PrisonClient.restClient(token).get({ path: '/api/users/me' })
   }
