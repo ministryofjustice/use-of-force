@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import type LocationService from './locationService'
 import AuthService from './authService'
+import { compareIncidentDetailsEditWithReport } from './editReports/incidentDetails'
 
 export default class ReportEditService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -22,6 +23,14 @@ export default class ReportEditService {
     return response
   }
 
+  compareEditsWithReport({ report, valuesToCompareWithReport: valuesFromRequestBody, reportSection }) {
+    if (reportSection === 'incidentDetails') {
+      return compareIncidentDetailsEditWithReport(report, valuesFromRequestBody)
+    }
+    // other report sections to be similarly compared here
+    return {}
+  }
+
   async persistChanges(data) {
     if (data.reportSection.section === 'incidentDetails') {
       // TODO
@@ -35,7 +44,7 @@ export default class ReportEditService {
       return [
         {
           href: '#reason',
-          text: `Select the reason for changing ${input.reportSection.text}`,
+          text: `Provide a reason for changing ${input.reportSection.text}`,
         },
       ]
     }
@@ -43,7 +52,7 @@ export default class ReportEditService {
       return [
         {
           href: '#reasonText',
-          text: `Please specify the reason`,
+          text: `Specify the reason for changing ${input.reportSection.text}`,
         },
       ]
     }

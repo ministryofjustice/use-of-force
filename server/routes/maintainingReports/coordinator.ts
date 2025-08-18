@@ -75,8 +75,13 @@ export default class CoordinatorRoutes {
       report.agencyId
     )
     const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
-    const userInput = req.flash('inputsForEditIncidentDetails')
+
+    // use reportId to determine the user inputs to be displayed
+    // this will prevent user-input carry-over if user starts edit on new report prior to completing edit of last report
+    const flashedReportId = req.flash('reportId')
+    const userInput = flashedReportId[0] === reportId ? req.flash('inputsForEditIncidentDetails') : []
     const input = firstItem(userInput)
+
     const incidentDate = getIncidentDate(incidentDetails.incidentDate, input?.incidentDate)
     const pageData = input || incidentDetails
 
@@ -113,11 +118,15 @@ export default class CoordinatorRoutes {
       errors,
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
     })
   }
 
   submitEditIncidentDetails: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    req.flash('reportId') // clear out any old values
+    req.flash('reportId', reportId)
+
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const { payloadFields, extractedFields, errors } = processInput({
       validationSpec: full.incidentDetails,
@@ -135,57 +144,50 @@ export default class CoordinatorRoutes {
       return res.redirect(req.originalUrl)
     }
 
-    const inputData = {
-      incidentDate: {
-        oldValue: report.incidentDate,
-        newValue: toJSDate(req.body.incidentDate), // need to persist JS Date object in the same format as as in the create report journey
-        hasChanged: report.incidentDate.toISOString() !== toJSDate(req.body.incidentDate).toISOString(),
-      },
-      agencyId: {
-        oldValue: report.agencyId,
-        newValue: req.body.newAgencyId,
-        hasChanged: hasValueChanged(report.agencyId, req.body.newAgencyId || report.agencyId),
-      },
-      incidentLocation: {
-        oldValue: report.form.incidentDetails.incidentLocationId,
-        newValue: req.body.incidentLocationId,
-        hasChanged: hasValueChanged(report.form.incidentDetails.incidentLocationId, req.body.incidentLocationId),
-      },
-      plannedUseOfForce: {
-        oldValue: report.form.incidentDetails.plannedUseOfForce,
-        newValue: req.body.plannedUseOfForce,
-        hasChanged: hasValueChanged(
-          report.form.incidentDetails.plannedUseOfForce.toString(),
-          req.body.plannedUseOfForce
-        ),
-      },
-      authorisedBy: {
-        oldValue: report.form.incidentDetails.authorisedBy,
-        newValue: req.body.authorisedBy,
-        hasChanged: hasValueChanged(report.form.incidentDetails.authorisedBy, req.body.authorisedBy),
-      },
-      witnesses: {
-        oldValue: trimAllValuesInObjectArray(report.form.incidentDetails.witnesses) || [],
-        newValue: trimAllValuesInObjectArray(req.body.witnesses?.filter(witness => witness.name !== '')),
-        hasChanged: !R.equals(
-          trimAllValuesInObjectArray(this.handleZeroWitnessesInExistingReport(report.form.incidentDetails.witnesses)),
-          trimAllValuesInObjectArray(req.body.witnesses)
-        ),
-      },
-    } as object
+    const valuesToCompareWithReport = {
+      incidentDate: req.body.incidentDate,
+      newAgencyId: req.body.newAgencyId,
+      incidentLocationId: req.body.incidentLocationId,
+      plannedUseOfForce: req.body.plannedUseOfForce,
+      authorisedBy: req.body.authorisedBy,
+      witnesses: req.body.witnesses,
+    }
 
-    const changedValues = getChangedValues(inputData, (value: { hasChanged: boolean }) => value.hasChanged === true)
+    const comparison = this.reportEditService.compareEditsWithReport({
+      report,
+      valuesToCompareWithReport,
+      reportSection: 'incidentDetails',
+    })
+
+    const changedValues = getChangedValues(comparison, (value: { hasChanged: boolean }) => value.hasChanged === true)
+
+    if (R.isEmpty(changedValues)) {
+      const errorSummary = [
+        {
+          href: '#cancelCoordinatorEdit',
+          text: "You must change something or select 'Cancel' to return to the use of force incident page",
+        },
+      ]
+      req.flash('errors', errorSummary)
+      req.flash('noChangeError', 'true')
+      return res.redirect('incident-details')
+    }
+
     req.flash('changes') // clear out first
     req.flash('changes', changedValues)
 
-    const sectionDetails = { text: 'the incident details', section: 'incidentDetails' }
+    const sectionDetails = {
+      text: 'the incident details',
+      section: 'incidentDetails',
+    }
     req.flash('sectionDetails') // clear out first
     req.flash('sectionDetails', sectionDetails)
 
+    req.flash('backlinkHref') // clear out first
+    req.flash('backlinkHref', 'incident-details')
+
     return res.redirect('reason-for-change')
   }
-
-  handleZeroWitnessesInExistingReport = witnesses => (!witnesses ? [] : witnesses)
 
   viewEditPrison: RequestHandler = async (req, res) => {
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -245,6 +247,8 @@ export default class CoordinatorRoutes {
       reportId,
       changes: changesToView,
       reason,
+      showBacklink: true,
+      backlinkHref: req.flash('backlinkHref'),
     })
   }
 
