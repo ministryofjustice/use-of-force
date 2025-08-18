@@ -6,7 +6,11 @@ import { PrisonClient } from '../data'
 import AuthService from './authService'
 
 export default class OffenderService {
-  constructor(private readonly prisonClient: PrisonClient, private readonly authService: AuthService) {}
+  // eslint-disable-next-line
+  constructor(
+    private readonly prisonClient: PrisonClient,
+    private readonly authService: AuthService
+  ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getOffenderDetails(bookingId: number, username: string): Promise<any> {

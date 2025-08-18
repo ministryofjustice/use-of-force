@@ -29,8 +29,12 @@ interface StreamRequest {
 
 export default class RestClient {
   agent: HttpAgent
-
-  constructor(private readonly name: string, private readonly config: ApiConfig, private readonly token: string) {
+  // eslint-disable-next-line
+  constructor(
+    private readonly name: string,
+    private readonly config: ApiConfig,
+    private readonly token: string
+  ) {
     this.agent = config.url.startsWith('https') ? new HttpsAgent(config.agent) : new HttpAgent(config.agent)
   }
 

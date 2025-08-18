@@ -8,7 +8,11 @@ const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
 export default class DraftReportClient {
-  constructor(private readonly query: QueryPerformer, private readonly reportLogClient: ReportLogClient) {}
+  // eslint-disable-next-line
+  constructor(
+    private readonly query: QueryPerformer,
+    private readonly reportLogClient: ReportLogClient
+  ) {}
 
   async create(
     { userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse },

@@ -14,6 +14,7 @@ import ReviewService from './reviewService'
 import StatementService from './statementService'
 import { InvolvedStaffService } from './involvedStaffService'
 import UserService from './userService'
+import ReportEditService from './reportEditService'
 
 import EventPublisher from './eventPublisher'
 
@@ -115,6 +116,8 @@ export const services = () => {
   )
   const feComponentsService = new FeComponentsService(feComponentsClient)
 
+  const reportEditService = new ReportEditService(locationService, authService)
+
   return {
     involvedStaffService,
     offenderService,
@@ -130,6 +133,7 @@ export const services = () => {
     draftReportService,
     feComponentsService,
     authService,
+    reportEditService,
   }
 }
 

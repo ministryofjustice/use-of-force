@@ -48,4 +48,29 @@ describe('nunjucksSetup', () => {
       check(SectionStatus.COMPLETE, SectionStatus.INCOMPLETE).toEqual(SectionStatus.INCOMPLETE)
     })
   })
+
+  describe('toYesNoIfTrueFalse', () => {
+    it('returns dash (-) for no value', () => {
+      const result = njk.getFilter('toYesNoIfTrueFalse')()
+      expect(result).toEqual('\u2013')
+    })
+    it('returns yes for string true', () => {
+      const result = njk.getFilter('toYesNoIfTrueFalse')('true')
+      expect(result).toEqual('Yes')
+    })
+
+    it('returns yes for boolean true', () => {
+      const result = njk.getFilter('toYesNoIfTrueFalse')(true)
+      expect(result).toEqual('Yes')
+    })
+    it('returnss no for string false', () => {
+      const result = njk.getFilter('toYesNoIfTrueFalse')('false')
+      expect(result).toEqual('No')
+    })
+
+    it('returns no for boolean false', () => {
+      const result = njk.getFilter('toYesNoIfTrueFalse')(false)
+      expect(result).toEqual('No')
+    })
+  })
 })
