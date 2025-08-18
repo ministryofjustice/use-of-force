@@ -140,7 +140,7 @@
     "pg": "^8.16.0",
     "pg-format": "^1.0.4",
     "querystring": "^0.2.1",
-    "ramda": "^0.29.0",
+    "ramda": "^0.31.3",
     "redis": "^4.6.13",
     "sass-middleware": "^0.0.3",
     "superagent": "^10.2.1",
