@@ -86,6 +86,7 @@ describe('Build details', () => {
       },
       incidentDetails: {
         incidentDate: new Date('2015-03-26T12:00:00.000Z'),
+        incidentLocationId: 'location-uuid',
         location: 'Wing A',
         offenderName: 'Jim Burgler',
         offenderNumber: 'A1234AA',

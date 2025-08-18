@@ -86,3 +86,24 @@ export const initialiseName = (fullName?: string): string | null => {
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
 }
+
+export const hasValueChanged = (oldValue, newValue) => {
+  if (!oldValue && newValue === '') return false
+
+  const newVal = newValue?.toUpperCase().trim()
+  const oldVal = oldValue?.toUpperCase().trim()
+  return newVal !== oldVal
+}
+
+export const trimAllValuesInObjectArray = arr => {
+  return arr?.filter(obj => obj.name !== '').map(obj => ({ name: obj.name?.trim() }))
+}
+
+export const getChangedValues = (obj, predicate) => {
+  return Object.fromEntries(Object.entries(obj).filter(([key, value]) => predicate(value, key)))
+}
+
+export const toJSDate = ({ date, time: { hour, minute } }) => {
+  const [day, month, year] = date.split('/').map(Number)
+  return new Date(year, month - 1, day, Number(hour), Number(minute))
+}
