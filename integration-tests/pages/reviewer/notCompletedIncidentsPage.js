@@ -32,6 +32,7 @@ const incidentsPage = () =>
           .invoke('attr', 'href')
           .then(link => link.match(/\/(.*?)\/view-statements/)[1]),
     }),
+    viewIncidentLink: () => cy.get('[data-qa=view-incident-link]'),
   })
 
 module.exports = {

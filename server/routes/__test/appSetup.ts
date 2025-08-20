@@ -22,6 +22,7 @@ import DraftReportService from '../../services/drafts/draftReportService'
 import FeComponentsService from '../../services/feComponentsService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import ReportEditService from '../../services/reportEditService'
 import { Services } from '../../services'
 import { PrisonClient } from '../../data'
 
@@ -127,6 +128,7 @@ export const appWithAllRoutes = (
     locationService: {} as LocationService,
     nomisMappingService: {} as NomisMappingService,
     reportDetailBuilder: {} as ReportDetailBuilder,
+    reportEditService: {} as ReportEditService,
     draftReportService: {} as DraftReportService,
     userService: {} as UserService,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

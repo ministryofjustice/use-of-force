@@ -3,7 +3,11 @@ import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 
 export default class IncidentsRoutes {
-  constructor(private readonly reportService: ReportService, private readonly reportDetailBuilder: ReportDataBuilder) {}
+  // eslint-disable-next-line
+  constructor(
+    private readonly reportService: ReportService,
+    private readonly reportDetailBuilder: ReportDataBuilder
+  ) {}
 
   redirectToHomePage: RequestHandler = async (req, res): Promise<void> => {
     const location = res.locals.user.isReviewer ? '/not-completed-incidents' : '/your-statements'

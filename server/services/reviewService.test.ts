@@ -160,8 +160,21 @@ describe('reviewService', () => {
         'offender-2': 'Prisoner prisoner-2',
       })
 
-      const result = await service.getIncompleteReports('userName', 'agency-1')
-      expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
+      const expected = new PageResponse(
+        {
+          min: 1,
+          max: 2,
+          page: 1,
+          totalCount: 2,
+          totalPages: 1,
+          nextPage: null,
+          previousPage: null,
+        },
+        [incidentSummary(1), incidentSummary(2)]
+      )
+
+      const result = await service.getIncompleteReports('userName', 'agency-1', 1)
+      expect(result).toEqual(expected)
       expect(incidentClient.getIncompleteReportsForReviewer).toHaveBeenCalledWith('agency-1')
       expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
         'offender-1',

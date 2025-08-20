@@ -15,6 +15,7 @@
 
 
 {% block formItems %}
+<input type="hidden" name="newAgencyId" value="{{ data.newAgencyId }}" />
 <div class="govuk-body">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -66,15 +67,19 @@
   <div class="govuk-grid-row govuk-!-padding-bottom-3 govuk-!-padding-top-3">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-label--s">Prison:&nbsp;</span>
-      <span data-qa="prison" id='prison'>
+      <span id='prison' data-qa="prison">
         {{ data.prison.description }} &nbsp;
-        {{
+        {% if coordinatorEditJourney %}
+            <a href="/{{data.reportId}}/edit-report/prison" class="govuk-link govuk-link--no-visited-state"  data-qa="change-prison">Change <span class="govuk-visually-hidden"> prison </span></a>
+         {% else %}
+          {{
           submitLink({
             label: 'Change<span class="govuk-visually-hidden"> prison </span>',
             qa: 'change-prison-link',
             value: 'save-and-change-prison'
           })
         }}
+        {% endif %}
       </span>
     </div>
   </div>
@@ -89,7 +94,8 @@
           label: {
             text: 'Where in '+ data.prison.description + ' did the incident happen?',
             isPageHeading: false,
-            classes: 'govuk-label--xs govuk-!-margin-bottom-2'
+            classes: 'govuk-label--xs govuk-!-margin-bottom-2',
+            attributes: {'data-qa': "prison-label"}
           },
           items: data.locations | toSelect('incidentLocationId', 'userDescription', data.incidentLocationId )
         })
@@ -175,7 +181,7 @@
             govukButton({
               text: 'Add another witness',
               classes: 'govuk-button--secondary  add-another__add-button',
-              attributes: { 'data-qa-add-another-witness': true }
+              attributes: { 'data-qa-add-another-witness': true, 'data-qa': 'add-another-witness-button' }
             })
           }}
         </div>

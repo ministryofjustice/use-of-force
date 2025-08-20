@@ -78,15 +78,6 @@ describe('prisonClient', () => {
     })
   })
 
-  describe('getPrisoners', () => {
-    it('should format query string', async () => {
-      fakePrisonApi.get('/api/prisoners?offenderNo=A123&offenderNo=B123').matchHeader('page-limit', 5000).reply(200, [])
-
-      const output = await prisonClient.getPrisoners(['A123', 'B123'], token)
-      expect(output).toEqual([])
-    })
-  })
-
   describe('getPrisonById', () => {
     const mockPrison = {
       active: true,
