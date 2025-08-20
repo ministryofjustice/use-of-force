@@ -143,7 +143,7 @@
     "ramda": "^0.31.3",
     "redis": "^4.6.13",
     "sass-middleware": "^0.0.3",
-    "superagent": "^10.2.1",
+    "superagent": "^10.2.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
