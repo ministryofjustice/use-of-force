@@ -95,12 +95,11 @@ export const hasValueChanged = (oldValue, newValue) => {
   return newVal !== oldVal
 }
 
-export const trimAllValuesInObjectArray = arr => {
-  return arr?.filter(obj => obj.name !== '').map(obj => ({ name: obj.name?.trim() }))
-}
-
-export const excludeObjectsWithEmptyValues = arr => {
-  return arr?.map(obj => ({ name: obj.name?.trim() })).filter(obj => obj.name !== '')
+export const excludeEmptyValuesThenTrim = arr => {
+  const actualObjects = arr?.filter(obj => obj.name?.trim() !== '') || undefined
+  return actualObjects?.length > 0
+    ? actualObjects.map(obj => ({ name: obj.name?.trim() })).filter(obj => obj.name !== undefined)
+    : undefined
 }
 
 export const getChangedValues = (obj, predicate) => {

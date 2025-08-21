@@ -6,8 +6,7 @@ const {
   isNilOrEmpty,
   removeKeysWithEmptyValues,
   parseDate,
-  trimAllValuesInObjectArray,
-  excludeObjectsWithEmptyValues,
+  excludeEmptyValuesThenTrim,
   hasValueChanged,
   getChangedValues,
   toJSDate,
@@ -149,65 +148,35 @@ describe('hasValueChanged', () => {
   })
 })
 
-describe('trimAllValuesInObjectArray', () => {
-  test('handles undefined inputs', () => {
-    const actualResult = trimAllValuesInObjectArray()
-    const expectedResult = undefined
-    expect(actualResult).toStrictEqual(expectedResult)
-  })
-  test('returns correct response when one value is padded', () => {
-    const actualResult = trimAllValuesInObjectArray([{ name: 'x' }, { name: 'y ' }])
-    const expectedResult = [{ name: 'x' }, { name: 'y' }]
-    expect(actualResult).toStrictEqual(expectedResult)
-  })
-  test('handles inputs that dont have padding', () => {
-    const actualResult = trimAllValuesInObjectArray([{ name: 'x' }, { name: 'y' }])
-    const expectedResult = [{ name: 'x' }, { name: 'y' }]
-    expect(actualResult).toStrictEqual(expectedResult)
+describe('excludeEmptyValuesThenTrim', () => {
+  it('should handle undefined', () => {
+    const input = undefined
+    expect(excludeEmptyValuesThenTrim(input)).toEqual(undefined)
   })
 
-  test('handles inputs with empty strings', () => {
-    const actualResult = trimAllValuesInObjectArray([{ name: '' }, { name: 'y' }])
-    const expectedResult = [{ name: 'y' }]
-    expect(actualResult).toStrictEqual(expectedResult)
+  it('should handle empty array', () => {
+    const input = []
+    expect(excludeEmptyValuesThenTrim(input)).toEqual(undefined)
   })
 
-  test('handles inputs with gaps', () => {
-    const actualResult = trimAllValuesInObjectArray([{ name: 'hello there' }, { name: 'y' }])
-    const expectedResult = [{ name: 'hello there' }, { name: 'y' }]
-    expect(actualResult).toStrictEqual(expectedResult)
+  it('should handle array containing single object with emnpty string value', () => {
+    const input = [{ name: '' }]
+    expect(excludeEmptyValuesThenTrim(input)).toEqual(undefined)
   })
 
-  test('handles single object array', () => {
-    const actualResult = trimAllValuesInObjectArray([{ name: 'x ' }])
-    const expectedResult = [{ name: 'x' }]
-    expect(actualResult).toStrictEqual(expectedResult)
-  })
-})
-
-describe('excludeObjectsWithEmptyValues', () => {
-  test('handles undefined inputs', () => {
-    const actualResult = excludeObjectsWithEmptyValues()
-    const expectedResult = undefined
-    expect(actualResult).toStrictEqual(expectedResult)
+  it('should handle array containing single object with padded string value', () => {
+    const input = [{ name: ' ' }]
+    expect(excludeEmptyValuesThenTrim(input)).toEqual(undefined)
   })
 
-  test('handles empty array', () => {
-    const actualResult = excludeObjectsWithEmptyValues([])
-    const expectedResult = []
-    expect(actualResult).toStrictEqual(expectedResult)
+  it('should handle array containing multiple object with padded and empty string value', () => {
+    const input = [{ name: ' ' }, { name: '' }]
+    expect(excludeEmptyValuesThenTrim(input)).toEqual(undefined)
   })
 
-  test('handles empty single length array', () => {
-    const actualResult = excludeObjectsWithEmptyValues([{ name: ' ' }])
-    const expectedResult = []
-    expect(actualResult).toStrictEqual(expectedResult)
-  })
-
-  test('returns correct response when value is empty padded or zero length string', () => {
-    const actualResult = excludeObjectsWithEmptyValues([{ name: '' }, { name: ' ' }])
-    const expectedResult = []
-    expect(actualResult).toStrictEqual(expectedResult)
+  it('should handle array containing multiple allowed values and multiple values to be excluded', () => {
+    const input = [{ name: '' }, { name: 'Harry ' }, { name: 'Tom' }, { name: '   ' }]
+    expect(excludeEmptyValuesThenTrim(input)).toEqual([{ name: 'Harry' }, { name: 'Tom' }])
   })
 })
 

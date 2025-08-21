@@ -1,11 +1,11 @@
 import R from 'ramda'
 
-import { trimAllValuesInObjectArray, hasValueChanged } from '../../utils/utils'
+import { hasValueChanged, excludeEmptyValuesThenTrim } from '../../utils/utils'
 
 export const compareIncidentDetailsEditWithReport = (report, valuesFromRequestBody) => {
-  const witnessesOldValue = trimAllValuesInObjectArray(report.form.incidentDetails.witnesses) || undefined
+  const witnessesOldValue = excludeEmptyValuesThenTrim(report.form.incidentDetails.witnesses) || undefined
   const witnessesNewValue =
-    trimAllValuesInObjectArray(valuesFromRequestBody.witnesses?.filter(witness => witness.name !== '')) || undefined
+    excludeEmptyValuesThenTrim(valuesFromRequestBody.witnesses?.filter(witness => witness.name !== '')) || undefined
 
   return {
     incidentDate: {

@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import moment from 'moment'
 
-import { excludeObjectsWithEmptyValues, trimAllValuesInObjectArray } from '../utils/utils'
+import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
 import type LocationService from './locationService'
 import AuthService from './authService'
@@ -45,10 +45,7 @@ export default class ReportEditService {
     // for incidentDetails
     if (data.reportSection.section === incidentDetailsConfig.section) {
       updatedSection = {
-        witnesses:
-          excludeObjectsWithEmptyValues(pageInput.witnesses).length > 0
-            ? trimAllValuesInObjectArray(pageInput.witnesses)
-            : undefined,
+        witnesses: excludeEmptyValuesThenTrim(pageInput.witnesses),
         plannedUseOfForce: JSON.parse(pageInput.plannedUseOfForce),
         authorisedBy: JSON.parse(pageInput.plannedUseOfForce) ? pageInput.authorisedBy : undefined,
         incidentLocationId: pageInput.incidentLocationId,
