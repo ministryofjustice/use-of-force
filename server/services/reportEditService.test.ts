@@ -1,11 +1,13 @@
 import ReportEditService from './reportEditService'
 import LocationService from './locationService'
 import AuthService from './authService'
+import ReportService from './reportService'
 
 jest.mock('./authService')
 jest.mock('./locationService')
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
+const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
 
@@ -13,7 +15,7 @@ let reportEditService
 
 beforeEach(() => {
   authService.getSystemClientToken.mockResolvedValue(`system-token-1`)
-  reportEditService = new ReportEditService(locationService, authService)
+  reportEditService = new ReportEditService(locationService, authService, reportService)
 })
 
 describe('constructChangesToView', () => {

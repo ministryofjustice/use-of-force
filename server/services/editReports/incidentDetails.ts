@@ -1,13 +1,17 @@
 import R from 'ramda'
 
-import { trimAllValuesInObjectArray, hasValueChanged, toJSDate } from '../../utils/utils'
+import { hasValueChanged, excludeEmptyValuesThenTrim } from '../../utils/utils'
 
 export const compareIncidentDetailsEditWithReport = (report, valuesFromRequestBody) => {
+  const witnessesOldValue = excludeEmptyValuesThenTrim(report.form.incidentDetails.witnesses) || undefined
+  const witnessesNewValue =
+    excludeEmptyValuesThenTrim(valuesFromRequestBody.witnesses?.filter(witness => witness.name !== '')) || undefined
+
   return {
     incidentDate: {
       oldValue: report.incidentDate,
-      newValue: toJSDate(valuesFromRequestBody.incidentDate), // need to persist JS Date object in the same format as as in the create report journey
-      hasChanged: report.incidentDate.toISOString() !== toJSDate(valuesFromRequestBody.incidentDate).toISOString(),
+      newValue: valuesFromRequestBody.incidentDate,
+      hasChanged: !R.equals(report.incidentDate, valuesFromRequestBody.incidentDate),
     },
     agencyId: {
       oldValue: report.agencyId,
@@ -25,10 +29,7 @@ export const compareIncidentDetailsEditWithReport = (report, valuesFromRequestBo
     plannedUseOfForce: {
       oldValue: report.form.incidentDetails.plannedUseOfForce,
       newValue: valuesFromRequestBody.plannedUseOfForce,
-      hasChanged: hasValueChanged(
-        report.form.incidentDetails.plannedUseOfForce.toString(),
-        valuesFromRequestBody.plannedUseOfForce
-      ),
+      hasChanged: !R.equals(report.form.incidentDetails.plannedUseOfForce, valuesFromRequestBody.plannedUseOfForce),
     },
     authorisedBy: {
       oldValue: report.form.incidentDetails.authorisedBy,
@@ -36,17 +37,12 @@ export const compareIncidentDetailsEditWithReport = (report, valuesFromRequestBo
       hasChanged: hasValueChanged(report.form.incidentDetails.authorisedBy, valuesFromRequestBody.authorisedBy),
     },
     witnesses: {
-      oldValue: trimAllValuesInObjectArray(report.form.incidentDetails.witnesses) || [],
-      newValue: trimAllValuesInObjectArray(valuesFromRequestBody.witnesses?.filter(witness => witness.name !== '')),
-      hasChanged: !R.equals(
-        trimAllValuesInObjectArray(handleZeroWitnessesInExistingReport(report.form.incidentDetails.witnesses)),
-        trimAllValuesInObjectArray(valuesFromRequestBody.witnesses)
-      ),
+      oldValue: witnessesOldValue,
+      newValue: witnessesNewValue,
+      hasChanged: !R.equals(witnessesOldValue, witnessesNewValue),
     },
   }
 }
-
-const handleZeroWitnessesInExistingReport = witnesses => (!witnesses ? [] : witnesses)
 
 export const compareReportDetailsEditWithReport = () => {
   return 0

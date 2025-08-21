@@ -1,5 +1,5 @@
 import type { QueryPerformer, InTransaction } from './dataAccess/db'
-import { AgencyId } from '../types/uof'
+import { AgencyId, LoggedInUser } from '../types/uof'
 import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
 import {
   IncidentSearchQuery,
@@ -304,6 +304,15 @@ export default class IncidentClient {
             ,   updated_date = now()
             where r.id = $3`,
       values: [formResponse, incidentDate, reportId],
+    })
+  }
+
+  async updateAgencyId(reportId: number, agencyId: AgencyId): Promise<void> {
+    await this.query({
+      text: `update v_report r
+              set agency_id = COALESCE($1,  r.agency_id)
+              where r.id = $2`,
+      values: [agencyId, reportId],
     })
   }
 }

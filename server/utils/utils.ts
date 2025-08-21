@@ -90,13 +90,16 @@ export const initialiseName = (fullName?: string): string | null => {
 export const hasValueChanged = (oldValue, newValue) => {
   if (!oldValue && newValue === '') return false
 
-  const newVal = newValue?.toUpperCase().trim()
-  const oldVal = oldValue?.toUpperCase().trim()
+  const newVal = newValue?.toUpperCase().trim() || undefined
+  const oldVal = oldValue?.toUpperCase().trim() || undefined
   return newVal !== oldVal
 }
 
-export const trimAllValuesInObjectArray = arr => {
-  return arr?.filter(obj => obj.name !== '').map(obj => ({ name: obj.name?.trim() }))
+export const excludeEmptyValuesThenTrim = arr => {
+  const actualObjects = arr?.filter(obj => obj.name?.trim() !== '') || undefined
+  return actualObjects?.length > 0
+    ? actualObjects.map(obj => ({ name: obj.name?.trim() })).filter(obj => obj.name !== undefined)
+    : undefined
 }
 
 export const getChangedValues = (obj, predicate) => {

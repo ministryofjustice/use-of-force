@@ -349,3 +349,14 @@ test('update', () => {
     values: [{}, date, 1],
   })
 })
+
+test('updateAgencyId', () => {
+  incidentClient.updateAgencyId(1, 'agencyId')
+
+  expect(query).toHaveBeenCalledWith({
+    text: `update v_report r
+              set agency_id = COALESCE($1,  r.agency_id)
+              where r.id = $2`,
+    values: ['agencyId', 1],
+  })
+})

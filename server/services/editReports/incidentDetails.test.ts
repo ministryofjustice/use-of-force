@@ -14,15 +14,9 @@ describe('compareIncidentDetailsEditWithReport', () => {
     },
   }
   const valuesFromRequestBody = {
-    incidentDate: {
-      date: '14/03/2020',
-      time: {
-        hour: '15',
-        minute: '17',
-      },
-    },
-    newAgencyId: '',
-    incidentLocationId: '12345-ABC',
+    incidentDate: new Date('2020-03-02T14:17:00Z'),
+    newAgencyId: 'MDI',
+    incidentLocationId: '56789-ABC',
     plannedUseOfForce: 'true',
     authorisedBy: 'Joe bloggs',
     witnesses: [
@@ -34,8 +28,8 @@ describe('compareIncidentDetailsEditWithReport', () => {
 
   const expectedResult = {
     agencyId: {
-      hasChanged: false,
-      newValue: '',
+      hasChanged: true,
+      newValue: 'MDI',
       oldValue: 'WRI',
     },
     authorisedBy: {
@@ -44,13 +38,13 @@ describe('compareIncidentDetailsEditWithReport', () => {
       oldValue: undefined,
     },
     incidentDate: {
-      hasChanged: true,
-      newValue: new Date('2020-03-14T15:17:00Z'),
+      hasChanged: false,
+      newValue: new Date('2020-03-02T14:17:00Z'),
       oldValue: new Date('2020-03-02T14:17:00Z'),
     },
     incidentLocation: {
-      hasChanged: false,
-      newValue: '12345-ABC',
+      hasChanged: true,
+      newValue: '56789-ABC',
       oldValue: '12345-ABC',
     },
     plannedUseOfForce: {
@@ -65,7 +59,7 @@ describe('compareIncidentDetailsEditWithReport', () => {
           name: 'Tom Smith',
         },
       ],
-      oldValue: [],
+      oldValue: undefined,
     },
   }
   it('Should calculate differences correctly', () => {
