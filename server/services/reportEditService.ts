@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
+import { PersistData } from './editReports/types/reportEditServiceTypes'
 import type LocationService from './locationService'
 import AuthService from './authService'
 import { compareIncidentDetailsEditWithReport } from './editReports/incidentDetails'
@@ -38,7 +39,7 @@ export default class ReportEditService {
     return {}
   }
 
-  async persistChanges(user: LoggedInUser, data): Promise<void> {
+  async persistChanges(user: LoggedInUser, data: PersistData): Promise<void> {
     const pageInput = data.pageInput[0]
     let updatedSection = {} // for updating the original report
 
