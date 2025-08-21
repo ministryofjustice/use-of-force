@@ -697,7 +697,7 @@ describe('coordinator', () => {
         })
     })
 
-    it('Succesfull submit redirects to correct page', async () => {
+    it('Successful submit redirects to correct page', async () => {
       flash.mockReturnValueOnce([
         {
           text: 'the incident details',
@@ -742,7 +742,7 @@ describe('coordinator', () => {
         })
     })
 
-    it('Unsuccesfull submit redirects to correct page', async () => {
+    it('Unsuccessful submit redirects to correct page', async () => {
       reportEditService.persistChanges.mockRejectedValueOnce('')
       await request(app)
         .post('/1/edit-report/reason-for-change')
