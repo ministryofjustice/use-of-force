@@ -40,7 +40,7 @@ const statementService = new StatementService(null, null, null) as jest.Mocked<S
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const reportEditService = new ReportEditService(null, null) as jest.Mocked<ReportEditService>
+const reportEditService = new ReportEditService(null, null, null) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
 let app
@@ -274,21 +274,62 @@ describe('coordinator', () => {
         })
     })
 
-    it('Validation error redirects back to current page with errors', async () => {
+    it('Validation error redirects back to current page with errors when no data in request body', async () => {
       await request(app)
         .post('/1/edit-report/incident-details')
         .send({})
         .expect(302)
         .expect('Location', '/1/edit-report/incident-details')
         .expect(res => {
-          expect(flash).toHaveBeenCalledWith('inputsForEditIncidentDetails', {
-            incidentDate: undefined,
-            reportId: '1',
-          })
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('reportId', '1')
           expect(flash).toHaveBeenCalledWith('errors', [
             { href: '#incidentLocationId', text: 'Select the location of the incident' },
             { href: '#plannedUseOfForce', text: 'Select yes if the use of force was planned' },
           ])
+        })
+    })
+
+    it('Validation error redirects back to current page with errors when no change in request body and persisted report', async () => {
+      const body = {
+        newAgencyId: 'WRI',
+        incidentDate: {
+          date: '12/05/2025',
+          time: {
+            hour: '10',
+            minute: '00',
+          },
+        },
+        incidentLocationId: 'aaaa-2222',
+        plannedUseOfForce: 'false',
+        witnesses: [
+          {
+            name: 'jimmy',
+          },
+          {
+            name: 'another person',
+          },
+        ],
+        submitType: 'continue-coordinator-edit',
+      }
+      const comparison = {
+        anyKey: {
+          oldValue: '123',
+          newValue: '123',
+          hasChanged: false,
+        },
+      }
+      reportEditService.compareEditsWithReport.mockReturnValue(comparison)
+
+      await request(app)
+        .post('/1/edit-report/incident-details')
+        .send(body)
+        .expect(302)
+        .expect('Location', 'incident-details')
+        .expect(res => {
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('reportId', '1')
+          expect(flash).toHaveBeenCalledWith('pageInput')
         })
     })
 
@@ -656,7 +697,7 @@ describe('coordinator', () => {
         })
     })
 
-    it('Validates the input, calls persist and redirects to correct page', async () => {
+    it('Succesfull submit redirects to correct page', async () => {
       flash.mockReturnValueOnce([
         {
           text: 'the incident details',
@@ -675,13 +716,41 @@ describe('coordinator', () => {
             reasonText: 'Some text',
             reportSection: { section: 'incidentDetails', text: 'the incident details' },
           })
-          expect(reportEditService.persistChanges).toHaveBeenCalledWith({
-            changes: [],
-            reason: 'someReason',
-            reasonAdditionalInfo: 'Some addiitonal text',
-            reasonText: 'Some text',
-            reportSection: { section: 'incidentDetails', text: 'the incident details' },
-          })
+          expect(reportEditService.persistChanges).toHaveBeenCalledWith(
+            {
+              activeCaseLoadId: 'LEI',
+              displayName: 'First Last',
+              firstName: 'first',
+              isAdmin: false,
+              isCoordinator: true,
+              isReviewer: true,
+              lastName: 'last',
+              token: 'token',
+              userId: 'id',
+              username: 'user1',
+            },
+            {
+              changes: [],
+              pageInput: [],
+              reason: 'someReason',
+              reasonAdditionalInfo: 'Some addiitonal text',
+              reasonText: 'Some text',
+              reportId: '1',
+              reportSection: { section: 'incidentDetails', text: 'the incident details' },
+            }
+          )
+        })
+    })
+
+    it('Unsuccesfull submit redirects to correct page', async () => {
+      reportEditService.persistChanges.mockRejectedValueOnce('')
+      await request(app)
+        .post('/1/edit-report/reason-for-change')
+        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some addiitonal text' })
+        .expect(302)
+        .expect('Location', '/1/view-incident')
+        .expect(res => {
+          expect(logger.error).toHaveBeenCalledWith('Could not persist changes for reportId 1', '')
         })
     })
   })

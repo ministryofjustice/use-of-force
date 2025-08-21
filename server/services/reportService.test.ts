@@ -25,7 +25,7 @@ const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
-
+reportLogClient.insert = jest.fn()
 let service: ReportService
 
 beforeEach(() => {
@@ -203,6 +203,69 @@ describe('reportService', () => {
           },
         })
       })
+    })
+  })
+  describe('updateWithEdits', () => {
+    const currentUser = { username: 'USER-1', token: 'token-1' }
+    const reportId = 1
+    const formName = 'incidentDetails'
+    const updatedSection = {
+      plannedUseOfForce: false,
+    }
+    const changes = [
+      {
+        agencyId: {
+          oldValue: 'BSI',
+          newValue: 'ALI',
+          hasChanged: true,
+        },
+        incidentLocation: {
+          oldValue: 'AAA',
+          newValue: 'BBB',
+          hasChanged: true,
+        },
+        plannedUseOfForce: {
+          oldValue: true,
+          newValue: false,
+          hasChanged: true,
+        },
+        authorisedBy: {
+          oldValue: 'Officer Smith',
+          hasChanged: true,
+        },
+      },
+    ]
+    const incidentDate = new Date('2025-08-20T03:24:00')
+
+    test('should update form body and prison correctly when a edit has occurred', async () => {
+      incidentClient.getReportForReviewer.mockResolvedValue({
+        id: 1,
+        form: {
+          incidentDetails: {
+            authorisedBy: 'Officer Smith',
+            plannedUseOfForce: true,
+          },
+        },
+      } as Report)
+
+      await service.updateWithEdits(
+        currentUser as LoggedInUser,
+        reportId,
+        formName,
+        updatedSection,
+        changes as unknown,
+        incidentDate
+      )
+
+      expect(incidentClient.updateAgencyId).toHaveBeenCalledWith(1, 'ALI')
+      expect(incidentClient.update).toHaveBeenCalledWith(
+        1,
+        incidentDate,
+        {
+          incidentDetails: { plannedUseOfForce: false },
+        },
+        transactionalClient
+      )
     })
   })
 })

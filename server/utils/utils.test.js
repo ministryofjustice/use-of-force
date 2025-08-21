@@ -7,6 +7,7 @@ const {
   removeKeysWithEmptyValues,
   parseDate,
   trimAllValuesInObjectArray,
+  excludeObjectsWithEmptyValues,
   hasValueChanged,
   getChangedValues,
   toJSDate,
@@ -180,6 +181,32 @@ describe('trimAllValuesInObjectArray', () => {
   test('handles single object array', () => {
     const actualResult = trimAllValuesInObjectArray([{ name: 'x ' }])
     const expectedResult = [{ name: 'x' }]
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+})
+
+describe('excludeObjectsWithEmptyValues', () => {
+  test('handles undefined inputs', () => {
+    const actualResult = excludeObjectsWithEmptyValues()
+    const expectedResult = undefined
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('handles empty array', () => {
+    const actualResult = excludeObjectsWithEmptyValues([])
+    const expectedResult = []
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('handles empty single length array', () => {
+    const actualResult = excludeObjectsWithEmptyValues([{ name: ' ' }])
+    const expectedResult = []
+    expect(actualResult).toStrictEqual(expectedResult)
+  })
+
+  test('returns correct response when value is empty padded or zero length string', () => {
+    const actualResult = excludeObjectsWithEmptyValues([{ name: '' }, { name: ' ' }])
+    const expectedResult = []
     expect(actualResult).toStrictEqual(expectedResult)
   })
 })

@@ -141,4 +141,43 @@ export default class ReportService {
       })
     }
   }
+
+  private getUpdatedReportWithEdits(
+    existingReport: Record<string, unknown>,
+    formName: string,
+    updatedSection
+  ): Record<string, unknown> {
+    return {
+      ...existingReport,
+      [formName]: updatedSection,
+    }
+  }
+
+  public async updateWithEdits(
+    currentUser: LoggedInUser,
+    reportId: number,
+    formName: string,
+    updatedSection: unknown,
+    changes: unknown,
+    incidentDate?: Date | null
+  ): Promise<void> {
+    const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
+
+    const updatedPayload = this.getUpdatedReportWithEdits(form, formName, updatedSection)
+
+    if (updatedPayload || incidentDate) {
+      const { username } = currentUser
+      logger.info(`Updated report with id: ${id} for user: ${username}`)
+
+      this.inTransaction(async query => {
+        await this.incidentClient.updateAgencyId(reportId, changes[0].agencyId?.newValue)
+        await this.incidentClient.update(id, incidentDate, updatedPayload, query)
+        await this.reportLogClient.insert(query, username, reportId, 'REPORT_MODIFIED', {
+          formName,
+          originalSection: form[formName],
+          updatedSection,
+        })
+      })
+    }
+  }
 }

@@ -1,14 +1,7 @@
 import R from 'ramda'
 import type { Request, RequestHandler } from 'express'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
-import {
-  isNilOrEmpty,
-  firstItem,
-  trimAllValuesInObjectArray,
-  hasValueChanged,
-  getChangedValues,
-  toJSDate,
-} from '../../utils/utils'
+import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
 import { paths, full } from '../../config/incident'
 import { ReportStatus } from '../../config/types'
@@ -23,6 +16,7 @@ import LocationService from '../../services/locationService'
 import { processInput } from '../../services/validation'
 import ReportEditService from '../../services/reportEditService'
 import log from '../../../log'
+import incidentDetailsConfig from '../../config/edit/incidentDetailsConfig'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -124,19 +118,14 @@ export default class CoordinatorRoutes {
 
   submitEditIncidentDetails: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    const pageInput = req.body
     req.flash('reportId') // clear out any old values
     req.flash('reportId', reportId)
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const { payloadFields, extractedFields, errors } = processInput({
       validationSpec: full.incidentDetails,
-      input: req.body,
-    })
-
-    req.flash('inputsForEditIncidentDetails', {
-      ...payloadFields,
-      incidentDate: extractedFields.incidentDate,
-      reportId,
+      input: pageInput,
     })
 
     if (!isNilOrEmpty(errors)) {
@@ -144,23 +133,36 @@ export default class CoordinatorRoutes {
       return res.redirect(req.originalUrl)
     }
 
+    pageInput.incidentDate = extractedFields.incidentDate.value
+    req.flash('pageInput') // clear out first
+    req.flash('pageInput', pageInput)
+
+    req.flash('inputsForEditIncidentDetails', {
+      ...payloadFields,
+      incidentDate: extractedFields.incidentDate,
+      reportId,
+    })
+
     const valuesToCompareWithReport = {
-      incidentDate: req.body.incidentDate,
+      incidentDate: extractedFields.incidentDate.value,
       newAgencyId: req.body.newAgencyId,
-      incidentLocationId: req.body.incidentLocationId,
-      plannedUseOfForce: req.body.plannedUseOfForce,
-      authorisedBy: req.body.authorisedBy,
-      witnesses: req.body.witnesses,
+      incidentLocationId: payloadFields.incidentLocationId,
+      plannedUseOfForce: payloadFields.plannedUseOfForce,
+      authorisedBy: payloadFields.authorisedBy,
+      witnesses: payloadFields.witnesses,
     }
 
+    // compare page data with original report
     const comparison = this.reportEditService.compareEditsWithReport({
       report,
       valuesToCompareWithReport,
-      reportSection: 'incidentDetails',
+      reportSection: incidentDetailsConfig.section,
     })
 
+    // pull out only the data that has changed
     const changedValues = getChangedValues(comparison, (value: { hasChanged: boolean }) => value.hasChanged === true)
 
+    // if nothing has changed, redirect back with an error message
     if (R.isEmpty(changedValues)) {
       const errorSummary = [
         {
@@ -178,7 +180,7 @@ export default class CoordinatorRoutes {
 
     const sectionDetails = {
       text: 'the incident details',
-      section: 'incidentDetails',
+      section: incidentDetailsConfig.section,
     }
     req.flash('sectionDetails') // clear out first
     req.flash('sectionDetails', sectionDetails)
@@ -270,9 +272,17 @@ export default class CoordinatorRoutes {
 
     try {
       const changes = req.flash('changes')
-      await this.reportEditService.persistChanges({ reportSection, changes, reason, reasonText, reasonAdditionalInfo })
+      await this.reportEditService.persistChanges(res.locals.user, {
+        reportId,
+        pageInput: req.flash('pageInput'),
+        reportSection,
+        changes,
+        reason,
+        reasonText,
+        reasonAdditionalInfo,
+      })
     } catch (err) {
-      log.error(`Could not persist changes for reportId=${reportId}`, err)
+      log.error(`Could not persist changes for reportId ${reportId}`, err)
     }
 
     // fully clear flash to prevent any values being carried over

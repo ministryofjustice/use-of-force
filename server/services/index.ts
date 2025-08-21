@@ -116,7 +116,7 @@ export const services = () => {
   )
   const feComponentsService = new FeComponentsService(feComponentsClient)
 
-  const reportEditService = new ReportEditService(locationService, authService)
+  const reportEditService = new ReportEditService(locationService, authService, reportService)
 
   return {
     involvedStaffService,
