@@ -11,7 +11,6 @@
     "watch-ts": "tsc -w",
     "watch-node": "DEBUG=gov-starter-server* DB_PORT=5433 nodemon --trace-deprecation -r dotenv/config --watch dist/ dist/server.js | bunyan -o short",
     "start:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\"",
-    "start:nocheck": "npm run nobuild && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\"",
     "nobuild": "npm run css-build && npm run copy-views",
     "start-feature": "export $(cat feature.env) && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "watch-node-feature": "export $(cat feature.env) && nodemon -r dotenv/config --watch dist/ $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
