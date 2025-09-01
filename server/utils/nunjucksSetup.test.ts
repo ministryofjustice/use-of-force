@@ -50,9 +50,9 @@ describe('nunjucksSetup', () => {
   })
 
   describe('toYesNoIfTrueFalse', () => {
-    it('returns dash (-) for no value', () => {
+    it('returns undefined nothing for no value', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')()
-      expect(result).toEqual('\u2013')
+      expect(result).toEqual(undefined)
     })
     it('returns yes for string true', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')('true')

@@ -4,12 +4,14 @@ import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test
 import { Report } from '../../data/incidentClientTypes'
 import ReviewService from '../../services/reviewService'
 import ReportService from '../../services/reportService'
+import ReportEditService from '../../services/reportEditService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
 import config from '../../config'
 
 jest.mock('../../services/reviewService')
 jest.mock('../../services/reportService')
+jest.mock('../../services/reportEditService')
 jest.mock('../../services/authService')
 jest.mock('../../services/reportDetailBuilder')
 
@@ -17,6 +19,7 @@ const userSupplier = jest.fn()
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
+const reportEditService = new ReportEditService(null, null, null, null) as jest.Mocked<ReportEditService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 let report = { id: 1, username: 'user1', form: { incidentDetails: {} } } as unknown as Report
@@ -65,6 +68,7 @@ beforeEach(() => {
   config.featureFlagReportEditingEnabled = true
   reviewService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
+  reportEditService.mapEditDataToViewOutput.mockResolvedValue([])
   reviewService.getStatements.mockResolvedValue(statements)
   reportDetailBuilder.build.mockResolvedValue({
     offenderDetail: {
@@ -72,7 +76,10 @@ beforeEach(() => {
     },
   } as ReportDetail)
 
-  app = appWithAllRoutes({ reportService, reportDetailBuilder, authService, reviewService }, userSupplier)
+  app = appWithAllRoutes(
+    { reportService, reportEditService, reportDetailBuilder, authService, reviewService },
+    userSupplier
+  )
 })
 
 afterEach(() => {
@@ -384,6 +391,56 @@ describe('GET /view-incident', () => {
         .expect(res => {
           expect(res.status).toBe(200)
           expect(res.text).toContain('You are not the reporter for report 999')
+        })
+    })
+  })
+
+  describe('Edit history tab', () => {
+    it('should display the expected columns and  data', () => {
+      userSupplier.mockReturnValue(reviewerUser)
+      reportEditService.mapEditDataToViewOutput.mockResolvedValue([
+        {
+          editDate: new Date(),
+          editorName: reviewerUser.displayName,
+          whatChanged: [
+            'Incident date',
+            'Prison',
+            'Incident location',
+            'Was use of force planned',
+            'Who authorised use of force',
+            'Witnesses to the incident',
+          ],
+          changedFrom: ['28/07/2025 01:10', 'Whitemoor (HMP)', 'Astro Turf', 'No', undefined, ''],
+          changedTo: ['29/07/2025 02:10', 'Ashfield (HMP)', 'Activate Room', 'Yes', 'Joe bloggs', 'Witness A'],
+          reason: 'Error in report',
+          additionalComments: 'Some additional comments',
+        },
+      ])
+      return request(app)
+        .get('/1/view-incident?tab=edit-history')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Edit history')
+          expect(res.text).toContain('Date')
+          expect(res.text).toContain('Time')
+          expect(res.text).toContain('Changed by')
+          expect(res.text).toContain('What changed')
+          expect(res.text).toContain('Changed from')
+          expect(res.text).toContain('Changed to')
+          expect(res.text).toContain('Reason for change')
+          expect(res.text).toContain('28/07/2025 01:10')
+          expect(res.text).toContain('29/07/2025 02:10')
+          expect(res.text).toContain('First Last')
+          expect(res.text).toContain('Whitemoor (HMP)')
+          expect(res.text).toContain('Ashfield (HMP)')
+          expect(res.text).toContain('Astro Turf')
+          expect(res.text).toContain('Activate Room')
+          expect(res.text).toContain('Joe bloggs')
+          expect(res.text).toContain('Witness A')
+          expect(res.text).toContain('Error in report')
+          expect(res.text).toContain('govuk-details__summary')
+          expect(res.text).toContain('Some additional comments')
         })
     })
   })

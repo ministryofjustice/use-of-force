@@ -52,17 +52,14 @@ test('getReportEdits', () => {
           , editor_user_id "editorUserId"
           , editor_name "editorName"
           , report_id "reportId"
-          , change_to "changeTo"
-          , old_value_primary "oldValuePrimary"
-          , old_value_secondary "oldValueSecondary"
-          , new_value_primary "newValuePrimary"
-          , new_value_secondary "newValueSecondary"
+          , changes "changes"
           , reason "reason"
+          , reason_text "reasonText"
           , additional_comments "additionalComments"
           , report_owner_changed "reportOwnerChanged"
           from report_edit r
           where r.report_id = $1
-          ORDER BY edit_date ASC`,
+          ORDER BY edit_date DESC`,
     values: [1],
   })
 })
@@ -350,13 +347,18 @@ test('update', () => {
   })
 })
 
-test('updateAgencyId', () => {
-  incidentClient.updateAgencyId(1, 'agencyId')
+test('updateWithEdits', () => {
+  const date = new Date()
+
+  incidentClient.updateWithEdits(1, date, 'WRI', {})
 
   expect(query).toHaveBeenCalledWith({
     text: `update v_report r
-              set agency_id = COALESCE($1,  r.agency_id)
-              where r.id = $2`,
-    values: ['agencyId', 1],
+            set form_response = COALESCE($1,   r.form_response)
+            ,   incident_date = COALESCE($2,   r.incident_date)
+            ,   agency_id = COALESCE($3,   r.agency_id)
+            ,   updated_date = now()
+            where r.id = $4`,
+    values: [{}, date, 'WRI', 1],
   })
 })

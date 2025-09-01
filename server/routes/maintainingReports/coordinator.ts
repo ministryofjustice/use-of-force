@@ -1,5 +1,6 @@
 import R from 'ramda'
 import type { Request, RequestHandler } from 'express'
+import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
@@ -80,7 +81,7 @@ export default class CoordinatorRoutes {
     const pageData = input || incidentDetails
 
     let newPrisonDetails = null // newPrison refers to the one selected via the /edit-prison page
-    let incidentLocationsInNewPrison = null
+    let incidentLocationsInNewPrison: PrisonLocation[] = null
 
     if (newPrison) {
       try {
@@ -156,7 +157,7 @@ export default class CoordinatorRoutes {
     const comparison = this.reportEditService.compareEditsWithReport({
       report,
       valuesToCompareWithReport,
-      reportSection: incidentDetailsConfig.section,
+      reportSection: incidentDetailsConfig.SECTION,
     })
 
     // pull out only the data that has changed
@@ -175,12 +176,13 @@ export default class CoordinatorRoutes {
       return res.redirect('incident-details')
     }
 
+    const sanitisedChangedValues = this.reportEditService.removeHasChangedKey(changedValues)
     req.flash('changes') // clear out first
-    req.flash('changes', changedValues)
+    req.flash('changes', sanitisedChangedValues)
 
     const sectionDetails = {
       text: 'the incident details',
-      section: incidentDetailsConfig.section,
+      section: incidentDetailsConfig.SECTION,
     }
     req.flash('sectionDetails') // clear out first
     req.flash('sectionDetails', sectionDetails)
@@ -232,7 +234,7 @@ export default class CoordinatorRoutes {
     const reportSection = sectionDetails[0]
     const changes = req.flash('changes')
 
-    const changesToView = await this.reportEditService.constructChangesToView(
+    const changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
       res.locals.user.username,
       reportSection,
       changes[0]
@@ -247,7 +249,7 @@ export default class CoordinatorRoutes {
       errors,
       reportSection,
       reportId,
-      changes: changesToView,
+      changes: changesToDisplayInTheReasonsPage,
       reason,
       showBacklink: true,
       backlinkHref: req.flash('backlinkHref'),
@@ -291,7 +293,7 @@ export default class CoordinatorRoutes {
     return res.redirect(`/${reportId}/view-incident`)
   }
 
-  // existing code below which will be removed at some point
+  // ===========.  existing code below which will be removed at some point.  ==========
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
     const token = await this.authService.getSystemClientToken(res.locals.user.username)

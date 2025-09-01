@@ -40,7 +40,7 @@ const statementService = new StatementService(null, null, null) as jest.Mocked<S
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const reportEditService = new ReportEditService(null, null, null) as jest.Mocked<ReportEditService>
+const reportEditService = new ReportEditService(null, null, null, null) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
 let app
