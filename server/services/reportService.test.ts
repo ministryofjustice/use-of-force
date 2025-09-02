@@ -8,6 +8,7 @@ import { Prison } from '../data/prisonClientTypes'
 import { LoggedInUser } from '../types/uof'
 import ReportLogClient from '../data/reportLogClient'
 import AuthService from './authService'
+import { Change } from './editReports/types/reportEditServiceTypes'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/reportLogClient')
@@ -22,7 +23,6 @@ const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderS
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportLogClient = new ReportLogClient() as jest.Mocked<ReportLogClient>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
-
 const transactionalClient = jest.fn()
 const inTransaction = callback => callback(transactionalClient)
 reportLogClient.insert = jest.fn()
@@ -210,40 +210,72 @@ describe('reportService', () => {
     const reportId = 1
     const formName = 'incidentDetails'
     const updatedSection = {
-      plannedUseOfForce: false,
+      witnesses: [
+        {
+          name: 'Witness A',
+        },
+        {
+          name: 'Witness B',
+        },
+      ],
+      plannedUseOfForce: true,
+      authorisedBy: 'Officer Smith',
+      incidentLocationId: 'UUID-2',
     }
+
     const changes = [
       {
         agencyId: {
-          oldValue: 'BSI',
+          question: 'Prison',
+          oldValue: 'BXI',
           newValue: 'ALI',
-          hasChanged: true,
         },
         incidentLocation: {
-          oldValue: 'AAA',
-          newValue: 'BBB',
-          hasChanged: true,
+          question: 'Incident location',
+          oldValue: 'UUID-1',
+          newValue: 'UUID-2',
         },
         plannedUseOfForce: {
-          oldValue: true,
-          newValue: false,
-          hasChanged: true,
+          question: 'Was use of force planned',
+          oldValue: false,
+          newValue: true,
         },
         authorisedBy: {
-          oldValue: 'Officer Smith',
-          hasChanged: true,
+          question: 'Who authorised use of force',
+          newValue: 'Officer Smith',
+        },
+        witnesses: {
+          question: 'Witnesses to the incident',
+          oldValue: [
+            {
+              name: 'Witness A',
+            },
+          ],
+          newValue: [
+            {
+              name: 'Witness A',
+            },
+            {
+              name: 'Witness B',
+            },
+          ],
         },
       },
     ]
     const incidentDate = new Date('2025-08-20T03:24:00')
 
-    test('should update form body and prison correctly when a edit has occurred', async () => {
+    test('should update form body and prison correctly when an edit has occurred', async () => {
       incidentClient.getReportForReviewer.mockResolvedValue({
         id: 1,
         form: {
           incidentDetails: {
-            authorisedBy: 'Officer Smith',
-            plannedUseOfForce: true,
+            witnesses: [
+              {
+                name: 'Witness A',
+              },
+            ],
+            plannedUseOfForce: false,
+            incidentLocationId: 'UUID-1',
           },
         },
       } as Report)
@@ -253,16 +285,50 @@ describe('reportService', () => {
         reportId,
         formName,
         updatedSection,
-        changes as unknown,
+        changes as unknown as Change[],
+        'errorInReport',
+        'Error in report',
+        'just forgot',
+        false,
         incidentDate
       )
 
-      expect(incidentClient.updateAgencyId).toHaveBeenCalledWith(1, 'ALI')
-      expect(incidentClient.update).toHaveBeenCalledWith(
+      expect(incidentClient.updateWithEdits).toHaveBeenCalledWith(
         1,
         incidentDate,
+        'ALI',
         {
-          incidentDetails: { plannedUseOfForce: false },
+          incidentDetails: {
+            authorisedBy: 'Officer Smith',
+            incidentLocationId: 'UUID-2',
+            plannedUseOfForce: true,
+            witnesses: [{ name: 'Witness A' }, { name: 'Witness B' }],
+          },
+        },
+        transactionalClient
+      )
+
+      expect(incidentClient.insertReportEdit).toHaveBeenCalledWith(
+        {
+          changes: {
+            agencyId: { question: 'Prison', oldValue: 'BXI', newValue: 'ALI' },
+            incidentLocation: { question: 'Incident location', oldValue: 'UUID-1', newValue: 'UUID-2' },
+            plannedUseOfForce: { question: 'Was use of force planned', oldValue: false, newValue: true },
+            authorisedBy: { question: 'Who authorised use of force', newValue: 'Officer Smith' },
+            witnesses: {
+              question: 'Witnesses to the incident',
+              oldValue: [{ name: 'Witness A' }],
+              newValue: [{ name: 'Witness A' }, { name: 'Witness B' }],
+            },
+          },
+
+          displayName: undefined,
+          reason: 'errorInReport',
+          reasonAdditionalInfo: 'just forgot',
+          reasonText: 'Error in report',
+          reportId: 1,
+          reportOwnerChanged: false,
+          username: 'USER-1',
         },
         transactionalClient
       )

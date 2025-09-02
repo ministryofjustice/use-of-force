@@ -5,9 +5,15 @@ import type { Services } from '../../services'
 import config from '../../config'
 
 export default function viewingIncidentRoutes(services: Services): Router {
-  const { reportService, reportDetailBuilder, reviewService, authService } = services
+  const { reportService, reportEditService, reportDetailBuilder, reviewService, authService } = services
   const router = express.Router()
-  const incidents = new ViewIncidentRoutes(reportService, reportDetailBuilder, reviewService, authService)
+  const incidents = new ViewIncidentRoutes(
+    reportService,
+    reportEditService,
+    reportDetailBuilder,
+    reviewService,
+    authService
+  )
   const get = (path, handler) => router.get(path, asyncMiddleware(handler))
 
   if (config.featureFlagReportEditingEnabled) {

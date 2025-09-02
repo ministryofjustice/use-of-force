@@ -22,6 +22,7 @@ import DraftReportService from '../../services/drafts/draftReportService'
 import FeComponentsService from '../../services/feComponentsService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
+import EditIncidentDetailsService from '../../services/editIncidentDetailsService'
 import ReportEditService from '../../services/reportEditService'
 import { Services } from '../../services'
 import { PrisonClient } from '../../data'
@@ -128,6 +129,7 @@ export const appWithAllRoutes = (
     locationService: {} as LocationService,
     nomisMappingService: {} as NomisMappingService,
     reportDetailBuilder: {} as ReportDetailBuilder,
+    editIncidentDetailsService: {} as EditIncidentDetailsService,
     reportEditService: {} as ReportEditService,
     draftReportService: {} as DraftReportService,
     userService: {} as UserService,
