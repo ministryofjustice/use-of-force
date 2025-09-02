@@ -1,14 +1,7 @@
 import type { Readable } from 'stream'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
-import type {
-  InmateDetail,
-  InmateBasicDetails,
-  UserDetail,
-  PrisonerDetail,
-  CaseLoad,
-  Prison,
-} from './prisonClientTypes'
+import type { InmateDetail, InmateBasicDetails, UserDetail, CaseLoad, Prison } from './prisonClientTypes'
 import config from '../config'
 import BaseApiClient from './baseApiClient'
 

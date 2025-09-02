@@ -3,10 +3,8 @@ import { URLSearchParams } from 'url'
 import superagent from 'superagent'
 
 import type TokenStore from './tokenStore/tokenStore'
-import logger from '../../log'
 import config from '../config'
 import generateOauthClientToken from '../authentication/clientCredentials'
-import RestClient from './restClient'
 
 const timeoutSpec = config.apis.oauth2.timeout
 const hmppsAuthUrl = config.apis.oauth2.url
@@ -19,8 +17,6 @@ function getSystemClientTokenFromHmppsAuth(username?: string): Promise<superagen
     ...(username && { username }),
   }).toString()
 
-  logger.info(`${grantRequest} HMPPS Auth request for client id '${config.apis.oauth2.systemClientId}''`)
-
   return superagent
     .post(`${hmppsAuthUrl}/oauth/token`)
     .set('Authorization', clientToken)
@@ -31,10 +27,6 @@ function getSystemClientTokenFromHmppsAuth(username?: string): Promise<superagen
 
 export default class HmppsAuthClient {
   constructor(private readonly tokenStore: TokenStore) {}
-
-  private static restClient(token: string): RestClient {
-    return new RestClient('HMPPS Auth Client', config.apis.oauth2, token)
-  }
 
   async getSystemClientToken(username?: string): Promise<string> {
     const key = username || '%ANONYMOUS%'

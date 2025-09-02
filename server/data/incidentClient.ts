@@ -1,5 +1,5 @@
 import type { QueryPerformer, InTransaction } from './dataAccess/db'
-import { AgencyId, LoggedInUser } from '../types/uof'
+import { AgencyId } from '../types/uof'
 import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
 import {
   IncidentSearchQuery,
