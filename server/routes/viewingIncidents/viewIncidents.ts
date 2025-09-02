@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express'
 import type AuthService from 'server/services/authService'
+import ReportEditService from '../../services/reportEditService'
 import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import type ReviewService from '../../services/reviewService'
@@ -8,6 +9,7 @@ import logger from '../../../log'
 export default class ViewIncidentsRoutes {
   constructor(
     private readonly reportService: ReportService,
+    private readonly reportEditService: ReportEditService,
     private readonly reportDetailBuilder: ReportDataBuilder,
     private readonly reviewService: ReviewService,
     private readonly authService: AuthService
@@ -19,6 +21,7 @@ export default class ViewIncidentsRoutes {
     const { isReviewer, isCoordinator, username } = res.locals.user
     const report = await this.reviewService.getReport(parseInt(incidentId, 10))
     const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
+    const reportEditViewData = await this.reportEditService.mapEditDataToViewOutput(reportEdits, req.user)
     const hasReportBeenEdited = reportEdits?.length > 0
     const reportData = await this.reportDetailBuilder.build(username, report)
     const { offenderDetail } = reportData
@@ -78,6 +81,7 @@ export default class ViewIncidentsRoutes {
         isReviewer,
         isCoordinator,
         offenderDetail,
+        reportEditViewData,
       }
       return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
     }

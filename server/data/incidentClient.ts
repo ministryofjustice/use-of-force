@@ -1,3 +1,4 @@
+import { Change } from '../services/editReports/types/reportEditServiceTypes'
 import type { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
@@ -69,17 +70,14 @@ export default class IncidentClient {
           , editor_user_id "editorUserId"
           , editor_name "editorName"
           , report_id "reportId"
-          , change_to "changeTo"
-          , old_value_primary "oldValuePrimary"
-          , old_value_secondary "oldValueSecondary"
-          , new_value_primary "newValuePrimary"
-          , new_value_secondary "newValueSecondary"
+          , changes "changes"
           , reason "reason"
+          , reason_text "reasonText"
           , additional_comments "additionalComments"
           , report_owner_changed "reportOwnerChanged"
           from report_edit r
           where r.report_id = $1
-          ORDER BY edit_date ASC`,
+          ORDER BY edit_date DESC`,
       values: [reportId],
     })
     return results.rows
@@ -307,12 +305,46 @@ export default class IncidentClient {
     })
   }
 
-  async updateAgencyId(reportId: number, agencyId: AgencyId): Promise<void> {
-    await this.query({
+  async updateWithEdits(
+    reportId: number,
+    incidentDate: Date | null,
+    agencyId: string | null,
+    formResponse: unknown | null,
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    await query({
       text: `update v_report r
-              set agency_id = COALESCE($1,  r.agency_id)
-              where r.id = $2`,
-      values: [agencyId, reportId],
+            set form_response = COALESCE($1,   r.form_response)
+            ,   incident_date = COALESCE($2,   r.incident_date)
+            ,   agency_id = COALESCE($3,   r.agency_id)
+            ,   updated_date = now()
+            where r.id = $4`,
+      values: [formResponse, incidentDate, agencyId, reportId],
+    })
+  }
+
+  async insertReportEdit(
+    edits: {
+      username: string
+      displayName: string
+      reportId: number
+      changes: Change
+      reason: string
+      reasonText: string
+      reasonAdditionalInfo: string
+      reportOwnerChanged: boolean
+    },
+    query: QueryPerformer = this.query
+  ): Promise<void> {
+    const { username, displayName, reportId, changes, reason, reasonText, reasonAdditionalInfo, reportOwnerChanged } =
+      edits
+    await query({
+      text: `INSERT INTO report_edit
+      (editor_user_id, editor_name, report_id, changes, reason, reason_text, additional_comments, report_owner_changed)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+      returning id;
+      `,
+      values: [username, displayName, reportId, changes, reason, reasonText, reasonAdditionalInfo, reportOwnerChanged],
     })
   }
 }

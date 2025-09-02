@@ -1,3 +1,90 @@
-<h1 class="govuk-heading-xl">Use of force incident {{ data.incidentId }}</h1>
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% block content %}
+<div class="govuk-grid-column-full">
+  <div class = 'govuk-!-display-none-print'>
+    <div class="flex-container-space-between">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
+
+      {% if data.isCoordinator %}
+        <div class="govuk-button-group govuk-!-margin-top-6">
+            {{ govukButton({
+              text: "Edit report",
+              href: "edit-report",
+              attributes: {'data-qa':'button-edit-report'}
+            }) }}
+
+            {{ govukButton({
+              classes: "govuk-button--warning",
+              text: "Delete incident",
+              href: "delete-incident",
+              attributes: {'data-qa':'button-delete-incident'}
+            }) }}
+        </div>
+      {% endif %}
+    </div>
 
   {{ navigationTabMacro.navigation(data, {editHistory:true}) }}
+</div>
+<div class="govuk-grid-column-full">
+
+<div class="govuk-grid-row govuk-body negative-margin-top-7">
+  <table class="govuk-table edit-history-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Edit history</caption>
+
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header edit-history-table-width-8">Date</th>
+        <th scope="col" class="govuk-table__header edit-history-table-width-8">Time</th>
+        <th scope="col" class="govuk-table__header edit-history-table-width-8">Changed by</th>
+        <th scope="col" class="govuk-table__header edit-history-table-width-12">What changed</th>
+        <th scope="col" class="govuk-table__header ">Changed from</th>
+        <th scope="col" class="govuk-table__header ">Changed to</th>
+        <th scope="col" class="govuk-table__header">Reason for change</th>
+      </tr>
+    </thead>
+    {% for item in data.reportEditViewData %}
+      <tbody class="govuk-table__body border-bottom-grey">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractDate}}</td>
+          <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractTime}}</td>
+          <td class="govuk-table__cell edit-history-table-width-8">{{item.editorName}}</td>
+          <td class="govuk-table__cell edit-history-table-width-12">{{item.whatChanged[0]}}</td>
+          <td class="govuk-table__cell">{{item.changedFrom[0]}}</td>
+          <td class="govuk-table__cell">{{item.changedTo[0]}}</td>
+          <td class="govuk-table__cell">{{item.reason}}</td>
+        </tr>
+        {% set len = item.whatChanged.length %}
+        {% for i in range(1, len) %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell">{{item.whatChanged[i]}}</td>
+            <td class="govuk-table__cell">{{item.changedFrom[i]}}</td>
+            <td class="govuk-table__cell">{{item.changedTo[i]}}</td>
+            <td class="govuk-table__cell"></td>        
+          </tr>
+        {% endfor %}
+          <tr>
+            <td colspan="6"></td>
+            <td>
+              <!-- If additional comments added -->
+              {% if item.additionalComments %}
+                {% set additionalComponentHtml %}
+                  {{ item.additionalComments }}
+                {% endset %}
+                {{ govukDetails({
+                  summaryText: "Additional comments",
+                  classes: "govuk-!-margin-top-2",
+                  html: additionalComponentHtml
+                }) }}
+              {% endif %}
+            </td>
+          </tr>
+      </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,42 +1,60 @@
-/* eslint-disable no-await-in-loop */
 import moment from 'moment'
-
+import sequence from '../config/edit/questionSequence'
+import questionSets from '../config/edit/questionSets'
+import incidentDetailsConfig, { QUESTION_ID, REASON } from '../config/edit/incidentDetailsConfig'
 import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
 import { PersistData } from './editReports/types/reportEditServiceTypes'
-import type LocationService from './locationService'
-import AuthService from './authService'
-import { compareIncidentDetailsEditWithReport } from './editReports/incidentDetails'
-import incidentDetailsConfig from '../config/edit/incidentDetailsConfig'
-
+import compareIncidentDetailsEditWithReport from './editReports/incidentDetails'
 import ReportService from './reportService'
 import logger from '../../log'
+import EditIncidentDetailsService from './editIncidentDetailsService'
+import AuthService from './authService'
+import LocationService from './locationService'
 
 export default class ReportEditService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(
+    private readonly reportService: ReportService,
+    private readonly editIncidentDetailsService: EditIncidentDetailsService,
     private readonly locationService: LocationService,
-    private readonly authService: AuthService,
-    private readonly reportService: ReportService
+    private readonly authService: AuthService
   ) {}
 
-  async constructChangesToView(username, reportSection, changes = []) {
-    const questionSet = this.#getQuestionSet(reportSection)
+  async constructChangesToView(username: string, reportSection: { section: string }, changes = []) {
     let response = []
 
-    if (reportSection?.section === incidentDetailsConfig.section) {
-      response = await this.#buildIncidentDetails(username, questionSet, changes)
+    if (reportSection?.section === incidentDetailsConfig.SECTION) {
+      response = await this.editIncidentDetailsService.buildIncidentDetails(
+        username,
+        questionSets[reportSection.section],
+        changes
+      )
     }
+    // add similar ifs for the other page
 
     return response
   }
 
   compareEditsWithReport({ report, valuesToCompareWithReport: valuesFromRequestBody, reportSection }) {
-    if (reportSection === incidentDetailsConfig.section) {
-      return compareIncidentDetailsEditWithReport(report, valuesFromRequestBody)
+    switch (reportSection) {
+      case incidentDetailsConfig.SECTION:
+        return compareIncidentDetailsEditWithReport(report, valuesFromRequestBody)
+
+      // add more sections as needed, eg:
+      // case anotherSectionConfig.SECTION:
+      //   return compareAnotherSectionEditWithReport(report, valuesFromRequestBody)
+
+      default:
+        return {}
     }
-    // other report sections to be similarly compared here
-    return {}
+  }
+
+  removeHasChangedKey(changes) {
+    return Object.keys(changes).reduce((acc, key) => {
+      const { hasChanged, ...rest } = changes[key] // remove hasChanged
+      acc[key] = rest
+      return acc
+    }, {})
   }
 
   async persistChanges(user: LoggedInUser, data: PersistData): Promise<void> {
@@ -44,13 +62,14 @@ export default class ReportEditService {
     let updatedSection = {} // for updating the original report
 
     // for incidentDetails
-    if (data.reportSection.section === incidentDetailsConfig.section) {
+    if (data.reportSection.section === incidentDetailsConfig.SECTION) {
       updatedSection = {
         witnesses: excludeEmptyValuesThenTrim(pageInput.witnesses),
         plannedUseOfForce: JSON.parse(pageInput.plannedUseOfForce),
         authorisedBy: JSON.parse(pageInput.plannedUseOfForce) ? pageInput.authorisedBy : undefined,
         incidentLocationId: pageInput.incidentLocationId,
       }
+      // do new if blocks for the other sections of the report here
     }
 
     try {
@@ -60,6 +79,10 @@ export default class ReportEditService {
         data.reportSection.section,
         updatedSection,
         data.changes,
+        data.reason,
+        data.reasonText,
+        data.reasonAdditionalInfo,
+        data.reportOwnerChanged,
         pageInput.incidentDate
       )
     } catch (e) {
@@ -67,7 +90,8 @@ export default class ReportEditService {
     }
   }
 
-  validateReasonForChangeInput(input) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateReasonForChangeInput(input: { reason: string; reasonText: string; reportSection: any }) {
     if (!input.reason) {
       return [
         {
@@ -87,96 +111,103 @@ export default class ReportEditService {
     return []
   }
 
-  private questionSets = {
-    incidentDetails: {
-      agencyId: { text: 'Prison', entity: 'prison' },
-      incidentLocation: { text: 'Incident location', entity: 'internalLocation' },
-      witnesses: { text: 'Witnesses to the incident', entity: 'people' },
-      plannedUseOfForce: { text: 'Was use of force planned', entity: 'boolean' },
-      authorisedBy: { text: 'Who authorised use of force', entity: 'person' },
-      incidentDate: { text: 'Incident date', entity: 'date' },
-    },
-    // Add other section mappings here
+  async mapEditDataToViewOutput(edits, user) {
+    const changeObjsWrappedInArray = edits.map(edit => ({ ...edit, changes: [edit.changes] }))
+    const orderedEdits = this.reorderKeysInChangesArrayWithinEditsToSpecificSequence(changeObjsWrappedInArray)
+    return Promise.all(
+      orderedEdits.map(async edit => ({
+        editDate: edit.editDate,
+        editorName: edit.editorName,
+        whatChanged: this.getWhatChanged(edit.changes),
+        changedFrom: await this.getChangedFrom(edit.changes, user),
+        changedTo: await this.getChangedTo(edit.changes, user),
+        reason: this.mapReasonToTitleAndText(edit),
+        additionalComments: edit.additionalComments,
+      }))
+    )
   }
 
-  async #buildIncidentDetails(username, questionSet, changes) {
-    const result = []
-    const keys = Object.keys(changes)
+  reorderKeysInChangesArrayWithinEditsToSpecificSequence(edits) {
+    return edits.map(edit => {
+      const original = edit.changes[0] || {}
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key of keys) {
-      const question = questionSet[key]?.text
-      const entity = questionSet[key]?.entity
-      let isDate = false
-      let isPrison = false
-      let isInternalLocation = false
-      let isBoolean = false
-      let isPerson = false
+      const ordered = sequence.reduce((acc, key) => {
+        if (original[key] !== undefined) {
+          acc[key] = original[key]
+        }
+        return acc
+      }, {})
 
-      if (entity === 'date') isDate = true
-      if (entity === 'prison') isPrison = true
-      if (entity === 'internalLocation') isInternalLocation = true
-      if (entity === 'boolean') isBoolean = true
-      if (entity === 'person') isPerson = true
-
-      if (isDate) {
-        const oldValue = moment(changes[key].oldValue).format('DD/MM/YYYY HH:mm')
-        const newValue = moment(changes[key].newValue).format('DD/MM/YYYY HH:mm')
-        result.push({
-          question,
-          oldValue,
-          newValue,
-        })
-      } else if (isPrison) {
-        const oldValue = await this.#getPrison(username, changes[key].oldValue)
-        const newValue = await this.#getPrison(username, changes[key].newValue)
-        result.push({
-          question,
-          oldValue,
-          newValue,
-        })
-      } else if (isInternalLocation) {
-        const oldValue = await this.#getInternalLocation(username, changes[key].oldValue)
-        const newValue = await this.#getInternalLocation(username, changes[key].newValue)
-        result.push({
-          question,
-          oldValue,
-          newValue,
-        })
-      } else if (isPerson || isBoolean) {
-        result.push({
-          question,
-          oldValue: changes[key].oldValue,
-          newValue: changes[key].newValue,
-        })
-      } else {
-        result.push({
-          question,
-          oldValue: changes[key].oldValue ? this.#getArrayContentsAsString(changes[key].oldValue) : undefined,
-          newValue: changes[key].newValue ? this.#getArrayContentsAsString(changes[key].newValue) : undefined,
-        })
+      return {
+        ...edit,
+        changes: [ordered],
       }
+    })
+  }
+
+  getWhatChanged(changes) {
+    const changeObject = changes[0]
+    const keys = Object.keys(changeObject)
+    return keys.map(k => changeObject[k].question)
+  }
+
+  async getChangedFrom(changes, user) {
+    const changeObject = changes[0]
+    const keys = Object.keys(changeObject)
+
+    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k].oldValue, user)))
+  }
+
+  async getChangedTo(changes, user) {
+    const changeObject = changes[0]
+    const keys = Object.keys(changeObject)
+
+    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k].newValue, user)))
+  }
+
+  // this is converting, dates, locationIds, prisonIds etc to the values to be displayed in edit history page
+  async applyCorrectFormat(k, v, user) {
+    const handlers = {
+      [QUESTION_ID.INCIDENT_DATE]: () => moment(v).format('DD/MM/YYYY HH:mm'),
+
+      [QUESTION_ID.AGENCY_ID]: async () => {
+        const token = await this.authService.getSystemClientToken(user.username)
+        const result = await this.locationService.getPrisonById(token, v)
+        return result.description
+      },
+
+      [QUESTION_ID.INCIDENT_LOCATION]: async () => {
+        const token = await this.authService.getSystemClientToken(user.username)
+        const result = await this.locationService.getLocation(token, v)
+        return result
+      },
+
+      [QUESTION_ID.PLANNED_UOF]: () => (v === true ? 'Yes' : 'No'),
+
+      [QUESTION_ID.AUTHORISED_BY]: () => v,
+
+      [QUESTION_ID.WITNESSES]: () => (Array.isArray(v) && v.length > 0 ? v.map(obj => obj.name).join(', ') : ''),
+
+      // add more handlers here for all the other pages
     }
-    return result
+
+    const handler = handlers[k]
+    return handler ? handler() : v
   }
 
-  #getQuestionSet(reportSection) {
-    return this.questionSets[reportSection?.section] || {}
-  }
+  mapReasonToTitleAndText(data) {
+    switch (data.reason) {
+      case REASON.ERROR_IN_REPORT:
+        return REASON.ERROR_IN_REPORT_DESCRIPTION
 
-  #getArrayContentsAsString(content: { name: string }[]): string {
-    return content.map(c => c.name).join(', ')
-  }
+      case REASON.SOMETHING_MISSING:
+        return REASON.SOMETHING_MISSING_DESCRIPTION
 
-  async #getPrison(username, agencyId: string): Promise<string> {
-    const token = await this.authService.getSystemClientToken(username)
-    const prison = await this.locationService.getPrisonById(token, agencyId)
-    return prison.description
-  }
+      case REASON.NEW_EVIDENCE:
+        return REASON.NEW_EVIDENCE_DESCRIPTION
 
-  async #getInternalLocation(username, uuid: string) {
-    const token = await this.authService.getSystemClientToken(username)
-    const location = await this.locationService.getLocation(token, uuid)
-    return location
+      default:
+        return `${REASON.ANOTHER_REASON_DESCRIPTION}: ${data.reasonText}`
+    }
   }
 }

@@ -25,6 +25,7 @@ import { notificationServiceFactory } from './notificationService'
 import { DraftInvolvedStaffService } from './drafts/draftInvolvedStaffService'
 import FeComponentsService from './feComponentsService'
 import AuthService from './authService'
+import EditIncidentDetailsService from './editIncidentDetailsService'
 
 export const services = () => {
   const {
@@ -116,7 +117,14 @@ export const services = () => {
   )
   const feComponentsService = new FeComponentsService(feComponentsClient)
 
-  const reportEditService = new ReportEditService(locationService, authService, reportService)
+  const editIncidentDetailsService = new EditIncidentDetailsService(locationService, authService)
+
+  const reportEditService = new ReportEditService(
+    reportService,
+    editIncidentDetailsService,
+    locationService,
+    authService
+  )
 
   return {
     involvedStaffService,
@@ -133,6 +141,7 @@ export const services = () => {
     draftReportService,
     feComponentsService,
     authService,
+    editIncidentDetailsService,
     reportEditService,
   }
 }

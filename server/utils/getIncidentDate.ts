@@ -1,6 +1,7 @@
 import moment from 'moment'
+import { DateTime } from '../config/edit/incidentDetailsConfig'
 
-export default function getIncidentDate(savedValue: Date, userProvidedValue) {
+export default function getIncidentDate(savedValue: Date, userProvidedValue): DateTime | null {
   if (userProvidedValue) {
     const {
       date,

@@ -89,6 +89,14 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return value ? moment(value).format(format) : null
   })
 
+  njkEnv.addFilter('extractDate', value => {
+    return value ? moment(value).format('DD/MM/YYYY') : null
+  })
+
+  njkEnv.addFilter('extractTime', value => {
+    return value ? moment(value).format('HH:mm') : null
+  })
+
   njkEnv.addFilter('toSelect', (array, valueKey, textKey, value) => {
     const emptyOption = {
       value: '',
@@ -211,7 +219,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   })
 
   njkEnv.addFilter('toYesNoIfTrueFalse', value => {
-    if (value == null) return '\u2013'
     if (value === 'true' || value === true) return 'Yes'
     if (value === 'false' || value === false) return 'No'
     return value

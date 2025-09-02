@@ -1,6 +1,5 @@
 import R from 'ramda'
 import { IncidentClient } from '../data'
-
 import logger from '../../log'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
@@ -159,6 +158,10 @@ export default class ReportService {
     formName: string,
     updatedSection: unknown,
     changes: unknown,
+    reason: string,
+    reasonText: string,
+    reasonAdditionalInfo: string,
+    reportOwnerChanged = false,
     incidentDate?: Date | null
   ): Promise<void> {
     const { id, form } = await this.incidentClient.getReportForReviewer(reportId)
@@ -166,12 +169,31 @@ export default class ReportService {
     const updatedPayload = this.getUpdatedReportWithEdits(form, formName, updatedSection)
 
     if (updatedPayload || incidentDate) {
-      const { username } = currentUser
+      const { username, displayName } = currentUser
       logger.info(`Updated report with id: ${id} for user: ${username}`)
 
+      const dataForEditTable = {
+        username,
+        displayName,
+        reportId,
+        changes: changes[0],
+        reason,
+        reasonText,
+        reasonAdditionalInfo,
+        reportOwnerChanged,
+      }
+
       this.inTransaction(async query => {
-        await this.incidentClient.updateAgencyId(reportId, changes[0].agencyId?.newValue)
-        await this.incidentClient.update(id, incidentDate, updatedPayload, query)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const agencyId = changes.find(obj => 'agencyId' in obj)?.agencyId?.newValue || null // if agencyId is null, the DB query will ensure the current value is retained
+
+        // update original report
+        await this.incidentClient.updateWithEdits(id, incidentDate, agencyId, updatedPayload, query)
+
+        //  add new record into report_edit
+        await this.incidentClient.insertReportEdit(dataForEditTable, query)
+
         await this.reportLogClient.insert(query, username, reportId, 'REPORT_MODIFIED', {
           formName,
           originalSection: form[formName],
