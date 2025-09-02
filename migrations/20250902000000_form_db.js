@@ -1,17 +1,16 @@
-export async function up(knex) {
-  await knex.schema.alterTable('report_edit', table => {
+exports.up = knex =>
+  knex.schema.alterTable('report_edit', table => {
     table.dropColumn('change_to')
     table.dropColumn('old_value_primary')
     table.dropColumn('old_value_secondary')
     table.dropColumn('new_value_primary')
     table.dropColumn('new_value_secondary')
-    table.jsonb('changes').defaultTo('[]').notNullable()
+    table.jsonb('changes').defaultTo('{}').notNullable()
     table.text('reason_text')
   })
-}
 
-export async function down(knex) {
-  await knex.schema.alterTable('report_edit', table => {
+exports.down = knex =>
+  knex.schema.alterTable('report_edit', table => {
     table.dropColumn('changes')
     table.dropColumn('reason_text')
     table.string('change_to')
@@ -20,4 +19,3 @@ export async function down(knex) {
     table.string('new_value_primary')
     table.string('new_value_secondary')
   })
-}
