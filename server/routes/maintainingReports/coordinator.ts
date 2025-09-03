@@ -267,7 +267,7 @@ export default class CoordinatorRoutes {
   }
 
   // submitReasonForChange will also be used for changes to all parts of the report
-  submitReasonForChange: RequestHandler = async (req, res, next) => {
+  submitReasonForChange: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const { reason, reasonText, reasonAdditionalInfo } = req.body
     const sectionDetails = req.flash('sectionDetails')
