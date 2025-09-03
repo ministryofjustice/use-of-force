@@ -748,16 +748,16 @@ describe('coordinator', () => {
         })
     })
 
-    it('Unsuccessful submit redirects to correct page', async () => {
-      reportEditService.persistChanges.mockRejectedValueOnce('')
-      await request(app)
+    it('should log and throw error when persistChanges fails', async () => {
+      reportEditService.persistChanges.mockRejectedValueOnce(new Error('Something failed'))
+      const res = await request(app)
         .post('/1/edit-report/reason-for-change')
-        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some addiitonal text' })
-        .expect(302)
-        .expect('Location', '/1/view-incident')
-        .expect(res => {
-          expect(logger.error).toHaveBeenCalledWith('Could not persist changes for reportId 1', '')
-        })
+        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some additional text' })
+
+      expect(res.status).toBe(500)
+      expect(res.text).toContain('Error')
+
+      expect(logger.error).toHaveBeenCalledWith('Could not persist changes for reportId 1', expect.any(Error))
     })
   })
 

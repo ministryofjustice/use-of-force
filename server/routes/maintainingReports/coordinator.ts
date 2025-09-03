@@ -267,7 +267,7 @@ export default class CoordinatorRoutes {
   }
 
   // submitReasonForChange will also be used for changes to all parts of the report
-  submitReasonForChange: RequestHandler = async (req, res) => {
+  submitReasonForChange: RequestHandler = async (req, res, next) => {
     const { reportId } = req.params
     const { reason, reasonText, reasonAdditionalInfo } = req.body
     const sectionDetails = req.flash('sectionDetails')
@@ -293,16 +293,14 @@ export default class CoordinatorRoutes {
         reasonText,
         reasonAdditionalInfo,
       })
-    } catch (err) {
-      log.error(`Could not persist changes for reportId ${reportId}`, err)
+    } catch (error) {
+      req.session.flash = {}
+      log.error(`Could not persist changes for reportId ${reportId}`, error)
+      throw error
     }
 
-    // fully clear flash to prevent any values being carried over
     req.session.flash = {}
-
-    // set a final flash enabling success message to be displayed in /view-incident page
     req.flash('edit-success-message', { reportSection })
-
     return res.redirect(`/${reportId}/view-incident`)
   }
 
