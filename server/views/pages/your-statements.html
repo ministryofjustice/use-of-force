@@ -77,7 +77,6 @@
 {% else %}
 <p class="govuk-body">You have no statements</p>
 {% endif %}
-
 {% if pageData.totalPages > 1 %}
   {{ mojPagination( pageData | toPagination ) }}
 {% endif %}

@@ -4,10 +4,10 @@
 {% from  "../macros.njk" import overdueBadge %}   
 {% from  "../macros.njk" import removalRequestedBadge %}    
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
-  
   {% if pageData.totalPages > 1 %}
     {{ mojPagination( pageData | toPagination(rawQuery) ) }}
   {% endif %} 
