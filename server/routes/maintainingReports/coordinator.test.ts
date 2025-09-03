@@ -117,6 +117,8 @@ describe('coordinator', () => {
     locationService.getPrisonById.mockResolvedValue({} as Prison)
     reportEditService.constructChangesToView.mockResolvedValue([])
     reportEditService.validateReasonForChangeInput.mockReturnValue([])
+    offenderService.getOffenderDetails.mockResolvedValue({ status: 'Acive' })
+
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -193,6 +195,8 @@ describe('coordinator', () => {
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status') // check that prisoner profile is displayed
           expect(res.text).toContain('Incident details')
           expect(res.text).toContain('Continue')
           expect(res.text).toContain('Cancel')
@@ -442,6 +446,8 @@ describe('coordinator', () => {
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status') // check that prisoner profile is displayed
           expect(res.text).toContain('Reason for changing the incident details')
           expect(res.text).toContain('Save change')
           expect(res.text).toContain('Cancel')

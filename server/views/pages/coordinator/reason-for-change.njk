@@ -1,4 +1,4 @@
-{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% extends "../../formPages/formTemplate.html" %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
@@ -7,21 +7,24 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
+{% set showBacklink = data.showBacklink %}
+{% set backlinkHref = data.backlinkHref %}
+
 {% block content %}
 
-{% if errors.length > 0 %}
+{% if data.errors.length > 0 %}
   {{ govukErrorSummary({
     titleText: "There is a problem",
-    errorList: errors
+    errorList: data.errors
   }) }}
 {% endif %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
-    <h1 class="govuk-heading-xl mainHeading">Reason for changing {{reportSection.text}}</h1>
+    <h1 class="govuk-heading-xl mainHeading">Reason for changing {{data.reportSection.text}}</h1>
 
     {% set rowData = [] %}
-    {% for change in changes %}
+    {% for change in data.changes %}
       {% set rowData = (rowData.push(
               [{
                 text: change.question,
@@ -66,7 +69,8 @@
           id: "reasonText",
           maxlength: 250,
           classes: "govuk-!-width-one-half",
-          errorMessage: errors | findError('reasonText'),
+          errorMessage: data.errors | findError('reasonText'),
+          attributes: {'data-qa':'another-reason-text'},
           hint: {
             text: "Please specify"
           }
@@ -80,7 +84,7 @@
             name: "reason",
             fieldset: {
               legend: {
-                text: "Why are you changing " + reportSection.text + "?",
+                text: "Why are you changing " + data.reportSection.text + "?",
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--m"
               }
@@ -88,7 +92,7 @@
             hint: {
               text: "Select one option"
             },
-             errorMessage: errors | findError('reason'),
+             errorMessage: data.errors | findError('reason'),
             items: [
               {
                 value: "errorInReport",
@@ -109,7 +113,7 @@
                 value: "anotherReasonForEdit",
                 text: "Another reason",
                 attributes: {'data-qa': 'another-reason'},
-                checked: reason === 'anotherReasonForEdit',
+                checked: data.reason === 'anotherReasonForEdit',
                 conditional: {
                   html: reasonHtml
                 }
@@ -121,7 +125,7 @@
           name: "reasonAdditionalInfo",
           id: "reasonAdditionalInfo",
           maxlength: 500,
-          attributes: {'data-qa': 'additional-info'},
+          attributes: {'data-qa': 'additional-info-text'},
           label: {
             text: "Add additional information to explain this change",
             classes: "govuk-label--m",
@@ -140,7 +144,7 @@
             attributes: {'data-qa': 'save-and-continue'}
           }) }}
 
-          <a class="govuk-link" href="/{{reportId}}/view-incident?tab=report"
+          <a class="govuk-link" href="/{{data.reportId}}/view-incident?tab=report"
           data-qa="cancel-edit-reason-link" >Cancel</a>
         </div>
 
