@@ -9,6 +9,11 @@ const reasonForChangePage = () =>
     saveButton: () => cy.get('[data-qa="save-and-continue"]'),
     cancelLink: () => cy.get('[data-qa="cancel-edit-reason-link"]'),
     backLink: () => cy.get('[data-qa="back-link"]'),
+    prisonerProfile: () => cy.get('[data-qa="mini-profile"]'),
+    radioErrorInReport: () => cy.get('[data-qa="error-in-report"]'),
+    radioAnotherReason: () => cy.get('[data-qa="another-reason"]'),
+    anotherReasonText: () => cy.get('[data-qa="another-reason-text"]'),
+    additionalInfoText: () => cy.get('[data-qa="additional-info-text"]'),
   })
 
 module.exports = {

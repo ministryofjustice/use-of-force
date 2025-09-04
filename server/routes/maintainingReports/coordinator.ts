@@ -65,6 +65,7 @@ export default class CoordinatorRoutes {
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const incidentLocationsInPersistedPrison = await this.locationService.getIncidentLocations(
       systemToken,
       report.agencyId
@@ -104,6 +105,7 @@ export default class CoordinatorRoutes {
       locations: incidentLocationsInNewPrison || incidentLocationsInPersistedPrison,
       prison: newPrisonDetails || incidentDetails.prison,
       newAgencyId: newPrison,
+      offenderDetail,
     }
 
     const errors = req.flash('errors')
@@ -245,15 +247,23 @@ export default class CoordinatorRoutes {
     req.flash('changes', changes)
     req.flash('sectionDetails', sectionDetails)
 
-    return res.render('pages/coordinator/reason-for-change.njk', {
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+    const backlinkHref = req.flash('backlinkHref')
+    req.flash('backlinkHref', backlinkHref)
+
+    const data = {
       errors,
       reportSection,
       reportId,
       changes: changesToDisplayInTheReasonsPage,
       reason,
       showBacklink: true,
-      backlinkHref: req.flash('backlinkHref'),
-    })
+      backlinkHref,
+      offenderDetail,
+    }
+
+    return res.render('pages/coordinator/reason-for-change.njk', { data })
   }
 
   // submitReasonForChange will also be used for changes to all parts of the report
@@ -283,13 +293,14 @@ export default class CoordinatorRoutes {
         reasonText,
         reasonAdditionalInfo,
       })
-    } catch (err) {
-      log.error(`Could not persist changes for reportId ${reportId}`, err)
+    } catch (error) {
+      req.session.flash = {}
+      log.error(`Could not persist changes for reportId ${reportId}`, error)
+      throw error
     }
 
-    // fully clear flash to prevent any values being carried over
     req.session.flash = {}
-
+    req.flash('edit-success-message', { reportSection })
     return res.redirect(`/${reportId}/view-incident`)
   }
 

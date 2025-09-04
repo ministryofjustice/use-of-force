@@ -3,6 +3,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 {% import ".././reportDetailMacro.njk" as reportDetail %} 
 {% import "./navigationTabMacro.njk" as navigationTabMacro %}
 
@@ -30,6 +31,25 @@
     {% endif %}
 
   </div>
+
+  {% if data.displaySuccessBanner == true %}
+    <!-- Display success banner if edit happens -->
+    {% set alertHtml %}
+    <p class="govuk-body">
+     You have changed {{data.reportSectionText}} for this report. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
+    </p>
+    {% endset %}
+
+
+    {{ mojAlert({
+      variant: "success",
+      title: "Success",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: alertHtml,
+      attributes: {'data-qa':'success-banner'}
+    }) }}
+  {% endif %}
 
   {{ super() }}
 {% endblock %}

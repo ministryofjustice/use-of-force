@@ -38,6 +38,9 @@ export default class ViewIncidentsRoutes {
       const accessingFromYourReportTab = req.query['your-report']
       const isUsersOwnReport = username === report.username
       const isReviewerOrCoodinator = isReviewer || isCoordinator
+      const reportSectionText = req.flash('edit-success-message')[0]?.reportSection.text
+      // eslint-disable-next-line no-unneeded-ternary
+      const displaySuccessBanner = reportSectionText ? true : false
 
       if ((accessingFromYourReportTab && isUsersOwnReport) || (!accessingFromYourReportTab && isReviewerOrCoodinator)) {
         const dataForReport = {
@@ -50,6 +53,8 @@ export default class ViewIncidentsRoutes {
           isCoordinator,
           incidentId,
           tab: 'report',
+          displaySuccessBanner,
+          reportSectionText,
         }
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }

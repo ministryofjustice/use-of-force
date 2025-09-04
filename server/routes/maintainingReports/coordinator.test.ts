@@ -117,6 +117,8 @@ describe('coordinator', () => {
     locationService.getPrisonById.mockResolvedValue({} as Prison)
     reportEditService.constructChangesToView.mockResolvedValue([])
     reportEditService.validateReasonForChangeInput.mockReturnValue([])
+    offenderService.getOffenderDetails.mockResolvedValue({ status: 'Acive' })
+
     app = appWithAllRoutes(
       {
         involvedStaffService,
@@ -193,6 +195,8 @@ describe('coordinator', () => {
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status') // check that prisoner profile is displayed
           expect(res.text).toContain('Incident details')
           expect(res.text).toContain('Continue')
           expect(res.text).toContain('Cancel')
@@ -442,6 +446,8 @@ describe('coordinator', () => {
         .expect(200)
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status') // check that prisoner profile is displayed
           expect(res.text).toContain('Reason for changing the incident details')
           expect(res.text).toContain('Save change')
           expect(res.text).toContain('Cancel')
@@ -742,16 +748,16 @@ describe('coordinator', () => {
         })
     })
 
-    it('Unsuccessful submit redirects to correct page', async () => {
-      reportEditService.persistChanges.mockRejectedValueOnce('')
-      await request(app)
+    it('should log and throw error when persistChanges fails', async () => {
+      reportEditService.persistChanges.mockRejectedValueOnce(new Error('Something failed'))
+      const res = await request(app)
         .post('/1/edit-report/reason-for-change')
-        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some addiitonal text' })
-        .expect(302)
-        .expect('Location', '/1/view-incident')
-        .expect(res => {
-          expect(logger.error).toHaveBeenCalledWith('Could not persist changes for reportId 1', '')
-        })
+        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some additional text' })
+
+      expect(res.status).toBe(500)
+      expect(res.text).toContain('Error')
+
+      expect(logger.error).toHaveBeenCalledWith('Could not persist changes for reportId 1', expect.any(Error))
     })
   })
 
