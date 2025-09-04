@@ -146,19 +146,23 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     const urlForPage = n => `?${querystring.stringify({ ...query, page: n })}`
 
     const { page, totalPages, previousPage, nextPage, totalCount, min, max } = pageData
-    const items: { text: string; href?: string; selected?: boolean }[] = []
+    const items: { text: string; href?: string; selected?: boolean; classes?: string; type: string }[] = []
 
     const addPage = (n: number) => {
       items.push({
         text: `${n}`,
         href: urlForPage(n),
         selected: n === page,
+        type: 'page',
       })
     }
 
     const addEllipsis = () => {
       items.push({
         text: '…',
+        classes: 'govuk-pagination__item--dots',
+        selected: false,
+        type: 'dots',
       })
     }
 
@@ -169,7 +173,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     } else {
       const isNearStart = page <= 3
       const isNearEnd = page >= totalPages - 2
-
       if (isNearStart) {
         // e.g. [1] 2 3 … 10
         for (let i = 1; i <= 3; i += 1) addPage(i)
