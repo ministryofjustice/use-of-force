@@ -15,7 +15,6 @@ import { Services } from './services'
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
 
-import logger from '../log'
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
 import populateCurrentUser from './middleware/populateCurrentUser'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
@@ -206,31 +205,6 @@ export default function createApp(services: Services): Express {
 
   // CSRF protection
   app.use(setUpCsrf())
-
-  // JWT token refresh
-  app.use(async (req, res, next) => {
-    if (req.user && req.originalUrl !== '/sign-out') {
-      const timeToRefresh = new Date() > req.user.refreshTime
-      if (timeToRefresh) {
-        try {
-          const newToken = await services.signInService.getRefreshedToken(req.user)
-          req.user.token = newToken.token
-          req.user.refreshToken = newToken.refreshToken
-          logger.info(`existing refreshTime in the past by ${new Date().getTime() - req.user.refreshTime}`)
-          logger.info(
-            `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
-              newToken.refreshTime
-            }`
-          )
-          req.user.refreshTime = newToken.refreshTime
-        } catch (error) {
-          logger.error(`Token refresh error: ${req.user.username}`, error.stack)
-          return res.redirect('/sign-out')
-        }
-      }
-    }
-    return next()
-  })
 
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.

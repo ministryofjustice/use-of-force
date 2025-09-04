@@ -5,8 +5,6 @@ declare namespace Express {
     user?: {
       username: string
       token: string
-      refreshToken: string
-      refreshTime: any
     }
     session: any
     logout: () => void
@@ -20,8 +18,6 @@ declare namespace Express {
       user?: {
         username: string
         token: string
-        refreshToken: string
-        refreshTime: number
         firstName: string
         lastName: string
         userId: string

@@ -40,8 +40,6 @@ export type UserWithPrison = FoundUserResult & { prison?: string }
 export type LoggedInUser = {
   username: string
   token: string
-  refreshToken: string
-  refreshTime: Date
   firstName: string
   lastName: string
   userId: string
