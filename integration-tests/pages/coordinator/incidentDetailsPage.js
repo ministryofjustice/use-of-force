@@ -13,6 +13,7 @@ const incidentDetailsPage = () =>
     newValue: () => cy.get('[data-qa="new-value"]'),
     errorSummary: () => cy.get('.govuk-error-summary__body'),
     errorMessage: () => cy.get('.govuk-error-message'),
+    hourOfIncident: () => cy.get('[data-qa="incident-date-hour"]'),
   })
 
 module.exports = {

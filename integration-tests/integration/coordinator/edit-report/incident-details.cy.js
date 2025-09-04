@@ -3,6 +3,7 @@ import NotCompletedIncidentsPage from '../../../pages/reviewer/notCompletedIncid
 import CompletedIncidentsPage from '../../../pages/reviewer/completedIncidentsPage'
 import ViewIncidentPage from '../../../pages/coordinator/viewIncidentPage'
 import EditReportPage from '../../../pages/coordinator/editReportPage'
+import EditHistoryPage from '../../../pages/coordinator/editHistoryPage'
 import IncidentDetailsPage from '../../../pages/coordinator/incidentDetailsPage'
 import PrisonPage from '../../../pages/coordinator/prisonPage'
 import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
@@ -217,11 +218,11 @@ context('A use of force coordinator needs to edit incident-details', () => {
   })
 
   context('complete reports', () => {
-    it('A coordinator can access the edit incident details page for a complete report', () => {
+    it('A coordinator can edit the incident details and eventually view the edit history', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
-        submittedDate: moment().toDate(),
-        incidentDate: moment('2019-01-22 09:57:00.000'),
+        submittedDate: moment('2025-07-23 09:57:00.000'),
+        incidentDate: moment('2025-07-22 09:57:00.000'),
         agencyId: offender.agencyId,
         bookingId: offender.bookingId,
         sequenceNumber: 1,
@@ -241,7 +242,70 @@ context('A use of force coordinator needs to edit incident-details', () => {
 
       const editReportPage = EditReportPage.verifyOnPage()
       editReportPage.changeIncidentDetailsLink().click()
-      IncidentDetailsPage.verifyOnPage()
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.hourOfIncident().click().clear().type(10)
+      incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.backLink().should('exist')
+      reasonForChangePage.prisonerProfile().should('exist')
+      reasonForChangePage.question().should('contain', 'Incident date')
+      reasonForChangePage.oldValue().should('contain', '22/07/2025 09:57')
+      reasonForChangePage.newValue().should('contain', '22/07/2025 10:57')
+      reasonForChangePage.radioAnotherReason().click()
+      reasonForChangePage.anotherReasonText().type('Some more details')
+      reasonForChangePage.additionalInfoText().type('Some even more additional details')
+      reasonForChangePage.saveButton().click()
+
+      ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.successBanner().should('exist')
+      viewIncidentPage.editHistoryLinkInSuccessBanner().click()
+      const editHistoryPage = EditHistoryPage.verifyOnPage()
+      editHistoryPage.tableRow(4).should('contain', 'Incident date')
+      editHistoryPage.tableRow(5).should('contain', '22/07/2025 09:57')
+      editHistoryPage.tableRow(6).should('contain', '22/07/2025 10:57')
+      editHistoryPage.tableRow(7).should('contain', 'Another reason: Some more details')
+      editHistoryPage.summaryTextLink().click()
+      editHistoryPage.summaryText().should('contain', 'Some even more additional details')
+    })
+
+    it.only('A coordinator can complete an edit without adding additional info text', () => {
+      cy.task('seedReport', {
+        status: ReportStatus.COMPLETE,
+        submittedDate: moment('2025-07-23 09:57:00.000'),
+        incidentDate: moment('2025-07-22 09:57:00.000'),
+        agencyId: offender.agencyId,
+        bookingId: offender.bookingId,
+        sequenceNumber: 1,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
+
+      const completedIncidentsPage = CompletedIncidentsPage.goTo()
+      completedIncidentsPage.viewIncidentLink().click()
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeIncidentDetailsLink().click()
+      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
+      incidentDetailsPage.hourOfIncident().click().clear().type(10)
+      incidentDetailsPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.radioAnotherReason().click()
+      reasonForChangePage.anotherReasonText().type('Some more details')
+      reasonForChangePage.saveButton().click()
+
+      ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editHistoryLinkInSuccessBanner().click()
+      const editHistoryPage = EditHistoryPage.verifyOnPage()
+      editHistoryPage.summaryTextLink().should('not.exist')
     })
   })
 })

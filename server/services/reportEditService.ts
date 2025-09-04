@@ -87,6 +87,7 @@ export default class ReportEditService {
       )
     } catch (e) {
       logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      throw e
     }
   }
 
