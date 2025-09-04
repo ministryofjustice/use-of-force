@@ -161,6 +161,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
       items.push({
         text: '…',
         classes: 'govuk-pagination__item--dots',
+        selected: false,
         type: 'dots',
       })
     }
@@ -172,7 +173,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     } else {
       const isNearStart = page <= 3
       const isNearEnd = page >= totalPages - 2
-
       if (isNearStart) {
         // e.g. [1] 2 3 … 10
         for (let i = 1; i <= 3; i += 1) addPage(i)
