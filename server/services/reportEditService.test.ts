@@ -5,6 +5,7 @@ import AuthService from './authService'
 import ReportService from './reportService'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import questionSets from '../config/edit/questionSets'
+import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 
 jest.mock('./authService')
 jest.mock('./locationService')
@@ -12,6 +13,8 @@ const locationService = new LocationService(null, null) as jest.Mocked<LocationS
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
 const editIncidentDetailsService = new EditIncidentDetailsService(null, null) as jest.Mocked<EditIncidentDetailsService>
+const editRelocationAndInjuriesService =
+  new EditRelocationAndInjuriesService() as jest.Mocked<EditRelocationAndInjuriesService>
 
 locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
@@ -20,7 +23,13 @@ let reportEditService
 
 beforeEach(() => {
   authService.getSystemClientToken.mockResolvedValue(`system-token-1`)
-  reportEditService = new ReportEditService(reportService, editIncidentDetailsService, locationService, authService)
+  reportEditService = new ReportEditService(
+    reportService,
+    editIncidentDetailsService,
+    editRelocationAndInjuriesService,
+    locationService,
+    authService
+  )
 })
 
 describe('constructChangesToView', () => {
@@ -257,15 +266,6 @@ describe('applyCorrectFormat', () => {
     expect(result).toEqual('Cell-1')
   })
 
-  it('should return location name', async () => {
-    locationService.getLocation.mockResolvedValue('Cell-1')
-
-    const key = 'incidentLocation'
-    const val = 'UUID-1'
-    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
-    expect(result).toEqual('Cell-1')
-  })
-
   it('should return authorisedby without modification', async () => {
     const key = 'authorisedBy'
     const val = 'Harry'
@@ -292,5 +292,21 @@ describe('applyCorrectFormat', () => {
     ]
     const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
     expect(result).toEqual('jimmy, tom')
+  })
+
+  it('should return staffNeedingMedicalAttention array as a single string', async () => {
+    const key = 'staffNeedingMedicalAttention'
+    const val = [
+      {
+        name: 'jimmy',
+        hospitalisation: true,
+      },
+      {
+        name: 'tom',
+        hospitalisation: false,
+      },
+    ]
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('jimmy (hospitalised), tom')
   })
 })

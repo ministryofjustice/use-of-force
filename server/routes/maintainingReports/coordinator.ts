@@ -18,6 +18,9 @@ import { processInput } from '../../services/validation'
 import ReportEditService from '../../services/reportEditService'
 import log from '../../../log'
 import incidentDetailsConfig from '../../config/edit/incidentDetailsConfig'
+import relocationAndInjuriesConfig, { QUESTION_ID as RAIQID } from '../../config/edit/relocationAndInjuriesConfig'
+
+import * as types from '../../config/types'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -228,6 +231,106 @@ export default class CoordinatorRoutes {
     return res.redirect(`/${reportId}/edit-report/incident-details?new-prison=${req.body.agencyId}`)
   }
 
+  viewEditRelocationAndInjuries: RequestHandler = async (req, res) => {
+    req.flash('changes') // clear out any old data
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const userInput = req.flash('reportId')[0] === reportId ? req.flash('inputsForEditRelocationAndInjuries') : []
+    const input = firstItem(userInput) // there will only be input if user 'back buttons' from submitEditRelocationAndInjuries
+    const pageData = input || report.form.relocationAndInjuries // pageData is either the new inputs or the data currently in report
+
+    const data = {
+      types,
+      offenderDetail,
+      ...pageData,
+      reportId,
+    }
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/relocation-and-injuries.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  submitEditRelocationAndInjuries: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const pageInput = req.body
+
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { payloadFields, errors } = processInput({
+      validationSpec: full.relocationAndInjuries,
+      input: pageInput,
+    })
+
+    req.flash('reportId')
+    req.flash('reportId', reportId)
+
+    req.flash('inputsForEditRelocationAndInjuries', {
+      ...payloadFields,
+      reportId,
+    })
+    if (!isNilOrEmpty(errors)) {
+      req.flash('errors', errors)
+      return res.redirect(req.originalUrl)
+    }
+
+    // create an object containing kv pairs as follows fieldName:payloadValue
+    const valuesToCompareWithReport = Object.values(RAIQID).reduce((acc, current) => {
+      return { ...acc, [current]: payloadFields[current] }
+    }, {})
+
+    // compare new inputs with original report
+    const comparison = this.reportEditService.compareEditsWithReport({
+      report,
+      valuesToCompareWithReport,
+      reportSection: relocationAndInjuriesConfig.SECTION,
+    })
+
+    // extract the data that has changed
+    const changedValues = getChangedValues(comparison, (value: { hasChanged: boolean }) => value.hasChanged === true)
+
+    // if nothing has changed, redirect back with an error message
+    if (R.isEmpty(changedValues)) {
+      const errorSummary = [
+        {
+          href: '#cancelCoordinatorEdit',
+          text: "You must change something or select 'Cancel' to return to the use of force incident page",
+        },
+      ]
+      req.flash('errors', errorSummary)
+      req.flash('noChangeError', 'true')
+      return res.redirect('relocation-and-injuries')
+    }
+
+    // clear flash first
+    req.flash('pageInput')
+    req.flash('changes')
+    req.flash('sectionDetails')
+    req.flash('backlinkHref')
+
+    // valuesToCompareWithReport are the page inputs after processing. One of the things Processing does is convert any 'true/false' to boolean equivalents. As such valuesToCompareWithReport, not the raw input from re.body, should be persisted to report
+    const valuesToBePersistedToReport = valuesToCompareWithReport
+    req.flash('pageInput', valuesToBePersistedToReport)
+
+    const changes = this.reportEditService.removeHasChangedKey(changedValues)
+    req.flash('changes', changes)
+
+    req.flash('sectionDetails', {
+      text: 'relocation and injuries',
+      section: relocationAndInjuriesConfig.SECTION,
+    })
+    req.flash('backlinkHref', 'relocation-and-injuries')
+
+    return res.redirect('reason-for-change')
+  }
+
   // viewReasonForChange will be used for changes to all parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const { reportId } = req.params
@@ -243,7 +346,7 @@ export default class CoordinatorRoutes {
     )
     const reason = req.flash('reason')[0]
 
-    // flash again as needed when persisting
+    // flash again because needed when persisting to report_edit
     req.flash('changes', changes)
     req.flash('sectionDetails', sectionDetails)
 

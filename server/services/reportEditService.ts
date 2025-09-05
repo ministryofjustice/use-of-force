@@ -2,13 +2,21 @@ import moment from 'moment'
 import sequence from '../config/edit/questionSequence'
 import questionSets from '../config/edit/questionSets'
 import incidentDetailsConfig, { QUESTION_ID, REASON } from '../config/edit/incidentDetailsConfig'
+import relocationAndInjuriesConfig, {
+  QUESTION_ID as RAIQID,
+  RELOCATION_LOCATION_DESCRIPTION,
+  RELOCATION_TYPE_DESCRIPTION,
+} from '../config/edit/relocationAndInjuriesConfig'
 import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
 import { PersistData } from './editReports/types/reportEditServiceTypes'
 import compareIncidentDetailsEditWithReport from './editReports/incidentDetails'
+import compareRelocationAndInjuriesEditWithReport from './editReports/relocationAndInjuries'
+
 import ReportService from './reportService'
 import logger from '../../log'
 import EditIncidentDetailsService from './editIncidentDetailsService'
+import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 import AuthService from './authService'
 import LocationService from './locationService'
 
@@ -16,10 +24,12 @@ export default class ReportEditService {
   constructor(
     private readonly reportService: ReportService,
     private readonly editIncidentDetailsService: EditIncidentDetailsService,
+    private readonly editRelocationAndInjuriesService: EditRelocationAndInjuriesService,
     private readonly locationService: LocationService,
     private readonly authService: AuthService
   ) {}
 
+  // used to format the output for the /reason-for-changes page
   async constructChangesToView(username: string, reportSection: { section: string }, changes = []) {
     let response = []
 
@@ -29,6 +39,10 @@ export default class ReportEditService {
         questionSets[reportSection.section],
         changes
       )
+    }
+
+    if (reportSection?.section === relocationAndInjuriesConfig.SECTION) {
+      response = await this.editRelocationAndInjuriesService.buildDetails(questionSets[reportSection.section], changes)
     }
     // add similar ifs for the other page
 
@@ -40,10 +54,10 @@ export default class ReportEditService {
       case incidentDetailsConfig.SECTION:
         return compareIncidentDetailsEditWithReport(report, valuesFromRequestBody)
 
-      // add more sections as needed, eg:
-      // case anotherSectionConfig.SECTION:
-      //   return compareAnotherSectionEditWithReport(report, valuesFromRequestBody)
+      case relocationAndInjuriesConfig.SECTION:
+        return compareRelocationAndInjuriesEditWithReport(report, valuesFromRequestBody)
 
+      // add more sections as needed
       default:
         return {}
     }
@@ -69,8 +83,15 @@ export default class ReportEditService {
         authorisedBy: JSON.parse(pageInput.plannedUseOfForce) ? pageInput.authorisedBy : undefined,
         incidentLocationId: pageInput.incidentLocationId,
       }
-      // do new if blocks for the other sections of the report here
     }
+
+    if (data.reportSection.section === relocationAndInjuriesConfig.SECTION) {
+      updatedSection = Object.values(RAIQID).reduce((acc, current) => {
+        return { ...acc, [current]: pageInput[current] }
+      }, {})
+    }
+
+    // do new if blocks for the other sections of the report here
 
     try {
       await this.reportService.updateWithEdits(
@@ -83,7 +104,7 @@ export default class ReportEditService {
         data.reasonText,
         data.reasonAdditionalInfo,
         data.reportOwnerChanged,
-        pageInput.incidentDate
+        pageInput.incidentDate || null
       )
     } catch (e) {
       logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
@@ -166,9 +187,10 @@ export default class ReportEditService {
     return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k].newValue, user)))
   }
 
-  // this is converting, dates, locationIds, prisonIds etc to the values to be displayed in edit history page
+  // these handlers convert dates, locationIds, prisonIds, nested objects etc to the values to be displayed in EDIT-HISTORY page
   async applyCorrectFormat(k, v, user) {
     const handlers = {
+      //  handlers for incident-details
       [QUESTION_ID.INCIDENT_DATE]: () => moment(v).format('DD/MM/YYYY HH:mm'),
 
       [QUESTION_ID.AGENCY_ID]: async () => {
@@ -189,10 +211,23 @@ export default class ReportEditService {
 
       [QUESTION_ID.WITNESSES]: () => (Array.isArray(v) && v.length > 0 ? v.map(obj => obj.name).join(', ') : ''),
 
-      // add more handlers here for all the other pages
+      //  handlers for Relocation and Injuries
+      [RAIQID.PRISONER_RELOCATION]: () => RELOCATION_LOCATION_DESCRIPTION[v],
+      [RAIQID.RELOCATION_TYPE]: () => RELOCATION_TYPE_DESCRIPTION[v],
+      [RAIQID.RELOCATION_COMPLIANCY]: () => (v === true ? 'Yes' : 'No'),
+      [RAIQID.HEALTHCARE_INVOLVED]: () => (v === true ? 'Yes' : 'No'),
+      [RAIQID.PRISONER_HOSPITALISATION]: () => (v === true ? 'Yes' : 'No'),
+      [RAIQID.STAFF_MEDICAL_ATTENTION]: () => (v === true ? 'Yes' : 'No'),
+      [RAIQID.PRISONER_INJURIES]: () => (v === true ? 'Yes' : 'No'),
+
+      [RAIQID.STAFF_NEEDING_MEDICAL_ATTENTION]: () =>
+        Array.isArray(v) && v.length > 0
+          ? v.map(obj => (obj.hospitalisation ? `${obj.name} (hospitalised)` : obj.name)).join(', ')
+          : '',
     }
 
     const handler = handlers[k]
+    //  check if a handler exists for a particular question. Otherwise return the input value as-is
     return handler ? handler() : v
   }
 

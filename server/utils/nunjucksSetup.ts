@@ -107,6 +107,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
       value: item[valueKey],
       text: item[textKey],
       selected: item[valueKey] === value,
+      attributes: { 'data-qa': 'item[valueKey]' },
     }))
     return [emptyOption, ...items]
   })
