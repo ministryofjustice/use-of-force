@@ -7,7 +7,11 @@
 <section class="govuk-tabs__panel">
   {% include "../partials/incidentSearchPanel.html" %}
 
-  {% if pageData.totalPages > 1 %}
+  {% if pageData.totalPages == 1 %}
+    <div class="displayPageCountOnly">
+      {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+    </div>
+  {% elif pageData.totalPages > 1 %}
     {{ mojPagination( pageData | toPagination(rawQuery) ) }}
   {% endif %} 
 
