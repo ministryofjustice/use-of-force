@@ -87,6 +87,8 @@ export default class ViewIncidentsRoutes {
         isCoordinator,
         offenderDetail,
         reportEditViewData,
+        ...reportData,
+        statements: submittedStatements,
       }
       return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
     }
