@@ -8,7 +8,7 @@
   {% include "../partials/incidentSearchPanel.html" %}
 
   {% if pageData.totalPages == 1 %}
-    <div class="displayPageCountOnly">
+    <div class="displayResultsCountOnly">
       {{ mojPagination( pageData | toPagination(rawQuery) ) }}
     </div>
   {% elif pageData.totalPages > 1 %}

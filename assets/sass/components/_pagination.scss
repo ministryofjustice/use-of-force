@@ -83,7 +83,7 @@
 
 // Displays only the 'Showing x to x of x results section of the pagination if only 1 page of results
 // Ensures the content is displayed on the right hand side of its parent container
-.displayPageCountOnly {
+.displayResultsCountOnly {
   .moj-pagination__list {
     display: none;
   }
