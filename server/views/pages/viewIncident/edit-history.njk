@@ -28,63 +28,147 @@
   {{ navigationTabMacro.navigation(data, {editHistory:true}) }}
 </div>
 <div class="govuk-grid-column-full">
+  <div class="govuk-grid-row govuk-body negative-margin-top-7">
+    {# this table is for screen view #}
+    <table class="govuk-table edit-history-table govuk-!-display-none-print">
+      <caption class="govuk-table__caption govuk-table__caption--m">Edit history</caption>
 
-<div class="govuk-grid-row govuk-body negative-margin-top-7">
-  <table class="govuk-table edit-history-table">
-    <caption class="govuk-table__caption govuk-table__caption--m">Edit history</caption>
-
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header edit-history-table-width-8">Date</th>
-        <th scope="col" class="govuk-table__header edit-history-table-width-8">Time</th>
-        <th scope="col" class="govuk-table__header edit-history-table-width-8">Changed by</th>
-        <th scope="col" class="govuk-table__header edit-history-table-width-12">What changed</th>
-        <th scope="col" class="govuk-table__header ">Changed from</th>
-        <th scope="col" class="govuk-table__header ">Changed to</th>
-        <th scope="col" class="govuk-table__header">Reason for change</th>
-      </tr>
-    </thead>
-    {% for item in data.reportEditViewData %}
-      <tbody class="govuk-table__body border-bottom-grey">
+      <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractDate}}</td>
-          <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractTime}}</td>
-          <td class="govuk-table__cell edit-history-table-width-8">{{item.editorName}}</td>
-          <td class="govuk-table__cell edit-history-table-width-12">{{item.whatChanged[0]}}</td>
-          <td class="govuk-table__cell">{{item.changedFrom[0]}}</td>
-          <td class="govuk-table__cell">{{item.changedTo[0]}}</td>
-          <td class="govuk-table__cell">{{item.reason}}</td>
+          <th scope="col" class="govuk-table__header edit-history-table-width-8">Date</th>
+          <th scope="col" class="govuk-table__header edit-history-table-width-8">Time</th>
+          <th scope="col" class="govuk-table__header edit-history-table-width-8">Changed by</th>
+          <th scope="col" class="govuk-table__header edit-history-table-width-12">What changed</th>
+          <th scope="col" class="govuk-table__header ">Changed from</th>
+          <th scope="col" class="govuk-table__header ">Changed to</th>
+          <th scope="col" class="govuk-table__header">Reason for change</th>
         </tr>
-        {% set len = item.whatChanged.length %}
-        {% for i in range(1, len) %}
+      </thead>
+      {% for item in data.reportEditViewData %}
+        <tbody class="govuk-table__body border-bottom-grey">
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell">{{item.whatChanged[i]}}</td>
-            <td class="govuk-table__cell">{{item.changedFrom[i]}}</td>
-            <td class="govuk-table__cell">{{item.changedTo[i]}}</td>
-            <td class="govuk-table__cell"></td>        
+            <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractDate}}</td>
+            <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractTime}}</td>
+            <td class="govuk-table__cell edit-history-table-width-8">{{item.editorName}}</td>
+            <td class="govuk-table__cell edit-history-table-width-12">{{item.whatChanged[0]}}</td>
+            <td class="govuk-table__cell">{{item.changedFrom[0]}}</td>
+            <td class="govuk-table__cell">{{item.changedTo[0]}}</td>
+            <td class="govuk-table__cell">{{item.reason}}</td>
           </tr>
+          {% set len = item.whatChanged.length %}
+          {% for i in range(1, len) %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell"></td>
+              <td class="govuk-table__cell"></td>
+              <td class="govuk-table__cell"></td>
+              <td class="govuk-table__cell">{{item.whatChanged[i]}}</td>
+              <td class="govuk-table__cell">{{item.changedFrom[i]}}</td>
+              <td class="govuk-table__cell">{{item.changedTo[i]}}</td>
+              <td class="govuk-table__cell"></td>        
+            </tr>
+          {% endfor %}
+            <tr>
+              <td colspan="6"></td>
+              <td>
+                <!-- If additional comments added -->
+                {% if item.additionalComments %}
+                  {% set additionalComponentHtml %}
+                    {{ item.additionalComments }}
+                  {% endset %}
+                  {{ govukDetails({
+                    summaryText: "Additional comments",
+                    classes: "govuk-!-margin-top-2",
+                    html: additionalComponentHtml
+                  }) }}
+                {% endif %}
+              </td>
+            </tr>
+        </tbody>
+      {% endfor %}
+    </table>
+
+    {# printing report, statements and edit history #}
+    <div class="print"> 
+      {%  set printReport = true %}
+      <h1>Use of force incident {{ data.incidentId }}</h1>
+      
+      {#  print report #}
+        {{
+          reportDetail.detail(data, null, data.incidentId, user, printReport, renderReportView)
+        }}
+
+      {# print statements #}
+      <div class="page-break-before">
+        {% for statement in data.statements %}
+          <h2 class="govuk-heading-l">{{ statement.name }}'s statement</h2>
+          <p> <span class="govuk-label--s"> Submitted: </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p>
+          <p class="pre-wrapped">{{ statement.statement }}</p>
+          {% for additionalComments in statement.additionalComments %}
+            <hr/>
+            <p> <span class="govuk-label--s"> Additional comment submitted: </span> {{additionalComments.dateSubmitted | formatDate('D MMMM YYYY - HH:mm')}}</p>
+            <p class="pre-wrapped">{{ additionalComments.additionalComment}}</p>
+          {% endfor %}
+        <hr>
         {% endfor %}
-          <tr>
-            <td colspan="6"></td>
-            <td>
-              <!-- If additional comments added -->
-              {% if item.additionalComments %}
-                {% set additionalComponentHtml %}
-                  {{ item.additionalComments }}
-                {% endset %}
-                {{ govukDetails({
-                  summaryText: "Additional comments",
-                  classes: "govuk-!-margin-top-2",
-                  html: additionalComponentHtml
-                }) }}
-              {% endif %}
-            </td>
-          </tr>
-      </tbody>
-    {% endfor %}
-  </table>
+      </div> 
+
+      {# print edit history #}
+      <div class="page-break-before">
+        <table class="govuk-table edit-history-table print">
+          <caption class="govuk-table__caption govuk-table__caption--l">Edit history</caption>
+
+          {% for item in data.reportEditViewData %}
+          <tbody class="govuk-table__body">
+
+            <!-- Heading for each change as centered H2 with date and time -->
+              <tr class="govuk-table__row">
+                <td colspan="3">
+                  <div>
+                    <h2 class="govuk-heading-m">Change made on {{ item.editDate | extractDate }} at {{ item.editDate | extractTime }}</h2>
+                  </div>
+                  <div class="border-surround-border-grey govuk-!-padding-3  govuk-!-margin-bottom-5">
+                    <!-- Stack remaining top-level info vertically -->
+                    <div>
+                      <p><strong>Changed by:</strong> {{ item.editorName }}</p>
+                      <p><strong>Reason:</strong> {{ item.reason }}</p>
+                    </div>
+
+                    <!-- Changes table -->
+                    <table class="govuk-table">
+                      <tr class="border-bottom-light-grey">
+                        <th class="govuk-table__header">What changed</th>
+                        <th class="govuk-table__header">Changed from</th>
+                        <th class="govuk-table__header">Changed to</th>
+                      </tr>
+
+                      {% for i in range(0, item.whatChanged.length) %}
+                      <tr class="border-bottom-light-grey">
+                        <td class="govuk-table__cell">{{ item.whatChanged[i] }}</td>
+                        <td class="govuk-table__cell">{{ item.changedFrom[i] }}</td>
+                        <td class="govuk-table__cell">{{ item.changedTo[i] }}</td>
+                      </tr>
+                      {% endfor %}
+                    </table>
+
+                    <!-- Additional comments if any -->
+                    {% if item.additionalComments %}
+                    <h3 class="govuk-heading-s"> Additional comments </h3>
+                      <p>
+                        {{item.additionalComments}}
+                      </p>
+                    </div>
+                    {% endif %}
+                  <div>
+                </td>
+              </tr>
+
+          </tbody>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
+
+
 {% endblock %}

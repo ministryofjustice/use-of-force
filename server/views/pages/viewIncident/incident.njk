@@ -25,8 +25,17 @@
       }) }}
 
     {% if data.isReviewer or data.isCoordinator%}
+    
+      {% set linkText %}
+        {% if data.tab == 'edit-history' %}
+          Print incident and edit history      
+        {% else %}
+          Print report and statements
+        {% endif %}
+      {% endset %}
+
       <div class="float-right">
-        <a href="" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
+        <a href="" class="govuk-link govuk-link--no-visited-state print-link"> {{linkText}} </a>
       </div>
     {% endif %}
 
