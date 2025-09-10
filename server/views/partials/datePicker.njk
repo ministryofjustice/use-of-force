@@ -1,17 +1,17 @@
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
 {%  macro datePicker(params) %}
-<div class="date-picker-container">
-    {{ mojDatePicker({
-        id: params.id,
-        name: params.name,
-        leadingZeros: 'true',
-        label: {
-            text: params.label
-        },
-        value: "DD/MM/YYYY",
-        errorMessage: params.errorMessage
-        }) 
-    }}
+    <div class="date-picker-container">
+        {{ mojDatePicker({
+            id: params.id,
+            name: params.name,
+            leadingZeros: 'true',
+            label: {
+                text: params.label
+            },
+            value: "DD/MM/YYYY",
+            errorMessage: params.errorMessage
+            }) 
+        }}
     </div>
 {%  endmacro %}
