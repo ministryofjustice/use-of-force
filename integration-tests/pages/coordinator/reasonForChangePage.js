@@ -1,10 +1,11 @@
 import page from '../page'
 
+const row = i => cy.get('[data-qa="table"] tbody tr').eq(i)
+const tableCell = (i, colName) => row(i - 1).find(`[data-qa=${colName}]`)
+
 const reasonForChangePage = () =>
   page('Reason for changing', {
-    question: () => cy.get('[data-qa="question"]'),
-    oldValue: () => cy.get('[data-qa="old-value"]'),
-    newValue: () => cy.get('[data-qa="new-value"]'),
+    tableRowAndColHeading: (i, colName) => tableCell(i, colName),
     errorInReportRadio: () => cy.get('[data-qa="error-in-report"]'),
     saveButton: () => cy.get('[data-qa="save-and-continue"]'),
     cancelLink: () => cy.get('[data-qa="cancel-edit-reason-link"]'),

@@ -111,9 +111,9 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.continueButton().click()
 
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
-      reasonForChangePage.question().should('contain', 'Was use of force planned')
-      reasonForChangePage.oldValue().should('contain', 'Yes')
-      reasonForChangePage.newValue().should('contain', 'No')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Was use of force planned')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Yes')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'No')
       reasonForChangePage.errorInReportRadio().click()
       reasonForChangePage.saveButton().click()
 
@@ -135,9 +135,9 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.continueButton().click()
 
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
-      reasonForChangePage.question().should('contain', 'Who authorised use of force')
-      reasonForChangePage.oldValue().should('contain', 'Eric Bloodaxe')
-      reasonForChangePage.newValue().should('contain', 'Eric Bloodaxe-Smith')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Who authorised use of force')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'Eric Bloodaxe-Smith')
 
       cy.task('seedReport', {
         sequenceNumber: 1,
@@ -168,8 +168,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.authorisedByTextInput().should('not.have.value', 'Eric Bloodaxe-Smith')
 
       incidentDetailsPage.continueButton().click()
-      reasonForChangePage.oldValue().should('not.contain', 'Eric Bloodaxe')
-      reasonForChangePage.newValue().should('not.contain', 'Eric Bloodaxe-Smith')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('not.contain', 'Eric Bloodaxe')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('not.contain', 'Eric Bloodaxe-Smith')
     })
 
     it('A coordinator can see their edits when using back link in the /reason-for-change page', () => {
@@ -187,9 +187,9 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.continueButton().click()
 
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
-      reasonForChangePage.question().should('contain', 'Who authorised use of force')
-      reasonForChangePage.oldValue().should('contain', 'Eric Bloodaxe')
-      reasonForChangePage.newValue().should('contain', 'Eric Bloodaxe-Smith')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Who authorised use of force')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'Eric Bloodaxe-Smith')
 
       reasonForChangePage.backLink().click()
 
@@ -249,9 +249,9 @@ context('A use of force coordinator needs to edit incident-details', () => {
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
       reasonForChangePage.backLink().should('exist')
       reasonForChangePage.prisonerProfile().should('exist')
-      reasonForChangePage.question().should('contain', 'Incident date')
-      reasonForChangePage.oldValue().should('contain', '22/07/2025 09:57')
-      reasonForChangePage.newValue().should('contain', '22/07/2025 10:57')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Incident date')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
       reasonForChangePage.radioAnotherReason().click()
       reasonForChangePage.anotherReasonText().type('Some more details')
       reasonForChangePage.additionalInfoText().type('Some even more additional details')
@@ -261,15 +261,15 @@ context('A use of force coordinator needs to edit incident-details', () => {
       viewIncidentPage.successBanner().should('exist')
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
       const editHistoryPage = EditHistoryPage.verifyOnPage()
-      editHistoryPage.tableRow(4).should('contain', 'Incident date')
-      editHistoryPage.tableRow(5).should('contain', '22/07/2025 09:57')
-      editHistoryPage.tableRow(6).should('contain', '22/07/2025 10:57')
-      editHistoryPage.tableRow(7).should('contain', 'Another reason: Some more details')
-      editHistoryPage.summaryTextLink().click()
-      editHistoryPage.summaryText().should('contain', 'Some even more additional details')
+      editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'Incident date')
+      editHistoryPage.tableRowAndColHeading(1, 'changed-from').should('contain', '22/07/2025 09:57')
+      editHistoryPage.tableRowAndColHeading(1, 'changed-to').should('contain', '22/07/2025 10:57')
+      editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
+      editHistoryPage.summaryTextLink(2).click()
+      editHistoryPage.tableRowAndSummaryText(2).should('contain', 'Some even more additional details')
     })
 
-    it.only('A coordinator can complete an edit without adding additional info text', () => {
+    it('A coordinator can complete an edit without adding additional info text', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
         submittedDate: moment('2025-07-23 09:57:00.000'),
@@ -305,7 +305,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       ViewIncidentPage.verifyOnPage()
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
       const editHistoryPage = EditHistoryPage.verifyOnPage()
-      editHistoryPage.summaryTextLink().should('not.exist')
+      editHistoryPage.summaryTextLink(1).should('not.exist')
     })
   })
 })

@@ -49,11 +49,11 @@
           <tr class="govuk-table__row">
             <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractDate}}</td>
             <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractTime}}</td>
-            <td class="govuk-table__cell edit-history-table-width-8">{{item.editorName}}</td>
-            <td class="govuk-table__cell edit-history-table-width-12">{{item.whatChanged[0]}}</td>
-            <td class="govuk-table__cell">{{item.changedFrom[0]}}</td>
-            <td class="govuk-table__cell">{{item.changedTo[0]}}</td>
-            <td class="govuk-table__cell">{{item.reason}}</td>
+            <td class="govuk-table__cell edit-history-table-width-8" data-qa="changed-by">{{item.editorName}}</td>
+            <td class="govuk-table__cell edit-history-table-width-12" data-qa="what-changed">{{item.whatChanged[0]}}</td>
+            <td class="govuk-table__cell" data-qa="changed-from">{{item.changedFrom[0]}}</td>
+            <td class="govuk-table__cell" data-qa="changed-to">{{item.changedTo[0]}}</td>
+            <td class="govuk-table__cell" data-qa="reason">{{item.reason}}</td>
           </tr>
           {% set len = item.whatChanged.length %}
           {% for i in range(1, len) %}

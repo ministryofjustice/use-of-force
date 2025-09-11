@@ -1,4 +1,5 @@
 import { QUESTION_SET } from './incidentDetailsConfig'
+import { QUESTION_SET as RAIQS } from './relocationAndInjuriesConfig'
 
 // this will hold the questions every page. Keys to match those in db
 export default {
@@ -9,6 +10,19 @@ export default {
     plannedUseOfForce: QUESTION_SET.PLANNED_UOF,
     authorisedBy: QUESTION_SET.AUTHORISED_BY,
     incidentDate: QUESTION_SET.INCIDENT_DATE,
+  },
+  relocationAndInjuries: {
+    prisonerRelocation: RAIQS.PRISONER_RELOCATION,
+    relocationCompliancy: RAIQS.RELOCATION_COMPLIANCY,
+    relocationType: RAIQS.RELOCATION_TYPE,
+    userSpecifiedRelocationType: RAIQS.USER_SPECIFIED_RELOCATION_TYPE,
+    f213CompletedBy: RAIQS.F213_COMPLETED_BY,
+    prisonerInjuries: RAIQS.PRISONER_INJURIES,
+    healthcareInvolved: RAIQS.HEALTHCARE_INVOLVED,
+    healthcarePractionerName: RAIQS.HEALTHCARE_PRACTIONER_NAME,
+    prisonerHospitalisation: RAIQS.PRISONER_HOSPITALISATION,
+    staffMedicalAttention: RAIQS.STAFF_MEDICAL_ATTENTION,
+    staffNeedingMedicalAttention: RAIQS.STAFF_NEEDING_MEDICAL_ATTENTION,
   },
   // Add mappings for the other sections/pages of the report here. Keys to be in the order to display in reasons page
 }
