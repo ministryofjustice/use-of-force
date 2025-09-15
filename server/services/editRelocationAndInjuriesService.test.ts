@@ -88,53 +88,53 @@ describe('buildDetails', () => {
     }
     const expectedResult = [
       {
-        question: 'Where was the prisoner relocated to',
+        question: 'Where was the prisoner relocated to?',
         oldValue: 'Reception',
         newValue: 'Own cell',
       },
       {
-        question: 'Was the prisoner compliant',
+        question: 'Was the prisoner compliant?',
         oldValue: false,
         newValue: true,
       },
       {
-        question: 'What was the type of relocation',
+        question: 'What was the type of relocation?',
         oldValue: 'Full relocation',
         newValue: undefined,
       },
       {
-        question: 'Who completed the F213 form',
+        question: 'Who completed the F213 form?',
         oldValue: 'Mr Fowler',
         newValue: 'Mr Fowler-Smith',
       },
       {
-        question: 'Did the prisoner sustain any injuries at the time',
+        question: 'Did the prisoner sustain any injuries at the time?',
         oldValue: true,
         newValue: false,
       },
       {
         question:
-          'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)',
+          'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Name of healthcare member present ',
+        question: 'Name of healthcare member present?',
         oldValue: 'Dr Harold',
         newValue: undefined,
       },
       {
-        question: 'Did the prisoner need outside hospitalisation at the time',
+        question: 'Did the prisoner need outside hospitalisation at the time?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Did a member of staff need medical attention at the time',
+        question: 'Did a member of staff need medical attention at the time?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Name of who needed medical attention',
+        question: 'Name of who needed medical attention?',
         oldValue: 'Tony, John (went to hosptial), Harry (went to hosptial)',
         newValue: 'Tony, John, Harry',
       },
@@ -210,38 +210,38 @@ describe('buildDetails', () => {
     }
     const expectedResult = [
       {
-        question: 'Who completed the F213 form',
+        question: 'Who completed the F213 form?',
         oldValue: 'Mr Fowler',
         newValue: 'Mr Fowler-Smith',
       },
       {
-        question: 'Did the prisoner sustain any injuries at the time',
+        question: 'Did the prisoner sustain any injuries at the time?',
         oldValue: true,
         newValue: false,
       },
       {
         question:
-          'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)',
+          'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Name of healthcare member present ',
+        question: 'Name of healthcare member present?',
         oldValue: 'Dr Harold',
         newValue: undefined,
       },
       {
-        question: 'Did the prisoner need outside hospitalisation at the time',
+        question: 'Did the prisoner need outside hospitalisation at the time?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Did a member of staff need medical attention at the time',
+        question: 'Did a member of staff need medical attention at the time?',
         oldValue: true,
         newValue: false,
       },
       {
-        question: 'Name of who needed medical attention',
+        question: 'Name of who needed medical attention?',
         oldValue: 'Tony, John (went to hosptial), Harry (went to hosptial)',
         newValue: 'Tony, John, Harry',
       },

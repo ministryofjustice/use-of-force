@@ -389,6 +389,8 @@ export default class CoordinatorRoutes {
       req.flash('reason')
       req.flash('reasonText')
       req.flash('reasonAdditionalInfo')
+      req.flash('errors')
+
       req.flash('reason', reason)
       req.flash('reasonText', reasonText)
       req.flash('reasonAdditionalInfo', reasonAdditionalInfo)

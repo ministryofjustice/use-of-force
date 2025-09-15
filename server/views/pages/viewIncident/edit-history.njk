@@ -51,8 +51,8 @@
             <td class="govuk-table__cell edit-history-table-width-8">{{item.editDate | extractTime}}</td>
             <td class="govuk-table__cell edit-history-table-width-8" data-qa="changed-by">{{item.editorName}}</td>
             <td class="govuk-table__cell edit-history-table-width-12" data-qa="what-changed">{{item.whatChanged[0]}}</td>
-            <td class="govuk-table__cell" data-qa="changed-from">{{item.changedFrom[0]}}</td>
-            <td class="govuk-table__cell" data-qa="changed-to">{{item.changedTo[0]}}</td>
+            <td class="govuk-table__cell" data-qa="old-value">{{item.changedFrom[0] | default('Not applicable', true)}}</td>
+            <td class="govuk-table__cell" data-qa="new-value">{{item.changedTo[0] | default('Not applicable', true)}}</td>
             <td class="govuk-table__cell" data-qa="reason">{{item.reason}}</td>
           </tr>
           {% set len = item.whatChanged.length %}
@@ -62,8 +62,8 @@
               <td class="govuk-table__cell"></td>
               <td class="govuk-table__cell"></td>
               <td class="govuk-table__cell">{{item.whatChanged[i]}}</td>
-              <td class="govuk-table__cell">{{item.changedFrom[i]}}</td>
-              <td class="govuk-table__cell">{{item.changedTo[i]}}</td>
+              <td class="govuk-table__cell" data-qa="old-value">{{item.changedFrom[i] | default('Not applicable', true)}}</td>
+              <td class="govuk-table__cell" data-qa="new-value">{{item.changedTo[i] | default('Not applicable', true)}}</td>
               <td class="govuk-table__cell"></td>        
             </tr>
           {% endfor %}
@@ -141,8 +141,8 @@
                       {% for i in range(0, item.whatChanged.length) %}
                       <tr class="border-bottom-light-grey">
                         <td class="govuk-table__cell">{{ item.whatChanged[i] }}</td>
-                        <td class="govuk-table__cell">{{ item.changedFrom[i] }}</td>
-                        <td class="govuk-table__cell">{{ item.changedTo[i] }}</td>
+                        <td class="govuk-table__cell">{{ item.changedFrom[i] | default('Not applicable', true) }}</td>
+                        <td class="govuk-table__cell">{{ item.changedTo[i] | default('Not applicable', true) }}</td>
                       </tr>
                       {% endfor %}
                     </table>

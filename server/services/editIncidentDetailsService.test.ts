@@ -99,11 +99,11 @@ describe('buildIncidentDetails', () => {
 
     const result = await editIncidentDetailsService.buildIncidentDetails('user-1', questionSet, changes)
     const expectedResult = [
-      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'Incident date' },
-      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Incident location' },
+      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'When did the incident happen?' },
+      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Where did the incident happen?' },
       { newValue: 'Aylesbury (HMP)', oldValue: 'Whitemoor (HMP)', question: 'Prison' },
-      { newValue: false, oldValue: true, question: 'Was use of force planned' },
-      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force' },
+      { newValue: false, oldValue: true, question: 'Was use of force planned?' },
+      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force?' },
       { newValue: 'John Smith', oldValue: 'John Smith, Tom', question: 'Witnesses to the incident' },
     ]
     expect(result).toEqual(expectedResult)
@@ -127,11 +127,11 @@ describe('buildIncidentDetails', () => {
 
     const result = await editIncidentDetailsService.buildIncidentDetails('user-1', questionSet, changes)
     const expectedResult = [
-      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'Incident date' },
-      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Incident location' },
+      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'When did the incident happen?' },
+      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Where did the incident happen?' },
       { newValue: 'Aylesbury (HMP)', oldValue: 'Whitemoor (HMP)', question: 'Prison' },
-      { newValue: false, oldValue: true, question: 'Was use of force planned' },
-      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force' },
+      { newValue: false, oldValue: true, question: 'Was use of force planned?' },
+      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force?' },
       { newValue: 'John Smith', oldValue: undefined, question: 'Witnesses to the incident' },
     ]
     expect(result).toEqual(expectedResult)
@@ -153,11 +153,11 @@ describe('buildIncidentDetails', () => {
 
     const result = await editIncidentDetailsService.buildIncidentDetails('user-1', questionSet, changes)
     const expectedResult = [
-      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'Incident date' },
-      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Incident location' },
+      { newValue: '27/07/2025 14:30', oldValue: '26/07/2025 15:30', question: 'When did the incident happen?' },
+      { newValue: 'Cell two', oldValue: 'Cell one', question: 'Where did the incident happen?' },
       { newValue: 'Aylesbury (HMP)', oldValue: 'Whitemoor (HMP)', question: 'Prison' },
-      { newValue: false, oldValue: true, question: 'Was use of force planned' },
-      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force' },
+      { newValue: false, oldValue: true, question: 'Was use of force planned?' },
+      { newValue: undefined, oldValue: 'John', question: 'Who authorised use of force?' },
       { newValue: undefined, oldValue: 'John Smith', question: 'Witnesses to the incident' },
     ]
     expect(result).toEqual(expectedResult)
