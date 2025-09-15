@@ -70,17 +70,14 @@
             <tr>
               <td colspan="6"></td>
               <td>
-                <!-- If additional comments added -->
-                {% if item.additionalComments %}
-                  {% set additionalComponentHtml %}
-                    {{ item.additionalComments }}
-                  {% endset %}
-                  {{ govukDetails({
-                    summaryText: "Additional comments",
-                    classes: "govuk-!-margin-top-2",
-                    html: additionalComponentHtml
-                  }) }}
-                {% endif %}
+                {% set additionalComponentHtml %}
+                  {{ item.additionalComments }}
+                {% endset %}
+                {{ govukDetails({
+                  summaryText: "Additional comments",
+                  classes: "govuk-!-margin-top-2",
+                  html: additionalComponentHtml
+                }) }}
               </td>
             </tr>
         </tbody>
