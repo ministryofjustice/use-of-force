@@ -96,7 +96,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
     })
 
-    it('The coordinator can view their edits prior to completing the process', () => {
+    it.only('The coordinator can view their edits prior to completing the process', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -115,6 +115,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Yes')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'No')
       reasonForChangePage.errorInReportRadio().click()
+      reasonForChangePage.additionalInfoText().type('Some additional info text')
       reasonForChangePage.saveButton().click()
 
       ViewIncidentPage.verifyOnPage()
