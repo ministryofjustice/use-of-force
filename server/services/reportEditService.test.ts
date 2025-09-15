@@ -149,8 +149,8 @@ describe('removeHasChangedKey', () => {
   })
 })
 describe('validateReasonForChangeInput', () => {
-  it('Should return error when no reason provided', () => {
-    const input = { reportSection: { text: 'the incident details' } }
+  it('Should return error when no reason or additional info provided', () => {
+    const input = { reportSection: { section: 'incidentDetails', text: 'the incident details' } }
 
     const result = reportEditService.validateReasonForChangeInput(input)
     expect(result).toEqual([
@@ -158,20 +158,50 @@ describe('validateReasonForChangeInput', () => {
         href: '#reason',
         text: `Provide a reason for changing the incident details`,
       },
+      {
+        href: '#reasonAdditionalInfo',
+        text: 'Provide additional information to explain the changes you are making',
+      },
     ])
   })
 
-  it("Should return correct error when 'anotherReasonForEdit' provided but no accompanying explanation text", () => {
-    const input = { reason: 'anotherReasonForEdit', reportSection: { text: 'the incident details' } }
+  it("Should return correct error when 'another reason' selected but no accompanying text or reasonAdditionalInfo text ", () => {
+    const input = {
+      reason: 'anotherReasonForEdit',
+      reportSection: { section: 'incidentDetails', text: 'the incident details' },
+    }
 
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([{ href: '#reasonText', text: 'Specify the reason for changing the incident details' }])
+    expect(result).toEqual([
+      { href: '#reasonText', text: 'Specify the reason for changing the incident details' },
+      {
+        href: '#reasonAdditionalInfo',
+        text: 'Provide additional information to explain the changes you are making',
+      },
+    ])
+  })
+
+  it("Should return correct error when 'other reason' selected and corresponding text provided but 'additional info' text missing", () => {
+    const input = {
+      reason: 'anotherReasonForEdit',
+      reasonText: 'some reason text',
+      reportSection: { section: 'incidentDetails', text: 'the incident details' },
+    }
+
+    const result = reportEditService.validateReasonForChangeInput(input)
+    expect(result).toEqual([
+      {
+        href: '#reasonAdditionalInfo',
+        text: 'Provide additional information to explain the changes you are making',
+      },
+    ])
   })
 
   it('should return no validation errors', () => {
     const input = {
       reason: 'errorInReport',
       reasonText: '',
+      reasonAdditionalInfo: 'additional info text',
       reportSection: {
         text: 'the incident details',
         section: 'incidentDetails',

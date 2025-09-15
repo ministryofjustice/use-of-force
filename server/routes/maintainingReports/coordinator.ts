@@ -344,7 +344,6 @@ export default class CoordinatorRoutes {
       reportSection,
       changes[0]
     )
-    const reason = req.flash('reason')[0]
 
     // flash again because needed when persisting to report_edit
     req.flash('changes', changes)
@@ -360,7 +359,9 @@ export default class CoordinatorRoutes {
       reportSection,
       reportId,
       changes: changesToDisplayInTheReasonsPage,
-      reason,
+      reason: req.flash('reason')[0],
+      reasonText: req.flash('reasonText')[0],
+      reasonAdditionalInfo: req.flash('reasonAdditionalInfo')[0],
       showBacklink: true,
       backlinkHref,
       offenderDetail,
@@ -377,11 +378,21 @@ export default class CoordinatorRoutes {
     const reportSection = sectionDetails[0]
     req.flash('sectionDetails', sectionDetails)
 
-    const validationError = this.reportEditService.validateReasonForChangeInput({ reason, reasonText, reportSection })
-    if (validationError.length > 0) {
-      req.flash('reason') // clear any old values first
+    const validationErrors = this.reportEditService.validateReasonForChangeInput({
+      reason,
+      reasonText,
+      reasonAdditionalInfo,
+      reportSection,
+    })
+    if (validationErrors.length > 0) {
+      // clear any old values first
+      req.flash('reason')
+      req.flash('reasonText')
+      req.flash('reasonAdditionalInfo')
       req.flash('reason', reason)
-      req.flash('errors', validationError)
+      req.flash('reasonText', reasonText)
+      req.flash('reasonAdditionalInfo', reasonAdditionalInfo)
+      req.flash('errors', validationErrors)
       return res.redirect(`/${reportId}/edit-report/reason-for-change`)
     }
 
@@ -393,7 +404,7 @@ export default class CoordinatorRoutes {
         reportSection,
         changes,
         reason,
-        reasonText,
+        reasonText: reason === 'anotherReasonForEdit' ? reasonText : '',
         reasonAdditionalInfo,
       })
     } catch (error) {

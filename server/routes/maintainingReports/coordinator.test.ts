@@ -1034,13 +1034,14 @@ describe('coordinator', () => {
 
       await request(app)
         .post('/1/edit-report/reason-for-change')
-        .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some addiitonal text' })
+        .send({ reason: 'anotherReasonForEdit', reasonText: 'Some text', reasonAdditionalInfo: 'Some additional text' })
         .expect(302)
         .expect('Location', '/1/view-incident')
         .expect(() => {
           expect(reportEditService.validateReasonForChangeInput).toHaveBeenCalledWith({
-            reason: 'someReason',
+            reason: 'anotherReasonForEdit',
             reasonText: 'Some text',
+            reasonAdditionalInfo: 'Some additional text',
             reportSection: { section: 'incidentDetails', text: 'the incident details' },
           })
           expect(reportEditService.persistChanges).toHaveBeenCalledWith(
@@ -1059,9 +1060,53 @@ describe('coordinator', () => {
             {
               changes: [],
               pageInput: [],
-              reason: 'someReason',
-              reasonAdditionalInfo: 'Some addiitonal text',
+              reason: 'anotherReasonForEdit',
+              reasonAdditionalInfo: 'Some additional text',
               reasonText: 'Some text',
+              reportId: '1',
+              reportSection: { section: 'incidentDetails', text: 'the incident details' },
+            }
+          )
+        })
+    })
+
+    it("should not persist 'other reason' text unless the reason is 'anotherReasonForEdit'", async () => {
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
+
+      await request(app)
+        .post('/1/edit-report/reason-for-change')
+        .send({
+          reason: 'somethingMissingFromReport',
+          reasonText: 'Some text',
+          reasonAdditionalInfo: 'Some additional text',
+        })
+        .expect(302)
+        .expect('Location', '/1/view-incident')
+        .expect(() => {
+          expect(reportEditService.persistChanges).toHaveBeenCalledWith(
+            {
+              activeCaseLoadId: 'LEI',
+              displayName: 'First Last',
+              firstName: 'first',
+              isAdmin: false,
+              isCoordinator: true,
+              isReviewer: true,
+              lastName: 'last',
+              token: 'token',
+              userId: 'id',
+              username: 'user1',
+            },
+            {
+              changes: [],
+              pageInput: [],
+              reason: 'somethingMissingFromReport',
+              reasonAdditionalInfo: 'Some additional text',
+              reasonText: '',
               reportId: '1',
               reportSection: { section: 'incidentDetails', text: 'the incident details' },
             }

@@ -115,6 +115,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Yes')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'No')
       reasonForChangePage.errorInReportRadio().click()
+      reasonForChangePage.additionalInfoText().type('Some additional info text')
       reasonForChangePage.saveButton().click()
 
       ViewIncidentPage.verifyOnPage()
@@ -267,45 +268,6 @@ context('A use of force coordinator needs to edit incident-details', () => {
       editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
       editHistoryPage.summaryTextLink(2).click()
       editHistoryPage.tableRowAndSummaryText(2).should('contain', 'Some even more additional details')
-    })
-
-    it('A coordinator can complete an edit without adding additional info text', () => {
-      cy.task('seedReport', {
-        status: ReportStatus.COMPLETE,
-        submittedDate: moment('2025-07-23 09:57:00.000'),
-        incidentDate: moment('2025-07-22 09:57:00.000'),
-        agencyId: offender.agencyId,
-        bookingId: offender.bookingId,
-        sequenceNumber: 1,
-        involvedStaff: [
-          {
-            username: 'TEST_USER',
-            name: 'TEST_USER name',
-            email: 'TEST_USER@gov.uk',
-          },
-        ],
-      })
-
-      const completedIncidentsPage = CompletedIncidentsPage.goTo()
-      completedIncidentsPage.viewIncidentLink().click()
-      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-      viewIncidentPage.editReportButton().click()
-
-      const editReportPage = EditReportPage.verifyOnPage()
-      editReportPage.changeIncidentDetailsLink().click()
-      const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-      incidentDetailsPage.hourOfIncident().click().clear().type(10)
-      incidentDetailsPage.continueButton().click()
-
-      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
-      reasonForChangePage.radioAnotherReason().click()
-      reasonForChangePage.anotherReasonText().type('Some more details')
-      reasonForChangePage.saveButton().click()
-
-      ViewIncidentPage.verifyOnPage()
-      viewIncidentPage.editHistoryLinkInSuccessBanner().click()
-      const editHistoryPage = EditHistoryPage.verifyOnPage()
-      editHistoryPage.summaryTextLink(1).should('not.exist')
     })
   })
 })

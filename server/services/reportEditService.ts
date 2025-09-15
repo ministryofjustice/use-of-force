@@ -1,4 +1,5 @@
 import moment from 'moment'
+import reasonForChangeErrorMessageConfig from '../config/edit/reasonForChangeErrorMessageConfig'
 import sequence from '../config/edit/questionSequence'
 import questionSets from '../config/edit/questionSets'
 import incidentDetailsConfig, { QUESTION_ID, REASON } from '../config/edit/incidentDetailsConfig'
@@ -19,6 +20,11 @@ import EditIncidentDetailsService from './editIncidentDetailsService'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 import AuthService from './authService'
 import LocationService from './locationService'
+
+type errors = {
+  href: string
+  text: string
+}
 
 export default class ReportEditService {
   constructor(
@@ -113,24 +119,34 @@ export default class ReportEditService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  validateReasonForChangeInput(input: { reason: string; reasonText: string; reportSection: any }) {
+  validateReasonForChangeInput(input: {
+    reason: string
+    reasonText: string
+    reasonAdditionalInfo: string
+    reportSection: any
+  }): errors[] {
+    const allErrors = []
+    const { reason, anotherReason } = reasonForChangeErrorMessageConfig[input.reportSection.section]
+
     if (!input.reason) {
-      return [
-        {
-          href: '#reason',
-          text: `Provide a reason for changing ${input.reportSection.text}`,
-        },
-      ]
+      allErrors.push({
+        href: '#reason',
+        text: reason,
+      })
     }
     if (input.reason === 'anotherReasonForEdit' && !input.reasonText) {
-      return [
-        {
-          href: '#reasonText',
-          text: `Specify the reason for changing ${input.reportSection.text}`,
-        },
-      ]
+      allErrors.push({
+        href: '#reasonText',
+        text: anotherReason,
+      })
     }
-    return []
+    if (!input.reasonAdditionalInfo) {
+      allErrors.push({
+        href: '#reasonAdditionalInfo',
+        text: 'Provide additional information to explain the changes you are making',
+      })
+    }
+    return allErrors
   }
 
   async mapEditDataToViewOutput(edits, user) {
