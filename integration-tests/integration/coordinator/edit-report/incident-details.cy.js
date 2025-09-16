@@ -96,7 +96,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       incidentDetailsPage.whereInPrisonLabelText().should('contain', 'Leeds')
     })
 
-    it('The coordinator can view their edits prior to completing the process', () => {
+    it('The coordinator can view their edits both prior and after completing the process', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -114,11 +114,17 @@ context('A use of force coordinator needs to edit incident-details', () => {
       reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Was use of force planned')
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Yes')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'No')
+      reasonForChangePage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
+
       reasonForChangePage.errorInReportRadio().click()
       reasonForChangePage.additionalInfoText().type('Some additional info text')
       reasonForChangePage.saveButton().click()
 
       ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editHistoryLinkInSuccessBanner().click()
+
+      const editHistoryPage = EditHistoryPage.verifyOnPage()
+      editHistoryPage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
     })
 
     it('A coordinator can edit another report without completing current edit without the risk of data cross-contamination', () => {
@@ -250,7 +256,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
       reasonForChangePage.backLink().should('exist')
       reasonForChangePage.prisonerProfile().should('exist')
-      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Incident date')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'When did the incident happen?')
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
       reasonForChangePage.radioAnotherReason().click()
@@ -262,9 +268,9 @@ context('A use of force coordinator needs to edit incident-details', () => {
       viewIncidentPage.successBanner().should('exist')
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
       const editHistoryPage = EditHistoryPage.verifyOnPage()
-      editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'Incident date')
-      editHistoryPage.tableRowAndColHeading(1, 'changed-from').should('contain', '22/07/2025 09:57')
-      editHistoryPage.tableRowAndColHeading(1, 'changed-to').should('contain', '22/07/2025 10:57')
+      editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'When did the incident happen?')
+      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
+      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
       editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
       editHistoryPage.summaryTextLink(2).click()
       editHistoryPage.tableRowAndSummaryText(2).should('contain', 'Some even more additional details')

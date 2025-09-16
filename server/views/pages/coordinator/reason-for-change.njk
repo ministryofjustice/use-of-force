@@ -31,11 +31,11 @@
                 attributes: {'data-qa': 'question'}
               },
               {
-                text: change.oldValue | toYesNoIfTrueFalse,
+                text: change.oldValue | toYesNoIfTrueFalse | default('Not applicable', true),
                 attributes: {'data-qa': 'old-value'}
               },
               {
-                text: change.newValue | toYesNoIfTrueFalse,
+                text: change.newValue | toYesNoIfTrueFalse | default('Not applicable', true),
                 attributes: {'data-qa': 'new-value'}
               }]
             ), rowData) %}

@@ -5,7 +5,6 @@ import ViewIncidentPage from '../../../pages/coordinator/viewIncidentPage'
 import EditReportPage from '../../../pages/coordinator/editReportPage'
 import EditHistoryPage from '../../../pages/coordinator/editHistoryPage'
 import RelocationAndInjuriesPage from '../../../pages/coordinator/relocationAndInjuriesPage'
-import PrisonPage from '../../../pages/coordinator/prisonPage'
 import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
 import { ReportStatus } from '../../../../server/config/types'
 
@@ -63,7 +62,7 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
   })
 
   context('complete reports', () => {
-    it.only('A coordinator can edit the relocation and injuries page', () => {
+    it('A coordinator can edit the relocation and injuries page', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
         submittedDate: moment('2025-07-23 09:57:00.000'),
@@ -97,13 +96,13 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
       reasonForChangePage.backLink().should('exist')
       reasonForChangePage.prisonerProfile().should('exist')
 
-      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Where was the prisoner relocated to')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Where was the prisoner relocated to?')
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Segregation unit')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'Own cell')
 
       reasonForChangePage
         .tableRowAndColHeading(2, 'question')
-        .should('contain', 'Did the prisoner need outside hospitalisation at the time')
+        .should('contain', 'Did the prisoner need outside hospitalisation at the time?')
       reasonForChangePage.tableRowAndColHeading(2, 'old-value').should('contain', 'Yes')
       reasonForChangePage.tableRowAndColHeading(2, 'new-value').should('contain', 'No')
 
@@ -111,13 +110,13 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
       relocationAndInjuriesPage.continueButton().click()
 
       //  ensure returning to previous page retains previous selections
-      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Where was the prisoner relocated to')
+      reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'Where was the prisoner relocated to?')
       reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Segregation unit')
       reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'Own cell')
 
       reasonForChangePage
         .tableRowAndColHeading(2, 'question')
-        .should('contain', 'Did the prisoner need outside hospitalisation at the time')
+        .should('contain', 'Did the prisoner need outside hospitalisation at the time?')
       reasonForChangePage.tableRowAndColHeading(2, 'old-value').should('contain', 'Yes')
       reasonForChangePage.tableRowAndColHeading(2, 'new-value').should('contain', 'No')
       reasonForChangePage.radioAnotherReason().click()
@@ -130,9 +129,9 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
 
       const editHistoryPage = EditHistoryPage.verifyOnPage()
-      editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'Where was the prisoner relocated to')
-      editHistoryPage.tableRowAndColHeading(1, 'changed-from').should('contain', 'Segregation unit')
-      editHistoryPage.tableRowAndColHeading(1, 'changed-to').should('contain', 'Own cell')
+      editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'Where was the prisoner relocated to?')
+      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', 'Segregation unit')
+      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', 'Own cell')
       editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
       editHistoryPage.summaryTextLink(3).click()
       editHistoryPage.tableRowAndSummaryText(3).should('contain', 'Some even more additional details')

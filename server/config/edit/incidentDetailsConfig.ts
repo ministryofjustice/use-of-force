@@ -4,11 +4,11 @@ export default {
 
 export const QUESTION_SET = {
   PRISON: 'Prison',
-  INCIDENT_LOCATION: 'Incident location',
+  INCIDENT_LOCATION: 'Where did the incident happen?',
   WITNESSES: 'Witnesses to the incident',
-  PLANNED_UOF: 'Was use of force planned',
-  AUTHORISED_BY: 'Who authorised use of force',
-  INCIDENT_DATE: 'Incident date',
+  PLANNED_UOF: 'Was use of force planned?',
+  AUTHORISED_BY: 'Who authorised use of force?',
+  INCIDENT_DATE: 'When did the incident happen?',
 }
 
 export const QUESTION_ID = {

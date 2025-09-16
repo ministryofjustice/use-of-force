@@ -5,18 +5,18 @@ export default {
 }
 
 export const QUESTION_SET = {
-  PRISONER_RELOCATION: 'Where was the prisoner relocated to',
-  RELOCATION_COMPLIANCY: 'Was the prisoner compliant',
-  RELOCATION_TYPE: 'What was the type of relocation',
-  USER_SPECIFIED_RELOCATION_TYPE: 'Type of other relocation',
-  F213_COMPLETED_BY: 'Who completed the F213 form',
-  PRISONER_INJURIES: 'Did the prisoner sustain any injuries at the time',
+  PRISONER_RELOCATION: 'Where was the prisoner relocated to?',
+  RELOCATION_COMPLIANCY: 'Was the prisoner compliant?',
+  RELOCATION_TYPE: 'What was the type of relocation?',
+  USER_SPECIFIED_RELOCATION_TYPE: 'Type of other relocation?',
+  F213_COMPLETED_BY: 'Who completed the F213 form?',
+  PRISONER_INJURIES: 'Did the prisoner sustain any injuries at the time?',
   HEALTHCARE_INVOLVED:
-    'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)',
-  HEALTHCARE_PRACTIONER_NAME: 'Name of healthcare member present ',
-  PRISONER_HOSPITALISATION: 'Did the prisoner need outside hospitalisation at the time',
-  STAFF_MEDICAL_ATTENTION: 'Did a member of staff need medical attention at the time',
-  STAFF_NEEDING_MEDICAL_ATTENTION: 'Name of who needed medical attention',
+    'Was a member of healthcare present throughout the incident (doctor, registered nurse or healthcare officer)?',
+  HEALTHCARE_PRACTIONER_NAME: 'Name of healthcare member present?',
+  PRISONER_HOSPITALISATION: 'Did the prisoner need outside hospitalisation at the time?',
+  STAFF_MEDICAL_ATTENTION: 'Did a member of staff need medical attention at the time?',
+  STAFF_NEEDING_MEDICAL_ATTENTION: 'Name of who needed medical attention?',
 }
 
 export const QUESTION_ID = {
