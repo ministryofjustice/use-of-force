@@ -332,7 +332,7 @@ export default class CoordinatorRoutes {
     return res.redirect('reason-for-change')
   }
 
-  viewEvidence: RequestHandler = async (req, res) => {
+  viewEditEvidence: RequestHandler = async (req, res) => {
     req.flash('changes') // clear out any old data
     const { reportId } = req.params
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
@@ -360,7 +360,7 @@ export default class CoordinatorRoutes {
     })
   }
 
-  submitEvidence: RequestHandler = async (req, res) => {
+  submitEditEvidence: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const pageInput = req.body
 
