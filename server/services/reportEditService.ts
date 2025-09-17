@@ -8,16 +8,18 @@ import relocationAndInjuriesConfig, {
   RELOCATION_LOCATION_DESCRIPTION,
   RELOCATION_TYPE_DESCRIPTION,
 } from '../config/edit/relocationAndInjuriesConfig'
+import evidenceConfig, { QUESTION_ID as EQID } from '../config/edit/evidenceConfig'
 import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
 import { PersistData } from './editReports/types/reportEditServiceTypes'
 import compareIncidentDetailsEditWithReport from './editReports/incidentDetails'
 import compareRelocationAndInjuriesEditWithReport from './editReports/relocationAndInjuries'
-
+import compareEvidenceWithReport from './editReports/evidence'
 import ReportService from './reportService'
 import logger from '../../log'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
+import EditEvidenceService from './editEvidenceService'
 import AuthService from './authService'
 import LocationService from './locationService'
 
@@ -31,11 +33,12 @@ export default class ReportEditService {
     private readonly reportService: ReportService,
     private readonly editIncidentDetailsService: EditIncidentDetailsService,
     private readonly editRelocationAndInjuriesService: EditRelocationAndInjuriesService,
+    private readonly editEvidenceService: EditEvidenceService,
     private readonly locationService: LocationService,
     private readonly authService: AuthService
   ) {}
 
-  // used to format the output for the /reason-for-changes page
+  // used to format the output for the /reason-for-change page
   async constructChangesToView(username: string, reportSection: { section: string }, changes = []) {
     let response = []
 
@@ -50,6 +53,10 @@ export default class ReportEditService {
     if (reportSection?.section === relocationAndInjuriesConfig.SECTION) {
       response = await this.editRelocationAndInjuriesService.buildDetails(questionSets[reportSection.section], changes)
     }
+
+    if (reportSection?.section === evidenceConfig.SECTION) {
+      response = await this.editEvidenceService.buildDetails(questionSets[reportSection.section], changes)
+    }
     // add similar ifs for the other page
 
     return response
@@ -62,6 +69,9 @@ export default class ReportEditService {
 
       case relocationAndInjuriesConfig.SECTION:
         return compareRelocationAndInjuriesEditWithReport(report, valuesFromRequestBody)
+
+      case evidenceConfig.SECTION:
+        return compareEvidenceWithReport(report, valuesFromRequestBody)
 
       // add more sections as needed
       default:
@@ -93,6 +103,12 @@ export default class ReportEditService {
 
     if (data.reportSection.section === relocationAndInjuriesConfig.SECTION) {
       updatedSection = Object.values(RAIQID).reduce((acc, current) => {
+        return { ...acc, [current]: pageInput[current] }
+      }, {})
+    }
+
+    if (data.reportSection.section === evidenceConfig.SECTION) {
+      updatedSection = Object.values(EQID).reduce((acc, current) => {
         return { ...acc, [current]: pageInput[current] }
       }, {})
     }
@@ -222,9 +238,7 @@ export default class ReportEditService {
       },
 
       [QUESTION_ID.PLANNED_UOF]: () => (v === true ? 'Yes' : 'No'),
-
       [QUESTION_ID.AUTHORISED_BY]: () => v,
-
       [QUESTION_ID.WITNESSES]: () => (Array.isArray(v) && v.length > 0 ? v.map(obj => obj.name).join(', ') : ''),
 
       //  handlers for Relocation and Injuries
@@ -240,6 +254,12 @@ export default class ReportEditService {
         Array.isArray(v) && v.length > 0
           ? v.map(obj => (obj.hospitalisation ? `${obj.name} (hospitalised)` : obj.name)).join(', ')
           : '',
+
+      //  handlers for Evidence
+      [EQID.BAGGED_EVIDENCE]: () => (v === true ? 'Yes' : 'No'),
+      [EQID.EVIDENCE_TAG_AND_DESCRIPTION]: () => this.editEvidenceService.evidenceTagAndDescriptionDisplay(v),
+      [EQID.PHOTOGRAPHS_TAKEN]: () => (v === true ? 'Yes' : 'No'),
+      [EQID.CCTV_RECORDING]: () => this.editEvidenceService.toYesNoNotKnown(v),
     }
 
     const handler = handlers[k]
