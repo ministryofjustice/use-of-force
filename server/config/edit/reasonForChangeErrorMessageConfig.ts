@@ -11,7 +11,7 @@ export default {
     reason: 'Provide a reason for changing the relocation and injuries details',
     anotherReason: 'Specify the reason for changing the relocation and injuries details',
   },
-  changeEvidence: {
+  evidence: {
     reason: 'Provide a reason for changing the evidence details',
     anotherReason: 'Specify the reason for changing the evidence details',
   },

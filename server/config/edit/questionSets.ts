@@ -1,5 +1,6 @@
 import { QUESTION_SET } from './incidentDetailsConfig'
 import { QUESTION_SET as RAIQS } from './relocationAndInjuriesConfig'
+import { QUESTION_SET as EQS } from './evidenceConfig'
 
 // this will hold the questions every page. Keys to match those in db
 export default {
@@ -24,5 +25,12 @@ export default {
     staffMedicalAttention: RAIQS.STAFF_MEDICAL_ATTENTION,
     staffNeedingMedicalAttention: RAIQS.STAFF_NEEDING_MEDICAL_ATTENTION,
   },
+  evidence: {
+    baggedEvidence: EQS.BAGGED_EVIDENCE,
+    evidenceTagAndDescription: EQS.EVIDENCE_TAG_AND_DESCRIPTION,
+    photographsTaken: EQS.PHOTOGRAPHS_TAKEN,
+    cctvRecording: EQS.CCTV_RECORDING,
+  },
+
   // Add mappings for the other sections/pages of the report here. Keys to be in the order to display in reasons page
 }

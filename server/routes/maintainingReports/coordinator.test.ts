@@ -40,7 +40,7 @@ const statementService = new StatementService(null, null, null) as jest.Mocked<S
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const reportEditService = new ReportEditService(null, null, null, null, null) as jest.Mocked<ReportEditService>
+const reportEditService = new ReportEditService(null, null, null, null, null, null) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
 let app
@@ -80,6 +80,21 @@ const basicPersistedReport = {
         {
           name: 'John',
           hospitalisation: true,
+        },
+      ],
+    },
+    evidence: {
+      cctvRecording: 'NO',
+      baggedEvidence: true,
+      photographsTaken: false,
+      evidenceTagAndDescription: [
+        {
+          description: 'knife',
+          evidenceTagReference: '1',
+        },
+        {
+          description: 'chair',
+          evidenceTagReference: '2',
         },
       ],
     },
@@ -628,6 +643,253 @@ describe('coordinator', () => {
           expect(flash).toHaveBeenCalledWith('reportId', '1')
           expect(flash).toHaveBeenCalledWith('inputsForEditRelocationAndInjuries', {
             ...basicPersistedReport.form.relocationAndInjuries,
+            reportId: '1',
+          })
+        })
+    })
+
+    it('Should continue to next page', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      const relocationInjuriesAndInjuriesBody = {
+        prisonerRelocation: 'OWN_CELL',
+        relocationCompliancy: 'true',
+        userSpecifiedRelocationType: '',
+        f213CompletedBy: 'Mr Fowler',
+        prisonerInjuries: 'true',
+        healthcareInvolved: 'true',
+        healthcarePractionerName: 'Dr Harold',
+        prisonerHospitalisation: 'true',
+        staffMedicalAttention: 'true',
+        staffNeedingMedicalAttention: [
+          {
+            name: 'Tony',
+            hospitalisation: 'false',
+          },
+          {
+            name: 'John',
+            hospitalisation: 'true',
+          },
+          {
+            name: 'Harry',
+            hospitalisation: 'false',
+          },
+        ],
+      }
+
+      reportEditService.compareEditsWithReport.mockReturnValue({
+        staffNeedingMedicalAttention: {
+          question: 'Name of who needed medical attention',
+          oldValue: [
+            {
+              name: 'Tony',
+              hospitalisation: false,
+            },
+            {
+              name: 'John',
+              hospitalisation: true,
+            },
+          ],
+          newValue: [
+            {
+              name: 'Tony',
+              hospitalisation: false,
+            },
+            {
+              name: 'John',
+              hospitalisation: true,
+            },
+            {
+              name: 'Harry',
+              hospitalisation: false,
+            },
+          ],
+          hasChanged: true,
+        },
+      } as never)
+
+      reportEditService.removeHasChangedKey.mockReturnValue({
+        staffNeedingMedicalAttention: {
+          question: 'Name of who needed medical attention',
+          oldValue: [
+            {
+              name: 'Tony',
+              hospitalisation: false,
+            },
+            {
+              name: 'John',
+              hospitalisation: true,
+            },
+          ],
+          newValue: [
+            {
+              name: 'Tony',
+              hospitalisation: false,
+            },
+            {
+              name: 'John',
+              hospitalisation: true,
+            },
+            {
+              name: 'Harry',
+              hospitalisation: false,
+            },
+          ],
+        },
+      } as never)
+
+      await request(app)
+        .post('/1/edit-report/relocation-and-injuries')
+        .send(relocationInjuriesAndInjuriesBody)
+        .expect(302)
+        .expect('Location', 'reason-for-change')
+        .expect(() => {
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('reportId', '1')
+          expect(flash).toHaveBeenCalledWith('inputsForEditRelocationAndInjuries', {
+            ...basicPersistedReport.form.relocationAndInjuries,
+            reportId: '1',
+            staffNeedingMedicalAttention: [
+              { hospitalisation: false, name: 'Tony' },
+              { hospitalisation: true, name: 'John' },
+              { hospitalisation: false, name: 'Harry' },
+            ],
+          })
+          expect(flash).toHaveBeenCalledWith('sectionDetails')
+          expect(flash).toHaveBeenCalledWith('sectionDetails', {
+            text: 'relocation and injuries',
+            section: 'relocationAndInjuries',
+          })
+          expect(flash).toHaveBeenCalledWith('backlinkHref')
+          expect(flash).toHaveBeenCalledWith('backlinkHref', 'relocation-and-injuries')
+        })
+    })
+  })
+
+  describe('viewEditEvidence', () => {
+    it('should render page', async () => {
+      await request(app)
+        .get('/1/edit-report/evidence')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status') // check that prisoner profile is displayed
+          expect(res.text).toContain('Evidence')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('errors')
+        })
+    })
+
+    it('should call upstream service correctly', async () => {
+      await request(app)
+        .get('/1/edit-report/evidence')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+        })
+    })
+
+    it('should render error messages when partial data submitted', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce(['1'])
+      flash.mockReturnValueOnce([])
+
+      flash.mockReturnValueOnce([
+        {
+          text: 'Please input both the evidence tag number and the description',
+          href: '#baggedEvidence',
+        },
+      ])
+
+      await request(app)
+        .get('/1/edit-report/evidence')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Please input both the evidence tag number and the description')
+        })
+    })
+
+    it('should return the users new input rather than the saved report data', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce(['1'])
+      flash.mockReturnValueOnce([
+        {
+          baggedEvidence: true,
+          evidenceTagAndDescription: [
+            {
+              evidenceTagReference: 'A1234',
+              description: null,
+            },
+          ],
+          photographsTaken: false,
+          cctvRecording: 'YES',
+          reportId: '2',
+        },
+      ])
+
+      await request(app)
+        .get('/1/edit-report/evidence')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('A1234')
+        })
+    })
+  })
+
+  describe('submitEditEvidence', () => {
+    it('redirects to current page when no difference between request body and persisted report', async () => {
+      const body = {
+        cctvRecording: 'NO',
+        baggedEvidence: 'true',
+        photographsTaken: 'false',
+        evidenceTagAndDescription: [
+          {
+            description: 'knife',
+            evidenceTagReference: '1',
+          },
+          {
+            description: 'chair',
+            evidenceTagReference: '2',
+          },
+        ],
+      }
+
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      await request(app)
+        .post('/1/edit-report/evidence')
+        .send(body)
+        .expect(302)
+        .expect('Location', 'evidence')
+        .expect(res => {
+          expect(flash).toHaveBeenCalledWith('reportId')
+          expect(flash).toHaveBeenCalledWith('reportId', '1')
+          expect(flash).toHaveBeenCalledWith('inputsForEvidence', {
+            baggedEvidence: true,
+            cctvRecording: 'NO',
+            evidenceTagAndDescription: [
+              {
+                description: 'knife',
+                evidenceTagReference: '1',
+              },
+              {
+                description: 'chair',
+                evidenceTagReference: '2',
+              },
+            ],
+            photographsTaken: false,
             reportId: '1',
           })
         })

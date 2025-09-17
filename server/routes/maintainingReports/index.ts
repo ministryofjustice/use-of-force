@@ -59,6 +59,8 @@ export default function Index(services: Services): Router {
       post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
       get('/:reportId/edit-report/relocation-and-injuries', coordinator.viewEditRelocationAndInjuries)
       post('/:reportId/edit-report/relocation-and-injuries', coordinator.submitEditRelocationAndInjuries)
+      get('/:reportId/edit-report/evidence', coordinator.viewEvidence)
+      post('/:reportId/edit-report/evidence', coordinator.submitEvidence)
       get('/:reportId/edit-report/prison', coordinator.viewEditPrison)
       post('/:reportId/edit-report/prison', coordinator.submitEditPrison)
       get('/:reportId/edit-report/reason-for-change', coordinator.viewReasonForChange)

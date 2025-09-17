@@ -10,7 +10,7 @@ export default [
   'plannedUseOfForce',
   'authorisedBy',
   'witnesses',
-  //   relocation and injuries
+  // relocation and injuries
   'prisonerRelocation',
   'relocationCompliancy',
   'relocationType',
@@ -22,4 +22,9 @@ export default [
   'prisonerHospitalisation',
   'staffMedicalAttention',
   'staffNeedingMedicalAttention',
+  // evidence
+  'baggedEvidence',
+  'evidenceTagAndDescription',
+  'photographsTaken',
+  'cctvRecording',
 ]

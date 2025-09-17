@@ -27,6 +27,7 @@ import FeComponentsService from './feComponentsService'
 import AuthService from './authService'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
+import EditEvidenceService from './editEvidenceService'
 
 export const services = () => {
   const {
@@ -120,11 +121,13 @@ export const services = () => {
 
   const editIncidentDetailsService = new EditIncidentDetailsService(locationService, authService)
   const editRelocationAndInjuriesService = new EditRelocationAndInjuriesService()
+  const editEvidenceService = new EditEvidenceService()
 
   const reportEditService = new ReportEditService(
     reportService,
     editIncidentDetailsService,
     editRelocationAndInjuriesService,
+    editEvidenceService,
     locationService,
     authService
   )

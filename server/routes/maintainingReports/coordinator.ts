@@ -19,6 +19,7 @@ import ReportEditService from '../../services/reportEditService'
 import log from '../../../log'
 import incidentDetailsConfig from '../../config/edit/incidentDetailsConfig'
 import relocationAndInjuriesConfig, { QUESTION_ID as RAIQID } from '../../config/edit/relocationAndInjuriesConfig'
+import evidenceConfig, { QUESTION_ID as EQID } from '../../config/edit/evidenceConfig'
 
 import * as types from '../../config/types'
 
@@ -327,6 +328,105 @@ export default class CoordinatorRoutes {
       section: relocationAndInjuriesConfig.SECTION,
     })
     req.flash('backlinkHref', 'relocation-and-injuries')
+
+    return res.redirect('reason-for-change')
+  }
+
+  viewEvidence: RequestHandler = async (req, res) => {
+    req.flash('changes') // clear out any old data
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const userInput = req.flash('reportId')[0] === reportId ? req.flash('inputsForEvidence') : []
+    const input = firstItem(userInput)
+    const pageData = input || report.form.evidence
+
+    const data = {
+      types,
+      offenderDetail,
+      ...pageData,
+      reportId,
+    }
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/evidence.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  submitEvidence: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const pageInput = req.body
+
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { payloadFields, errors } = processInput({
+      validationSpec: full.evidence,
+      input: pageInput,
+    })
+
+    req.flash('reportId')
+    req.flash('reportId', reportId)
+
+    req.flash('inputsForEvidence', {
+      ...payloadFields,
+      reportId,
+    })
+    if (!isNilOrEmpty(errors)) {
+      req.flash('errors', errors)
+      return res.redirect(req.originalUrl)
+    }
+
+    // create an object containing kv pairs as follows fieldName:payloadValue
+    const valuesToCompareWithReport = Object.values(EQID).reduce((acc, current) => {
+      return { ...acc, [current]: payloadFields[current] }
+    }, {})
+
+    // compare new inputs with original report
+    const comparison = this.reportEditService.compareEditsWithReport({
+      report,
+      valuesToCompareWithReport,
+      reportSection: evidenceConfig.SECTION,
+    })
+
+    // extract the data that has changed
+    const changedValues = getChangedValues(comparison, (value: { hasChanged: boolean }) => value.hasChanged === true)
+
+    // if nothing has changed, redirect back with an error message
+    if (R.isEmpty(changedValues)) {
+      const errorSummary = [
+        {
+          href: '#cancelCoordinatorEdit',
+          text: "You must change something or select 'Cancel' to return to the use of force incident page",
+        },
+      ]
+      req.flash('errors', errorSummary)
+      req.flash('noChangeError', 'true')
+      return res.redirect('evidence')
+    }
+
+    // clear flash first
+    req.flash('pageInput')
+    req.flash('changes')
+    req.flash('sectionDetails')
+    req.flash('backlinkHref')
+
+    const valuesToBePersistedToReport = valuesToCompareWithReport
+    req.flash('pageInput', valuesToBePersistedToReport)
+
+    const changes = this.reportEditService.removeHasChangedKey(changedValues)
+    req.flash('changes', changes)
+
+    req.flash('sectionDetails', {
+      text: 'evidence',
+      section: evidenceConfig.SECTION,
+    })
+    req.flash('backlinkHref', 'evidence')
 
     return res.redirect('reason-for-change')
   }

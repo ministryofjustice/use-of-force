@@ -6,6 +6,7 @@ import ReportService from './reportService'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import questionSets from '../config/edit/questionSets'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
+import EditEvidenceService from './editEvidenceService'
 
 jest.mock('./authService')
 jest.mock('./locationService')
@@ -15,6 +16,7 @@ const reportService = new ReportService(null, null, null, null, null, null) as j
 const editIncidentDetailsService = new EditIncidentDetailsService(null, null) as jest.Mocked<EditIncidentDetailsService>
 const editRelocationAndInjuriesService =
   new EditRelocationAndInjuriesService() as jest.Mocked<EditRelocationAndInjuriesService>
+const editEvidenceService = new EditEvidenceService() as jest.Mocked<EditEvidenceService>
 
 locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
@@ -27,6 +29,7 @@ beforeEach(() => {
     reportService,
     editIncidentDetailsService,
     editRelocationAndInjuriesService,
+    editEvidenceService,
     locationService,
     authService
   )
