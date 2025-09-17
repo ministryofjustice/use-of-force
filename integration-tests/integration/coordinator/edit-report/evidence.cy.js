@@ -10,7 +10,7 @@ import { ReportStatus } from '../../../../server/config/types'
 
 const moment = require('moment')
 
-context('A use of force coordinator needs to edit relocation and injuries', () => {
+context('A use of force coordinator needs to edit evidence details', () => {
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
