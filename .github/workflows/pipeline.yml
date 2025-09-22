@@ -21,6 +21,11 @@ permissions:
   contents: read
   packages: write
 
+concurrency:
+  # if branch is main, append commit sha to the group name, so that other jobs from main don't get cancelled
+  group: ${{ github.workflow }}-${{ github.ref }}${{ (github.ref == 'refs/heads/main') && format('-{0}', github.sha) || '' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   # main node build workflow
   node_build:
