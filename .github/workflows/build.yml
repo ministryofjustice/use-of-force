@@ -1,0 +1,70 @@
+name: Build and test node
+# this custom script can be removed when govuk_frontend_toolkit is replaced.
+# It generates a package-lock.json file which changes the hash key running hashFiles('**/package-lock.json')
+on:
+  workflow_call:
+    inputs:
+      node_version_file:
+        description: "Passed to setup-node action to specify where to source the version of node from"
+        required: false
+        type: string
+        default: ".nvmrc"
+
+permissions:
+  contents: read
+
+jobs:
+  node-build:
+    name: Run the node build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ inputs.node_version_file }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+      - name: update npm
+        shell: bash
+        run: |
+          sudo npm install -g npm@latest
+      - name: restore cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: |
+            ./node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}
+      - name: install dependencies
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          npm ci --no-audit
+      - name: build npm
+        shell: bash
+        run: |
+          npm run build
+      - name: Linter check # Run linter after build because the integration test code depend on compiled typescript...
+        shell: bash
+        run: |
+          npm run lint
+      - name: upload the artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm_build_artifacts
+          path: |
+            build/
+            dist/
+            assets/stylesheets/
+      - name: save cache
+        id: save-cache
+        uses: actions/cache/save@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: |
+            ./node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}

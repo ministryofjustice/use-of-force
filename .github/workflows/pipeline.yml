@@ -30,7 +30,8 @@ jobs:
   # main node build workflow
   node_build:
     name: node build
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2 # WORKFLOW_VERSION
+    # uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2 # WORKFLOW_VERSION
+    uses: ./.github/workflows/build.yml # this custom script can be removed when govuk_frontend_toolkit is replaced.
     secrets: inherit
   # generic node unit tests - feel free to override with local tests if required
   node_unit_tests:
