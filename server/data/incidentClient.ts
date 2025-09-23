@@ -328,7 +328,7 @@ export default class IncidentClient {
       username: string
       displayName: string
       reportId: number
-      changes: Change
+      changes: Record<string, Change>
       reason: string
       reasonText: string
       reasonAdditionalInfo: string

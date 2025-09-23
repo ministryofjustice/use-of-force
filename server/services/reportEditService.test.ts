@@ -7,6 +7,8 @@ import EditIncidentDetailsService from './editIncidentDetailsService'
 import questionSets from '../config/edit/questionSets'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 import EditEvidenceService from './editEvidenceService'
+import EditUseOfForceDetailsService from './editUseOfForceDetailsService'
+import logger from '../../log'
 
 jest.mock('./authService')
 jest.mock('./locationService')
@@ -17,9 +19,13 @@ const editIncidentDetailsService = new EditIncidentDetailsService(null, null) as
 const editRelocationAndInjuriesService =
   new EditRelocationAndInjuriesService() as jest.Mocked<EditRelocationAndInjuriesService>
 const editEvidenceService = new EditEvidenceService() as jest.Mocked<EditEvidenceService>
+const editUseOfForceDetailsService = new EditUseOfForceDetailsService() as jest.Mocked<EditUseOfForceDetailsService>
 
 locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
+reportService.updateWithEdits = jest.fn()
+reportService.updateTwoReportSections = jest.fn()
+logger.error = jest.fn()
 
 let reportEditService
 
@@ -30,6 +36,7 @@ beforeEach(() => {
     editIncidentDetailsService,
     editRelocationAndInjuriesService,
     editEvidenceService,
+    editUseOfForceDetailsService,
     locationService,
     authService
   )
@@ -341,5 +348,295 @@ describe('applyCorrectFormat', () => {
     ]
     const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
     expect(result).toEqual('jimmy (hospitalised), tom')
+  })
+})
+
+describe('getWhatChanged', () => {
+  it('returns the question text for a set of changes', async () => {
+    const changes = [
+      {
+        prisonerRelocation: {
+          newValue: 'GATED_CELL',
+          oldValue: 'OWN_CELL',
+          question: 'Where was the prisoner relocated to?',
+        },
+        relocationCompliancy: {
+          newValue: false,
+          oldValue: true,
+          question: 'Was the prisoner compliant?',
+        },
+        relocationType: {
+          newValue: 'PRIMARY',
+          question: 'What was the type of relocation?',
+        },
+      },
+    ]
+
+    const result = await reportEditService.getWhatChanged(changes)
+    expect(result).toEqual([
+      'Where was the prisoner relocated to?',
+      'Was the prisoner compliant?',
+      'What was the type of relocation?',
+    ])
+  })
+})
+
+describe('getChangedFrom', () => {
+  it('should return the previous values for each question', async () => {
+    const changes = [
+      {
+        prisonerRelocation: {
+          oldValue: 'GATED_CELL',
+          newValue: 'OWN_CELL',
+          question: 'Where was the prisoner relocated to?',
+        },
+        relocationCompliancy: {
+          oldValue: false,
+          newValue: true,
+          question: 'Was the prisoner compliant?',
+        },
+        relocationType: {
+          oldValue: 'PRIMARY',
+          question: 'What was the type of relocation?',
+        },
+      },
+    ]
+
+    const result = await reportEditService.getChangedFrom(changes)
+    expect(result).toEqual(['Gated cell', 'No', 'Primary relocation'])
+  })
+})
+
+describe('getChangedTo', () => {
+  it('should return the new values for each question', async () => {
+    const changes = [
+      {
+        prisonerRelocation: {
+          oldValue: 'GATED_CELL',
+          newValue: 'OWN_CELL',
+          question: 'Where was the prisoner relocated to?',
+        },
+        relocationCompliancy: {
+          oldValue: false,
+          newValue: true,
+          question: 'Was the prisoner compliant?',
+        },
+        relocationType: {
+          oldValue: 'PRIMARY',
+          question: 'What was the type of relocation?',
+        },
+      },
+    ]
+
+    const result = await reportEditService.getChangedTo(changes)
+    expect(result).toEqual(['Own cell', 'Yes', undefined])
+  })
+})
+
+describe('mapReasonToTitleAndText', () => {
+  const reasons = [
+    [{ reason: 'errorInReport' }, 'Error in report'],
+    [{ reason: 'somethingMissingFromReport' }, 'Something missing'],
+    [{ reason: 'newEvidence' }, 'New evidence'],
+    [{ reason: 'anotherReasonForEdit', reasonText: 'X' }, 'Another reason: X'],
+  ]
+
+  it.each(reasons)('maps %s', (data, expected) => {
+    expect(reportEditService.mapReasonToTitleAndText(data)).toEqual(expected)
+  })
+})
+
+describe('persistChanges', () => {
+  const data = {
+    reportId: '2',
+    pageInput: [
+      {
+        baggedEvidence: false,
+        photographsTaken: false,
+        cctvRecording: 'YES',
+      },
+    ],
+    reportSection: {
+      text: 'evidence',
+      section: 'evidence',
+    },
+    changes: [
+      {
+        baggedEvidence: {
+          question: 'Was any evidence bagged and tagged?',
+          oldValue: false,
+          newValue: false,
+        },
+        photographsTaken: {
+          question: 'Were any photographs taken?',
+          oldValue: true,
+          newValue: false,
+        },
+        cctvRecording: {
+          question: 'Was any part of the incident captured on CCTV?',
+          oldValue: 'NO',
+          newValue: 'YES',
+        },
+      },
+    ],
+    reason: 'errorInReport',
+    reasonText: '',
+    reasonAdditionalInfo: 'Some additional text',
+    reportOwnerChanged: false,
+  }
+  it('should call reportService.updateWithEdits with correct args for evidence section', async () => {
+    await reportEditService.persistChanges('user1', data)
+
+    expect(reportService.updateWithEdits).toHaveBeenCalledWith(
+      'user1',
+      2,
+      'evidence',
+      {
+        baggedEvidence: false,
+        photographsTaken: false,
+        cctvRecording: 'YES',
+      },
+      data.changes,
+      'errorInReport',
+      '',
+      'Some additional text',
+      false,
+      null
+    )
+  })
+
+  it('logs error', async () => {
+    reportService.updateWithEdits.mockRejectedValue(new Error('500'))
+    await expect(reportEditService.persistChanges('user1', data)).rejects.toThrow()
+    expect(logger.error).toHaveBeenCalledWith('Could not persist changes to report 2. Error: 500')
+  })
+})
+
+describe('persistChangesForReasonsAndDetails', () => {
+  const data = {
+    reportId: '2',
+    reportSection: {
+      text: 'use of force details',
+      section: 'useOfForceDetails',
+    },
+    reason: 'anotherReasonForEdit',
+    reasonText: 'The reason',
+    reasonAdditionalInfo: 'More text',
+    reasonsForUofData: {
+      reportSection: 'reasonsForUseOfForce',
+      changes: [
+        {
+          reasons: {
+            question: 'Why was use of force applied against this prisoner?',
+            oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
+            newValue: ['ASSAULT_ON_ANOTHER_PRISONER'],
+          },
+          primaryReason: {
+            question: 'What was the primary reason use of force was applied against this prisoner?',
+            oldValue: 'FIGHT_BETWEEN_PRISONERS',
+          },
+        },
+      ],
+      pageInputForReasons: ['ASSAULT_ON_ANOTHER_PRISONER'],
+      pageInputForPrimaryReason: undefined,
+    },
+    uofDetailsData: {
+      reportSection: 'useOfForceDetails',
+      changes: [
+        {
+          positiveCommunication: {
+            question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+            oldValue: false,
+            newValue: true,
+          },
+        },
+      ],
+      payload: [
+        {
+          positiveCommunication: true,
+          bodyWornCamera: 'NO',
+          personalProtectionTechniques: false,
+          batonDrawnAgainstPrisoner: false,
+          pavaDrawnAgainstPrisoner: false,
+          taserDrawn: false,
+          bittenByPrisonDog: false,
+          weaponsObserved: 'NO',
+          guidingHold: true,
+          guidingHoldOfficersInvolved: 2,
+          escortingHold: false,
+          restraintPositions: 'NONE',
+          painInducingTechniquesUsed: 'NONE',
+          handcuffsApplied: true,
+        },
+      ],
+    },
+  }
+  it('should call reportService.updateTwoReportSections with correct args', async () => {
+    await reportEditService.persistChangesForReasonsAndDetails('user1', data)
+
+    expect(reportService.updateTwoReportSections).toHaveBeenCalledWith('user1', {
+      formSections: {
+        reasonsForUseOfForce: {
+          changes: {
+            primaryReason: {
+              oldValue: 'FIGHT_BETWEEN_PRISONERS',
+              question: 'What was the primary reason use of force was applied against this prisoner?',
+            },
+            reasons: {
+              newValue: ['ASSAULT_ON_ANOTHER_PRISONER'],
+              oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
+              question: 'Why was use of force applied against this prisoner?',
+            },
+          },
+          payload: { primaryReason: undefined, reasons: ['ASSAULT_ON_ANOTHER_PRISONER'] },
+        },
+        useOfForceDetails: {
+          changes: {
+            positiveCommunication: {
+              newValue: true,
+              oldValue: false,
+              question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+            },
+          },
+          payload: {
+            arcWarningUsed: undefined,
+            batonDrawnAgainstPrisoner: false,
+            batonUsed: undefined,
+            bittenByPrisonDog: false,
+            bodyWornCamera: 'NO',
+            bodyWornCameraNumbers: undefined,
+            escortingHold: false,
+            guidingHold: true,
+            guidingHoldOfficersInvolved: 2,
+            handcuffsApplied: true,
+            painInducingTechniquesUsed: 'NONE',
+            pavaDrawnAgainstPrisoner: false,
+            pavaUsed: undefined,
+            personalProtectionTechniques: false,
+            positiveCommunication: true,
+            redDotWarning: undefined,
+            restraintPositions: 'NONE',
+            taserCycleExtended: undefined,
+            taserDeployed: undefined,
+            taserDrawn: false,
+            taserOperativePresent: undefined,
+            taserReenergised: undefined,
+            weaponTypes: undefined,
+            weaponsObserved: 'NO',
+          },
+        },
+      },
+      keys: ['reasonsForUseOfForce', 'useOfForceDetails'],
+      reason: 'anotherReasonForEdit',
+      reasonAdditionalInfo: 'More text',
+      reasonText: 'The reason',
+      reportId: 2,
+    })
+  })
+
+  it('logs error', async () => {
+    reportService.updateTwoReportSections.mockRejectedValue(new Error('500'))
+    await expect(reportEditService.persistChangesForReasonsAndDetails('user1', data)).rejects.toThrow()
+    expect(logger.error).toHaveBeenCalledWith('Could not persist changes to report 2. Error: 500')
   })
 })

@@ -5,6 +5,7 @@ const viewIncidentPage = () =>
     editReportButton: () => cy.get('[data-qa="button-edit-report"]'),
     successBanner: () => cy.get('[data-qa="success-banner"]'),
     editHistoryLinkInSuccessBanner: () => cy.get('[data-qa="success-banner-edit-history-link"]'),
+    reasonsForUseOfForce: () => cy.get('[data-qa=reasonsForUseOfForce]'),
   })
 
 module.exports = {

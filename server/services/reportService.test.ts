@@ -137,9 +137,7 @@ describe('reportService', () => {
 
     test('when report does not exists', async () => {
       incidentClient.getReportForReviewer.mockReturnValue(null)
-
       await expect(service.deleteReport('currentUser', 1)).rejects.toThrow(`Report: '1' does not exist`)
-
       expect(incidentClient.deleteReport).not.toHaveBeenCalled()
     })
 
