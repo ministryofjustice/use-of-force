@@ -2,7 +2,7 @@ version: '3.1'
 services:
 
   use-of-force-redis:
-    image: 'redis:7.2'
+    image: 'redis:7.4'
     networks:
       - hmpps
     container_name: use-of-force-redis
