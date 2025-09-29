@@ -57,6 +57,8 @@ export default function Index(services: Services): Router {
       get('/:reportId/edit-report', coordinator.viewEditReport)
       get('/:reportId/edit-report/incident-details', coordinator.viewEditIncidentDetails)
       post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
+      get('/:reportId/edit-report/staff-involved', coordinator.viewEditInvolvedStaff)
+      // post('/:reportId/edit-report/staff-involved', coordinator.viewEditInvolvedStaff)
       get('/:reportId/edit-report/relocation-and-injuries', coordinator.viewEditRelocationAndInjuries)
       post('/:reportId/edit-report/relocation-and-injuries', coordinator.submitEditRelocationAndInjuries)
       get('/:reportId/edit-report/evidence', coordinator.viewEditEvidence)
@@ -95,9 +97,9 @@ export default function Index(services: Services): Router {
     const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
 
-    get('/:reportId/edit-report', admin.viewEditReport)
-    get('/:reportId/edit-report/:formName', admin.viewEditForm)
-    post('/:reportId/edit-report/:formName', admin.submitEditForm)
+    // get('/:reportId/edit-report', admin.viewEditReport)
+    // get('/:reportId/edit-report/:formName', admin.viewEditForm)
+    // post('/:reportId/edit-report/:formName', admin.submitEditForm)
   }
 
   return router
