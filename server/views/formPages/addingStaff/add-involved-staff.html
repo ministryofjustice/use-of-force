@@ -1,0 +1,63 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageTitle = 'Find the person you want to add' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+    {% if errors.length > 0 %}
+        {{
+            govukErrorSummary({
+                titleText: 'There is a problem',
+                errorList: errors,
+                attributes: { 'data-qa-errors': true }
+            })
+        }}
+    {% endif %}
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-top-0 govuk-!-margin-bottom-9">
+        <span class="govuk-caption-xl">Edit a use of force report</span>
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>  
+        <div class="govuk-grid-row govuk-!-margin-top-7">
+            <div class="govuk-grid-column-three-quarters">
+                <h2 class="govuk-heading-l">Search for a member of staff</h2> 
+                <span class="govuk-caption-l">Search by part of a persons name, their full name, their email address or their user ID</span>
+            </div>
+            <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
+               <form method="post">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <div class="govuk-form-group">
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-2">
+                                {{
+                                    govukInput({
+                                    id: 'username',
+                                    name: 'username',
+                                    value: value,
+                                    classes: 'govuk-input',
+                                    errorMessage: errors | findError('username')
+                                    })
+                                }}
+                            </div>
+
+                            <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet govuk-!-margin-top-0">
+                                {{
+                                    govukButton({
+                                    text: 'Search',
+                                    name: 'continue',
+                                    classes: 'govuk-button govuk-!-width-full govuk-!-margin-bottom-0',
+                                    attributes: { 'data-qa': 'search' }
+                                    })
+                                }}
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/{{ data.incidentId }}/view-report" class="govuk-link">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
