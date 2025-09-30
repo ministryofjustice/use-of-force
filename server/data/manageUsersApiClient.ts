@@ -52,4 +52,12 @@ export default class ManageUsersApiClient extends BaseApiClient {
       query: querystring.stringify({ firstName: firstName?.trim(), lastName: lastName?.trim() }),
     })
   }
+
+  async findUsersFuzzySearch(value: string, token: string): Promise<FoundUserResult[]> {
+    const path = `/prisonusers/search`
+    return ManageUsersApiClient.restClient(token).get({
+      path,
+      query: querystring.stringify({ nameFilter: value.trim() }),
+    })
+  }
 }

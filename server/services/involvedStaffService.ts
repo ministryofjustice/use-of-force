@@ -94,6 +94,59 @@ export class InvolvedStaffService {
     })
   }
 
+  public async findInvolvedStaffFuzzySearch(token: string, reportId: number, value: string) {
+    // : Promise<AddStaffResult> {
+    logger.info(`Adding involved staff with value: ${value} to report: '${reportId}'`)
+
+    const foundUsersFuzzySearchResults = await this.userService.findUsersFuzzySearch(token, value)
+
+    const content = foundUsersFuzzySearchResults ?? []
+
+    return content
+
+    // CONTINUE HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    // ORIGIONAL COPIED CODE
+
+    // if (!foundUser.exists) {
+    //   return AddStaffResult.MISSING
+    // }
+
+    // logger.info(`found staff: '${foundUser}'`)
+
+    // const report = await this.incidentClient.getReportForReviewer(reportId)
+    // if (!report) {
+    //   throw new Error(`Report: '${reportId}' does not exist`)
+    // }
+
+    // if (await this.statementsClient.isStatementPresentForUser(reportId, foundUser.username)) {
+    //   return AddStaffResult.ALREADY_EXISTS
+    // }
+
+    // return this.inTransaction(async client => {
+    //   await this.statementsClient.createStatements(
+    //     reportId,
+    //     null,
+    //     moment(report.submittedDate).add(3, 'day').toDate(),
+    //     [foundUser],
+    //     client
+    //   )
+
+    //   if (report.status === ReportStatus.COMPLETE.value) {
+    //     logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)
+    //     // TODO provide real username
+    //     await this.incidentClient.changeStatus(
+    //       reportId,
+    //       'SYSTEM',
+    //       ReportStatus.COMPLETE,
+    //       ReportStatus.SUBMITTED,
+    //       client
+    //     )
+    //   }
+    //   return foundUser.verified ? AddStaffResult.SUCCESS : AddStaffResult.SUCCESS_UNVERIFIED
+    // })
+  }
+
   public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 

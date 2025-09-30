@@ -575,13 +575,76 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
+  viewEditInvolvedStaff: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { involvedStaff } = report.form
+
+    const errors = req.flash('errors')
+    const data = { reportId, username: report.username, involvedStaff }
+
+    return res.render('pages/coordinator/staff-involved.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+
+    const errors = req.flash('errors')
+    const data = { reportId }
+
+    return res.render('pages/coordinator/edit-add-involved-staff.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const {
+      body: { username },
+    } = req
+
+    if (!username.trim()) {
+      req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
+      return res.redirect(paths.addInvolvedStaff(reportId))
+    }
+
+    const result = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      reportId,
+      username
+    )
+
+    req.flash('username', username.toUpperCase())
+    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
+  }
+
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
 
     const errors = req.flash('errors')
-    const data = { incidentId: reportId }
+    // const data = { incidentId: reportId }
+    const data = { reportId }
 
     res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+
+    // return res.render('pages/coordinator/add-staff-involved.njk', {
+    //   data,
+    //   errors,
+    //   showSaveAndReturnButton: false,
+    //   coordinatorEditJourney: true,
+    //   noChangeError: req.flash('noChangeError'),
+    // })
   }
 
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {

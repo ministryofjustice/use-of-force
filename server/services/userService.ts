@@ -71,6 +71,18 @@ export default class UserService {
     }
   }
 
+  public async findUsersFuzzySearch(token: string, value: string) {
+    // : Promise<FoundUserResult[]> {
+    try {
+      return await this.manageUsersClient.findUsersFuzzySearch(value, token).catch(() => {
+        return []
+      })
+    } catch (error) {
+      logger.error('Error during findUsers: ', error.stack)
+      throw error
+    }
+  }
+
   comparesUsers =
     (agencyId: string) =>
     (user1: UserWithPrison, user2: UserWithPrison): number => {
