@@ -593,13 +593,37 @@ export default class CoordinatorRoutes {
     })
   }
 
+  viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+
+    const errors = req.flash('errors')
+    const data = { reportId }
+
+    return res.render('pages/coordinator/edit-add-staff-involved.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
 
     const errors = req.flash('errors')
-    const data = { incidentId: reportId }
+    // const data = { incidentId: reportId }
+    const data = { reportId }
 
     res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+
+    // return res.render('pages/coordinator/add-staff-involved.njk', {
+    //   data,
+    //   errors,
+    //   showSaveAndReturnButton: false,
+    //   coordinatorEditJourney: true,
+    //   noChangeError: req.flash('noChangeError'),
+    // })
   }
 
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {
