@@ -458,7 +458,6 @@ export default class CoordinatorRoutes {
     req.flash('changes', { ...changesToReasonsForUof, ...changesToUofDetails })
 
     req.flash('backlinkHref', 'use-of-force-details')
-    req.flash('isUseOfForceDetailsJourney', true)
 
     const sectionDetails = {
       text: 'use of force details',
@@ -685,25 +684,11 @@ export default class CoordinatorRoutes {
     req.flash('backlinkHref', backlinkHref)
     let data = {}
 
-    let isUseOfForceDetailsJourney = false
-    // eslint-disable-next-line prefer-destructuring
-    isUseOfForceDetailsJourney = req.flash('isUseOfForceDetailsJourney')[0]
-
-    let changesToDisplayInTheReasonsPage
-
-    if (isUseOfForceDetailsJourney) {
-      changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
-        res.locals.user.username,
-        reportSection,
-        changes[0]
-      )
-    } else {
-      changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
-        res.locals.user.username,
-        reportSection,
-        changes[0]
-      )
-    }
+    const changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
+      res.locals.user.username,
+      reportSection,
+      changes[0]
+    )
 
     req.flash('sectionDetails', sectionDetails)
 
