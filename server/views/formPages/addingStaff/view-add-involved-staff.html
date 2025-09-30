@@ -14,80 +14,47 @@
                 <table class="govuk-table" data-qa="involved-staff-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
-                            <th class="govuk-table__header" scope="col">Name</th>
+                            <th class="govuk-table__header " scope="col">Name</th>
                             <th class="govuk-table__header" scope="col">Email address</th>
                             <th class="govuk-table__header govuk-!-text-align-right" scope="col">Action</th>
                         </tr>
                     </thead>
 
                     <tbody class="govuk-table__body">
-                        {% set href = '/' + data.reportId + '/delete-involved-staff' %} <!-- TO BE UPDATED TO ACTUAL ROUTE -->
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">Test Name (USER_ID)</td>
-                            <td class="govuk-table__cell">test@test.com</td>
-                            <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a href={{href}}
-                                    draggable="false"
-                                    class="govuk-link" 
-                                    data-qa="delete-link">Delete</a>
-                            </td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">Test Name (USER_ID)</td>
-                            <td class="govuk-table__cell">test@test.com</td>
-                            <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a href={{href}}
-                                    draggable="false"
-                                    class="govuk-link" 
-                                    data-qa="delete-link">Delete</a>
-                            </td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">Test Name (USER_ID)</td>
-                            <td class="govuk-table__cell">test@test.com</td>
-                            <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a href={{href}}
-                                    draggable="false"
-                                    class="govuk-link" 
-                                    data-qa="delete-link">Delete</a>
-                            </td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">Test Name (USER_ID)</td>
-                            <td class="govuk-table__cell">test@test.com</td>
-                            <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a href={{href}}
-                                    draggable="false"
-                                    class="govuk-link" 
-                                    data-qa="delete-link">Delete</a>
-                            </td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">Test Name (USER_ID)</td>
-                            <td class="govuk-table__cell">test@test.com</td>
-                            <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a href={{href}}
-                                    draggable="false"
-                                    class="govuk-link" 
-                                    data-qa="delete-link">Delete</a>
-                            </td>
-                        </tr>
+                        {% for staff in data.involvedStaff %}
+                            {% set href = '/' + data.reportId + '/delete-involved-staff/' + staff.username %}
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">{{ staff.name }} ({{ staff.username }})</td>
+                                <td class="govuk-table__cell">{{ staff.email }}</td>
+                                <td class="govuk-table__cell govuk-!-text-align-right">
+                                    {% if staff.username != data.username %}
+                                        <a href="{{ href }}"
+                                            draggable="false"
+                                            class="govuk-link"
+                                            data-qa="delete-link-{{ loop.index }}">Delete</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell" colspan="3">No staff have been added yet.</td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
 
-                <div class="govuk-grid-row">                     
-                    <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet">
+                <div class="govuk-grid-row govuk-!-margin-left-0">
+                    <div class="govuk-button-group govuk-!-margin-bottom-0" style="display: flex; align-items: center;">
                         {{
                             govukButton({
                                 text: 'Add someone',
                                 name: 'add-someone',
-                                classes: 'govuk-button govuk-!-width-full',
                                 attributes: { 'data-qa': 'add-someone' }
                             })
                         }}
-                    </div>
 
-                    <a href="/{{ data.reportId }}/view-report" class="govuk-link govuk-!-padding-top-1">Return to incident report</a>
+                        <a href="/{{ data.reportId }}/view-report" class="govuk-link govuk-!-margin-left-1">Return to incident report</a>
+                    </div>
                 </div>
             </div>
         </div>
