@@ -228,18 +228,24 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
       },
       {
         row: 15,
+        question: 'How many officers were involved?',
+        old: 2,
+        new: 'Not applicable',
+      },
+      {
+        row: 16,
         question: 'Was an escorting hold used against this prisoner?',
         old: 'Yes',
         new: 'No',
       },
       {
-        row: 16,
+        row: 17,
         question: 'Which control and restraint positions were used against this prisoner?',
         old: 'Standing: On back (supine), On front (prone), Kneeling',
         new: 'Standing: Underhook, On back (supine), On front (prone), Kneeling',
       },
       {
-        row: 17,
+        row: 18,
         question: 'Were handcuffs applied against this prisoner?',
         old: 'Yes',
         new: 'No',
