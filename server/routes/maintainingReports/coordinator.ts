@@ -599,13 +599,34 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
     const data = { reportId }
 
-    return res.render('pages/coordinator/edit-add-staff-involved.njk', {
+    return res.render('pages/coordinator/edit-add-involved-staff.njk', {
       data,
       errors,
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,
       noChangeError: req.flash('noChangeError'),
     })
+  }
+
+  submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const {
+      body: { username },
+    } = req
+
+    if (!username.trim()) {
+      req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
+      return res.redirect(paths.addInvolvedStaff(reportId))
+    }
+
+    const result = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      reportId,
+      username
+    )
+
+    req.flash('username', username.toUpperCase())
+    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
