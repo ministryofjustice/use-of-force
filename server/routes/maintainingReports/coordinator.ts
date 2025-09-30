@@ -578,10 +578,12 @@ export default class CoordinatorRoutes {
   viewEditInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
 
-    const errors = req.flash('errors')
-    const data = { reportId }
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { involvedStaff } = report.form
 
-    // res.render('pages/coordinator/add-involved-staff/staff-involved.html', { errors, data })
+    const errors = req.flash('errors')
+    const data = { reportId, username: report.username, involvedStaff }
+
     return res.render('pages/coordinator/staff-involved.njk', {
       data,
       errors,
