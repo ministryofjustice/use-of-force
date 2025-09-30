@@ -25,6 +25,11 @@ export default class EditUseOfForceDetailsService {
           resolvedNewValue = this.formatObjectArrayToString(newValue, 'weaponType')
           break
 
+        case 'guidingHoldOfficersInvolved':
+          resolvedOldValue = oldValue
+          resolvedNewValue = newValue
+          break
+
         case 'restraintPositions':
           resolvedOldValue = this.formatDisplayOfRestraintAndPainInducingQuestions(
             oldValue,

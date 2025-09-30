@@ -140,6 +140,15 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.guidingHold,
       hasChanged: !R.equals(report.form.useOfForceDetails.guidingHold, valuesFromRequestBody.guidingHold),
     },
+    guidingHoldOfficersInvolved: {
+      question: QUESTION_SET.GUIDING_HOLD_OFFICERS_INVOLVED,
+      oldValue: report.form.useOfForceDetails.guidingHoldOfficersInvolved,
+      newValue: valuesFromRequestBody.guidingHoldOfficersInvolved,
+      hasChanged: !R.equals(
+        report.form.useOfForceDetails.guidingHoldOfficersInvolved,
+        valuesFromRequestBody.guidingHoldOfficersInvolved
+      ),
+    },
     escortingHold: {
       question: QUESTION_SET.ESCORTING_HOLD,
       oldValue: report.form.useOfForceDetails.escortingHold,
