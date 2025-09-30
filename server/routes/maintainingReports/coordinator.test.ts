@@ -507,15 +507,6 @@ describe('coordinator', () => {
           expect(res.text).not.toContain('Print report and statements')
           expect(reviewService.getReport).toHaveBeenCalledWith(1)
           expect(flash).toHaveBeenCalledWith('errors')
-        })
-    })
-
-    it('should call upstream service correctly', async () => {
-      await request(app)
-        .get('/1/edit-report/why-was-uof-applied')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
           expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
         })
     })
@@ -553,27 +544,7 @@ describe('coordinator', () => {
     it('Should continue to what-was-the-primary-reason-of-uof page', async () => {
       reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
 
-      const reasonsBody = {
-        reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'VERBAL_THREAT'],
-      }
-
-      reportEditService.compareEditsWithReport.mockReturnValue({
-        reasons: {
-          question: 'Why was use of force applied against this prisoner?',
-          oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
-          newValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'VERBAL_THREAT'],
-          hasChanged: true,
-        },
-      } as never)
-
-      reportEditService.removeHasChangedKey.mockReturnValue({
-        primaryReason: {
-          question: 'Why was use of force applied against this prisone?',
-          oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
-          newValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'VERBAL_THREAT'],
-        },
-      } as never)
-
+      const reasonsBody = { reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'VERBAL_THREAT'] }
       await request(app)
         .post('/1/edit-report/why-was-uof-applied')
         .send(reasonsBody)
@@ -583,26 +554,7 @@ describe('coordinator', () => {
     it('Should continue to use-of-force-details page', async () => {
       reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
 
-      const reasonsBody = {
-        reasons: ['FIGHT_BETWEEN_PRISONERS'],
-      }
-
-      reportEditService.compareEditsWithReport.mockReturnValue({
-        reasons: {
-          question: 'Why was use of force applied against this prisoner?',
-          oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
-          newValue: 'FIGHT_BETWEEN_PRISONERS',
-          hasChanged: true,
-        },
-      } as never)
-
-      reportEditService.removeHasChangedKey.mockReturnValue({
-        primaryReason: {
-          question: 'Why was use of force applied against this prisone?',
-          oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
-          newValue: 'FIGHT_BETWEEN_PRISONERS',
-        },
-      } as never)
+      const reasonsBody = { reasons: ['FIGHT_BETWEEN_PRISONERS'] }
 
       await request(app)
         .post('/1/edit-report/why-was-uof-applied')
@@ -630,15 +582,6 @@ describe('coordinator', () => {
           expect(res.text).not.toContain('Print report and statements')
           expect(reviewService.getReport).toHaveBeenCalledWith(1)
           expect(flash).toHaveBeenCalledWith('errors')
-        })
-    })
-
-    it('should call upstream service correctly', async () => {
-      await request(app)
-        .get('/1/edit-report/what-was-the-primary-reason-of-uof')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
           expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
         })
     })
@@ -688,7 +631,7 @@ describe('coordinator', () => {
         })
     })
 
-    it('should display error for no edits', async () => {
+    it('should display any error messages', async () => {
       flash.mockReturnValue([
         {
           text: 'You must change something or select to return to the use of force incident page',
@@ -708,13 +651,11 @@ describe('coordinator', () => {
 
   describe('submitEditUseOfForceDetails', () => {
     it('redirects to current page when no difference between request body and persisted report', async () => {
-      const body = basicPersistedReport
-
       reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
 
       await request(app)
         .post('/1/edit-report/use-of-force-details')
-        .send(body)
+        .send(basicPersistedReport)
         .expect(302)
         .expect('Location', '/1/edit-report/use-of-force-details')
     })
@@ -748,18 +689,9 @@ describe('coordinator', () => {
           expect(res.text).not.toContain('check-your-answers')
           expect(res.text).not.toContain('Print report and statements')
           expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
           expect(flash).toHaveBeenCalledWith('reportId')
           expect(flash).toHaveBeenCalledWith('errors')
-        })
-    })
-
-    it('should call upstream service correctly', async () => {
-      await request(app)
-        .get('/1/edit-report/relocation-and-injuries')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
         })
     })
 
