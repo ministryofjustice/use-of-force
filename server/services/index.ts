@@ -28,6 +28,7 @@ import AuthService from './authService'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 import EditEvidenceService from './editEvidenceService'
+import EditUseOfForceDetailsService from './editUseOfForceDetailsService'
 
 export const services = () => {
   const {
@@ -122,12 +123,14 @@ export const services = () => {
   const editIncidentDetailsService = new EditIncidentDetailsService(locationService, authService)
   const editRelocationAndInjuriesService = new EditRelocationAndInjuriesService()
   const editEvidenceService = new EditEvidenceService()
+  const editUseOfForceDetailsService = new EditUseOfForceDetailsService()
 
   const reportEditService = new ReportEditService(
     reportService,
     editIncidentDetailsService,
     editRelocationAndInjuriesService,
     editEvidenceService,
+    editUseOfForceDetailsService,
     locationService,
     authService
   )

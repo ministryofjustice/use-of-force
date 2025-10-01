@@ -1,4 +1,3 @@
-import * as R from 'ramda'
 import mapEvidenceChanges from './evidence'
 
 import { QUESTION_SET } from '../../config/edit/evidenceConfig'

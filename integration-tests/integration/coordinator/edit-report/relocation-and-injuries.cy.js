@@ -136,5 +136,45 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
       editHistoryPage.summaryTextLink(3).click()
       editHistoryPage.tableRowAndSummaryText(3).should('contain', 'Some even more additional details')
     })
+
+    it('A Cancelling from reason-for-change page should delete any unpersisted edits', () => {
+      cy.task('seedReport', {
+        status: ReportStatus.COMPLETE,
+        submittedDate: moment('2025-07-23 09:57:00.000'),
+        incidentDate: moment('2025-07-22 09:57:00.000'),
+        agencyId: offender.agencyId,
+        bookingId: offender.bookingId,
+        sequenceNumber: 1,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
+
+      const completedIncidentsPage = CompletedIncidentsPage.goTo()
+      completedIncidentsPage.viewIncidentLink().click()
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeRelocationAndInjuriesLink().click()
+
+      const relocationAndInjuriesPage = RelocationAndInjuriesPage.verifyOnPage()
+      relocationAndInjuriesPage.prisonerRelocation().select('OWN_CELL')
+      relocationAndInjuriesPage.prisonerHospitalisationNo().click()
+      relocationAndInjuriesPage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+      reasonForChangePage.cancelLink().click()
+      ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+      editReportPage.changeRelocationAndInjuriesLink().click()
+
+      // the edit to OWN_CELL should be cancelled and the original persisted value of SEGREGATION_UNIT should be rendered
+      relocationAndInjuriesPage.prisonerRelocation().should('have.value', 'SEGREGATION_UNIT')
+    })
   })
 })

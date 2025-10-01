@@ -6,6 +6,7 @@ const editReportPage = () =>
     changeRelocationAndInjuriesLink: () =>
       cy.get('.govuk-\\!-display-none-print [data-qa="relocationAndInjuries-link"]'),
     changeEvidenceLink: () => cy.get('.govuk-\\!-display-none-print [data-qa="evidence-link"]'),
+    changeUofDetailsLink: () => cy.get('.govuk-\\!-display-none-print [data-qa="useOfForceDetails-link"]'),
   })
 
 module.exports = {

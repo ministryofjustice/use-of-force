@@ -40,7 +40,15 @@ const statementService = new StatementService(null, null, null) as jest.Mocked<S
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
-const reportEditService = new ReportEditService(null, null, null, null, null, null) as jest.Mocked<ReportEditService>
+const reportEditService = new ReportEditService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
 let app
@@ -62,6 +70,26 @@ const basicPersistedReport = {
       ],
       plannedUseOfForce: false,
       incidentLocationId: 'aaaa-2222',
+    },
+    useOfForceDetails: {
+      taserDrawn: false,
+      guidingHold: true,
+      escortingHold: false,
+      bodyWornCamera: 'NO',
+      weaponsObserved: 'NO',
+      handcuffsApplied: true,
+      bittenByPrisonDog: false,
+      restraintPositions: 'NONE',
+      positiveCommunication: false,
+      pavaDrawnAgainstPrisoner: false,
+      batonDrawnAgainstPrisoner: false,
+      painInducingTechniquesUsed: 'NONE',
+      guidingHoldOfficersInvolved: 2,
+      personalProtectionTechniques: false,
+    },
+    reasonsForUseOfForce: {
+      reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
+      primaryReason: 'FIGHT_BETWEEN_PRISONERS',
     },
     relocationAndInjuries: {
       f213CompletedBy: 'Mr Fowler',
@@ -108,6 +136,7 @@ const reportDetailBuilderResponse = {
   bookingId: null,
   offenderDetail: {},
   useOfForceDetails: {},
+  reasonsForUseOfForce: {},
   relocationAndInjuries: {},
   evidence: {},
   incidentDetails: {
@@ -460,6 +489,189 @@ describe('coordinator', () => {
     })
   })
 
+  describe('viewEditWhyWasUOFApplied', () => {
+    it('should render page', async () => {
+      await request(app)
+        .get('/1/edit-report/why-was-uof-applied')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status')
+          expect(res.text).toContain('Why was use of force applied against this prisoner')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(flash).toHaveBeenCalledWith('errors')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+        })
+    })
+
+    it('should render error messages when no data submitted', async () => {
+      flash.mockReturnValueOnce([
+        {
+          text: 'Select the reasons why use of force was applied',
+          href: '#reasons',
+        },
+      ])
+
+      await request(app)
+        .get('/1/edit-report/why-was-uof-applied')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('Select the reasons why use of force was applied')
+        })
+    })
+  })
+
+  describe('submitEditWhyWasUOFApplied', () => {
+    it('redirects back with errors', async () => {
+      reviewService.getReport.mockResolvedValue({} as unknown as Report)
+
+      await request(app)
+        .post('/1/edit-report/why-was-uof-applied')
+        .send({})
+        .expect(302)
+        .expect('Location', '/1/edit-report/why-was-uof-applied')
+    })
+
+    it('Should continue to what-was-the-primary-reason-of-uof page', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      const reasonsBody = { reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'VERBAL_THREAT'] }
+      await request(app)
+        .post('/1/edit-report/why-was-uof-applied')
+        .send(reasonsBody)
+        .expect(302)
+        .expect('Location', 'what-was-the-primary-reason-of-uof')
+    })
+    it('Should continue to use-of-force-details page', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      const reasonsBody = { reasons: ['FIGHT_BETWEEN_PRISONERS'] }
+
+      await request(app)
+        .post('/1/edit-report/why-was-uof-applied')
+        .send(reasonsBody)
+        .expect(302)
+        .expect('Location', 'use-of-force-details')
+    })
+  })
+
+  describe('viewEditPrimaryReasonForUof', () => {
+    it('should render page', async () => {
+      await request(app)
+        .get('/1/edit-report/what-was-the-primary-reason-of-uof')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status')
+          expect(res.text).toContain('primary reason use of force was applied against this prisoner')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(flash).toHaveBeenCalledWith('errors')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+        })
+    })
+  })
+
+  describe('submitEditPrimaryReasonForUof', () => {
+    it('redirects back with errors', async () => {
+      reviewService.getReport.mockResolvedValue({} as unknown as Report)
+
+      await request(app)
+        .post('/1/edit-report/what-was-the-primary-reason-of-uof')
+        .send({})
+        .expect(302)
+        .expect('Location', '/1/edit-report/what-was-the-primary-reason-of-uof')
+    })
+
+    it('Should continue to use-of-force-details page', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      await request(app)
+        .post('/1/edit-report/what-was-the-primary-reason-of-uof')
+        .send({ primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER' })
+        .expect(302)
+        .expect('Location', 'use-of-force-details')
+    })
+  })
+
+  describe('viewEditUseOfForceDetails', () => {
+    it('should render page', async () => {
+      await request(app)
+        .get('/1/edit-report/use-of-force-details')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status')
+          expect(res.text).toContain('Use of force details')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+          expect(flash).toHaveBeenCalledWith('errors')
+        })
+    })
+
+    it('should display any error messages', async () => {
+      flash.mockReturnValue([
+        {
+          text: 'You must change something or select to return to the use of force incident page',
+          href: '#cancelCoordinatorEdit',
+        },
+      ])
+      await request(app)
+        .get('/1/edit-report/use-of-force-details')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('There is a problem')
+          expect(res.text).toContain('You must change something or select to return to the use of force incident page')
+        })
+    })
+  })
+
+  describe('submitEditUseOfForceDetails', () => {
+    it('redirects to current page when no difference between request body and persisted report', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+
+      await request(app)
+        .post('/1/edit-report/use-of-force-details')
+        .send(basicPersistedReport)
+        .expect(302)
+        .expect('Location', '/1/edit-report/use-of-force-details')
+    })
+
+    it('redirects to current page when required inputs not provided (eg secondary taser questions)', async () => {
+      reviewService.getReport.mockResolvedValue(basicPersistedReport as unknown as Report)
+      const body = basicPersistedReport
+      body.form.useOfForceDetails.taserDrawn = true
+
+      await request(app)
+        .post('/1/edit-report/use-of-force-details')
+        .send(body)
+        .expect(302)
+        .expect('Location', '/1/edit-report/use-of-force-details')
+    })
+  })
   describe('viewEditRelocationAndInjuries', () => {
     it('should render page', async () => {
       await request(app)
@@ -477,18 +689,9 @@ describe('coordinator', () => {
           expect(res.text).not.toContain('check-your-answers')
           expect(res.text).not.toContain('Print report and statements')
           expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
           expect(flash).toHaveBeenCalledWith('reportId')
           expect(flash).toHaveBeenCalledWith('errors')
-        })
-    })
-
-    it('should call upstream service correctly', async () => {
-      await request(app)
-        .get('/1/edit-report/relocation-and-injuries')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
         })
     })
 
@@ -549,65 +752,6 @@ describe('coordinator', () => {
   })
 
   describe('submitEditRelocationAndInjuries', () => {
-    it('should render page', async () => {
-      await request(app)
-        .get('/1/edit-report/relocation-and-injuries')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
-          expect(res.text).toContain('Back')
-          expect(res.text).toContain('Status') // check that prisoner profile is displayed
-          expect(res.text).toContain('Relocation and injuries')
-          expect(res.text).toContain('Continue')
-          expect(res.text).toContain('Cancel')
-          expect(res.text).toContain('/1/edit-report')
-          expect(res.text).not.toContain('Save and return to report use of force')
-          expect(res.text).not.toContain('check-your-answers')
-          expect(res.text).not.toContain('Print report and statements')
-          expect(reviewService.getReport).toHaveBeenCalledWith(1)
-          expect(flash).toHaveBeenCalledWith('reportId')
-          expect(flash).toHaveBeenCalledWith('errors')
-        })
-    })
-
-    it('should call upstream service correctly', async () => {
-      await request(app)
-        .get('/1/edit-report/relocation-and-injuries')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
-          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
-        })
-    })
-
-    it('should render error messages when partial data submitted', async () => {
-      flash.mockReturnValue([
-        {
-          text: 'Select the type of relocation',
-          href: '#relocationType',
-        },
-        {
-          text: 'Enter the name of the member of healthcare',
-          href: '#healthcarePractionerName',
-        },
-        {
-          text: 'Enter the name of who needed medical attention',
-          href: '#staffNeedingMedicalAttention[0][name]',
-        },
-      ])
-
-      await request(app)
-        .get('/1/edit-report/relocation-and-injuries')
-        .expect(200)
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(res => {
-          expect(res.text).toContain('There is a problem')
-          expect(res.text).toContain('Select the type of relocation')
-          expect(res.text).toContain('Enter the name of the member of healthcare')
-          expect(res.text).toContain('Enter the name of who needed medical attention')
-        })
-    })
-
     it('redirects to current page when no difference between request body and persisted report', async () => {
       const body = {
         prisonerRelocation: 'OWN_CELL',
@@ -1378,6 +1522,13 @@ describe('coordinator', () => {
 
     it('should log and throw error when persistChanges fails', async () => {
       reportEditService.persistChanges.mockRejectedValueOnce(new Error('Something failed'))
+
+      flash.mockReturnValueOnce([
+        {
+          text: 'the incident details',
+          section: 'incidentDetails',
+        },
+      ])
       const res = await request(app)
         .post('/1/edit-report/reason-for-change')
         .send({ reason: 'someReason', reasonText: 'Some text', reasonAdditionalInfo: 'Some additional text' })

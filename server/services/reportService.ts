@@ -152,6 +152,54 @@ export default class ReportService {
     }
   }
 
+  public async updateTwoReportSections(user, data) {
+    const { username, displayName } = user
+    const { id, form } = await this.incidentClient.getReportForReviewer(data.reportId)
+    const [key1, key2] = data.keys
+
+    const updatedFormPayload = {
+      ...form,
+      ...{ [key1]: data.formSections[key1].payload },
+      ...{ [key2]: data.formSections[key2].payload },
+    }
+
+    const changesToPersistInReportEdit = { ...data.formSections[key1].changes, ...data.formSections[key2].changes }
+
+    const dataForEditTable = {
+      username,
+      displayName,
+      reportId: data.reportId,
+      changes: changesToPersistInReportEdit,
+      reason: data.reason,
+      reasonText: data.reasonText,
+      reasonAdditionalInfo: data.reasonAdditionalInfo,
+      reportOwnerChanged: false,
+    }
+
+    this.inTransaction(async query => {
+      // update original report
+      await this.incidentClient.updateWithEdits(id, null, null, updatedFormPayload, query)
+
+      //  add new record into report_edit
+      await this.incidentClient.insertReportEdit(dataForEditTable, query)
+
+      // audit logs
+      await this.reportLogClient.insert(query, username, data.reportId, 'REPORT_MODIFIED', {
+        formName: key1,
+        originalSection: form[key1],
+        updatedSection: data.formSections[key1].payload,
+      })
+
+      await this.reportLogClient.insert(query, username, data.reportId, 'REPORT_MODIFIED', {
+        formName: key2,
+        originalSection: form[key2],
+        updatedSection: data.formSections[key2].payload,
+      })
+
+      logger.info(`Updated report with id: ${id} for user: ${username}`)
+    })
+  }
+
   public async updateWithEdits(
     currentUser: LoggedInUser,
     reportId: number,
