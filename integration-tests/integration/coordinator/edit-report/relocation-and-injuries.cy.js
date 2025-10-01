@@ -137,7 +137,7 @@ context('A use of force coordinator needs to edit relocation and injuries', () =
       editHistoryPage.tableRowAndSummaryText(3).should('contain', 'Some even more additional details')
     })
 
-    it.only('A Cancelling from reason-for-change page should delete any unpersisted edits', () => {
+    it('A Cancelling from reason-for-change page should delete any unpersisted edits', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
         submittedDate: moment('2025-07-23 09:57:00.000'),
