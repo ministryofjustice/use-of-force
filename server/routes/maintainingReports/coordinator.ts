@@ -57,6 +57,7 @@ export default class CoordinatorRoutes {
     const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
     const statements = await this.reviewService.getStatements(systemToken, parseInt(reportId, 10))
     const submittedStatements = statements.filter(stmnt => stmnt.isSubmitted)
+    req.session.flash = {} // clears out any existing flash data
 
     return res.render('pages/coordinator/edit-report.njk', {
       data: dataWithEdits,

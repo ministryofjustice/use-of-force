@@ -183,5 +183,55 @@ context('A use of force coordinator needs to edit evidence details', () => {
       editHistoryPage.summaryTextLink(5).click()
       editHistoryPage.tableRowAndSummaryText(5).should('contain', 'Some even more additional details')
     })
+
+    it('Cancelling from reason-for-change page should delete any unpersisted edit', () => {
+      cy.task('seedReport', {
+        status: ReportStatus.COMPLETE,
+        submittedDate: moment('2025-07-23 09:57:00.000'),
+        incidentDate: moment('2025-07-22 09:57:00.000'),
+        agencyId: offender.agencyId,
+        bookingId: offender.bookingId,
+        sequenceNumber: 1,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      })
+
+      const completedIncidentsPage = CompletedIncidentsPage.goTo()
+      completedIncidentsPage.viewIncidentLink().click()
+      const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+      viewIncidentPage.editReportButton().click()
+
+      const editReportPage = EditReportPage.verifyOnPage()
+      editReportPage.changeEvidenceLink().click()
+      // make edits
+      const evidencePage = EvidencePage.verifyOnPage()
+      evidencePage.baggedEvidenceNo().click()
+      evidencePage.photographsTakenNo().click()
+      evidencePage.cctvNo().click()
+      evidencePage.continueButton().click()
+
+      const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+
+      // click cancel button before persisting changes
+      reasonForChangePage.cancelLink().click()
+
+      viewIncidentPage.editReportButton().click()
+      editReportPage.changeEvidenceLink().click()
+
+      // inputs should revert back to persisted data, i.e without any edits that were saved to flash
+      evidencePage.evidenceTag(0).should('have.value', 'Bagged evidence 1')
+      evidencePage.evidenceTagDescription(0).should('have.value', 'This evidence was collected from the prisoner 1')
+      evidencePage.evidenceTag(1).should('have.value', 'Bagged evidence 2')
+      evidencePage.evidenceTagDescription(1).should('have.value', 'This evidence was collected from the prisoner 2')
+      evidencePage.evidenceTag(2).should('have.value', 'Bagged evidence 3')
+      evidencePage.evidenceTagDescription(2).should('have.value', 'Clothes samples')
+      evidencePage.cctvNotKnown().should('be.checked')
+      evidencePage.photographsTakenYes().should('be.checked')
+    })
   })
 })
