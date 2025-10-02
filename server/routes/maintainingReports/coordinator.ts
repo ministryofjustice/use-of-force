@@ -597,7 +597,16 @@ export default class CoordinatorRoutes {
     const { reportId } = req.params
 
     const errors = req.flash('errors')
-    const data = { reportId }
+    const username = req.flash('username')[0] || ''
+    const userSearchResultsRaw = req.flash('userSearchResults')[0]
+    // const userSearchResults =  userSearchResultsRaw ? JSON.parse(userSearchResultsRaw) : []
+    const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.results?.content || [] : []
+
+    const data = {
+      reportId,
+      username,
+      userSearchResults,
+    }
 
     return res.render('pages/coordinator/edit-add-involved-staff.njk', {
       data,
@@ -619,14 +628,16 @@ export default class CoordinatorRoutes {
       return res.redirect(paths.addInvolvedStaff(reportId))
     }
 
-    const result = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+    const results = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
       await this.authService.getSystemClientToken(res.locals.user.username),
       reportId,
       username
     )
 
     req.flash('username', username.toUpperCase())
-    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
+    req.flash('userSearchResults', JSON.stringify(results))
+
+    return res.redirect(paths.viewEditAddInvolvedStaff(reportId))
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {

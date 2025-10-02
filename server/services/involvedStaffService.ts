@@ -6,6 +6,7 @@ import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
 import { InvolvedStaff } from '../data/incidentClientTypes'
 import { RemovalRequest } from '../data/statementsClientTypes'
+import { FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -94,57 +95,33 @@ export class InvolvedStaffService {
     })
   }
 
-  public async findInvolvedStaffFuzzySearch(token: string, reportId: number, value: string) {
-    // : Promise<AddStaffResult> {
-    logger.info(`Adding involved staff with value: ${value} to report: '${reportId}'`)
+  public async findInvolvedStaffFuzzySearch(
+    token: string,
+    reportId: number,
+    value: string
+  ): Promise<FuzzySearchFoundUserResponse> {
+    logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
 
     const foundUsersFuzzySearchResults = await this.userService.findUsersFuzzySearch(token, value)
 
-    const content = foundUsersFuzzySearchResults ?? []
+    // If null/undefined, return empty structure that matches FuzzySearchFoundUserResponse
+    if (!foundUsersFuzzySearchResults) {
+      return {
+        results: [],
+        pageNumber: 0,
+        totalPages: 0,
+        totalElements: 0,
+        size: 0,
+      }
+    }
 
-    return content
-
-    // CONTINUE HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    // ORIGIONAL COPIED CODE
-
-    // if (!foundUser.exists) {
-    //   return AddStaffResult.MISSING
-    // }
-
-    // logger.info(`found staff: '${foundUser}'`)
-
-    // const report = await this.incidentClient.getReportForReviewer(reportId)
-    // if (!report) {
-    //   throw new Error(`Report: '${reportId}' does not exist`)
-    // }
-
-    // if (await this.statementsClient.isStatementPresentForUser(reportId, foundUser.username)) {
-    //   return AddStaffResult.ALREADY_EXISTS
-    // }
-
-    // return this.inTransaction(async client => {
-    //   await this.statementsClient.createStatements(
-    //     reportId,
-    //     null,
-    //     moment(report.submittedDate).add(3, 'day').toDate(),
-    //     [foundUser],
-    //     client
-    //   )
-
-    //   if (report.status === ReportStatus.COMPLETE.value) {
-    //     logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)
-    //     // TODO provide real username
-    //     await this.incidentClient.changeStatus(
-    //       reportId,
-    //       'SYSTEM',
-    //       ReportStatus.COMPLETE,
-    //       ReportStatus.SUBMITTED,
-    //       client
-    //     )
-    //   }
-    //   return foundUser.verified ? AddStaffResult.SUCCESS : AddStaffResult.SUCCESS_UNVERIFIED
-    // })
+    return {
+      results: foundUsersFuzzySearchResults,
+      pageNumber: 0,
+      totalPages: 1,
+      totalElements: foundUsersFuzzySearchResults.length,
+      size: foundUsersFuzzySearchResults.length,
+    }
   }
 
   public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {

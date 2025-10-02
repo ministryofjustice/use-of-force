@@ -56,7 +56,19 @@
                     <a href="/{{ data.incidentId }}/view-report" class="govuk-link">Cancel</a>
                 </form>
             </div>
-        </div>
+           
+            <div class="govuk-row govuk-!-margin-top-7">
+                {{ data.userSearchResults | dump }}
+            </div>
+            <!-- {% if data.userSearchResults.length > 0 %}
+                <div class="govuk-grid-row govuk-!-margin-top-7">
+                  
+                    <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
+                        {{ data.userSearchResults | dump }}
+                    </div>
+                </div>
+            {% endif %}
+        </div> -->
     </div>
 </div>
 

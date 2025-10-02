@@ -39,6 +39,7 @@ export const paths = {
       removalRequest ? `?removalRequest=${removalRequest}` : ''
     }`,
   confirmReportDelete: reportId => `/coordinator/report/${reportId}/confirm-delete`,
+  viewEditAddInvolvedStaff: reportId => `/${reportId}/edit-report/add-staff-involved`,
 
   // admin
   editReport: reportId => `/${reportId}/edit-report`,

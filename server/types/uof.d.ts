@@ -35,6 +35,32 @@ export type FoundUserResult = {
   staffId: number
 }
 
+export type FuzzySearchFoundUserResult = {
+  username: string
+  staffId: number
+  firstName: string
+  lastName: string
+  active: true
+  status: string
+  locked: true
+  expired: true
+  activeCaseload: {
+    id: string
+    name: string
+  }
+  dpsRoleCount: number
+  email: string
+  staffStatus: string
+}
+
+export type FuzzySearchFoundUserResponse = {
+  results: FuzzySearchFoundUserResult[]
+  pageNumber: number
+  totalPages: number
+  totalElements: number
+  size: number
+}
+
 export type UserWithPrison = FoundUserResult & { prison?: string }
 
 export type LoggedInUser = {
