@@ -44,10 +44,10 @@
                             <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet govuk-!-margin-top-0">
                                 {{
                                     govukButton({
-                                    text: 'Search',
-                                    name: 'continue',
-                                    classes: 'govuk-button govuk-!-width-full govuk-!-margin-bottom-0',
-                                    attributes: { 'data-qa': 'search' }
+                                        text: 'Search',
+                                        name: 'continue',
+                                        classes: 'govuk-button govuk-!-margin-bottom-0',
+                                        attributes: { 'data-qa': 'search' }
                                     })
                                 }}
                             </div>
@@ -62,6 +62,10 @@
     <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-margin-right-2">
 
         {% if data.userSearchResults.length > 0 %}
+            <p class="govuk-body govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-margin-bottom-6">
+                If there are 2 or more results with the same name, you may have to contact the person to confirm which email address belongs to them.
+            </p>
+
             <table class="govuk-table">
                 <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
@@ -69,7 +73,7 @@
                     <th scope="col" class="govuk-table__header">Location</th>
                     <th scope="col" class="govuk-table__header">User ID</th>
                     <th scope="col" class="govuk-table__header">Email address</th>
-                    <th scope="col" class="govuk-table__header">Action</th>
+                    <th scope="col" class="govuk-table__header govuk-!-text-align-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="govuk-table__body"></tbody>
@@ -80,8 +84,8 @@
                             <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
                             <td class="govuk-table__cell">{{ user.username }}</td>
                             <td class="govuk-table__cell">{{ user.email }}</td>
-                            <td class="govuk-table__cell">
-                                <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add</a>
+                            <td class="govuk-table__cell govuk-!-text-align-right">
+                                <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add {{ user.firstName }} {{ user.lastName }}</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -90,8 +94,8 @@
         {% endif %}
     </div>
 
-    <div class="govuk-grid-column-three-quarters">
-        <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link">Cancel</a>
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
+        <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link govuk-body">Cancel</a>
     </div>
 </div>  
 {% endblock %}
