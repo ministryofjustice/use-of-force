@@ -511,6 +511,28 @@ describe('coordinator', () => {
         })
     })
 
+    it('should render page even if no reasonsForUseOfForce exist (old reports)', async () => {
+      basicPersistedReport.form.reasonsForUseOfForce = undefined
+      await request(app)
+        .get('/1/edit-report/why-was-uof-applied')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status')
+          expect(res.text).toContain('Why was use of force applied against this prisoner')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(flash).toHaveBeenCalledWith('errors')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+        })
+    })
+
     it('should render error messages when no data submitted', async () => {
       flash.mockReturnValueOnce([
         {
@@ -566,6 +588,28 @@ describe('coordinator', () => {
 
   describe('viewEditPrimaryReasonForUof', () => {
     it('should render page', async () => {
+      await request(app)
+        .get('/1/edit-report/what-was-the-primary-reason-of-uof')
+        .expect(200)
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(res => {
+          expect(res.text).toContain('Back')
+          expect(res.text).toContain('Status')
+          expect(res.text).toContain('primary reason use of force was applied against this prisoner')
+          expect(res.text).toContain('Continue')
+          expect(res.text).toContain('Cancel')
+          expect(res.text).toContain('/1/edit-report')
+          expect(res.text).not.toContain('Save and return to report use of force')
+          expect(res.text).not.toContain('check-your-answers')
+          expect(res.text).not.toContain('Print report and statements')
+          expect(reviewService.getReport).toHaveBeenCalledWith(1)
+          expect(flash).toHaveBeenCalledWith('errors')
+          expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'user1')
+        })
+    })
+
+    it('should render page even if no reasonsForUseOfForce exist (old reports)', async () => {
+      basicPersistedReport.form.reasonsForUseOfForce = undefined
       await request(app)
         .get('/1/edit-report/what-was-the-primary-reason-of-uof')
         .expect(200)

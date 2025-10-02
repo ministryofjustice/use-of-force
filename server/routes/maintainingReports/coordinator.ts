@@ -239,7 +239,7 @@ export default class CoordinatorRoutes {
     const { reportId } = req.params
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-    const input = report.form.reasonsForUseOfForce.reasons
+    const input = report.form.reasonsForUseOfForce?.reasons || []
 
     const data = {
       UofReasons,
@@ -306,7 +306,7 @@ export default class CoordinatorRoutes {
     const primaryReason = req.flash('primaryReason')[0]
 
     const data = {
-      primaryReason: report.form.reasonsForUseOfForce.primaryReason,
+      primaryReason: report.form.reasonsForUseOfForce?.primaryReason || '',
       reasons: Object.values(UofReasons).filter(({ value }) => whyWasUOFAppliedReasons.includes(value)),
       offenderDetail,
       reportId,
