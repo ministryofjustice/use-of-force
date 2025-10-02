@@ -239,13 +239,15 @@ export default class CoordinatorRoutes {
     const { reportId } = req.params
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-    const input = report.form.reasonsForUseOfForce?.reasons || []
+    const persistedUseOfForceReasons = report.form.reasonsForUseOfForce?.reasons || []
+    const flashedReasonsData = req.flash('whyWasUOFAppliedReasons')
+    const flashedReasons = flashedReasonsData.length ? flashedReasonsData : undefined
 
     const data = {
       UofReasons,
       types,
       offenderDetail,
-      reasons: input,
+      reasons: flashedReasons || persistedUseOfForceReasons,
       reportId,
     }
 
@@ -303,16 +305,16 @@ export default class CoordinatorRoutes {
     const whyWasUOFAppliedReasons = req.flash('whyWasUOFAppliedReasons')
     req.flash('whyWasUOFAppliedReasons', whyWasUOFAppliedReasons)
 
-    const primaryReason = req.flash('primaryReason')[0]
+    const persistedPrimaryReason = report.form.reasonsForUseOfForce?.primaryReason
+    const flashedPrimaryReason = req.flash('primaryReason')?.[0]
 
     const data = {
-      primaryReason: report.form.reasonsForUseOfForce?.primaryReason || '',
+      primaryReason: flashedPrimaryReason || persistedPrimaryReason,
       reasons: Object.values(UofReasons).filter(({ value }) => whyWasUOFAppliedReasons.includes(value)),
       offenderDetail,
       reportId,
     }
 
-    req.flash('primaryReason', primaryReason)
     return res.render('pages/coordinator/why-uof-applied-primary-reason.njk', {
       data,
       errors: req.flash('errors'),
@@ -340,12 +342,29 @@ export default class CoordinatorRoutes {
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const pageData = report.form.useOfForceDetails
+    let backLinkHref = `/${reportId}/edit-report/why-was-uof-applied`
+
+    const whyWasUOFAppliedReasons = req.flash('whyWasUOFAppliedReasons')
+    req.flash('whyWasUOFAppliedReasons', whyWasUOFAppliedReasons)
+
+    const flashedPrimaryReason = req.flash('primaryReason')?.[0]
+    req.flash('primaryReason', flashedPrimaryReason)
+
+    if (flashedPrimaryReason) {
+      req.flash('primaryReason', req.flash('primaryReason')[0])
+      backLinkHref = `/${reportId}/edit-report/what-was-the-primary-reason-of-uof`
+    }
+
+    const flashedUseOfForceDetails = req.flash('useOfForceDetails')?.[0]
+    const flashedReportId = req.flash('reportId')?.[0]
+    const inputData = flashedReportId === reportId && flashedUseOfForceDetails ? flashedUseOfForceDetails : pageData
 
     const data = {
       types,
       offenderDetail,
-      ...pageData,
+      ...inputData,
       reportId,
+      backLinkHref,
     }
 
     const errors = req.flash('errors')
@@ -362,9 +381,6 @@ export default class CoordinatorRoutes {
   submitEditUseOfForceDetails: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const pageInput = req.body
-    req.flash('inputsForEditUseOfForceDetails')
-    req.flash('inputsForEditUseOfForceDetails', pageInput)
-
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
 
     // processing use-of-force-details only
@@ -377,6 +393,10 @@ export default class CoordinatorRoutes {
       req.flash('errors', errors)
       return res.redirect(req.originalUrl)
     }
+
+    // flash useOfForceDetails so selections can be viewed going back
+    req.flash('useOfForceDetails')
+    req.flash('useOfForceDetails', payloadFields)
 
     // handle reasons and primaryReason
     const reasons = req.flash('whyWasUOFAppliedReasons')
@@ -673,6 +693,8 @@ export default class CoordinatorRoutes {
   // viewReasonForChange will be used for changes to all parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    req.flash('reportId')
+    req.flash('reportId', reportId)
     const errors = req.flash('errors')
     const sectionDetails = req.flash('sectionDetails')
     const reportSection = sectionDetails[0]
@@ -744,6 +766,8 @@ export default class CoordinatorRoutes {
     if (reportSection.section === useOfForceDetailsConfig.SECTION) {
       const pageInputForReasons = req.flash('whyWasUOFAppliedReasons')
       const pageInputForPrimaryReason = req.flash('primaryReason')[0]
+      req.flash('whyWasUOFAppliedReasons', pageInputForReasons)
+      req.flash('primaryReason', pageInputForPrimaryReason)
       const changesToUofDetails = req.flash('changesToUofDetails')
       const changesToReasonsForUof = req.flash('changesToReasonsForUof')
       const payload = req.flash('payloadFields')
