@@ -6,7 +6,7 @@
 {% set pageTitle = 'Find the person you want to add' %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-body">
+<div class="govuk-grid-row">
     {% if errors.length > 0 %}
         {{
             govukErrorSummary({
@@ -53,23 +53,42 @@
                             </div>
                         </div>
                     </div>
-                    <a href="/{{ data.incidentId }}/view-report" class="govuk-link">Cancel</a>
+                    <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link">Cancel</a>
                 </form>
             </div>
-           
-            <div class="govuk-row govuk-!-margin-top-7">
-                {{ data.userSearchResults | dump }}
-            </div>
-            <!-- {% if data.userSearchResults.length > 0 %}
-                <div class="govuk-grid-row govuk-!-margin-top-7">
-                  
-                    <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
-                        {{ data.userSearchResults | dump }}
-                    </div>
-                </div>
-            {% endif %}
-        </div> -->
+        </div>
     </div>
-</div>
 
+    <!-- results table -->
+    <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-margin-right-2">
+
+        {% if data.userSearchResults.length > 0 %}
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header">Name</th>
+                    <th scope="col" class="govuk-table__header">Location</th>
+                    <th scope="col" class="govuk-table__header">User ID</th>
+                    <th scope="col" class="govuk-table__header">Email address</th>
+                    <th scope="col" class="govuk-table__header">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body"></tbody>
+                    {% for user in data.userSearchResults %}
+                        {% set href = '/' + data.reportId + '/add-involved-staff/' + user.username %}
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">{{ user.firstName }} {{ user.lastName }}</td>
+                            <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
+                            <td class="govuk-table__cell">{{ user.username }}</td>
+                            <td class="govuk-table__cell">{{ user.email }}</td>
+                            <td class="govuk-table__cell">
+                                <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>  
 {% endblock %}

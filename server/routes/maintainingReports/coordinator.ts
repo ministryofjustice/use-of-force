@@ -599,7 +599,6 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
     const username = req.flash('username')[0] || ''
     const userSearchResultsRaw = req.flash('userSearchResults')[0]
-    // const userSearchResults =  userSearchResultsRaw ? JSON.parse(userSearchResultsRaw) : []
     const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.results?.content || [] : []
 
     const data = {
