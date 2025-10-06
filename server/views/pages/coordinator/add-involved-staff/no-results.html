@@ -1,0 +1,40 @@
+{% extends "../../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+
+
+{% set pageTitle = 'There are no search results' %}
+
+
+{% block content %}
+<div class="govuk-grid-row govuk-!-mrgin-left-0">
+    <div class="govuk-!-margin-left-2">
+        <span class="govuk-caption-xl">Edit a use of force report</span>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>  
+        <div class="govuk-grid-row govuk-!-margin-top-7">
+            <div class="govuk-grid-column-three-quarters">
+                <span class="govuk-caption-m">You can search again using different search terms, such as the person's user ID or another name they may be known by.</span>
+            </div>
+        </div>
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-!-margin-top-5">
+         <form method="post" action="/{{ data.reportId }}/edit-report/add-staff-involved">
+              <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+              {{
+                  govukButton({
+                      text: 'Search again',
+                      name: 'continue',
+                      classes: 'govuk-button govuk-!-margin-bottom-0',
+                      attributes: { 'data-qa': 'search-again' }
+                  })
+              }}
+          </form>
+      </div>
+      <div class="govuk-!-margin-top-3">
+        <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
+          <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link govuk-body">Cancel</a>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

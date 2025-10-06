@@ -54,7 +54,7 @@ export type FuzzySearchFoundUserResult = {
 }
 
 export type FuzzySearchFoundUserResponse = {
-  results: FuzzySearchFoundUserResult[]
+  content: FuzzySearchFoundUserResult[]
   pageNumber: number
   totalPages: number
   totalElements: number

@@ -103,11 +103,10 @@ export class InvolvedStaffService {
     logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
 
     const foundUsersFuzzySearchResults = await this.userService.findUsersFuzzySearch(token, value)
-
-    // If null/undefined, return empty structure that matches FuzzySearchFoundUserResponse
+    const content = foundUsersFuzzySearchResults?.content || []
     if (!foundUsersFuzzySearchResults) {
       return {
-        results: [],
+        content: [],
         pageNumber: 0,
         totalPages: 0,
         totalElements: 0,
@@ -116,11 +115,11 @@ export class InvolvedStaffService {
     }
 
     return {
-      results: foundUsersFuzzySearchResults,
+      content,
       pageNumber: 0,
       totalPages: 1,
-      totalElements: foundUsersFuzzySearchResults.length,
-      size: foundUsersFuzzySearchResults.length,
+      totalElements: foundUsersFuzzySearchResults.totalElements || 0,
+      size: foundUsersFuzzySearchResults.size || 0,
     }
   }
 

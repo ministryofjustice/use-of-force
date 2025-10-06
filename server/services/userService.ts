@@ -2,7 +2,13 @@ import logger from '../../log'
 import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { type PrisonClient } from '../data'
-import { User, UserWithPrison, FoundUserResult, FuzzySearchFoundUserResult } from '../types/uof'
+import {
+  User,
+  UserWithPrison,
+  FoundUserResult,
+  FuzzySearchFoundUserResult,
+  FuzzySearchFoundUserResponse,
+} from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
@@ -71,14 +77,18 @@ export default class UserService {
     }
   }
 
-  public async findUsersFuzzySearch(token: string, value: string): Promise<FuzzySearchFoundUserResult[]> {
-    try {
-      return await this.manageUsersClient.findUsersFuzzySearch(value, token).catch(() => {
-        return []
-      })
-    } catch (error) {
-      logger.error('Error during findUsers: ', error.stack)
-      throw error
+  public async findUsersFuzzySearch(token: string, value: string): Promise<FuzzySearchFoundUserResponse> {
+    const response = await this.manageUsersClient.findUsersFuzzySearch(value, token)
+    const results = response?.content || []
+    const size = response?.size || 0
+    const totalElements = response?.totalElements || 0
+
+    return {
+      content: results,
+      pageNumber: 0,
+      totalPages: 1,
+      totalElements,
+      size,
     }
   }
 

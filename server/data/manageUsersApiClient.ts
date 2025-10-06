@@ -2,7 +2,7 @@ import querystring from 'querystring'
 
 import BaseApiClient from './baseApiClient'
 import config from '../config'
-import { FoundUserResult, FuzzySearchFoundUserResult } from '../types/uof'
+import { FoundUserResult, FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import { EmailAddress } from '../types/manageUsersApi/manageUsersApiTypes'
 
 export type EmailResult = {
@@ -53,7 +53,8 @@ export default class ManageUsersApiClient extends BaseApiClient {
     })
   }
 
-  async findUsersFuzzySearch(value: string, token: string): Promise<FuzzySearchFoundUserResult[]> {
+  async findUsersFuzzySearch(value: string, token: string): Promise<FuzzySearchFoundUserResponse> {
+    // async findUsersFuzzySearch(value: string, token: string): Promise<FuzzySearchFoundUserResult[]> {
     const path = `/prisonusers/search`
 
     return ManageUsersApiClient.restClient(token).get({

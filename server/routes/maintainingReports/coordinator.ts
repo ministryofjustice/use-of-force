@@ -599,7 +599,7 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
     const username = req.flash('username')[0] || ''
     const userSearchResultsRaw = req.flash('userSearchResults')[0]
-    const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.results?.content || [] : []
+    const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.content || [] : []
 
     const data = {
       reportId,
@@ -633,10 +633,30 @@ export default class CoordinatorRoutes {
       username
     )
 
+    if (results.totalElements === undefined || results.totalElements === 0) {
+      req.flash('errors', [{ href: '#username', text: 'No matches found – check the username and try again' }])
+      return res.redirect(paths.noResultsEditAddInvolvedStaff(reportId))
+    }
+
     req.flash('username', username.toUpperCase())
     req.flash('userSearchResults', JSON.stringify(results))
 
     return res.redirect(paths.viewEditAddInvolvedStaff(reportId))
+  }
+
+  noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+
+    const data = {
+      reportId,
+    }
+
+    return res.render('pages/coordinator/no-results-edit-add-involved-staff.njk', {
+      data,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {

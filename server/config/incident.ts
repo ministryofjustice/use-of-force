@@ -40,6 +40,7 @@ export const paths = {
     }`,
   confirmReportDelete: reportId => `/coordinator/report/${reportId}/confirm-delete`,
   viewEditAddInvolvedStaff: reportId => `/${reportId}/edit-report/add-staff-involved`,
+  noResultsEditAddInvolvedStaff: reportId => `/${reportId}/edit-report/add-staff-involved/no-results`,
 
   // admin
   editReport: reportId => `/${reportId}/edit-report`,
