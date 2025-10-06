@@ -44,7 +44,7 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
     seedReport()
   })
 
-  it('edit only the reasons page when there is just one reason', () => {
+  it('edit the reasons page and select only one reason', () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
@@ -63,6 +63,8 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
     reasonsPage.uncheckReason('FIGHT_BETWEEN_PRISONERS')
     reasonsPage.checkReason('TO_PREVENT_ESCAPE_OR_ABSCONDING')
     reasonsPage.clickContinue()
+
+    // if there is only one reason, the primary reason page is skipped and journey goes straight to useOfForceDetailsPage
 
     const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
     useOfForceDetailsPage.continueButton().click()
@@ -276,6 +278,75 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
       editHistoryPage.tableRowAndColHeading(row, 'what-changed').should('contain', question)
       editHistoryPage.tableRowAndColHeading(row, 'old-value').should('contain', old)
       editHistoryPage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
+    })
+  })
+
+  it('navigate using back links from /reason-for-change to /why-was-uof-applied page and still see in-progress selections', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeUofDetailsLink().click()
+
+    const reasonsPage = ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['FIGHT_BETWEEN_PRISONERS'])
+    })
+    reasonsPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    reasonsPage.clickContinue()
+
+    const primaryReasonPage = PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    primaryReasonPage.clickContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.radio('positiveCommunication', 'false').click()
+    useOfForceDetailsPage.continueButton().click()
+
+    const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+
+    const tableRows = [
+      {
+        row: 1,
+        question: 'Why was use of force applied against this prisoner?',
+        old: 'Fight between prisoners',
+        new: 'Assault on a member of staff, Fight between prisoners',
+      },
+      {
+        row: 2,
+        question: 'What was the primary reason use of force was applied against this prisoner?',
+        old: 'Not applicable',
+        new: 'Assault on a member of staff',
+      },
+      {
+        row: 3,
+        question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+        old: 'Yes',
+        new: 'No',
+      },
+    ]
+
+    tableRows.forEach(({ row, question, old, new: newValue }) => {
+      reasonForChangePage.tableRowAndColHeading(row, 'question').should('contain', question)
+      reasonForChangePage.tableRowAndColHeading(row, 'old-value').should('contain', old)
+      reasonForChangePage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
+    })
+    reasonForChangePage.backLink().click()
+
+    UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.isCheckedRadio('positiveCommunication', 'false')
+    useOfForceDetailsPage.clickBack()
+
+    PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.primaryReason().should('have.value', 'ASSAULT_ON_A_MEMBER_OF_STAFF')
+    primaryReasonPage.clickBack()
+
+    ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['ASSAULT_ON_A_MEMBER_OF_STAFF', 'FIGHT_BETWEEN_PRISONERS'])
     })
   })
 })

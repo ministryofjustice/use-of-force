@@ -9,6 +9,7 @@ const editPrimaryReasonPage = () =>
       checkReason: value => cy.get('#uof-primary-reasons [type="radio"]').check(value),
       clickContinue: () => cy.get('[data-qa="continue-coordinator-edit"]').click(),
       clickCancel: () => cy.get('[data-qa="cancel"]').click(),
+      clickBack: () => cy.get('[data-qa="back-link"]').click(),
       errorSummaryTitle: () => cy.get('.govuk-error-summary__title'),
       errorSummaryText: () => cy.get('.govuk-error-summary__list'),
     }

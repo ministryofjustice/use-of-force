@@ -534,6 +534,7 @@ describe('coordinator', () => {
     })
 
     it('should render error messages when no data submitted', async () => {
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
           text: 'Select the reasons why use of force was applied',
@@ -1203,6 +1204,8 @@ describe('coordinator', () => {
   describe('viewReasonForChange', () => {
     it('should render page', async () => {
       flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
           text: 'the incident details',
@@ -1210,7 +1213,6 @@ describe('coordinator', () => {
         },
       ])
       flash.mockReturnValueOnce([{}])
-      flash.mockReturnValueOnce([])
       reportEditService.constructChangesToView.mockResolvedValue([])
       await request(app)
         .get('/1/edit-report/reason-for-change')
@@ -1283,6 +1285,8 @@ describe('coordinator', () => {
         })
     })
     it('should render correct error when no radio button is selected', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
           href: '#reason',
@@ -1310,6 +1314,8 @@ describe('coordinator', () => {
     })
 
     it('should render correct error when Another reason radio selected but no reason ext entered', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
           href: '#anotherReasonForEdit',
@@ -1339,6 +1345,8 @@ describe('coordinator', () => {
 
   describe('submitReasonForChange', () => {
     it('should render reason-for-change page', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
@@ -1373,6 +1381,8 @@ describe('coordinator', () => {
     })
 
     it('should display the changes, replacing booleans with Yes or No', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
@@ -1420,6 +1430,8 @@ describe('coordinator', () => {
     })
 
     it('should display correct error when no radio button is selected', async () => {
+      flash.mockReturnValueOnce([])
+      flash.mockReturnValueOnce([])
       flash.mockReturnValueOnce([
         {
           href: '#reason',
@@ -1448,6 +1460,8 @@ describe('coordinator', () => {
     })
 
     it("should display correct error when 'Another reason' radio selected but no text entered", async () => {
+      flash.mockReturnValueOnce(['1'])
+      flash.mockReturnValueOnce(['1'])
       flash.mockReturnValueOnce([
         {
           href: '#anotherReasonForEdit',
