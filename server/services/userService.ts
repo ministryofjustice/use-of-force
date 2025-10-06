@@ -82,11 +82,13 @@ export default class UserService {
     const results = response?.content || []
     const size = response?.size || 0
     const totalElements = response?.totalElements || 0
+    const totalPages = response?.totalPages || 0
+    const pageNumber = response?.pageNumber || 0
 
     return {
       content: results,
-      pageNumber: 0,
-      totalPages: 1,
+      pageNumber,
+      totalPages,
       totalElements,
       size,
     }
