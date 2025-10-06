@@ -350,7 +350,7 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
     })
   })
 
-  it.only('navigate using browser back/forward buttons from /reason-for-change to /why-was-uof-applied page and still see in-progress selections', () => {
+  it('navigate using browser back/forward buttons from /reason-for-change to /why-was-uof-applied page and still see in-progress selections', () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
