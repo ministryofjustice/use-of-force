@@ -634,7 +634,6 @@ export default class CoordinatorRoutes {
     )
 
     if (results.totalElements === undefined || results.totalElements === 0) {
-      req.flash('errors', [{ href: '#username', text: 'No matches found – check the username and try again' }])
       return res.redirect(paths.noResultsEditAddInvolvedStaff(reportId))
     }
 
