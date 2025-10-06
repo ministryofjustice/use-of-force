@@ -349,4 +349,95 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
       expect(reasons).to.deep.equal(['ASSAULT_ON_A_MEMBER_OF_STAFF', 'FIGHT_BETWEEN_PRISONERS'])
     })
   })
+
+  it.only('navigate using browser back/forward buttons from /reason-for-change to /why-was-uof-applied page and still see in-progress selections', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeUofDetailsLink().click()
+
+    const reasonsPage = ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['FIGHT_BETWEEN_PRISONERS'])
+    })
+    reasonsPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    reasonsPage.clickContinue()
+
+    const primaryReasonPage = PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    primaryReasonPage.clickContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.radio('positiveCommunication', 'false').click()
+    useOfForceDetailsPage.continueButton().click()
+
+    const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+
+    const tableRows = [
+      {
+        row: 1,
+        question: 'Why was use of force applied against this prisoner?',
+        old: 'Fight between prisoners',
+        new: 'Assault on a member of staff, Fight between prisoners',
+      },
+      {
+        row: 2,
+        question: 'What was the primary reason use of force was applied against this prisoner?',
+        old: 'Not applicable',
+        new: 'Assault on a member of staff',
+      },
+      {
+        row: 3,
+        question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+        old: 'Yes',
+        new: 'No',
+      },
+    ]
+
+    tableRows.forEach(({ row, question, old, new: newValue }) => {
+      reasonForChangePage.tableRowAndColHeading(row, 'question').should('contain', question)
+      reasonForChangePage.tableRowAndColHeading(row, 'old-value').should('contain', old)
+      reasonForChangePage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
+    })
+
+    // click browser back button to go to use-of-force-details
+    cy.go('back')
+    UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.isCheckedRadio('positiveCommunication', 'false')
+
+    // click browser back button to go to primary-reason
+    cy.go('back')
+    PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.primaryReason().should('have.value', 'ASSAULT_ON_A_MEMBER_OF_STAFF')
+
+    // click browser back button to go to why-was-uof-applied
+    cy.go('back')
+    ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['ASSAULT_ON_A_MEMBER_OF_STAFF', 'FIGHT_BETWEEN_PRISONERS'])
+    })
+
+    // click browser forward button to go to primary-reason
+    cy.go('forward')
+    PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.primaryReason().should('have.value', 'ASSAULT_ON_A_MEMBER_OF_STAFF')
+
+    // click browser forward button to go to use-of-force-details
+    cy.go('forward')
+    UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.isCheckedRadio('positiveCommunication', 'false')
+
+    // click browser forward button to go to reasons-for-change
+    cy.go('forward')
+    ReasonForChangePage.verifyOnPage()
+    tableRows.forEach(({ row, question, old, new: newValue }) => {
+      reasonForChangePage.tableRowAndColHeading(row, 'question').should('contain', question)
+      reasonForChangePage.tableRowAndColHeading(row, 'old-value').should('contain', old)
+      reasonForChangePage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
+    })
+  })
 })
