@@ -241,7 +241,12 @@ export default class CoordinatorRoutes {
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const persistedUseOfForceReasons = report.form.reasonsForUseOfForce?.reasons || []
     const flashedReasonsData = req.flash('whyWasUOFAppliedReasons')
-    const flashedReasons = flashedReasonsData.length ? flashedReasonsData : undefined
+    let flashedReasons: string[]
+
+    if (flashedReasonsData.length) {
+      flashedReasons = flashedReasonsData
+      req.flash('whyWasUOFAppliedReasons', flashedReasonsData)
+    }
 
     const data = {
       UofReasons,
