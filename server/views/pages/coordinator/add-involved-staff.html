@@ -12,7 +12,8 @@
             govukErrorSummary({
                 titleText: 'There is a problem',
                 errorList: errors,
-                attributes: { 'data-qa-errors': true }
+                attributes: { 'data-qa-errors': true },
+                classes: 'govuk-!-margin-bottom-6'
             })
         }}
     {% endif %}
@@ -23,12 +24,12 @@
             <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2> 
             <span class="govuk-caption-m">Search by part of a persons name, their full name, their email address or their user ID</span>
         </div>
-        <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
+        <div class="govuk-grid-column-three-quarters govuk-!-margin-top-6">
             <form method="post">
                 <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                 <div class="govuk-form-group">
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-2 govuk-!-padding-right-0">
+                    <div class="govuk-grid-row align-items-end">
+                        <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-0 govuk-!-padding-right-0">
                             {{
                                 govukInput({
                                     id: 'username',
@@ -39,8 +40,7 @@
                                 })
                             }}
                         </div>
-
-                        <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet govuk-!-margin-top-0">
+                        <div class="govuk-!-margin-left-2 padding-bottom-2 ">
                             {{
                                 govukButton({
                                     text: 'Search',
