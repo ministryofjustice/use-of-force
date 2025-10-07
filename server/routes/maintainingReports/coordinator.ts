@@ -623,8 +623,8 @@ export default class CoordinatorRoutes {
     } = req
 
     if (!username.trim()) {
-      req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
-      return res.redirect(paths.addInvolvedStaff(reportId))
+      req.flash('errors', [{ href: '#username', text: "Enter a person's name, email address or user ID" }])
+      return res.redirect(paths.viewEditAddInvolvedStaff(reportId))
     }
 
     const results = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
