@@ -6,7 +6,7 @@
 {% set pageTitle = 'Find the person you want to add' %}
 
 {% block content %}
-<div class="govuk-grid-row govuk-!-mrgin-left-0">
+<div class="govuk-grid-row govuk-!-margin-left-0 govuk-!-margin-right-0">
     {% if errors.length > 0 %}
         {{
             govukErrorSummary({
@@ -16,45 +16,43 @@
             })
         }}
     {% endif %}
-    <div class="govuk-!-margin-left-2">
-        <span class="govuk-caption-xl">Edit a use of force report</span>
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>  
-        <div class="govuk-grid-row govuk-!-margin-top-7">
-            <div class="govuk-grid-column-three-quarters">
-                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2> 
-                <span class="govuk-caption-m">Search by part of a persons name, their full name, their email address or their user ID</span>
-            </div>
-            <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
-               <form method="post">
-                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-                    <div class="govuk-form-group">
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-2 govuk-!-padding-right-0">
-                                {{
-                                    govukInput({
+    <span class="govuk-caption-xl">Edit a use of force report</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>  
+    <div class="govuk-grid-row govuk-!-margin-top-7">
+        <div class="govuk-grid-column-three-quarters">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2> 
+            <span class="govuk-caption-m">Search by part of a persons name, their full name, their email address or their user ID</span>
+        </div>
+        <div class="govuk-grid-column-three-quarters govuk-!-margin-top-5">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                <div class="govuk-form-group">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-2 govuk-!-padding-right-0">
+                            {{
+                                govukInput({
                                     id: 'username',
                                     name: 'username',
                                     value: value,
                                     classes: 'govuk-input',
                                     errorMessage: errors | findError('username')
-                                    })
-                                }}
-                            </div>
+                                })
+                            }}
+                        </div>
 
-                            <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet govuk-!-margin-top-0">
-                                {{
-                                    govukButton({
-                                        text: 'Search',
-                                        name: 'continue',
-                                        classes: 'govuk-button govuk-!-margin-bottom-0',
-                                        attributes: { 'data-qa': 'search' }
-                                    })
-                                }}
-                            </div>
+                        <div class="govuk-grid-column-one-quarter govuk-grid-column-full-from-tablet govuk-!-margin-top-0">
+                            {{
+                                govukButton({
+                                    text: 'Search',
+                                    name: 'continue',
+                                    classes: 'govuk-button govuk-!-margin-bottom-0',
+                                    attributes: { 'data-qa': 'search' }
+                                })
+                            }}
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -94,7 +92,7 @@
         {% endif %}
     </div>
 
-    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4">
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4 govuk-!-padding-left-0">
         <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link govuk-body">Cancel</a>
     </div>
 </div>  
