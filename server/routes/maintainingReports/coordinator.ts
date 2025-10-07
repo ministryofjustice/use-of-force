@@ -579,10 +579,16 @@ export default class CoordinatorRoutes {
     const { reportId } = req.params
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const { involvedStaff } = report.form
 
     const errors = req.flash('errors')
-    const data = { reportId, username: report.username, involvedStaff }
+    const data = {
+      reportId,
+      username: report.username,
+      involvedStaff,
+      offenderDetail,
+    }
 
     return res.render('pages/coordinator/staff-involved.njk', {
       data,
@@ -600,11 +606,13 @@ export default class CoordinatorRoutes {
     const username = req.flash('username')[0] || ''
     const userSearchResultsRaw = req.flash('userSearchResults')[0]
     const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.content || [] : []
-
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const data = {
       reportId,
       username,
       userSearchResults,
+      offenderDetail,
     }
 
     return res.render('pages/coordinator/edit-add-involved-staff.njk', {
@@ -645,9 +653,12 @@ export default class CoordinatorRoutes {
 
   noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
     const data = {
       reportId,
+      offenderDetail,
     }
 
     return res.render('pages/coordinator/no-results-edit-add-involved-staff.njk', {
