@@ -240,7 +240,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }
 
     if (totalPages <= 3) {
-      for (let i = 0; i <= totalPages; i += 1) {
+      for (let i = 0; i <= totalPages - 1; i += 1) {
         addPage(i)
       }
     } else {

@@ -721,7 +721,7 @@ export default class CoordinatorRoutes {
     req.flash('username', username.toUpperCase())
     req.flash('userSearchResults', JSON.stringify(results))
 
-    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=1`)
+    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=0`)
   }
 
   noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {
@@ -744,20 +744,10 @@ export default class CoordinatorRoutes {
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
-
     const errors = req.flash('errors')
-    // const data = { incidentId: reportId }
     const data = { reportId }
 
     res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
-
-    // return res.render('pages/coordinator/add-staff-involved.njk', {
-    //   data,
-    //   errors,
-    //   showSaveAndReturnButton: false,
-    //   coordinatorEditJourney: true,
-    //   noChangeError: req.flash('noChangeError'),
-    // })
   }
 
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {
