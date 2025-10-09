@@ -718,7 +718,7 @@ export default class CoordinatorRoutes {
       return res.redirect(paths.noResultsEditAddInvolvedStaff(reportId))
     }
 
-    req.flash('username', username.toUpperCase())
+    req.flash('username', username)
     req.flash('userSearchResults', JSON.stringify(results))
 
     return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=0`)
