@@ -215,6 +215,78 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }
   })
 
+  njkEnv.addFilter('toPaginationZeroBased', (pageData: PageMetaData, query: Record<string, unknown> = {}) => {
+    const urlForPage = n => `?${querystring.stringify({ ...query, page: n })}`
+
+    const { page, totalPages, previousPage, nextPage, totalCount, min, max } = pageData
+    const items: { text: string; href?: string; selected?: boolean; classes?: string; type: string }[] = []
+
+    const addPage = (n: number) => {
+      items.push({
+        text: `${n + 1}`,
+        href: urlForPage(n),
+        selected: n === page,
+        type: 'page',
+      })
+    }
+
+    const addEllipsis = () => {
+      items.push({
+        text: '…',
+        classes: 'govuk-pagination__item--dots',
+        selected: false,
+        type: 'dots',
+      })
+    }
+
+    if (totalPages <= 3) {
+      for (let i = 0; i <= totalPages; i += 1) {
+        addPage(i)
+      }
+    } else {
+      const isNearStart = page <= 2
+      const isNearEnd = page >= totalPages - 2
+      if (isNearStart) {
+        // e.g. [1] 2 3 … 10
+        for (let i = 0; i <= 2; i += 1) addPage(i)
+        addEllipsis()
+        addPage(totalPages - 1)
+      } else if (isNearEnd) {
+        // e.g. 1 … 8 9 [10]
+        addPage(0)
+        addEllipsis()
+        for (let i = totalPages - 3; i <= totalPages - 1; i += 1) addPage(i)
+      } else {
+        // e.g. 1 … 4 [5] 6 … 10
+        addPage(0)
+        addEllipsis()
+        addPage(page - 1)
+        addPage(page)
+        addPage(page + 1)
+        addEllipsis()
+        addPage(totalPages - 1)
+      }
+    }
+
+    return {
+      results: {
+        from: min,
+        to: max,
+        count: totalCount,
+      },
+      previous: previousPage && {
+        text: 'Previous',
+        href: urlForPage(previousPage - 1),
+      },
+      next: nextPage &&
+        !(totalPages <= 3 && page === totalPages) && {
+          text: 'Next',
+          href: urlForPage(nextPage),
+        },
+      items,
+    }
+  })
+
   njkEnv.addFilter('toYesNo', value => {
     if (value == null) {
       return '\u2013'

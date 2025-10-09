@@ -2,13 +2,7 @@ import logger from '../../log'
 import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { type PrisonClient } from '../data'
-import {
-  User,
-  UserWithPrison,
-  FoundUserResult,
-  FuzzySearchFoundUserResult,
-  FuzzySearchFoundUserResponse,
-} from '../types/uof'
+import { User, UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
@@ -77,21 +71,9 @@ export default class UserService {
     }
   }
 
-  public async findUsersFuzzySearch(token: string, value: string): Promise<FuzzySearchFoundUserResponse> {
-    const response = await this.manageUsersClient.findUsersFuzzySearch(value, token)
-    const results = response?.content || []
-    const size = response?.size || 0
-    const totalElements = response?.totalElements || 0
-    const totalPages = response?.totalPages || 0
-    const pageNumber = response?.pageNumber || 0
-
-    return {
-      content: results,
-      pageNumber,
-      totalPages,
-      totalElements,
-      size,
-    }
+  public async findUsersFuzzySearch(token: string, value: string, page: number): Promise<FuzzySearchFoundUserResponse> {
+    const result = this.manageUsersClient.findUsersFuzzySearch(value, token, page)
+    return result
   }
 
   comparesUsers =

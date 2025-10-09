@@ -6,7 +6,7 @@ import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
 import { InvolvedStaff } from '../data/incidentClientTypes'
 import { RemovalRequest } from '../data/statementsClientTypes'
-import { FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
+import { FuzzySearchFoundUserResponse } from '../types/uof'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -98,29 +98,12 @@ export class InvolvedStaffService {
   public async findInvolvedStaffFuzzySearch(
     token: string,
     reportId: number,
-    value: string
+    value: string,
+    page: number
   ): Promise<FuzzySearchFoundUserResponse> {
     logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
 
-    const foundUsersFuzzySearchResults = await this.userService.findUsersFuzzySearch(token, value)
-    const content = foundUsersFuzzySearchResults?.content || []
-    if (!foundUsersFuzzySearchResults) {
-      return {
-        content: [],
-        pageNumber: 0,
-        totalPages: 0,
-        totalElements: 0,
-        size: 0,
-      }
-    }
-
-    return {
-      content,
-      pageNumber: 0,
-      totalPages: 1,
-      totalElements: foundUsersFuzzySearchResults.totalElements || 0,
-      size: foundUsersFuzzySearchResults.size || 0,
-    }
+    return this.userService.findUsersFuzzySearch(token, value, page)
   }
 
   public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {

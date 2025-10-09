@@ -20,6 +20,7 @@ import log from '../../../log'
 import incidentDetailsConfig from '../../config/edit/incidentDetailsConfig'
 import relocationAndInjuriesConfig, { QUESTION_ID as RAIQID } from '../../config/edit/relocationAndInjuriesConfig'
 import evidenceConfig, { QUESTION_ID as EQID } from '../../config/edit/evidenceConfig'
+import { FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../../types/uof'
 
 import * as types from '../../config/types'
 
@@ -599,20 +600,90 @@ export default class CoordinatorRoutes {
     })
   }
 
+  // viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+  //   const { reportId } = req.params
+
+  //   const page = parseInt(req.query.page as string, 10) || 1
+  //   const errors = req.flash('errors')
+  //   const username = req.flash('username')[0] || ''
+  //   const userSearchResultsRaw = req.flash('userSearchResults')[0]
+  //   // const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.content || [] : []
+  //   const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw) || [] : []
+  //   const report = await this.reviewService.getReport(parseInt(reportId, 10))
+  //   const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+  //   const data = {
+  //     reportId,
+  //     username,
+  //     userSearchResults,
+  //     offenderDetail,
+  //   }
+
+  //   return res.render('pages/coordinator/edit-add-involved-staff.njk', {
+  //     data,
+  //     errors,
+  //     showSaveAndReturnButton: false,
+  //     coordinatorEditJourney: true,
+  //     noChangeError: req.flash('noChangeError'),
+  //   })
+  // }
+
   viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
+    const page = parseInt(req.query.page as string, 10) || 0
 
     const errors = req.flash('errors')
-    const username = req.flash('username')[0] || ''
+    const flashUsername = req.flash('username')[0]
+    const queryUsername = req.query.username as string
+    const username = flashUsername || queryUsername || ''
+
     const userSearchResultsRaw = req.flash('userSearchResults')[0]
-    const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.content || [] : []
+    let userSearchResults: any = { content: [] }
+    let content: any[] = []
+
+    if (userSearchResultsRaw) {
+      try {
+        userSearchResults = JSON.parse(userSearchResultsRaw)
+        content = userSearchResults?.content || []
+      } catch {
+        userSearchResults = { content: [] }
+        content = []
+      }
+    } else if (username) {
+      // Re-perform search for pagination
+      userSearchResults = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+        await this.authService.getSystemClientToken(res.locals.user.username),
+        parseInt(reportId, 10),
+        username,
+        page
+      )
+      content = userSearchResults?.content || []
+    }
+
+    const { number: currentPage = 0, totalPages = 1, totalElements = 0, size = 10 } = userSearchResults
+    const start = currentPage * size + 1
+    const end = start + content.length - 1
+
+    const paginationMeta = {
+      page: currentPage,
+      totalPages,
+      previousPage: currentPage > 0 ? currentPage : 0,
+      nextPage: currentPage + 1 < totalPages ? currentPage + 1 : undefined,
+      totalCount: totalElements,
+      min: start,
+      max: end,
+    }
+
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
     const data = {
       reportId,
       username,
       userSearchResults,
       offenderDetail,
+      paginationMeta,
+      baseUrl: paths.viewEditAddInvolvedStaff(reportId),
     }
 
     return res.render('pages/coordinator/edit-add-involved-staff.njk', {
@@ -625,6 +696,7 @@ export default class CoordinatorRoutes {
   }
 
   submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const page = parseInt(req.query.page as string, 10) || 0
     const reportId = extractReportId(req)
     const {
       body: { username },
@@ -638,7 +710,8 @@ export default class CoordinatorRoutes {
     const results = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
       await this.authService.getSystemClientToken(res.locals.user.username),
       reportId,
-      username
+      username,
+      page
     )
 
     if (results.totalElements === undefined || results.totalElements === 0) {
@@ -648,7 +721,7 @@ export default class CoordinatorRoutes {
     req.flash('username', username.toUpperCase())
     req.flash('userSearchResults', JSON.stringify(results))
 
-    return res.redirect(paths.viewEditAddInvolvedStaff(reportId))
+    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=1`)
   }
 
   noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {

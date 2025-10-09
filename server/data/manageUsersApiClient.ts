@@ -53,13 +53,13 @@ export default class ManageUsersApiClient extends BaseApiClient {
     })
   }
 
-  async findUsersFuzzySearch(value: string, token: string): Promise<FuzzySearchFoundUserResponse> {
-    // async findUsersFuzzySearch(value: string, token: string): Promise<FuzzySearchFoundUserResult[]> {
+  async findUsersFuzzySearch(value: string, token: string, page: number): Promise<FuzzySearchFoundUserResponse> {
     const path = `/prisonusers/search`
-
-    return ManageUsersApiClient.restClient(token).get({
+    const result: FuzzySearchFoundUserResponse = await ManageUsersApiClient.restClient(token).get({
       path,
-      query: querystring.stringify({ nameFilter: value.trim() }),
+      query: querystring.stringify({ nameFilter: value.trim(), page }),
     })
+
+    return result
   }
 }

@@ -2,6 +2,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %} 
 {% from "govuk/components/input/macro.njk" import govukInput %} 
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
 
 {% set pageTitle = 'Find the person you want to add' %}
 
@@ -59,7 +60,7 @@
     <!-- results table -->
     <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-margin-right-2">
 
-        {% if data.userSearchResults.length > 0 %}
+        {% if data.userSearchResults.content.length > 0 %}
             <p class="govuk-body govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-margin-bottom-6">
                 If there are 2 or more results with the same name, you may have to contact the person to confirm which email address belongs to them.
             </p>
@@ -75,7 +76,7 @@
                     </tr>
                 </thead>
                 <tbody class="govuk-table__body"></tbody>
-                    {% for user in data.userSearchResults %}
+                    {% for user in data.userSearchResults.content %}
                         {% set href = '/' + data.reportId + '/add-involved-staff/' + user.username %}
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">{{ user.firstName }} {{ user.lastName }}</td>
@@ -89,6 +90,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            {{data.userSearchResults | dump}}
+
+            {{ mojPagination(data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+
         {% endif %}
     </div>
 
