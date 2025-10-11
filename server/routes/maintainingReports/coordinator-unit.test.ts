@@ -53,9 +53,9 @@ let res
 const report = {
   id: 1,
   username: 'USER',
-  incidentDate: new Date('2025-10-06T03:10:00.000Z'),
+  incidentDate: new Date('2025-10-06T04:10:00+01:00'),
   agencyId: 'ABC',
-  submittedDate: new Date('2025-10-09T17:00:00.000Z'),
+  submittedDate: new Date('2025-10-09T17:00:00+01:00'),
   reporterName: 'User 1',
   form: {
     evidence: {
@@ -117,7 +117,7 @@ const report = {
 }
 
 const incidentDetails = {
-  incidentDate: new Date('2025-10-06T03:10:00.000Z'),
+  incidentDate: new Date('2025-10-06T04:10:00+01:00'),
 }
 
 const incidentDetailsResponse = {
