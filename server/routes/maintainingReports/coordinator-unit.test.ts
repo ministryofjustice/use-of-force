@@ -53,21 +53,15 @@ let res
 const report = {
   id: 1,
   username: 'USER',
-  incidentDate: new Date('2025-10-06T03:10:00.000Z'),
+  incidentDate: '2025-10-06T03:10:00.000Z',
   agencyId: 'ABC',
-  submittedDate: new Date('2025-10-09T17:00:00.000Z'),
+  submittedDate: '2025-10-10T15:10:00.000Z',
   reporterName: 'User 1',
   form: {
     evidence: {
       cctvRecording: 'NO',
       baggedEvidence: true,
       photographsTaken: false,
-      evidenceTagAndDescription: [
-        {
-          description: 'evidence 1',
-          evidenceTagReference: 'ref 1',
-        },
-      ],
     },
     involvedStaff: [],
     incidentDetails: {
@@ -79,9 +73,9 @@ const report = {
           name: 'tom',
         },
       ],
-      authorisedBy: 'Mr Jones',
+      authorisedBy: 'Deborah',
       plannedUseOfForce: true,
-      incidentLocationId: 'loc-1',
+      incidentLocationId: 'abc-123',
     },
     useOfForceDetails: {
       taserDrawn: false,
@@ -99,8 +93,7 @@ const report = {
       personalProtectionTechniques: false,
     },
     reasonsForUseOfForce: {
-      reasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-      primaryReason: 'HOSTAGE_NTRG',
+      reasons: ['FIGHT_BETWEEN_PRISONERS'],
     },
     relocationAndInjuries: {
       f213CompletedBy: 'Mr Fowler',
@@ -117,7 +110,7 @@ const report = {
 }
 
 const incidentDetails = {
-  incidentDate: new Date('2025-10-06T03:10:00.000Z'),
+  incidentDate: '2025-10-06T03:10:00.000Z',
 }
 
 const incidentDetailsResponse = {
@@ -500,7 +493,7 @@ describe('CoordinatorEditReportController', () => {
             coordinatorEditJourney: true,
             data: {
               offenderDetail: { name: 'An Offender' },
-              primaryReason: 'HOSTAGE_NTRG',
+              primaryReason: undefined,
               reasons: [
                 { label: 'Assault on another prisoner', value: 'ASSAULT_ON_ANOTHER_PRISONER' },
                 { label: 'Hostage (NTRG)', value: 'HOSTAGE_NTRG' },
