@@ -113,16 +113,16 @@ export default class ReportEditService {
   async persistChangesForReasonsAndDetails(user: LoggedInUser, data): Promise<void> {
     const formSections = {
       [data.reasonsForUofData.reportSection]: {
-        changes: data.reasonsForUofData.changes[0],
+        changes: data.reasonsForUofData.changes,
         payload: {
           reasons: data.reasonsForUofData.pageInputForReasons,
           primaryReason: data.reasonsForUofData.pageInputForPrimaryReason,
         },
       },
       [data.uofDetailsData.reportSection]: {
-        changes: data.uofDetailsData.changes[0],
+        changes: data.uofDetailsData.changes,
         payload: Object.values(UOFDQID).reduce((acc, current) => {
-          return { ...acc, [current]: data.uofDetailsData.payload[0][current] }
+          return { ...acc, [current]: data.uofDetailsData.payload[current] }
         }, {}),
       },
     }
@@ -143,7 +143,7 @@ export default class ReportEditService {
   }
 
   async persistChanges(user: LoggedInUser, data: PersistData): Promise<void> {
-    const pageInput = data.pageInput[0]
+    const { pageInput } = data
     let updatedSection = {} // for updating the original report
 
     // for incidentDetails

@@ -449,36 +449,34 @@ describe('mapReasonToTitleAndText', () => {
 describe('persistChanges', () => {
   const data = {
     reportId: '2',
-    pageInput: [
-      {
-        baggedEvidence: false,
-        photographsTaken: false,
-        cctvRecording: 'YES',
-      },
-    ],
+    pageInput: {
+      baggedEvidence: false,
+      photographsTaken: false,
+      cctvRecording: 'YES',
+    },
+
     reportSection: {
       text: 'evidence',
       section: 'evidence',
     },
-    changes: [
-      {
-        baggedEvidence: {
-          question: 'Was any evidence bagged and tagged?',
-          oldValue: false,
-          newValue: false,
-        },
-        photographsTaken: {
-          question: 'Were any photographs taken?',
-          oldValue: true,
-          newValue: false,
-        },
-        cctvRecording: {
-          question: 'Was any part of the incident captured on CCTV?',
-          oldValue: 'NO',
-          newValue: 'YES',
-        },
+    changes: {
+      baggedEvidence: {
+        question: 'Was any evidence bagged and tagged?',
+        oldValue: false,
+        newValue: false,
       },
-    ],
+      photographsTaken: {
+        question: 'Were any photographs taken?',
+        oldValue: true,
+        newValue: false,
+      },
+      cctvRecording: {
+        question: 'Was any part of the incident captured on CCTV?',
+        oldValue: 'NO',
+        newValue: 'YES',
+      },
+    },
+
     reason: 'errorInReport',
     reasonText: '',
     reasonAdditionalInfo: 'Some additional text',
@@ -524,51 +522,46 @@ describe('persistChangesForReasonsAndDetails', () => {
     reasonAdditionalInfo: 'More text',
     reasonsForUofData: {
       reportSection: 'reasonsForUseOfForce',
-      changes: [
-        {
-          reasons: {
-            question: 'Why was use of force applied against this prisoner?',
-            oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
-            newValue: ['ASSAULT_ON_ANOTHER_PRISONER'],
-          },
-          primaryReason: {
-            question: 'What was the primary reason use of force was applied against this prisoner?',
-            oldValue: 'FIGHT_BETWEEN_PRISONERS',
-          },
+      changes: {
+        reasons: {
+          question: 'Why was use of force applied against this prisoner?',
+          oldValue: ['ASSAULT_ON_ANOTHER_PRISONER', 'FIGHT_BETWEEN_PRISONERS'],
+          newValue: ['ASSAULT_ON_ANOTHER_PRISONER'],
         },
-      ],
+        primaryReason: {
+          question: 'What was the primary reason use of force was applied against this prisoner?',
+          oldValue: 'FIGHT_BETWEEN_PRISONERS',
+        },
+      },
       pageInputForReasons: ['ASSAULT_ON_ANOTHER_PRISONER'],
       pageInputForPrimaryReason: undefined,
     },
     uofDetailsData: {
       reportSection: 'useOfForceDetails',
-      changes: [
-        {
-          positiveCommunication: {
-            question: 'Was positive communication used to de-escalate the situation with this prisoner?',
-            oldValue: false,
-            newValue: true,
-          },
+      changes: {
+        positiveCommunication: {
+          question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+          oldValue: false,
+          newValue: true,
         },
-      ],
-      payload: [
-        {
-          positiveCommunication: true,
-          bodyWornCamera: 'NO',
-          personalProtectionTechniques: false,
-          batonDrawnAgainstPrisoner: false,
-          pavaDrawnAgainstPrisoner: false,
-          taserDrawn: false,
-          bittenByPrisonDog: false,
-          weaponsObserved: 'NO',
-          guidingHold: true,
-          guidingHoldOfficersInvolved: 2,
-          escortingHold: false,
-          restraintPositions: 'NONE',
-          painInducingTechniquesUsed: 'NONE',
-          handcuffsApplied: true,
-        },
-      ],
+      },
+
+      payload: {
+        positiveCommunication: true,
+        bodyWornCamera: 'NO',
+        personalProtectionTechniques: false,
+        batonDrawnAgainstPrisoner: false,
+        pavaDrawnAgainstPrisoner: false,
+        taserDrawn: false,
+        bittenByPrisonDog: false,
+        weaponsObserved: 'NO',
+        guidingHold: true,
+        guidingHoldOfficersInvolved: 2,
+        escortingHold: false,
+        restraintPositions: 'NONE',
+        painInducingTechniquesUsed: 'NONE',
+        handcuffsApplied: true,
+      },
     },
   }
   it('should call reportService.updateTwoReportSections with correct args', async () => {

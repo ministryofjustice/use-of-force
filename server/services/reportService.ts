@@ -224,7 +224,7 @@ export default class ReportService {
         username,
         displayName,
         reportId,
-        changes: changes[0],
+        changes,
         reason,
         reasonText,
         reasonAdditionalInfo,
@@ -234,7 +234,7 @@ export default class ReportService {
       this.inTransaction(async query => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const agencyId = changes.find(obj => 'agencyId' in obj)?.agencyId?.newValue || null // if agencyId is null, the DB query will ensure the current value is retained
+        const agencyId = changes.agencyId?.newValue || null // if agencyId is null, the DB query will ensure the current value is retained
 
         // update original report
         await this.incidentClient.updateWithEdits(id, incidentDate, agencyId, updatedPayload, query)
