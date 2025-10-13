@@ -42,8 +42,8 @@
             ), rowData) %}
     {% endfor %} #}
 
-    {# <div class = 'govuk-body'>
-      {{ govukTable({
+    <div class = 'govuk-body'>
+      {# {{ govukTable({
         caption: "Changes you are making",
         captionClasses: "govuk-table__caption--m",
         firstCellIsHeader: true,
@@ -63,8 +63,9 @@
           }
         ],
         rows: rowData
-      }) }}
+      }) }} #}
 
+      <!-- to update -->
       {% set reasonHtml %}
         {{ govukCharacterCount({
           name: "reasonText",
@@ -82,12 +83,11 @@
 
      <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-        
         {{ govukRadios({
             name: "reason",
             fieldset: {
               legend: {
-                text: "Why are you changing " + data.reportSection.text + "?",
+                text: "Why are you adding this person to the use of force report? ",
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--m"
               }
@@ -98,22 +98,16 @@
              errorMessage: data.errors | findError('reason'),
             items: [
               {
-                value: "errorInReport",
-                text: "Somebody reported an error in the report",
-                checked: data.reason === 'errorInReport',
-                attributes: {'data-qa': 'error-in-report'}
+                value: "errorInReport", 
+                text: "The person who created the report forgot to add them",
+                checked: data.reason === 'errorInReport', 
+                attributes: {'data-qa': 'error-in-report'} 
               },
               {
                 value: "somethingMissingFromReport",
-                text: "Something was missing from the report",
+                text: "SBodycam footage revealed that they were involved",
                 checked: data.reason === 'somethingMissingFromReport',
                 attributes: {'data-qa': 'missing-from-report'}
-              },
-              {
-                value: "newEvidence",
-                text: "New evidence emerged after the report was submitted",
-                checked: data.reason === 'newEvidence',
-                attributes: {'data-qa': 'new-evidence'}
               },
               {
                 value: "anotherReasonForEdit",
@@ -135,12 +129,12 @@
           errorMessage: data.errors | findError('reasonAdditionalInfo'),
           value: data.reasonAdditionalInfo,
           label: {
-            text: "Add additional information to explain this change",
+            text: "Add additional information to explain why you are adding this person",
             classes: "govuk-label--m",
             isPageHeading: true
           },
           hint: {
-            text: "For example, how was the error spotted, or how did the new evidence emerge?"
+            text: "For example, why the person who created the report forgot to add them."
           }
         }) }}
 
@@ -157,7 +151,7 @@
         </div>
 
       </form>
-    </div> #}
+    </div>
   </div>
 </div>
 {% endblock %}
