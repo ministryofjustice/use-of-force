@@ -696,7 +696,8 @@ export default class CoordinatorRoutes {
   }
 
   submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const page = parseInt(req.query.page as string, 10) || 0
+    const page = 0
+    // const page = parseInt(req.query.page as string, 10) || 0
     const reportId = extractReportId(req)
     const {
       body: { username },
@@ -721,7 +722,7 @@ export default class CoordinatorRoutes {
     req.flash('username', username)
     req.flash('userSearchResults', JSON.stringify(results))
 
-    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=0`)
+    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=0&username=${username}`)
   }
 
   noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {

@@ -61,6 +61,11 @@
     <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-margin-right-2">
 
         {% if data.userSearchResults.content.length > 0 %}
+
+            <div class="displayResultsCountOnly govuk-grid-column-full govuk-!-padding-right-0 govuk-!-margin-bottom-2">
+                {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+            </div>
+
             <p class="govuk-body govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-margin-bottom-6">
                 If there are 2 or more results with the same name, you may have to contact the person to confirm which email address belongs to them.
             </p>
@@ -91,9 +96,15 @@
                 </tbody>
             </table>
 
-            {{data.userSearchResults | dump}}
-
-            {{ mojPagination(data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+            {% if data.paginationMeta.totalPages == 1 %}
+                <div class="displayResultsCountOnly govuk-grid-column-full govuk-!-margin-top-2 govuk-!-padding-left-0 govuk-!-padding-right-0 govuk-!-margin-bottom-2">
+                    {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+                </div>
+            {% elif data.paginationMeta.totalPages > 1 %}
+                <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-2 govuk-!-padding-left-0 govuk-!-padding-right-0">
+                    {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+                </div
+            {% endif %} 
 
         {% endif %}
     </div>
