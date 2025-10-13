@@ -231,18 +231,19 @@ describe('CoordinatorEditReportController', () => {
         incidentDetailsResponse.data.newAgencyId = 'MDI'
         expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'MDI')
         expect(res.render).toHaveBeenCalled()
-        it('should catch error if new prison not found', async () => {
-          req.query = { 'new-prison': 'AAA' }
-          locationService.getPrisonById.mockRejectedValue(new Error())
-          await controller.viewEditIncidentDetails(req, res)
+      })
 
-          incidentDetailsResponse.data.prison = undefined
-          incidentDetailsResponse.data.newAgencyId = 'AAA'
-          expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'AAA')
-          expect(logger.error).toHaveBeenCalledWith('User attempted to obtain details for prison AAA')
-          expect(res.render).toHaveBeenCalled()
-          incidentDetailsResponse.data.newAgencyId = undefined
-        })
+      it('should catch error if new prison not found', async () => {
+        req.query = { 'new-prison': 'AAA' }
+        locationService.getPrisonById.mockRejectedValue(new Error())
+        await controller.viewEditIncidentDetails(req, res)
+
+        incidentDetailsResponse.data.prison = undefined
+        incidentDetailsResponse.data.newAgencyId = 'AAA'
+        expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'AAA')
+        expect(logger.error).toHaveBeenCalledWith('User attempted to obtain details for prison AAA')
+        expect(res.render).toHaveBeenCalled()
+        incidentDetailsResponse.data.newAgencyId = undefined
       })
 
       it('should capture validation error', async () => {
