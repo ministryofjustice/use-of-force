@@ -50,10 +50,11 @@ let controller: any
 let req
 let res
 
+const incidentDate = new Date(Date.UTC(2025, 9, 6, 3, 10, 0, 0))
 const report = {
   id: 1,
   username: 'USER',
-  incidentDate: '2025-10-06T03:10:00.000Z',
+  incidentDate,
   agencyId: 'ABC',
   submittedDate: '2025-10-10T15:10:00.000Z',
   reporterName: 'User 1',
@@ -110,7 +111,7 @@ const report = {
 }
 
 const incidentDetails = {
-  incidentDate: '2025-10-06T03:10:00.000Z',
+  incidentDate,
 }
 
 const incidentDetailsResponse = {
@@ -361,7 +362,7 @@ describe('CoordinatorEditReportController', () => {
                 hour: '04',
                 minute: '10',
               },
-              value: new Date('2025-10-06T03:10:00.000Z'),
+              value: incidentDate,
             },
             incidentLocationId: 'Loc-1',
             plannedUseOfForce: true,
@@ -377,7 +378,7 @@ describe('CoordinatorEditReportController', () => {
           },
           pageInput: {
             authorisedBy: 'Mr Smith',
-            incidentDate: new Date('2025-10-06T03:10:00.000Z'),
+            incidentDate,
             incidentLocationId: 'Loc-1',
             newAgencyId: '',
             plannedUseOfForce: 'true',
