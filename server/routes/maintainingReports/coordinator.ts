@@ -600,34 +600,6 @@ export default class CoordinatorRoutes {
     })
   }
 
-  // viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
-  //   const { reportId } = req.params
-
-  //   const page = parseInt(req.query.page as string, 10) || 1
-  //   const errors = req.flash('errors')
-  //   const username = req.flash('username')[0] || ''
-  //   const userSearchResultsRaw = req.flash('userSearchResults')[0]
-  //   // const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw)?.content || [] : []
-  //   const userSearchResults = userSearchResultsRaw ? JSON.parse(userSearchResultsRaw) || [] : []
-  //   const report = await this.reviewService.getReport(parseInt(reportId, 10))
-  //   const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-
-  //   const data = {
-  //     reportId,
-  //     username,
-  //     userSearchResults,
-  //     offenderDetail,
-  //   }
-
-  //   return res.render('pages/coordinator/edit-add-involved-staff.njk', {
-  //     data,
-  //     errors,
-  //     showSaveAndReturnButton: false,
-  //     coordinatorEditJourney: true,
-  //     noChangeError: req.flash('noChangeError'),
-  //   })
-  // }
-
   viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const page = parseInt(req.query.page as string, 10) || 0
@@ -697,7 +669,6 @@ export default class CoordinatorRoutes {
 
   submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
     const page = 0
-    // const page = parseInt(req.query.page as string, 10) || 0
     const reportId = extractReportId(req)
     const {
       body: { username },
@@ -736,6 +707,27 @@ export default class CoordinatorRoutes {
     }
 
     return res.render('pages/coordinator/no-results-edit-add-involved-staff.njk', {
+      data,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  editViewAddNewInvolvedStaffMember: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+    const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+    const staffMember = await this.userService.getUser(systemToken, req.params.username) // call api to get staff member details
+
+    const data = {
+      reportId,
+      offenderDetail,
+      staffMember,
+    }
+
+    return res.render('pages/coordinator/reason-for-adding-this-person.njk', {
       data,
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,

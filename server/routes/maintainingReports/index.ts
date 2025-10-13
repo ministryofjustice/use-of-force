@@ -61,6 +61,7 @@ export default function Index(services: Services): Router {
       get('/:reportId/edit-report/add-staff-involved', coordinator.viewEditAddInvolvedStaff)
       post('/:reportId/edit-report/add-staff-involved', coordinator.submitEditAddInvolvedStaff)
       get('/:reportId/edit-report/add-staff-involved/no-results', coordinator.noResultsEditAddInvolvedStaff)
+      get('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.editViewAddNewInvolvedStaffMember)
       get('/:reportId/edit-report/relocation-and-injuries', coordinator.viewEditRelocationAndInjuries)
       post('/:reportId/edit-report/relocation-and-injuries', coordinator.submitEditRelocationAndInjuries)
       get('/:reportId/edit-report/evidence', coordinator.viewEditEvidence)

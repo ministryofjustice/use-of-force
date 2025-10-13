@@ -82,7 +82,7 @@
                 </thead>
                 <tbody class="govuk-table__body"></tbody>
                     {% for user in data.userSearchResults.content %}
-                        {% set href = '/' + data.reportId + '/add-involved-staff/' + user.username %}
+                        {% set href = '/' + data.reportId + '/edit-report/add-new-staff-involved/' + user.username %}
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">{{ user.firstName }} {{ user.lastName }}</td>
                             <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
