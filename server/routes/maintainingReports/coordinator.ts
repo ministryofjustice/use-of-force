@@ -633,7 +633,7 @@ export default class CoordinatorRoutes {
 
     data = {
       errors,
-      reportSection: sectionDetails.section,
+      reportSection: { text: sectionDetails.text },
       reportId,
       changes: changesToDisplayInTheReasonsPage,
       reason: req.session.edit.reason,
