@@ -243,7 +243,7 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
       {
         row: 17,
         question: 'Which control and restraint positions were used against this prisoner?',
-        old: 'Standing: On back (supine), On front (prone), Kneeling',
+        old: 'Standing, On back (supine), On front (prone), Kneeling',
         new: 'Standing: Underhook, On back (supine), On front (prone), Kneeling',
       },
       {

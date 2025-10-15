@@ -88,13 +88,20 @@ export default class EditUseOfForceDetailsService {
     return response
   }
 
-  formatDisplayOfRestraintAndPainInducingQuestions(inputValue, labelSet, noneMessage): string {
-    if (inputValue !== 'NONE') {
-      const valArray = Array.isArray(inputValue) ? inputValue : [inputValue]
-      const labels = valArray.map(v => labelSet[v].label)
-      return labels.length === 1 ? labels[0] : `${labels[0]}: ${labels.slice(1).join(', ')}`
+  formatDisplayOfRestraintAndPainInducingQuestions(inputValue, labelSet, noneMessage: string): string {
+    if (!inputValue) return ''
+    if (inputValue === 'NONE') return noneMessage
+
+    const valArray = Array.isArray(inputValue) ? inputValue : [inputValue]
+
+    const inputContainsChildren = v => {
+      return valArray.filter(key => key.includes(`${v}__`)).length > 0
     }
-    return noneMessage
+
+    const labels = valArray.map(v =>
+      labelSet[v].sub_options && inputContainsChildren(v) ? `${labelSet[v].label}: ` : `${labelSet[v].label}, `
+    )
+    return labels.join('').trim().slice(0, -1)
   }
 
   formatObjectArrayToString(arr: Record<string, string>[], key: string): string {
@@ -109,6 +116,8 @@ export default class EditUseOfForceDetailsService {
   }
 
   formatDisplayOfPrimaryReasonQuestion(inputValue, reasons) {
-    return inputValue ? reasons[inputValue].label : ''
+    if (!inputValue) return ''
+    const reason = reasons[inputValue]
+    return reason ? reason.label : ''
   }
 }
