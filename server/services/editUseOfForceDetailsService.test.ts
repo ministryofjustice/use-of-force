@@ -104,100 +104,118 @@ describe('EditUseOfForceDetailsService', () => {
 
   describe('formatDisplayOfRestraintAndPainInducingQuestions', () => {
     describe('with ControlAndRestraintPosition', () => {
-      it('returns empty string if falsy (eg old reports where the ControlAndRestraintPosition question was never asked)', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          undefined,
-          ControlAndRestraintPosition,
-          'No positions'
-        )
-        expect(res).toBe('')
+      const noneMessage = 'No positions'
+
+      it('returns empty string if falsy input', () => {
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(undefined, ControlAndRestraintPosition, noneMessage)
+        ).toBe('')
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(null, ControlAndRestraintPosition, noneMessage)
+        ).toBe('')
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions('', ControlAndRestraintPosition, noneMessage)
+        ).toBe('')
       })
+
       it('returns none message for NONE input', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          'NONE',
-          ControlAndRestraintPosition,
-          'No positions'
-        )
-        expect(res).toBe('No positions')
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', ControlAndRestraintPosition, noneMessage)
+        ).toBe('No positions')
       })
 
-      it('returns label for single value', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
+      it('returns label for single parent value', () => {
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions('STANDING', ControlAndRestraintPosition, noneMessage)
+        ).toBe('Standing')
+      })
+      it('returns label for single different parent value', () => {
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions('KNEELING', ControlAndRestraintPosition, noneMessage)
+        ).toBe('Kneeling')
+      })
+
+      it('returns labels for multiple parents but none have child values', () => {
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(
+            ['STANDING', 'ON_BACK'],
+            ControlAndRestraintPosition,
+            noneMessage
+          )
+        ).toBe('Standing, On back (supine)')
+      })
+
+      it('returns formatted string for parent with children', () => {
+        const input = ['STANDING', 'STANDING__WRIST_WEAVE', 'STANDING__DOUBLE_WRIST_HOLD']
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+        ).toBe('Standing: Wrist weave, Double wrist hold')
+      })
+
+      it('returns formatted string for multiple parent/child groups', () => {
+        const input = [
+          'STANDING',
+          'STANDING__WRIST_WEAVE',
+          'ON_BACK',
+          'ON_BACK__STRAIGHT_ARM_HOLD',
+          'ON_BACK__CONVERSION_TO_RBH',
+          'FACE_DOWN',
+          'FACE_DOWN__BALANCE_DISPLACEMENT',
+          'FACE_DOWN__STRAIGHT_ARM_HOLD',
+          'FACE_DOWN__CONVERSION_TO_RBH',
           'KNEELING',
-          ControlAndRestraintPosition,
-          ''
-        )
-        expect(res).toBe('Kneeling')
-      })
+        ]
 
-      it('returns formatted string for array values', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          [
-            'STANDING',
-            'STANDING__WRIST_WEAVE',
-            'ON_BACK',
-            'ON_BACK__STRAIGHT_ARM_HOLD',
-            'ON_BACK__CONVERSION_TO_RBH',
-            'FACE_DOWN',
-            'FACE_DOWN__BALANCE_DISPLACEMENT',
-            'FACE_DOWN__STRAIGHT_ARM_HOLD',
-            'FACE_DOWN__CONVERSION_TO_RBH',
-            'KNEELING',
-          ],
-          ControlAndRestraintPosition,
-          ''
-        )
-        expect(res).toBe(
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+        ).toBe(
           'Standing: Wrist weave, On back (supine): Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling'
         )
       })
 
-      it('returns formatted string for array values where sub selections not made', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          [
-            'STANDING',
-            'ON_BACK',
-            'FACE_DOWN',
-            'FACE_DOWN__BALANCE_DISPLACEMENT',
-            'FACE_DOWN__STRAIGHT_ARM_HOLD',
-            'FACE_DOWN__CONVERSION_TO_RBH',
-            'KNEELING',
-          ],
-          ControlAndRestraintPosition,
-          ''
-        )
-        expect(res).toBe(
+      it('returns formatted string when some parents have no children', () => {
+        const input = [
+          'STANDING',
+          'ON_BACK',
+          'FACE_DOWN',
+          'FACE_DOWN__BALANCE_DISPLACEMENT',
+          'FACE_DOWN__STRAIGHT_ARM_HOLD',
+          'FACE_DOWN__CONVERSION_TO_RBH',
+          'KNEELING',
+        ]
+
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+        ).toBe(
           'Standing, On back (supine), On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling'
         )
       })
     })
 
     describe('with PainInducingTechniquesUsed', () => {
+      const noneMessage = 'No pain inducing techniques were used'
+
       it('returns none message for NONE input', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          'NONE',
-          PainInducingTechniquesUsed,
-          'No pain inducing techniques were used'
-        )
-        expect(res).toBe('No pain inducing techniques were used')
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', PainInducingTechniquesUsed, noneMessage)
+        ).toBe('No pain inducing techniques were used')
       })
 
       it('returns label for single technique', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          'THUMB_LOCK',
-          PainInducingTechniquesUsed,
-          'No pain inducing techniques were used'
-        )
-        expect(res).toBe('Thumb lock')
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(
+            'THUMB_LOCK',
+            PainInducingTechniquesUsed,
+            noneMessage
+          )
+        ).toBe('Thumb lock')
       })
 
-      it('returns formatted string for multiple techniques', () => {
-        const res = service.formatDisplayOfRestraintAndPainInducingQuestions(
-          ['FINAL_LOCK_FLEXION', 'FINAL_LOCK_ROTATION'],
-          PainInducingTechniquesUsed,
-          'No pain inducing techniques were used'
-        )
-        expect(res).toBe('Wrist flexion, Wrist rotation')
+      it('returns comma-separated list for multiple techniques', () => {
+        const input = ['FINAL_LOCK_FLEXION', 'FINAL_LOCK_ROTATION']
+        expect(
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, PainInducingTechniquesUsed, noneMessage)
+        ).toBe('Wrist flexion, Wrist rotation')
       })
     })
   })

@@ -90,19 +90,18 @@ export default class EditUseOfForceDetailsService {
 
   formatDisplayOfRestraintAndPainInducingQuestions(inputValue, labelSet, noneMessage: string): string {
     if (!inputValue) return ''
+    if (inputValue === 'NONE') return noneMessage
+
+    const valArray = Array.isArray(inputValue) ? inputValue : [inputValue]
 
     const inputContainsChildren = v => {
-      return inputValue.filter(key => key.includes(`${v}__`)).length > 0
+      return valArray.filter(key => key.includes(`${v}__`)).length > 0
     }
 
-    if (inputValue !== 'NONE') {
-      const valArray = Array.isArray(inputValue) ? inputValue : [inputValue]
-      const labels = valArray.map(v =>
-        labelSet[v].sub_options && inputContainsChildren(v) ? `${labelSet[v].label}: ` : `${labelSet[v].label}, `
-      )
-      return labels.join('').trim().slice(0, -1)
-    }
-    return noneMessage
+    const labels = valArray.map(v =>
+      labelSet[v].sub_options && inputContainsChildren(v) ? `${labelSet[v].label}: ` : `${labelSet[v].label}, `
+    )
+    return labels.join('').trim().slice(0, -1)
   }
 
   formatObjectArrayToString(arr: Record<string, string>[], key: string): string {
