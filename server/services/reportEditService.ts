@@ -266,7 +266,7 @@ export default class ReportEditService {
     const changeObject = changes[0]
     const keys = Object.keys(changeObject)
 
-    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k].oldValue, user)))
+    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k]?.oldValue, user)))
   }
 
   async getChangedTo(changes, user) {
@@ -299,10 +299,10 @@ export default class ReportEditService {
       [QUESTION_ID.WITNESSES]: () => (Array.isArray(v) && v.length > 0 ? v.map(obj => obj.name).join(', ') : ''),
 
       // handler for Uof reasons
-      [RFUOFQID.REASONS]: () => v.map(i => REASON_DESCRIPTION[i]).join(', '),
+      [RFUOFQID.REASONS]: () => (v ? v.map(i => REASON_DESCRIPTION[i]).join(', ') : ''),
 
       // handler for Uof primary reason
-      [RFUOFQID.PRIMARY_REASON]: () => REASON_DESCRIPTION[v],
+      [RFUOFQID.PRIMARY_REASON]: () => (v ? REASON_DESCRIPTION[v] : ''),
 
       // handlers for use of force details
       [UOFDQID.POSITIVE_COMMUNICATION]: () => (v === true ? 'Yes' : 'No'),
@@ -327,13 +327,13 @@ export default class ReportEditService {
       [UOFDQID.GUIDING_HOLD]: () => (v === true ? 'Yes' : 'No'),
       [UOFDQID.ESCORTING_HOLD]: () => (v === true ? 'Yes' : 'No'),
       [UOFDQID.RESTRAINT_POSITIONS]: () =>
-        this.formatDisplayOfRestraintAndPainInducingQuestions(
+        this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
           v,
           ControlAndRestraintPosition,
           'No control and restraint positions were used'
         ),
       [UOFDQID.PAIN_INDUCING_TECHNIQUES_USED]: () =>
-        this.formatDisplayOfRestraintAndPainInducingQuestions(
+        this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
           v,
           PainInducingTechniquesUsed,
           'No pain inducing techniques were used'
@@ -386,14 +386,5 @@ export default class ReportEditService {
       default:
         return `${REASON.ANOTHER_REASON_DESCRIPTION}: ${data.reasonText}`
     }
-  }
-
-  formatDisplayOfRestraintAndPainInducingQuestions(inputValue, labelSet, noneMessage): string {
-    if (inputValue !== 'NONE') {
-      const valArray = Array.isArray(inputValue) ? inputValue : [inputValue]
-      const labels = valArray.map(v => labelSet[v].label)
-      return labels.length === 1 ? labels[0] : `${labels[0]}: ${labels.slice(1).join(', ')}`
-    }
-    return noneMessage
   }
 }

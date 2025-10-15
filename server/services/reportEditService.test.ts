@@ -349,6 +349,41 @@ describe('applyCorrectFormat', () => {
     const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
     expect(result).toEqual('jimmy (hospitalised), tom')
   })
+
+  it('should return empty string if reasons undefined (eg old report where the reasons question was never asked)', async () => {
+    const key = 'reasons'
+    const val = undefined
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('')
+  })
+
+  it('should return a string of one reason)', async () => {
+    const key = 'reasons'
+    const val = ['ASSAULT_ON_ANOTHER_PRISONER']
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('Assault on another prisoner')
+  })
+
+  it('should return a string of multiple reasons)', async () => {
+    const key = 'reasons'
+    const val = ['ASSAULT_ON_ANOTHER_PRISONER', 'ASSAULT_ON_A_MEMBER_OF_STAFF']
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('Assault on another prisoner, Assault on a member of staff')
+  })
+
+  it('should return primaryReason label', async () => {
+    const key = 'primaryReason'
+    const val = 'ASSAULT_ON_ANOTHER_PRISONER'
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('Assault on another prisoner')
+  })
+
+  it('should return empty string if primaryReason is undefined (eg old report where the primaryReason question was never asked)', async () => {
+    const key = 'primaryReason'
+    const val = undefined
+    const result = await reportEditService.applyCorrectFormat(key, val, 'user-1')
+    expect(result).toEqual('')
+  })
 })
 
 describe('getWhatChanged', () => {
