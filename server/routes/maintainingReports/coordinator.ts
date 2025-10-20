@@ -576,18 +576,19 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
-  viewEditInvolvedStaff: RequestHandler = async (req, res) => {
+  viewInvolvedStaff: RequestHandler = async (req, res) => {
     const { reportId } = req.params
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-    const { involvedStaff } = report.form
+    const reportData = await this.reportDetailBuilder.build(report.username, report)
+    const { staffInvolved } = reportData.incidentDetails
 
     const errors = req.flash('errors')
     const data = {
       reportId,
       username: report.username,
-      involvedStaff,
+      staffInvolved,
       offenderDetail,
     }
 
@@ -600,7 +601,7 @@ export default class CoordinatorRoutes {
     })
   }
 
-  viewEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+  viewInvolvedStaffSearch: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const page = parseInt(req.query.page as string, 10) || 0
 
@@ -655,7 +656,7 @@ export default class CoordinatorRoutes {
       userSearchResults,
       offenderDetail,
       paginationMeta,
-      baseUrl: paths.viewEditAddInvolvedStaff(reportId),
+      baseUrl: paths.viewInvolvedStaffSearch(reportId),
     }
 
     return res.render('pages/coordinator/edit-add-involved-staff.njk', {
@@ -667,7 +668,7 @@ export default class CoordinatorRoutes {
     })
   }
 
-  submitEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+  submitInvolvedStaffSearch: RequestHandler = async (req, res) => {
     const page = 0
     const reportId = extractReportId(req)
     const {
@@ -676,7 +677,7 @@ export default class CoordinatorRoutes {
 
     if (!username.trim()) {
       req.flash('errors', [{ href: '#username', text: "Enter a person's name, email address or user ID" }])
-      return res.redirect(paths.viewEditAddInvolvedStaff(reportId))
+      return res.redirect(paths.viewInvolvedStaffSearch(reportId))
     }
 
     const results = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
@@ -687,16 +688,16 @@ export default class CoordinatorRoutes {
     )
 
     if (results.totalElements === undefined || results.totalElements === 0) {
-      return res.redirect(paths.noResultsEditAddInvolvedStaff(reportId))
+      return res.redirect(paths.viewNoResultsFoundInvolvedStaffSearch(reportId))
     }
 
     req.flash('username', username)
     req.flash('userSearchResults', JSON.stringify(results))
 
-    return res.redirect(`${paths.viewEditAddInvolvedStaff(reportId)}?page=0&username=${username}`)
+    return res.redirect(`${paths.viewInvolvedStaffSearch(reportId)}?page=0&username=${username}`)
   }
 
-  noResultsEditAddInvolvedStaff: RequestHandler = async (req, res) => {
+  viewNoResultsFoundInvolvedStaffSearch: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
@@ -724,7 +725,7 @@ export default class CoordinatorRoutes {
     const data = {
       reportId,
       offenderDetail,
-      staffMember,
+      username: staffMember,
     }
 
     return res.render('pages/coordinator/reason-for-adding-this-person.njk', {
@@ -733,6 +734,28 @@ export default class CoordinatorRoutes {
       coordinatorEditJourney: true,
       noChangeError: req.flash('noChangeError'),
     })
+  }
+
+  submitAddNewInvolvedStaffMember: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const { username } = req.params
+
+    const result = await this.involvedStaffService.addInvolvedStaff(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      reportId,
+      username
+    )
+
+    if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
+      const user = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
+        reportId,
+        username,
+        name: user.name,
+      })
+    }
+
+    return res.redirect(paths.viewInvolvedStaffSearch(reportId)) // reportId, result
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
