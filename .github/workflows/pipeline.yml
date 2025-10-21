@@ -45,6 +45,8 @@ jobs:
     uses: ./.github/workflows/integration_tests.yml
     needs: [node_build]
     secrets: inherit
+    with:
+      app_version: ${{ needs.build_docker.outputs.app_version }}
   helm_lint:
     strategy:
       matrix:
