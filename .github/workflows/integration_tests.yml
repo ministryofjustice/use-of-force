@@ -11,6 +11,9 @@ on:
         required: false
         type: string
         default: ".nvmrc"
+      spec-file-patterns:
+        type: string
+        default: 'integration_tests/e2e/**/*.cy.js'
 
 jobs:
   get-timings:
@@ -90,6 +93,12 @@ jobs:
         shell: bash
         run: |
           curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+
+      - name: Ensure test database exists
+        run: |
+          psql -h localhost -U use-of-force -c "CREATE DATABASE \"use-of-force\";" || echo "Database already exists"
+        env:
+          PGPASSWORD: use-of-force
 
       - name: Prepare and run integration tests
         id: integration-tests
