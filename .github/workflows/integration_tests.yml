@@ -43,21 +43,21 @@ jobs:
         ports:
           - 6379:6379
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
-        env:
-          ALLOW_EMPTY_PASSWORD: yes
-          APP_VERSION: ${{ inputs.app_version }}
-        strategy:
-          fail-fast: false
-          matrix:
-            container: [ 1, 2, 3, 4, 5, 6, 7 ]
-        outputs:
-          timings-1: ${{ steps.timings.outputs.t1 }}
-          timings-2: ${{ steps.timings.outputs.t2 }}
-          timings-3: ${{ steps.timings.outputs.t3 }}
-          timings-4: ${{ steps.timings.outputs.t4 }}
-          timings-5: ${{ steps.timings.outputs.t5 }}
-          timings-6: ${{ steps.timings.outputs.t6 }}
-          timings-7: ${{ steps.timings.outputs.t7 }}
+    env:
+      ALLOW_EMPTY_PASSWORD: yes
+      APP_VERSION: ${{ inputs.app_version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [ 1, 2, 3, 4, 5, 6, 7 ]
+    outputs:
+      timings-1: ${{ steps.timings.outputs.t1 }}
+      timings-2: ${{ steps.timings.outputs.t2 }}
+      timings-3: ${{ steps.timings.outputs.t3 }}
+      timings-4: ${{ steps.timings.outputs.t4 }}
+      timings-5: ${{ steps.timings.outputs.t5 }}
+      timings-6: ${{ steps.timings.outputs.t6 }}
+      timings-7: ${{ steps.timings.outputs.t7 }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v5
