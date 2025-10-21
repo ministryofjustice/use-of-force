@@ -55,6 +55,11 @@ export default function Index(services: Services): Router {
 
     if (config.featureFlagReportEditingEnabled) {
       get('/:reportId/edit-report', coordinator.viewEditReport)
+      get('/:reportId/delete-incident', coordinator.viewDeleteIncident)
+      post('/:reportId/delete-incident', coordinator.submitDeleteIncident)
+      get('/:reportId/reason-for-deleting-report', coordinator.viewReasonForDeletingIncident)
+      post('/:reportId/reason-for-deleting-report', coordinator.submitReasonForDeletingIncident)
+      get('/:reportId/delete-incident-success', coordinator.viewDeleteIncidentSuccess)
       get('/:reportId/edit-report/incident-details', coordinator.viewEditIncidentDetails)
       post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
       get('/:reportId/edit-report/why-was-uof-applied', coordinator.viewEditWhyWasUOFApplied)

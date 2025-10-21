@@ -97,6 +97,19 @@ describe('reviewService', () => {
     })
   })
 
+  describe('getBookingIdWithReportId', () => {
+    it('should return bookingId if present', async () => {
+      incidentClient.getBookingId.mockResolvedValue({ bookingId: '12345' })
+      const result = await service.getBookingIdWithReportId(1)
+      expect(incidentClient.getBookingId).toHaveBeenCalledWith(1)
+      expect(result).toBe('12345')
+    })
+
+    it('should throw if bookingId is missing', async () => {
+      incidentClient.getBookingId.mockResolvedValue({ bookingId: undefined })
+      await expect(service.getBookingIdWithReportId(1)).rejects.toThrow("Booking Id: '1' does not exist")
+    })
+  })
   describe('getReportEdits', () => {
     test('it should call query on db', async () => {
       incidentClient.getReportEdits.mockResolvedValue([{ id: 1, reportId: 1 }] as ReportEdit[])
