@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress'
-
+import cypressSplit from 'cypress-split'
 import auth from './integration-tests/mockApis/auth'
 import { resetStubs } from './integration-tests/mockApis/wiremock'
 import prisonApi from './integration-tests/mockApis/prisonApi'
@@ -10,7 +10,7 @@ import search from './integration-tests/mockApis/search'
 import { stringToHash } from './server/utils/hash'
 
 import db from './integration-tests/db/db'
-import config from './dist/server/config'
+import sConfig from './dist/server/config'
 
 import components from './integration-tests/mockApis/components'
 
@@ -27,11 +27,11 @@ export default defineConfig({
   e2e: {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
-    setupNodeEvents(on) {
+    setupNodeEvents(on, config) {
       on('task', {
         ...db,
 
-        stringToHash: text => stringToHash(text, config.email.urlSigningSecret),
+        stringToHash: text => stringToHash(text, sConfig.email.urlSigningSecret),
 
         reset: () => Promise.all([db.clearDb(), resetStubs()]),
 
@@ -80,6 +80,8 @@ export default defineConfig({
 
         stubComponentsFail: components.stubComponentsFail,
       })
+      cypressSplit(on, config)
+      return config
     },
     baseUrl: 'http://localhost:3007',
     excludeSpecPattern: '**/!(*.cy).js',

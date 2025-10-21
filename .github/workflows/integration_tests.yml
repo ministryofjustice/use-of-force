@@ -33,6 +33,38 @@ jobs:
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
         env:
           ALLOW_EMPTY_PASSWORD: yes
+
+  get-timings:
+    name: Get timings
+    uses: ministryofjustice/hmpps-assess-risks-and-needs-github-actions/.github/workflows/cypress_get_timings.yml@v1
+    with:
+      repository: ministryofjustice/hmpps-locations-inside-prison
+      spec-file-patterns: ${{ inputs.spec-file-patterns }}
+
+  cypress-test:
+    name: Run Cypress tests
+    runs-on: ubuntu-latest
+    needs: get-timings
+    services:
+      redis:
+        image: redis:8.2
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      APP_VERSION: ${{ inputs.app_version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [ 1, 2, 3, 4, 5, 6, 7 ]
+    outputs:
+      timings-1: ${{ steps.timings.outputs.t1 }}
+      timings-2: ${{ steps.timings.outputs.t2 }}
+      timings-3: ${{ steps.timings.outputs.t3 }}
+      timings-4: ${{ steps.timings.outputs.t4 }}
+      timings-5: ${{ steps.timings.outputs.t5 }}
+      timings-6: ${{ steps.timings.outputs.t6 }}
+      timings-7: ${{ steps.timings.outputs.t7 }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ inputs.node_version_file }}
@@ -64,7 +96,33 @@ jobs:
           nohup java -jar wiremock.jar --port 9091 &
           nohup npm run start-feature &
           sleep 5
-          npm run int-test
+
+#          npm run int-test
+      - name: Run split Cypress tests 🧪
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+        env:
+          SPEC: ${{ inputs.spec-file-patterns }}
+          SPLIT: ${{ strategy.job-total }}
+          SPLIT_INDEX: ${{ strategy.job-index }}
+          SPLIT_FILE: 'timings.json'
+
+      - name: Upload any screenshots due to failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: Upload screenshots
+          path: integration_tests/screenshots
+          if-no-files-found: ignore
+
+      - name: Output updated timings
+        if: success() || failure()
+        id: timings
+        run: |
+          cat timings.json
+          echo "t${{ matrix.container }}=$(jq -c . < timings.json)" >> $GITHUB_OUTPUT
+
       - name: upload results
         if: always()
         uses: actions/upload-artifact@v4
@@ -82,3 +140,15 @@ jobs:
         with:
           script: |
             core.setFailed('Integration tests failed')
+
+  save-timings:
+    name: Save timings
+    uses: ministryofjustice/hmpps-assess-risks-and-needs-github-actions/.github/workflows/cypress_save_timings.yml@v1
+    if: success() || failure()
+    needs:
+      - get-timings
+      - cypress-test
+    with:
+      repository: ministryofjustice/hmpps-locations-inside-prison
+      initial-timings: ${{ needs.get-timings.outputs.timings }}
+      updated-timings: ${{ toJSON(needs.cypress-test.outputs) }}

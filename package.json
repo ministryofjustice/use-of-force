@@ -117,6 +117,7 @@
     "cookie-session": "^2.1.0",
     "csrf-sync": "^4.2.1",
     "cypress-axe": "^1.6.0",
+    "cypress-split": "^1.24.23",
     "date-fns": "^3.2.0",
     "escape-html": "^1.0.3",
     "express": "^4.21.2",
