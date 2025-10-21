@@ -20,6 +20,7 @@ on:
 permissions:
   contents: read
   packages: write
+  actions: write
 
 concurrency:
   # if branch is main, append commit sha to the group name, so that other jobs from main don't get cancelled
