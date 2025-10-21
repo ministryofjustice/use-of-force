@@ -2,6 +2,10 @@ name: Integration tests
 on:
   workflow_call:
     inputs:
+      app_version:
+        description: App version
+        required: true
+        type: string
       node_version_file:
         description: "Passed to setup-node action to specify where to source the version of node from"
         required: false
@@ -10,8 +14,16 @@ on:
 permissions:
   contents: read
 jobs:
-  integration_test:
+  get-timings:
+    name: Get timings
+    uses: ministryofjustice/hmpps-assess-risks-and-needs-github-actions/.github/workflows/cypress_get_timings.yml@v1
+    with:
+      repository: ministryofjustice/hmpps-locations-inside-prison
+      spec-file-patterns: ${{ inputs.spec-file-patterns }}
+
+  cypress-test:
     runs-on: ubuntu-latest
+    needs: get-timings
     services:
       postgres:
         image: postgres:16.4
@@ -33,48 +45,37 @@ jobs:
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
         env:
           ALLOW_EMPTY_PASSWORD: yes
-
-  get-timings:
-    name: Get timings
-    uses: ministryofjustice/hmpps-assess-risks-and-needs-github-actions/.github/workflows/cypress_get_timings.yml@v1
-    with:
-      repository: ministryofjustice/hmpps-locations-inside-prison
-      spec-file-patterns: ${{ inputs.spec-file-patterns }}
-
-  cypress-test:
-    name: Run Cypress tests
-    runs-on: ubuntu-latest
-    needs: get-timings
-    services:
-      redis:
-        image: redis:8.2
-        ports:
-          - 6379:6379
-        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=5
-    env:
-      APP_VERSION: ${{ inputs.app_version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        container: [ 1, 2, 3, 4, 5, 6, 7 ]
-    outputs:
-      timings-1: ${{ steps.timings.outputs.t1 }}
-      timings-2: ${{ steps.timings.outputs.t2 }}
-      timings-3: ${{ steps.timings.outputs.t3 }}
-      timings-4: ${{ steps.timings.outputs.t4 }}
-      timings-5: ${{ steps.timings.outputs.t5 }}
-      timings-6: ${{ steps.timings.outputs.t6 }}
-      timings-7: ${{ steps.timings.outputs.t7 }}
+          APP_VERSION: ${{ inputs.app_version }}
+        strategy:
+          fail-fast: false
+          matrix:
+            container: [ 1, 2, 3, 4, 5, 6, 7 ]
+        outputs:
+          timings-1: ${{ steps.timings.outputs.t1 }}
+          timings-2: ${{ steps.timings.outputs.t2 }}
+          timings-3: ${{ steps.timings.outputs.t3 }}
+          timings-4: ${{ steps.timings.outputs.t4 }}
+          timings-5: ${{ steps.timings.outputs.t5 }}
+          timings-6: ${{ steps.timings.outputs.t6 }}
+          timings-7: ${{ steps.timings.outputs.t7 }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - uses: ministryofjustice/hmpps-assess-risks-and-needs-github-actions/.github/actions/cypress/create_timings_file@v1
+        with:
+          timings: ${{ needs.get-timings.outputs.timings }}
+
       - name: Use Node.js ${{ inputs.node_version_file }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: ${{ inputs.node_version_file }}
+
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
           name: npm_build_artifacts
+
       - name: restore cache
         id: restore-cache
         uses: actions/cache/restore@v4
@@ -85,10 +86,12 @@ jobs:
             ./node_modules
             ~/.cache/Cypress
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Get wiremock
         shell: bash
         run: |
           curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash
@@ -96,7 +99,6 @@ jobs:
           nohup java -jar wiremock.jar --port 9091 &
           nohup npm run start-feature &
           sleep 5
-
 #          npm run int-test
       - name: Run split Cypress tests 🧪
         uses: cypress-io/github-action@v6
@@ -134,12 +136,6 @@ jobs:
             coverage/
             test_results/
             ctrf/
-      - name: fail the action if the tests failed
-        if: ${{ steps.integration-tests.outcome == 'failure' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.setFailed('Integration tests failed')
 
   save-timings:
     name: Save timings
