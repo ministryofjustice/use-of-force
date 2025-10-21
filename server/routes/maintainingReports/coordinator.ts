@@ -20,9 +20,9 @@ import log from '../../../log'
 import incidentDetailsConfig from '../../config/edit/incidentDetailsConfig'
 import relocationAndInjuriesConfig, { QUESTION_ID as RAIQID } from '../../config/edit/relocationAndInjuriesConfig'
 import evidenceConfig, { QUESTION_ID as EQID } from '../../config/edit/evidenceConfig'
-import { FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../../types/uof'
 
 import * as types from '../../config/types'
+import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
 
 const extractReportId = (req: Request): number => parseInt(req.params.reportId, 10)
 
@@ -739,23 +739,45 @@ export default class CoordinatorRoutes {
   submitAddNewInvolvedStaffMember: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const { username } = req.params
+    const pageInput = req.body
 
+    // Validate input using Joi schema
+    const { payloadFields, errors } = processInput({
+      validationSpec: reasonForAddingStaffForm.complete,
+      input: pageInput,
+    })
+
+    if (!isNilOrEmpty(errors)) {
+      // Re-render form with errors and previous input
+      const report = await this.reviewService.getReport(reportId)
+      const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+      const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+      const staffMember = await this.userService.getUser(systemToken, username)
+      const data = {
+        reportId,
+        offenderDetail,
+        username: staffMember,
+        ...pageInput,
+        errors,
+      }
+      return res.render('pages/coordinator/reason-for-adding-this-person.njk', {
+        data,
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: req.flash('noChangeError'),
+      })
+    }
+
+    // Add staff member if validation passes
     const result = await this.involvedStaffService.addInvolvedStaff(
       await this.authService.getSystemClientToken(res.locals.user.username),
       reportId,
       username
     )
 
-    if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
-      const user = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
-      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
-        reportId,
-        username,
-        name: user.name,
-      })
-    }
+    // Optionally handle result as in other add staff flows...
 
-    return res.redirect(paths.viewInvolvedStaffSearch(reportId)) // reportId, result
+    return res.redirect(paths.viewInvolvedStaffSearch(reportId))
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
