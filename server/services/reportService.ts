@@ -16,6 +16,7 @@ import type {
 
 import type { LoggedInUser } from '../types/uof'
 import AuthService from './authService'
+import { Change } from './editReports/types/reportEditServiceTypes'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -249,5 +250,37 @@ export default class ReportService {
         })
       })
     }
+  }
+
+  public async deleteIncidentAndUpdateReportEdit(
+    user: LoggedInUser,
+    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: Change }
+  ): Promise<void> {
+    const { reportId, reasonForDelete, reasonForDeleteText, changes } = data
+    logger.info(`User: ${user.username} is deleting report: '${data.reportId}'`)
+
+    const report = await this.incidentClient.getReportForReviewer(data.reportId)
+    if (!report) {
+      throw new Error(`Report: '${data.reportId}' does not exist`)
+    }
+
+    const dataForEditTable = {
+      username: user.username,
+      displayName: user.displayName,
+      reportId: data.reportId,
+      changes,
+      reason: reasonForDelete,
+      reasonText: reasonForDeleteText,
+      reasonAdditionalInfo: '',
+      reportOwnerChanged: false,
+    }
+
+    this.inTransaction(async query => {
+      // update original report with deleted date
+      await this.incidentClient.deleteReport(user.username, reportId)
+
+      //  add new record into report_edit
+      await this.incidentClient.insertReportEdit(dataForEditTable, query)
+    })
   }
 }

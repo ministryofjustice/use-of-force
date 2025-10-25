@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
 
@@ -191,7 +192,40 @@ export default class ReportEditService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateReasonForDeleteInput(input: { reasonForDelete: string; reasonForDeleteText: string }): errors[] {
+    const allErrors = []
+
+    if (!input.reasonForDelete) {
+      allErrors.push({
+        href: '#reasonForDelete',
+        text: 'Provide a reason for deleting this report',
+      })
+    }
+    if (input.reasonForDelete === 'anotherReason' && !input.reasonForDeleteText) {
+      allErrors.push({
+        href: '#reasonForDeleteText',
+        text: 'Specify a reason for deleting this report',
+      })
+    }
+    return allErrors
+  }
+
+  persistDeleteIncident = async (
+    user: LoggedInUser,
+    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: any }
+  ): Promise<void> => {
+    if (!user || !data) {
+      throw new Error('User and data are required to delete an incident report.')
+    }
+
+    try {
+      await this.reportService.deleteIncidentAndUpdateReportEdit(user, data)
+    } catch (error) {
+      logger.error(`Report deletion failed. Report id ${data.reportId}`, error)
+      throw new Error(`Could not delete incident with id ${data.reportId}.`)
+    }
+  }
+
   validateReasonForChangeInput(input: {
     reason: string
     reasonText: string

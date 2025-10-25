@@ -55,6 +55,20 @@ beforeEach(() => {
   userSupplier.mockReturnValue(coordinatorUser)
   reportDetailBuilder.build.mockResolvedValue({} as ReportDetail)
   reviewService.getStatements.mockResolvedValue([] as ReviewerStatementWithComments[])
+  locationService.getPrisons.mockResolvedValue([
+    {
+      agencyId: 'ABC',
+      description: 'Prison ABC',
+      agencyType: 'INST',
+      active: true,
+    },
+    {
+      agencyId: 'DEF',
+      description: 'Prison DEF',
+      agencyType: 'INST',
+      active: true,
+    },
+  ])
 
   app = appWithAllRoutes(
     {
@@ -104,6 +118,59 @@ describe('coordinator authorisation', () => {
         .expect(res => {
           expect(res.text).toContain('Not authorised to access this resource')
         })
+    })
+  })
+
+  describe('viewEditPrison', () => {
+    it('should allow coordinator to access page', async () => {
+      await request(app).get('/1/edit-report/prison').expect(200).expect('Content-Type', 'text/html; charset=utf-8')
+    })
+
+    it('should not allow reviewer to access page', async () => {
+      userSupplier.mockReturnValue(reviewerUser)
+      await request(app)
+        .get('/1/edit-report/prison')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('should not allow user (i.e not coordinator/reviewerUser) to access page', async () => {
+      userSupplier.mockReturnValue(user)
+      await request(app)
+        .get('/1/edit-report/prison')
+        .expect(401)
+        .expect(res => {
+          expect(res.text).toContain('Not authorised to access this resource')
+        })
+    })
+
+    it('page response should include error data', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      flash.mockReturnValue([
+        {
+          text: 'What prison did the use of force take place in?',
+          href: '#agencyId',
+        },
+      ])
+      await request(app)
+        .get('/1/edit-report/prison')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('What prison did the use of force take place in')
+        })
+    })
+  })
+
+  describe('submitEditPrison', () => {
+    it('should redirect to next page with correct query parameters', async () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      await request(app)
+        .post('/1/edit-report/prison')
+        .send({ agencyId: 'ABC' })
+        .expect(302)
+        .expect('Location', '/1/edit-report/incident-details?new-prison=ABC')
     })
   })
 })

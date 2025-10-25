@@ -25,6 +25,7 @@ locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
 reportService.updateWithEdits = jest.fn()
 reportService.updateTwoReportSections = jest.fn()
+reportService.deleteIncidentAndUpdateReportEdit = jest.fn()
 logger.error = jest.fn()
 
 let reportEditService
@@ -666,5 +667,62 @@ describe('persistChangesForReasonsAndDetails', () => {
     reportService.updateTwoReportSections.mockRejectedValue(new Error('500'))
     await expect(reportEditService.persistChangesForReasonsAndDetails('user1', data)).rejects.toThrow()
     expect(logger.error).toHaveBeenCalledWith('Could not persist changes to report 2. Error: 500')
+  })
+})
+
+describe('validateReasonForDeleteInput', () => {
+  it('should return error if reasonForDelete is missing', () => {
+    const input = { reasonForDelete: '' }
+    const result = reportEditService.validateReasonForDeleteInput(input)
+    expect(result).toEqual([
+      {
+        href: '#reasonForDelete',
+        text: 'Provide a reason for deleting this report',
+      },
+    ])
+  })
+
+  it('should return error if reasonForDelete is anotherReason and reasonForDeleteText is missing', () => {
+    const input = { reasonForDelete: 'anotherReason', reasonForDeleteText: '' }
+    const result = reportEditService.validateReasonForDeleteInput(input)
+    expect(result).toEqual([
+      {
+        href: '#reasonForDeleteText',
+        text: 'Specify a reason for deleting this report',
+      },
+    ])
+  })
+
+  it('should return no errors if valid reasonForDelete is provided', () => {
+    const input = { reasonForDelete: 'errorInReport', reasonForDeleteText: '' }
+    const result = reportEditService.validateReasonForDeleteInput(input)
+    expect(result).toEqual([])
+  })
+
+  it('should return no errors if anotherReason and reasonForDeleteText are provided', () => {
+    const input = { reasonForDelete: 'anotherReason', reasonForDeleteText: 'details' }
+    const result = reportEditService.validateReasonForDeleteInput(input)
+    expect(result).toEqual([])
+  })
+})
+
+describe('persistDeleteIncident', () => {
+  const user = { username: 'USER' }
+  const data = { reportId: 1, reasonForDelete: 'reason', reasonForDeleteText: '', changes: {} }
+
+  it('should call deleteIncidentAndUpdateReportEdit with correct args', async () => {
+    reportService.deleteIncidentAndUpdateReportEdit.mockResolvedValue(undefined)
+    await expect(reportEditService.persistDeleteIncident(user, data)).resolves.toBeUndefined()
+    expect(reportService.deleteIncidentAndUpdateReportEdit).toHaveBeenCalledWith(user, data)
+  })
+
+  it('should throw and log error if deleteIncidentAndUpdateReportEdit fails', async () => {
+    const error = new Error('fail')
+    reportService.deleteIncidentAndUpdateReportEdit.mockRejectedValue(error)
+    await expect(reportEditService.persistDeleteIncident(user, data)).rejects.toThrow(
+      'Could not delete incident with id 1.'
+    )
+    expect(reportService.deleteIncidentAndUpdateReportEdit).toHaveBeenCalledWith(user, data)
+    expect(logger.error).toHaveBeenCalledWith('Report deletion failed. Report id 1', error)
   })
 })

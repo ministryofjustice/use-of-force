@@ -65,6 +65,100 @@ export default class CoordinatorRoutes {
     })
   }
 
+  viewDeleteIncident: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/delete-incident.njk', {
+      data: {
+        reportId,
+        offenderDetail,
+        confirmation: this.getIncidentReportSession(req, reportId, 'confirmation'),
+      },
+      errors,
+    })
+  }
+
+  submitDeleteIncident: RequestHandler = async (req, res) => {
+    const { confirmation } = req.body
+    const { reportId } = req.params
+
+    if (!confirmation) {
+      req.flash('errors', [{ href: '#confirmation', text: 'Confirm whether you want to delete this incident' }])
+      return res.redirect(req.originalUrl)
+    }
+
+    this.setIncidentReportSession(req, reportId, { confirmation })
+
+    return confirmation === 'yes'
+      ? res.redirect('reason-for-deleting-report')
+      : res.redirect('/not-completed-incidents')
+  }
+
+  viewReasonForDeletingIncident: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const errors = req.flash('errors')
+
+    return res.render('pages/coordinator/delete-incident-reason.njk', {
+      data: {
+        reportId,
+        offenderDetail,
+        reasonForDelete: this.getIncidentReportSession(req, reportId, 'reasonForDelete'),
+        reasonForDeleteText: this.getIncidentReportSession(req, reportId, 'reasonForDeleteText'),
+      },
+      errors,
+    })
+  }
+
+  submitReasonForDeletingIncident: RequestHandler = async (req, res, next) => {
+    const { reportId } = req.params
+    const { reasonForDelete, reasonForDeleteText } = req.body
+    const validationErrors = this.reportEditService.validateReasonForDeleteInput({
+      reasonForDelete,
+      reasonForDeleteText,
+    })
+
+    if (validationErrors.length > 0) {
+      req.flash('errors', validationErrors)
+      this.setIncidentReportSession(req, reportId, { reasonForDelete, reasonForDeleteText })
+      return res.redirect(`/${reportId}/reason-for-deleting-report`)
+    }
+
+    await this.reportEditService.persistDeleteIncident(res.locals.user, {
+      reportId: parseInt(reportId, 10),
+      reasonForDelete,
+      reasonForDeleteText,
+      changes: { reportDeleted: { oldValue: false, newValue: true, question: 'Incident report deleted' } },
+    })
+
+    // delete flash and session data
+    req.session.flash = undefined
+    this.removeIncidentReportSession(req, reportId)
+    return res.redirect(`/${reportId}/delete-incident-success`)
+  }
+
+  viewDeleteIncidentSuccess: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const bookingId = await this.reviewService.getBookingIdWithReportId(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(
+      parseInt(bookingId, 10),
+      res.locals.user.username
+    )
+
+    return res.render('pages/coordinator/delete-incident-success.njk', {
+      data: {
+        reportId,
+        offenderDetail,
+      },
+    })
+  }
+
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const newPrison = req.query['new-prison']
@@ -611,7 +705,7 @@ export default class CoordinatorRoutes {
     return res.redirect('reason-for-change')
   }
 
-  // viewReasonForChange will be used for changes to all parts of the report
+  // viewReasonForChange will be used for changes to many parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const errors = req.flash('errors')
@@ -647,7 +741,7 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/reason-for-change.njk', { data })
   }
 
-  // submitReasonForChange will also be used for changes to all parts of the report
+  // submitReasonForChange will also be used for changes to many parts of the report
   submitReasonForChange: RequestHandler = async (req, res) => {
     const { reportId } = req.params
     const { reason, reasonText, reasonAdditionalInfo } = req.body
@@ -900,5 +994,29 @@ export default class CoordinatorRoutes {
 
     const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
     return res.redirect(location)
+  }
+
+  getIncidentReportSession(req, reportId, key) {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return undefined
+    const reportSessionEntry = req.session.incidentReport.find(entry => entry.reportId === reportId)
+    return reportSessionEntry ? reportSessionEntry[key] : undefined
+  }
+
+  setIncidentReportSession(req, reportId, values = {}) {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) req.session.incidentReport = []
+    const reportSessionIndex = req.session.incidentReport.findIndex(entry => entry.reportId === reportId)
+    if (reportSessionIndex >= 0) {
+      req.session.incidentReport[reportSessionIndex] = {
+        ...req.session.incidentReport[reportSessionIndex],
+        ...values,
+      }
+    } else {
+      req.session.incidentReport.push({ reportId, ...values })
+    }
+  }
+
+  removeIncidentReportSession(req, reportId) {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
+    req.session.incidentReport = req.session.incidentReport.filter(entry => entry.reportId !== reportId)
   }
 }

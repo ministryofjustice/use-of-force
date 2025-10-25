@@ -204,6 +204,18 @@ test('getReport', () => {
   })
 })
 
+describe('getBookingId', () => {
+  it('should return bookingId for a report', async () => {
+    query.mockResolvedValue({ rows: [{ bookingId: '12345' }] })
+    const result = await incidentClient.getBookingId(1)
+    expect(query).toHaveBeenCalledWith({
+      text: expect.stringContaining('select'),
+      values: [1],
+    })
+    expect(result).toEqual({ bookingId: '12345' })
+  })
+})
+
 test('getAnonReportSummary', () => {
   incidentClient.getAnonReportSummary(1)
 
