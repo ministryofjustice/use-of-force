@@ -1,11 +1,23 @@
-exports.up = knex =>
-  knex.schema.alterTable('report', table => {
+exports.up = async knex => {
+  await knex.schema.alterTable('report', table => {
     table.timestamp('completed_date').nullable()
     table.index('status')
   })
 
-exports.down = knex =>
-  knex.schema.alterTable('report', table => {
+  await knex.raw(`
+    CREATE OR REPLACE VIEW v_report AS
+    SELECT * FROM report WHERE deleted IS NULL;
+  `)
+}
+
+exports.down = async knex => {
+  await knex.raw(`
+    CREATE OR REPLACE VIEW v_report AS
+    SELECT * FROM report WHERE deleted IS NULL;
+  `)
+
+  await knex.schema.alterTable('report', table => {
     table.dropColumn('completed_date')
     table.dropIndex('status')
   })
+}
