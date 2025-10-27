@@ -1,4 +1,4 @@
-import { Change } from '../services/editReports/types/reportEditServiceTypes'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { QueryPerformer, InTransaction } from './dataAccess/db'
 import { AgencyId } from '../types/uof'
 import { LabelledValue, ReportStatus, StatementStatus } from '../config/types'
@@ -59,6 +59,17 @@ export default class IncidentClient {
           from v_report r
           where r.user_id = $1 and r.id = $2`,
       values: [userId, reportId],
+    })
+    return results.rows[0]
+  }
+
+  async getBookingId(reportId: number): Promise<Record<'bookingId', string>> {
+    const results = await this.query({
+      text: `select 
+          booking_id "bookingId"
+          from report r
+          where r.id = $1`,
+      values: [reportId],
     })
     return results.rows[0]
   }

@@ -1,0 +1,27 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = 'Are you sure you want to delete this report?' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% set deletionMessageHtml %}
+      <p>You have deleted use of force incident <strong>{{ data.reportId }}</strong>.</p>
+      <p>Contact the service desk if you need to view the contents of a deleted report.</p>
+      {% endset %}
+
+      {{ govukPanel({
+        titleText: "Success",
+        html: deletionMessageHtml,
+        classes: "govuk-!-margin-bottom-6"
+      }) }}
+
+     <p class="govuk-body">
+      <a class="govuk-link" href="/not-completed-incidents" data-qa="view-incidents">Back to use of force incidents</a>
+    </p>
+
+    </div>
+  </div>
+{% endblock %}
