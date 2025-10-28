@@ -11,11 +11,6 @@ exports.up = async knex => {
 }
 
 exports.down = async knex => {
-  await knex.raw(`
-    CREATE OR REPLACE VIEW v_report AS
-    SELECT * FROM report WHERE deleted IS NULL;
-  `)
-
   await knex.schema.alterTable('report', table => {
     table.dropColumn('completed_date')
     table.dropIndex('status')
