@@ -2,7 +2,7 @@ import querystring from 'querystring'
 
 import BaseApiClient from './baseApiClient'
 import config from '../config'
-import { FoundUserResult, FuzzySearchFoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
+import { FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import { EmailAddress } from '../types/manageUsersApi/manageUsersApiTypes'
 
 export type EmailResult = {
