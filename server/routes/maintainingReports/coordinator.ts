@@ -590,6 +590,8 @@ export default class CoordinatorRoutes {
       username: report.username,
       staffInvolved,
       offenderDetail,
+      displaySuccessBanner: req.flash('result')[0] === 'success',
+      bannerMessage: req.flash('resultMessage')[0],
     }
 
     return res.render('pages/coordinator/staff-involved.njk', {
@@ -632,6 +634,27 @@ export default class CoordinatorRoutes {
       )
       content = userSearchResults?.content || []
     }
+
+    await Promise.all(
+      content.map(async staffMember => {
+        try {
+          const isExistingInvolvedStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(
+            parseInt(reportId, 10),
+            staffMember.username
+          )
+
+          if (isExistingInvolvedStaffMember) {
+            Object.assign(staffMember, { isExistingInvolvedStaffMember: true })
+          }
+        } catch (error) {
+          // Log the error for debugging, but continue processing others
+          log.error(
+            `Error checking involved staff member ${staffMember.username} for report ${reportId}: ${error.message}`,
+            error
+          )
+        }
+      })
+    )
 
     const { number: currentPage = 0, totalPages = 1, totalElements = 0, size = 10 } = userSearchResults
     const start = currentPage * size + 1
@@ -733,6 +756,7 @@ export default class CoordinatorRoutes {
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,
       noChangeError: req.flash('noChangeError'),
+      backlinkHref: paths.viewInvolvedStaffSearch(reportId),
     })
   }
 
@@ -742,7 +766,7 @@ export default class CoordinatorRoutes {
     const pageInput = req.body
 
     // Validate input using Joi schema
-    const { payloadFields, errors } = processInput({
+    const { errors } = processInput({
       validationSpec: reasonForAddingStaffForm.complete,
       input: pageInput,
     })
@@ -775,9 +799,48 @@ export default class CoordinatorRoutes {
       username
     )
 
-    // Optionally handle result as in other add staff flows...
+    // Handle result - display appropriate alert message
+    switch (result) {
+      case AddStaffResult.SUCCESS:
+      case AddStaffResult.SUCCESS_UNVERIFIED: {
+        const edits = {
+          username: res.locals.user.username,
+          displayName: res.locals.user.displayName,
+          reportId,
+          changes: {
+            oldValue: 'the list of involved staff',
+            newValue: 'the new list of involved staff',
+            question: 'Staff involved',
+          },
+          reason: pageInput.reason,
+          reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
+          reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
+          reportOwnerChanged: false,
+        }
 
-    return res.redirect(paths.viewInvolvedStaffSearch(reportId))
+        await this.involvedStaffService.updateReportEditWithInvolvedStaff(edits)
+
+        const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+        const successMessage = `You have added ${staffMember.name} (${staffMember.userId.toUpperCase()}) to the incident. You can see your changes on the edit history tab of the incident report.`
+        req.flash('result', 'success')
+        req.flash('resultMessage', successMessage)
+        break
+      }
+      case AddStaffResult.ALREADY_EXISTS: {
+        const existingStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+        const alreadyExistsMessage = `${existingStaffMember.name} (${existingStaffMember.userId.toUpperCase()}) is already added to the incident.`
+        req.flash('result', 'success')
+        req.flash('resultMessage', alreadyExistsMessage)
+        break
+      }
+      default: {
+        req.flash('result', 'error')
+        req.flash('resultMessage', 'An unexpected error occurred while adding the staff member.')
+        break
+      }
+    }
+
+    return res.redirect(paths.viewInvolvedStaff(reportId))
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {

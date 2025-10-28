@@ -95,6 +95,10 @@ export class InvolvedStaffService {
     })
   }
 
+  public async updateReportEditWithInvolvedStaff(edits): Promise<void> {
+    return this.incidentClient.insertReportEdit(edits)
+  }
+
   public async findInvolvedStaffFuzzySearch(
     token: string,
     reportId: number,

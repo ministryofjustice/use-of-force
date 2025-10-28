@@ -13,6 +13,16 @@
         }) }}
     {% endif %}
 
+    <!-- success banner will be here -->
+    {% if data.displaySuccessBanner %}
+        {{ mojAlert({
+            variant: "success",
+            title: 'Success',
+            showTitleAsHeading: true,
+            html: data.bannerMessage
+        }) }}
+    {% endif %}
+
     {% if data.offenderDetail %}
         {% block banner %}
             {% set person = {

@@ -7,8 +7,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
-{% set showBacklink = data.showBacklink %}
-{% set backlinkHref = data.backlinkHref %}
+{% set showBacklink = true %}
+{% set backlinkHref = backlinkHref %}
 
 {% block content %}
 
@@ -102,8 +102,7 @@
             attributes: {'data-qa': 'save-and-continue'}
           }) }}
 
-          <a class="govuk-link" href="/{{data.reportId}}/view-incident?tab=report"
-          data-qa="cancel-edit-reason-link" >Cancel</a>
+          <a class="govuk-link" href="/{{data.reportId}}/view-incident?tab=report" data-qa="cancel-edit-reason-link" >Cancel</a>
         </div>
 
       </form>

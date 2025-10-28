@@ -3,6 +3,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %} 
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% set pageTitle = 'Find the person you want to add' %}
 
@@ -89,7 +90,11 @@
                             <td class="govuk-table__cell">{{ user.username }}</td>
                             <td class="govuk-table__cell">{{ user.email }}</td>
                             <td class="govuk-table__cell govuk-!-text-align-right">
-                                <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add {{ user.firstName }} {{ user.lastName }}</a>
+                                {% if user.isExistingInvolvedStaffMember %}
+                                    <span class="govuk-body govuk-!-color-grey-7">Added to report</span>
+                                {% else %}
+                                    <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add {{ user.firstName }} {{ user.lastName }}</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
