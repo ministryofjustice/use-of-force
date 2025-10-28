@@ -73,6 +73,14 @@ export default class ReviewService {
     return report
   }
 
+  async getBookingIdWithReportId(reportId: number): Promise<string> {
+    const { bookingId } = await this.incidentClient.getBookingId(reportId)
+    if (!bookingId) {
+      throw new Error(`Booking Id: '${reportId}' does not exist`)
+    }
+    return bookingId
+  }
+
   async getReportEdits(reportId: number): Promise<ReportEdit[]> {
     const edits = await this.incidentClient.getReportEdits(reportId)
     return edits

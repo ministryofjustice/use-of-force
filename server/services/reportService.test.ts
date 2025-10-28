@@ -137,9 +137,7 @@ describe('reportService', () => {
 
     test('when report does not exists', async () => {
       incidentClient.getReportForReviewer.mockReturnValue(null)
-
       await expect(service.deleteReport('currentUser', 1)).rejects.toThrow(`Report: '1' does not exist`)
-
       expect(incidentClient.deleteReport).not.toHaveBeenCalled()
     })
 
@@ -223,45 +221,43 @@ describe('reportService', () => {
       incidentLocationId: 'UUID-2',
     }
 
-    const changes = [
-      {
-        agencyId: {
-          question: 'Prison',
-          oldValue: 'BXI',
-          newValue: 'ALI',
-        },
-        incidentLocation: {
-          question: 'Incident location',
-          oldValue: 'UUID-1',
-          newValue: 'UUID-2',
-        },
-        plannedUseOfForce: {
-          question: 'Was use of force planned',
-          oldValue: false,
-          newValue: true,
-        },
-        authorisedBy: {
-          question: 'Who authorised use of force',
-          newValue: 'Officer Smith',
-        },
-        witnesses: {
-          question: 'Witnesses to the incident',
-          oldValue: [
-            {
-              name: 'Witness A',
-            },
-          ],
-          newValue: [
-            {
-              name: 'Witness A',
-            },
-            {
-              name: 'Witness B',
-            },
-          ],
-        },
+    const changes = {
+      agencyId: {
+        question: 'Prison',
+        oldValue: 'BXI',
+        newValue: 'ALI',
       },
-    ]
+      incidentLocation: {
+        question: 'Incident location',
+        oldValue: 'UUID-1',
+        newValue: 'UUID-2',
+      },
+      plannedUseOfForce: {
+        question: 'Was use of force planned',
+        oldValue: false,
+        newValue: true,
+      },
+      authorisedBy: {
+        question: 'Who authorised use of force',
+        newValue: 'Officer Smith',
+      },
+      witnesses: {
+        question: 'Witnesses to the incident',
+        oldValue: [
+          {
+            name: 'Witness A',
+          },
+        ],
+        newValue: [
+          {
+            name: 'Witness A',
+          },
+          {
+            name: 'Witness B',
+          },
+        ],
+      },
+    }
     const incidentDate = new Date('2025-08-20T03:24:00')
 
     test('should update form body and prison correctly when an edit has occurred', async () => {

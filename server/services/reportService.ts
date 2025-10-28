@@ -16,6 +16,7 @@ import type {
 
 import type { LoggedInUser } from '../types/uof'
 import AuthService from './authService'
+import { Change } from './editReports/types/reportEditServiceTypes'
 
 interface NamesByOffenderNumber {
   [offenderNo: string]: string
@@ -152,6 +153,54 @@ export default class ReportService {
     }
   }
 
+  public async updateTwoReportSections(user, data) {
+    const { username, displayName } = user
+    const { id, form } = await this.incidentClient.getReportForReviewer(data.reportId)
+    const [key1, key2] = data.keys
+
+    const updatedFormPayload = {
+      ...form,
+      ...{ [key1]: data.formSections[key1].payload },
+      ...{ [key2]: data.formSections[key2].payload },
+    }
+
+    const changesToPersistInReportEdit = { ...data.formSections[key1].changes, ...data.formSections[key2].changes }
+
+    const dataForEditTable = {
+      username,
+      displayName,
+      reportId: data.reportId,
+      changes: changesToPersistInReportEdit,
+      reason: data.reason,
+      reasonText: data.reasonText,
+      reasonAdditionalInfo: data.reasonAdditionalInfo,
+      reportOwnerChanged: false,
+    }
+
+    this.inTransaction(async query => {
+      // update original report
+      await this.incidentClient.updateWithEdits(id, null, null, updatedFormPayload, query)
+
+      //  add new record into report_edit
+      await this.incidentClient.insertReportEdit(dataForEditTable, query)
+
+      // audit logs
+      await this.reportLogClient.insert(query, username, data.reportId, 'REPORT_MODIFIED', {
+        formName: key1,
+        originalSection: form[key1],
+        updatedSection: data.formSections[key1].payload,
+      })
+
+      await this.reportLogClient.insert(query, username, data.reportId, 'REPORT_MODIFIED', {
+        formName: key2,
+        originalSection: form[key2],
+        updatedSection: data.formSections[key2].payload,
+      })
+
+      logger.info(`Updated report with id: ${id} for user: ${username}`)
+    })
+  }
+
   public async updateWithEdits(
     currentUser: LoggedInUser,
     reportId: number,
@@ -176,7 +225,7 @@ export default class ReportService {
         username,
         displayName,
         reportId,
-        changes: changes[0],
+        changes,
         reason,
         reasonText,
         reasonAdditionalInfo,
@@ -186,7 +235,7 @@ export default class ReportService {
       this.inTransaction(async query => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const agencyId = changes.find(obj => 'agencyId' in obj)?.agencyId?.newValue || null // if agencyId is null, the DB query will ensure the current value is retained
+        const agencyId = changes.agencyId?.newValue || null // if agencyId is null, the DB query will ensure the current value is retained
 
         // update original report
         await this.incidentClient.updateWithEdits(id, incidentDate, agencyId, updatedPayload, query)
@@ -201,5 +250,37 @@ export default class ReportService {
         })
       })
     }
+  }
+
+  public async deleteIncidentAndUpdateReportEdit(
+    user: LoggedInUser,
+    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: Change }
+  ): Promise<void> {
+    const { reportId, reasonForDelete, reasonForDeleteText, changes } = data
+    logger.info(`User: ${user.username} is deleting report: '${data.reportId}'`)
+
+    const report = await this.incidentClient.getReportForReviewer(data.reportId)
+    if (!report) {
+      throw new Error(`Report: '${data.reportId}' does not exist`)
+    }
+
+    const dataForEditTable = {
+      username: user.username,
+      displayName: user.displayName,
+      reportId: data.reportId,
+      changes,
+      reason: reasonForDelete,
+      reasonText: reasonForDeleteText,
+      reasonAdditionalInfo: '',
+      reportOwnerChanged: false,
+    }
+
+    this.inTransaction(async query => {
+      // update original report with deleted date
+      await this.incidentClient.deleteReport(user.username, reportId)
+
+      //  add new record into report_edit
+      await this.incidentClient.insertReportEdit(dataForEditTable, query)
+    })
   }
 }

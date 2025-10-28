@@ -1,6 +1,8 @@
 import { QUESTION_SET } from './incidentDetailsConfig'
 import { QUESTION_SET as RAIQS } from './relocationAndInjuriesConfig'
 import { QUESTION_SET as EQS } from './evidenceConfig'
+import { QUESTION_SET as UOFDQS } from './useOfForceDetailsConfig'
+import { QUESTION_SET as RUOFQS } from './reasonsForUoFConfig'
 
 // this will hold the questions every page. Keys to match those in db
 export default {
@@ -30,6 +32,35 @@ export default {
     evidenceTagAndDescription: EQS.EVIDENCE_TAG_AND_DESCRIPTION,
     photographsTaken: EQS.PHOTOGRAPHS_TAKEN,
     cctvRecording: EQS.CCTV_RECORDING,
+  },
+
+  reasonsForUseOfForce: { reasons: RUOFQS.REASONS, primaryReason: RUOFQS.PRIMARY_REASON },
+
+  useOfForceDetails: {
+    positiveCommunication: UOFDQS.POSITIVE_COMMUNICATION,
+    bodyWornCamera: UOFDQS.BODY_WORN_CAMERA,
+    bodyWornCameraNumbers: UOFDQS.BODY_WORN_CAMERA_NUMBERS,
+    personalProtectionTechniques: UOFDQS.PERSONAL_PROTECTION_TECHNIQUES,
+    batonDrawnAgainstPrisoner: UOFDQS.BATON_DRAWN_AGAINST_PRISONER,
+    batonUsed: UOFDQS.BATON_USED,
+    pavaDrawnAgainstPrisoner: UOFDQS.PAVA_DRAWN_AGAINST_PRISONER,
+    pavaUsed: UOFDQS.PAVA_USED,
+    taserDrawn: UOFDQS.TASER_DRAWN,
+    taserOperativePresent: UOFDQS.TASER_OPERATIVE_PRESENT,
+    redDotWarning: UOFDQS.RED_DOT_WARNING,
+    arcWarningUsed: UOFDQS.ARC_WARNING_USED,
+    taserDeployed: UOFDQS.TASER_DEPLOYED,
+    taserCycleExtended: UOFDQS.TASER_CYCLE_EXTENDED,
+    taserReenergised: UOFDQS.TASER_REENERGISED,
+    bittenByPrisonDog: UOFDQS.BITTEN_BY_PRISON_DOG,
+    weaponsObserved: UOFDQS.WEAPONS_OBSERVED,
+    weaponTypes: UOFDQS.WEAPON_TYPES,
+    guidingHold: UOFDQS.GUIDING_HOLD,
+    guidingHoldOfficersInvolved: UOFDQS.GUIDING_HOLD_OFFICERS_INVOLVED,
+    escortingHold: UOFDQS.ESCORTING_HOLD,
+    restraintPositions: UOFDQS.RESTRAINT_POSITIONS,
+    painInducingTechniquesUsed: UOFDQS.PAIN_INDUCING_TECHNIQUES_USED,
+    handcuffsApplied: UOFDQS.HANDCUFFS_APPLIED,
   },
 
   // Add mappings for the other sections/pages of the report here. Keys to be in the order to display in reasons page

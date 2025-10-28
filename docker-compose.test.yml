@@ -15,7 +15,7 @@ services:
     - POSTGRES_DB=use-of-force-int
 
   use-of-force-redis:
-    image: 'redis:7.2'
+    image: 'redis:7.4'
     networks:
       - hmpps_int
     environment:

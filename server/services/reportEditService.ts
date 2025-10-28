@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
+import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
+
 import reasonForChangeErrorMessageConfig from '../config/edit/reasonForChangeErrorMessageConfig'
 import sequence from '../config/edit/questionSequence'
 import questionSets from '../config/edit/questionSets'
@@ -9,17 +12,22 @@ import relocationAndInjuriesConfig, {
   RELOCATION_TYPE_DESCRIPTION,
 } from '../config/edit/relocationAndInjuriesConfig'
 import evidenceConfig, { QUESTION_ID as EQID } from '../config/edit/evidenceConfig'
+import reasonsForUoFConfig, { QUESTION_ID as RFUOFQID, REASON_DESCRIPTION } from '../config/edit/reasonsForUoFConfig'
+import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../config/edit/useOfForceDetailsConfig'
 import { excludeEmptyValuesThenTrim } from '../utils/utils'
 import { LoggedInUser } from '../types/uof'
 import { PersistData } from './editReports/types/reportEditServiceTypes'
 import compareIncidentDetailsEditWithReport from './editReports/incidentDetails'
 import compareRelocationAndInjuriesEditWithReport from './editReports/relocationAndInjuries'
 import compareEvidenceWithReport from './editReports/evidence'
+import compareReasonsForUofWithReport from './editReports/reasonsForUseOfForce'
+import compareUseOfForceDetailsWithReport from './editReports/useOfForceDetails'
 import ReportService from './reportService'
 import logger from '../../log'
 import EditIncidentDetailsService from './editIncidentDetailsService'
 import EditRelocationAndInjuriesService from './editRelocationAndInjuriesService'
 import EditEvidenceService from './editEvidenceService'
+import EditUseOfForceDetailsService from './editUseOfForceDetailsService'
 import AuthService from './authService'
 import LocationService from './locationService'
 
@@ -34,11 +42,12 @@ export default class ReportEditService {
     private readonly editIncidentDetailsService: EditIncidentDetailsService,
     private readonly editRelocationAndInjuriesService: EditRelocationAndInjuriesService,
     private readonly editEvidenceService: EditEvidenceService,
+    private readonly editUseOfForceDetailsService: EditUseOfForceDetailsService,
     private readonly locationService: LocationService,
     private readonly authService: AuthService
   ) {}
 
-  // used to format the output for the /reason-for-change page
+  // used to format the output for the REASON-FOR-CHANGE page
   async constructChangesToView(username: string, reportSection: { section: string }, changes = []) {
     let response = []
 
@@ -48,6 +57,15 @@ export default class ReportEditService {
         questionSets[reportSection.section],
         changes
       )
+    }
+
+    if (reportSection?.section === reasonsForUoFConfig.SECTION) {
+      response = await this.editUseOfForceDetailsService.buildDetails(questionSets[reportSection.section], changes)
+    }
+
+    if (reportSection?.section === useOfForceDetailsConfig.SECTION) {
+      const combinedSections = { ...questionSets[reportSection.section], ...questionSets.reasonsForUseOfForce }
+      response = await this.editUseOfForceDetailsService.buildDetails(combinedSections, changes)
     }
 
     if (reportSection?.section === relocationAndInjuriesConfig.SECTION) {
@@ -73,6 +91,12 @@ export default class ReportEditService {
       case evidenceConfig.SECTION:
         return compareEvidenceWithReport(report, valuesFromRequestBody)
 
+      case reasonsForUoFConfig.SECTION:
+        return compareReasonsForUofWithReport(report, valuesFromRequestBody)
+
+      case useOfForceDetailsConfig.SECTION:
+        return compareUseOfForceDetailsWithReport(report, valuesFromRequestBody)
+
       // add more sections as needed
       default:
         return {}
@@ -87,8 +111,40 @@ export default class ReportEditService {
     }, {})
   }
 
+  async persistChangesForReasonsAndDetails(user: LoggedInUser, data): Promise<void> {
+    const formSections = {
+      [data.reasonsForUofData.reportSection]: {
+        changes: data.reasonsForUofData.changes,
+        payload: {
+          reasons: data.reasonsForUofData.pageInputForReasons,
+          primaryReason: data.reasonsForUofData.pageInputForPrimaryReason,
+        },
+      },
+      [data.uofDetailsData.reportSection]: {
+        changes: data.uofDetailsData.changes,
+        payload: Object.values(UOFDQID).reduce((acc, current) => {
+          return { ...acc, [current]: data.uofDetailsData.payload[current] }
+        }, {}),
+      },
+    }
+
+    try {
+      await this.reportService.updateTwoReportSections(user, {
+        reportId: parseInt(data.reportId, 10),
+        reason: data.reason,
+        reasonText: data.reasonText,
+        reasonAdditionalInfo: data.reasonAdditionalInfo,
+        formSections,
+        keys: [data.reasonsForUofData.reportSection, data.uofDetailsData.reportSection],
+      })
+    } catch (e) {
+      logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      throw e
+    }
+  }
+
   async persistChanges(user: LoggedInUser, data: PersistData): Promise<void> {
-    const pageInput = data.pageInput[0]
+    const { pageInput } = data
     let updatedSection = {} // for updating the original report
 
     // for incidentDetails
@@ -101,12 +157,14 @@ export default class ReportEditService {
       }
     }
 
+    // relocationAndInjuriesConfig
     if (data.reportSection.section === relocationAndInjuriesConfig.SECTION) {
       updatedSection = Object.values(RAIQID).reduce((acc, current) => {
         return { ...acc, [current]: pageInput[current] }
       }, {})
     }
 
+    // evidenceConfig
     if (data.reportSection.section === evidenceConfig.SECTION) {
       updatedSection = Object.values(EQID).reduce((acc, current) => {
         return { ...acc, [current]: pageInput[current] }
@@ -134,7 +192,40 @@ export default class ReportEditService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateReasonForDeleteInput(input: { reasonForDelete: string; reasonForDeleteText: string }): errors[] {
+    const allErrors = []
+
+    if (!input.reasonForDelete) {
+      allErrors.push({
+        href: '#reasonForDelete',
+        text: 'Provide a reason for deleting this report',
+      })
+    }
+    if (input.reasonForDelete === 'anotherReason' && !input.reasonForDeleteText) {
+      allErrors.push({
+        href: '#reasonForDeleteText',
+        text: 'Specify a reason for deleting this report',
+      })
+    }
+    return allErrors
+  }
+
+  persistDeleteIncident = async (
+    user: LoggedInUser,
+    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: any }
+  ): Promise<void> => {
+    if (!user || !data) {
+      throw new Error('User and data are required to delete an incident report.')
+    }
+
+    try {
+      await this.reportService.deleteIncidentAndUpdateReportEdit(user, data)
+    } catch (error) {
+      logger.error(`Report deletion failed. Report id ${data.reportId}`, error)
+      throw new Error(`Could not delete incident with id ${data.reportId}.`)
+    }
+  }
+
   validateReasonForChangeInput(input: {
     reason: string
     reasonText: string
@@ -209,7 +300,7 @@ export default class ReportEditService {
     const changeObject = changes[0]
     const keys = Object.keys(changeObject)
 
-    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k].oldValue, user)))
+    return Promise.all(keys.map(k => this.applyCorrectFormat(k, changeObject[k]?.oldValue, user)))
   }
 
   async getChangedTo(changes, user) {
@@ -241,6 +332,48 @@ export default class ReportEditService {
       [QUESTION_ID.AUTHORISED_BY]: () => v,
       [QUESTION_ID.WITNESSES]: () => (Array.isArray(v) && v.length > 0 ? v.map(obj => obj.name).join(', ') : ''),
 
+      // handler for Uof reasons
+      [RFUOFQID.REASONS]: () => (v ? v.map(i => REASON_DESCRIPTION[i]).join(', ') : ''),
+
+      // handler for Uof primary reason
+      [RFUOFQID.PRIMARY_REASON]: () => (v ? REASON_DESCRIPTION[v] : ''),
+
+      // handlers for use of force details
+      [UOFDQID.POSITIVE_COMMUNICATION]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.POSITIVE_COMMUNICATION]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.BODY_WORN_CAMERAS]: () => (v === 'YES' ? 'Yes' : 'No'),
+      [UOFDQID.BODY_WORN_CAMERA_NUMBERS]: () => (v ? v.map(cam => cam.cameraNum).join(', ') : ''),
+      [UOFDQID.PERSONAL_PROTECTION_TECHNIQUES]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.BATON_DRAWN_AGAINST_PRISONER]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.BATON_USED]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.PAVA_DRAWN_AGAINST_PRISONER]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.PAVA_USED]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.TASER_DRAWN]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.TASER_OPERATIVE_PRESENT]: () => this.toYesNoFalsy(v),
+      [UOFDQID.RED_DOT_WARNING]: () => this.toYesNoFalsy(v),
+      [UOFDQID.ARC_WARNING_USED]: () => this.toYesNoFalsy(v),
+      [UOFDQID.TASER_DEPLOYED]: () => this.toYesNoFalsy(v),
+      [UOFDQID.TASER_CYCLE_EXTENDED]: () => this.toYesNoFalsy(v),
+      [UOFDQID.TASER_REENERGISED]: () => this.toYesNoFalsy(v),
+      [UOFDQID.BITTEN_BY_PRISON_DOG]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.WEAPONS_OBSERVED]: () => (v === 'YES' ? 'Yes' : 'No'),
+      [UOFDQID.WEAPON_TYPES]: () => (v ? v.map(weapon => weapon.weaponType).join(', ') : ''),
+      [UOFDQID.GUIDING_HOLD]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.ESCORTING_HOLD]: () => (v === true ? 'Yes' : 'No'),
+      [UOFDQID.RESTRAINT_POSITIONS]: () =>
+        this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
+          v,
+          ControlAndRestraintPosition,
+          'No control and restraint positions were used'
+        ),
+      [UOFDQID.PAIN_INDUCING_TECHNIQUES_USED]: () =>
+        this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
+          v,
+          PainInducingTechniquesUsed,
+          'No pain inducing techniques were used'
+        ),
+      [UOFDQID.HANDCUFFS_APPLIED]: () => (v === true ? 'Yes' : 'No'),
+
       //  handlers for Relocation and Injuries
       [RAIQID.PRISONER_RELOCATION]: () => RELOCATION_LOCATION_DESCRIPTION[v],
       [RAIQID.RELOCATION_TYPE]: () => RELOCATION_TYPE_DESCRIPTION[v],
@@ -265,6 +398,12 @@ export default class ReportEditService {
     const handler = handlers[k]
     //  check if a handler exists for a particular question. Otherwise return the input value as-is
     return handler ? handler() : v
+  }
+
+  toYesNoFalsy(v) {
+    if (v === true) return 'Yes'
+    if (v === false) return 'No'
+    return ''
   }
 
   mapReasonToTitleAndText(data) {

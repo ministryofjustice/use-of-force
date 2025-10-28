@@ -19,7 +19,15 @@ const userSupplier = jest.fn()
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
-const reportEditService = new ReportEditService(null, null, null, null, null, null) as jest.Mocked<ReportEditService>
+const reportEditService = new ReportEditService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<ReportEditService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 let report = { id: 1, username: 'user1', form: { incidentDetails: {} } } as unknown as Report

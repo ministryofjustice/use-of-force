@@ -55,6 +55,11 @@ export default function Index(services: Services): Router {
 
     if (config.featureFlagReportEditingEnabled) {
       get('/:reportId/edit-report', coordinator.viewEditReport)
+      get('/:reportId/delete-incident', coordinator.viewDeleteIncident)
+      post('/:reportId/delete-incident', coordinator.submitDeleteIncident)
+      get('/:reportId/reason-for-deleting-report', coordinator.viewReasonForDeletingIncident)
+      post('/:reportId/reason-for-deleting-report', coordinator.submitReasonForDeletingIncident)
+      get('/:reportId/delete-incident-success', coordinator.viewDeleteIncidentSuccess)
       get('/:reportId/edit-report/incident-details', coordinator.viewEditIncidentDetails)
       post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
       get('/:reportId/edit-report/staff-involved', coordinator.viewInvolvedStaff)
@@ -65,6 +70,12 @@ export default function Index(services: Services): Router {
       get('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.editViewAddNewInvolvedStaffMember)
       post('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.submitAddNewInvolvedStaffMember)
 
+      get('/:reportId/edit-report/why-was-uof-applied', coordinator.viewEditWhyWasUOFApplied)
+      post('/:reportId/edit-report/why-was-uof-applied', coordinator.submitEditWhyWasUOFApplied)
+      get('/:reportId/edit-report/what-was-the-primary-reason-of-uof', coordinator.viewEditPrimaryReasonForUof)
+      post('/:reportId/edit-report/what-was-the-primary-reason-of-uof', coordinator.submitEditPrimaryReasonForUof)
+      get('/:reportId/edit-report/use-of-force-details', coordinator.viewEditUseOfForceDetails)
+      post('/:reportId/edit-report/use-of-force-details', coordinator.submitEditUseOfForceDetails)
       get('/:reportId/edit-report/relocation-and-injuries', coordinator.viewEditRelocationAndInjuries)
       post('/:reportId/edit-report/relocation-and-injuries', coordinator.submitEditRelocationAndInjuries)
       get('/:reportId/edit-report/evidence', coordinator.viewEditEvidence)
