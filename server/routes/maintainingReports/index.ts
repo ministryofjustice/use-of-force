@@ -102,10 +102,6 @@ export default function Index(services: Services): Router {
     const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)
     const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
-
-    // get('/:reportId/edit-report', admin.viewEditReport)
-    // get('/:reportId/edit-report/:formName', admin.viewEditForm)
-    // post('/:reportId/edit-report/:formName', admin.submitEditForm)
   }
 
   return router
