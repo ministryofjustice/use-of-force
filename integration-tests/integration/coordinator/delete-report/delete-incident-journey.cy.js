@@ -8,16 +8,7 @@ const NotCompletedIncidentsPage = require('../../../pages/reviewer/notCompletedI
 const { offender } = require('../../../mockApis/data')
 const { ReportStatus } = require('../../../../server/config/types')
 
-beforeEach(() => {
-  cy.task('reset')
-  cy.task('stubOffenderDetails', offender)
-  cy.task('stubLocations', offender.agencyId)
-  cy.task('stubPrison', offender.agencyId)
-  cy.task('stubOffenders', [offender])
-  cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
-  cy.task('stubCoordinatorLogin')
-  cy.login()
-
+const seedReport = () => {
   cy.task('seedReport', {
     status: ReportStatus.SUBMITTED,
     submittedDate: moment().toDate(),
@@ -34,9 +25,21 @@ beforeEach(() => {
       },
     ],
   })
-})
+}
 
 describe('Coordinator Delete Incident Journey', () => {
+  beforeEach(() => {
+    cy.task('reset')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubLocations', offender.agencyId)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
+    seedReport()
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+  })
+
   it('should complete the delete incident journey including all validation and success', () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
