@@ -51,13 +51,13 @@ let controller: any
 let req
 let res
 
-const incidentDate = '2025-10-06T03:10:00.000Z'
+const incidentDate = '2025-10-28T03:10:00.000Z'
 const report = {
   id: 1,
   username: 'USER',
   incidentDate,
   agencyId: 'ABC',
-  submittedDate: '2025-10-10T15:10:00.000Z',
+  submittedDate: '2025-10-29T15:10:00.000Z',
   reporterName: 'User 1',
   form: {
     evidence: {
@@ -120,8 +120,8 @@ const editIncidentDetailsViewModel = {
   data: {
     displayName: undefined,
     incidentDate: {
-      date: '06/10/2025',
-      hour: '04',
+      date: '28/10/2025',
+      hour: '03',
       minute: '10',
     },
     locations: [
