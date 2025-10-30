@@ -1,3 +1,4 @@
+import { parseISO, format } from 'date-fns'
 import { offender } from '../../../mockApis/data'
 import NotCompletedIncidentsPage from '../../../pages/reviewer/notCompletedIncidentsPage'
 import CompletedIncidentsPage from '../../../pages/reviewer/completedIncidentsPage'
@@ -9,14 +10,12 @@ import PrisonPage from '../../../pages/coordinator/prisonPage'
 import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
 import { ReportStatus } from '../../../../server/config/types'
 
-const moment = require('moment')
-
 context('A use of force coordinator needs to edit incident-details', () => {
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      incidentDate: moment('2019-09-10 09:57:00.000').toDate(),
+      submittedDate: new Date(),
+      incidentDate: parseISO('2019-09-10T09:57:00.000Z'),
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -149,8 +148,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
       cy.task('seedReport', {
         sequenceNumber: 1,
         reporterName: 'Tom Jones',
-        incidentDate: moment('2024-01-25 09:57:40.000').toDate(),
-        submittedDate: moment('2024-01-29 10:30:43.122').toDate(),
+        incidentDate: parseISO('2024-01-25T09:57:40.000Z'),
+        submittedDate: parseISO('2024-01-29T10:30:43.122Z'),
         status: ReportStatus.SUBMITTED,
         agencyId: 'MDI',
         bookingId: 1001,
@@ -228,8 +227,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
     it('A coordinator can edit the incident details and eventually view the edit history', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
-        submittedDate: moment('2025-07-23 09:57:00.000'),
-        incidentDate: moment('2025-07-22 09:57:00.000'),
+        submittedDate: parseISO('2025-07-23T09:57:00.000Z'),
+        incidentDate: parseISO('2025-07-22T09:57:00.000Z'),
         agencyId: offender.agencyId,
         bookingId: offender.bookingId,
         sequenceNumber: 1,
@@ -250,15 +249,23 @@ context('A use of force coordinator needs to edit incident-details', () => {
       const editReportPage = EditReportPage.verifyOnPage()
       editReportPage.changeIncidentDetailsLink().click()
       const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-      incidentDetailsPage.hourOfIncident().click().clear().type(10)
+      // Change both date and time
+      incidentDetailsPage.hourOfIncident().click().clear().type('10')
+      incidentDetailsPage.minuteOfIncident().click().clear().type('40')
+      incidentDetailsPage.dateOfIncident().clear().type('07/10/2025')
       incidentDetailsPage.continueButton().click()
 
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
       reasonForChangePage.backLink().should('exist')
       reasonForChangePage.prisonerProfile().should('exist')
       reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'When did the incident happen?')
-      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
-      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
+      // Dynamically assert on local time display to match the app using only date-fns
+      const oldDateObj = parseISO('2025-07-22T09:57:00.000Z')
+      const newDateObj = parseISO('2025-10-07T09:40:00.000Z')
+      const oldDate = format(oldDateObj, 'dd/MM/yyyy HH:mm')
+      const newDate = format(newDateObj, 'dd/MM/yyyy HH:mm')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', oldDate)
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', newDate)
       reasonForChangePage.radioAnotherReason().click()
       reasonForChangePage.anotherReasonText().type('Some more details')
       reasonForChangePage.additionalInfoText().type('Some even more additional details')
@@ -269,8 +276,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
       const editHistoryPage = EditHistoryPage.verifyOnPage()
       editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'When did the incident happen?')
-      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
-      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
+      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', oldDate)
+      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', newDate)
       editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
       editHistoryPage.summaryTextLink(2).click()
       editHistoryPage.tableRowAndSummaryText(2).should('contain', 'Some even more additional details')

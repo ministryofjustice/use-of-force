@@ -14,6 +14,8 @@ const incidentDetailsPage = () =>
     errorSummary: () => cy.get('.govuk-error-summary__body'),
     errorMessage: () => cy.get('.govuk-error-message'),
     hourOfIncident: () => cy.get('[data-qa="incident-date-hour"]'),
+    minuteOfIncident: () => cy.get('[data-qa="incident-date-minute"]'),
+    dateOfIncident: () => cy.get('[data-qa="incident-date"]'),
   })
 
 module.exports = {

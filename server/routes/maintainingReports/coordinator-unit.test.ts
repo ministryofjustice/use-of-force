@@ -51,7 +51,7 @@ let controller: any
 let req
 let res
 
-const incidentDate = new Date(Date.UTC(2025, 9, 6, 3, 10, 0, 0))
+const incidentDate = '2025-10-06T03:10:00.000Z'
 const report = {
   id: 1,
   username: 'USER',
@@ -115,7 +115,7 @@ const incidentDetails = {
   incidentDate,
 }
 
-const incidentDetailsResponse = {
+const editIncidentDetailsViewModel = {
   coordinatorEditJourney: true,
   data: {
     displayName: undefined,
@@ -223,15 +223,15 @@ describe('CoordinatorEditReportController', () => {
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(locationService.getIncidentLocations).toHaveBeenCalledWith('token', 'ABC')
-        expect(res.render).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/incident-details.njk', editIncidentDetailsViewModel)
         req.query = { 'new-prison': 'MDI' }
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.data.prison = {
+        editIncidentDetailsViewModel.data.prison = {
           id: 'MDI',
           name: 'Moorland',
         }
-        incidentDetailsResponse.data.newAgencyId = 'MDI'
+        editIncidentDetailsViewModel.data.newAgencyId = 'MDI'
         expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'MDI')
         expect(res.render).toHaveBeenCalled()
       })
@@ -241,12 +241,12 @@ describe('CoordinatorEditReportController', () => {
         locationService.getPrisonById.mockRejectedValue(new Error())
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.data.prison = undefined
-        incidentDetailsResponse.data.newAgencyId = 'AAA'
+        editIncidentDetailsViewModel.data.prison = undefined
+        editIncidentDetailsViewModel.data.newAgencyId = 'AAA'
         expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'AAA')
         expect(logger.error).toHaveBeenCalledWith('User attempted to obtain details for prison AAA')
         expect(res.render).toHaveBeenCalled()
-        incidentDetailsResponse.data.newAgencyId = undefined
+        editIncidentDetailsViewModel.data.newAgencyId = undefined
       })
 
       it('should capture validation error', async () => {
@@ -259,21 +259,21 @@ describe('CoordinatorEditReportController', () => {
 
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.errors = [
+        editIncidentDetailsViewModel.errors = [
           {
             href: '#authorisedBy',
             text: 'Enter the name of the person who authorised the use of force',
           },
         ]
 
-        incidentDetailsResponse.noChangeError = [
+        editIncidentDetailsViewModel.noChangeError = [
           {
             href: '#authorisedBy',
             text: 'Enter the name of the person who authorised the use of force',
           },
         ]
 
-        expect(res.render).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/incident-details.njk', editIncidentDetailsViewModel)
       })
     })
 
