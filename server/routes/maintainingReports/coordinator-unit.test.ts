@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ReportService from '../../services/reportService'
 import { InvolvedStaffService } from '../../services/involvedStaffService'
 import ReviewService from '../../services/reviewService'
@@ -50,13 +51,13 @@ let controller: any
 let req
 let res
 
-const incidentDate = new Date(Date.UTC(2025, 9, 6, 3, 10, 0, 0))
+const incidentDate = '2025-10-28T03:10:00.000Z'
 const report = {
   id: 1,
   username: 'USER',
   incidentDate,
   agencyId: 'ABC',
-  submittedDate: '2025-10-10T15:10:00.000Z',
+  submittedDate: '2025-10-29T15:10:00.000Z',
   reporterName: 'User 1',
   form: {
     evidence: {
@@ -114,13 +115,13 @@ const incidentDetails = {
   incidentDate,
 }
 
-const incidentDetailsResponse = {
+const editIncidentDetailsViewModel = {
   coordinatorEditJourney: true,
   data: {
     displayName: undefined,
     incidentDate: {
-      date: '06/10/2025',
-      hour: '04',
+      date: '28/10/2025',
+      hour: '03',
       minute: '10',
     },
     locations: [
@@ -134,7 +135,7 @@ const incidentDetailsResponse = {
       name: 'An Offender',
     },
     prison: undefined,
-    reportId: '1',
+    reportId: 1,
     witnesses: [
       {
         name: 'jimmy',
@@ -150,11 +151,11 @@ const incidentDetailsResponse = {
 }
 
 beforeEach(() => {
-  req = { params: { reportId: '1' }, session: {}, query: {}, flash }
+  req = { params: { reportId: 1 }, session: {}, query: {}, flash }
   res = { locals: { user: { username: 'USER' } }, render: jest.fn(), redirect: jest.fn() }
 
-  req.session = { edit: {} }
-  req.session.edit.inputsForEditIncidentDetails = undefined
+  req.session = { incidentReport: {} }
+  req.session.incidentReport.inputsForEditIncidentDetails = undefined
 
   authService.getSystemClientToken.mockResolvedValue('token')
   locationService.getPrisonById.mockResolvedValue({ id: 'MDI', name: 'Moorland' } as any)
@@ -195,7 +196,7 @@ describe('CoordinatorEditReportController', () => {
       expect(reportDetailBuilder.build).toHaveBeenCalledWith('USER', report)
       expect(reviewService.getReportEdits).toHaveBeenCalledWith(1)
       expect(reviewService.getStatements).toHaveBeenCalledWith('token', 1)
-      expect(req.session.edit).toEqual({})
+      expect(req.session.incidentReport).toEqual({})
       expect(res.render).toHaveBeenCalledWith('pages/coordinator/edit-report.njk', {
         data: {
           bookingId: null,
@@ -222,15 +223,15 @@ describe('CoordinatorEditReportController', () => {
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(locationService.getIncidentLocations).toHaveBeenCalledWith('token', 'ABC')
-        expect(res.render).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/incident-details.njk', editIncidentDetailsViewModel)
         req.query = { 'new-prison': 'MDI' }
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.data.prison = {
+        editIncidentDetailsViewModel.data.prison = {
           id: 'MDI',
           name: 'Moorland',
         }
-        incidentDetailsResponse.data.newAgencyId = 'MDI'
+        editIncidentDetailsViewModel.data.newAgencyId = 'MDI'
         expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'MDI')
         expect(res.render).toHaveBeenCalled()
       })
@@ -240,12 +241,12 @@ describe('CoordinatorEditReportController', () => {
         locationService.getPrisonById.mockRejectedValue(new Error())
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.data.prison = undefined
-        incidentDetailsResponse.data.newAgencyId = 'AAA'
+        editIncidentDetailsViewModel.data.prison = undefined
+        editIncidentDetailsViewModel.data.newAgencyId = 'AAA'
         expect(locationService.getPrisonById).toHaveBeenCalledWith('token', 'AAA')
         expect(logger.error).toHaveBeenCalledWith('User attempted to obtain details for prison AAA')
         expect(res.render).toHaveBeenCalled()
-        incidentDetailsResponse.data.newAgencyId = undefined
+        editIncidentDetailsViewModel.data.newAgencyId = undefined
       })
 
       it('should capture validation error', async () => {
@@ -258,21 +259,21 @@ describe('CoordinatorEditReportController', () => {
 
         await controller.viewEditIncidentDetails(req, res)
 
-        incidentDetailsResponse.errors = [
+        editIncidentDetailsViewModel.errors = [
           {
             href: '#authorisedBy',
             text: 'Enter the name of the person who authorised the use of force',
           },
         ]
 
-        incidentDetailsResponse.noChangeError = [
+        editIncidentDetailsViewModel.noChangeError = [
           {
             href: '#authorisedBy',
             text: 'Enter the name of the person who authorised the use of force',
           },
         ]
 
-        expect(res.render).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/incident-details.njk', editIncidentDetailsViewModel)
       })
     })
 
@@ -370,7 +371,7 @@ describe('CoordinatorEditReportController', () => {
           'pages/coordinator/why-uof-applied.njk',
           expect.objectContaining({ coordinatorEditJourney: true })
         )
-        expect(req.session.edit).toEqual({})
+        expect(req.session.incidentReport).toEqual({})
       })
 
       it('should render page with any validation errors', async () => {
@@ -399,26 +400,30 @@ describe('CoordinatorEditReportController', () => {
       })
 
       it('should set session object correctly and redirect', async () => {
+        req.params = { reportId: '1' }
         req.body = { reasons: ['ASSAULT_ON_ANOTHER_PRISONER'] }
-        req.session.edit.whyWasUOFAppliedReasons = req.body.reasons
+        req.session.incidentReport = [{ reportId: 1 }]
 
         const comparison = {
           reasons: {
             question: 'Why was use of force applied against this prisoner?',
-            oldValue: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-            newValue: req.body.reasons,
+            oldValue: undefined,
+            newValue: ['ASSAULT_ON_A_MEMBER_OF_STAFF'],
             hasChanged: true,
           },
         }
         reportEditService.compareEditsWithReport.mockReturnValue(comparison)
 
         await controller.submitEditWhyWasUOFApplied(req, res)
-        expect(req.session.edit.whyWasUOFAppliedChanges).toEqual(comparison)
+        const sessionObj = req.session.incidentReport.find(obj => obj.reportId === 1)
+        expect(sessionObj.whyWasUOFAppliedChanges).toEqual(comparison)
         expect(res.redirect).toHaveBeenCalledWith('use-of-force-details')
       })
 
       it('should set session object correctly and redirect to primary reason page', async () => {
+        req.params = { reportId: '1' }
         req.body = { reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'OTHER_NTRG_INCIDENT'] }
+        req.session.incidentReport = [{ reportId: 1 }]
         const comparison = {
           reasons: {
             question: 'Why was use of force applied against this prisoner?',
@@ -430,7 +435,8 @@ describe('CoordinatorEditReportController', () => {
         reportEditService.compareEditsWithReport.mockReturnValue(comparison)
 
         await controller.submitEditWhyWasUOFApplied(req, res)
-        expect(req.session.edit.whyWasUOFAppliedChanges).toEqual(comparison)
+        const sessionObj = req.session.incidentReport.find(obj => obj.reportId === 1)
+        expect(sessionObj.whyWasUOFAppliedChanges).toEqual(comparison)
         expect(res.redirect).toHaveBeenCalledWith('what-was-the-primary-reason-of-uof')
       })
     })
@@ -438,7 +444,8 @@ describe('CoordinatorEditReportController', () => {
     describe('viewPrimaryReason', () => {
       it('should render page', async () => {
         const reasons = ['ASSAULT_ON_ANOTHER_PRISONER', 'HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT']
-        req.session.edit = { reasons }
+        req.params = { reportId: '1' }
+        req.session.incidentReport = [{ reportId: 1, reasons }]
         await controller.viewEditPrimaryReasonForUof(req, res)
 
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
@@ -455,7 +462,7 @@ describe('CoordinatorEditReportController', () => {
                 { label: 'Hostage (NTRG)', value: 'HOSTAGE_NTRG' },
                 { label: 'Other NTRG incident', value: 'OTHER_NTRG_INCIDENT' },
               ],
-              reportId: '1',
+              reportId: 1,
             },
             errors: undefined,
             showSaveAndReturnButton: false,
@@ -482,10 +489,8 @@ describe('CoordinatorEditReportController', () => {
 
     describe('viewEditUseOfForceDetails', () => {
       it('should render page', async () => {
-        req.session = {
-          edit: {
-            whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-          },
+        req.session.incidentReport = {
+          whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
         }
         await controller.viewEditUseOfForceDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
@@ -515,14 +520,16 @@ describe('CoordinatorEditReportController', () => {
       }
 
       it('should redirect to next page', async () => {
-        req.params = { reportId: 1 }
+        req.params = { reportId: '1' }
         req.body = userInputUofDetails
-        req.session = {
-          edit: {
+        // Simulate array-based session structure for incidentReport
+        req.session.incidentReport = [
+          {
+            reportId: 1,
             reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'HOSTAGE_NTRG'],
             primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER',
           },
-        }
+        ]
 
         const useOfForceDetails = {
           positiveCommunication: true,
@@ -551,8 +558,10 @@ describe('CoordinatorEditReportController', () => {
 
         await controller.submitEditUseOfForceDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
-        expect(req.session.edit.useOfForceDetails).toEqual(useOfForceDetails)
-        expect(req.session.edit).toEqual({
+        // Find the session object for reportId 1
+        const sessionObj = req.session.incidentReport.find(obj => obj.reportId === 1)
+        expect(sessionObj.useOfForceDetails).toEqual(useOfForceDetails)
+        expect(sessionObj).toEqual({
           pageInputsforReasonsForUofAndPrimaryReason: {
             primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER',
             reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'HOSTAGE_NTRG'],
@@ -560,6 +569,7 @@ describe('CoordinatorEditReportController', () => {
           primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER',
           reasons: ['ASSAULT_ON_ANOTHER_PRISONER', 'HOSTAGE_NTRG'],
           useOfForceDetails,
+          reportId: 1,
         })
         expect(res.redirect).toHaveBeenCalled()
       })
@@ -569,7 +579,7 @@ describe('CoordinatorEditReportController', () => {
   describe('Relocation and injuries', () => {
     describe('viewEditRelocationAndInjuries', () => {
       it('should render page', async () => {
-        req.session = { edit: { inputsForEditRelocationAndInjuries: {} } }
+        req.session = { incidentReport: { inputsForEditRelocationAndInjuries: {} } }
 
         await controller.viewEditRelocationAndInjuries(req, res)
         expect(res.render).toHaveBeenCalled()
@@ -676,44 +686,42 @@ describe('CoordinatorEditReportController', () => {
         } as never)
         await controller.submitEditRelocationAndInjuries(req, res)
 
-        expect(req.session.edit).toEqual({
-          backlinkHref: 'relocation-and-injuries',
-          changes: {
-            prisonerHospitalisation: {
-              newValue: true,
-              oldValue: false,
-              question: 'Did the prisoner need outside hospitalisation at the time?',
+        expect(req.session.incidentReport).toEqual([
+          {
+            backlinkHref: 'relocation-and-injuries',
+            changes: {
+              prisonerHospitalisation: {
+                newValue: true,
+                oldValue: false,
+                question: 'Did the prisoner need outside hospitalisation at the time?',
+              },
             },
+            inputsForEditRelocationAndInjuries: {
+              f213CompletedBy: 'Mr Fowler',
+              healthcareInvolved: false,
+              prisonerHospitalisation: false,
+              prisonerInjuries: false,
+              prisonerRelocation: 'GATED_CELL',
+              relocationCompliancy: true,
+              staffMedicalAttention: false,
+            },
+            pageInput: {
+              f213CompletedBy: 'Mr Fowler',
+              healthcareInvolved: false,
+              healthcarePractionerName: undefined,
+              prisonerHospitalisation: false,
+              prisonerInjuries: false,
+              prisonerRelocation: 'GATED_CELL',
+              relocationCompliancy: true,
+              relocationType: undefined,
+              staffMedicalAttention: false,
+              staffNeedingMedicalAttention: undefined,
+              userSpecifiedRelocationType: undefined,
+            },
+            reportId: 1,
+            sectionDetails: { section: 'relocationAndInjuries', text: 'relocation and injuries' },
           },
-          inputsForEditIncidentDetails: undefined,
-          inputsForEditRelocationAndInjuries: {
-            f213CompletedBy: 'Mr Fowler',
-            healthcareInvolved: false,
-            prisonerHospitalisation: false,
-            prisonerInjuries: false,
-            prisonerRelocation: 'GATED_CELL',
-            relocationCompliancy: true,
-            reportId: '1',
-            staffMedicalAttention: false,
-          },
-          pageInput: {
-            f213CompletedBy: 'Mr Fowler',
-            healthcareInvolved: false,
-            healthcarePractionerName: undefined,
-            prisonerHospitalisation: false,
-            prisonerInjuries: false,
-            prisonerRelocation: 'GATED_CELL',
-            relocationCompliancy: true,
-            relocationType: undefined,
-            staffMedicalAttention: false,
-            staffNeedingMedicalAttention: undefined,
-            userSpecifiedRelocationType: undefined,
-          },
-          sectionDetails: {
-            section: 'relocationAndInjuries',
-            text: 'relocation and injuries',
-          },
-        })
+        ])
 
         expect(res.redirect).toHaveBeenCalledWith('reason-for-change')
       })
@@ -787,6 +795,91 @@ describe('CoordinatorEditReportController', () => {
     })
   })
 
+  describe('viewReasonForChange', () => {
+    beforeEach(() => {
+      req.params = { reportId: 1 }
+      req.session.incidentReport = [
+        {
+          reportId: 1,
+          sectionDetails: { section: 'incidentDetails', text: 'the incident details' },
+          changes: { foo: { oldValue: 'a', newValue: 'b', question: 'some question' } },
+          backlinkHref: 'incident-details',
+          reason: 'reason',
+          reasonText: 'reasonText',
+          reasonAdditionalInfo: 'info',
+        },
+      ]
+      res.locals = { user: { username: 'USER' } }
+      reviewService.getReport.mockResolvedValue(report as any)
+      offenderService.getOffenderDetails.mockResolvedValue({ name: 'An Offender' })
+      reportEditService.constructChangesToView.mockResolvedValue([
+        { question: 'some question', oldValue: 'a', newValue: 'b' },
+      ])
+    })
+
+    it('should render the reason-for-change page with correct data', async () => {
+      req.flash = jest.fn().mockReturnValue([])
+      await controller.viewReasonForChange(req, res)
+      expect(reviewService.getReport).toHaveBeenCalledWith(1)
+      expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
+      expect(reportEditService.constructChangesToView).toHaveBeenCalled()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/coordinator/reason-for-change.njk',
+        expect.objectContaining({
+          data: expect.objectContaining({
+            reportId: 1,
+            reason: 'reason',
+            reasonText: 'reasonText',
+            reasonAdditionalInfo: 'info',
+            showBacklink: true,
+            backlinkHref: 'incident-details',
+            offenderDetail: { name: 'An Offender' },
+          }),
+        })
+      )
+    })
+
+    it('should include errors from flash if present', async () => {
+      req.flash = jest.fn().mockReturnValueOnce([{ href: '#reason', text: 'Required' }])
+      await controller.viewReasonForChange(req, res)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/coordinator/reason-for-change.njk',
+        expect.objectContaining({ data: expect.objectContaining({ errors: [{ href: '#reason', text: 'Required' }] }) })
+      )
+    })
+  })
+  describe('submitReasonForChange', () => {
+    it('should call removeIncidentReportSession with correct reportId after successful change', async () => {
+      req.params = { reportId: 1 }
+      req.body = { reason: 'reason', reasonText: 'text', reasonAdditionalInfo: 'info' }
+      req.session.incidentReport = [
+        {
+          reportId: 1,
+          sectionDetails: { section: 'incidentDetails', text: 'the incident details' },
+          pageInput: { foo: 'bar' },
+          changes: { foo: { oldValue: 'a', newValue: 'b', question: 'Foo?' } },
+        },
+        {
+          reportId: 2,
+          sectionDetails: { section: 'incidentDetails', text: 'the incident details' },
+          pageInput: { foo: 'baz' },
+          changes: { foo: { oldValue: 'c', newValue: 'd', question: 'Foo?' } },
+        },
+      ]
+      reportEditService.validateReasonForChangeInput.mockReturnValue([])
+      reportEditService.persistChanges.mockResolvedValue()
+      const removeSpy = jest.spyOn(controller, 'removeIncidentReportSession')
+
+      await controller.submitReasonForChange(req, res)
+      expect(reportEditService.validateReasonForChangeInput).toHaveBeenCalled()
+      expect(reportEditService.persistChanges).toHaveBeenCalled()
+      expect(removeSpy).toHaveBeenCalledWith(req, 1)
+      // Should remove the data in session for reportId 1 only leaving just 1 item in the array
+      expect(req.session.incidentReport.length).toBe(1)
+      expect(req.session.incidentReport[0].reportId).toBe(2)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident')
+    })
+  })
   describe('Deleting incident reports', () => {
     describe('viewDeleteIncident', () => {
       it('should render delete-incident.njk with correct data if session.incidentReport is undefined', async () => {
@@ -798,7 +891,7 @@ describe('CoordinatorEditReportController', () => {
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalledWith('pages/coordinator/delete-incident.njk', {
           data: {
-            reportId: '1',
+            reportId: 1,
             offenderDetail: { name: 'An Offender' },
             confirmation: undefined,
           },
@@ -807,13 +900,13 @@ describe('CoordinatorEditReportController', () => {
       })
       it('should render delete-incident.njk with correct data', async () => {
         req.flash.mockReturnValue([])
-        req.session.incidentReport = [{ reportId: '1', confirmation: 'yes' }]
+        req.session.incidentReport = [{ reportId: 1, confirmation: 'yes' }]
         await controller.viewDeleteIncident(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalledWith('pages/coordinator/delete-incident.njk', {
           data: {
-            reportId: '1',
+            reportId: 1,
             offenderDetail: { name: 'An Offender' },
             confirmation: 'yes',
           },
@@ -853,13 +946,13 @@ describe('CoordinatorEditReportController', () => {
     describe('viewReasonForDeletingIncident', () => {
       it('should render delete-incident-reason.njk with correct data', async () => {
         req.flash.mockReturnValue([])
-        req.session.incidentReport = [{ reportId: '1', reasonForDelete: 'reason', reasonForDeleteText: 'text' }]
+        req.session.incidentReport = [{ reportId: 1, reasonForDelete: 'reason', reasonForDeleteText: 'text' }]
         await controller.viewReasonForDeletingIncident(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalledWith('pages/coordinator/delete-incident-reason.njk', {
           data: {
-            reportId: '1',
+            reportId: 1,
             offenderDetail: { name: 'An Offender' },
             reasonForDelete: 'reason',
             reasonForDeleteText: 'text',
@@ -872,10 +965,10 @@ describe('CoordinatorEditReportController', () => {
     describe('submitReasonForDeletingIncident', () => {
       beforeEach(() => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes', reasonForDelete: 'reason1' },
-          { reportId: '2', confirmation: 'no', reasonForDelete: 'reason2' },
+          { reportId: 1, confirmation: 'yes', reasonForDelete: 'reason1' },
+          { reportId: 2, confirmation: 'no', reasonForDelete: 'reason2' },
         ]
-        req.params = { reportId: '1' }
+        req.params = { reportId: 1 }
       })
 
       it('should flash errors and redirect if validation fails', async () => {
@@ -908,16 +1001,16 @@ describe('CoordinatorEditReportController', () => {
             reportDeleted: { oldValue: false, newValue: true, question: 'Incident report deleted' },
           },
         })
-        // Should remove the data in session for reportId '1' only
+        // Should remove the data in session for reportId 1 only
         expect(req.session.incidentReport.length).toBe(1)
-        expect(req.session.incidentReport[0]).toEqual({ reportId: '2', confirmation: 'no', reasonForDelete: 'reason2' })
+        expect(req.session.incidentReport[0]).toEqual({ reportId: 2, confirmation: 'no', reasonForDelete: 'reason2' })
         expect(res.redirect).toHaveBeenCalledWith('/1/delete-incident-success')
       })
     })
 
     describe('viewDeleteIncidentSuccess', () => {
       it('should render delete-incident-success page with correct data', async () => {
-        req.params = { reportId: '1' }
+        req.params = { reportId: 1 }
         res.locals = { user: { username: 'USER' } }
         reviewService.getBookingIdWithReportId.mockResolvedValue('123456')
         offenderService.getOffenderDetails.mockResolvedValue({ name: 'An Offender' })
@@ -926,134 +1019,137 @@ describe('CoordinatorEditReportController', () => {
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(123456, 'USER')
         expect(res.render).toHaveBeenCalledWith('pages/coordinator/delete-incident-success.njk', {
           data: {
-            reportId: '1',
+            reportId: 1,
             offenderDetail: { name: 'An Offender' },
           },
         })
       })
     })
+  })
 
-    describe('setDeleteIncidentSession and getDeleteIncidentSession', () => {
-      it('should initialize session.incidentReport as array if undefined and add new entry', () => {
-        controller.setIncidentReportSession(req, '1', { confirmation: 'yes' })
-        expect(Array.isArray(req.session.incidentReport)).toBe(true)
-        expect(req.session.incidentReport.length).toBe(1)
-        expect(req.session.incidentReport[0]).toEqual({ reportId: '1', confirmation: 'yes' })
-      })
-
-      it('should update existing entry for same reportId', () => {
-        req.session.incidentReport = [{ reportId: '1', confirmation: 'no' }]
-        controller.setIncidentReportSession(req, '1', { confirmation: 'yes', reasonForDelete: 'reason' })
-        expect(req.session.incidentReport.length).toBe(1)
-        expect(req.session.incidentReport[0]).toEqual({ reportId: '1', confirmation: 'yes', reasonForDelete: 'reason' })
-      })
-
-      it('should add new entry if reportId does not exist', () => {
-        req.session.incidentReport = [{ reportId: '1', confirmation: 'yes' }]
-        controller.setIncidentReportSession(req, '2', { confirmation: 'no' })
-        expect(req.session.incidentReport.length).toBe(2)
-        expect(req.session.incidentReport).toEqual([
-          { confirmation: 'yes', reportId: '1' },
-          { confirmation: 'no', reportId: '2' },
-        ])
-      })
-
-      it('should do nothing if session.incidentReport is not an array', () => {
-        req.session.incidentReport = {}
-        controller.setIncidentReportSession(req, '1', { confirmation: 'yes' })
-        // Should re-initialize as array
-        expect(Array.isArray(req.session.incidentReport)).toBe(true)
-        expect(req.session.incidentReport.length).toBe(1)
-        expect(req.session.incidentReport[0]).toEqual({ reportId: '1', confirmation: 'yes' })
-      })
-
+  describe('Session handling functions', () => {
+    describe('getDeleteIncidentSession', () => {
       it('getIncidentReportSession returns undefined if session.incidentReport is undefined', () => {
         req.session.incidentReport = undefined
-        const result = controller.getIncidentReportSession(req, '1', 'confirmation')
+        const result = controller.getIncidentReportSession(req, 1, 'confirmation')
         expect(result).toBeUndefined()
       })
 
       it('getIncidentReportSession returns undefined if session.incidentReport is not an array', () => {
         req.session.incidentReport = {}
-        const result = controller.getIncidentReportSession(req, '1', 'confirmation')
+        const result = controller.getIncidentReportSession(req, 1, 'confirmation')
         expect(result).toBeUndefined()
       })
 
       it('getIncidentReportSession returns undefined if reportId not found', () => {
-        req.session.incidentReport = [{ reportId: '2', confirmation: 'yes' }]
-        const result = controller.getIncidentReportSession(req, '1', 'confirmation')
+        req.session.incidentReport = [{ reportId: 2, confirmation: 'yes' }]
+        const result = controller.getIncidentReportSession(req, 1, 'confirmation')
         expect(result).toBeUndefined()
       })
 
       it('getIncidentReportSession returns value for given key if found', () => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes', reasonForDelete: 'reason' },
-          { reportId: '2', confirmation: 'no' },
+          { reportId: 1, confirmation: 'yes', reasonForDelete: 'reason' },
+          { reportId: 2, confirmation: 'no' },
         ]
-        const confirmation = controller.getIncidentReportSession(req, '1', 'confirmation')
-        expect(confirmation).toBe('yes')
-        const reason = controller.getIncidentReportSession(req, '1', 'reasonForDelete')
-        expect(reason).toBe('reason')
+        const sessionObj = controller.getIncidentReportSession(req, 1)
+        expect(sessionObj).toBeDefined()
+        expect(sessionObj.confirmation).toBe('yes')
+        expect(sessionObj.reasonForDelete).toBe('reason')
       })
     })
 
+    describe('setDeleteIncidentSession', () => {
+      it('should initialize session.incidentReport as array if undefined and add new entry', () => {
+        controller.setIncidentReportSession(req, 1, { confirmation: 'yes' })
+        expect(Array.isArray(req.session.incidentReport)).toBe(true)
+        expect(req.session.incidentReport.length).toBe(1)
+        expect(req.session.incidentReport[0]).toEqual({ reportId: 1, confirmation: 'yes' })
+      })
+
+      it('should update existing entry for same reportId', () => {
+        req.session.incidentReport = [{ reportId: 1, confirmation: 'no' }]
+        controller.setIncidentReportSession(req, 1, { confirmation: 'yes', reasonForDelete: 'reason' })
+        expect(req.session.incidentReport.length).toBe(1)
+        expect(req.session.incidentReport[0]).toEqual({ reportId: 1, confirmation: 'yes', reasonForDelete: 'reason' })
+      })
+
+      it('should add new entry if reportId does not exist', () => {
+        req.session.incidentReport = [{ reportId: 1, confirmation: 'yes' }]
+        controller.setIncidentReportSession(req, 2, { confirmation: 'no' })
+        expect(req.session.incidentReport.length).toBe(2)
+        expect(req.session.incidentReport).toEqual([
+          { confirmation: 'yes', reportId: 1 },
+          { confirmation: 'no', reportId: 2 },
+        ])
+      })
+
+      it('should do nothing if session.incidentReport is not an array', () => {
+        req.session.incidentReport = {}
+        controller.setIncidentReportSession(req, 1, { confirmation: 'yes' })
+        // Should re-initialize as array
+        expect(Array.isArray(req.session.incidentReport)).toBe(true)
+        expect(req.session.incidentReport.length).toBe(1)
+        expect(req.session.incidentReport[0]).toEqual({ reportId: 1, confirmation: 'yes' })
+      })
+    })
     describe('removeIncidentReportSession', () => {
       it('should remove the entry with the given reportId from session.incidentReport', () => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '2', confirmation: 'no' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 2, confirmation: 'no' },
         ]
-        controller.removeIncidentReportSession(req, '1')
+        controller.removeIncidentReportSession(req, 1)
         expect(req.session.incidentReport.length).toBe(1)
-        expect(req.session.incidentReport).toEqual([{ reportId: '2', confirmation: 'no' }])
+        expect(req.session.incidentReport).toEqual([{ reportId: 2, confirmation: 'no' }])
       })
 
       it('should do nothing if session.incidentReport is undefined', () => {
         req.session.incidentReport = undefined
-        controller.removeIncidentReportSession(req, '1')
+        controller.removeIncidentReportSession(req, 1)
         expect(req.session.incidentReport).toBeUndefined()
       })
 
       it('should do nothing if session.incidentReport is not an array', () => {
         req.session.incidentReport = {}
-        controller.removeIncidentReportSession(req, '1')
+        controller.removeIncidentReportSession(req, 1)
         expect(req.session.incidentReport).toEqual({})
       })
 
       it('should not remove anything if reportId does not exist', () => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '2', confirmation: 'no' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 2, confirmation: 'no' },
         ]
         controller.removeIncidentReportSession(req, '3')
         expect(req.session.incidentReport.length).toBe(2)
         expect(req.session.incidentReport).toEqual([
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '2', confirmation: 'no' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 2, confirmation: 'no' },
         ])
       })
 
       it('should remove the correct entry when multiple entries exist', () => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '2', confirmation: 'no' },
-          { reportId: '3', confirmation: 'maybe' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 2, confirmation: 'no' },
+          { reportId: 3, confirmation: 'maybe' },
         ]
-        controller.removeIncidentReportSession(req, '2')
+        controller.removeIncidentReportSession(req, 2)
         expect(req.session.incidentReport.length).toBe(2)
         expect(req.session.incidentReport).toEqual([
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '3', confirmation: 'maybe' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 3, confirmation: 'maybe' },
         ])
       })
 
       it('should remove all entries if called repeatedly for each reportId', () => {
         req.session.incidentReport = [
-          { reportId: '1', confirmation: 'yes' },
-          { reportId: '2', confirmation: 'no' },
+          { reportId: 1, confirmation: 'yes' },
+          { reportId: 2, confirmation: 'no' },
         ]
-        controller.removeIncidentReportSession(req, '1')
-        controller.removeIncidentReportSession(req, '2')
+        controller.removeIncidentReportSession(req, 1)
+        controller.removeIncidentReportSession(req, 2)
         expect(req.session.incidentReport.length).toBe(0)
         expect(req.session.incidentReport).toEqual([])
       })

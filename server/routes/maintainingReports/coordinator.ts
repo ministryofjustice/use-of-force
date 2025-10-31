@@ -42,12 +42,12 @@ export default class CoordinatorRoutes {
   ) {}
 
   viewEditReport: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const { user } = res.locals
     const systemToken = await this.authService.getSystemClientToken(user.username)
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
-    const reportEdits = await this.reviewService.getReportEdits(parseInt(reportId, 10))
+    const reportEdits = await this.reviewService.getReportEdits(reportId)
     const hasReportBeenEdited = reportEdits?.length > 0
     const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
     const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
@@ -55,9 +55,8 @@ export default class CoordinatorRoutes {
     const reportOwner = newReportOwners?.at(-1)
     data.bookingId = null
     const dataWithEdits = { ...data, hasReportBeenEdited, lastEdit, hasReportOwnerChanged, reportOwner }
-    const statements = await this.reviewService.getStatements(systemToken, parseInt(reportId, 10))
+    const statements = await this.reviewService.getStatements(systemToken, reportId)
     const submittedStatements = statements.filter(stmnt => stmnt.isSubmitted)
-    req.session.edit = {} // initialise session.edit
     return res.render('pages/coordinator/edit-report.njk', {
       data: dataWithEdits,
       user,
@@ -66,17 +65,18 @@ export default class CoordinatorRoutes {
   }
 
   viewDeleteIncident: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
     const errors = req.flash('errors')
 
+    const sessionData = this.getIncidentReportSession(req, reportId)
     return res.render('pages/coordinator/delete-incident.njk', {
       data: {
         reportId,
         offenderDetail,
-        confirmation: this.getIncidentReportSession(req, reportId, 'confirmation'),
+        confirmation: sessionData?.confirmation,
       },
       errors,
     })
@@ -84,7 +84,7 @@ export default class CoordinatorRoutes {
 
   submitDeleteIncident: RequestHandler = async (req, res) => {
     const { confirmation } = req.body
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
 
     if (!confirmation) {
       req.flash('errors', [{ href: '#confirmation', text: 'Confirm whether you want to delete this incident' }])
@@ -99,25 +99,26 @@ export default class CoordinatorRoutes {
   }
 
   viewReasonForDeletingIncident: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
     const errors = req.flash('errors')
 
+    const sessionData = this.getIncidentReportSession(req, reportId)
     return res.render('pages/coordinator/delete-incident-reason.njk', {
       data: {
         reportId,
         offenderDetail,
-        reasonForDelete: this.getIncidentReportSession(req, reportId, 'reasonForDelete'),
-        reasonForDeleteText: this.getIncidentReportSession(req, reportId, 'reasonForDeleteText'),
+        reasonForDelete: sessionData?.reasonForDelete,
+        reasonForDeleteText: sessionData?.reasonForDeleteText,
       },
       errors,
     })
   }
 
   submitReasonForDeletingIncident: RequestHandler = async (req, res, next) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const { reasonForDelete, reasonForDeleteText } = req.body
     const validationErrors = this.reportEditService.validateReasonForDeleteInput({
       reasonForDelete,
@@ -131,7 +132,7 @@ export default class CoordinatorRoutes {
     }
 
     await this.reportEditService.persistDeleteIncident(res.locals.user, {
-      reportId: parseInt(reportId, 10),
+      reportId,
       reasonForDelete,
       reasonForDeleteText,
       changes: { reportDeleted: { oldValue: false, newValue: true, question: 'Incident report deleted' } },
@@ -144,8 +145,8 @@ export default class CoordinatorRoutes {
   }
 
   viewDeleteIncidentSuccess: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const bookingId = await this.reviewService.getBookingIdWithReportId(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const bookingId = await this.reviewService.getBookingIdWithReportId(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(
       parseInt(bookingId, 10),
       res.locals.user.username
@@ -160,17 +161,18 @@ export default class CoordinatorRoutes {
   }
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const incidentLocationsInPersistedPrison = await this.locationService.getIncidentLocations(
       systemToken,
       report.agencyId
     )
     const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
-    const userInput = req.session.edit.inputsForEditIncidentDetails
+    const sessionData = this.getIncidentReportSession(req, reportId)
+    const userInput = sessionData?.inputsForEditIncidentDetails
     const incidentDate = getIncidentDate(incidentDetails.incidentDate, userInput?.incidentDate)
     const pageData = userInput || incidentDetails
 
@@ -213,10 +215,10 @@ export default class CoordinatorRoutes {
   }
 
   submitEditIncidentDetails: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const pageInput = req.body
 
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const { payloadFields, extractedFields, errors } = processInput({
       validationSpec: full.incidentDetails,
       input: pageInput,
@@ -224,13 +226,13 @@ export default class CoordinatorRoutes {
 
     pageInput.incidentDate = extractedFields.incidentDate.value
 
-    req.session.edit.pageInput = pageInput
-
-    req.session.edit.inputsForEditIncidentDetails = {
+    const inputsForEditIncidentDetails = {
       ...payloadFields,
       incidentDate: extractedFields.incidentDate,
       reportId,
     }
+
+    this.setIncidentReportSession(req, reportId, { pageInput, inputsForEditIncidentDetails })
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
@@ -266,14 +268,13 @@ export default class CoordinatorRoutes {
       return res.redirect('incident-details')
     }
 
-    req.session.edit.changes = this.reportEditService.removeHasChangedKey(changedValues)
-
-    req.session.edit.sectionDetails = {
+    const changes = this.reportEditService.removeHasChangedKey(changedValues)
+    const sectionDetails = {
       text: 'the incident details',
       section: incidentDetailsConfig.SECTION,
     }
-
-    req.session.edit.backlinkHref = 'incident-details'
+    const backlinkHref = 'incident-details'
+    this.setIncidentReportSession(req, reportId, { changes, sectionDetails, backlinkHref })
 
     return res.redirect('reason-for-change')
   }
@@ -288,7 +289,7 @@ export default class CoordinatorRoutes {
   }
 
   submitEditPrison: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const { agencyId, submit } = req.body
     const error = [
       {
@@ -312,12 +313,11 @@ export default class CoordinatorRoutes {
   }
 
   viewEditWhyWasUOFApplied: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const persistedUseOfForceReasons = report.form.reasonsForUseOfForce?.reasons || []
-    // eslint-disable-next-line prefer-destructuring
-    const reasons = req.session.edit?.reasons
+    const reasons = this.getIncidentReportSession(req, reportId)?.reasons
 
     const errors = req.flash('errors')
     let whyWasUOFAppliedReasons = []
@@ -341,16 +341,16 @@ export default class CoordinatorRoutes {
   }
 
   submitEditWhyWasUOFApplied: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const { reasons } = req.body
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
 
     if (!reasons) {
       req.flash('errors', [{ href: '#reasons', text: 'Select the reasons why use of force was applied' }])
       return res.redirect(req.originalUrl)
     }
 
-    req.session.edit.reasons = reasons
+    this.setIncidentReportSession(req, reportId, { reasons: Array.isArray(reasons) ? reasons : [reasons] })
 
     // compare page data with original report
     const comparison = this.reportEditService.compareEditsWithReport({
@@ -361,7 +361,8 @@ export default class CoordinatorRoutes {
 
     // pull out only the data that has changed
     const changedValues = getChangedValues(comparison, (value: { hasChanged: boolean }) => value.hasChanged === true)
-    req.session.edit.whyWasUOFAppliedChanges = changedValues
+
+    this.setIncidentReportSession(req, reportId, { whyWasUOFAppliedChanges: changedValues })
 
     return reasons.length > 1
       ? res.redirect('what-was-the-primary-reason-of-uof')
@@ -369,12 +370,13 @@ export default class CoordinatorRoutes {
   }
 
   viewEditPrimaryReasonForUof: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-    const { reasons } = req.session.edit
+    const sessionData = this.getIncidentReportSession(req, reportId) || {}
+    const reasons = sessionData?.reasons || []
     const persistedPrimaryReason = report.form.reasonsForUseOfForce?.primaryReason
-    const primaryReasonInSession = req.session.edit.primaryReason
+    const primaryReasonInSession = sessionData?.primaryReason
 
     const data = {
       primaryReason: primaryReasonInSession || persistedPrimaryReason,
@@ -393,34 +395,35 @@ export default class CoordinatorRoutes {
 
   submitEditPrimaryReasonForUof: RequestHandler = async (req, res) => {
     const { primaryReason } = req.body
+    const reportId = extractReportId(req)
 
     if (!primaryReason) {
       req.flash('errors', [{ href: '#primaryReason', text: 'Select the primary reason for applying use of force' }])
       return res.redirect(req.originalUrl)
     }
 
-    req.session.edit.primaryReason = primaryReason
+    this.setIncidentReportSession(req, reportId, { primaryReason })
     return res.redirect('use-of-force-details')
   }
 
   viewEditUseOfForceDetails: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const useOfForceDetailsPersistedData = report.form.useOfForceDetails
-    const { reasons } = req.session.edit
+    const reasons = this.getIncidentReportSession(req, reportId)?.reasons || []
     const backLinkHref =
-      reasons?.length > 1
+      reasons.length > 1
         ? `/${reportId}/edit-report/what-was-the-primary-reason-of-uof`
         : `/${reportId}/edit-report/why-was-uof-applied`
 
-    const useOfForceDetailsInSession = req.session.edit.useOfForceDetails
-    const inputData = useOfForceDetailsInSession || useOfForceDetailsPersistedData
+    const userInput = this.getIncidentReportSession(req, reportId)?.useOfForceDetails
+    const pageData = userInput || useOfForceDetailsPersistedData
 
     const data = {
       types,
       offenderDetail,
-      ...inputData,
+      ...pageData,
       reportId,
       backLinkHref,
     }
@@ -437,32 +440,31 @@ export default class CoordinatorRoutes {
   }
 
   submitEditUseOfForceDetails: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const pageInput = req.body
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
 
     const { payloadFields, errors } = processInput({
       validationSpec: full.useOfForceDetails,
       input: pageInput,
     })
 
-    req.session.edit.useOfForceDetails = payloadFields
+    this.setIncidentReportSession(req, reportId, { useOfForceDetails: payloadFields })
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
       return res.redirect(req.originalUrl)
     }
-    const { reasons, primaryReason } = req.session.edit
 
+    const { reasons, primaryReason } = this.getIncidentReportSession(req, reportId) || {}
     const combinedReasons = { reasons, primaryReason }
-
     const reasonsForUofComparedWithReport = this.reportEditService.compareEditsWithReport({
       report,
       valuesToCompareWithReport: combinedReasons,
       reportSection: reasonsForUofConfig.SECTION,
     })
 
-    req.session.edit.pageInputsforReasonsForUofAndPrimaryReason = combinedReasons
+    this.setIncidentReportSession(req, reportId, { pageInputsforReasonsForUofAndPrimaryReason: combinedReasons })
 
     // create an object of all the possible values that cross-match  useOfForceDetails
     const uofDetailsComparedToReport = Object.values(UOFDQID).reduce((acc, current) => {
@@ -511,29 +513,31 @@ export default class CoordinatorRoutes {
       changesToReasonsForUof,
     }
 
-    req.session.edit.changesForReportEdit = changedReasonsAndDetailsValuesToBePersistedToReportEdit
-    req.session.edit.changesToUofDetails = changesToUofDetails
-    req.session.edit.changesToReasonsForUof = changesToReasonsForUof
-    req.session.edit.changes = { ...changesToReasonsForUof, ...changesToUofDetails }
-    req.session.edit.backlinkHref = 'use-of-force-details'
-
     const sectionDetails = {
       text: 'use of force details',
       section: useOfForceDetailsConfig.SECTION,
     }
 
-    req.session.edit.payloadFields = payloadFields
-    req.session.edit.sectionDetails = sectionDetails
+    this.setIncidentReportSession(req, reportId, {
+      changesForReportEdit: changedReasonsAndDetailsValuesToBePersistedToReportEdit,
+      changesToUofDetails,
+      changesToReasonsForUof,
+      changes: { ...changesToReasonsForUof, ...changesToUofDetails },
+      backlinkHref: 'use-of-force-details',
+      payloadFields,
+      sectionDetails,
+    })
 
     return res.redirect('reason-for-change')
   }
 
   viewEditRelocationAndInjuries: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-
-    const pageData = req.session.edit.inputsForEditRelocationAndInjuries || report.form.relocationAndInjuries // pageData is either the new inputs or the data currently in report
+    const sessionData = this.getIncidentReportSession(req, reportId)
+    const userInput = sessionData?.inputsForEditRelocationAndInjuries
+    const pageData = userInput || report.form.relocationAndInjuries // pageData is either the new inputs or the data currently in report
 
     const data = {
       types,
@@ -554,19 +558,16 @@ export default class CoordinatorRoutes {
   }
 
   submitEditRelocationAndInjuries: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const pageInput = req.body
 
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const { payloadFields, errors } = processInput({
       validationSpec: full.relocationAndInjuries,
       input: pageInput,
     })
 
-    req.session.edit.inputsForEditRelocationAndInjuries = {
-      ...payloadFields,
-      reportId,
-    }
+    this.setIncidentReportSession(req, reportId, { inputsForEditRelocationAndInjuries: payloadFields })
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
@@ -604,27 +605,30 @@ export default class CoordinatorRoutes {
     // valuesToCompareWithReport are the page inputs after processing. One of the things Processing does is convert any 'true/false' to boolean equivalents. As such valuesToCompareWithReport, not the raw input from re.body, should be persisted to report
     const valuesToBePersistedToReport = valuesToCompareWithReport
 
-    req.session.edit.pageInput = valuesToBePersistedToReport
-
     const changes = this.reportEditService.removeHasChangedKey(changedValues)
-    req.session.edit.changes = changes
-
-    req.session.edit.sectionDetails = {
+    const sectionDetails = {
       text: 'relocation and injuries',
       section: relocationAndInjuriesConfig.SECTION,
     }
+    const backlinkHref = 'relocation-and-injuries'
 
-    req.session.edit.backlinkHref = 'relocation-and-injuries'
+    this.setIncidentReportSession(req, reportId, {
+      pageInput: valuesToBePersistedToReport,
+      changes,
+      sectionDetails,
+      backlinkHref,
+    })
 
     return res.redirect('reason-for-change')
   }
 
   viewEditEvidence: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const reportId = extractReportId(req)
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-
-    const pageData = req.session.edit.inputsForEvidence || report.form.evidence
+    const sessionData = this.getIncidentReportSession(req, reportId)
+    const userInput = sessionData?.inputsForEvidence
+    const pageData = userInput || report.form.evidence // pageData is either the new inputs or the data currently in report
 
     const data = {
       types,
@@ -645,16 +649,16 @@ export default class CoordinatorRoutes {
   }
 
   submitEditEvidence: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const pageInput = req.body
 
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const { payloadFields, errors } = processInput({
       validationSpec: full.evidence,
       input: pageInput,
     })
 
-    req.session.edit.inputsForEvidence = { ...payloadFields, reportId }
+    this.setIncidentReportSession(req, reportId, { inputsForEvidence: payloadFields })
 
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
@@ -690,33 +694,35 @@ export default class CoordinatorRoutes {
     }
 
     const valuesToBePersistedToReport = valuesToCompareWithReport
-    req.session.edit.pageInput = valuesToBePersistedToReport
-
     const changes = this.reportEditService.removeHasChangedKey(changedValues)
-    req.session.edit.changes = changes
-
-    req.session.edit.sectionDetails = {
+    const sectionDetails = {
       text: 'evidence',
       section: evidenceConfig.SECTION,
     }
-
-    req.session.edit.backlinkHref = 'evidence'
+    const backlinkHref = 'evidence'
+    this.setIncidentReportSession(req, reportId, {
+      pageInput: valuesToBePersistedToReport,
+      changes,
+      sectionDetails,
+      backlinkHref,
+    })
 
     return res.redirect('reason-for-change')
   }
 
   // viewReasonForChange will be used for changes to many parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const errors = req.flash('errors')
-    const { sectionDetails } = req.session.edit
-    const { changes } = req.session.edit
-
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const sessionData = this.getIncidentReportSession(req, reportId)
+    const sectionDetails = sessionData?.sectionDetails
+    const changes = sessionData?.changes
+    const backlinkHref = sessionData?.backlinkHref
+    const reason = sessionData?.reason
+    const reasonText = sessionData?.reasonText
+    const reasonAdditionalInfo = sessionData?.reasonAdditionalInfo
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
-
-    // eslint-disable-next-line prefer-destructuring
-    const backlinkHref = req.session.edit.backlinkHref
     let data = {}
 
     const changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
@@ -730,9 +736,9 @@ export default class CoordinatorRoutes {
       reportSection: { text: sectionDetails.text },
       reportId,
       changes: changesToDisplayInTheReasonsPage,
-      reason: req.session.edit.reason,
-      reasonText: req.session.edit.reasonText,
-      reasonAdditionalInfo: req.session.edit.reasonAdditionalInfo,
+      reason,
+      reasonText,
+      reasonAdditionalInfo,
       showBacklink: true,
       backlinkHref,
       offenderDetail,
@@ -743,13 +749,15 @@ export default class CoordinatorRoutes {
 
   // submitReasonForChange will also be used for changes to many parts of the report
   submitReasonForChange: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const { reason, reasonText, reasonAdditionalInfo } = req.body
-    const { sectionDetails } = req.session.edit
+    const sessionData = this.getIncidentReportSession(req, reportId)
+    const sectionDetails = sessionData?.sectionDetails
     const reportSection = sectionDetails
 
-    const { pageInput } = req.session.edit // to persist in original report
-    const { changes } = req.session.edit // to persist in edit-history table
+    const pageInput = sessionData?.pageInput // to persist in original report
+    const changes = sessionData?.changes // to persist in edit-history table
+
     const validationErrors = this.reportEditService.validateReasonForChangeInput({
       reason,
       reasonText,
@@ -758,21 +766,25 @@ export default class CoordinatorRoutes {
     })
     if (validationErrors.length > 0) {
       req.flash('errors', validationErrors)
-      req.session.edit.reason = reason
-      req.session.edit.reasonText = reasonText
-      req.session.edit.reasonAdditionalInfo = reasonAdditionalInfo
+      this.setIncidentReportSession(req, reportId, {
+        reason,
+        reasonText,
+        reasonAdditionalInfo,
+      })
       return res.redirect(`/${reportId}/edit-report/reason-for-change`)
     }
 
     // the /use-of-force-details section requires different logic compared
     // to other sections because it also involves the reasons and primary reason section
     if (reportSection.section === useOfForceDetailsConfig.SECTION) {
-      const pageInputForReasons = req.session.edit.reasons
-      const pageInputForPrimaryReason = req.session.edit.primaryReason
+      const pageInputForReasons = this.getIncidentReportSession(req, reportId)?.reasons
+      const pageInputForPrimaryReason = this.getIncidentReportSession(req, reportId)?.primaryReason
+      const {
+        changesToUofDetails,
+        changesToReasonsForUof,
+        useOfForceDetails: payload,
+      } = this.getIncidentReportSession(req, reportId)
 
-      const { changesToUofDetails } = req.session.edit
-      const { changesToReasonsForUof } = req.session.edit
-      const payload = req.session.edit.useOfForceDetails
       const reasonsForUofData = {
         reportSection: reasonsForUofConfig.SECTION,
         changes: changesToReasonsForUof,
@@ -818,6 +830,7 @@ export default class CoordinatorRoutes {
       }
     }
     req.session.flash = {}
+    this.removeIncidentReportSession(req, reportId)
     req.flash('edit-success-message', { reportSection })
     return res.redirect(`/${reportId}/view-incident`)
   }
@@ -996,10 +1009,9 @@ export default class CoordinatorRoutes {
     return res.redirect(location)
   }
 
-  getIncidentReportSession(req, reportId, key) {
+  getIncidentReportSession(req, reportId) {
     if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return undefined
-    const reportSessionEntry = req.session.incidentReport.find(entry => entry.reportId === reportId)
-    return reportSessionEntry ? reportSessionEntry[key] : undefined
+    return req.session.incidentReport.find(entry => entry.reportId === reportId)
   }
 
   setIncidentReportSession(req, reportId, values = {}) {

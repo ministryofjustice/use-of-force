@@ -130,7 +130,7 @@ export default class ReportEditService {
 
     try {
       await this.reportService.updateTwoReportSections(user, {
-        reportId: parseInt(data.reportId, 10),
+        reportId: data.reportId,
         reason: data.reason,
         reasonText: data.reasonText,
         reasonAdditionalInfo: data.reasonAdditionalInfo,
@@ -138,7 +138,7 @@ export default class ReportEditService {
         keys: [data.reasonsForUofData.reportSection, data.uofDetailsData.reportSection],
       })
     } catch (e) {
-      logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      logger.error(`Could not persist changes to report ${data.reportId}. ${e}`)
       throw e
     }
   }
@@ -176,7 +176,7 @@ export default class ReportEditService {
     try {
       await this.reportService.updateWithEdits(
         user,
-        parseInt(data.reportId, 10),
+        data.reportId,
         data.reportSection.section,
         updatedSection,
         data.changes,
@@ -187,7 +187,7 @@ export default class ReportEditService {
         pageInput.incidentDate || null
       )
     } catch (e) {
-      logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      logger.error(`Could not persist changes to report ${data.reportId}. ${e}`)
       throw e
     }
   }

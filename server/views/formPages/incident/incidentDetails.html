@@ -39,7 +39,7 @@
           name: 'incidentDate[date]',
           date: data.incidentDate.date,
           classes: 'date-picker-input-wide' if isDateError ,
-          attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy', 'placeholder': 'DD/MM/YYYY'},
+          attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy', 'placeholder': 'DD/MM/YYYY', 'data-qa':'incident-date'},
           errorMessage: errors | findErrors(['incidentDate[date]'])
           })
         }}

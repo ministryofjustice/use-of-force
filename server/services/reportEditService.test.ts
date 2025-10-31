@@ -484,7 +484,7 @@ describe('mapReasonToTitleAndText', () => {
 
 describe('persistChanges', () => {
   const data = {
-    reportId: '2',
+    reportId: 2,
     pageInput: {
       baggedEvidence: false,
       photographsTaken: false,
@@ -548,7 +548,7 @@ describe('persistChanges', () => {
 
 describe('persistChangesForReasonsAndDetails', () => {
   const data = {
-    reportId: '2',
+    reportId: 2,
     reportSection: {
       text: 'use of force details',
       section: 'useOfForceDetails',
