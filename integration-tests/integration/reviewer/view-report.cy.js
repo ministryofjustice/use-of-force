@@ -75,9 +75,8 @@ context('view review page', () => {
         viewReportPage.incidentNumber().contains(reportId)
       })
 
-      viewReportPage.returnToIncidentOverview().click()
-      viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.return().click()
+      viewReportPage.returnToUseOfForceIncidents().click()
+      viewStatementsPage = NotCompletedIncidentsPage.verifyOnPage()
     }
 
     {
