@@ -32,7 +32,7 @@ const viewReportPage = () =>
       })
     },
 
-    returnToIncidentOverview: () => cy.get('[data-qa="return-to-incident-overview"]'),
+    returnToUseOfForceIncidents: () => cy.get('[data-qa="use-of-force-incidents-link"]'),
   })
 
 module.exports = {

@@ -332,7 +332,7 @@ describe('GET /view-incident', () => {
     })
   })
 
-  describe('Report body', () => {
+  describe('Report tab', () => {
     it('should not include report edited row', () => {
       return request(app)
         .get('/1/view-incident?tab=report&your-report=true')
@@ -403,6 +403,18 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('You are not the reporter for report 999')
         })
     })
+
+    it('should include a link to return to the use of force incidents page', () => {
+      userSupplier.mockReturnValue(coordinatorUser)
+      return request(app)
+        .get('/1/view-incident?tab=report')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="use-of-force-incidents-link"')
+          expect(res.text).toContain('/not-completed-incidents')
+        })
+    })
   })
 
   describe('Edit history tab', () => {
@@ -453,6 +465,17 @@ describe('GET /view-incident', () => {
           expect(res.text).toContain('Some additional comments')
         })
     })
+
+    it('should include a link to return to the use of force incidents page', () => {
+      return request(app)
+        .get('/1/view-incident?tab=edit-history')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('data-qa="use-of-force-incidents-link"')
+          expect(res.text).toContain('/not-completed-incidents')
+        })
+    })
   })
 
   describe('Statements', () => {
@@ -476,13 +499,14 @@ describe('GET /view-incident', () => {
         })
     })
 
-    it('should include a link to return to use of force incidents', () => {
+    it('should include a link to return to the use of force incidents page', () => {
       return request(app)
         .get('/1/view-incident?tab=statements')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('data-qa="return-link"')
+          expect(res.text).toContain('data-qa="use-of-force-incidents-link"')
+          expect(res.text).toContain('/not-completed-incidents')
         })
     })
 
