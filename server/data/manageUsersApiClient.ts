@@ -2,7 +2,7 @@ import querystring from 'querystring'
 
 import BaseApiClient from './baseApiClient'
 import config from '../config'
-import { FoundUserResult } from '../types/uof'
+import { FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import { EmailAddress } from '../types/manageUsersApi/manageUsersApiTypes'
 
 export type EmailResult = {
@@ -51,5 +51,15 @@ export default class ManageUsersApiClient extends BaseApiClient {
       path,
       query: querystring.stringify({ firstName: firstName?.trim(), lastName: lastName?.trim() }),
     })
+  }
+
+  async findUsersFuzzySearch(value: string, token: string, page: number): Promise<FuzzySearchFoundUserResponse> {
+    const path = `/prisonusers/search`
+    const result: FuzzySearchFoundUserResponse = await ManageUsersApiClient.restClient(token).get({
+      path,
+      query: querystring.stringify({ nameFilter: value.trim(), page }),
+    })
+
+    return result
   }
 }
