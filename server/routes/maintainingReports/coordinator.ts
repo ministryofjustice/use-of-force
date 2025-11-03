@@ -758,18 +758,19 @@ export default class CoordinatorRoutes {
     const pageInput = sessionData?.pageInput // to persist in original report
     const changes = sessionData?.changes // to persist in edit-history table
 
-    const validationErrors = this.reportEditService.validateReasonForChangeInput({
+    const { errors, sanitizedInputValues } = this.reportEditService.validateReasonForChangeInput({
       reason,
       reasonText,
       reasonAdditionalInfo,
       reportSection,
     })
-    if (validationErrors.length > 0) {
-      req.flash('errors', validationErrors)
+
+    if (errors.length > 0) {
+      req.flash('errors', errors)
       this.setIncidentReportSession(req, reportId, {
         reason,
-        reasonText,
-        reasonAdditionalInfo,
+        reasonText: sanitizedInputValues.reasonText,
+        reasonAdditionalInfo: sanitizedInputValues.reasonAdditionalInfo,
       })
       return res.redirect(`/${reportId}/edit-report/reason-for-change`)
     }
@@ -820,8 +821,8 @@ export default class CoordinatorRoutes {
           reportSection,
           changes,
           reason,
-          reasonText: reason === 'anotherReasonForEdit' ? reasonText : '',
-          reasonAdditionalInfo,
+          reasonText: reason === 'anotherReasonForEdit' ? sanitizedInputValues.reasonText : '',
+          reasonAdditionalInfo: sanitizedInputValues.reasonAdditionalInfo,
         })
       } catch (error) {
         req.session.flash = {}
