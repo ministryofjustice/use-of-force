@@ -879,9 +879,9 @@ export default class CoordinatorRoutes {
   }
 
   viewInvolvedStaff: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
 
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const reportData = await this.reportDetailBuilder.build(report.username, report)
     const { staffInvolved } = reportData.incidentDetails
