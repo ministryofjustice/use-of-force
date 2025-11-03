@@ -36,7 +36,7 @@
                                 govukInput({
                                     id: 'username',
                                     name: 'username',
-                                    value: value,
+                                    value: data.queryParams.username,
                                     classes: 'govuk-input',
                                     errorMessage: errors | findError('username')
                                 })
@@ -83,7 +83,7 @@
                 </thead>
                 <tbody class="govuk-table__body"></tbody>
                     {% for user in data.userSearchResults.content %}
-                        {% set href = '/' + data.reportId + '/edit-report/add-new-staff-involved/' + user.username %}
+                        {% set href = '/' + data.reportId + '/edit-report/add-new-staff-involved/' + user.username + '?page=' + data.queryParams.currentPage + '&username=' + data.queryParams.username %}
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">{{ user.firstName }} {{ user.lastName }}</td>
                             <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>

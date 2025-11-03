@@ -3,13 +3,12 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block beforeContent %}
-
     {% if showBacklink %}
         {{ govukBackLink({
-        classes: 'govuk-!-margin-top-5 govuk-!-margin-bottom-5',
-        text: "Back",
-        href: backlinkHref, 
-        attributes: {'data-qa': 'back-link'}
+            classes: 'govuk-!-margin-top-5 govuk-!-margin-bottom-5',
+            text: "Back",
+            href: backlinkHref, 
+            attributes: {'data-qa': 'back-link'}
         }) }}
     {% endif %}
 

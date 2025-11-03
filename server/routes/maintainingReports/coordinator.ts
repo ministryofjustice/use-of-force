@@ -975,6 +975,7 @@ export default class CoordinatorRoutes {
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
+    const usernameValue = username || ''
     const data = {
       reportId,
       username,
@@ -982,6 +983,10 @@ export default class CoordinatorRoutes {
       offenderDetail,
       paginationMeta,
       baseUrl: paths.viewInvolvedStaffSearch(reportId),
+      queryParams: {
+        currentPage,
+        username: usernameValue,
+      },
     }
 
     return res.render('pages/coordinator/edit-add-involved-staff.njk', {
@@ -1046,6 +1051,7 @@ export default class CoordinatorRoutes {
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
     const staffMember = await this.userService.getUser(systemToken, req.params.username) // call api to get staff member details
+    const { page, username } = req.query
 
     const data = {
       reportId,
@@ -1058,7 +1064,7 @@ export default class CoordinatorRoutes {
       showSaveAndReturnButton: false,
       coordinatorEditJourney: true,
       noChangeError: req.flash('noChangeError'),
-      backlinkHref: paths.viewInvolvedStaffSearch(reportId),
+      backlinkHref: paths.viewInvolvedStaffSearch(reportId) + (page ? `?page=${page}&username=${username}` : ''),
     })
   }
 
