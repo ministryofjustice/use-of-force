@@ -109,11 +109,11 @@ export default function Index(services: Services): Router {
   // because coordinator will be able to amend everything an admin currently does.
   // Note, admin is not a prison staff member but a dev with the admin role
 
-  {
-    const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)
-    const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
-    const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
-  }
+  // {
+  //   const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)
+  //   const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
+  //   const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
+  // }
 
   return router
 }
