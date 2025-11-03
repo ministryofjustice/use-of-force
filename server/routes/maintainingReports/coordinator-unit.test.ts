@@ -866,7 +866,10 @@ describe('CoordinatorEditReportController', () => {
           changes: { foo: { oldValue: 'c', newValue: 'd', question: 'Foo?' } },
         },
       ]
-      reportEditService.validateReasonForChangeInput.mockReturnValue([])
+      reportEditService.validateReasonForChangeInput.mockReturnValue({
+        errors: [],
+        sanitizedInputValues: { reasonAdditionalInfo: 'info', reasonText: 'text' },
+      })
       reportEditService.persistChanges.mockResolvedValue()
       const removeSpy = jest.spyOn(controller, 'removeIncidentReportSession')
 

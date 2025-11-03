@@ -159,21 +159,19 @@ describe('removeHasChangedKey', () => {
     expect(reportEditService.removeHasChangedKey(input)).toEqual(output)
   })
 })
+
 describe('validateReasonForChangeInput', () => {
   it('Should return error when no reason or additional info provided', () => {
     const input = { reportSection: { section: 'incidentDetails', text: 'the incident details' } }
 
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([
-      {
-        href: '#reason',
-        text: `Provide a reason for changing the incident details`,
-      },
-      {
-        href: '#reasonAdditionalInfo',
-        text: 'Provide additional information to explain the changes you are making',
-      },
-    ])
+    expect(result).toEqual({
+      errors: [
+        { href: '#reason', text: 'Provide a reason for changing the incident details' },
+        { href: '#reasonAdditionalInfo', text: 'Provide additional information to explain the changes you are making' },
+      ],
+      sanitizedInputValues: { reasonAdditionalInfo: undefined, reasonText: undefined },
+    })
   })
 
   it("Should return correct error when 'another reason' selected but no accompanying text or reasonAdditionalInfo text ", () => {
@@ -183,13 +181,13 @@ describe('validateReasonForChangeInput', () => {
     }
 
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([
-      { href: '#reasonText', text: 'Specify the reason for changing the incident details' },
-      {
-        href: '#reasonAdditionalInfo',
-        text: 'Provide additional information to explain the changes you are making',
-      },
-    ])
+    expect(result).toEqual({
+      errors: [
+        { href: '#reasonText', text: 'Specify the reason for changing the incident details' },
+        { href: '#reasonAdditionalInfo', text: 'Provide additional information to explain the changes you are making' },
+      ],
+      sanitizedInputValues: { reasonAdditionalInfo: undefined, reasonText: undefined },
+    })
   })
 
   it("Should return correct error when 'other reason' selected and corresponding text provided but 'additional info' text missing", () => {
@@ -200,12 +198,15 @@ describe('validateReasonForChangeInput', () => {
     }
 
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([
-      {
-        href: '#reasonAdditionalInfo',
-        text: 'Provide additional information to explain the changes you are making',
+    expect(result).toEqual({
+      errors: [
+        { href: '#reasonAdditionalInfo', text: 'Provide additional information to explain the changes you are making' },
+      ],
+      sanitizedInputValues: {
+        reasonAdditionalInfo: undefined,
+        reasonText: 'some reason text',
       },
-    ])
+    })
   })
 
   it('should return no validation errors', () => {
@@ -219,7 +220,10 @@ describe('validateReasonForChangeInput', () => {
       },
     }
     const result = reportEditService.validateReasonForChangeInput(input)
-    expect(result).toEqual([])
+    expect(result).toEqual({
+      errors: [],
+      sanitizedInputValues: { reasonAdditionalInfo: 'additional info text', reasonText: '' },
+    })
   })
 })
 
