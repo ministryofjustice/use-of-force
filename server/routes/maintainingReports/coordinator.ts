@@ -1072,6 +1072,7 @@ export default class CoordinatorRoutes {
     const reportId = extractReportId(req)
     const { username } = req.params
     const pageInput = req.body
+    const { page, username: searchedUsername } = req.query
 
     // Validate input using Joi schema
     const { errors } = processInput({
@@ -1097,6 +1098,8 @@ export default class CoordinatorRoutes {
         showSaveAndReturnButton: false,
         coordinatorEditJourney: true,
         noChangeError: req.flash('noChangeError'),
+        backlinkHref:
+          paths.viewInvolvedStaffSearch(reportId) + (page ? `?page=${page}&username=${searchedUsername}` : ''),
       })
     }
 
