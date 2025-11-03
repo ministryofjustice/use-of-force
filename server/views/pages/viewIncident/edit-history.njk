@@ -2,31 +2,32 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block content %}
-<div class="govuk-grid-column-full">
-  <div class = 'govuk-!-display-none-print'>
-    <div class="flex-container-space-between">
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
 
-      {% if data.isCoordinator %}
-        <div class="govuk-button-group govuk-!-margin-top-6">
-            {{ govukButton({
-              text: "Edit report",
-              href: "edit-report",
-              attributes: {'data-qa':'button-edit-report'}
-            }) }}
+<div class = 'govuk-!-display-none-print'>
+  <div class="flex-container-space-between">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
 
-            {{ govukButton({
-              classes: "govuk-button--warning",
-              text: "Delete incident",
-              href: "delete-incident",
-              attributes: {'data-qa':'button-delete-incident'}
-            }) }}
-        </div>
-      {% endif %}
-    </div>
+    {% if data.isCoordinator %}
+      <div class="govuk-button-group govuk-!-margin-top-6">
+          {{ govukButton({
+            text: "Edit report",
+            href: "edit-report",
+            attributes: {'data-qa':'button-edit-report'}
+          }) }}
 
-  {{ navigationTabMacro.navigation(data, {editHistory:true}) }}
+          {{ govukButton({
+            classes: "govuk-button--warning",
+            text: "Delete incident",
+            href: "delete-incident",
+            attributes: {'data-qa':'button-delete-incident'}
+          }) }}
+      </div>
+    {% endif %}
+  </div>
 </div>
+
+{{ navigationTabMacro.navigation(data, {editHistory:true}) }}
+
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row govuk-body negative-margin-top-7">
     {# this table is for screen view #}
