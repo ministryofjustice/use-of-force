@@ -892,7 +892,7 @@ export default class CoordinatorRoutes {
       username: report.username,
       staffInvolved,
       offenderDetail,
-      displaySuccessBanner: req.flash('result')[0] === 'success',
+      displayAddedInvolvedStaffSuccessBanner: req.flash('result')[0] === 'success',
       bannerMessage: req.flash('resultMessage')[0],
     }
 
