@@ -50,6 +50,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
+  null,
   null
 ) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
@@ -76,6 +77,9 @@ beforeEach(() => {
       active: true,
     },
   ])
+
+  // Always allow edit/delete for coordinator in these tests
+  reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
 
   app = appWithAllRoutes(
     {

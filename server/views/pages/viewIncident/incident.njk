@@ -60,6 +60,17 @@
     }) }}
   {% endif %}
 
+{% if data.isCoordinator and data.reportEditOrDeletePermitted == false %}
+  {{ mojAlert({
+    variant: "information",
+    title: "You cannot edit this report",
+    showTitleAsHeading: true,
+    dismissible: false,
+    classes: 'govuk-!-display-none-print',
+    html:'Reports are editable for ' + data.editabilityPeriod + ' weeks from their incident date. If you think there is a  need to edit this report after ' + data.editabilityPeriod + ' weeks, contact the Use of Force service desk.'
+  }) }}
+ {% endif %}
+
   {{ super() }}
 {% endblock %}
 

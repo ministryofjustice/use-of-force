@@ -1,4 +1,6 @@
 import moment from 'moment'
+import IncidentClient from '../data/incidentClient'
+import { Report } from '../data/incidentClientTypes'
 import ReportEditService from './reportEditService'
 import LocationService from './locationService'
 import AuthService from './authService'
@@ -20,6 +22,7 @@ const editRelocationAndInjuriesService =
   new EditRelocationAndInjuriesService() as jest.Mocked<EditRelocationAndInjuriesService>
 const editEvidenceService = new EditEvidenceService() as jest.Mocked<EditEvidenceService>
 const editUseOfForceDetailsService = new EditUseOfForceDetailsService() as jest.Mocked<EditUseOfForceDetailsService>
+const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 
 locationService.getLocation = jest.fn()
 locationService.getPrisonById = jest.fn()
@@ -27,6 +30,7 @@ reportService.updateWithEdits = jest.fn()
 reportService.updateTwoReportSections = jest.fn()
 reportService.deleteIncidentAndUpdateReportEdit = jest.fn()
 logger.error = jest.fn()
+incidentClient.getReportForReviewer = jest.fn()
 
 let reportEditService
 
@@ -39,7 +43,8 @@ beforeEach(() => {
     editEvidenceService,
     editUseOfForceDetailsService,
     locationService,
-    authService
+    authService,
+    incidentClient
   )
 })
 
@@ -728,5 +733,36 @@ describe('persistDeleteIncident', () => {
     )
     expect(reportService.deleteIncidentAndUpdateReportEdit).toHaveBeenCalledWith(user, data)
     expect(logger.error).toHaveBeenCalledWith('Report deletion failed. Report id 1', error)
+  })
+})
+
+describe('isIncidentDateWithinEditPeriod', () => {
+  const today = new Date(2025, 10, 1) // 1 Nov 2025
+  const reportId = 1
+  it('returns true if incidentDate is today', async () => {
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: today } as Report)
+    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+    expect(result).toBe(true)
+  })
+
+  it('returns true if incidentDate is 1 day inside edit window', async () => {
+    const oneDayInsideEditWindow = new Date('2025-08-03T00:00:00Z')
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: oneDayInsideEditWindow } as Report)
+    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+    expect(result).toBe(true)
+  })
+
+  it('returns true if incidentDate is exactly at start of edit window', async () => {
+    const startOfWindow = new Date('2025-08-02T00:00:00Z')
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: startOfWindow } as Report)
+    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+    expect(result).toBe(true)
+  })
+
+  it('returns false if incidentDate is 1 day outside edit window', async () => {
+    const oneDayOutsideEditWindow = new Date('2025-08-01T00:00:00Z')
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: oneDayOutsideEditWindow } as Report)
+    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+    expect(result).toBe(false)
   })
 })

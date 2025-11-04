@@ -110,6 +110,7 @@ const clearAllTables = async () => {
   await deleteRows('statement_amendments')
   await deleteRows('statement')
   await deleteRows('report')
+  await deleteRows('report_edit')
 }
 
 const getReportCount = statuses => {

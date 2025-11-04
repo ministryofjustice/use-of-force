@@ -196,4 +196,5 @@ export default {
   environmentName: get('ENVIRONMENT_NAME', ''),
   featureFlagRemoveCellLocationAgencies: get('FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES', '').split(','),
   featureFlagReportEditingEnabled: get('FEATURE_FLAG_REPORT_EDITING_ENABLED', 'false') === 'true',
+  submittedReportEditPeriodWeeks: get('SUBMITTED_REPORT_EDIT_PERIOD_WEEKS', 13) as number,
 }

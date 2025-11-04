@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
+import { subWeeks, isWithinInterval } from 'date-fns'
+import IncidentClient from '../data/incidentClient'
+import config from '../config'
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
-
 import reasonForChangeErrorMessageConfig from '../config/edit/reasonForChangeErrorMessageConfig'
 import sequence from '../config/edit/questionSequence'
 import questionSets from '../config/edit/questionSets'
@@ -44,7 +46,8 @@ export default class ReportEditService {
     private readonly editEvidenceService: EditEvidenceService,
     private readonly editUseOfForceDetailsService: EditUseOfForceDetailsService,
     private readonly locationService: LocationService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly incidentClient: IncidentClient
   ) {}
 
   // used to format the output for the REASON-FOR-CHANGE page
@@ -430,5 +433,21 @@ export default class ReportEditService {
       default:
         return `${REASON.ANOTHER_REASON_DESCRIPTION}: ${data.reasonText}`
     }
+  }
+
+  async isIncidentDateWithinEditPeriod(reportId: number, today = new Date(Date.now())): Promise<boolean> {
+    const report = await this.incidentClient.getReportForReviewer(reportId) // this can be used by coordinator too
+
+    const incidentDate = new Date(report.incidentDate)
+
+    // Convert to UTC
+    const incidentDateUTC = new Date(
+      Date.UTC(incidentDate.getFullYear(), incidentDate.getMonth(), incidentDate.getDate())
+    )
+
+    const earliestDateForEditing = subWeeks(today, config.submittedReportEditPeriodWeeks)
+
+    // Check if incidentDate is within edibility period
+    return isWithinInterval(incidentDateUTC, { start: earliestDateForEditing, end: today })
   }
 }

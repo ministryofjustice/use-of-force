@@ -133,7 +133,8 @@ export const services = () => {
     editEvidenceService,
     editUseOfForceDetailsService,
     locationService,
-    authService
+    authService,
+    incidentClient
   )
 
   return {
