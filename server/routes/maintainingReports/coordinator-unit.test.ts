@@ -167,6 +167,14 @@ beforeEach(() => {
   offenderService.getOffenderDetails.mockResolvedValue({ name: 'An Offender' })
   reportEditService.persistDeleteIncident = jest.fn()
   reviewService.getBookingIdWithReportId = jest.fn()
+  involvedStaffService.findInvolvedStaffFuzzySearch.mockResolvedValue({
+    content: [],
+    pageNumber: 0,
+    totalPages: 1,
+    totalElements: 0,
+    size: 10,
+  })
+  involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({ userId: 'abc' } as any)
 
   controller = new CoordinatorRoutes(
     reportService,
@@ -1102,6 +1110,154 @@ describe('CoordinatorEditReportController', () => {
           expect(req.session.incidentReport).toEqual([])
         })
       })
+    })
+  })
+
+  describe('viewEditInvolvedStaffSearch', () => {
+    it('should render view correctly with default username', async () => {
+      flash.mockReturnValue([])
+      req.query.username = undefined
+      req.flash = flash
+      await controller.viewInvolvedStaffSearch(req, res)
+      // You can check that username is empty string if not set
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('')
+    })
+
+    it('should use req.query.username when set', async () => {
+      flash.mockReturnValue([])
+      req.query.username = 'queryuser'
+      req.flash = flash
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('queryuser')
+    })
+
+    it('should use flash username when set and ignore query', async () => {
+      req.flash = jest.fn()
+      req.flash.mockImplementation(key => (key === 'username' ? ['flashuser'] : []))
+      req.query.username = 'queryuser'
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('flashuser')
+    })
+
+    it('should parse userSearchResults from flash if present', async () => {
+      const userSearchResults = { content: [{ username: 'abc' }], number: 0, totalPages: 1, totalElements: 1, size: 10 }
+      req.flash = jest.fn().mockImplementation(key => {
+        if (key === 'userSearchResults') return [JSON.stringify(userSearchResults)]
+        if (key === 'username') return ['testuser']
+        return []
+      })
+
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content[0].username).toBe('abc')
+      expect(renderArgs.data.username).toBe('testuser')
+    })
+
+    it('should handle invalid userSearchResults flash value gracefully', async () => {
+      req.flash = jest.fn().mockImplementation(key => (key === 'userSearchResults' ? ['not-json'] : []))
+      req.query.username = 'baduser'
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content).toEqual([])
+      expect(renderArgs.data.username).toBe('baduser')
+    })
+
+    it('should call fuzzy search when username is present and no flash results', async () => {
+      req.query.username = 'searchuser'
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      expect(authService.getSystemClientToken).toHaveBeenCalledWith(res.locals.user.username)
+      expect(involvedStaffService.findInvolvedStaffFuzzySearch).toHaveBeenCalledWith('token', 1, 'searchuser', 0)
+    })
+
+    it('should flag existing involved staff members', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 0,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content[0].isExistingInvolvedStaffMember).toBe(true)
+    })
+
+    it('should log error if loadInvolvedStaffByUsername throws', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 0,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      }
+
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      involvedStaffService.loadInvolvedStaffByUsername.mockRejectedValue(new Error('Test error'))
+
+      const logSpy = jest.spyOn(logger, 'error').mockImplementation(jest.fn())
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error checking involved staff member abc'),
+        expect.any(Error)
+      )
+    })
+
+    it('should calculate pagination metadata correctly', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 2,
+        totalPages: 5,
+        totalElements: 50,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const { paginationMeta } = res.render.mock.calls[0][1].data
+      expect(paginationMeta).toEqual({
+        page: 2,
+        totalPages: 5,
+        previousPage: 2,
+        nextPage: 3,
+        totalCount: 50,
+        min: 21,
+        max: 21,
+      })
+    })
+
+    it('should include report and offender details in render data', async () => {
+      const userSearchResults = {
+        content: [],
+        number: 0,
+        totalPages: 1,
+        totalElements: 0,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.offenderDetail.name).toBe(incidentDetailsResponse.data.offenderDetail.name)
     })
   })
 })
