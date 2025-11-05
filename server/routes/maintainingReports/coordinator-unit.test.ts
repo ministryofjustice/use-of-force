@@ -1322,4 +1322,27 @@ describe('CoordinatorEditReportController', () => {
       })
     })
   })
+
+  describe('editViewAddNewInvolvedStaffMember', () => {
+    it('should render the reason-for-adding page with correct data', async () => {
+      req.query = { page: '2', username: 'USER' }
+      req.flash = jest.fn().mockReturnValue(['Some error'])
+
+      await controller.editViewAddNewInvolvedStaffMember(req, res)
+
+      expect(reviewService.getReport).toHaveBeenCalledWith(1)
+      expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
+      expect(authService.getSystemClientToken).toHaveBeenCalledWith('USER')
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/reason-for-adding-this-person.njk', {
+        data: {
+          reportId: '1',
+          offenderDetail: { name: 'An Offender' },
+        },
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: ['Some error'],
+        backlinkHref: '/1/edit-report/staff-involved-search?page=2&username=USER',
+      })
+    })
+  })
 })
