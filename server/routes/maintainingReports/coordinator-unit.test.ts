@@ -1118,8 +1118,9 @@ describe('CoordinatorEditReportController', () => {
       flash.mockReturnValue([])
       req.query.username = undefined
       req.flash = flash
+
       await controller.viewInvolvedStaffSearch(req, res)
-      // You can check that username is empty string if not set
+
       const renderArgs = res.render.mock.calls[0][1]
       expect(renderArgs.data.username).toBe('')
     })
