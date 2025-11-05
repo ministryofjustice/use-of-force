@@ -9,14 +9,15 @@ import PrisonPage from '../../../pages/coordinator/prisonPage'
 import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
 import { ReportStatus } from '../../../../server/config/types'
 
-const moment = require('moment')
-
 context('A use of force coordinator needs to edit incident-details', () => {
+  let incidentDate
+  let submittedDate = null
+
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      incidentDate: moment('2019-09-10 09:57:00.000').toDate(),
+      submittedDate: new Date(),
+      incidentDate,
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -29,6 +30,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
     })
 
   beforeEach(() => {
+    incidentDate = new Date('2025-10-01T01:00:00.000Z')
+    submittedDate = new Date('2025-10-05T17:00:00.000Z')
     cy.task('reset')
     cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
@@ -127,7 +130,7 @@ context('A use of force coordinator needs to edit incident-details', () => {
       editHistoryPage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
     })
 
-    it('A coordinator can edit another report without completing current edit without the risk of data cross-contamination', () => {
+    it('A coordinator can start editing another report without completing current one without the risk of data cross-contamination', () => {
       const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
       notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -149,8 +152,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
       cy.task('seedReport', {
         sequenceNumber: 1,
         reporterName: 'Tom Jones',
-        incidentDate: moment('2024-01-25 09:57:40.000').toDate(),
-        submittedDate: moment('2024-01-29 10:30:43.122').toDate(),
+        incidentDate: new Date('2025-10-02T01:00:00.000Z'),
+        submittedDate,
         status: ReportStatus.SUBMITTED,
         agencyId: 'MDI',
         bookingId: 1001,
@@ -173,10 +176,11 @@ context('A use of force coordinator needs to edit incident-details', () => {
       IncidentDetailsPage.verifyOnPage()
       incidentDetailsPage.authorisedByTextInput().should('have.value', 'Eric Bloodaxe')
       incidentDetailsPage.authorisedByTextInput().should('not.have.value', 'Eric Bloodaxe-Smith')
+      incidentDetailsPage.authorisedByTextInput().type('-Jones') // edit changes the name
 
       incidentDetailsPage.continueButton().click()
-      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('not.contain', 'Eric Bloodaxe')
-      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('not.contain', 'Eric Bloodaxe-Smith')
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Eric Bloodaxe')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', 'Eric Bloodaxe-Jones')
     })
 
     it('A coordinator can see their edits when using back link in the /reason-for-change page', () => {
@@ -228,8 +232,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
     it('A coordinator can edit the incident details and eventually view the edit history', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
-        submittedDate: moment('2025-07-23 09:57:00.000'),
-        incidentDate: moment('2025-07-22 09:57:00.000'),
+        submittedDate,
+        incidentDate: new Date('2025-10-03T01:00:00.000Z'),
         agencyId: offender.agencyId,
         bookingId: offender.bookingId,
         sequenceNumber: 1,
@@ -250,15 +254,19 @@ context('A use of force coordinator needs to edit incident-details', () => {
       const editReportPage = EditReportPage.verifyOnPage()
       editReportPage.changeIncidentDetailsLink().click()
       const incidentDetailsPage = IncidentDetailsPage.verifyOnPage()
-      incidentDetailsPage.hourOfIncident().click().clear().type(10)
+      // Change both date and time
+      incidentDetailsPage.hourOfIncident().click().clear().type('17')
+      incidentDetailsPage.minuteOfIncident().click().clear().type('00')
+      incidentDetailsPage.dateOfIncident().clear().type('12/10/2025')
       incidentDetailsPage.continueButton().click()
 
       const reasonForChangePage = ReasonForChangePage.verifyOnPage()
       reasonForChangePage.backLink().should('exist')
       reasonForChangePage.prisonerProfile().should('exist')
       reasonForChangePage.tableRowAndColHeading(1, 'question').should('contain', 'When did the incident happen?')
-      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
-      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
+
+      reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', '03/10/2025')
+      reasonForChangePage.tableRowAndColHeading(1, 'new-value').should('contain', '12/10/2025')
       reasonForChangePage.radioAnotherReason().click()
       reasonForChangePage.anotherReasonText().type('Some more details')
       reasonForChangePage.additionalInfoText().type('Some even more additional details')
@@ -269,8 +277,8 @@ context('A use of force coordinator needs to edit incident-details', () => {
       viewIncidentPage.editHistoryLinkInSuccessBanner().click()
       const editHistoryPage = EditHistoryPage.verifyOnPage()
       editHistoryPage.tableRowAndColHeading(1, 'what-changed').should('contain', 'When did the incident happen?')
-      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', '22/07/2025 09:57')
-      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', '22/07/2025 10:57')
+      editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', '03/10/2025')
+      editHistoryPage.tableRowAndColHeading(1, 'new-value').should('contain', '12/10/2025')
       editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
       editHistoryPage.summaryTextLink(2).click()
       editHistoryPage.tableRowAndSummaryText(2).should('contain', 'Some even more additional details')

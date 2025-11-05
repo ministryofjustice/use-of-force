@@ -1,10 +1,12 @@
-import { RequestHandler } from 'express'
+import { RequestHandler, Request } from 'express'
 import type AuthService from 'server/services/authService'
 import ReportEditService from '../../services/reportEditService'
 import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import type ReviewService from '../../services/reviewService'
 import logger from '../../../log'
+
+const extractReportId = (req: Request): number => parseInt(req.params.incidentId, 10)
 
 export default class ViewIncidentsRoutes {
   constructor(
@@ -15,19 +17,26 @@ export default class ViewIncidentsRoutes {
     private readonly authService: AuthService
   ) {}
 
+  // handle any session data for this report if user closes browser tab without completing the edit
+  deleteAnyPendingEditsForThisReport(req, reportId) {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
+    req.session.incidentReport = req.session.incidentReport.filter(entry => entry.reportId !== reportId)
+  }
+
   viewIncident: RequestHandler = async (req, res) => {
-    const { incidentId } = req.params
+    const incidentId = extractReportId(req)
+    this.deleteAnyPendingEditsForThisReport(req, incidentId)
     const { tab } = req.query
     const { isReviewer, isCoordinator, username } = res.locals.user
-    const report = await this.reviewService.getReport(parseInt(incidentId, 10))
-    const reportEdits = await this.reportService.getReportEdits(parseInt(incidentId, 10))
+    const report = await this.reviewService.getReport(incidentId)
+    const reportEdits = await this.reportService.getReportEdits(incidentId)
     const reportEditViewData = await this.reportEditService.mapEditDataToViewOutput(reportEdits, req.user)
     const hasReportBeenEdited = reportEdits?.length > 0
     const reportData = await this.reportDetailBuilder.build(username, report)
     const { offenderDetail } = reportData
 
     const systemToken = await this.authService.getSystemClientToken(username)
-    const allStatements = await this.reviewService.getStatements(systemToken, parseInt(incidentId, 10))
+    const allStatements = await this.reviewService.getStatements(systemToken, incidentId)
     const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
 
     if (tab === 'report') {

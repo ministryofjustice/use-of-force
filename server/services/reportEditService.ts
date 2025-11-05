@@ -130,7 +130,7 @@ export default class ReportEditService {
 
     try {
       await this.reportService.updateTwoReportSections(user, {
-        reportId: parseInt(data.reportId, 10),
+        reportId: data.reportId,
         reason: data.reason,
         reasonText: data.reasonText,
         reasonAdditionalInfo: data.reasonAdditionalInfo,
@@ -138,7 +138,7 @@ export default class ReportEditService {
         keys: [data.reasonsForUofData.reportSection, data.uofDetailsData.reportSection],
       })
     } catch (e) {
-      logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      logger.error(`Could not persist changes to report ${data.reportId}. ${e}`)
       throw e
     }
   }
@@ -176,7 +176,7 @@ export default class ReportEditService {
     try {
       await this.reportService.updateWithEdits(
         user,
-        parseInt(data.reportId, 10),
+        data.reportId,
         data.reportSection.section,
         updatedSection,
         data.changes,
@@ -187,7 +187,7 @@ export default class ReportEditService {
         pageInput.incidentDate || null
       )
     } catch (e) {
-      logger.error(`Could not persist changes to report ${parseInt(data.reportId, 10)}. ${e}`)
+      logger.error(`Could not persist changes to report ${data.reportId}. ${e}`)
       throw e
     }
   }
@@ -231,29 +231,39 @@ export default class ReportEditService {
     reasonText: string
     reasonAdditionalInfo: string
     reportSection: any
-  }): errors[] {
-    const allErrors = []
-    const { reason, anotherReason } = reasonForChangeErrorMessageConfig[input.reportSection.section]
+  }): { errors: errors[]; sanitizedInputValues: { reasonText: string; reasonAdditionalInfo: string } } {
+    const errors = []
+    const { reason: reasonErrConfig, anotherReason: anotherReasonErrConfig } =
+      reasonForChangeErrorMessageConfig[input.reportSection.section]
+
+    const trimmedReasonText = input.reasonText?.trim()
+    const trimmedReasonAdditionalInfo = input.reasonAdditionalInfo?.trim()
 
     if (!input.reason) {
-      allErrors.push({
+      errors.push({
         href: '#reason',
-        text: reason,
+        text: reasonErrConfig,
       })
     }
-    if (input.reason === 'anotherReasonForEdit' && !input.reasonText) {
-      allErrors.push({
+    if (input.reason === 'anotherReasonForEdit' && !trimmedReasonText) {
+      errors.push({
         href: '#reasonText',
-        text: anotherReason,
+        text: anotherReasonErrConfig,
       })
     }
-    if (!input.reasonAdditionalInfo) {
-      allErrors.push({
+    if (!trimmedReasonAdditionalInfo) {
+      errors.push({
         href: '#reasonAdditionalInfo',
         text: 'Provide additional information to explain the changes you are making',
       })
     }
-    return allErrors
+    return {
+      errors,
+      sanitizedInputValues: {
+        reasonText: trimmedReasonText,
+        reasonAdditionalInfo: trimmedReasonAdditionalInfo,
+      },
+    }
   }
 
   async mapEditDataToViewOutput(edits, user) {

@@ -45,7 +45,7 @@
     <!-- Display success banner if edit happens -->
     {% set alertHtml %}
     <p class="govuk-body">
-     You have changed {{data.reportSectionText}} for this report. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
+     You have changed {{data.reportSectionText}} for this incident. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
     </p>
     {% endset %}
 
@@ -76,6 +76,10 @@
     {% else %}
       {% include "./edit-history.njk" %}
     {% endif %}
+    <p class="govuk-!-margin-top-5">
+      <a href="/not-completed-incidents" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link">Return to use of force incidents</a>
+    </p>
+  </div>
   </div>
 </div>
 

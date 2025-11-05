@@ -104,7 +104,7 @@
                 'data-qa-link': 'edit-history-link',
                 dataValue: data.lastEdit.editDate | formatDate("D MMMM YYYY [at] HH:mm") + ' by ' + data.lastEdit.editorName,
                 linkName: 'Edit history',
-                href: data.incidentId + '/edit-history'
+                href: data.incidentId + '/view-incident?tab=edit-history'
               })
             }}
           {% endif %}  

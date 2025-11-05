@@ -2,7 +2,7 @@
 export type Change = { oldValue: unknown; newValue: unknown; question: string }
 
 export type PersistData = {
-  reportId: string
+  reportId: number
   pageInput: any
   reportSection: { section: string }
   changes: Record<string, Change>
