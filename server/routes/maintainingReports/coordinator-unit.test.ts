@@ -1,5 +1,5 @@
 import ReportService from '../../services/reportService'
-import { InvolvedStaffService } from '../../services/involvedStaffService'
+import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import ReviewService from '../../services/reviewService'
 import OffenderService from '../../services/offenderService'
 import UserService from '../../services/userService'
@@ -174,7 +174,16 @@ beforeEach(() => {
     totalElements: 0,
     size: 10,
   })
-  involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({ userId: 'abc' } as any)
+  // involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({ userId: 'abc' } as any)
+
+  involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({
+    userId: 'abc',
+    name: 'USER',
+    statementId: 123,
+    email: 'jane.doe@example.com',
+  } as any)
+  involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
+  involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
 
   controller = new CoordinatorRoutes(
     reportService,
@@ -1343,6 +1352,61 @@ describe('CoordinatorEditReportController', () => {
         noChangeError: ['Some error'],
         backlinkHref: '/1/edit-report/staff-involved-search?page=2&username=USER',
       })
+    })
+  })
+
+  describe('submitAddNewInvolvedStaffMember', () => {
+    it('should flash success message and redirect for SUCCESS result', async () => {
+      req.body = {
+        reason: 'anotherReasonForEdit',
+        reasonText: 'Because it’s necessary',
+        reasonAdditionalInfo: 'Extra context',
+      }
+
+      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce(AddStaffResult.SUCCESS)
+      involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
+      involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({
+        userId: 'abc',
+        name: 'USER',
+        statementId: 123,
+        email: 'user@example.com',
+      })
+
+      await controller.submitAddNewInvolvedStaffMember(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('result', 'success')
+      expect(req.flash).toHaveBeenCalledWith(
+        'resultMessage',
+        expect.stringContaining('You have added USER (ABC) to the incident')
+      )
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
+    })
+
+    it('should flash already exists message for ALREADY_EXISTS result', async () => {
+      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce(AddStaffResult.ALREADY_EXISTS)
+
+      await controller.submitAddNewInvolvedStaffMember(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('result', 'success')
+      expect(req.flash).toHaveBeenCalledWith(
+        'resultMessage',
+        expect.stringContaining('USER (ABC) is already added to the incident')
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
+    })
+
+    it('should flash error message for unexpected result', async () => {
+      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce('UNKNOWN_RESULT' as any)
+
+      await controller.submitAddNewInvolvedStaffMember(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('result', 'error')
+      expect(req.flash).toHaveBeenCalledWith(
+        'resultMessage',
+        'An unexpected error occurred while adding the staff member.'
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
     })
   })
 })
