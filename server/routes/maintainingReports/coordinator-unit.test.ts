@@ -1167,6 +1167,10 @@ describe('CoordinatorEditReportController', () => {
 
     it('should call fuzzy search when username is present and no flash results', async () => {
       req.query.username = 'searchuser'
+      req.flash = jest.fn().mockImplementation(key => {
+        if (key === 'username') return []
+        return []
+      })
       await controller.viewInvolvedStaffSearch(req, res)
 
       expect(authService.getSystemClientToken).toHaveBeenCalledWith(res.locals.user.username)
