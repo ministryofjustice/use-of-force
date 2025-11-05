@@ -1265,4 +1265,41 @@ describe('CoordinatorEditReportController', () => {
       expect(renderArgs.data.offenderDetail.name).toBe(incidentDetailsResponse.data.offenderDetail.name)
     })
   })
+
+  describe('submitInvolvedStaffSearch', () => {
+    it('should redirect with error if username is empty', async () => {
+      req.body = { username: '   ' }
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(flash).toHaveBeenCalledWith('errors', [
+        { href: '#username', text: "Enter a person's name, email address or user ID" },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search')
+    })
+
+    it('should redirect to no results page if no results found', async () => {
+      req.body = { username: 'john' }
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search/no-results')
+    })
+
+    it('should redirect to results page if results found', async () => {
+      req.body = { username: 'john' }
+
+      involvedStaffService.findInvolvedStaffFuzzySearch.mockResolvedValueOnce({
+        content: [{ userId: 'abc', name: 'John Doe' } as any],
+        pageNumber: 1,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      })
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search?page=0&username=john')
+    })
+  })
 })
