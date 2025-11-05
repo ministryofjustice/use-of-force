@@ -1302,4 +1302,24 @@ describe('CoordinatorEditReportController', () => {
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search?page=0&username=john')
     })
   })
+
+  describe('viewNoResultsFoundInvolvedStaffSearch', () => {
+    it('should render the no-results page with correct data', async () => {
+      req.flash = jest.fn().mockReturnValue(['Some error'])
+
+      await controller.viewNoResultsFoundInvolvedStaffSearch(req, res)
+
+      expect(reviewService.getReport).toHaveBeenCalledWith(1)
+      expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/no-results-edit-add-involved-staff.njk', {
+        data: {
+          reportId: '1',
+          offenderDetail: { name: 'An Offender' },
+        },
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: ['Some error'],
+      })
+    })
+  })
 })
