@@ -2,7 +2,7 @@ import logger from '../../log'
 import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { type PrisonClient } from '../data'
-import { User, UserWithPrison, FoundUserResult } from '../types/uof'
+import { User, UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
@@ -69,6 +69,11 @@ export default class UserService {
       logger.error('Error during findUsers: ', error.stack)
       throw error
     }
+  }
+
+  public async findUsersFuzzySearch(token: string, value: string, page: number): Promise<FuzzySearchFoundUserResponse> {
+    const result = this.manageUsersClient.findUsersFuzzySearch(value, token, page)
+    return result
   }
 
   comparesUsers =

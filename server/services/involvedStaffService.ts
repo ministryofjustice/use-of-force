@@ -6,6 +6,7 @@ import type { InTransaction } from '../data/dataAccess/db'
 import type UserService from './userService'
 import { InvolvedStaff } from '../data/incidentClientTypes'
 import { RemovalRequest } from '../data/statementsClientTypes'
+import { FuzzySearchFoundUserResponse } from '../types/uof'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -133,5 +134,20 @@ export class InvolvedStaffService {
       { involvedName, incidentDate, submittedDate },
       context
     )
+  }
+
+  public async updateReportEditWithInvolvedStaff(edits): Promise<void> {
+    return this.incidentClient.insertReportEdit(edits)
+  }
+
+  public async findInvolvedStaffFuzzySearch(
+    token: string,
+    reportId: number,
+    value: string,
+    page: number
+  ): Promise<FuzzySearchFoundUserResponse> {
+    logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
+
+    return this.userService.findUsersFuzzySearch(token, value, page)
   }
 }

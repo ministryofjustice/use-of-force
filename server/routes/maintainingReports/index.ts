@@ -76,6 +76,12 @@ export default function Index(services: Services): Router {
       post('/:reportId/edit-report/prison', coordinator.submitEditPrison)
       get('/:reportId/edit-report/reason-for-change', coordinator.viewReasonForChange)
       post('/:reportId/edit-report/reason-for-change', coordinator.submitReasonForChange)
+      get('/:reportId/edit-report/staff-involved', coordinator.viewInvolvedStaff)
+      get('/:reportId/edit-report/staff-involved-search', coordinator.viewInvolvedStaffSearch)
+      post('/:reportId/edit-report/staff-involved-search', coordinator.submitInvolvedStaffSearch)
+      get('/:reportId/edit-report/staff-involved-search/no-results', coordinator.viewNoResultsFoundInvolvedStaffSearch)
+      get('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.editViewAddNewInvolvedStaffMember)
+      post('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.submitAddNewInvolvedStaffMember)
     }
 
     get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
@@ -95,20 +101,6 @@ export default function Index(services: Services): Router {
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
       coordinator.viewStaffMemberNotRemoved
     )
-  }
-
-  // the admin routes will not be needed once all the coordinator routes are complete
-  // because coordinator will be able to amend everything an admin currently does.
-  // Note, admin is not a prison staff member but a dev with the admin role
-
-  {
-    const admin = new AdminRoutes(reportService, reviewService, offenderService, authService)
-    const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
-    const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
-
-    get('/:reportId/edit-report', admin.viewEditReport)
-    get('/:reportId/edit-report/:formName', admin.viewEditForm)
-    post('/:reportId/edit-report/:formName', admin.submitEditForm)
   }
 
   return router

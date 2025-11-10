@@ -22,6 +22,7 @@ import relocationAndInjuriesConfig, { QUESTION_ID as RAIQID } from '../../config
 import evidenceConfig, { QUESTION_ID as EQID } from '../../config/edit/evidenceConfig'
 import reasonsForUofConfig from '../../config/edit/reasonsForUoFConfig'
 import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../../config/edit/useOfForceDetailsConfig'
+import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
 
 import * as types from '../../config/types'
 
@@ -836,6 +837,290 @@ export default class CoordinatorRoutes {
     return res.redirect(`/${reportId}/view-incident`)
   }
 
+  viewInvolvedStaff: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+
+    const report = await this.reviewService.getReport(reportId)
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+    const reportData = await this.reportDetailBuilder.build(report.username, report)
+    const { staffInvolved } = reportData.incidentDetails
+
+    const errors = req.flash('errors')
+    const data = {
+      reportId,
+      username: report.username,
+      staffInvolved,
+      offenderDetail,
+      displayAddedInvolvedStaffSuccessBanner: req.flash('result')[0] === 'success',
+      bannerMessage: req.flash('resultMessage')[0],
+    }
+
+    return res.render('pages/coordinator/staff-involved.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  viewInvolvedStaffSearch: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const page = parseInt(req.query.page as string, 10) || 0
+
+    const errors = req.flash('errors')
+    const flashUsername = req.flash('username')[0]
+    const queryUsername = req.query.username as string
+    const username = flashUsername || queryUsername || ''
+
+    const userSearchResultsRaw = req.flash('userSearchResults')[0]
+    let userSearchResults: any = { content: [] }
+    let content: any[] = []
+
+    if (userSearchResultsRaw) {
+      try {
+        userSearchResults = JSON.parse(userSearchResultsRaw)
+        content = userSearchResults?.content || []
+      } catch {
+        userSearchResults = { content: [] }
+        content = []
+      }
+    } else if (username) {
+      // Re-perform search for pagination
+      userSearchResults = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+        await this.authService.getSystemClientToken(res.locals.user.username),
+        parseInt(reportId, 10),
+        username,
+        page
+      )
+      content = userSearchResults?.content || []
+    }
+
+    await Promise.all(
+      content.map(async staffMember => {
+        try {
+          const isExistingInvolvedStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(
+            parseInt(reportId, 10),
+            staffMember.username
+          )
+
+          if (isExistingInvolvedStaffMember) {
+            Object.assign(staffMember, { isExistingInvolvedStaffMember: true })
+          }
+        } catch (error) {
+          // Log the error for debugging, but continue processing others
+          log.error(
+            `Error checking involved staff member ${staffMember.username} for report ${reportId}: ${error.message}`,
+            error
+          )
+        }
+      })
+    )
+
+    const { number: currentPage = 0, totalPages = 1, totalElements = 0, size = 10 } = userSearchResults
+    const start = currentPage * size + 1
+    const end = start + content.length - 1
+
+    const paginationMeta = {
+      page: currentPage,
+      totalPages,
+      previousPage: currentPage > 0 ? currentPage : 0,
+      nextPage: currentPage + 1 < totalPages ? currentPage + 1 : undefined,
+      totalCount: totalElements,
+      min: start,
+      max: end,
+    }
+
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const usernameValue = username || ''
+    const data = {
+      reportId,
+      username,
+      userSearchResults,
+      offenderDetail,
+      paginationMeta,
+      baseUrl: paths.viewInvolvedStaffSearch(reportId),
+      queryParams: {
+        currentPage,
+        username: usernameValue,
+      },
+    }
+
+    return res.render('pages/coordinator/edit-add-involved-staff.njk', {
+      data,
+      errors,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  submitInvolvedStaffSearch: RequestHandler = async (req, res) => {
+    const page = 0
+    const reportId = extractReportId(req)
+    const {
+      body: { username },
+    } = req
+
+    if (!username.trim()) {
+      req.flash('errors', [{ href: '#username', text: "Enter a person's name, email address or user ID" }])
+      return res.redirect(paths.viewInvolvedStaffSearch(reportId))
+    }
+
+    const results = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      reportId,
+      username,
+      page
+    )
+
+    if (results.totalElements === undefined || results.totalElements === 0) {
+      return res.redirect(paths.viewNoResultsFoundInvolvedStaffSearch(reportId))
+    }
+
+    req.flash('username', username)
+    req.flash('userSearchResults', JSON.stringify(results))
+
+    return res.redirect(`${paths.viewInvolvedStaffSearch(reportId)}?page=0&username=${username}`)
+  }
+
+  viewNoResultsFoundInvolvedStaffSearch: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+    const data = {
+      reportId,
+      offenderDetail,
+    }
+
+    return res.render('pages/coordinator/no-results-edit-add-involved-staff.njk', {
+      data,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+    })
+  }
+
+  editViewAddNewInvolvedStaffMember: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+    const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+    const staffMember = await this.userService.getUser(systemToken, req.params.username) // call api to get staff member details
+    const { page, username } = req.query
+
+    const data = {
+      reportId,
+      offenderDetail,
+      username: staffMember,
+    }
+
+    return res.render('pages/coordinator/reason-for-adding-this-person.njk', {
+      data,
+      showSaveAndReturnButton: false,
+      coordinatorEditJourney: true,
+      noChangeError: req.flash('noChangeError'),
+      backlinkHref: paths.viewInvolvedStaffSearch(reportId) + (page ? `?page=${page}&username=${username}` : ''),
+    })
+  }
+
+  submitAddNewInvolvedStaffMember: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const { username } = req.params
+    const pageInput = req.body
+    const { page, username: searchedUsername } = req.query
+
+    // Validate input using Joi schema
+    const { errors } = processInput({
+      validationSpec: reasonForAddingStaffForm.complete,
+      input: pageInput,
+    })
+
+    if (!isNilOrEmpty(errors)) {
+      // Re-render form with errors and previous input
+      const report = await this.reviewService.getReport(reportId)
+      const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+      const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
+      const staffMember = await this.userService.getUser(systemToken, username)
+      const data = {
+        reportId,
+        offenderDetail,
+        username: staffMember,
+        ...pageInput,
+        errors,
+      }
+      return res.render('pages/coordinator/reason-for-adding-this-person.njk', {
+        data,
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: req.flash('noChangeError'),
+        backlinkHref:
+          paths.viewInvolvedStaffSearch(reportId) + (page ? `?page=${page}&username=${searchedUsername}` : ''),
+      })
+    }
+
+    // Add staff member if validation passes
+    const result = await this.involvedStaffService.addInvolvedStaff(
+      await this.authService.getSystemClientToken(res.locals.user.username),
+      reportId,
+      username
+    )
+
+    // Handle result - display appropriate alert message
+    switch (result) {
+      case AddStaffResult.SUCCESS:
+      case AddStaffResult.SUCCESS_UNVERIFIED: {
+        const edits = {
+          username: res.locals.user.username,
+          displayName: res.locals.user.displayName,
+          reportId,
+          changes: {
+            oldValue: 'the list of involved staff',
+            newValue: 'the new list of involved staff',
+            question: 'Staff involved',
+          },
+          reason: pageInput.reason,
+          reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
+          reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
+          reportOwnerChanged: false,
+        }
+
+        await this.involvedStaffService.updateReportEditWithInvolvedStaff(edits)
+
+        const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+        const successMessage = `You have added ${staffMember.name} (${staffMember.userId.toUpperCase()}) to the incident. You can see your changes on the edit history tab of the incident report.`
+        req.flash('result', 'success')
+        req.flash('resultMessage', successMessage)
+        break
+      }
+      case AddStaffResult.ALREADY_EXISTS: {
+        const existingStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
+        const alreadyExistsMessage = `${existingStaffMember.name} (${existingStaffMember.userId.toUpperCase()}) is already added to the incident.`
+        req.flash('result', 'success')
+        req.flash('resultMessage', alreadyExistsMessage)
+        break
+      }
+      default: {
+        req.flash('result', 'error')
+        req.flash('resultMessage', 'An unexpected error occurred while adding the staff member.')
+        break
+      }
+    }
+
+    return res.redirect(paths.viewInvolvedStaff(reportId))
+  }
+
+  viewAddInvolvedStaff: RequestHandler = async (req, res) => {
+    const { reportId } = req.params
+    const errors = req.flash('errors')
+    const data = { reportId }
+
+    res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+  }
+
   // ===========.  existing code below which will be removed at some point.  ==========
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
@@ -891,14 +1176,14 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
-  viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+  // viewAddInvolvedStaff: RequestHandler = async (req, res) => {
+  //   const { reportId } = req.params
 
-    const errors = req.flash('errors')
-    const data = { incidentId: reportId }
+  //   const errors = req.flash('errors')
+  //   const data = { incidentId: reportId }
 
-    res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
-  }
+  //   res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
+  // }
 
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
