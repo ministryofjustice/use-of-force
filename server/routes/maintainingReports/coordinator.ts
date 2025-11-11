@@ -1176,15 +1176,6 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
-  // viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-  //   const { reportId } = req.params
-
-  //   const errors = req.flash('errors')
-  //   const data = { incidentId: reportId }
-
-  //   res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
-  // }
-
   submitAddInvolvedStaff: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const {
