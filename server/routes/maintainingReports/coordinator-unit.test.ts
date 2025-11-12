@@ -1459,8 +1459,7 @@ describe('CoordinatorEditReportController', () => {
         reasonAdditionalInfo: 'Extra context',
       }
 
-      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce(AddStaffResult.SUCCESS)
-      involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
+      involvedStaffService.updateWithNewInvolvedStaff.mockResolvedValueOnce(AddStaffResult.SUCCESS)
       involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({
         userId: 'abc',
         name: 'USER',
@@ -1476,19 +1475,6 @@ describe('CoordinatorEditReportController', () => {
         expect.stringContaining('You have added USER (ABC) to the incident')
       )
 
-      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
-    })
-
-    it('should flash already exists message for ALREADY_EXISTS result', async () => {
-      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce(AddStaffResult.ALREADY_EXISTS)
-
-      await controller.submitAddNewInvolvedStaffMember(req, res)
-
-      expect(req.flash).toHaveBeenCalledWith('result', 'success')
-      expect(req.flash).toHaveBeenCalledWith(
-        'resultMessage',
-        expect.stringContaining('USER (ABC) is already added to the incident')
-      )
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
     })
 
