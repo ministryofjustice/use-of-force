@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import request from 'supertest'
-import moment from 'moment'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
-import { Report } from '../../data/incidentClientTypes'
+import { Report, ReportEdit } from '../../data/incidentClientTypes'
 import ReviewService from '../../services/reviewService'
 import ReportService from '../../services/reportService'
 import ReportEditService from '../../services/reportEditService'
@@ -34,18 +33,32 @@ const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 let report = { id: 1, username: 'user1', form: { incidentDetails: {} } } as unknown as Report
 
-const reportEdit = {
-  id: 1,
-  editDate: moment('2025-05-13 10:30:43.122'),
-  editorUserId: 'TOM_ID',
-  editorName: 'TOM',
-  reportId: 1,
-  changeTo: 'PAVA',
-  oldValuePrimary: 'true',
-  newValuePrimary: 'false',
-  reason: 'chose wrong answer',
-  reportOwnerChanged: false,
-}
+const reportEdits = [
+  {
+    id: 2,
+    editDate: new Date('2025-11-01 09:00:00.000'),
+    editorUserId: 'HARRY_ID',
+    editorName: 'HARRY',
+    reportId: 1,
+    changes: { someChange: { oldValue: true, newValue: false } },
+    reason: 'chose wrong answer',
+    reasonText: '',
+    additionalComments: '',
+    reportOwnerChanged: false,
+  },
+  {
+    id: 1,
+    editDate: new Date('2025-05-13 10:30:43.122'),
+    editorUserId: 'TOM_ID',
+    editorName: 'TOM',
+    reportId: 1,
+    changes: { someChange: { oldValue: true, newValue: false } },
+    reason: 'chose wrong answer',
+    reasonText: '',
+    additionalComments: '',
+    reportOwnerChanged: false,
+  },
+] as ReportEdit[]
 
 const statements = [
   {
@@ -299,7 +312,7 @@ describe('GET /view-incident', () => {
 
     it('should display edit History tab if report has been edited', () => {
       userSupplier.mockReturnValue(coordinatorUser)
-      reportService.getReportEdits.mockResolvedValue([reportEdit])
+      reportService.getReportEdits.mockResolvedValue(reportEdits)
 
       return request(app)
         .get('/1/view-incident?tab=report')
@@ -345,8 +358,8 @@ describe('GET /view-incident', () => {
         })
     })
 
-    it('should include report edited row but not current owner row', () => {
-      reportService.getReportEdits.mockResolvedValue([reportEdit])
+    it('should include report edited row', () => {
+      reportService.getReportEdits.mockResolvedValue([reportEdits[1]])
       return request(app)
         .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
@@ -354,23 +367,18 @@ describe('GET /view-incident', () => {
         .expect(res => {
           expect(res.text).toContain('Use of force incident 1')
           expect(res.text).toContain('Report last edited')
-          expect(res.text).not.toContain('Current report owner')
         })
     })
 
-    it('should include both report edited and current owner rows', () => {
-      reportService.getReportEdits.mockResolvedValue([
-        { ...reportEdit, reportOwnerChanged: true, newValuePrimary: 'BOB (BOB_ID)' },
-      ])
+    it('should show latest edit in Report last edited row of Report details section', () => {
+      reportService.getReportEdits.mockResolvedValue(reportEdits)
       return request(app)
         .get('/1/view-incident?tab=report&your-report=true')
         .expect(200)
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('Use of force incident 1')
-          expect(res.text).toContain('Report last edited')
-          expect(res.text).toContain('Current report owner')
-          expect(res.text).toContain('BOB (BOB_ID)')
+          expect(res.text).toContain('1 November 2025 at 09:00 by HARRY')
+          expect(res.text).not.toContain('13 May 2025 at 10:30 by TOM')
         })
     })
 

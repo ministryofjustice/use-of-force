@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportEdit, ReportSummary } from '../data/incidentClientTypes'
@@ -127,17 +126,17 @@ describe('reviewService', () => {
       const reportEdit = [
         {
           id: 1,
-          editDate: moment('2025-05-13 10:30:43.122'),
+          editDate: new Date('2025-05-13 10:30:43.122'),
           editorUserId: 'TOM_ID',
           editorName: 'TOM',
           reportId: 1,
-          changeTo: 'PAVA',
-          oldValuePrimary: 'true',
-          newValuePrimary: 'false',
+          changes: { pava: { oldValue: 'true', newValue: 'false' } },
           reason: 'chose wrong answer',
+          reasonText: '',
+          additionalComments: '',
           reportOwnerChanged: false,
         },
-      ]
+      ] as ReportEdit[]
 
       incidentClient.getReportEdits.mockResolvedValue(reportEdit)
       const result = await service.getReportEdits(1)

@@ -158,6 +158,7 @@ export class InvolvedStaffService {
     reportId: number,
     username: string,
     displayName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pageInput: any
   ): Promise<AddStaffResult> {
     logger.info(`Updating involved staff with username: ${username} on report: '${reportId}'`)

@@ -61,16 +61,14 @@ export interface NotificationReminder {
 
 export interface ReportEdit {
   id: number
-  editDate: Moment
+  editDate: Date
   editorUserId: string
   editorName: string
   reportId: number
-  changeTo: string
-  oldValuePrimary: string
-  oldValueSecondary?: string
-  newValuePrimary: string
-  newValueSecondary?: string
-  reason?: string
-  additionalComments?: string
+  reason: string
+  reasonText: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  changes: Record<string, { newValue: any; oldValue: any }>
+  additionalComments: string
   reportOwnerChanged: boolean
 }
