@@ -39,6 +39,9 @@ export const paths = {
       removalRequest ? `?removalRequest=${removalRequest}` : ''
     }`,
   confirmReportDelete: reportId => `/coordinator/report/${reportId}/confirm-delete`,
+  viewInvolvedStaff: reportId => `/${reportId}/edit-report/staff-involved`,
+  viewInvolvedStaffSearch: reportId => `/${reportId}/edit-report/staff-involved-search`,
+  viewNoResultsFoundInvolvedStaffSearch: reportId => `/${reportId}/edit-report/staff-involved-search/no-results`,
 
   // admin
   editReport: reportId => `/${reportId}/edit-report`,

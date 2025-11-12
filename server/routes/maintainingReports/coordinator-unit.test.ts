@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ReportService from '../../services/reportService'
-import { InvolvedStaffService } from '../../services/involvedStaffService'
+import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import ReviewService from '../../services/reviewService'
 import OffenderService from '../../services/offenderService'
 import UserService from '../../services/userService'
@@ -27,7 +27,14 @@ jest.mock('../../../log')
 
 // Mocks
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
-const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
@@ -168,6 +175,21 @@ beforeEach(() => {
   offenderService.getOffenderDetails.mockResolvedValue({ name: 'An Offender' })
   reportEditService.persistDeleteIncident = jest.fn()
   reviewService.getBookingIdWithReportId = jest.fn()
+  involvedStaffService.findInvolvedStaffFuzzySearch.mockResolvedValue({
+    content: [],
+    pageNumber: 0,
+    totalPages: 1,
+    totalElements: 0,
+    size: 10,
+  })
+  involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({
+    userId: 'abc',
+    name: 'USER',
+    statementId: 123,
+    email: 'jane.doe@example.com',
+  } as any)
+  involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
+  involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
 
   controller = new CoordinatorRoutes(
     reportService,
@@ -215,6 +237,43 @@ describe('CoordinatorEditReportController', () => {
   })
 
   describe('Incident details', () => {
+    describe('viewEditInvolvedStaff', () => {
+      it('should render view correctly', async () => {
+        flash.mockReturnValue([
+          {
+            displayAddedInvolvedStaffSuccessBanner: false,
+          },
+        ])
+        await controller.viewInvolvedStaff(req, res)
+        expect(reviewService.getReport).toHaveBeenCalledWith(1)
+        expect(reportDetailBuilder.build).toHaveBeenCalledWith('USER', report)
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/staff-involved.njk', {
+          coordinatorEditJourney: true,
+          data: {
+            bannerMessage: {
+              displayAddedInvolvedStaffSuccessBanner: false,
+            },
+            displayAddedInvolvedStaffSuccessBanner: false,
+            offenderDetail: { name: 'An Offender' },
+            reportId: 1,
+            staffInvolved: undefined,
+            username: 'USER',
+          },
+          errors: [
+            {
+              displayAddedInvolvedStaffSuccessBanner: false,
+            },
+          ],
+          noChangeError: [
+            {
+              displayAddedInvolvedStaffSuccessBanner: false,
+            },
+          ],
+          showSaveAndReturnButton: false,
+        })
+      })
+    })
+
     describe('viewEditIncidentDetails', () => {
       it('should call services and render page', async () => {
         await controller.viewEditIncidentDetails(req, res)
@@ -1156,6 +1215,279 @@ describe('CoordinatorEditReportController', () => {
         expect(req.session.incidentReport.length).toBe(0)
         expect(req.session.incidentReport).toEqual([])
       })
+    })
+  })
+
+  describe('viewEditInvolvedStaffSearch', () => {
+    it('should render view correctly with default username', async () => {
+      flash.mockReturnValue([])
+      req.query.username = undefined
+      req.flash = flash
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('')
+    })
+
+    it('should use req.query.username when set', async () => {
+      flash.mockReturnValue([])
+      req.query.username = 'queryuser'
+      req.flash = flash
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('queryuser')
+    })
+
+    it('should use flash username when set and ignore query', async () => {
+      req.flash = jest.fn()
+      req.flash.mockImplementation(key => (key === 'username' ? ['flashuser'] : []))
+      req.query.username = 'queryuser'
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.username).toBe('flashuser')
+    })
+
+    it('should parse userSearchResults from flash if present', async () => {
+      const userSearchResults = { content: [{ username: 'abc' }], number: 0, totalPages: 1, totalElements: 1, size: 10 }
+      req.flash = jest.fn().mockImplementation(key => {
+        if (key === 'userSearchResults') return [JSON.stringify(userSearchResults)]
+        if (key === 'username') return ['testuser']
+        return []
+      })
+
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content[0].username).toBe('abc')
+      expect(renderArgs.data.username).toBe('testuser')
+    })
+
+    it('should handle invalid userSearchResults flash value gracefully', async () => {
+      req.flash = jest.fn().mockImplementation(key => (key === 'userSearchResults' ? ['not-json'] : []))
+      req.query.username = 'baduser'
+      await controller.viewInvolvedStaffSearch(req, res)
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content).toEqual([])
+      expect(renderArgs.data.username).toBe('baduser')
+    })
+
+    it('should call fuzzy search when username is present and no flash results', async () => {
+      req.query.username = 'searchuser'
+      req.flash = jest.fn().mockImplementation(key => {
+        if (key === 'username') return []
+        return []
+      })
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      expect(authService.getSystemClientToken).toHaveBeenCalledWith(res.locals.user.username)
+      expect(involvedStaffService.findInvolvedStaffFuzzySearch).toHaveBeenCalledWith('token', 1, 'searchuser', 0)
+    })
+
+    it('should flag existing involved staff members', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 0,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.userSearchResults.content[0].isExistingInvolvedStaffMember).toBe(true)
+    })
+
+    it('should log error if loadInvolvedStaffByUsername throws', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 0,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      }
+
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      involvedStaffService.loadInvolvedStaffByUsername.mockRejectedValue(new Error('Test error'))
+
+      const logSpy = jest.spyOn(logger, 'error').mockImplementation(jest.fn())
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error checking involved staff member abc'),
+        expect.any(Error)
+      )
+    })
+
+    it('should calculate pagination metadata correctly', async () => {
+      const userSearchResults = {
+        content: [{ username: 'abc' }],
+        number: 2,
+        totalPages: 5,
+        totalElements: 50,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const { paginationMeta } = res.render.mock.calls[0][1].data
+      expect(paginationMeta).toEqual({
+        page: 2,
+        totalPages: 5,
+        previousPage: 2,
+        nextPage: 3,
+        totalCount: 50,
+        min: 21,
+        max: 21,
+      })
+    })
+
+    it('should include report and offender details in render data', async () => {
+      const userSearchResults = {
+        content: [],
+        number: 0,
+        totalPages: 1,
+        totalElements: 0,
+        size: 10,
+      }
+      req.flash = jest
+        .fn()
+        .mockImplementation(key => (key === 'userSearchResults' ? [JSON.stringify(userSearchResults)] : []))
+
+      await controller.viewInvolvedStaffSearch(req, res)
+
+      const renderArgs = res.render.mock.calls[0][1]
+      expect(renderArgs.data.offenderDetail.name).toBe('An Offender')
+    })
+  })
+
+  describe('submitInvolvedStaffSearch', () => {
+    it('should redirect with error if username is empty', async () => {
+      req.body = { username: '   ' }
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(flash).toHaveBeenCalledWith('errors', [
+        { href: '#username', text: "Enter a person's name, email address or user ID" },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search')
+    })
+
+    it('should redirect to no results page if no results found', async () => {
+      req.body = { username: 'john' }
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search/no-results')
+    })
+
+    it('should redirect to results page if results found', async () => {
+      req.body = { username: 'john' }
+
+      involvedStaffService.findInvolvedStaffFuzzySearch.mockResolvedValueOnce({
+        content: [{ userId: 'abc', name: 'John Doe' } as any],
+        pageNumber: 1,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      })
+
+      await controller.submitInvolvedStaffSearch(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved-search?page=0&username=john')
+    })
+  })
+
+  describe('viewNoResultsFoundInvolvedStaffSearch', () => {
+    it('should render the no-results page with correct data', async () => {
+      req.flash = jest.fn().mockReturnValue(['Some error'])
+
+      await controller.viewNoResultsFoundInvolvedStaffSearch(req, res)
+
+      expect(reviewService.getReport).toHaveBeenCalledWith(1)
+      expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/no-results-edit-add-involved-staff.njk', {
+        data: {
+          reportId: 1,
+          offenderDetail: { name: 'An Offender' },
+        },
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: ['Some error'],
+      })
+    })
+  })
+
+  describe('editViewAddNewInvolvedStaffMember', () => {
+    it('should render the reason-for-adding page with correct data', async () => {
+      req.query = { page: '2', username: 'USER' }
+      req.flash = jest.fn().mockReturnValue(['Some error'])
+
+      await controller.editViewAddNewInvolvedStaffMember(req, res)
+
+      expect(reviewService.getReport).toHaveBeenCalledWith(1)
+      expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
+      expect(authService.getSystemClientToken).toHaveBeenCalledWith('USER')
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/reason-for-adding-this-person.njk', {
+        data: {
+          reportId: 1,
+          offenderDetail: { name: 'An Offender' },
+        },
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: ['Some error'],
+        backlinkHref: '/1/edit-report/staff-involved-search?page=2&username=USER',
+      })
+    })
+  })
+
+  describe('submitAddNewInvolvedStaffMember', () => {
+    it('should flash success message and redirect for SUCCESS result', async () => {
+      req.body = {
+        reason: 'anotherReasonForEdit',
+        reasonText: 'Because it’s necessary',
+        reasonAdditionalInfo: 'Extra context',
+      }
+
+      involvedStaffService.updateWithNewInvolvedStaff.mockResolvedValueOnce(AddStaffResult.SUCCESS)
+      involvedStaffService.loadInvolvedStaffByUsername.mockResolvedValue({
+        userId: 'abc',
+        name: 'USER',
+        statementId: 123,
+        email: 'user@example.com',
+      })
+
+      await controller.submitAddNewInvolvedStaffMember(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('result', 'success')
+      expect(req.flash).toHaveBeenCalledWith(
+        'resultMessage',
+        expect.stringContaining('You have added USER (ABC) to the incident')
+      )
+
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
+    })
+
+    it('should flash error message for unexpected result', async () => {
+      involvedStaffService.addInvolvedStaff.mockResolvedValueOnce('UNKNOWN_RESULT' as any)
+      await controller.submitAddNewInvolvedStaffMember(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('result', 'error')
+      expect(req.flash).toHaveBeenCalledWith(
+        'resultMessage',
+        'An unexpected error occurred while adding the staff member.'
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
     })
   })
 })

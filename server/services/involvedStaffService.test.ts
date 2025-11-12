@@ -5,6 +5,7 @@ import IncidentClient from '../data/incidentClient'
 import StatementsClient from '../data/statementsClient'
 import UserService from './userService'
 import { Report } from '../data/incidentClientTypes'
+import ManageUsersApiClient from '../data/manageUsersApiClient'
 
 jest.mock('../data/incidentClient')
 jest.mock('../data/statementsClient')
@@ -13,6 +14,7 @@ jest.mock('./userService')
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
+const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
 
 const client = jest.fn()
 
@@ -32,7 +34,8 @@ beforeEach(() => {
     statementsClient,
     userService,
     db.inTransaction,
-    notificationService
+    notificationService,
+    manageUsersApiClient
   )
 
   statementsClient.getInvolvedStaffToRemove.mockResolvedValue({

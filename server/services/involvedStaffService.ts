@@ -3,9 +3,11 @@ import logger from '../../log'
 import { ReportStatus } from '../config/types'
 import type { IncidentClient, StatementsClient } from '../data'
 import type { InTransaction } from '../data/dataAccess/db'
-import type UserService from './userService'
+import UserService from './userService'
 import { InvolvedStaff } from '../data/incidentClientTypes'
 import { RemovalRequest } from '../data/statementsClientTypes'
+import { FuzzySearchFoundUserResponse } from '../types/uof'
+import ManageUsersApiClient from '../data/manageUsersApiClient'
 
 export enum AddStaffResult {
   SUCCESS = 'success',
@@ -20,7 +22,8 @@ export class InvolvedStaffService {
     private readonly statementsClient: StatementsClient,
     private readonly userService: UserService,
     private readonly inTransaction: InTransaction,
-    private readonly notificationService
+    private readonly notificationService,
+    private readonly manageUsersClient: ManageUsersApiClient
   ) {}
 
   public getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
@@ -133,5 +136,74 @@ export class InvolvedStaffService {
       { involvedName, incidentDate, submittedDate },
       context
     )
+  }
+
+  public async updateReportEditWithInvolvedStaff(edits, query): Promise<void> {
+    return this.incidentClient.insertReportEdit(edits, query)
+  }
+
+  public async findInvolvedStaffFuzzySearch(
+    token: string,
+    reportId: number,
+    value: string,
+    page: number
+  ): Promise<FuzzySearchFoundUserResponse> {
+    logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
+
+    return this.userService.findUsersFuzzySearch(token, value, page)
+  }
+
+  public async updateWithNewInvolvedStaff(
+    token: string,
+    reportId: number,
+    username: string,
+    displayName: string,
+    pageInput: any
+  ): Promise<AddStaffResult> {
+    logger.info(`Updating involved staff with username: ${username} on report: '${reportId}'`)
+
+    const oldValue = await this.getInvolvedStaff(reportId)
+
+    const parsedOldValue = oldValue.map(staff => `${staff.name} (${staff.userId})`).join(', ')
+
+    const { name } = await this.manageUsersClient.getUser(username, token)
+
+    const newValue = `${parsedOldValue}, ${name} (${username})`
+
+    const edits = {
+      username,
+      displayName,
+      reportId,
+      changes: {
+        involvedStaff: {
+          // need key adding in other file - which file?
+          oldValue: parsedOldValue,
+          newValue,
+          question: 'Staff involved',
+        },
+      },
+      reason: pageInput.reason,
+      reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
+      reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
+      reportOwnerChanged: false,
+    }
+
+    const report = await this.incidentClient.getReportForReviewer(reportId)
+
+    let result
+
+    await this.inTransaction(async query => {
+      result = await this.addInvolvedStaff(token, reportId, username)
+
+      await this.updateReportEditWithInvolvedStaff(edits, query)
+
+      if (report.status === ReportStatus.COMPLETE.value) {
+        logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)
+        // TODO provide real username
+        await this.incidentClient.changeStatus(reportId, 'SYSTEM', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, query)
+      }
+    })
+
+    return result
   }
 }
