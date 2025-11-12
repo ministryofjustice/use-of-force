@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReportEdit } from '../../data/incidentClientTypes'
 import ReportService from '../../services/reportService'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import ReviewService from '../../services/reviewService'
@@ -236,6 +237,73 @@ describe('CoordinatorEditReportController', () => {
     })
   })
 
+  describe('Report details', () => {
+    describe('viewEditReport', () => {
+      it("should display the correct details in 'last edited' row", async () => {
+        const reportEdits = [
+          {
+            id: 2,
+            editDate: new Date('2025-11-01T09:00:00.000Z'),
+            editorUserId: 'UserId2',
+            editorName: 'John Smith',
+            reportId: 1,
+            reason: 'some reason 2',
+            reasonText: 'some reason text 2',
+            changes: { someChange: { oldValue: true, newValue: false } },
+            additionalComments: 'some comments 2',
+            reportOwnerChanged: false,
+          },
+          {
+            id: 1,
+            editDate: new Date('2025-10-15T09:00:00.000Z'),
+            editorUserId: 'UserId1',
+            editorName: 'Mike Smith',
+            reportId: 1,
+            reason: 'some reason 1',
+            reasonText: 'some reason text 1',
+            changes: { someChange: { oldValue: true, newValue: false } },
+            additionalComments: 'some comments 1',
+            reportOwnerChanged: false,
+          },
+        ]
+
+        reviewService.getReportEdits.mockResolvedValue(reportEdits as ReportEdit[])
+        await controller.viewEditReport(req, res)
+        expect(res.render).toHaveBeenCalledWith('pages/coordinator/edit-report.njk', {
+          data: {
+            bookingId: null,
+            hasReportBeenEdited: true,
+            hasReportOwnerChanged: false,
+            incidentDetails: {
+              incidentDate: '2025-10-28T03:10:00.000Z',
+            },
+            lastEdit: {
+              additionalComments: 'some comments 2',
+              changes: {
+                someChange: {
+                  newValue: false,
+                  oldValue: true,
+                },
+              },
+              editDate: new Date('2025-11-01T09:00:00.000Z'),
+              editorName: 'John Smith',
+              editorUserId: 'UserId2',
+              id: 2,
+              reason: 'some reason 2',
+              reasonText: 'some reason text 2',
+              reportId: 1,
+              reportOwnerChanged: false,
+            },
+            reportOwner: undefined,
+          },
+          statements: [],
+          user: {
+            username: 'USER',
+          },
+        })
+      })
+    })
+  })
   describe('Incident details', () => {
     describe('viewEditInvolvedStaff', () => {
       it('should render view correctly', async () => {

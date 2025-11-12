@@ -40,7 +40,7 @@ export default class ViewIncidentsRoutes {
     const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
 
     if (tab === 'report') {
-      const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+      const lastEdit = hasReportBeenEdited ? reportEdits[0] : null
       const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
       const hasReportOwnerChanged = newReportOwners?.length > 0
       const reportOwner = newReportOwners?.at(-1)

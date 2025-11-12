@@ -50,7 +50,7 @@ export default class CoordinatorRoutes {
     const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
     const reportEdits = await this.reviewService.getReportEdits(reportId)
     const hasReportBeenEdited = reportEdits?.length > 0
-    const lastEdit = hasReportBeenEdited ? reportEdits.at(-1) : null
+    const lastEdit = hasReportBeenEdited ? reportEdits[0] : null
     const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
     const hasReportOwnerChanged = newReportOwners?.length > 0
     const reportOwner = newReportOwners?.at(-1)
