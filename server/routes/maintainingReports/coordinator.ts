@@ -865,7 +865,7 @@ export default class CoordinatorRoutes {
   }
 
   viewInvolvedStaffSearch: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
+    const reportId = extractReportId(req)
     const page = parseInt(req.query.page as string, 10) || 0
 
     const errors = req.flash('errors')
@@ -889,7 +889,7 @@ export default class CoordinatorRoutes {
       // Re-perform search for pagination
       userSearchResults = await this.involvedStaffService.findInvolvedStaffFuzzySearch(
         await this.authService.getSystemClientToken(res.locals.user.username),
-        parseInt(reportId, 10),
+        reportId,
         username,
         page
       )
@@ -900,7 +900,7 @@ export default class CoordinatorRoutes {
       content.map(async staffMember => {
         try {
           const isExistingInvolvedStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(
-            parseInt(reportId, 10),
+            reportId,
             staffMember.username
           )
 
@@ -931,7 +931,7 @@ export default class CoordinatorRoutes {
       max: end,
     }
 
-    const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
     const usernameValue = username || ''
