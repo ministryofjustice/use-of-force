@@ -79,7 +79,7 @@ beforeEach(() => {
   ])
 
   // Always allow edit/delete for coordinator in these tests
-  reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+  reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
 
   app = appWithAllRoutes(
     {

@@ -94,7 +94,7 @@ beforeEach(() => {
   reportService.getReportEdits.mockResolvedValue([])
   reportEditService.mapEditDataToViewOutput.mockResolvedValue([])
   reviewService.getStatements.mockResolvedValue(statements)
-  reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+  reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
 
   reportDetailBuilder.build.mockResolvedValue({
     offenderDetail: {
@@ -186,7 +186,7 @@ describe('GET /view-incident', () => {
 
   describe('Edit report allowability banner', () => {
     it('should display banner to coordinator only', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -199,7 +199,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display banner to non-coordinator (reviewer)', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(reviewerUser)
 
       return request(app)
@@ -212,7 +212,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display banner to non-coordinator (reporter)', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(user)
 
       return request(app)
@@ -227,7 +227,7 @@ describe('GET /view-incident', () => {
 
   describe('Action buttons', () => {
     it('should display both Edit report and Delete incident buttons to coordinator if report completion date within permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -241,7 +241,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to coordinator if report completion date outside permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -255,7 +255,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to just reporter', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(user)
 
       return request(app)
@@ -269,7 +269,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to reviewer', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(reviewerUser)
 
       return request(app)
@@ -285,7 +285,7 @@ describe('GET /view-incident', () => {
 
   describe('Statements tab', () => {
     it('should display both Edit report and Delete incident buttons to coordinator and report completion date is within permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -299,7 +299,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should display both Edit report and Delete incident buttons to coordinator and report completion date is outside permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -341,7 +341,7 @@ describe('GET /view-incident', () => {
 
   describe('Edit history tab', () => {
     it('should display both Edit report and Delete incident buttons to coordinator if report completion date is within permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -355,7 +355,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to coordinator if report completion date is outside permitted timescales', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       userSupplier.mockReturnValue(coordinatorUser)
 
       return request(app)
@@ -369,7 +369,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to just reporter', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(user)
 
       return request(app)
@@ -383,7 +383,7 @@ describe('GET /view-incident', () => {
     })
 
     it('should not display Edit report or Delete incident buttons to reviewer', () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
       userSupplier.mockReturnValue(reviewerUser)
 
       return request(app)

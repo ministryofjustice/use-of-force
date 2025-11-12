@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import { subWeeks, isWithinInterval } from 'date-fns'
+import { isWithinInterval, addWeeks, subDays } from 'date-fns'
 import IncidentClient from '../data/incidentClient'
 import config from '../config'
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
@@ -435,19 +435,23 @@ export default class ReportEditService {
     }
   }
 
-  async isIncidentDateWithinEditPeriod(reportId: number, today = new Date(Date.now())): Promise<boolean> {
-    const report = await this.incidentClient.getReportForReviewer(reportId) // this can be used by coordinator too
+  async isTodaysDateWithinEditabilityPeriod(reportId: number, today = new Date()): Promise<boolean> {
+    // on the first iteration of this function, the edit period was 13 weeks starting from the incidentDate inclusive
 
-    const incidentDate = new Date(report.incidentDate)
+    const report = await this.incidentClient.getReportForReviewer(reportId)
 
-    // Convert to UTC
-    const incidentDateUTC = new Date(
-      Date.UTC(incidentDate.getFullYear(), incidentDate.getMonth(), incidentDate.getDate())
-    )
+    // Helper to normalize any date to UTC midnight
+    const toUTCMidnight = (date: Date) =>
+      new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
 
-    const earliestDateForEditing = subWeeks(today, config.submittedReportEditPeriodWeeks)
+    // Normalize dates
+    const editPeriodStart = toUTCMidnight(new Date(report.incidentDate))
+    const todayUTC = toUTCMidnight(today)
 
-    // Check if incidentDate is within edibility period
-    return isWithinInterval(incidentDateUTC, { start: earliestDateForEditing, end: today })
+    // Calculate start of edit period in UTC
+    const editPeriodEnd = subDays(addWeeks(editPeriodStart, config.submittedReportEditPeriodWeeks), 1)
+
+    // Does todays date fall in editability window?
+    return isWithinInterval(todayUTC, { start: editPeriodStart, end: editPeriodEnd })
   }
 }

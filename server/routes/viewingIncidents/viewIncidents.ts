@@ -39,7 +39,7 @@ export default class ViewIncidentsRoutes {
     const systemToken = await this.authService.getSystemClientToken(username)
     const allStatements = await this.reviewService.getStatements(systemToken, incidentId)
     const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(incidentId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(incidentId)
 
     if (tab === 'report') {
       const lastEdit = hasReportBeenEdited ? reportEdits[0] : null

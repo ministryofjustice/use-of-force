@@ -736,33 +736,30 @@ describe('persistDeleteIncident', () => {
   })
 })
 
-describe('isIncidentDateWithinEditPeriod', () => {
-  const today = new Date(2025, 10, 1) // 1 Nov 2025
+describe('isTodaysDateWithinEditabilityPeriod', () => {
+  const today = new Date(2025, 10, 12) // 12 Nov 2025
   const reportId = 1
   it('returns true if incidentDate is today', async () => {
-    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: today } as Report)
-    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: today } as Report) // 12 Nov 2025
+    const result = await reportEditService.isTodaysDateWithinEditabilityPeriod(reportId, today)
     expect(result).toBe(true)
   })
 
-  it('returns true if incidentDate is 1 day inside edit window', async () => {
-    const oneDayInsideEditWindow = new Date('2025-08-03T00:00:00Z')
-    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: oneDayInsideEditWindow } as Report)
-    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+  it('returns true if today is 1 day before end of edit window', async () => {
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: new Date(Date.UTC(2025, 7, 15)) } as Report) // edit window 15 Aug 2025 - 13 Nov 2025
+    const result = await reportEditService.isTodaysDateWithinEditabilityPeriod(reportId, today)
     expect(result).toBe(true)
   })
 
-  it('returns true if incidentDate is exactly at start of edit window', async () => {
-    const startOfWindow = new Date('2025-08-02T00:00:00Z')
-    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: startOfWindow } as Report)
-    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+  it('returns true if today is exactly at end of edit window', async () => {
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: new Date(Date.UTC(2025, 7, 14)) } as Report) // edit window 14 Aug 2025 - 12 Nov 2025
+    const result = await reportEditService.isTodaysDateWithinEditabilityPeriod(reportId, today)
     expect(result).toBe(true)
   })
 
-  it('returns false if incidentDate is 1 day outside edit window', async () => {
-    const oneDayOutsideEditWindow = new Date('2025-08-01T00:00:00Z')
-    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: oneDayOutsideEditWindow } as Report)
-    const result = await reportEditService.isIncidentDateWithinEditPeriod(reportId, today)
+  it('returns false if today is 1 day after end of edit window', async () => {
+    incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: new Date(Date.UTC(2025, 7, 13)) } as Report) // edit window 13 Aug 2025 - 11 Nov 2025
+    const result = await reportEditService.isTodaysDateWithinEditabilityPeriod(reportId, today)
     expect(result).toBe(false)
   })
 })

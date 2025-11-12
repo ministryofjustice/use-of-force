@@ -194,7 +194,7 @@ beforeEach(() => {
   involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
 
   // Always allow edit/delete of a report unless test specifies otherwise
-  reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
+  reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
 
   controller = new CoordinatorRoutes(
     reportService,
@@ -222,57 +222,57 @@ describe('CoordinatorEditReportController', () => {
     })
 
     it('viewEditReport: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditReport(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewDeleteIncident: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewDeleteIncident(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewReasonForDeletingIncident: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewReasonForDeletingIncident(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditPrison: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditPrison(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditIncidentDetails: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditIncidentDetails(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditWhyWasUOFApplied: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditWhyWasUOFApplied(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditPrimaryReasonForUof: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditPrimaryReasonForUof(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditUseOfForceDetails: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditUseOfForceDetails(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditRelocationAndInjuries: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditRelocationAndInjuries(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewEditEvidence: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewEditEvidence(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
     it('viewReasonForChange: should redirect to /view-incident page', async () => {
-      reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(false)
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
       await controller.viewReasonForChange(req, res)
       expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })

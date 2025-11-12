@@ -1,5 +1,5 @@
 import R from 'ramda'
-import type { Request, Response, RequestHandler } from 'express'
+import type { Request, RequestHandler } from 'express'
 import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
@@ -44,7 +44,7 @@ export default class CoordinatorRoutes {
 
   viewEditReport: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -72,7 +72,7 @@ export default class CoordinatorRoutes {
 
   viewDeleteIncident: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -111,7 +111,7 @@ export default class CoordinatorRoutes {
 
   viewReasonForDeletingIncident: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -178,7 +178,7 @@ export default class CoordinatorRoutes {
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -302,7 +302,7 @@ export default class CoordinatorRoutes {
 
   viewEditPrison: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -341,7 +341,7 @@ export default class CoordinatorRoutes {
 
   viewEditWhyWasUOFApplied: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
 
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
@@ -404,7 +404,7 @@ export default class CoordinatorRoutes {
 
   viewEditPrimaryReasonForUof: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -446,7 +446,7 @@ export default class CoordinatorRoutes {
 
   viewEditUseOfForceDetails: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -576,7 +576,7 @@ export default class CoordinatorRoutes {
 
   viewEditRelocationAndInjuries: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -672,7 +672,7 @@ export default class CoordinatorRoutes {
 
   viewEditEvidence: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
@@ -766,7 +766,7 @@ export default class CoordinatorRoutes {
   // viewReasonForChange will be used for changes to many parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const reportEditOrDeletePermitted = await this.reportEditService.isIncidentDateWithinEditPeriod(reportId)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
 
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
