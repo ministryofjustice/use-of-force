@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
 import { Report, ReportEdit, ReportSummary } from '../data/incidentClientTypes'

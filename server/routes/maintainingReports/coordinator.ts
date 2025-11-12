@@ -874,7 +874,9 @@ export default class CoordinatorRoutes {
     const username = flashUsername || queryUsername || ''
 
     const userSearchResultsRaw = req.flash('userSearchResults')[0]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let userSearchResults: any = { content: [] }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let content: any[] = []
 
     if (userSearchResultsRaw) {
