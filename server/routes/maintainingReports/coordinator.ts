@@ -1076,7 +1076,7 @@ export default class CoordinatorRoutes {
       case AddStaffResult.SUCCESS:
       case AddStaffResult.SUCCESS_UNVERIFIED: {
         const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
-        const successMessage = `You have added ${staffMember.name} (${staffMember.userId.toUpperCase()}) to the incident. You can see your changes on the edit history tab of the incident report.`
+        const successMessage = `You have added ${staffMember.name} (${staffMember.userId.toUpperCase()}) to the incident. You can see your changes on the <a class="govuk-link" href="/${reportId}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab of the incident report.`
         req.flash('result', 'success')
         req.flash('resultMessage', successMessage)
         break
