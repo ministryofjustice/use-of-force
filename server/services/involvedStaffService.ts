@@ -188,6 +188,8 @@ export class InvolvedStaffService {
       reportOwnerChanged: false,
     }
 
+    const report = await this.incidentClient.getReportForReviewer(reportId)
+
     let result
 
     await this.inTransaction(async query => {
@@ -195,11 +197,11 @@ export class InvolvedStaffService {
 
       await this.updateReportEditWithInvolvedStaff(edits, query)
 
-      // await this.reportLogClient.insert(client, username, reportId, 'REPORT_MODIFIED', {
-      //   formName,
-      //   originalSection: form[formName],
-      //   updatedSection,
-      // })
+      if (report.status === ReportStatus.COMPLETE.value) {
+        logger.info(`There are now pending statements on : ${reportId}, moving from 'COMPLETE' to 'SUBMITTED'`)
+        // TODO provide real username
+        await this.incidentClient.changeStatus(reportId, 'SYSTEM', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, query)
+      }
     })
 
     return result
