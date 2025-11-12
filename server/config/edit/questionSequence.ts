@@ -56,4 +56,6 @@ export default [
   'restraintPositions',
   'painInducingTechniquesUsed',
   'handcuffsApplied',
+  // add involved staff
+  'involvedStaff',
 ]

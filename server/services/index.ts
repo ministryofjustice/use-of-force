@@ -55,7 +55,8 @@ export const services = () => {
     statementsClient,
     userService,
     db.inTransaction,
-    notificationService
+    notificationService,
+    hmppsManageUsersApiClient
   )
   const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
   const offenderService = new OffenderService(prisonApiClient, authService)

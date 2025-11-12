@@ -15,7 +15,14 @@ jest.mock('./involvedStaffService')
 jest.mock('./offenderService')
 jest.mock('./nomisMappingService')
 
-const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<InvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 

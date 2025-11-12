@@ -29,7 +29,14 @@ jest.mock('../../../log')
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
-const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>

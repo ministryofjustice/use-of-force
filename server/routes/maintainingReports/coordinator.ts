@@ -1062,34 +1062,19 @@ export default class CoordinatorRoutes {
       })
     }
 
-    // Add staff member if validation passes
-    const result = await this.involvedStaffService.addInvolvedStaff(
+    // Add staff member if validation passes - addInvolvedStaff / updateWithNewInvolvedStaff
+    const result = await this.involvedStaffService.updateWithNewInvolvedStaff(
       await this.authService.getSystemClientToken(res.locals.user.username),
       reportId,
-      username
+      username,
+      res.locals.user.displayName,
+      pageInput
     )
 
     // Handle result - display appropriate alert message
     switch (result) {
       case AddStaffResult.SUCCESS:
       case AddStaffResult.SUCCESS_UNVERIFIED: {
-        const edits = {
-          username: res.locals.user.username,
-          displayName: res.locals.user.displayName,
-          reportId,
-          changes: {
-            oldValue: 'the list of involved staff',
-            newValue: 'the new list of involved staff',
-            question: 'Staff involved',
-          },
-          reason: pageInput.reason,
-          reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
-          reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
-          reportOwnerChanged: false,
-        }
-
-        await this.involvedStaffService.updateReportEditWithInvolvedStaff(edits)
-
         const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
         const successMessage = `You have added ${staffMember.name} (${staffMember.userId.toUpperCase()}) to the incident. You can see your changes on the edit history tab of the incident report.`
         req.flash('result', 'success')
