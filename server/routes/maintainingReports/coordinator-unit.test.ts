@@ -192,7 +192,8 @@ beforeEach(() => {
   } as any)
   involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
   involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
-  // Always allow edit/delete unless overridden in a specific test
+
+  // Always allow edit/delete of a report unless test specifies otherwise
   reportEditService.isIncidentDateWithinEditPeriod.mockResolvedValue(true)
 
   controller = new CoordinatorRoutes(
