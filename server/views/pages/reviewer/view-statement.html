@@ -17,9 +17,15 @@
  
   {{ statementDetail.detail(data, false) }}
 
+  {% if featureFlagReportEditingEnabled %}
+    {% set href = '/'+ data.reportId + '/view-incident?tab=report' %}
+  {% else %}
+    {% set href = '/'+ data.reportId + '/view-statements' %}
+  {% endif %}
+
   <p class="govuk-!-margin-top-5">
     <a
-      href="/{{ data.reportId }}/view-statements"
+      href={{href}}
       draggable="false"
       class="govuk-link"
       data-qa="continue"
