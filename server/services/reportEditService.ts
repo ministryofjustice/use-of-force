@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import { isWithinInterval, addWeeks, subDays } from 'date-fns'
+import { isWithinInterval, addWeeks, subDays, startOfDay, endOfDay } from 'date-fns'
 import IncidentClient from '../data/incidentClient'
 import config from '../config'
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
@@ -439,19 +439,12 @@ export default class ReportEditService {
     // on the first iteration of this function, the edit period was 13 weeks starting from the incidentDate inclusive
 
     const report = await this.incidentClient.getReportForReviewer(reportId)
-
-    // Helper to normalize any date to UTC midnight
-    const toUTCMidnight = (date: Date) =>
-      new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
-
-    // Normalize dates
-    const editPeriodStart = toUTCMidnight(new Date(report.incidentDate))
-    const todayUTC = toUTCMidnight(today)
+    const editPeriodStart = startOfDay(new Date(report.incidentDate))
+    const endOfToday = endOfDay(today)
 
     // Calculate start of edit period in UTC
-    const editPeriodEnd = subDays(addWeeks(editPeriodStart, config.submittedReportEditPeriodWeeks), 1)
+    const editPeriodEnd = endOfDay(subDays(addWeeks(editPeriodStart, config.submittedReportEditPeriodWeeks), 1))
 
-    // Does todays date fall in editability window?
-    return isWithinInterval(todayUTC, { start: editPeriodStart, end: editPeriodEnd })
+    return isWithinInterval(endOfToday, { start: editPeriodStart, end: editPeriodEnd })
   }
 }
