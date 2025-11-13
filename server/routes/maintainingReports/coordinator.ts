@@ -44,6 +44,11 @@ export default class CoordinatorRoutes {
 
   viewEditReport: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const { user } = res.locals
     const systemToken = await this.authService.getSystemClientToken(user.username)
     const report = await this.reviewService.getReport(reportId)
@@ -67,6 +72,11 @@ export default class CoordinatorRoutes {
 
   viewDeleteIncident: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
@@ -101,6 +111,11 @@ export default class CoordinatorRoutes {
 
   viewReasonForDeletingIncident: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
 
@@ -163,6 +178,11 @@ export default class CoordinatorRoutes {
 
   viewEditIncidentDetails: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const newPrison = req.query['new-prison']
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
     const report = await this.reviewService.getReport(reportId)
@@ -281,6 +301,12 @@ export default class CoordinatorRoutes {
   }
 
   viewEditPrison: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const systemToken = await this.authService.getSystemClientToken(res.locals.user.username)
     const prisons = await this.locationService.getPrisons(systemToken)
 
@@ -315,6 +341,12 @@ export default class CoordinatorRoutes {
 
   viewEditWhyWasUOFApplied: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const persistedUseOfForceReasons = report.form.reasonsForUseOfForce?.reasons || []
@@ -372,6 +404,11 @@ export default class CoordinatorRoutes {
 
   viewEditPrimaryReasonForUof: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const sessionData = this.getIncidentReportSession(req, reportId) || {}
@@ -409,6 +446,11 @@ export default class CoordinatorRoutes {
 
   viewEditUseOfForceDetails: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const useOfForceDetailsPersistedData = report.form.useOfForceDetails
@@ -534,6 +576,11 @@ export default class CoordinatorRoutes {
 
   viewEditRelocationAndInjuries: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const sessionData = this.getIncidentReportSession(req, reportId)
@@ -625,6 +672,11 @@ export default class CoordinatorRoutes {
 
   viewEditEvidence: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const report = await this.reviewService.getReport(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const sessionData = this.getIncidentReportSession(req, reportId)
@@ -714,6 +766,12 @@ export default class CoordinatorRoutes {
   // viewReasonForChange will be used for changes to many parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
+
+    if (!reportEditOrDeletePermitted) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const errors = req.flash('errors')
     const sessionData = this.getIncidentReportSession(req, reportId)
     const sectionDetails = sessionData?.sectionDetails

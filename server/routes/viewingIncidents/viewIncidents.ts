@@ -5,6 +5,7 @@ import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import type ReviewService from '../../services/reviewService'
 import logger from '../../../log'
+import config from '../../config'
 
 const extractReportId = (req: Request): number => parseInt(req.params.incidentId, 10)
 
@@ -38,6 +39,7 @@ export default class ViewIncidentsRoutes {
     const systemToken = await this.authService.getSystemClientToken(username)
     const allStatements = await this.reviewService.getStatements(systemToken, incidentId)
     const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
+    const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(incidentId)
 
     if (tab === 'report') {
       const lastEdit = hasReportBeenEdited ? reportEdits[0] : null
@@ -64,6 +66,8 @@ export default class ViewIncidentsRoutes {
           tab: 'report',
           displaySuccessBanner,
           reportSectionText,
+          reportEditOrDeletePermitted,
+          editabilityPeriod: config.submittedReportEditPeriodWeeks,
         }
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
@@ -83,6 +87,7 @@ export default class ViewIncidentsRoutes {
         offenderDetail,
         allStatements,
         statements: submittedStatements,
+        reportEditOrDeletePermitted,
       }
       return res.render('pages/viewIncident/incident.njk', { data: dataForStatements })
     }
@@ -98,6 +103,7 @@ export default class ViewIncidentsRoutes {
         reportEditViewData,
         ...reportData,
         statements: submittedStatements,
+        reportEditOrDeletePermitted,
       }
       return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
     }

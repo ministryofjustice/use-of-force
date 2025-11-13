@@ -50,6 +50,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
+  null,
   null
 ) as jest.Mocked<ReportEditService>
 const flash = jest.fn()
@@ -192,6 +193,9 @@ beforeEach(() => {
   involvedStaffService.addInvolvedStaff.mockResolvedValue(AddStaffResult.SUCCESS)
   involvedStaffService.updateReportEditWithInvolvedStaff = jest.fn()
 
+  // Always allow edit/delete of a report unless test specifies otherwise
+  reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(true)
+
   controller = new CoordinatorRoutes(
     reportService,
     involvedStaffService,
@@ -211,6 +215,68 @@ afterEach(() => {
 })
 
 describe('CoordinatorEditReportController', () => {
+  // --- Permission-based redirect tests for all View endpoints ---
+  describe('When report is outside editability window', () => {
+    beforeEach(() => {
+      req.params = { reportId: '1' }
+    })
+
+    it('viewEditReport: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditReport(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewDeleteIncident: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewDeleteIncident(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewReasonForDeletingIncident: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewReasonForDeletingIncident(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditPrison: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditPrison(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditIncidentDetails: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditIncidentDetails(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditWhyWasUOFApplied: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditWhyWasUOFApplied(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditPrimaryReasonForUof: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditPrimaryReasonForUof(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditUseOfForceDetails: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditUseOfForceDetails(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditRelocationAndInjuries: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditRelocationAndInjuries(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewEditEvidence: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewEditEvidence(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+    it('viewReasonForChange: should redirect to /view-incident page', async () => {
+      reportEditService.isTodaysDateWithinEditabilityPeriod.mockResolvedValue(false)
+      await controller.viewReasonForChange(req, res)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+  })
   describe('viewEditReport', () => {
     it('should call services correctly return expected data', async () => {
       await controller.viewEditReport(req, res)
@@ -581,7 +647,7 @@ describe('CoordinatorEditReportController', () => {
           'pages/coordinator/why-uof-applied-primary-reason.njk',
           expect.objectContaining({
             coordinatorEditJourney: true,
-            data: {
+            data: expect.objectContaining({
               offenderDetail: { name: 'An Offender' },
               primaryReason: undefined,
               reasons: [
@@ -590,7 +656,7 @@ describe('CoordinatorEditReportController', () => {
                 { label: 'Other NTRG incident', value: 'OTHER_NTRG_INCIDENT' },
               ],
               reportId: 1,
-            },
+            }),
             errors: undefined,
             showSaveAndReturnButton: false,
           })

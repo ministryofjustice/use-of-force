@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
+import { isWithinInterval, addWeeks, subDays, startOfDay, endOfDay } from 'date-fns'
+import IncidentClient from '../data/incidentClient'
+import config from '../config'
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed } from '../config/types'
-
 import reasonForChangeErrorMessageConfig from '../config/edit/reasonForChangeErrorMessageConfig'
 import sequence from '../config/edit/questionSequence'
 import questionSets from '../config/edit/questionSets'
@@ -44,7 +46,8 @@ export default class ReportEditService {
     private readonly editEvidenceService: EditEvidenceService,
     private readonly editUseOfForceDetailsService: EditUseOfForceDetailsService,
     private readonly locationService: LocationService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly incidentClient: IncidentClient
   ) {}
 
   // used to format the output for the REASON-FOR-CHANGE page
@@ -430,5 +433,18 @@ export default class ReportEditService {
       default:
         return `${REASON.ANOTHER_REASON_DESCRIPTION}: ${data.reasonText}`
     }
+  }
+
+  async isTodaysDateWithinEditabilityPeriod(reportId: number, today = new Date()): Promise<boolean> {
+    // on the first iteration of this function, the edit period was 13 weeks starting from the incidentDate inclusive
+
+    const report = await this.incidentClient.getReportForReviewer(reportId)
+    const editPeriodStart = startOfDay(new Date(report.incidentDate))
+    const endOfToday = endOfDay(today)
+
+    // Calculate start of edit period in UTC
+    const editPeriodEnd = endOfDay(subDays(addWeeks(editPeriodStart, config.submittedReportEditPeriodWeeks), 1))
+
+    return isWithinInterval(endOfToday, { start: editPeriodStart, end: editPeriodEnd })
   }
 }

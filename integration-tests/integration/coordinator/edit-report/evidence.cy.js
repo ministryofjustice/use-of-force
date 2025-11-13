@@ -8,14 +8,14 @@ import EvidencePage from '../../../pages/coordinator/evidencePage'
 import ReasonForChangePage from '../../../pages/coordinator/reasonForChangePage'
 import { ReportStatus } from '../../../../server/config/types'
 
-const moment = require('moment')
-
 context('A use of force coordinator needs to edit evidence details', () => {
+  const submittedDate = new Date()
+  const incidentDate = new Date()
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
-      incidentDate: moment('2019-09-10 09:57:00.000').toDate(),
+      submittedDate,
+      incidentDate,
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -66,8 +66,8 @@ context('A use of force coordinator needs to edit evidence details', () => {
     it('A coordinator can edit the evidence page', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
-        submittedDate: moment('2025-07-23 09:57:00.000'),
-        incidentDate: moment('2025-07-22 09:57:00.000'),
+        submittedDate,
+        incidentDate,
         agencyId: offender.agencyId,
         bookingId: offender.bookingId,
         sequenceNumber: 1,
@@ -187,8 +187,8 @@ context('A use of force coordinator needs to edit evidence details', () => {
     it('Cancelling from reason-for-change page should delete any unpersisted edit', () => {
       cy.task('seedReport', {
         status: ReportStatus.COMPLETE,
-        submittedDate: moment('2025-07-23 09:57:00.000'),
-        incidentDate: moment('2025-07-22 09:57:00.000'),
+        submittedDate,
+        incidentDate,
         agencyId: offender.agencyId,
         bookingId: offender.bookingId,
         sequenceNumber: 1,

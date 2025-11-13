@@ -4,7 +4,7 @@
   <div class="flex-container-space-between">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-4 govuk-!-margin-top-4">Use of force incident {{ data.incidentId }} </h1>
 
-    {% if data.isCoordinator %}
+    {% if data.isCoordinator and data.reportEditOrDeletePermitted %}
       <div class="govuk-button-group govuk-!-margin-top-6">
           {{ govukButton({
             text: "Edit report",

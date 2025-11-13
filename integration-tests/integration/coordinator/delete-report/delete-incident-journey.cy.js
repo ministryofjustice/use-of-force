@@ -1,4 +1,3 @@
-import moment from 'moment'
 import DeleteIncidentPage from '../../../pages/coordinator/deleteIncidentPage'
 import DeleteIncidentReasonPage from '../../../pages/coordinator/deleteIncidentReasonPage'
 import DeleteIncidentSuccessPage from '../../../pages/coordinator/deleteIncidentSuccessPage'
@@ -11,10 +10,10 @@ const { ReportStatus } = require('../../../../server/config/types')
 const seedReport = () => {
   cy.task('seedReport', {
     status: ReportStatus.SUBMITTED,
-    submittedDate: moment().toDate(),
+    submittedDate: new Date(),
     username: 'TEST_USER',
     reporterName: 'James Stuart',
-    incidentDate: moment('2019-09-10 09:57:40.000').toDate(),
+    incidentDate: new Date(),
     agencyId: 'MDI',
     bookingId: 1001,
     involvedStaff: [
