@@ -737,7 +737,7 @@ describe('persistDeleteIncident', () => {
 })
 
 describe('isTodaysDateWithinEditabilityPeriod', () => {
-  const today = new Date(2025, 10, 12) // 12 Nov 2025
+  const today = new Date(2025, 10, 12, 0, 0, 0) // 12 Nov 2025
   const reportId = 1
   it('returns true if incidentDate is today', async () => {
     incidentClient.getReportForReviewer.mockResolvedValue({ incidentDate: today } as Report) // 12 Nov 2025
