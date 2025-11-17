@@ -97,7 +97,6 @@ export class InvolvedStaffService {
     })
   }
 
-  // to delete?
   public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
@@ -207,78 +206,5 @@ export class InvolvedStaffService {
     })
 
     return result
-  }
-
-  // new method to remove involved staff and update report edit
-  public async updateReportRemoveInvolvedStaff(
-    token: string,
-    reportId: number,
-    username: string,
-    displayName: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pageInput: any,
-    statementId: number
-  ): Promise<void> {
-    logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
-
-    const involvedStaff = await this.statementsClient.getInvolvedStaffToRemove(statementId)
-
-    // GET INVOLVED STAFF (oldValue)
-
-    // GET ID / NAME ETC FOR STAFF MEMBER BEING REMOVED
-
-    // REMOVE THAT STAFF MEMBER FROM THE ARRAY (becomes newValue)
-
-    const oldValue = await this.getInvolvedStaff(reportId)
-
-    const parsedOldValue = oldValue.map(staff => `${staff.name} (${staff.userId})`).join(', ')
-
-    const { name } = await this.manageUsersClient.getUser(username, token)
-
-    // remove staff member from array here
-    const newValue = `${parsedOldValue}, ${name} (${username})`
-
-    const edits = {
-      username,
-      displayName,
-      reportId,
-      changes: {
-        involvedStaff: {
-          // need key adding in other file - which file?
-          oldValue: parsedOldValue,
-          newValue,
-          question: 'Staff involved',
-        },
-      },
-      reason: pageInput.reason,
-      reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
-      reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
-      reportOwnerChanged: false,
-    }
-
-    await this.inTransaction(async client => {
-      const pendingStatementBeforeDeletion = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
-
-      await this.statementsClient.deleteStatement({
-        statementId,
-        query: client,
-      })
-
-      if (pendingStatementBeforeDeletion !== 0) {
-        const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
-
-        if (pendingStatementCount === 0) {
-          // TODO provide real username
-          logger.info(`All statements complete on : ${reportId}, marking as complete`)
-          await this.incidentClient.changeStatus(
-            reportId,
-            'SYSTEM',
-            ReportStatus.SUBMITTED,
-            ReportStatus.COMPLETE,
-            client
-          )
-        }
-      }
-    })
   }
 }
