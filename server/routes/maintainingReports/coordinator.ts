@@ -1308,7 +1308,17 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+    res.render('pages/coordinator/reason-for-deleting-this-person.njk', { errors, data })
+  }
+
+  submitDeleteStatement: RequestHandler = async (req, res) => {
+    // const reportId = extractReportId(req)
+    // const { statementId } = req.params
+    // const { removalRequest } = req.query
+    // const staffMember = await this.involvedStaffService.loadInvolvedStaff(reportId, parseInt(statementId, 10))
+    // const errors = req.flash('errors')
+    // const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
+    // res.render('pages/coordinator/reason-for-deleting-this-person.njk', { errors, data })
   }
 
   deleteStatement: RequestHandler = async (req, res) => {
