@@ -148,7 +148,6 @@ export class InvolvedStaffService {
       const pendingStatementBeforeDeletion = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
       await this.statementsClient.deleteStatement({ statementId, query: client })
-      await this.updateReportEditWithInvolvedStaff(edits, client)
 
       if (pendingStatementBeforeDeletion !== 0) {
         const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
@@ -166,6 +165,8 @@ export class InvolvedStaffService {
           )
         }
       }
+
+      await this.updateReportEditWithInvolvedStaff(edits, client)
     })
 
     // Notification (assuming single removal)
