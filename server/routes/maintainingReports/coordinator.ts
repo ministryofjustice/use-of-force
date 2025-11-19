@@ -1348,7 +1348,6 @@ export default class CoordinatorRoutes {
 
     const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
 
-    // remove staff member if validation passes ------ // res.locals.user.username needs to be the editor name
     await this.involvedStaffService.removeInvolvedStaff(
       res.locals.user.username,
       reportId,
@@ -1364,26 +1363,6 @@ export default class CoordinatorRoutes {
 
     return res.redirect(paths.viewInvolvedStaff(reportId))
   }
-
-  // deleteStatement: RequestHandler = async (req, res) => {
-  //   const reportId = extractReportId(req)
-  //   const { statementId } = req.params
-  //   const { confirm, removalRequest } = req.body
-
-  //   if (!confirm) {
-  //     req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
-  //     return removalRequest
-  //       ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
-  //       : res.redirect(paths.confirmStatementDelete(reportId, statementId, false))
-  //   }
-
-  //   if (confirm === 'yes') {
-  //     await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
-  //   }
-
-  //   const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
-  //   return res.redirect(location)
-  // }
 
   getIncidentReportSession(req, reportId) {
     if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return undefined
