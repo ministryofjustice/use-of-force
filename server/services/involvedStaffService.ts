@@ -97,24 +97,65 @@ export class InvolvedStaffService {
     })
   }
 
-  public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
+  public async removeInvolvedStaff(
+    username: string,
+    reportId: number,
+    statementId: number,
+    displayName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pageInput: any
+  ): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
-    const involvedStaff = await this.statementsClient.getInvolvedStaffToRemove(statementId)
+    // Normalize involvedStaff to an array of objects
+    const involvedStaffRaw = await this.statementsClient.getInvolvedStaffToRemove(statementId)
+
+    // if ! an Array wrap the Object in an array
+    const involvedStaff = Array.isArray(involvedStaffRaw) ? involvedStaffRaw : [involvedStaffRaw]
+
+    // Get current involved staff
+    const oldValueRaw = await this.getInvolvedStaff(reportId)
+    const oldValue = Array.isArray(oldValueRaw) ? oldValueRaw : [oldValueRaw]
+
+    // Build oldValue string for audit
+    const parsedOldValue = oldValue.map(staff => `${staff.name} (${staff.userId})`).join(', ')
+
+    // Filter out staff where BOTH email and userId match
+    const filteredStaff = oldValue.filter(
+      staff => !involvedStaff.some(remove => remove.email === staff.email && remove.userId === staff.userId)
+    )
+
+    const newValue = filteredStaff.map(staff => `${staff.name} (${staff.userId})`).join(', ')
+
+    const edits = {
+      username,
+      displayName,
+      reportId,
+      changes: {
+        involvedStaff: {
+          oldValue: parsedOldValue,
+          newValue,
+          question: 'Staff involved',
+        },
+      },
+      reason: pageInput.reason,
+      reasonText: pageInput.reason === 'anotherReasonForEdit' ? pageInput.reasonText : '',
+      reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
+      reportOwnerChanged: false,
+    }
 
     await this.inTransaction(async client => {
       const pendingStatementBeforeDeletion = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
-      await this.statementsClient.deleteStatement({
-        statementId,
-        query: client,
-      })
+      await this.statementsClient.deleteStatement({ statementId, query: client })
+      await this.updateReportEditWithInvolvedStaff(edits, client)
 
       if (pendingStatementBeforeDeletion !== 0) {
         const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
         if (pendingStatementCount === 0) {
-          // TODO provide real username
+          // await this.updateReportEditWithInvolvedStaff(edits, client)
+
           logger.info(`All statements complete on : ${reportId}, marking as complete`)
           await this.incidentClient.changeStatus(
             reportId,
@@ -127,13 +168,13 @@ export class InvolvedStaffService {
       }
     })
 
-    const { submittedDate, email, name: involvedName } = involvedStaff
-    const incidentDate = moment(involvedStaff.incidentDate).toDate()
+    // Notification (assuming single removal)
+    const { submittedDate, email, name: involvedName, incidentDate } = involvedStaff[0]
     const context = { reportId, statementId }
 
     await this.notificationService.sendInvolvedStaffRemovedFromReport(
       email,
-      { involvedName, incidentDate, submittedDate },
+      { involvedName, incidentDate: moment(incidentDate).toDate(), submittedDate },
       context
     )
   }
