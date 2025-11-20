@@ -1309,7 +1309,11 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    res.render('pages/coordinator/reason-for-deleting-this-person.njk', { errors, data })
+    res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+      errors,
+      data,
+      backlinkHref: paths.viewInvolvedStaff(reportId),
+    })
   }
 
   submitDeleteStatement: RequestHandler = async (req, res) => {
@@ -1341,8 +1345,7 @@ export default class CoordinatorRoutes {
         showSaveAndReturnButton: false,
         coordinatorEditJourney: true,
         noChangeError: req.flash('noChangeError'),
-        backlinkHref:
-          paths.viewInvolvedStaffSearch(reportId) + (page ? `?page=${page}&username=${searchedUsername}` : ''),
+        backlinkHref: paths.viewInvolvedStaff(reportId),
       })
     }
 
