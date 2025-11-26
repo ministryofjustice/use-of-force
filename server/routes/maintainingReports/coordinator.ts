@@ -1320,7 +1320,6 @@ export default class CoordinatorRoutes {
     const reportId = extractReportId(req)
     const { statementId, username } = req.params
     const pageInput = req.body
-    const { page, username: searchedUsername } = req.query
 
     // Validate input using Joi schema
     const { errors } = processInput({
