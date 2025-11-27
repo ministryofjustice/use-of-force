@@ -4,7 +4,7 @@ const { buildValidationSpec } = require('../../services/validation')
 const reasonForAddingStaffSchema = joi.object({
   reason: joi
     .string()
-    .valid('errorInReport', 'somethingMissingFromReport', 'anotherReasonForEdit')
+    .valid('forgottenInReport', 'bodycamFootageRevealedinvolved', 'anotherReasonForEdit')
     .required()
     .messages({
       'any.required': 'Provide a reason for adding this person',

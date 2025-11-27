@@ -2,10 +2,14 @@ const { joi } = require('./validations')
 const { buildValidationSpec } = require('../../services/validation')
 
 const reasonForDeletingStaffSchema = joi.object({
-  reason: joi.string().valid('personNotInvolved', 'personAddedInError', 'anotherReasonForEdit').required().messages({
-    'any.required': 'Provide a reason for deleting this person',
-    'any.only': 'Provide a reason for deleting this person',
-  }),
+  reason: joi
+    .string()
+    .valid('footageRevealedNotInvolved', 'personAddedInError', 'anotherReasonForEdit')
+    .required()
+    .messages({
+      'any.required': 'Provide a reason for deleting this person',
+      'any.only': 'Provide a reason for deleting this person',
+    }),
   reasonText: joi.when('reason', {
     is: 'anotherReasonForEdit',
     then: joi.string().trim().min(3).max(250).required().messages({
