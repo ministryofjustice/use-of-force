@@ -153,8 +153,6 @@ export class InvolvedStaffService {
         const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
 
         if (pendingStatementCount === 0) {
-          // await this.updateReportEditWithInvolvedStaff(edits, client)
-
           logger.info(`All statements complete on : ${reportId}, marking as complete`)
           await this.incidentClient.changeStatus(
             reportId,
