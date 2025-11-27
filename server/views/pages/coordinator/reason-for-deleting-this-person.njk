@@ -55,9 +55,9 @@
             errorMessage: data.errors | findError('reason'),
             items: [
               {
-                value: "personNotInvolved",
+                value: "footageRevealedNotInvolved",
                 text: "Bodycam or CCTV footage revealed the person was not involved",
-                checked: data.reason === 'personNotInvolved',
+                checked: data.reason === 'footageRevealedNotInvolved',
                 attributes: {'data-qa': 'person-not-involved'}
               },
               {

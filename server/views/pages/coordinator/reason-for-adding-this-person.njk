@@ -55,15 +55,15 @@
             errorMessage: data.errors | findError('reason'),
             items: [
               {
-                value: "errorInReport", 
+                value: "forgottenInReport", 
                 text: "The person who created the report forgot to add them",
-                checked: data.reason === 'errorInReport', 
+                checked: data.reason === 'forgottenInReport', 
                 attributes: {'data-qa': 'error-in-report'} 
               },
               {
-                value: "somethingMissingFromReport",
+                value: "bodycamFootageRevealedinvolved",
                 text: "Bodycam footage revealed that they were involved",
-                checked: data.reason === 'somethingMissingFromReport',
+                checked: data.reason === 'bodycamFootageRevealedinvolved',
                 attributes: {'data-qa': 'missing-from-report'}
               },
               {
