@@ -1,0 +1,113 @@
+
+{% extends "../../formPages/formTemplate.html" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% set showBacklink = true %}
+{% set backlinkHref = backlinkHref %}
+
+{% block content %}
+
+{% if data.errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: data.errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-xl mainHeading">Reason for deleting this person</h1>
+
+    <div class = 'govuk-body'>
+      <!-- to update -->
+      {% set reasonHtml %}
+        {{ govukCharacterCount({
+          name: "reasonText",
+          id: "reasonText",
+          maxlength: 250,
+          value: data.reasonText,
+          classes: "govuk-!-width-one-half",
+          errorMessage: data.errors | findError('reasonText'),
+          attributes: {'data-qa':'another-reason-text'},
+          hint: {
+            text: "Please specify"
+          }
+        }) }}
+      {% endset -%}
+
+     <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {{ govukRadios({
+            name: "reason",
+            fieldset: {
+              legend: {
+                text: "Why are you deleting this person from the use of force report?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            errorMessage: data.errors | findError('reason'),
+            items: [
+              {
+                value: "personNotInvolved",
+                text: "Bodycam or CCTV footage revealed the person was not involved",
+                checked: data.reason === 'personNotInvolved',
+                attributes: {'data-qa': 'person-not-involved'}
+              },
+              {
+                value: "personAddedInError", 
+                text: "The person was confused for someone else and added in error",
+                checked: data.reason === 'personAddedInError',
+                attributes: {'data-qa': 'person-added-in-error'}
+              },
+              {
+                value: "anotherReasonForEdit",
+                text: "Another reason",
+                attributes: {'data-qa': 'another-reason'},
+                checked: data.reason === 'anotherReasonForEdit',
+                conditional: {
+                  html: reasonHtml
+                }
+              }
+            ]
+          }) }}
+
+        {{ govukCharacterCount({
+          name: "reasonAdditionalInfo",
+          id: "reasonAdditionalInfo",
+          maxlength: 500,
+          attributes: {'data-qa': 'additional-info-text'},
+          errorMessage: data.errors | findError('reasonAdditionalInfo'),
+          value: data.reasonAdditionalInfo,
+          label: {
+            text: "Add additional information to explain why you are deleting this person",
+            classes: "govuk-label--m",
+            isPageHeading: true
+          },
+          hint: {
+            text: "For example how the person was confused for someone else."
+          }
+        }) }}
+
+        <div class="govuk-button-group">  
+          {{ govukButton({
+            text: 'Save change',
+            name: "submit",
+            value: 'save-and-continue',
+            attributes: {'data-qa': 'save-and-continue'}
+          }) }}
+
+          <a class="govuk-link" href="/{{data.reportId}}/view-incident?tab=report" data-qa="cancel-edit-reason-link" >Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

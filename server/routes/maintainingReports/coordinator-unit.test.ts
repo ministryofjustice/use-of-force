@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request, Response } from 'express'
 import { ReportEdit } from '../../data/incidentClientTypes'
 import ReportService from '../../services/reportService'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
@@ -1622,6 +1623,50 @@ describe('CoordinatorEditReportController', () => {
         'An unexpected error occurred while adding the staff member.'
       )
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
+    })
+  })
+
+  describe('confirmDeleteStatement', () => {
+    beforeEach(() => {
+      req = {
+        params: { reportId: '123', statementId: '456' },
+        query: { removalRequest: 'true' },
+        flash: jest.fn().mockReturnValue([]),
+      }
+      res = {
+        render: jest.fn(),
+      }
+
+      involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'John Doe' } as any)
+    })
+
+    it('should call loadInvolvedStaff with correct arguments', async () => {
+      await controller.confirmDeleteStatement(req as Request, res as Response)
+
+      expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 456)
+    })
+
+    it('should render the correct template with expected data', async () => {
+      await controller.confirmDeleteStatement(req as Request, res as Response)
+
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/reason-for-deleting-this-person.njk', {
+        backlinkHref: '/123/edit-report/staff-involved',
+        data: {
+          displayName: 'John Doe',
+          removalRequest: 'true',
+          reportId: 123, // number
+          statementId: '456',
+        },
+        errors: [],
+      })
+    })
+
+    it('should include errors from flash if present', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue(['Some error'])
+
+      await controller.confirmDeleteStatement(req as Request, res as Response)
+
+      expect(res.render).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ errors: ['Some error'] }))
     })
   })
 })

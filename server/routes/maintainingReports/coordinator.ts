@@ -23,6 +23,7 @@ import evidenceConfig, { QUESTION_ID as EQID } from '../../config/edit/evidenceC
 import reasonsForUofConfig from '../../config/edit/reasonsForUoFConfig'
 import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../../config/edit/useOfForceDetailsConfig'
 import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
+import reasonForDeletingStaffForm from '../../config/forms/reasonForDeletingStaffForm'
 
 import * as types from '../../config/types'
 
@@ -1308,27 +1309,61 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+    res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+      errors,
+      data,
+      backlinkHref: paths.viewInvolvedStaff(reportId),
+    })
   }
 
-  deleteStatement: RequestHandler = async (req, res) => {
+  submitDeleteStatement: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
-    const { statementId } = req.params
-    const { confirm, removalRequest } = req.body
+    const { statementId, username } = req.params
+    const pageInput = req.body
 
-    if (!confirm) {
-      req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
-      return removalRequest
-        ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
-        : res.redirect(paths.confirmStatementDelete(reportId, statementId, false))
+    // Validate input using Joi schema
+    const { errors } = processInput({
+      validationSpec: reasonForDeletingStaffForm.complete,
+      input: pageInput,
+    })
+
+    if (!isNilOrEmpty(errors)) {
+      // Re-render form with errors and previous input
+      const report = await this.reviewService.getReport(reportId)
+      const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
+
+      const data = {
+        reportId,
+        offenderDetail,
+        ...pageInput,
+        errors,
+      }
+
+      return res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+        data,
+        showSaveAndReturnButton: false,
+        coordinatorEditJourney: true,
+        noChangeError: req.flash('noChangeError'),
+        backlinkHref: paths.viewInvolvedStaff(reportId),
+      })
     }
 
-    if (confirm === 'yes') {
-      await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
-    }
+    const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
 
-    const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
-    return res.redirect(location)
+    await this.involvedStaffService.removeInvolvedStaff(
+      res.locals.user.username,
+      reportId,
+      parseInt(statementId, 10),
+      res.locals.user.displayName,
+      pageInput
+    )
+
+    // redirect back to involved staff page with success message
+    const successMessage = `You have deleted ${staffMember.name} (${staffMember.userId.toUpperCase()}) from the incident.`
+    req.flash('result', 'success')
+    req.flash('resultMessage', successMessage)
+
+    return res.redirect(paths.viewInvolvedStaff(reportId))
   }
 
   getIncidentReportSession(req, reportId) {
