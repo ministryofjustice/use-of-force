@@ -49,7 +49,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it.only('should complete the report when the last involved staff is removed', () => {
+  it('should complete the report when the last involved staff is removed', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -81,24 +81,42 @@ context('A use of force coordinator can remove involved staff', () => {
       .should('contain.text', 'You have deleted MRS_JONES name (MRS_JONES) from the incident.')
   })
 
-  it('should only allow coordinators to remove involved staff', () => {
-    cy.task('stubReviewerLogin')
-    cy.login()
-
-    seedReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-  })
-
   it('should remove statements when involved staff are removed', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    // check initial state of statements table
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.statementsTableRows().should('have.length', 2)
+    viewIncidentPage.statementsTableRows().should('contain', 'MRS_JONES')
+
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+
+    involvedStaffPage.returnToIncidentReportLink().click()
+    ViewIncidentPage.verifyOnPage()
+
+    // check updated state of statements table
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.statementsTableRows().should('have.length', 1)
+    viewIncidentPage.statementsTableRows().should('not.contain', 'MRS_JONES')
   })
 
   it('should not show involved staff on the report after they have been removed', () => {
@@ -181,4 +199,36 @@ context('A use of force coordinator can remove involved staff', () => {
     // Assert delete link does NOT exist for TEST_USER
     // cy.get(`[data-qa="delete-link-TEST_USER"]`).should('not.exist')
   })
+
+  // it.only('should only allow coordinators to remove involved staff', () => {
+  //   cy.task('stubCoordinatorLogin')
+  //   cy.login()
+
+  //   seedReport()
+
+  //   const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+  //   notCompletedIncidentsPage.viewIncidentLink().click()
+
+  //   const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+  //   viewIncidentPage.editReportButton().click()
+
+  //   const editReportPage = EditReportPage.verifyOnPage()
+  //   editReportPage.changeStaffInvolvedLink().click()
+
+  //   const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+  //   involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+  //   involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+  //   const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+  //   reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
+  //   reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
+  //   reasonForDeletingInvolvedStaffPage.saveChanges().click()
+
+  //   involvedStaffPage.staffInvolvedTableRows().should('have.length', 1)
+  //   involvedStaffPage.staffInvolvedTableRows().should('not.contain', 'MRS_JONES')
+
+  //   involvedStaffPage
+  //     .successBanner()
+  //     .should('contain.text', 'You have deleted MRS_JONES name (MRS_JONES) from the incident.')
+  // })
 })
