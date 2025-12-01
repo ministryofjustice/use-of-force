@@ -49,7 +49,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('should complete the report when the last involved staff is removed', () => {
+  it('should reomve the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -119,116 +119,87 @@ context('A use of force coordinator can remove involved staff', () => {
     viewIncidentPage.statementsTableRows().should('not.contain', 'MRS_JONES')
   })
 
-  it('should not show involved staff on the report after they have been removed', () => {
+  it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the back link', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    // check initial state of statements table
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.backLink().click()
+
+    InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRows().should('contain', 'MRS_JONES')
   })
 
-  it('should not show involved staff on the statements tab after they have been removed', () => {
+  it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the cancel link', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    // check initial state of statements table
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.cancelLink().click()
+
+    ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.staffInvolvedTableRows().should('have.length', 2)
+    viewIncidentPage.staffInvolvedTableRows().should('contain', 'TEST_USER')
+    viewIncidentPage.staffInvolvedTableRows().should('contain', 'MRS_JONES')
   })
 
-  it('should show the report in the correct completed/not completed lists after involved staff have been removed', () => {
+  it.only('should show delete links for other staff but not for the report owner', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
     seedReport()
 
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+
+    // check the staff involved table and the row containing TEST_USER should not have a delete link, other rows should
+    // TO DO
+
+    // involvedStaffPage.staffInvolvedTableRows().should()
+    // involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
   })
 
-  it('should retain involved staff if the coordinator cancels the removal on the confirmation page', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-  })
-
-  it('should retain involved staff if the coordinator clicks the cancel link on the confirmation page', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-  })
-
-  it('should show a confirmation message when involved staff have been removed', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-  })
-
-  it('should show delete links for other staff but not for lthe report owner', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-
-    // const viewReportPage = ViewReportPage.goTo(reportId)
-
-    // Navigate to involved staff tab
-    // viewReportPage.selectTab('staff-involved')
-
-    // Assert delete link exists for MRS_JONES
-    // cy.get(`[data-qa="delete-link-MRS_JONES"]`).should('exist')
-
-    // Assert delete link does NOT exist for TEST_USER
-    // cy.get(`[data-qa="delete-link-TEST_USER"]`).should('not.exist')
-  })
-
-  // it.only('should only allow coordinators to remove involved staff', () => {
-  //   cy.task('stubCoordinatorLogin')
-  //   cy.login()
-
-  //   seedReport()
-
-  //   const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-  //   notCompletedIncidentsPage.viewIncidentLink().click()
-
-  //   const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-  //   viewIncidentPage.editReportButton().click()
-
-  //   const editReportPage = EditReportPage.verifyOnPage()
-  //   editReportPage.changeStaffInvolvedLink().click()
-
-  //   const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
-  //   involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
-  //   involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
-
-  //   const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
-  //   reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
-  //   reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
-  //   reasonForDeletingInvolvedStaffPage.saveChanges().click()
-
-  //   involvedStaffPage.staffInvolvedTableRows().should('have.length', 1)
-  //   involvedStaffPage.staffInvolvedTableRows().should('not.contain', 'MRS_JONES')
-
-  //   involvedStaffPage
-  //     .successBanner()
-  //     .should('contain.text', 'You have deleted MRS_JONES name (MRS_JONES) from the incident.')
-  // })
+  // test displaying validation errors on reason for deleting view
+  // TO DO
 })

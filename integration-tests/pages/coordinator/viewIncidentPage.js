@@ -10,6 +10,8 @@ const viewIncidentPage = () =>
     statementsTabLink: () => cy.get('[data-qa=statements-tab'),
     editHistoryTabLink: () => cy.get('[data-qa=edit-history-tab]'),
     statementsTableRows: () => cy.get('[data-qa=statements] tbody tr'),
+    staffInvolvedTableRows: () => cy.get('[data-qa=staff-involved]'),
+    returnToUseOfForceIncidentsLink: () => cy.get('[data-qa="use-of-force-incidents-link"]'),
   })
 
 module.exports = {
