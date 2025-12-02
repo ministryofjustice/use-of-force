@@ -3,12 +3,6 @@ import EditReportPage from '../../pages/coordinator/editReportPage'
 
 const moment = require('moment')
 const { offender } = require('../../mockApis/data')
-const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const ViewReportPage = require('../../pages/reviewer/viewReportPage')
-const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
-const YourReportPage = require('../../pages/yourReports/yourReportPage')
-const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatementDeletePage')
-const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
 const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const InvolvedStaffPage = require('../../pages/coordinator/viewInvolvedStaffPage')
 const ReasonForDeletingInvolvedStaffPage = require('../../pages/coordinator/reasonForDeletingInvolvedStaffPage')
@@ -176,7 +170,7 @@ context('A use of force coordinator can remove involved staff', () => {
     viewIncidentPage.staffInvolvedTableRows().should('contain', 'MRS_JONES')
   })
 
-  it.only('should show delete links for other staff but not for the report owner', () => {
+  it('should show delete links for other staff but not for the report owner', () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -192,14 +186,93 @@ context('A use of force coordinator can remove involved staff', () => {
     editReportPage.changeStaffInvolvedLink().click()
 
     const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
-
-    // check the staff involved table and the row containing TEST_USER should not have a delete link, other rows should
-    // TO DO
-
-    // involvedStaffPage.staffInvolvedTableRows().should()
-    // involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRows().eq(0).should('contain.text', 'TEST_USER')
+    involvedStaffPage.staffInvolvedTableRows().eq(0).should('not.contain', 'Delete')
+    involvedStaffPage.staffInvolvedTableRows().eq(1).should('contain', 'Delete')
   })
 
-  // test displaying validation errors on reason for deleting view
-  // TO DO
+  it('should display validation errors in the reason for deleteing view', () => {
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+
+    seedReport()
+
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+
+    // do not select reason or provide additional info
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'There is a problem')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Provide a reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Provide additional information to explain why you are deleting this person')
+    reasonForDeletingInvolvedStaffPage.reasonError().should('contain.text', 'Provide a reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage.reasonAdditionalInfoError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .reasonAdditionalInfoError()
+      .should('contain.text', 'Provide additional information to explain why you are deleting this person')
+
+    // select reason but do not provide additional info
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Specify the reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Specify the reason for deleting this person')
+
+    // proivide additional info that is more than 500 characters long
+    const longAdditionalInfo = 'a'.repeat(501)
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().clear().type(longAdditionalInfo)
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Additional information must be 500 characters or fewer')
+    reasonForDeletingInvolvedStaffPage.reasonAdditionalInfoError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .reasonAdditionalInfoError()
+      .should('contain.text', 'Additional information must be 500 characters or fewer')
+
+    // provide reason that is less than 3 characters long
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonInput().clear().type('ab')
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Some additional info')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'Reason must be at least 3 characters')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Reason must be at least 3 characters')
+
+    // provide reason that is more than 250 characters long
+    const longReason = 'a'.repeat(251)
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonInput().clear().type(longReason)
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'Reason must be 250 characters or fewer')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Reason must be 250 characters or fewer')
+  })
 })

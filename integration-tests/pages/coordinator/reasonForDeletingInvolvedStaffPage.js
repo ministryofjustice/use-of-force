@@ -1,3 +1,4 @@
+import { error } from 'console'
 import page from '../page'
 
 const reasonForDeletingInvolvedStaffPage = () =>
@@ -10,6 +11,10 @@ const reasonForDeletingInvolvedStaffPage = () =>
     backLink: () => cy.get('[data-qa="back-link"]'),
     saveChanges: () => cy.get('[data-qa="save-and-continue"]'),
     cancelLink: () => cy.get('[data-qa="cancel-edit-reason-link"]'),
+    errorSummary: () => cy.get('[data-qa="error-summary"]'),
+    reasonError: () => cy.get('#reason-error'),
+    anotherReasonError: () => cy.get('#reasonText-error'),
+    reasonAdditionalInfoError: () => cy.get('#reasonAdditionalInfo-error'),
   })
 
 module.exports = {
