@@ -19,6 +19,11 @@ context('A use of force coordinator can remove involved staff', () => {
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+
+    seedReport()
   })
 
   const seedReport = () =>
@@ -43,12 +48,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('should reomve the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
+  it('should remove the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -76,11 +76,6 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should remove statements when involved staff are removed', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -114,15 +109,9 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the back link', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
-    // check initial state of statements table
     const viewIncidentPage = ViewIncidentPage.verifyOnPage()
     viewIncidentPage.editReportButton().click()
 
@@ -142,15 +131,9 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the cancel link', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
-    // check initial state of statements table
     const viewIncidentPage = ViewIncidentPage.verifyOnPage()
     viewIncidentPage.editReportButton().click()
 
@@ -171,11 +154,6 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should show delete links for other staff but not for the report owner', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -192,11 +170,6 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should display validation errors in the reason for deleteing view', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -274,5 +247,37 @@ context('A use of force coordinator can remove involved staff', () => {
     reasonForDeletingInvolvedStaffPage
       .anotherReasonError()
       .should('contain.text', 'Reason must be 250 characters or fewer')
+  })
+
+  it('should return to the edit report page when the back link is clicked in the staff involved view', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.backLink().click()
+
+    EditReportPage.verifyOnPage()
+  })
+
+  it('should return to the view incident page when the Return to incident report link is clicked in the staff involved view', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.returnToIncidentReportLink().click()
+
+    ViewIncidentPage.verifyOnPage()
   })
 })
