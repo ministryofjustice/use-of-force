@@ -48,7 +48,7 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  it('should remove the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
+  const navigateToInvolvedStaffPage = () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.viewIncidentLink().click()
 
@@ -58,7 +58,11 @@ context('A use of force coordinator can remove involved staff', () => {
     const editReportPage = EditReportPage.verifyOnPage()
     editReportPage.changeStaffInvolvedLink().click()
 
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    return InvolvedStaffPage.verifyOnPage()
+  }
+
+  it('should remove the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
     involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
@@ -109,16 +113,7 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the back link', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeStaffInvolvedLink().click()
-
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
     involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
@@ -154,32 +149,14 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should show delete links for other staff but not for the report owner', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeStaffInvolvedLink().click()
-
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.staffInvolvedTableRows().eq(0).should('contain.text', 'TEST_USER')
     involvedStaffPage.staffInvolvedTableRows().eq(0).should('not.contain', 'Delete')
     involvedStaffPage.staffInvolvedTableRows().eq(1).should('contain', 'Delete')
   })
 
   it('should display validation errors in the reason for deleteing view', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeStaffInvolvedLink().click()
-
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
     involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
@@ -250,32 +227,14 @@ context('A use of force coordinator can remove involved staff', () => {
   })
 
   it('should return to the edit report page when the back link is clicked in the staff involved view', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeStaffInvolvedLink().click()
-
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.backLink().click()
 
     EditReportPage.verifyOnPage()
   })
 
   it('should return to the view incident page when the Return to incident report link is clicked in the staff involved view', () => {
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.viewIncidentLink().click()
-
-    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
-    viewIncidentPage.editReportButton().click()
-
-    const editReportPage = EditReportPage.verifyOnPage()
-    editReportPage.changeStaffInvolvedLink().click()
-
-    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.returnToIncidentReportLink().click()
 
     ViewIncidentPage.verifyOnPage()
