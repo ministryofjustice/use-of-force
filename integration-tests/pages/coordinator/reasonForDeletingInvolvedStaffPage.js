@@ -1,4 +1,3 @@
-import { error } from 'console'
 import page from '../page'
 
 const reasonForDeletingInvolvedStaffPage = () =>
