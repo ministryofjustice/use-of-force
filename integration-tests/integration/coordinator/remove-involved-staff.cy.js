@@ -112,6 +112,51 @@ context('A use of force coordinator can remove involved staff', () => {
     viewIncidentPage.statementsTableRows().should('not.contain', 'MRS_JONES')
   })
 
+  it('should add a new row in the edit history tab when involved staff are removed', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    // check initial state of statements table
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+
+    viewIncidentPage.editHistoryTabLink().should('not.exist')
+
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.statementsTableRows().should('have.length', 2)
+    viewIncidentPage.statementsTableRows().should('contain', 'MRS_JONES')
+
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
+
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+
+    involvedStaffPage.returnToIncidentReportLink().click()
+    ViewIncidentPage.verifyOnPage()
+
+    // check edit history table
+    viewIncidentPage.editHistoryTabLink().click()
+    viewIncidentPage.editHistoryTable().should('be.visible')
+    viewIncidentPage.editHistoryTable().should('have.length', 1)
+    viewIncidentPage.editHistoryTableWhatChanged().should('contain', 'Staff involved')
+    viewIncidentPage
+      .editHistoryTableOldValue()
+      .should('contain', 'TEST_USER name (TEST_USER), MRS_JONES name (MRS_JONES)')
+    viewIncidentPage.editHistoryTableNewValue().should('contain', 'TEST_USER name (TEST_USER)')
+    viewIncidentPage
+      .editHistoryTablReason()
+      .should('contain', 'Bodycam or CCTV footage revealed the person was not involved')
+    viewIncidentPage.editHistoryTableAdditionalComments().should('contain', 'Not involved in this incident')
+  })
+
   it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the back link', () => {
     const involvedStaffPage = navigateToInvolvedStaffPage()
     involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
