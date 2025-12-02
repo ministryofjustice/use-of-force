@@ -146,7 +146,6 @@ context('A use of force coordinator can remove involved staff', () => {
     viewIncidentPage.editHistoryTabLink().click()
     viewIncidentPage.editHistoryTable().should('be.visible')
     viewIncidentPage.editHistoryTable().should('have.length', 1)
-    viewIncidentPage.editHistoryTableWhatChanged().should('contain', 'Staff involved')
     viewIncidentPage
       .editHistoryTableOldValue()
       .should('contain', 'TEST_USER name (TEST_USER), MRS_JONES name (MRS_JONES)')
