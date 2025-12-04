@@ -1,12 +1,11 @@
+import ViewIncidentPage from '../../pages/coordinator/viewIncidentPage'
+import EditReportPage from '../../pages/coordinator/editReportPage'
+
 const moment = require('moment')
 const { offender } = require('../../mockApis/data')
-const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const ViewReportPage = require('../../pages/reviewer/viewReportPage')
-const YourReportsPage = require('../../pages/yourReports/yourReportsPage')
-const YourReportPage = require('../../pages/yourReports/yourReportPage')
-const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatementDeletePage')
-const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
 const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
+const InvolvedStaffPage = require('../../pages/coordinator/viewInvolvedStaffPage')
+const ReasonForDeletingInvolvedStaffPage = require('../../pages/coordinator/reasonForDeletingInvolvedStaffPage')
 
 const { ReportStatus } = require('../../../server/config/types')
 
@@ -20,6 +19,11 @@ context('A use of force coordinator can remove involved staff', () => {
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+
+    seedReport()
   })
 
   const seedReport = () =>
@@ -27,6 +31,7 @@ context('A use of force coordinator can remove involved staff', () => {
       username: 'TEST_USER',
       status: ReportStatus.SUBMITTED,
       submittedDate: moment().toDate(),
+      incidentDate: moment().subtract(3, 'days').toDate(),
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -43,189 +48,195 @@ context('A use of force coordinator can remove involved staff', () => {
       ],
     })
 
-  // list should contain delete links against each involved staff except the logged in user
-  // it('should show delete links for other staff but not for logged-in user', () => {
-  //   cy.task('stubCoordinatorLogin')
-  //   cy.login()
+  const navigateToInvolvedStaffPage = () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
 
-  //   seedReport()
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
 
-  //   const reportId = NotCompletedIncidentsPage.goTo().getTodoRow(0).reportId()
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
 
-  //   const viewReportPage = ViewReportPage.goTo(reportId)
+    return InvolvedStaffPage.verifyOnPage()
+  }
 
-  //   // Navigate to involved staff tab
-  //   viewReportPage.selectTab('staff-involved')
+  it('should remove the selected staff member from the staff involved table and display a success banner when they are successfully removed from the report', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
-  //   // Assert delete link exists for MRS_JONES
-  //   cy.get(`[data-qa="delete-link-MRS_JONES"]`).should('exist')
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
 
-  //   // Assert delete link does NOT exist for TEST_USER
-  //   cy.get(`[data-qa="delete-link-TEST_USER"]`).should('not.exist')
-  // })
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 1)
+    involvedStaffPage.staffInvolvedTableRows().should('not.contain', 'MRS_JONES')
 
-  // removing the last involved staff should complete the report
+    involvedStaffPage
+      .successBanner()
+      .should('contain.text', 'You have deleted MRS_JONES name (MRS_JONES) from the incident.')
+  })
 
-  // a coordinator should not be able to remove involved staff
+  it('should remove statements when involved staff are removed', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
 
-  // a reviewer should not be able to remove involved staff
+    // check initial state of statements table
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.statementsTableRows().should('have.length', 2)
+    viewIncidentPage.statementsTableRows().should('contain', 'MRS_JONES')
 
-  // removing involved staff should remove their statements too
+    viewIncidentPage.editReportButton().click()
 
-  // after removing involved staff, navigating back to the report should not show the involved staff
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
 
-  // after removing involved staff, navigating back to the statements tab should not show the involved staff
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
-  // after removing involved staff, the report should appear in the correct completed/not completed lists
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.reasonPersonNotInvolvedRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Not involved in this incident')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
 
-  // when viewing own reports, a coordinator should be able to remove involved staff
+    involvedStaffPage.returnToIncidentReportLink().click()
+    ViewIncidentPage.verifyOnPage()
 
-  // after removing involved staff from own report, the report should appear in the correct completed/not completed lists
+    // check updated state of statements table
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.statementsTableRows().should('have.length', 1)
+    viewIncidentPage.statementsTableRows().should('not.contain', 'MRS_JONES')
+  })
 
-  // if the coordinator removes involved staff but then cancels the confirmation, the involved staff should remain
+  it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the back link', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
-  // if the coordinator clicks the cancel link on the confirmation page, the involved staff should remain
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.backLink().click()
 
-  // if the coordinator clicks the cancel link on the confirmation page the coordinator should return to the report page
+    InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRows().should('contain', 'MRS_JONES')
+  })
 
-  // if the coordinator removes involved staff, they should see a confirmation message with a message indicating the staff member has been removed
+  it('should retain involved staff if the coordinator cancels the removal on the confirmation page by clicking the cancel link', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
 
-  // TO DELETE BELOW WHEN TESTS ARE ENABLED
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
 
-  // it(`A coordinator can remove staff on an otherwise complete report and it will complete the report. And the report will not display in the Not completed incidents page`, () => {
-  //   cy.task('stubCoordinatorLogin')
-  //   cy.login()
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
 
-  //   seedReport()
+    const involvedStaffPage = InvolvedStaffPage.verifyOnPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
-  //   const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-  //   notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
+    reasonForDeletingInvolvedStaffPage.cancelLink().click()
 
-  //   {
-  //     const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
-  //     prisoner().contains('Smith, Norman')
-  //     reporter().contains('James Stuart')
-  //     viewStatementsButton().click()
-  //   }
+    ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.staffInvolvedTableRows().should('have.length', 2)
+    viewIncidentPage.staffInvolvedTableRows().should('contain', 'TEST_USER')
+    viewIncidentPage.staffInvolvedTableRows().should('contain', 'MRS_JONES')
+  })
 
-  //   let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-  //   viewStatementsPage
-  //     .getReportId()
-  //     .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
-  //     .then(() => cy.reload())
+  it('should show delete links for other staff but not for the report owner', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.staffInvolvedTableRows().eq(0).should('contain.text', 'TEST_USER')
+    involvedStaffPage.staffInvolvedTableRows().eq(0).should('not.contain', 'Delete')
+    involvedStaffPage.staffInvolvedTableRows().eq(1).should('contain', 'Delete')
+  })
 
-  //   viewStatementsPage.statements().then(result =>
-  //     expect(result).to.deep.equal([
-  //       { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-  //       { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-  //     ])
-  //   )
+  it('should display validation errors in the reason for deleteing view', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.staffInvolvedTableRows().should('have.length', 2)
+    involvedStaffPage.staffInvolvedTableRowDeleteLink('MRS_JONES').click()
 
-  //   viewStatementsPage.reportLink().click()
-  //   let reportPage = ViewReportPage.verifyOnPage()
-  //   reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
-  //   reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
+    const reasonForDeletingInvolvedStaffPage = ReasonForDeletingInvolvedStaffPage.verifyOnPage()
 
-  //   const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
-  //   confirmStatementDeletePage.confirm()
-  //   confirmStatementDeletePage.continue().click()
+    // do not select reason or provide additional info
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'There is a problem')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Provide a reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Provide additional information to explain why you are deleting this person')
+    reasonForDeletingInvolvedStaffPage.reasonError().should('contain.text', 'Provide a reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage.reasonAdditionalInfoError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .reasonAdditionalInfoError()
+      .should('contain.text', 'Provide additional information to explain why you are deleting this person')
 
-  //   reportPage = ViewReportPage.verifyOnPage()
-  //   reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
-  //   reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
-  //   reportPage.returnToIncidentOverview().click()
+    // select reason but do not provide additional info
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonRadionButton().click()
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Specify the reason for deleting this person')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Specify the reason for deleting this person')
 
-  //   viewStatementsPage = ViewStatementsPage.verifyOnPage()
-  //   viewStatementsPage.return().click()
+    // proivide additional info that is more than 500 characters long
+    const longAdditionalInfo = 'a'.repeat(501)
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().clear().type(longAdditionalInfo)
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .errorSummary()
+      .should('contain.text', 'Additional information must be 500 characters or fewer')
+    reasonForDeletingInvolvedStaffPage.reasonAdditionalInfoError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .reasonAdditionalInfoError()
+      .should('contain.text', 'Additional information must be 500 characters or fewer')
 
-  //   const completedIncidentsPage = CompletedIncidentsPage.verifyOnPage()
-  //   {
-  //     const { prisoner, reporter, prisonNumber, viewStatementsButton } = completedIncidentsPage.getCompleteRow(0)
-  //     prisoner().contains('Smith, Norman')
-  //     reporter().contains('James Stuart')
-  //     prisonNumber().contains('A1234AC')
-  //     viewStatementsButton().click()
-  //   }
-  //   completedIncidentsPage.getNoCompleteRows().should('not.exist')
+    // provide reason that is less than 3 characters long
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonInput().clear().type('ab')
+    reasonForDeletingInvolvedStaffPage.additionalInfoTextInput().type('Some additional info')
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'Reason must be at least 3 characters')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Reason must be at least 3 characters')
 
-  //   viewStatementsPage = ViewStatementsPage.verifyOnPage()
+    // provide reason that is more than 250 characters long
+    const longReason = 'a'.repeat(251)
+    reasonForDeletingInvolvedStaffPage.reasonAnotherReasonInput().clear().type(longReason)
+    reasonForDeletingInvolvedStaffPage.saveChanges().click()
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('be.visible')
+    reasonForDeletingInvolvedStaffPage.errorSummary().should('contain.text', 'Reason must be 250 characters or fewer')
+    reasonForDeletingInvolvedStaffPage.anotherReasonError().should('be.visible')
+    reasonForDeletingInvolvedStaffPage
+      .anotherReasonError()
+      .should('contain.text', 'Reason must be 250 characters or fewer')
+  })
 
-  //   viewStatementsPage
-  //     .statements()
-  //     .then(result =>
-  //       expect(result).to.deep.equal([
-  //         { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-  //       ])
-  //     )
+  it('should return to the edit report page when the back link is clicked in the staff involved view', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.backLink().click()
 
-  //   cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
-  //     expect(count).to.equal(0)
-  //   )
-  // })
+    EditReportPage.verifyOnPage()
+  })
 
-  // xit(`When a coordinator views their own report they can remove staff on an otherwise complete report and it will complete the report. And the report will be shown to be complete`, () => {
-  //   cy.task('stubCoordinatorLogin')
-  //   cy.login()
+  it('should return to the view incident page when the Return to incident report link is clicked in the staff involved view', () => {
+    const involvedStaffPage = navigateToInvolvedStaffPage()
+    involvedStaffPage.returnToIncidentReportLink().click()
 
-  //   seedReport()
-
-  //   const yourReportsPage = YourReportsPage.goTo()
-
-  //   {
-  //     const { prisoner, action } = yourReportsPage.reports(0)
-  //     prisoner().contains('Smith, Norman')
-  //     action().click()
-  //   }
-
-  //   let reportPage = YourReportPage.verifyOnPage()
-
-  //   reportPage
-  //     .getReportId()
-  //     .then(reportId => cy.task('submitStatement', { userId: 'TEST_USER', reportId }))
-  //     .then(() => cy.reload())
-
-  //   reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
-  //   reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible').click()
-
-  //   const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('MRS_JONES name')
-  //   confirmStatementDeletePage.confirm()
-  //   confirmStatementDeletePage.continue().click()
-
-  //   reportPage = YourReportPage.verifyOnPage()
-  //   reportPage.deleteInvolvedStaff('TEST_USER').should('not.exist')
-  //   reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
-
-  //   cy.task('getReportCount', [ReportStatus.SUBMITTED.value, ReportStatus.IN_PROGRESS.value]).then(count =>
-  //     expect(count).to.equal(0)
-  //   )
-  // })
-
-  // xit('A reviewer user should not be able to remove staff', () => {
-  //   cy.task('stubReviewerLogin')
-  //   cy.login()
-
-  //   seedReport()
-
-  //   const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-  //   notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-
-  //   const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
-  //   prisoner().contains('Smith, Norman')
-  //   reporter().contains('James Stuart')
-  //   prisonNumber().contains('A1234AC')
-  //   viewStatementsButton().click()
-
-  //   const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-
-  //   viewStatementsPage.statements().then(result =>
-  //     expect(result).to.deep.equal([
-  //       { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-  //       { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
-  //     ])
-  //   )
-
-  //   viewStatementsPage.reportLink().click()
-  //   const reportPage = ViewReportPage.verifyOnPage()
-  //   reportPage.deleteInvolvedStaff('MRS_JONES').should('not.exist')
-  // })
+    ViewIncidentPage.verifyOnPage()
+  })
 })

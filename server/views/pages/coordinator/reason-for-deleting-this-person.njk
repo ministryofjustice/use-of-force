@@ -16,7 +16,8 @@
 {% if data.errors.length > 0 %}
   {{ govukErrorSummary({
     titleText: "There is a problem",
-    errorList: data.errors
+    errorList: data.errors,
+    attributes: {'data-qa': 'error-summary'}
   }) }}
 {% endif %}
 
@@ -75,7 +76,8 @@
                   html: reasonHtml
                 }
               }
-            ]
+            ],
+            attributes: {'data-qa': 'reason-radio-buttons'}
           }) }}
 
         {{ govukCharacterCount({
