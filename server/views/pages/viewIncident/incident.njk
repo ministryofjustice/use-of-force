@@ -88,7 +88,15 @@
       {% include "./edit-history.njk" %}
     {% endif %}
     <p class="govuk-!-margin-top-5">
-      <a href="/not-completed-incidents" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link">Return to use of force incidents</a>
+
+      {% if data.isReviewer or data.isCoordinator %}
+        {% set href = "/not-completed-incidents" %}
+      {% else %}
+        {% set href = "/your-statements" %}
+      {% endif %}
+
+      <a href="{{ href }}" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link">Return to use of force incidents</a>
+
     </p>
   </div>
   </div>
