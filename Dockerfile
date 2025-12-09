@@ -14,7 +14,7 @@ RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
 
 COPY . .
 
-RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
+RUN CYPRESS_INSTALL_BINARY=0 npm run setup && \
         npm run build && \
         export BUILD_NUMBER=${BUILD_NUMBER:-1_0_0} && \
         export GIT_REF=${GIT_REF:-dummy} && \
