@@ -16,13 +16,14 @@
 {% if data.errors.length > 0 %}
   {{ govukErrorSummary({
     titleText: "There is a problem",
-    errorList: data.errors
+    errorList: data.errors,
+    attributes: {'data-qa': 'error-summary'}
   }) }}
 {% endif %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
-    <h1 class="govuk-heading-xl mainHeading">Reason for adding this person</h1>
+    <h1 class="govuk-heading-xl mainHeading">Reason for deleting this person</h1>
 
     <div class = 'govuk-body'>
       <!-- to update -->
@@ -47,7 +48,7 @@
             name: "reason",
             fieldset: {
               legend: {
-                text: "Why are you adding this person to the use of force report? ",
+                text: "Why are you deleting this person from the use of force report?",
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--m"
               }
@@ -55,16 +56,16 @@
             errorMessage: data.errors | findError('reason'),
             items: [
               {
-                value: "forgottenInReport", 
-                text: "The person who created the report forgot to add them",
-                checked: data.reason === 'forgottenInReport', 
-                attributes: {'data-qa': 'error-in-report'} 
+                value: "footageRevealedNotInvolved",
+                text: "Bodycam or CCTV footage revealed the person was not involved",
+                checked: data.reason === 'footageRevealedNotInvolved',
+                attributes: {'data-qa': 'person-not-involved'}
               },
               {
-                value: "bodycamFootageRevealedinvolved",
-                text: "Bodycam footage revealed that they were involved",
-                checked: data.reason === 'bodycamFootageRevealedinvolved',
-                attributes: {'data-qa': 'missing-from-report'}
+                value: "personAddedInError", 
+                text: "The person was confused for someone else and added in error",
+                checked: data.reason === 'personAddedInError',
+                attributes: {'data-qa': 'person-added-in-error'}
               },
               {
                 value: "anotherReasonForEdit",
@@ -75,7 +76,8 @@
                   html: reasonHtml
                 }
               }
-            ]
+            ],
+            attributes: {'data-qa': 'reason-radio-buttons'}
           }) }}
 
         {{ govukCharacterCount({
@@ -86,12 +88,12 @@
           errorMessage: data.errors | findError('reasonAdditionalInfo'),
           value: data.reasonAdditionalInfo,
           label: {
-            text: "Add additional information to explain why you are adding this person",
+            text: "Add additional information to explain why you are deleting this person",
             classes: "govuk-label--m",
             isPageHeading: true
           },
           hint: {
-            text: "For example, why the person who created the report forgot to add them."
+            text: "For example how the person was confused for someone else."
           }
         }) }}
 

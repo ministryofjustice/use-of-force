@@ -24,7 +24,7 @@
 
                     <tbody class="govuk-table__body">
                         {% for staff in data.staffInvolved|sort(true, true, 'isReporter') %}
-                            {% set href = '/coordinator/report/' + data.reportId + '/statement/' + staff.statementId + '/confirm-delete' %}
+                            {% set href = '/coordinator/report/' + data.reportId + '/statement/' + staff.statementId + '/confirm-delete/' + staff.username %}
                             <tr class="govuk-table__row">
                                 <td class="govuk-table__cell">{{ staff.name }} ({{ staff.username }})</td>
                                 <td class="govuk-table__cell">{{ staff.email }}</td>
@@ -48,7 +48,7 @@
                     <div class="govuk-button-group govuk-!-margin-bottom-0" style="display: flex; align-items: center;">
                         <a href="/{{ data.reportId }}/edit-report/staff-involved-search" role="button" class="govuk-button" draggable="false">Add someone</a>
 
-                        <a href="/{{ data.reportId }}/view-incident?tab=report" class="govuk-link govuk-!-margin-left-1">Return to incident report</a>
+                        <a href="/{{ data.reportId }}/view-incident?tab=report" class="govuk-link govuk-!-margin-left-1" data-qa="return-to-incident-report-link">Return to incident report</a>
                     </div>
                 </div>
             </div>

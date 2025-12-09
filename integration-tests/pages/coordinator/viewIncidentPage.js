@@ -7,6 +7,10 @@ const viewIncidentPage = () =>
     successBanner: () => cy.get('[data-qa="success-banner"]'),
     editHistoryLinkInSuccessBanner: () => cy.get('[data-qa="success-banner-edit-history-link"]'),
     reasonsForUseOfForce: () => cy.get('[data-qa=reasonsForUseOfForce]'),
+    statementsTabLink: () => cy.get('[data-qa=statements-tab'),
+    statementsTableRows: () => cy.get('[data-qa=statements] tbody tr'),
+    staffInvolvedTableRows: () => cy.get('[data-qa=staff-involved]'),
+    returnToUseOfForceIncidentsLink: () => cy.get('[data-qa="use-of-force-incidents-link"]'),
   })
 
 module.exports = {

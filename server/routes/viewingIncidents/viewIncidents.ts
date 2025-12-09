@@ -40,20 +40,19 @@ export default class ViewIncidentsRoutes {
     const allStatements = await this.reviewService.getStatements(systemToken, incidentId)
     const submittedStatements = allStatements.filter(stmnt => stmnt.isSubmitted)
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(incidentId)
+    const isUsersOwnReport = username === report.username
+    const isReviewerOrCoordinator = isReviewer || isCoordinator
 
     if (tab === 'report') {
       const lastEdit = hasReportBeenEdited ? reportEdits[0] : null
       const newReportOwners = reportEdits?.filter(edit => edit.reportOwnerChanged)
       const hasReportOwnerChanged = newReportOwners?.length > 0
       const reportOwner = newReportOwners?.at(-1)
-      const accessingFromYourReportTab = req.query['your-report']
-      const isUsersOwnReport = username === report.username
-      const isReviewerOrCoodinator = isReviewer || isCoordinator
       const reportSectionText = req.flash('edit-success-message')[0]?.reportSection.text
       // eslint-disable-next-line no-unneeded-ternary
       const displaySuccessBanner = reportSectionText ? true : false
 
-      if ((accessingFromYourReportTab && isUsersOwnReport) || (!accessingFromYourReportTab && isReviewerOrCoodinator)) {
+      if (isUsersOwnReport || isReviewerOrCoordinator) {
         const dataForReport = {
           ...reportData,
           hasReportBeenEdited,
@@ -72,8 +71,12 @@ export default class ViewIncidentsRoutes {
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }
 
-      logger.info(`${username} attempted to access report ${incidentId} even though they are not the reporter`)
-      return res.render('pages/userError.njk', { message: `You are not the reporter for report ${incidentId}` })
+      logger.info(
+        `${username} attempted to access report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+      )
+      return res.render('pages/userError.njk', {
+        message: `Access denied because you are not the owner of report ${incidentId}`,
+      })
     }
 
     if (tab === 'statements') {
@@ -105,7 +108,15 @@ export default class ViewIncidentsRoutes {
         statements: submittedStatements,
         reportEditOrDeletePermitted,
       }
-      return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
+      if (isUsersOwnReport || isReviewerOrCoordinator) {
+        return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
+      }
+      logger.info(
+        `${username} attempted to access edit history for report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+      )
+      return res.render('pages/userError.njk', {
+        message: `Access denied because you are not the owner of report ${incidentId}`,
+      })
     }
 
     return res.redirect(`/${incidentId}/view-incident?tab=report`)
