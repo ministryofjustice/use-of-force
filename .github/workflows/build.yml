@@ -18,15 +18,15 @@ jobs:
     name: Run the node build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ inputs.node_version_file }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node_version_file }}
       - name: update npm
         shell: bash
         run: |
-          sudo npm install -g npm@latest
+         npm install -g npm@latest
       - name: restore cache
         id: restore-cache
         uses: actions/cache/restore@v4
@@ -41,7 +41,7 @@ jobs:
         if: steps.restore-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          npm ci --no-audit
+          npm run setup
       - name: build npm
         shell: bash
         run: |

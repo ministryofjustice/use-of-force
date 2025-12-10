@@ -1,1 +1,7 @@
-NODE_ENV=dev && node_modules/.bin/lint-staged && node_modules/.bin/tsc
+#!/bin/bash
+NODE_ENV=dev \
+npm run precommit:secrets \
+&& npm run precommit:lint \
+&& npm run precommit:verify \
+node_modules/.bin/tsc .
+
