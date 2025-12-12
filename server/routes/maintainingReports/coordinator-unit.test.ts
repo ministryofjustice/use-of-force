@@ -1646,20 +1646,20 @@ describe('CoordinatorEditReportController', () => {
       expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 456)
     })
 
-    // it('should render the correct template with expected data', async () => {
-    //   await controller.confirmDeleteStatement(req as Request, res as Response)
+    it('should render the correct template with expected data', async () => {
+      await controller.confirmDeleteStatement(req as Request, res as Response)
 
-    //   expect(res.render).toHaveBeenCalledWith('pages/coordinator/reason-for-deleting-this-person.njk', {
-    //     backlinkHref: '/123/edit-report/staff-involved',
-    //     data: {
-    //       displayName: 'John Doe',
-    //       removalRequest: 'true',
-    //       reportId: 123, // number
-    //       statementId: '456',
-    //     },
-    //     errors: [],
-    //   })
-    // })
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/reason-for-deleting-this-person.njk', {
+        backlinkHref: '/123/edit-report/staff-involved',
+        data: {
+          displayName: 'John Doe',
+          removalRequest: 'true',
+          reportId: 123, // number
+          statementId: '456',
+        },
+        errors: [],
+      })
+    })
 
     it('should include errors from flash if present', async () => {
       ;(req.flash as jest.Mock).mockReturnValue(['Some error'])
