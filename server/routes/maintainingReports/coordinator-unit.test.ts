@@ -1669,4 +1669,65 @@ describe('CoordinatorEditReportController', () => {
       expect(res.render).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ errors: ['Some error'] }))
     })
   })
+
+  describe('deleteStatement', () => {
+    beforeEach(() => {
+      req = {
+        params: { reportId: '1', statementId: '456' },
+        body: {},
+        flash: jest.fn(),
+      }
+      res = { redirect: jest.fn(), locals: { user: { username: 'USER' } } }
+    })
+
+    it('flashes error and redirects to confirm page with removalRequest=true when confirm missing', async () => {
+      req.body = { removalRequest: true }
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#confirm', text: 'Select yes if you want to delete this statement' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith(
+        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true'
+      )
+    })
+
+    it('flashes error and redirects to confirm page (no removalRequest) when confirm missing', async () => {
+      req.body = {}
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#confirm', text: 'Select yes if you want to delete this statement' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/coordinator/report/1/statement/456/confirm-delete')
+    })
+
+    it('removes involved staff and redirects to view-statements', async () => {
+      req.body = { confirm: 'yes', removalRequest: true }
+      involvedStaffService.removeInvolvedStaff.mockResolvedValue()
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(1, 456)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-statements')
+    })
+
+    it('removes involved staff and redirects to view-report', async () => {
+      req.body = { confirm: 'yes', removalRequest: false }
+      involvedStaffService.removeInvolvedStaff.mockResolvedValue()
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(1, 456)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-report')
+    })
+
+    it('does not remove involved staff and redirects to view-statements', async () => {
+      req.body = { confirm: 'no', removalRequest: true }
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-statements')
+    })
+
+    it('does not remove involved staff and redirects to view-report', async () => {
+      req.body = { confirm: 'no', removalRequest: false }
+      await controller.deleteStatement(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-report')
+    })
+  })
 })

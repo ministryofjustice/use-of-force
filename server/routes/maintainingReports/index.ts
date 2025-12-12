@@ -81,6 +81,8 @@ export default function Index(services: Services): Router {
       get('/:reportId/edit-report/staff-involved-search/no-results', coordinator.viewNoResultsFoundInvolvedStaffSearch)
       get('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.editViewAddNewInvolvedStaffMember)
       post('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.submitAddNewInvolvedStaffMember)
+      get('/:reportId/statement/:statementId/confirm-delete/:username', coordinator.confirmDeleteStatement)
+      post('/:reportId/statement/:statementId/confirm-delete/:username', coordinator.submitDeleteStatement)
     }
 
     get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
@@ -90,14 +92,8 @@ export default function Index(services: Services): Router {
     post('/coordinator/report/:reportId/add-staff', coordinator.submitAddInvolvedStaff)
     get('/coordinator/report/:reportId/add-staff/result/:result', coordinator.viewAddInvolvedStaffResult)
 
-    get(
-      '/coordinator/report/:reportId/statement/:statementId/confirm-delete/:username',
-      coordinator.confirmDeleteStatement
-    )
-    post(
-      '/coordinator/report/:reportId/statement/:statementId/confirm-delete/:username',
-      coordinator.submitDeleteStatement
-    )
+    get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
+    post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
 
     get('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.viewRemovalRequest)
     post('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.submitRemovalRequest)
