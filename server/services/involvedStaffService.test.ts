@@ -215,7 +215,7 @@ describe('update', () => {
       incidentClient.changeStatus = jest.fn().mockResolvedValue(undefined)
       notificationService.sendInvolvedStaffRemovedFromReport = jest.fn().mockResolvedValue(undefined)
 
-      await service.removeInvolvedStaff('removerUser', 1, 1, 'Remover Display', pageInput)
+      await service.removeInvolvedStaffFromReport('removerUser', 1, 1, 'Remover Display', pageInput)
 
       // Assert deletion called
       expect(statementsClient.deleteStatement).toHaveBeenCalledWith({ statementId: 1, query: client })
@@ -287,7 +287,7 @@ describe('update', () => {
       incidentClient.changeStatus = jest.fn().mockResolvedValue(undefined)
       notificationService.sendInvolvedStaffRemovedFromReport = jest.fn().mockResolvedValue(undefined)
 
-      await service.removeInvolvedStaff('removerUser', 1, 1, 'Remover Display', pageInput)
+      await service.removeInvolvedStaffFromReport('removerUser', 1, 1, 'Remover Display', pageInput)
 
       // Assert delete and insert called
       expect(statementsClient.deleteStatement).toHaveBeenCalledWith({ statementId: 1, query: client })
@@ -346,7 +346,7 @@ describe('update', () => {
       incidentClient.insertReportEdit = jest.fn().mockResolvedValue(undefined)
       notificationService.sendInvolvedStaffRemovedFromReport = jest.fn().mockResolvedValue(undefined)
 
-      await service.removeInvolvedStaff('u', 1, 1, 'd', pageInput)
+      await service.removeInvolvedStaffFromReport('u', 1, 1, 'd', pageInput)
 
       // Assert notification used first element
       expect(notificationService.sendInvolvedStaffRemovedFromReport).toHaveBeenCalledWith(
