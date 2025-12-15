@@ -1161,9 +1161,8 @@ export default class CoordinatorRoutes {
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
     const errors = req.flash('errors')
-    const data = { reportId }
+    const data = { incidentId: req.params.reportId }
 
     res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
   }
