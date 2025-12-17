@@ -23,7 +23,7 @@ generic-service:
     ENVIRONMENT_NAME: 'PRE-PRODUCTION'
     HMPPS_MANAGE_USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     INGRESS_URL: https://preprod.use-of-force.service.justice.gov.uk
-    FEATURE_FLAG_REPORT_EDITING_ENABLED: false
+    FEATURE_FLAG_REPORT_EDITING_ENABLED: true
 
 generic-data-analytics-extractor:
   serviceAccountName: use-of-force-preprod-to-ap-s3
