@@ -97,7 +97,48 @@ export class InvolvedStaffService {
     })
   }
 
-  public async removeInvolvedStaff(
+  public async removeInvolvedStaff(reportId: number, statementId: number): Promise<void> {
+    logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
+
+    const involvedStaff = await this.statementsClient.getInvolvedStaffToRemove(statementId)
+
+    await this.inTransaction(async client => {
+      const pendingStatementBeforeDeletion = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
+
+      await this.statementsClient.deleteStatement({
+        statementId,
+        query: client,
+      })
+
+      if (pendingStatementBeforeDeletion !== 0) {
+        const pendingStatementCount = await this.statementsClient.getNumberOfPendingStatements(reportId, client)
+
+        if (pendingStatementCount === 0) {
+          // TODO provide real username
+          logger.info(`All statements complete on : ${reportId}, marking as complete`)
+          await this.incidentClient.changeStatus(
+            reportId,
+            'SYSTEM',
+            ReportStatus.SUBMITTED,
+            ReportStatus.COMPLETE,
+            client
+          )
+        }
+      }
+    })
+
+    const { submittedDate, email, name: involvedName } = involvedStaff
+    const incidentDate = moment(involvedStaff.incidentDate).toDate()
+    const context = { reportId, statementId }
+
+    await this.notificationService.sendInvolvedStaffRemovedFromReport(
+      email,
+      { involvedName, incidentDate, submittedDate },
+      context
+    )
+  }
+
+  public async removeInvolvedStaffFromReport(
     username: string,
     reportId: number,
     statementId: number,

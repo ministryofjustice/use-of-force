@@ -24,6 +24,7 @@ import reasonsForUofConfig from '../../config/edit/reasonsForUoFConfig'
 import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../../config/edit/useOfForceDetailsConfig'
 import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
 import reasonForDeletingStaffForm from '../../config/forms/reasonForDeletingStaffForm'
+import config from '../../config'
 
 import * as types from '../../config/types'
 
@@ -1160,9 +1161,8 @@ export default class CoordinatorRoutes {
   }
 
   viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const { reportId } = req.params
     const errors = req.flash('errors')
-    const data = { reportId }
+    const data = { incidentId: req.params.reportId }
 
     res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
   }
@@ -1309,11 +1309,36 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
-      errors,
-      data,
-      backlinkHref: paths.viewInvolvedStaff(reportId),
-    })
+    if (config.featureFlagReportEditingEnabled) {
+      res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+        errors,
+        data,
+        backlinkHref: paths.viewInvolvedStaff(reportId),
+      })
+    } else {
+      // remove else once edit functionality has been made live
+      res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+    }
+  }
+
+  deleteStatement: RequestHandler = async (req, res) => {
+    const reportId = extractReportId(req)
+    const { statementId } = req.params
+    const { confirm, removalRequest } = req.body
+
+    if (!confirm) {
+      req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
+      return removalRequest
+        ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
+        : res.redirect(paths.confirmStatementDelete(reportId, statementId, false))
+    }
+
+    if (confirm === 'yes') {
+      await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
+    }
+
+    const location = removalRequest ? paths.viewStatements(reportId) : paths.viewReport(reportId)
+    return res.redirect(location)
   }
 
   submitDeleteStatement: RequestHandler = async (req, res) => {
@@ -1350,7 +1375,7 @@ export default class CoordinatorRoutes {
 
     const staffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
 
-    await this.involvedStaffService.removeInvolvedStaff(
+    await this.involvedStaffService.removeInvolvedStaffFromReport(
       res.locals.user.username,
       reportId,
       parseInt(statementId, 10),
