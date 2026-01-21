@@ -29,14 +29,10 @@
     <tbody class="govuk-table__body">
       {% for report in reports %}
         {% set linkText = 'View report' %}
-        {% set href = '/'+ report.id + '/your-report' %}
-
-        {% if featureFlagReportEditingEnabled %}
-          {% set href = '/'+ report.id + '/view-incident?tab=report' %}   
-          {% if user.isReviewer or user.isCoordinator %}   
-            {% set linkText = 'View incident' %}
-          {% endif %}    
-        {% endif %}
+        {% set href = '/'+ report.id + '/view-incident?tab=report' %}   
+        {% if user.isReviewer or user.isCoordinator %}   
+          {% set linkText = 'View incident' %}
+        {% endif %}    
 
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>

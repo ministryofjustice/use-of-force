@@ -16,13 +16,7 @@
     <h1 class="govuk-heading-xl mainHeading">{{ data.name}}'s statement</h1>
  
   {{ statementDetail.detail(data, false) }}
-
-  {% if featureFlagReportEditingEnabled %}
-    {% set href = '/'+ data.reportId + '/view-incident?tab=report' %}
-  {% else %}
-    {% set href = '/'+ data.reportId + '/view-statements' %}
-  {% endif %}
-
+  {% set href = '/'+ data.reportId + '/view-incident?tab=report' %}
   <p class="govuk-!-margin-top-5">
     <a
       href={{href}}

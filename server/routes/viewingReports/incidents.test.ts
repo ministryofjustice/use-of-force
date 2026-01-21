@@ -6,7 +6,6 @@ import ReportService, { IncidentSummary } from '../../services/reportService'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder from '../../services/reportDetailBuilder'
-import config from '../../config'
 
 jest.mock('../../services/reportService')
 jest.mock('../../services/authService')
@@ -85,20 +84,7 @@ describe('GET /your-reports', () => {
       })
   })
 
-  it('should display View report link for all users', () => {
-    config.featureFlagReportEditingEnabled = false
-
-    return request(app)
-      .get('/your-reports')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('View report')
-      })
-  })
   it('should display View report link for reporter', () => {
-    config.featureFlagReportEditingEnabled = true
-
     return request(app)
       .get('/your-reports')
       .expect(200)
@@ -109,7 +95,6 @@ describe('GET /your-reports', () => {
   })
 
   it('should display View incident link for coordinator', () => {
-    config.featureFlagReportEditingEnabled = true
     userSupplier.mockReturnValue(coordinatorUser)
     app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
 
@@ -123,7 +108,6 @@ describe('GET /your-reports', () => {
   })
 
   it('should display View incident link for reviewer', () => {
-    config.featureFlagReportEditingEnabled = true
     userSupplier.mockReturnValue(reviewerUser)
     app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
 
@@ -137,7 +121,6 @@ describe('GET /your-reports', () => {
   })
 
   it('should provide correct href to view report link in old view', () => {
-    config.featureFlagReportEditingEnabled = false
     userSupplier.mockReturnValue(reviewerUser)
     app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
 
@@ -151,7 +134,6 @@ describe('GET /your-reports', () => {
   })
 
   it('should provide correct href to view incident link in new view', () => {
-    config.featureFlagReportEditingEnabled = true
     userSupplier.mockReturnValue(reviewerUser)
     app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
 
