@@ -24,7 +24,6 @@ import reasonsForUofConfig from '../../config/edit/reasonsForUoFConfig'
 import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../../config/edit/useOfForceDetailsConfig'
 import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
 import reasonForDeletingStaffForm from '../../config/forms/reasonForDeletingStaffForm'
-import config from '../../config'
 
 import * as types from '../../config/types'
 
@@ -1309,16 +1308,11 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    if (config.featureFlagReportEditingEnabled) {
-      res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
-        errors,
-        data,
-        backlinkHref: paths.viewInvolvedStaff(reportId),
-      })
-    } else {
-      // remove else once edit functionality has been made live
-      res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
-    }
+    res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+      errors,
+      data,
+      backlinkHref: paths.viewInvolvedStaff(reportId),
+    })
   }
 
   deleteStatement: RequestHandler = async (req, res) => {

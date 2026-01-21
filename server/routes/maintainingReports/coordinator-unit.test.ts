@@ -12,7 +12,6 @@ import LocationService from '../../services/locationService'
 import ReportDataBuilder from '../../services/reportDetailBuilder'
 import ReportEditService from '../../services/reportEditService'
 import logger from '../../../log'
-import config from '../../config'
 import CoordinatorRoutes from './coordinator'
 
 jest.mock('../../services/reportService')
@@ -55,7 +54,6 @@ const reportEditService = new ReportEditService(
   null
 ) as jest.Mocked<ReportEditService>
 const flash = jest.fn()
-config.featureFlagReportEditingEnabled = true
 
 let controller: any
 let req
