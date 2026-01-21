@@ -91,17 +91,6 @@ export default class ReportService {
     return reports.map(toReport(offenderNosToNames))
   }
 
-  async deleteReport(username: string, reportId: number): Promise<void> {
-    logger.info(`User: ${username} is deleting report: '${reportId}'`)
-
-    const report = await this.incidentClient.getReportForReviewer(reportId)
-    if (!report) {
-      throw new Error(`Report: '${reportId}' does not exist`)
-    }
-
-    await this.incidentClient.deleteReport(username, reportId)
-  }
-
   private getUpdatedReport(
     existingReport: Record<string, unknown>,
     formName: string,
