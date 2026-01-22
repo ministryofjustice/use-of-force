@@ -32,7 +32,7 @@ export default class LocationClient extends BaseApiClient {
     token: string,
     serviceType: NonResidentialServiceType = NonResidentialServiceType.USE_OF_FORCE
   ): Promise<LocationInPrison[]> {
-    logger.info(`getting locations for prison ${prisonId} and usageType ${usageType}`)
+    logger.info(`getting locations for prison ${prisonId} and serviceType ${serviceType}`)
     return LocationClient.restClient(token).get({
       path: `/locations/non-residential/prison/${prisonId}/service/${serviceType}?formatLocalName=true&sortByLocalName=true`,
     })
