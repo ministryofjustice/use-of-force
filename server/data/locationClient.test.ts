@@ -75,11 +75,11 @@ describe('locationClient', () => {
     })
     it('can not search with incorrect usage-type filter', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
+        .get('/locations/non-residential/prison/MDI/service/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 
-      await expect(locationClient.getLocations('MDI', 'SOME-TYPE' as NonResidentialServiceType)).rejects.toThrow(
+      await expect(locationClient.getLocations('MDI', token, 'SOME-TYPE' as NonResidentialServiceType)).rejects.toThrow(
         'Bad Request'
       )
     })

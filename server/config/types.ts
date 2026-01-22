@@ -182,23 +182,12 @@ export const Destinations = {
   CHECK_YOUR_ANSWERS: 'check-your-answers',
 }
 
-export const enum NonResidentialUsageType {
-  ADJUDICATION_HEARING = 'ADJUDICATION_HEARING',
-  APPOINTMENT = 'APPOINTMENT',
-  MOVEMENT = 'MOVEMENT',
-  OCCURRENCE = 'OCCURRENCE',
-  PROGRAMMES_ACTIVITIES = 'PROGRAMMES_ACTIVITIES',
-  PROPERTY = 'PROPERTY',
-  VISIT = 'VISIT',
-  OTHER = 'OTHER',
-}
-
 export const enum NonResidentialServiceType {
-  APPOINTMENT = 'Appointments',
-  PROGRAMMES_AND_ACTIVITIES = 'Programmes and activities',
-  HEARING_LOCATION = 'Adjudications - hearing location',
-  LOCATION_OF_INCIDENT = 'Adjudications - location of incident',
-  INTERNAL_MOVEMENTS = 'Internal movements',
-  OFFICIAL_VISITS = 'Official visits',
-  USE_OF_FORCE = 'Use of force',
+  APPOINTMENT = 'APPOINTMENT',
+  PROGRAMMES_AND_ACTIVITIES = 'PROGRAMMES_AND_ACTIVITIES',
+  HEARING_LOCATION = 'HEARING_LOCATION',
+  LOCATION_OF_INCIDENT = 'LOCATION_OF_INCIDENT',
+  INTERNAL_MOVEMENTS = 'INTERNAL_MOVEMENTS',
+  OFFICIAL_VISITS = 'OFFICIAL_VISITS',
+  USE_OF_FORCE = 'USE_OF_FORCE',
 }
