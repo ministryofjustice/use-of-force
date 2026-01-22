@@ -1,5 +1,5 @@
 import logger from '../../log'
-import { NonResidentialUsageType } from '../config/types'
+import { NonResidentialServiceType } from '../config/types'
 
 import BaseApiClient from './baseApiClient'
 import config from '../config'
@@ -30,11 +30,11 @@ export default class LocationClient extends BaseApiClient {
   async getLocations(
     prisonId: string,
     token: string,
-    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE
+    serviceType: NonResidentialServiceType = NonResidentialServiceType.USE_OF_FORCE
   ): Promise<LocationInPrison[]> {
-    logger.info(`getting locations for prison ${prisonId} and usageType ${usageType}`)
+    logger.info(`getting locations for prison ${prisonId} and serviceType ${serviceType}`)
     return LocationClient.restClient(token).get({
-      path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}?formatLocalName=true&sortByLocalName=true`,
+      path: `/locations/non-residential/prison/${prisonId}/service/${serviceType}?formatLocalName=true&sortByLocalName=true`,
     })
   }
 }
