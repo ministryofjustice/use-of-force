@@ -33,11 +33,11 @@ module.exports = {
     })
   },
 
-  stubGetLocations: (prisonId, usageType = 'OCCURRENCE') => {
+  stubGetLocations: (prisonId, serviceType = 'USE_OF_FORCE') => {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/location-api/locations/prison/${prisonId}/non-residential-usage-type/${usageType}`,
+        urlPattern: `/location-api/locations/prison/${prisonId}/non-residential-service-type/${serviceType}`,
       },
       response: {
         status: 200,

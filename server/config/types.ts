@@ -192,3 +192,13 @@ export const enum NonResidentialUsageType {
   VISIT = 'VISIT',
   OTHER = 'OTHER',
 }
+
+export const enum NonResidentialServiceType {
+  APPOINTMENT = 'Appointments',
+  PROGRAMMES_AND_ACTIVITIES = 'Programmes and activities',
+  HEARING_LOCATION = 'Adjudications - hearing location',
+  LOCATION_OF_INCIDENT = 'Adjudications - location of incident',
+  INTERNAL_MOVEMENTS = 'Internal movements',
+  OFFICIAL_VISITS = 'Official visits',
+  USE_OF_FORCE = 'Use of force',
+}

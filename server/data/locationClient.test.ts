@@ -2,7 +2,7 @@ import nock from 'nock'
 import LocationClient from './locationClient'
 import config from '../config'
 import restClientBuilder from '.'
-import { NonResidentialUsageType } from '../config/types'
+import { NonResidentialServiceType, NonResidentialUsageType } from '../config/types'
 
 describe('locationClient', () => {
   let fakeLocationApi
@@ -61,7 +61,7 @@ describe('locationClient', () => {
     const locations = []
     it('should return data from api', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/OCCURRENCE')
+        .get('/locations/non-residential/prison/MDI/service/USE_OF_FORCE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
@@ -74,7 +74,7 @@ describe('locationClient', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 
-      await expect(locationClient.getLocations('MDI', 'SOME-TYPE' as NonResidentialUsageType)).rejects.toThrow(
+      await expect(locationClient.getLocations('MDI', 'SOME-TYPE' as NonResidentialServiceType)).rejects.toThrow(
         'Bad Request'
       )
     })

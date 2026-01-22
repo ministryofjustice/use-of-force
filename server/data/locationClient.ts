@@ -1,7 +1,7 @@
 import logger from '../../log'
 import type { RestClient } from './restClient'
 import type { LocationInPrison } from './locationClientTypes'
-import { NonResidentialUsageType } from '../config/types'
+import { NonResidentialServiceType, NonResidentialUsageType } from '../config/types'
 
 export default class LocationClient {
   constructor(private restClient: RestClient) {}
@@ -23,12 +23,11 @@ export default class LocationClient {
 
   async getLocations(
     prisonId: string,
-    usageType: NonResidentialUsageType = NonResidentialUsageType.OCCURRENCE
+    serviceType: NonResidentialServiceType = NonResidentialServiceType.USE_OF_FORCE
   ): Promise<LocationInPrison[]> {
-    logger.info(`getting locations for prison ${prisonId} and usageType ${usageType}`)
+    logger.info(`getting locations for prison ${prisonId} and serviceType ${serviceType}`)
     return this.restClient.get({
-      path: `/locations/prison/${prisonId}/non-residential-usage-type/${usageType}`,
-      headers: { 'Sort-Fields': 'userDescription' },
+      path: `/locations/non-residential/prison/${prisonId}/service/${serviceType}?formatLocalName=true&sortByLocalName=true`,
     })
   }
 }
