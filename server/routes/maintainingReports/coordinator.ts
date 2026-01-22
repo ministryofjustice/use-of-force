@@ -5,7 +5,7 @@ import { AddStaffResult, InvolvedStaffService } from '../../services/involvedSta
 import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
 import { paths, full } from '../../config/incident'
-import { ReportStatus, UofReasons } from '../../config/types'
+import { UofReasons } from '../../config/types'
 import ReportService from '../../services/reportService'
 import ReviewService from '../../services/reviewService'
 import OffenderService from '../../services/offenderService'
@@ -1263,38 +1263,6 @@ export default class CoordinatorRoutes {
     }
 
     return res.render(`pages/coordinator/add-involved-staff/${result}.html`, { reportId, username })
-  }
-
-  confirmDeleteReport: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const errors = req.flash('errors')
-    const report = await this.reviewService.getReport(reportId)
-
-    const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
-    const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
-
-    res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
-  }
-
-  deleteReport: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const { confirm } = req.body
-
-    if (!confirm) {
-      req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this report' }])
-      return res.redirect(paths.confirmReportDelete(reportId))
-    }
-
-    const report = await this.reviewService.getReport(reportId)
-    const referringPage =
-      report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
-
-    if (confirm === 'yes') {
-      await this.reportService.deleteReport(res.locals.user.username, reportId)
-    }
-
-    return res.redirect(referringPage)
   }
 
   confirmDeleteStatement: RequestHandler = async (req, res) => {
