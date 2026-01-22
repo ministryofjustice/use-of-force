@@ -37,7 +37,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/location-api/locations/prison/${prisonId}/non-residential-service-type/${serviceType}\\?formatLocalName=true&sortByLocalName=true`,
+        urlPattern: `/location-api/locations/non-residential/prison/${prisonId}/service/${serviceType}\\?formatLocalName=true&sortByLocalName=true`,
       },
       response: {
         status: 200,
