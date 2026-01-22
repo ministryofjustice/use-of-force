@@ -2,7 +2,7 @@ import R from 'ramda'
 import type { Request, RequestHandler } from 'express'
 import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
-import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
+import { isNilOrEmpty, getChangedValues } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
 import { paths, full } from '../../config/incident'
 import { UofReasons } from '../../config/types'
@@ -1159,14 +1159,6 @@ export default class CoordinatorRoutes {
     return res.redirect(paths.viewInvolvedStaff(reportId))
   }
 
-  viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const errors = req.flash('errors')
-    const data = { incidentId: req.params.reportId }
-
-    res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
-  }
-
-  // ===========.  existing code below which will be removed at some point.  ==========
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -1219,50 +1211,6 @@ export default class CoordinatorRoutes {
     const data = { name: staffMember.name, email: staffMember.email, reportId }
 
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
-  }
-
-  submitAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const {
-      body: { username },
-    } = req
-
-    if (!username.trim()) {
-      req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
-      return res.redirect(paths.addInvolvedStaff(reportId))
-    }
-
-    const result = await this.involvedStaffService.addInvolvedStaff(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      reportId,
-      username
-    )
-
-    req.flash('username', username.toUpperCase())
-    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
-  }
-
-  viewAddInvolvedStaffResult: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const result = req.params.result as AddStaffResult
-    const username = firstItem(req.flash('username'))
-
-    const knownResult = Object.values(AddStaffResult).some(knownValue => knownValue === result)
-
-    if (!username || !knownResult || result === AddStaffResult.SUCCESS) {
-      return res.redirect(paths.viewReport(reportId))
-    }
-
-    if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
-      const user = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
-      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
-        reportId,
-        username,
-        name: user.name,
-      })
-    }
-
-    return res.render(`pages/coordinator/add-involved-staff/${result}.html`, { reportId, username })
   }
 
   confirmDeleteStatement: RequestHandler = async (req, res) => {

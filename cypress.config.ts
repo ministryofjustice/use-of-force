@@ -3,6 +3,7 @@ import { defineConfig } from 'cypress'
 import auth from './integration-tests/mockApis/auth'
 import { resetStubs } from './integration-tests/mockApis/wiremock'
 import prisonApi from './integration-tests/mockApis/prisonApi'
+import manageUsersApi from './integration-tests/mockApis/manageUsersApi'
 import locationApi from './integration-tests/mockApis/locationApi'
 import nomisMappingApi from './integration-tests/mockApis/nomisMappingApi'
 
@@ -79,6 +80,10 @@ export default defineConfig({
         stubComponents: components.stubComponents,
 
         stubComponentsFail: components.stubComponentsFail,
+
+        stubStaffMemberSearch: manageUsersApi.stubStaffMemberSearch,
+
+        stubGetUser: manageUsersApi.stubGetUser,
       })
     },
     baseUrl: 'http://localhost:3007',
