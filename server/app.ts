@@ -2,27 +2,19 @@ import express, { Express, RequestHandler, Response, Request } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import helmet from 'helmet'
 import noCache from 'nocache'
-import csurf from 'csurf'
 import path from 'path'
 import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
 import crypto from 'crypto'
-import createError from 'http-errors'
-import session from 'express-session'
-import ConnectRedis from 'connect-redis'
-import { createRedisClient } from './data/redisClient'
-import RequestLogger from './middleware/requestLogger'
-
+import setUpCsrf from './middleware/setUpCsrf'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
-import loggingSerialiser from './loggingSerialiser'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
 import healthcheckFactory from './services/healthcheck'
 
-import logger from '../log'
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
 import populateCurrentUser from './middleware/populateCurrentUser'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
@@ -33,6 +25,8 @@ import unauthenticatedRoutes from './routes/unauthenticated'
 import asyncMiddleware from './middleware/asyncMiddleware'
 import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
+import setUpWebSession from './middleware/setUpWebSession'
+import refreshSystemToken from './middleware/refreshSystemToken'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
   tokenVerifierFactory(config.apis.tokenVerification)
@@ -40,7 +34,6 @@ const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
-const testMode = process.env.NODE_ENV === 'test'
 
 export default function createApp(services: Services): Express {
   const app = express()
@@ -74,7 +67,7 @@ export default function createApp(services: Services): Express {
   const scriptSrc = [
     "'self'",
     'code.jquery.com',
-    "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+    "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='",
     (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
   ]
   const styleSrc = ["'self'", 'code.jquery.com', (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`]
@@ -124,27 +117,7 @@ export default function createApp(services: Services): Express {
     next()
   })
 
-  const RedisStore = ConnectRedis(session)
-  const client = createRedisClient({ legacyMode: true })
-  client.connect()
-
-  app.use(
-    session({
-      store: new RedisStore({ client }),
-      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
-      secret: config.session.secret,
-      resave: false, // redis implements touch so shouldn't need this
-      saveUninitialized: false,
-      rolling: true,
-    })
-  )
-
-  app.use(
-    asyncMiddleware((req, res, next) => {
-      req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-      next()
-    })
-  )
+  app.use(setUpWebSession())
 
   app.use(passport.initialize())
   app.use(passport.session())
@@ -169,15 +142,16 @@ export default function createApp(services: Services): Express {
   }
 
   //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
+  const cacheControl = { maxAge: config.staticResourceCacheDuration }
 
   ;[
     '/assets',
-    '/assets/stylesheets',
+    '/assets/stylesheets/',
     '/assets/js',
-    `/node_modules/govuk-frontend/govuk/assets`,
-    `/node_modules/govuk-frontend`,
-    `/node_modules/@ministryofjustice/frontend/`,
+    '/node_modules/govuk-frontend/dist/govuk/assets',
+    '/node_modules/govuk-frontend/dist',
+    '/node_modules/@ministryofjustice/frontend/moj/assets',
+    '/node_modules/@ministryofjustice/frontend',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
@@ -187,8 +161,6 @@ export default function createApp(services: Services): Express {
     '/assets/images/icons',
     express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
   )
-
-  app.use(RequestLogger({ name: 'Use of force http', serializers: loggingSerialiser }))
 
   const healthcheck = healthcheckFactory(
     config.apis.oauth2.url,
@@ -232,34 +204,7 @@ export default function createApp(services: Services): Express {
   app.use(noCache())
 
   // CSRF protection
-  if (!testMode) {
-    app.use(csurf())
-  }
-
-  // JWT token refresh
-  app.use(async (req, res, next) => {
-    if (req.user && req.originalUrl !== '/sign-out') {
-      const timeToRefresh = new Date() > req.user.refreshTime
-      if (timeToRefresh) {
-        try {
-          const newToken = await services.signInService.getRefreshedToken(req.user)
-          req.user.token = newToken.token
-          req.user.refreshToken = newToken.refreshToken
-          logger.info(`existing refreshTime in the past by ${new Date().getTime() - req.user.refreshTime}`)
-          logger.info(
-            `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
-              newToken.refreshTime
-            }`
-          )
-          req.user.refreshTime = newToken.refreshTime
-        } catch (error) {
-          logger.error(`Token refresh error: ${req.user.username}`, error.stack)
-          return res.redirect('/sign-out')
-        }
-      }
-    }
-    return next()
-  })
+  app.use(setUpCsrf())
 
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.
@@ -300,16 +245,13 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(populateCurrentUser(services.userService))
+  app.use(refreshSystemToken(services))
 
   app.use(unauthenticatedRoutes(services))
   app.use(authorisationMiddleware)
 
   app.get('*', getFrontendComponents(services.feComponentsService))
   app.use(createRouter(authenticationMiddleware, services))
-
-  app.use((req, res, next) => {
-    next(createError(404, 'Not found'))
-  })
 
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 

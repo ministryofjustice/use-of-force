@@ -1,4 +1,4 @@
-{% extends "../partials/layout.html" %}
+{% extends "../partials/prisonerBannerLayout.njk" %}
 {% from "../macros.njk" import submitLink %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
@@ -24,6 +24,31 @@
   {% block formItems %}
 
   {% endblock %}
+
+  {% if coordinatorEditJourney %}
+
+    {% if noChangeError == 'true' %}
+      <p class="govuk-error-message">
+        Cancel to return to the use of force incident page
+      </p>
+    {% endif %}
+
+    <div class="flex-container">
+    {{ govukButton({
+      text: "Continue",
+      name: "submitType",
+      value: 'continue-coordinator-edit',
+      attributes: {'data-qa': 'continue-coordinator-edit'}
+    }) }}
+
+    <a href="/{{data.reportId}}/view-incident" 
+      class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-3 govuk-!-margin-top-1 govuk-body-m" 
+      id ="cancelCoordinatorEdit"
+      data-qa="cancel-coordinator-edit">
+      Cancel <span class="govuk-visually-hidden"> Cancel </span>
+    </a>
+  </div>
+  {% else %}
 
   {% if editMode %}
 
@@ -68,7 +93,7 @@
     {% endif %}
 
   {% endif %}
-
+  {% endif %}
   {% block additionalActions %}
 
   {% endblock %}

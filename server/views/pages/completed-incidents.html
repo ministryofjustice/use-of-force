@@ -7,7 +7,11 @@
 <section class="govuk-tabs__panel">
   {% include "../partials/incidentSearchPanel.html" %}
 
-  {% if pageData.totalPages > 1 %}
+  {% if pageData.totalPages == 1 %}
+    <div class="displayResultsCountOnly">
+      {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+    </div>
+  {% elif pageData.totalPages > 1 %}
     {{ mojPagination( pageData | toPagination(rawQuery) ) }}
   {% endif %} 
 
@@ -26,6 +30,9 @@
 
   <tbody class="govuk-table__body">
       {% for report in reports %}
+
+      {% set href = '/'+ report.id + '/view-incident?tab=report' %}
+
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>
         <td class="govuk-table__cell">{{report.offenderName}}</td>
@@ -33,9 +40,10 @@
         <td class="govuk-table__cell">{{report.staffMemberName}}</td>
         <td class="govuk-table__cell">
           <a
-            href="/{{ report.id }}/view-statements"
+            href={{href}}
             draggable="false"
             class="govuk-link" 
+            data-qa="view-incident-link"
           >
             View incident
           </a>

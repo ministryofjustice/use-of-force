@@ -8,8 +8,9 @@ import type OffenderService from '../../services/offenderService'
 import type LocationService from '../../services/locationService'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import type { ParsedDate } from '../../utils/dateSanitiser'
-import type { SystemToken } from '../../types/uof'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
+import AuthService from '../../services/authService'
+import getIncidentDate from '../../utils/getIncidentDate'
 
 const formName = 'incidentDetails'
 
@@ -23,7 +24,7 @@ export default class IncidentDetailsRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken,
+    private readonly authService: AuthService,
     private readonly locationService: LocationService
   ) {}
 
@@ -40,7 +41,7 @@ export default class IncidentDetailsRoutes {
 
   private async getSubmitRedirectLocation(req: Request, bookingId: number, submitType) {
     if (submitType === SubmitType.SAVE_AND_CHANGE_PRISON) {
-      return `/report/${bookingId}/change-prison`
+      return `/report/${bookingId}/prison-of-incident`
     }
 
     if (await this.draftReportService.isDraftComplete(req.user.username, bookingId)) {
@@ -52,36 +53,27 @@ export default class IncidentDetailsRoutes {
     return submitType === SubmitType.SAVE_AND_CONTINUE ? nextPath : `/report/${bookingId}/report-use-of-force`
   }
 
-  private getIncidentDate = (savedValue: Date, userProvidedValue) => {
-    if (userProvidedValue) {
-      const {
-        date,
-        time: { hour, minute },
-      } = userProvidedValue
-      return { date, hour, minute }
-    }
-    if (savedValue) {
-      const date = moment(savedValue)
-      return { date: date.format('DD/MM/YYYY'), hour: date.format('HH'), minute: date.format('mm') }
-    }
-
-    return null
-  }
-
   public view = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { form, incidentDate, persistedAgencyId, isComplete } = await this.loadForm(req)
 
-    const token = await this.systemToken(res.locals.user.username)
-    const offenderDetail = await this.offenderService.getOffenderDetails(token, bookingId)
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
+    const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), res.locals.user.username)
 
     // If report has been created, use persisted agency Id which is robust against offender moving establishments
     const prisonId = persistedAgencyId || offenderDetail.agencyId
+
+    // if prisoner is currently being transferred or has left the prison, redirect user to select prison where the incident occured
+    if (prisonId === 'TRN' || prisonId === 'OUT') {
+      return res.redirect(`/report/${bookingId}/prison-of-incident`)
+    }
+
     const locations = await this.locationService.getIncidentLocations(token, prisonId)
 
     const { displayName, offenderNo } = offenderDetail
 
-    const input = firstItem(req.flash('userInput'))
+    const input = firstItem(req.flash('userInputForIncidentDetails'))
+
     const pageData = input || form[formName]
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
@@ -91,10 +83,11 @@ export default class IncidentDetailsRoutes {
       ...pageData,
       displayName,
       offenderNo,
-      incidentDate: this.getIncidentDate(incidentDate, input?.incidentDate),
+      incidentDate: getIncidentDate(incidentDate, input?.incidentDate),
       locations,
       prison,
       types,
+      offenderDetail,
     }
 
     return res.render(`formPages/incident/${formName}`, {
@@ -108,7 +101,7 @@ export default class IncidentDetailsRoutes {
   public submit = async (req, res: Response): Promise<void> => {
     const { bookingId } = req.params
     const { submitType } = req.body
-    const token = await this.systemToken(res.locals.user.username)
+    const token = await this.authService.getSystemClientToken(res.locals.user.username)
 
     const fullValidation = submitType === SubmitType.SAVE_AND_CONTINUE
 
@@ -121,9 +114,11 @@ export default class IncidentDetailsRoutes {
 
     const updatedSection = payloadFields
 
+    // flashing so data can be accessed in 'change prison'
+    req.flash('userInputForIncidentDetails', { ...payloadFields, incidentDate }) // merge all fields back together!
+
     if (!isNilOrEmpty(errors)) {
       req.flash('errors', errors)
-      req.flash('userInput', { ...payloadFields, incidentDate }) // merge all fields back together!
       return res.redirect(req.originalUrl)
     }
 
@@ -136,6 +131,9 @@ export default class IncidentDetailsRoutes {
     )
 
     if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
+      // clear content in flash when not going to 'change the prison' page
+      req.flash('userInputForIncidentDetails')
+
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),

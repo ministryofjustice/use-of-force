@@ -6,6 +6,7 @@ const { ReportStatus } = require('../../../server/config/types')
 context('A user views their statements list', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubOffenderDetails', offender2)
@@ -81,7 +82,7 @@ context('A user views their statements list', () => {
 
     const yourStatementsPage = YourStatementsPage.goTo()
     yourStatementsPage.selectedTab().contains('Your statements')
-    yourStatementsPage.pagination().should('not.exist')
+    yourStatementsPage.pagination().should('exist')
 
     {
       const { date, prisoner, overdue, removalRequested, action } = yourStatementsPage.statements(0)
@@ -117,7 +118,7 @@ context('A user views their statements list', () => {
 
     cy.task(
       'seedReports',
-      Array.from(Array(62)).map((_, i) => ({
+      Array.from(Array(60)).map((_, i) => ({
         status: ReportStatus.SUBMITTED,
         bookingId: i,
         involvedStaff: [
@@ -136,14 +137,13 @@ context('A user views their statements list', () => {
 
     yourStatementsPage
       .pageResults()
-      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 62 results'))
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 60 results'))
 
     yourStatementsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: undefined, text: '1', selected: true },
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
       ])
     )
@@ -154,31 +154,103 @@ context('A user views their statements list', () => {
         { href: '?page=1', text: '1', selected: false },
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
 
-    yourStatementsPage.clickLinkWithText('4')
-    yourStatementsPage.pageLinks().then(pageLinks =>
-      expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous page', selected: false },
-        { href: '?page=1', text: '1', selected: false },
-        { href: '?page=2', text: '2', selected: false },
-        { href: '?page=3', text: '3', selected: false },
-        { href: undefined, text: '4', selected: true },
-      ])
-    )
-
-    yourStatementsPage.clickLinkWithText('Previous page')
+    yourStatementsPage.clickLinkWithText('3')
     yourStatementsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-        { href: '?page=4', text: '4', selected: false },
-        { href: '?page=4', text: 'Next page', selected: false },
+      ])
+    )
+
+    yourStatementsPage.clickLinkWithText('Previous page')
+    yourStatementsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
+      ])
+    )
+  })
+
+  it('A user can view expected pagination elements when there are more than 3 pages of results', () => {
+    cy.task('stubOffenders', [offender])
+    cy.login()
+
+    cy.task(
+      'seedReports',
+      Array.from(Array(220)).map((_, i) => ({
+        status: ReportStatus.SUBMITTED,
+        bookingId: i,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      }))
+    )
+
+    const yourStatementsPage = YourStatementsPage.goTo()
+    yourStatementsPage.selectedTab().contains('Your statements')
+    yourStatementsPage.pagination().should('be.visible')
+
+    yourStatementsPage
+      .pageResults()
+      .should(results => expect(results.text()).to.contain('Showing 1 to 20 of 220 results'))
+
+    // [1] 2 3 ... 11 Next >
+    yourStatementsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: undefined, text: '1', selected: true },
+        { href: '?page=2', text: '2', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=2', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … 3 [4] 5 Next >
+    yourStatementsPage.clickLinkWithText('3')
+    yourStatementsPage.clickLinkWithText('Next page')
+    yourStatementsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=3', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '4', selected: true },
+        { href: '?page=5', text: '5', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=5', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … [9] 10 11 Next >
+    yourStatementsPage.clickLinkWithText('5')
+    yourStatementsPage.clickLinkWithText('Next page') // 6
+    yourStatementsPage.clickLinkWithText('Next page') // 7
+    yourStatementsPage.clickLinkWithText('Next page') // 8
+    yourStatementsPage.clickLinkWithText('Next page') // 9
+    yourStatementsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=8', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: undefined, text: '9', selected: true },
+        { href: '?page=10', text: '10', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=10', text: 'Next page', selected: false },
       ])
     )
   })

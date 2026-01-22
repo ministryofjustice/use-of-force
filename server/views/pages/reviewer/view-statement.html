@@ -16,10 +16,10 @@
     <h1 class="govuk-heading-xl mainHeading">{{ data.name}}'s statement</h1>
  
   {{ statementDetail.detail(data, false) }}
-
+  {% set href = '/'+ data.reportId + '/view-incident?tab=report' %}
   <p class="govuk-!-margin-top-5">
     <a
-      href="/{{ data.reportId }}/view-statements"
+      href={{href}}
       draggable="false"
       class="govuk-link"
       data-qa="continue"

@@ -1,33 +1,28 @@
-import { IncidentClient, StatementsClient, AuthClient, RestClientBuilder } from '../data'
+import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import ReviewService, { IncidentSummary, ReportQuery } from './reviewService'
-import { Report, ReportSummary } from '../data/incidentClientTypes'
+import { Report, ReportEdit, ReportSummary } from '../data/incidentClientTypes'
 import { PageResponse } from '../utils/page'
 import OffenderService from './offenderService'
-import { EmailResult } from '../data/authClient'
+import { EmailResult } from '../data/manageUsersApiClient'
 import { ReviewerStatement } from '../data/statementsClientTypes'
+import AuthService from './authService'
 
 jest.mock('../data')
 jest.mock('./offenderService')
+jest.mock('./authService')
 
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
-const authClient = new AuthClient(null) as jest.Mocked<AuthClient>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: ReviewService
-let authClientBuilder: RestClientBuilder<AuthClient>
 
 describe('reviewService', () => {
   beforeEach(() => {
-    authClientBuilder = jest.fn().mockReturnValue(authClient)
-
-    service = new ReviewService(
-      statementsClient,
-      incidentClient,
-      authClientBuilder,
-      offenderService,
-      async username => `${username}-system-token`
-    )
+    authService.getSystemClientToken.mockResolvedValue('userName-system-token')
+    service = new ReviewService(statementsClient, incidentClient, manageUsersApiClient, offenderService, authService)
   })
 
   afterEach(() => {
@@ -35,7 +30,7 @@ describe('reviewService', () => {
   })
 
   test('getStatements', async () => {
-    authClient.getEmail
+    manageUsersApiClient.getEmail
       .mockResolvedValueOnce({ verified: false } as EmailResult)
       .mockResolvedValueOnce({ verified: true } as EmailResult)
     statementsClient.getStatementsForReviewer.mockResolvedValue([{ id: 1 }, { id: 2 }] as ReviewerStatement[])
@@ -46,14 +41,14 @@ describe('reviewService', () => {
       { id: 1, isVerified: false },
       { id: 2, isVerified: true },
     ])
-    expect(statementsClient.getStatementsForReviewer).toBeCalledWith(1)
+    expect(statementsClient.getStatementsForReviewer).toHaveBeenCalledWith(1)
   })
 
   describe('getStatement', () => {
     test('success', async () => {
       const date = new Date('2019-03-05 01:03:28')
       statementsClient.getStatementForReviewer.mockResolvedValue({ userId: 'USER_1', id: 2 } as ReviewerStatement)
-      authClient.getEmail.mockResolvedValue({ verified: true } as EmailResult)
+      manageUsersApiClient.getEmail.mockResolvedValue({ verified: true } as EmailResult)
       statementsClient.getAdditionalComments.mockResolvedValue([
         {
           additionalComment: 'comment1',
@@ -75,9 +70,8 @@ describe('reviewService', () => {
         ],
       })
 
-      expect(authClientBuilder).toBeCalledWith('token-1')
-      expect(authClient.getEmail).toBeCalledWith('USER_1')
-      expect(statementsClient.getStatementForReviewer).toBeCalledWith(1)
+      expect(manageUsersApiClient.getEmail).toHaveBeenCalledWith('USER_1', 'token-1')
+      expect(statementsClient.getStatementForReviewer).toHaveBeenCalledWith(1)
     })
 
     test('failed as no statement', async () => {
@@ -91,14 +85,62 @@ describe('reviewService', () => {
     test('it should call query on db', async () => {
       incidentClient.getReportForReviewer.mockResolvedValue({ id: 2 } as Report)
       await service.getReport(1)
-      expect(incidentClient.getReportForReviewer).toBeCalledTimes(1)
-      expect(incidentClient.getReportForReviewer).toBeCalledWith(1)
+      expect(incidentClient.getReportForReviewer).toHaveBeenCalledTimes(1)
+      expect(incidentClient.getReportForReviewer).toHaveBeenCalledWith(1)
     })
 
     test('report not present', async () => {
       incidentClient.getReportForReviewer.mockReturnValue(null)
 
       await expect(service.getReport(1)).rejects.toThrow("Report: '1' does not exist")
+    })
+  })
+
+  describe('getBookingIdWithReportId', () => {
+    it('should return bookingId if present', async () => {
+      incidentClient.getBookingId.mockResolvedValue({ bookingId: '12345' })
+      const result = await service.getBookingIdWithReportId(1)
+      expect(incidentClient.getBookingId).toHaveBeenCalledWith(1)
+      expect(result).toBe('12345')
+    })
+
+    it('should throw if bookingId is missing', async () => {
+      incidentClient.getBookingId.mockResolvedValue({ bookingId: undefined })
+      await expect(service.getBookingIdWithReportId(1)).rejects.toThrow("Booking Id: '1' does not exist")
+    })
+  })
+  describe('getReportEdits', () => {
+    test('it should call query on db', async () => {
+      incidentClient.getReportEdits.mockResolvedValue([{ id: 1, reportId: 1 }] as ReportEdit[])
+      await service.getReportEdits(1)
+      expect(incidentClient.getReportEdits).toHaveBeenCalledTimes(1)
+    })
+
+    test('no edits present', async () => {
+      incidentClient.getReportEdits.mockResolvedValue([] as ReportEdit[])
+      const result = await service.getReportEdits(1)
+      expect(result).toEqual([])
+    })
+
+    test('one edit present', async () => {
+      const reportEdit = [
+        {
+          id: 1,
+          editDate: new Date('2025-05-13 10:30:43.122'),
+          editorUserId: 'TOM_ID',
+          editorName: 'TOM',
+          reportId: 1,
+          changes: { pava: { oldValue: 'true', newValue: 'false' } },
+          reason: 'chose wrong answer',
+          reasonText: '',
+          additionalComments: '',
+          reportOwnerChanged: false,
+        },
+      ] as ReportEdit[]
+
+      incidentClient.getReportEdits.mockResolvedValue(reportEdit)
+      const result = await service.getReportEdits(1)
+      expect(result).toEqual(reportEdit)
     })
   })
 
@@ -130,10 +172,26 @@ describe('reviewService', () => {
         'offender-2': 'Prisoner prisoner-2',
       })
 
-      const result = await service.getIncompleteReports('userName', 'agency-1')
-      expect(result).toEqual([incidentSummary(1), incidentSummary(2)])
-      expect(incidentClient.getIncompleteReportsForReviewer).toBeCalledWith('agency-1')
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      const expected = new PageResponse(
+        {
+          min: 1,
+          max: 2,
+          page: 1,
+          totalCount: 2,
+          totalPages: 1,
+          nextPage: null,
+          previousPage: null,
+        },
+        [incidentSummary(1), incidentSummary(2)]
+      )
+
+      const result = await service.getIncompleteReports('userName', 'agency-1', 1)
+      expect(result).toEqual(expected)
+      expect(incidentClient.getIncompleteReportsForReviewer).toHaveBeenCalledWith('agency-1')
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
   })
 
@@ -178,8 +236,11 @@ describe('reviewService', () => {
           incidentSummary(2),
         ])
       )
-      expect(incidentClient.getCompletedReportsForReviewer).toBeCalledWith('agency-1', query, 1)
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      expect(incidentClient.getCompletedReportsForReviewer).toHaveBeenCalledWith('agency-1', query, 1)
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
 
     test('it can filter on prisoner name', async () => {
@@ -199,8 +260,11 @@ describe('reviewService', () => {
           [incidentSummary(2)]
         )
       )
-      expect(incidentClient.getAllCompletedReportsForReviewer).toBeCalledWith('agency-1', query)
-      expect(offenderService.getOffenderNames).toBeCalledWith('userName-system-token', ['offender-1', 'offender-2'])
+      expect(incidentClient.getAllCompletedReportsForReviewer).toHaveBeenCalledWith('agency-1', query)
+      expect(offenderService.getOffenderNames).toHaveBeenCalledWith('userName-system-token', [
+        'offender-1',
+        'offender-2',
+      ])
     })
 
     test('escapes regex characters when filtering by prisoner name', async () => {

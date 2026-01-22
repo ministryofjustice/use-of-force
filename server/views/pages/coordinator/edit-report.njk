@@ -1,0 +1,73 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% import "../reportDetailMacro.njk" as reportDetail %} 
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %} 
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageTitle = 'Edit Use of force report' %}
+{% set renderReportView = true %}
+{% set print = false %}
+{% set isEditReport = true %}
+
+{% block beforeContent %}
+    <div class="flex-container-space-between govuk-!-display-none-print">
+        {{ govukBreadcrumbs({
+          items: [
+            {
+              text: "Digital Prison Services",
+              href: links.exitUrl
+            },
+            {
+              text: "Use of force incidents",
+              href: "/"
+            },
+            {
+              text: "Use of force incident " + data.incidentId,
+              href: "/" + data.incidentId +"/view-incident?tab=report"
+            }
+          ]
+        }) }}
+
+      <div class="float-right">
+        <a href="" class="govuk-link govuk-link--no-visited-state print-link">  Print report and statements  </a>
+      </div>
+    </div>
+
+  {{ super() }}
+{% endblock %}
+  
+{% block content %}
+  <div class="govuk-grid-row govuk-body govuk-!-display-none-print">
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-9">      
+      <div class="flex-container-space-between">
+        <h1 class="govuk-heading-xl">{{ pageTitle }} {{ data.incidentId }} </h1>
+        <p>
+          <a href="/{{ data.incidentId }}/view-incident?tab=report"class="govuk-link" data-qa="return-to-incident" >Return to use of force incident</a>
+        </p>
+      </div>
+
+      {{
+        reportDetail.detail(data, null, data.incidentId, user, print, renderReportView, isEditReport, statements)
+      }}
+    </div>
+  </div>
+
+  {# print output #}
+  <div class=" govuk-body print">
+    {{
+      reportDetail.detail(data, null, data.incidentId, user, print, renderReportView, isEditReport, statements)
+    }}
+
+    {% for statement in statements %}
+      <h2 class="govuk-heading-l">{{ statement.name }}'s statement</h2>
+      <p> <span class="govuk-label--s"> Submitted: </span> {{statement.submittedDate | formatDate('D MMMM YYYY - HH:mm')}}</p>
+      <p class="pre-wrapped">{{ statement.statement }}</p>
+      {% for additionalComments in statement.additionalComments %}
+        <hr/>
+        <p> <span class="govuk-label--s"> Additional comment submitted: </span> {{additionalComments.dateSubmitted | formatDate('D MMMM YYYY - HH:mm')}}</p>
+        <p class="pre-wrapped">{{ additionalComments.additionalComment}}</p>
+      {% endfor %}
+    <hr>
+    {% endfor %}
+  </div> 
+
+{% endblock %}

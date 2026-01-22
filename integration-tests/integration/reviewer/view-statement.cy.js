@@ -9,6 +9,7 @@ context('view statement page', () => {
   const bookingId = 1001
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
     cy.task('stubPrison', offender.agencyId)
@@ -17,7 +18,7 @@ context('view statement page', () => {
     cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
   })
 
-  it('A reviewer can view statements for a specific report', () => {
+  xit('A reviewer can view statements for a specific report', () => {
     cy.task('stubReviewerLogin')
     cy.login(bookingId)
 

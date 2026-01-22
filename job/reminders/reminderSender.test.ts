@@ -49,8 +49,8 @@ describe('send', () => {
         isOverdue: false,
       })
 
-      expect(notificationService.sendReporterStatementReminder).toBeCalledTimes(1)
-      expect(notificationService.sendReporterStatementReminder).toBeCalledWith(
+      expect(notificationService.sendReporterStatementReminder).toHaveBeenCalledTimes(1)
+      expect(notificationService.sendReporterStatementReminder).toHaveBeenCalledWith(
         recipientEmail,
         {
           incidentDate,
@@ -72,8 +72,8 @@ describe('send', () => {
         statementId: -1,
       })
 
-      expect(notificationService.sendReporterStatementOverdue).toBeCalledTimes(1)
-      expect(notificationService.sendReporterStatementOverdue).toBeCalledWith(
+      expect(notificationService.sendReporterStatementOverdue).toHaveBeenCalledTimes(1)
+      expect(notificationService.sendReporterStatementOverdue).toHaveBeenCalledWith(
         recipientEmail,
         {
           incidentDate,
@@ -95,8 +95,8 @@ describe('send', () => {
         isOverdue: false,
       })
 
-      expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledTimes(1)
-      expect(notificationService.sendInvolvedStaffStatementReminder).toBeCalledWith(
+      expect(notificationService.sendInvolvedStaffStatementReminder).toHaveBeenCalledTimes(1)
+      expect(notificationService.sendInvolvedStaffStatementReminder).toHaveBeenCalledWith(
         recipientEmail,
         {
           incidentDate,
@@ -117,8 +117,8 @@ describe('send', () => {
         isOverdue: true,
       })
 
-      expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledTimes(1)
-      expect(notificationService.sendInvolvedStaffStatementOverdue).toBeCalledWith(
+      expect(notificationService.sendInvolvedStaffStatementOverdue).toHaveBeenCalledTimes(1)
+      expect(notificationService.sendInvolvedStaffStatementOverdue).toHaveBeenCalledWith(
         recipientEmail,
         {
           incidentDate,

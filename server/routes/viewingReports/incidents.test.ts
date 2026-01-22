@@ -1,25 +1,53 @@
 import request from 'supertest'
-import { appWithAllRoutes, user } from '../__test/appSetup'
+import { appWithAllRoutes, coordinatorUser, reviewerUser, user } from '../__test/appSetup'
 import { PageResponse } from '../../utils/page'
-import { ReportDetailBuilder, ReportService, OffenderService } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
+import ReportService, { IncidentSummary } from '../../services/reportService'
+import OffenderService from '../../services/offenderService'
+import AuthService from '../../services/authService'
+import ReportDetailBuilder from '../../services/reportDetailBuilder'
 
 jest.mock('../../services/reportService')
+jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/reportDetailBuilder')
 
 const userSupplier = jest.fn()
 
 const reportService = new ReportService(null, null, null, null, null, null) as jest.Mocked<ReportService>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
 
 let app
 
 beforeEach(() => {
+  reportService.getReports.mockResolvedValue({
+    metaData: {
+      page: 1,
+      totalCount: 2,
+      min: 1,
+      max: 2,
+      totalPages: 1,
+      previousPage: null,
+      nextPage: null,
+    },
+    items: [
+      {
+        id: 2,
+        bookingId: 541867,
+        incidentdate: new Date(),
+        staffMemberName: 'Bob',
+        offenderName: 'Offender A',
+        offenderNo: 'A12345B',
+        status: 'SUBMITTED',
+      },
+    ],
+  } as unknown as PageResponse<IncidentSummary>)
   userSupplier.mockReturnValue(user)
-  app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder }, userSupplier)
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+  app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
 })
 
 afterEach(() => {
@@ -53,6 +81,68 @@ describe('GET /your-reports', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Your reports')
+      })
+  })
+
+  it('should display View report link for reporter', () => {
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View report')
+      })
+  })
+
+  it('should display View incident link for coordinator', () => {
+    userSupplier.mockReturnValue(coordinatorUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View incident')
+      })
+  })
+
+  it('should display View incident link for reviewer', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View incident')
+      })
+  })
+
+  it('should provide correct href to view report link in old view', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/your-report')
+      })
+  })
+
+  it('should provide correct href to view incident link in new view', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    app = appWithAllRoutes({ reportService, offenderService, reportDetailBuilder, authService }, userSupplier)
+
+    return request(app)
+      .get('/your-reports')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/view-incident?tab=report')
       })
   })
 })

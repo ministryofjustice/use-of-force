@@ -7,6 +7,7 @@ const { ReportStatus } = require('../../../server/config/types')
 context('A reporter views their report list', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
@@ -70,7 +71,6 @@ context('A reporter views their report list', () => {
         relocationAndInjuries: 'NOT_STARTED',
         evidence: 'NOT_STARTED',
       })
-      inProgressReport.logout().click()
     }
   })
 
@@ -80,7 +80,7 @@ context('A reporter views their report list', () => {
 
     cy.task(
       'seedReports',
-      Array.from(Array(62)).map((_, i) => ({
+      Array.from(Array(60)).map((_, i) => ({
         status: ReportStatus.SUBMITTED,
         bookingId: i,
         involvedStaff: [
@@ -97,14 +97,13 @@ context('A reporter views their report list', () => {
     yourReportsPage.selectedTab().contains('Your reports')
     yourReportsPage.pagination().should('be.visible')
 
-    yourReportsPage.pageResults().should(results => expect(results.text()).to.contain('Showing 1 to 20 of 62 results'))
+    yourReportsPage.pageResults().should(results => expect(results.text()).to.contain('Showing 1 to 20 of 60 results'))
 
     yourReportsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: undefined, text: '1', selected: true },
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
       ])
     )
@@ -115,31 +114,101 @@ context('A reporter views their report list', () => {
         { href: '?page=1', text: '1', selected: false },
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
-        { href: '?page=4', text: '4', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
       ])
     )
 
-    yourReportsPage.clickLinkWithText('4')
-    yourReportsPage.pageLinks().then(pageLinks =>
-      expect(pageLinks).to.deep.equal([
-        { href: '?page=3', text: 'Previous page', selected: false },
-        { href: '?page=1', text: '1', selected: false },
-        { href: '?page=2', text: '2', selected: false },
-        { href: '?page=3', text: '3', selected: false },
-        { href: undefined, text: '4', selected: true },
-      ])
-    )
-
-    yourReportsPage.clickLinkWithText('Previous page')
+    yourReportsPage.clickLinkWithText('3')
     yourReportsPage.pageLinks().then(pageLinks =>
       expect(pageLinks).to.deep.equal([
         { href: '?page=2', text: 'Previous page', selected: false },
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-        { href: '?page=4', text: '4', selected: false },
-        { href: '?page=4', text: 'Next page', selected: false },
+      ])
+    )
+
+    yourReportsPage.clickLinkWithText('Previous page')
+    yourReportsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=1', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '2', selected: true },
+        { href: '?page=3', text: '3', selected: false },
+        { href: '?page=3', text: 'Next page', selected: false },
+      ])
+    )
+  })
+
+  it('A user can view extended pagination when more than 3 pages of results', () => {
+    cy.task('stubOffenders', [offender])
+    cy.login()
+
+    cy.task(
+      'seedReports',
+      Array.from(Array(220)).map((_, i) => ({
+        status: ReportStatus.SUBMITTED,
+        bookingId: i,
+        involvedStaff: [
+          {
+            username: 'TEST_USER',
+            name: 'TEST_USER name',
+            email: 'TEST_USER@gov.uk',
+          },
+        ],
+      }))
+    )
+
+    const yourReportsPage = YourReportsPage.goTo()
+    yourReportsPage.selectedTab().contains('Your reports')
+    yourReportsPage.pagination().should('be.visible')
+
+    yourReportsPage.pageResults().should(results => expect(results.text()).to.contain('Showing 1 to 20 of 220 results'))
+
+    // [1] 2 3 ... 11 Next >
+    yourReportsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: undefined, text: '1', selected: true },
+        { href: '?page=2', text: '2', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=2', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … 3 [4] 5 Next >
+    yourReportsPage.clickLinkWithText('3')
+    yourReportsPage.clickLinkWithText('Next page')
+    yourReportsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=3', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=3', text: '3', selected: false },
+        { href: undefined, text: '4', selected: true },
+        { href: '?page=5', text: '5', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=5', text: 'Next page', selected: false },
+      ])
+    )
+
+    // < Previous 1 … [9] 10 11 Next >
+    yourReportsPage.clickLinkWithText('5')
+    yourReportsPage.clickLinkWithText('Next page') // 6
+    yourReportsPage.clickLinkWithText('Next page') // 7
+    yourReportsPage.clickLinkWithText('Next page') // 8
+    yourReportsPage.clickLinkWithText('Next page') // 9
+    yourReportsPage.pageLinks().then(pageLinks =>
+      expect(pageLinks).to.deep.equal([
+        { href: '?page=8', text: 'Previous page', selected: false },
+        { href: '?page=1', text: '1', selected: false },
+        { href: undefined, text: '…', selected: false },
+        { href: undefined, text: '9', selected: true },
+        { href: '?page=10', text: '10', selected: false },
+        { href: '?page=11', text: '11', selected: false },
+        { href: '?page=10', text: 'Next page', selected: false },
       ])
     )
   })

@@ -1,0 +1,94 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% set pageTitle = 'Reason for deleting this report' %}
+{% set showBacklink = true %}
+{% set backlinkHref = '/' + data.reportId + '/delete-incident' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+  {% if errors.length > 0 %}
+    {{
+      govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      })
+    }}
+  {% endif %}
+
+  <div class="govuk-grid-column-three-quarters">
+    <span class="govuk-caption-xl">Delete a use of force incident </span>
+    <h1 class="govuk-heading-xl mainHeading"> {{ pageTitle }}</h1>
+
+    <div class = 'govuk-body'>
+
+      {% set reasonHtml %}
+        {{ govukCharacterCount({
+          name: "reasonForDeleteText",
+          id: "reasonForDeleteText",
+          maxlength: 250,
+          value: data.reasonForDeleteText,
+          classes: "govuk-!-width-one-half",
+          errorMessage: errors | findError('reasonForDeleteText'),
+          attributes: {'data-qa':'another-reason-text'},
+          hint: {
+            text: "Please specify"
+          }
+        }) }}
+      {% endset -%}
+
+     <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {{ govukRadios({
+          name: "reasonForDelete",
+          errorMessage: errors | findError('reasonForDelete'),
+          fieldset: {
+            legend: {
+              text: "Why are you deleting this report?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          items: [
+            {
+              value: "duplicateReport",
+              text: "It is a duplicate report",
+              attributes: {'data-qa': 'duplicate'},
+              checked: data.reasonForDelete === "duplicateReport"
+              },
+              {
+                value: "notUofIncident",
+                attributes: {'data-qa': 'not-uof-Incident'},
+                text: "The incident was not a use of force incident",
+                checked: data.reasonForDelete === "notUofIncident"
+              },            
+              {
+              value: "anotherReason",
+              text: "Another reason",
+              attributes: {'data-qa': 'another-reason'},
+              checked: data.reasonForDelete === 'anotherReason',
+              conditional: {
+                html: reasonHtml
+              }
+            }
+            ]
+          }) }}
+        
+        <div class="govuk-button-group">  
+          {{ govukButton({
+            text: 'Continue',
+            name: "submit",
+            value: 'continue',
+            attributes: {'data-qa': 'continue'}
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

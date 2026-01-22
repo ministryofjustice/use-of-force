@@ -6,6 +6,7 @@ const UseOfForceDetailsPage = require('../../pages/createReport/useOfForceDetail
 context('Enter use of force details page', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('stubOffenderDetails', offender)
     cy.task('stubLocations', offender.agencyId)
@@ -31,6 +32,8 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.batonUsed().check('true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.taserDrawn().check('false')
+    useOfForceDetailsPage.bittenByPrisonDog().check('false')
     useOfForceDetailsPage.weaponsObserved().check('NO')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
@@ -59,6 +62,8 @@ context('Enter use of force details page', () => {
         handcuffsApplied: true,
         pavaDrawnAgainstPrisoner: true,
         pavaUsed: true,
+        taserDrawn: false,
+        bittenByPrisonDog: false,
         weaponsObserved: 'NO',
         personalProtectionTechniques: true,
         positiveCommunication: true,
@@ -86,6 +91,8 @@ context('Enter use of force details page', () => {
         pavaDrawnAgainstPrisoner: true,
         weaponsObserved: 'NO',
         pavaUsed: true,
+        taserDrawn: false,
+        bittenByPrisonDog: false,
         personalProtectionTechniques: true,
         positiveCommunication: true,
         restraintPositions: 'STANDING',
@@ -109,6 +116,8 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.batonUsed().should('have.value', 'true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().should('have.value', 'true')
     useOfForceDetailsPage.pavaUsed().should('have.value', 'true')
+    useOfForceDetailsPage.taserDrawnNo().should('be.checked')
+    useOfForceDetailsPage.bittenByPrisonDogNo().should('be.checked')
     useOfForceDetailsPage.guidingHold().should('have.value', 'true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.two().should('be.checked')
     useOfForceDetailsPage.escortingHold().should('have.value', 'true')
@@ -145,6 +154,8 @@ context('Enter use of force details page', () => {
       .contains('Select yes if any part of the incident was captured on a body-worn camera')
     useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
     useOfForceDetailsPage.errorSummary().contains('Select yes if any weapons were observed')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a Taser was drawn against the prisoner')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if the prisoner was bitten by a prison dog')
   })
 
   it('Displays secondary validation messages', () => {
@@ -161,6 +172,8 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.personalProtectionTechniques().check('true')
     useOfForceDetailsPage.pavaDrawnAgainstPrisoner().check('true')
     useOfForceDetailsPage.pavaUsed().check('true')
+    useOfForceDetailsPage.taserDrawn().check('true')
+    useOfForceDetailsPage.bittenByPrisonDog().check('true')
     useOfForceDetailsPage.weaponsObserved().check('YES')
     useOfForceDetailsPage.guidingHold().check('true')
     useOfForceDetailsPage.guidingHoldOfficersInvolved.check('2')
@@ -171,6 +184,13 @@ context('Enter use of force details page', () => {
     useOfForceDetailsPage.errorSummary().contains('Enter the body-worn camera number')
     useOfForceDetailsPage.errorSummary().contains('Select if any pain inducing techniques were used')
     useOfForceDetailsPage.errorSummary().contains('Enter the type of weapon observed')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if the prisoner was warned a Taser operative was present')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a red-dot warning was used')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if a red-dot warning was used')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if an arc warning was used')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if the Taser was deployed')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if the Taser cycle was extended')
+    useOfForceDetailsPage.errorSummary().contains('Select yes if the Taser was re-energised')
   })
 
   it('Displays validation messages when multiple inputs are not unique', () => {

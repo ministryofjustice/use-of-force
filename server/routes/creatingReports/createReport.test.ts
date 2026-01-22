@@ -1,8 +1,12 @@
 import request from 'supertest'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
+import AuthService from '../../services/authService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../services/drafts/draftReportService')
+jest.mock('../../services/authService')
+jest.mock('../../services/offenderService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -13,11 +17,13 @@ const draftReportService = new DraftReportService(
   null,
   null
 ) as jest.Mocked<DraftReportService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 
 let app
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService })
+  app = appWithAllRoutes({ draftReportService, authService, offenderService })
   draftReportService.getCurrentDraft.mockResolvedValue({})
 })
 
@@ -44,6 +50,8 @@ const validUseOfForceDetailsRequest = {
   personalProtectionTechniques: 'false',
   batonDrawnAgainstPrisoner: 'false',
   pavaDrawnAgainstPrisoner: 'false',
+  bittenByPrisonDog: 'false',
+  taserDrawn: 'false',
   weaponsObserved: 'NO',
   guidingHold: 'false',
   escortingHold: 'false',
@@ -62,6 +70,8 @@ const validUseOfForceDetailUpdate = [
     bodyWornCameraNumbers: [{ cameraNum: 'ABC123' }],
     batonDrawnAgainstPrisoner: false,
     pavaDrawnAgainstPrisoner: false,
+    taserDrawn: false,
+    bittenByPrisonDog: false,
     guidingHold: false,
     escortingHold: false,
     handcuffsApplied: false,
@@ -115,6 +125,7 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/use-of-force-details`)
       .send({
         ...validUseOfForceDetailsRequest,
+        taserDrawn: undefined,
         bodyWornCamera: null,
         submitType: 'save-and-return',
       })
@@ -128,6 +139,7 @@ describe('POST save and return to tasklist', () => {
           handcuffsApplied: false,
           painInducingTechniquesUsed: 'NONE',
           pavaDrawnAgainstPrisoner: false,
+          bittenByPrisonDog: false,
           batonDrawnAgainstPrisoner: false,
           weaponsObserved: 'NO',
           personalProtectionTechniques: false,
@@ -205,9 +217,9 @@ describe('Submitting evidence page', () => {
         .expect(302)
         .expect('Location', nextPath)
         .expect(() => {
-          expect(draftReportService.process).toBeCalledTimes(1)
+          expect(draftReportService.process).toHaveBeenCalledTimes(1)
 
-          expect(draftReportService.process).toBeCalledWith(user, 1, 'evidence', {
+          expect(draftReportService.process).toHaveBeenCalledWith(user, 1, 'evidence', {
             baggedEvidence: true,
             cctvRecording: 'YES',
             evidenceTagAndDescription: [{ description: 'A Description', evidenceTagReference: '12345' }],

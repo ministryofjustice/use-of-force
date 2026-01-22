@@ -1,5 +1,4 @@
 import nock from 'nock'
-import restClientBuilder from '.'
 import config from '../config'
 import PrisonerSearchClient from './prisonerSearchClient'
 
@@ -11,7 +10,7 @@ describe('prisonSearchClientBuilder', () => {
 
   beforeEach(() => {
     fakePrisonerSearchApi = nock(config.apis.prisonerSearch.url)
-    client = restClientBuilder('prisonerSearch', config.apis.prisonerSearch, PrisonerSearchClient)(token)
+    client = new PrisonerSearchClient()
   })
 
   afterEach(() => {
@@ -29,12 +28,15 @@ describe('prisonSearchClientBuilder', () => {
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, results)
 
-      const output = await client.search({
-        prisonNumber: 'AAA123AB',
-        firstName: 'Bob',
-        lastName: 'Smith',
-        agencyId: 'MDI',
-      })
+      const output = await client.search(
+        {
+          prisonNumber: 'AAA123AB',
+          firstName: 'Bob',
+          lastName: 'Smith',
+          agencyId: 'MDI',
+        },
+        token
+      )
       expect(output).toEqual(results)
     })
   })

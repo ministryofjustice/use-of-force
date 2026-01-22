@@ -24,7 +24,7 @@ test('getReports', async () => {
 
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.id, count(*) OVER() AS "totalCount"
             , r.booking_id    "bookingId"
             , r.reporter_name "reporterName"
@@ -43,10 +43,31 @@ test('getReports', async () => {
   })
 })
 
+test('getReportEdits', () => {
+  incidentClient.getReportEdits(1)
+
+  expect(query).toBeCalledWith({
+    text: `select id
+          , edit_date "editDate"
+          , editor_user_id "editorUserId"
+          , editor_name "editorName"
+          , report_id "reportId"
+          , changes "changes"
+          , reason "reason"
+          , reason_text "reasonText"
+          , additional_comments "additionalComments"
+          , report_owner_changed "reportOwnerChanged"
+          from report_edit r
+          where r.report_id = $1
+          ORDER BY edit_date DESC`,
+    values: [1],
+  })
+})
+
 test('getReportForReviewer', () => {
   incidentClient.getReportForReviewer(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select id
           , user_id "username"
           , incident_date "incidentDate"
@@ -74,7 +95,7 @@ test('getIncompleteReportsForReviewer', () => {
 
   incidentClient.getIncompleteReportsForReviewer('agency-1')
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -98,7 +119,7 @@ test('getAllCompletedReportsForReviewer', () => {
     dateTo: moment('2020-01-30'),
   })
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.id
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -137,7 +158,7 @@ test('getCompletedReportsForReviewer', async () => {
 
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select r.id, count(*) OVER() AS "totalCount"
             , r.booking_id     "bookingId"
             , r.reporter_name  "reporterName"
@@ -167,7 +188,7 @@ test('getCompletedReportsForReviewer', async () => {
 test('getReport', () => {
   incidentClient.getReport('user1', 1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select id
           , user_id "username"
           , incident_date "incidentDate"
@@ -176,16 +197,29 @@ test('getReport', () => {
           , reporter_name "reporterName"
           , form_response "form"
           , booking_id "bookingId"
+          , status "status"
           from v_report r
           where r.user_id = $1 and r.id = $2`,
     values: ['user1', 1],
   })
 })
 
+describe('getBookingId', () => {
+  it('should return bookingId for a report', async () => {
+    query.mockResolvedValue({ rows: [{ bookingId: '12345' }] })
+    const result = await incidentClient.getBookingId(1)
+    expect(query).toHaveBeenCalledWith({
+      text: expect.stringContaining('select'),
+      values: [1],
+    })
+    expect(result).toEqual({ bookingId: '12345' })
+  })
+})
+
 test('getAnonReportSummary', () => {
   incidentClient.getAnonReportSummary(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select vs.id "statementId"
             ,  vr.incident_date "incidentDate"
             ,  vr.agency_id "agencyId"
@@ -201,7 +235,7 @@ describe('changeStatus', () => {
   test('changeStatus to incomplete', async () => {
     await incidentClient.changeStatus(1, 'USER-1', ReportStatus.COMPLETE, ReportStatus.SUBMITTED, transactionalQuery)
 
-    expect(transactionalQuery).toBeCalledWith({
+    expect(transactionalQuery).toHaveBeenCalledWith({
       text: `update v_report r
             set status = $1
             ,   updated_date = now()
@@ -219,7 +253,7 @@ describe('changeStatus', () => {
   test('changeStatus to complete', async () => {
     await incidentClient.changeStatus(1, 'USER-1', ReportStatus.SUBMITTED, ReportStatus.COMPLETE, transactionalQuery)
 
-    expect(transactionalQuery).toBeCalledWith({
+    expect(transactionalQuery).toHaveBeenCalledWith({
       text: `update v_report r
             set status = $1
             ,   updated_date = now()
@@ -242,7 +276,7 @@ test('getInvolvedStaff', async () => {
   const result = await incidentClient.getInvolvedStaff(1)
 
   expect(result).toEqual([{ name: 'AAA User' }, { name: 'BBB User' }])
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select s.id     "statementId"
     ,      s.user_id       "userId"
     ,      s.name          "name"
@@ -255,7 +289,7 @@ test('getInvolvedStaff', async () => {
 
 test('getNextNotificationReminder', () => {
   incidentClient.getNextNotificationReminder(transactionalQuery)
-  expect(transactionalQuery).toBeCalledWith({
+  expect(transactionalQuery).toHaveBeenCalledWith({
     text: `select s.id                     "statementId"
               ,       r.id                     "reportId"
               ,       s.user_id                "userId"
@@ -285,7 +319,7 @@ test('setNextReminderDate', () => {
   const date = new Date()
   incidentClient.setNextReminderDate(-1, date)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: 'update v_statement set next_reminder_date = $1, updated_date = now() where id = $2',
     values: [date, -1],
   })
@@ -295,15 +329,15 @@ test('deleteReport', async () => {
   const date = new Date()
   await incidentClient.deleteReport('USER-1', -1, date)
 
-  expect(transactionalQuery).toBeCalledWith({
+  expect(transactionalQuery).toHaveBeenCalledWith({
     text: 'update report set deleted = $1 where id = $2',
     values: [date, -1],
   })
-  expect(transactionalQuery).toBeCalledWith({
+  expect(transactionalQuery).toHaveBeenCalledWith({
     text: 'update statement set deleted = $1 where id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
-  expect(transactionalQuery).toBeCalledWith({
+  expect(transactionalQuery).toHaveBeenCalledWith({
     text: 'update statement_amendments set deleted = $1 where statement_id in (select id from statement where report_id = $2)',
     values: [date, -1],
   })
@@ -315,12 +349,28 @@ test('update', () => {
 
   incidentClient.update(1, date, {})
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `update v_report r
             set form_response = COALESCE($1,   r.form_response)
             ,   incident_date = COALESCE($2,   r.incident_date)
             ,   updated_date = now()
             where r.id = $3`,
     values: [{}, date, 1],
+  })
+})
+
+test('updateWithEdits', () => {
+  const date = new Date()
+
+  incidentClient.updateWithEdits(1, date, 'WRI', {})
+
+  expect(query).toHaveBeenCalledWith({
+    text: `update v_report r
+            set form_response = COALESCE($1,   r.form_response)
+            ,   incident_date = COALESCE($2,   r.incident_date)
+            ,   agency_id = COALESCE($3,   r.agency_id)
+            ,   updated_date = now()
+            where r.id = $4`,
+    values: [{}, date, 'WRI', 1],
   })
 })

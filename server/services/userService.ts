@@ -1,22 +1,20 @@
 import logger from '../../log'
 import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
-import type { RestClientBuilder, PrisonClient, AuthClient } from '../data'
-import { User, UserWithPrison, FoundUserResult } from '../types/uof'
-import { EmailResult } from '../data/authClient'
+import { type PrisonClient } from '../data'
+import { User, UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
+import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
   constructor(
-    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>
+    private readonly manageUsersClient: ManageUsersApiClient,
+    private readonly prisonClient: PrisonClient
   ) {}
 
   public async getSelf(token: string): Promise<User> {
     try {
-      const prisonClient = this.prisonClientBuilder(token)
-      const user = await prisonClient.getUser()
-
-      const activeCaseLoads = user.activeCaseLoadId ? await prisonClient.getUserCaseLoads() : []
+      const user = await this.prisonClient.getUser(token)
+      const activeCaseLoads = user.activeCaseLoadId ? await this.prisonClient.getUserCaseLoads(token) : []
       const activeCaseLoad = activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === user.activeCaseLoadId)
       const displayName = `${properCaseName(user.firstName)} ${properCaseName(user.lastName)}`
 
@@ -32,15 +30,20 @@ export default class UserService {
     }
   }
 
-  private async getEmailSafely(client: AuthClient, username: string): Promise<EmailResult> {
-    return usernamePattern.test(username) ? client.getEmail(username) : { username, exists: false, verified: false }
+  private async getEmailSafely(client: ManageUsersApiClient, username: string, token: string): Promise<EmailResult> {
+    const notFound = { username, exists: false, verified: false }
+    return usernamePattern.test(username)
+      ? client.getEmail(username, token).catch(() => {
+          return notFound
+        })
+      : notFound
   }
 
   public async getUser(token: string, username: string): Promise<FoundUserResult> {
     try {
-      const client = this.authClientBuilder(token)
-      const email = await this.getEmailSafely(client, username.toUpperCase())
-      const user = email.exists && (await client.getUser(email.username))
+      const client = this.manageUsersClient
+      const email = await this.getEmailSafely(client, username.toUpperCase(), token)
+      const user = email.exists && (await client.getUser(email.username, token))
 
       return {
         exists: email.exists,
@@ -59,15 +62,18 @@ export default class UserService {
 
   public async findUsers(token: string, firstName: string, lastName: string): Promise<FoundUserResult[]> {
     try {
-      const client = this.authClientBuilder(token)
-
-      const users = await client.findUsers(firstName, lastName)
-
-      return users
+      return await this.manageUsersClient.findUsers(firstName, lastName, token).catch(() => {
+        return []
+      })
     } catch (error) {
       logger.error('Error during findUsers: ', error.stack)
       throw error
     }
+  }
+
+  public async findUsersFuzzySearch(token: string, value: string, page: number): Promise<FuzzySearchFoundUserResponse> {
+    const result = this.manageUsersClient.findUsersFuzzySearch(value, token, page)
+    return result
   }
 
   comparesUsers =
@@ -92,11 +98,9 @@ export default class UserService {
     lastName: string
   ): Promise<UserWithPrison[]> {
     try {
-      const eliteClient = this.prisonClientBuilder(token)
-      const authClient = this.authClientBuilder(token)
-      const users = await authClient.findUsers(firstName, lastName)
+      const users = await this.manageUsersClient.findUsers(firstName, lastName, token)
 
-      const prisons = await eliteClient.getPrisons()
+      const prisons = await this.prisonClient.getPrisons(token)
 
       return users
         .map(user => ({
@@ -112,10 +116,8 @@ export default class UserService {
 
   public async getUserLocation(token: string, username: string): Promise<string> {
     try {
-      const authClient = this.authClientBuilder(token)
-      const prisonClient = this.prisonClientBuilder(token)
-      const user = await authClient.getUser(username)
-      const caseload = await prisonClient.getPrisonById(user.activeCaseLoadId)
+      const user = await this.manageUsersClient.getUser(username, token)
+      const caseload = await this.prisonClient.getPrisonById(user.activeCaseLoadId, token)
       return caseload.description
     } catch (error) {
       logger.error('Error during getUser: ', error.stack)

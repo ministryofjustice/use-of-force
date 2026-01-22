@@ -1,0 +1,121 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{% set pageTitle = 'Find the person you want to add' %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-!-margin-left-0 govuk-!-margin-right-0">
+    {% if errors.length > 0 %}
+        {{
+            govukErrorSummary({
+                titleText: 'There is a problem',
+                errorList: errors,
+                attributes: { 'data-qa-errors': true },
+                classes: 'govuk-!-margin-bottom-6'
+            })
+        }}
+    {% endif %}
+    <span class="govuk-caption-xl">Edit a use of force report</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>  
+    <div class="govuk-grid-row govuk-!-margin-top-7">
+        <div class="govuk-grid-column-three-quarters">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2> 
+            <span class="govuk-caption-m">Search by part of a persons name, their full name, their email address or their user ID</span>
+        </div>
+        <div class="govuk-grid-column-three-quarters govuk-!-margin-top-6">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                <div class="govuk-form-group">
+                    <div class="govuk-grid-row align-items-end">
+                        <div class="govuk-grid-column-three-quarters govuk-grid-column-full-from-tablet govuk-!-margin-bottom-0 govuk-!-padding-right-0">
+                            {{
+                                govukInput({
+                                    id: 'username',
+                                    name: 'username',
+                                    value: data.queryParams.username,
+                                    classes: 'govuk-input',
+                                    errorMessage: errors | findError('username')
+                                })
+                            }}
+                        </div>
+                        <div class="govuk-!-margin-left-2 padding-bottom-2 ">
+                            {{
+                                govukButton({
+                                    text: 'Search',
+                                    name: 'continue',
+                                    classes: 'govuk-button govuk-!-margin-bottom-0',
+                                    attributes: { 'data-qa': 'search' }
+                                })
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- results table -->
+    <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-margin-right-2">
+
+        {% if data.userSearchResults.content.length > 0 %}
+
+            <div class="displayResultsCountOnly govuk-grid-column-full govuk-!-padding-right-0 govuk-!-margin-bottom-2">
+                {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+            </div>
+
+            <p class="govuk-body govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-margin-bottom-6">
+                If there are 2 or more results with the same name, you may have to contact the person to confirm which email address belongs to them.
+            </p>
+
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header">Name</th>
+                    <th scope="col" class="govuk-table__header">Location</th>
+                    <th scope="col" class="govuk-table__header">User ID</th>
+                    <th scope="col" class="govuk-table__header">Email address</th>
+                    <th scope="col" class="govuk-table__header govuk-!-text-align-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body"></tbody>
+                    {% for user in data.userSearchResults.content %}
+                        {% set href = '/' + data.reportId + '/edit-report/add-new-staff-involved/' + user.username + '?page=' + data.queryParams.currentPage + '&username=' + data.queryParams.username %}
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">{{ user.firstName }} {{ user.lastName }}</td>
+                            <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
+                            <td class="govuk-table__cell">{{ user.username }}</td>
+                            <td class="govuk-table__cell">{{ user.email }}</td>
+                            <td class="govuk-table__cell govuk-!-text-align-right">
+                                {% if user.isExistingInvolvedStaffMember %}
+                                    <span class="govuk-body govuk-!-color-grey-7">Added to report</span>
+                                {% else %}
+                                    <a class="govuk-link" href="{{ href }}" aria-label="Add {{ user.firstName }} {{ user.lastName }}">Add {{ user.firstName }} {{ user.lastName }}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if data.paginationMeta.totalPages == 1 %}
+                <div class="displayResultsCountOnly govuk-grid-column-full govuk-!-margin-top-2 govuk-!-padding-left-0 govuk-!-padding-right-0 govuk-!-margin-bottom-2">
+                    {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+                </div>
+            {% elif data.paginationMeta.totalPages > 1 %}
+                <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-2 govuk-!-padding-left-0 govuk-!-padding-right-0">
+                    {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
+                </div
+            {% endif %} 
+
+        {% endif %}
+    </div>
+
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4 govuk-!-padding-left-0">
+        <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link govuk-body">Cancel</a>
+    </div>
+</div>  
+{% endblock %}

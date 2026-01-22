@@ -4,7 +4,7 @@
  {{obj.title}}
  {% if obj.url %}  
    <span class="govuk-body govuk-!-margin-top-1 float-right">
-     <a class="govuk-link govuk-link--no-visited-state" data-qa='{{obj.id}}-link' href='{{obj.url}}' >
+     <a class="govuk-link govuk-link--no-visited-state govuk-!-display-none-print" data-qa='{{obj.id}}-link' href='{{obj.url}}' >
        Change<span class="govuk-visually-hidden"> {{obj.title}} </span>
      </a>
    </span>
@@ -12,9 +12,21 @@
 </h2>
 {% endmacro %}
 
+{% macro tableRowWithBadge(dataItem) %}
+<dl class="govuk-summary-list govuk-!-margin-0 ">  
+  <div class="govuk-summary-list__row {{dataItem.addedClasses}}">
+    <dt class="govuk-summary-list__key summary-list__key__wider flex-basis-50"> {{dataItem.label}} </dt>
+    <dd class="govuk-summary-list__value" data-qa="{{dataItem['data-qa']}}">
+      <span class="moj-badge moj-badge-blue moj-badge-large"> {{dataItem.dataValue}}</span>
+    </dd>
+    <dd class="govuk-summary-list__actions"></dd>
+  </div>
+</dl> 
+{% endmacro %}
+
 {% macro tableRow(dataItem) %}
 <dl class="govuk-summary-list govuk-!-margin-0">  
-  <div class="govuk-summary-list__row {% if dataItem.print %} flex-container {% endif %}">
+  <div class="govuk-summary-list__row {{dataItem.addedClasses}}{% if dataItem.print %} flex-container {% endif %}">
     <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %} flex-basis-50"> {{dataItem.label}} </dt>
     <dd class="govuk-summary-list__value  {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
       {% if dataItem.dataValue.length === 0 or dataItem.dataValue == null %}
@@ -23,7 +35,6 @@
         {%for item in dataItem.dataValue %}
           {%for value in item %}
             {{value}}
-            {% if not loop.last %}<br/>{% endif %}
           {% endfor%}
       <br/>
           {%if item.length > 1 and not loop.last %}
@@ -41,7 +52,21 @@
       {{dataItem.dataValue}}
       {% endif %}
     </dd>
-    <dd class="govuk-summary-list__actions"></dd>
+  </div>
+</dl> 
+{% endmacro %}
+
+{% macro tableRowWithLink(dataItem) %}
+<dl class="govuk-summary-list  govuk-!-margin-bottom-0">  
+  <div class="govuk-summary-list__row {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}">
+    <dt class="govuk-summary-list__key summary-list__key__wider {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}"> {{dataItem.label}} </dt>
+    <dd class="govuk-summary-list__value {% if dataItem.print %} govuk-!-margin-right-4 {% endif %}" data-qa="{{dataItem['data-qa']}}">
+      {{dataItem.dataValue}}
+    </dd>
+   <dd class= "govuk-summary-list__actions govuk-!-display-none-print">
+    <a class="govuk-link govuk-link--no-visited-state" data-qa-link="{{dataItem['data-qa-link']}}" href='/{{dataItem.href}}'>{{dataItem.linkName}}
+    <span class="govuk-visually-hidden"> {{dataItem.linkName}}</span></a>
+   </dd>
   </div>
 </dl> 
 {% endmacro %}

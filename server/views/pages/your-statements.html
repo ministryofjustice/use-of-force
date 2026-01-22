@@ -7,10 +7,13 @@
 {% block tabContent %}
 <section class="govuk-tabs__panel">
 
-{% if pageData.totalPages > 1 %}
+{% if pageData.totalPages == 1 %}
+  <div class="displayResultsCountOnly">
+    {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+  </div>
+{% elif pageData.totalPages > 1 %}
   {{ mojPagination( pageData | toPagination ) }}
 {% endif %} 
-  
 
 {% if statements.length %}
 <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="statements">
@@ -39,7 +42,7 @@
                   href="/{{ statement.id }}/write-your-statement"
                   role="button"
                   draggable="false"
-                  class="govuk-button {{'govuk-button--secondary' if statement.inProgress else 'govuk-button' }} govuk-!-width-three-quarters">
+                  class="govuk-button {{'govuk-button--secondary' if statement.inProgress else 'govuk-button' }} govuk-!-width-two-thirds">
                   {{- 'Continue' if statement.inProgress else 'Start' -}}<span class="govuk-visually-hidden"> statement</span>
                 </a>
               {% case 'SUBMITTED' %}
@@ -77,7 +80,6 @@
 {% else %}
 <p class="govuk-body">You have no statements</p>
 {% endif %}
-
 {% if pageData.totalPages > 1 %}
   {{ mojPagination( pageData | toPagination ) }}
 {% endif %}

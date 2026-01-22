@@ -1,28 +1,44 @@
 import { Prison } from '../data/prisonClientTypes'
 import { InvolvedStaff, Report } from '../data/incidentClientTypes'
-import { LocationService, OffenderService, InvolvedStaffService, NomisMappingService } from '.'
 import ReportDetailBuilder from './reportDetailBuilder'
 import { UseOfForceReport } from '../data/UseOfForceReport'
+import AuthService from './authService'
+import { InvolvedStaffService } from './involvedStaffService'
+import LocationService from './locationService'
+import OffenderService from './offenderService'
+import NomisMappingService from './nomisMappingService'
 
 jest.mock('.')
+jest.mock('./authService')
+jest.mock('./locationService')
+jest.mock('./involvedStaffService')
+jest.mock('./offenderService')
+jest.mock('./nomisMappingService')
 
-const involvedStaffService = new InvolvedStaffService(null, null, null, null, null) as jest.Mocked<InvolvedStaffService>
+const involvedStaffService = new InvolvedStaffService(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+) as jest.Mocked<InvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let reportDetailBuilder
-
-const systemToken = async username => `system-token-for-${username}`
 
 const locationId = 123456
 const incidentLocationId = 'location-uuid'
 const dpsLocationId = 'location-uuid'
 
 beforeEach(() => {
+  authService.getSystemClientToken.mockResolvedValue(`system-token-for-Bob`)
   locationService.getPrisonById = jest.fn()
   locationService.getPrisonById.mockResolvedValue({
     agencyId: 'MDI',
@@ -34,7 +50,7 @@ beforeEach(() => {
     locationService,
     offenderService,
     nomisMappingService,
-    systemToken
+    authService
   )
 })
 
@@ -47,8 +63,8 @@ describe('Build details', () => {
     locationService.getLocation.mockResolvedValue('Wing A')
 
     involvedStaffService.getInvolvedStaff.mockResolvedValue([
-      { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22 },
-      { name: 'MAUREEN TYLER', userId: 'M_TYLER', statementId: 24 },
+      { name: 'JANET SMITH', userId: 'J_SMITH', statementId: 22, email: 'janet@gmail.com' },
+      { name: 'MAUREEN TYLER', userId: 'M_TYLER', statementId: 24, email: 'maureen@gmail.com' },
     ] as InvolvedStaff[])
 
     offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jim Burgler', offenderNo: 'A1234AA' })
@@ -63,6 +79,7 @@ describe('Build details', () => {
       reporterName: 'A User',
       submittedDate: new Date('2015-03-25T12:00:00Z'),
       agencyId: 'MDI',
+      status: 'SUBMITTED',
     }
 
     const result = await reportDetailBuilder.build('Bob', report)
@@ -76,6 +93,7 @@ describe('Build details', () => {
       },
       incidentDetails: {
         incidentDate: new Date('2015-03-26T12:00:00.000Z'),
+        incidentLocationId: 'location-uuid',
         location: 'Wing A',
         offenderName: 'Jim Burgler',
         offenderNumber: 'A1234AA',
@@ -92,6 +110,7 @@ describe('Build details', () => {
             reportId: 1,
             statementId: 22,
             username: 'J_SMITH',
+            email: 'janet@gmail.com',
           },
           {
             isReporter: false,
@@ -99,6 +118,7 @@ describe('Build details', () => {
             reportId: 1,
             statementId: 24,
             username: 'M_TYLER',
+            email: 'maureen@gmail.com',
           },
         ],
         witnesses: 'None',
@@ -126,6 +146,8 @@ describe('Build details', () => {
         batonDrawnAgainstPrisoner: undefined,
         pavaDrawn: undefined,
         pavaDrawnAgainstPrisoner: undefined,
+        taserDrawn: undefined,
+        bittenByPrisonDog: undefined,
         controlAndRestraintUsed: undefined,
         guidingHoldUsed: undefined,
         escortingHoldUsed: undefined,
@@ -137,6 +159,7 @@ describe('Build details', () => {
         primaryReason: undefined,
         reasonsForUseOfForce: undefined,
       },
+      reportStatus: 'SUBMITTED',
     })
   })
 

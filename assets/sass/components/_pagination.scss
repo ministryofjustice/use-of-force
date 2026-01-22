@@ -1,0 +1,101 @@
+.moj-pagination {
+    &__item {
+        text-align: center;
+        text-decoration: underline;
+        text-decoration-color: govuk-colour("blue");
+        text-underline-offset: 0.1578em;
+        padding: 0;
+
+        &:hover {
+            background-color: govuk-colour("light-grey");
+            text-decoration: underline;
+            text-decoration-color: #003078;
+            text-decoration-thickness: 3px;
+        }
+
+        &--active {
+            font-weight: bold;
+            background-color: govuk-colour("blue");
+            color: govuk-colour("white");
+            text-decoration: underline;
+            padding: 10px 17px !important;
+        
+            &:hover {
+                color: govuk-colour("white");
+                background-color: govuk-colour("blue");
+                text-decoration-color: govuk-colour("white");
+                cursor: pointer;
+            }  
+        }
+
+        &--prev a, &--next a {
+            color: #003078;
+            font-weight: bold; 
+        }
+
+        &--prev {
+            background-image: url('../images/pagination-arrow-previous.svg');
+            background-position: left;
+            background-repeat: no-repeat;
+
+            a {
+                margin-left: 1em;
+            }
+        }
+
+        &--next {
+            background-image: url('../images/pagination-arrow-next.svg');
+            background-position: right;
+            background-repeat: no-repeat;
+
+            a {
+                margin-right: 1em;
+            }
+        }
+    }
+
+    &__link {
+        display: inline-block;
+        text-decoration: underline;
+        text-decoration-color: govuk-colour("blue");
+        color: govuk-colour("blue") !important;
+        padding: 10px !important;
+
+        &:hover {
+            color: #003078 !important;
+        }
+
+        &:before, &:after {
+            display: none !important;
+        }
+    }
+
+    &__list {
+        padding-left: 5px !important;
+    }
+
+    .moj-pagination__item--dots {
+        text-decoration: none;
+        background-color: govuk-colour("white");
+        padding: 10px 15px;
+    }
+}
+
+// Displays only the 'Showing x to x of x results' section of the pagination if only 1 page of results
+// Ensures the content is displayed on the right hand side of its parent container
+.displayResultsCountOnly {
+  .moj-pagination__list {
+    display: none;
+  }
+
+  .moj-pagination__results {
+    margin-left: auto;
+    display: block; 
+    text-align: right; 
+  }
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+

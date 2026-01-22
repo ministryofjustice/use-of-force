@@ -2,8 +2,8 @@ import page from '../page'
 import reportDetails from '../sections/reportDetails'
 
 const viewReportPage = () =>
-  page('Use of force report', {
-    reporterName: () => cy.get('[data-qa="reporter-name"]'),
+  page('Use of force incident', {
+    reporterName: () => cy.get('[data-qa="report-created-by"]'),
 
     submittedDate: () => cy.get('[data-qa="submitted-date"]'),
 
@@ -23,14 +23,16 @@ const viewReportPage = () =>
 
     location: () => cy.get('[data-qa="location"]'),
 
+    historyLink: () => cy.get('[data-qa="history-link"]'),
+
     getReportId: () => {
       return cy.url().then(url => {
-        const match = url.match(/.*\/(.*)\/view-report/)
+        const match = url.match(/.*\/(.*)\/view-incident/)
         return match[1]
       })
     },
 
-    returnToIncidentOverview: () => cy.get('[data-qa="return-to-incident-overview"]'),
+    returnToUseOfForceIncidents: () => cy.get('[data-qa="use-of-force-incidents-link"]'),
   })
 
 module.exports = {

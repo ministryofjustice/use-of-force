@@ -6,10 +6,12 @@ import DraftReportService from '../../services/drafts/draftReportService'
 import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
+import AuthService from '../../services/authService'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/locationService')
+jest.mock('../../services/authService')
 
 const draftReportService = new DraftReportService(
   null,
@@ -20,15 +22,16 @@ const draftReportService = new DraftReportService(
   null,
   null
 ) as jest.Mocked<DraftReportService>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app
 const flash = jest.fn()
 const incidentLocationId = 'incident-location-id'
 
 beforeEach(() => {
-  app = appWithAllRoutes({ draftReportService, offenderService, locationService }, undefined, false, flash)
+  app = appWithAllRoutes({ draftReportService, offenderService, locationService, authService }, undefined, false, flash)
   draftReportService.getCurrentDraft.mockResolvedValue({})
   offenderService.getOffenderDetails.mockResolvedValue({
     displayName: 'Bob Smith',
@@ -38,6 +41,7 @@ beforeEach(() => {
   locationService.getIncidentLocations.mockResolvedValue([])
   flash.mockReturnValue([])
   draftReportService.getPotentialDuplicates.mockResolvedValue([])
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
 })
 
 afterEach(() => {
@@ -65,7 +69,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(offenderService.getOffenderDetails).toBeCalledWith('user1-system-token', '1')
+        expect(offenderService.getOffenderDetails).toHaveBeenCalledWith(1, 'user1')
       })
   })
 
@@ -76,7 +80,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+        expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'current-agency-id')
       })
   })
   test('should render saved data', () => {
@@ -93,7 +97,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Eric Bloodaxe')
-        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+        expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'current-agency-id')
       })
   })
 
@@ -112,7 +116,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).not.toContain('Eric Bloodaxe')
-        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'current-agency-id')
+        expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'current-agency-id')
       })
   })
   test('should render incident-details using locations for persisted agency if existing report', () => {
@@ -122,7 +126,28 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Incident details')
-        expect(locationService.getIncidentLocations).toBeCalledWith('user1-system-token', 'persisted-agency-id')
+        expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'persisted-agency-id')
+      })
+  })
+  test('should redirect to /prison-of-incident if agencyId is TRN', () => {
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'TRN' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect(302)
+      .expect('Location', '/report/1/prison-of-incident')
+      .expect(() => {
+        expect(locationService.getIncidentLocations).not.toHaveBeenCalled()
+      })
+  })
+
+  test('should redirect to /prison-of-incident if agencyId is OUT', () => {
+    draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'OUT' })
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect(302)
+      .expect('Location', '/report/1/prison-of-incident')
+      .expect(() => {
+        expect(locationService.getIncidentLocations).not.toHaveBeenCalled()
       })
   })
 })
@@ -145,8 +170,9 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/staff-involved')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(flash).toHaveBeenCalledTimes(2)
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -199,7 +225,7 @@ describe('POST save and continue /section/form', () => {
       .expect(302)
       .expect('Location', '/report/1/incident-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       }))
 })
 
@@ -217,8 +243,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -246,11 +272,12 @@ describe('POST save and return to tasklist', () => {
         witnesses: [{ name: 'User bob' }, { name: '' }],
       })
       .expect(302)
-      .expect('Location', '/report/1/change-prison')
+      .expect('Location', '/report/1/prison-of-incident')
       .expect(() => {
-        expect(draftReportService.getPotentialDuplicates).not.toBeCalled()
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(flash).toHaveBeenCalledTimes(1)
+        expect(draftReportService.getPotentialDuplicates).not.toHaveBeenCalled()
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -279,8 +306,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -304,8 +331,8 @@ describe('POST save and return to tasklist', () => {
       .expect(302)
       .expect('Location', '/report/1/report-use-of-force')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -349,8 +376,8 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/check-your-answers')
       .expect(() => {
-        expect(draftReportService.process).toBeCalledTimes(1)
-        expect(draftReportService.process).toBeCalledWith(
+        expect(draftReportService.process).toHaveBeenCalledTimes(1)
+        expect(draftReportService.process).toHaveBeenCalledWith(
           user,
           1,
           'incidentDetails',
@@ -377,7 +404,7 @@ describe('POST save and return to check-your-answers', () => {
       .expect(302)
       .expect('Location', '/report/1/incident-details')
       .expect(() => {
-        expect(draftReportService.process).not.toBeCalled()
+        expect(draftReportService.process).not.toHaveBeenCalled()
       })
   })
 })

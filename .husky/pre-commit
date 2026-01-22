@@ -1,4 +1,7 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/bin/bash
+NODE_ENV=dev \
+npm run precommit:secrets \
+&& npm run precommit:lint \
+&& npm run precommit:verify \
+node_modules/.bin/tsc .
 
-NODE_ENV=dev && node_modules/.bin/lint-staged && node_modules/.bin/tsc

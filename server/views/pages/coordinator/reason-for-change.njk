@@ -1,0 +1,162 @@
+{% extends "../../formPages/formTemplate.html" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% set showBacklink = data.showBacklink %}
+{% set backlinkHref = data.backlinkHref %}
+
+{% block content %}
+
+{% if data.errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: data.errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-xl mainHeading">Reason for changing {{data.reportSection.text}}</h1>
+
+    {% set rowData = [] %}
+    {% for change in data.changes %}
+      {% set rowData = (rowData.push(
+              [{
+                text: change.question,
+                attributes: {'data-qa': 'question'}
+              },
+              {
+                text: change.oldValue | toYesNoIfTrueFalse | default('Not applicable', true),
+                attributes: {'data-qa': 'old-value'}
+              },
+              {
+                text: change.newValue | toYesNoIfTrueFalse | default('Not applicable', true),
+                attributes: {'data-qa': 'new-value'}
+              }]
+            ), rowData) %}
+    {% endfor %}
+
+    <div class = 'govuk-body'>
+      {{ govukTable({
+        caption: "Changes you are making",
+        captionClasses: "govuk-table__caption--m",
+        firstCellIsHeader: true,
+        attributes:{'data-qa': 'table'},
+        head: [
+          {
+            text: "Changed question",
+            classes: "govuk-!-width-one-half"
+          },
+          {
+            text: "Changed from",
+            classes: "govuk-!-width-one-quarter"
+          },
+          {
+            text: "Changed to",
+            classes: "govuk-!-width-one-quarter"
+          }
+        ],
+        rows: rowData
+      }) }}
+
+      {% set reasonHtml %}
+        {{ govukCharacterCount({
+          name: "reasonText",
+          id: "reasonText",
+          maxlength: 250,
+          value: data.reasonText,
+          classes: "govuk-!-width-one-half",
+          errorMessage: data.errors | findError('reasonText'),
+          attributes: {'data-qa':'another-reason-text'},
+          hint: {
+            text: "Please specify"
+          }
+        }) }}
+      {% endset -%}
+
+     <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        
+        {{ govukRadios({
+            name: "reason",
+            fieldset: {
+              legend: {
+                text: "Why are you changing " + data.reportSection.text + "?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "Select one option"
+            },
+             errorMessage: data.errors | findError('reason'),
+            items: [
+              {
+                value: "errorInReport",
+                text: "Somebody reported an error in the report",
+                checked: data.reason === 'errorInReport',
+                attributes: {'data-qa': 'error-in-report'}
+              },
+              {
+                value: "somethingMissingFromReport",
+                text: "Something was missing from the report",
+                checked: data.reason === 'somethingMissingFromReport',
+                attributes: {'data-qa': 'missing-from-report'}
+              },
+              {
+                value: "newEvidence",
+                text: "New evidence emerged after the report was submitted",
+                checked: data.reason === 'newEvidence',
+                attributes: {'data-qa': 'new-evidence'}
+              },
+              {
+                value: "anotherReasonForEdit",
+                text: "Another reason",
+                attributes: {'data-qa': 'another-reason'},
+                checked: data.reason === 'anotherReasonForEdit',
+                conditional: {
+                  html: reasonHtml
+                }
+              }
+            ]
+          }) }}
+
+        {{ govukCharacterCount({
+          name: "reasonAdditionalInfo",
+          id: "reasonAdditionalInfo",
+          maxlength: 500,
+          attributes: {'data-qa': 'additional-info-text'},
+          errorMessage: data.errors | findError('reasonAdditionalInfo'),
+          value: data.reasonAdditionalInfo,
+          label: {
+            text: "Add additional information to explain this change",
+            classes: "govuk-label--m",
+            isPageHeading: true
+          },
+          hint: {
+            text: "For example, how was the error spotted, or how did the new evidence emerge?"
+          }
+        }) }}
+
+        <div class="govuk-button-group">  
+          {{ govukButton({
+            text: 'Save change',
+            name: "submit",
+            value: 'save-and-continue',
+            attributes: {'data-qa': 'save-and-continue'}
+          }) }}
+
+          <a class="govuk-link" href="/{{data.reportId}}/view-incident?tab=report"
+          data-qa="cancel-edit-reason-link" >Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

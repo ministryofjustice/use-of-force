@@ -1,0 +1,11 @@
+{% extends "../partials/layout.html" %}
+
+{% set pageTitle = message %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-panel__title"> {{ message }} </h1>
+  </div>
+  </div>
+{% endblock %}

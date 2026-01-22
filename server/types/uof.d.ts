@@ -37,13 +37,35 @@ export type FoundUserResult = {
 
 export type UserWithPrison = FoundUserResult & { prison?: string }
 
-export type SystemToken = (string?) => Promise<string>
+export type FuzzySearchFoundUserResult = {
+  username: string
+  staffId: number
+  firstName: string
+  lastName: string
+  active: true
+  status: string
+  locked: true
+  expired: true
+  activeCaseload: {
+    id: string
+    name: string
+  }
+  dpsRoleCount: number
+  email: string
+  staffStatus: string
+}
+
+export type FuzzySearchFoundUserResponse = {
+  content: FuzzySearchFoundUserResult[]
+  pageNumber: number
+  totalPages: number
+  totalElements: number
+  size: number
+}
 
 export type LoggedInUser = {
   username: string
   token: string
-  refreshToken: string
-  refreshTime: Date
   firstName: string
   lastName: string
   userId: string

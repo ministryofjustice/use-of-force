@@ -58,3 +58,17 @@ export interface NotificationReminder {
   isOverdue?: boolean
   reminder: number
 }
+
+export interface ReportEdit {
+  id: number
+  editDate: Date
+  editorUserId: string
+  editorName: string
+  reportId: number
+  reason: string
+  reasonText: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  changes: Record<string, { newValue: any; oldValue: any }>
+  additionalComments: string
+  reportOwnerChanged: boolean
+}

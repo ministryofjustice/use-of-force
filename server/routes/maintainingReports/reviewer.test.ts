@@ -1,20 +1,25 @@
+/* eslint-disable */
 import request from 'supertest'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 import { parseDate } from '../../utils/utils'
 import { PageResponse } from '../../utils/page'
 import type { ReportDetail } from '../../services/reportDetailBuilder'
-import { OffenderService, ReviewService, ReportDetailBuilder } from '../../services'
 import { Report } from '../../data/incidentClientTypes'
-import { ReviewerStatementWithComments } from '../../services/reviewService'
+import ReviewService, { IncidentSummary, ReviewerStatementWithComments } from '../../services/reviewService'
+import OffenderService from '../../services/offenderService'
+import AuthService from '../../services/authService'
+import ReportDetailBuilder from '../../services/reportDetailBuilder'
 
 const userSupplier = jest.fn()
 
 jest.mock('../../services/reviewService')
 jest.mock('../../services/offenderService')
+jest.mock('../../services/authService')
 jest.mock('../../services/reportDetailBuilder')
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
 const report = { id: 1, form: { incidentDetails: {} } } as unknown as Report
 
@@ -23,10 +28,14 @@ let app
 beforeEach(() => {
   userSupplier.mockReturnValue(user)
   reviewService.getReport.mockResolvedValue({} as Report)
-  app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder }, userSupplier)
-  reviewService.getIncompleteReports.mockResolvedValue([])
+  authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+  app = appWithAllRoutes({ offenderService, reviewService, reportDetailBuilder, authService }, userSupplier)
+
+  reviewService.getIncompleteReports.mockResolvedValue(
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, []),
+  )
   reviewService.getCompletedReports.mockResolvedValue(
-    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, [])
+    new PageResponse({ min: 0, max: 0, page: 1, totalCount: 0, totalPages: 1 }, []),
   )
   offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Jimmy Choo', offenderNo: '123456' })
   reportDetailBuilder.build.mockResolvedValue({} as ReportDetail)
@@ -54,7 +63,7 @@ describe(`GET /completed-incidents`, () => {
 
     return request(app)
       .get(
-        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&&dateFrom=09/01/2020&dateTo=15/01/2020&prisonerName=Jimmy Choo'
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&&dateFrom=09/01/2020&dateTo=15/01/2020&prisonerName=Jimmy Choo',
       )
       .expect(200)
       .expect('Content-Type', /html/)
@@ -70,7 +79,7 @@ describe(`GET /completed-incidents`, () => {
             reporter: 'Bob',
             prisonerName: 'Jimmy Choo',
           },
-          1
+          1,
         )
       })
   })
@@ -80,18 +89,18 @@ describe(`GET /completed-incidents`, () => {
     reviewService.getCompletedReports.mockResolvedValue(
       new PageResponse(
         { min: 1, max: 20, totalCount: 200, totalPages: 10, page: 1, nextPage: 2, previousPage: null },
-        []
-      )
+        [],
+      ),
     )
     return request(app)
       .get(
-        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo'
+        '/completed-incidents?prisonNumber=A1234AA&reporter=Bob&dateFrom=9 Jan 2020&dateTo=15 Jan 2020&prisonerName=Jimmy Choo',
       )
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3'
+          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3',
         )
       })
   })
@@ -112,7 +121,7 @@ describe(`GET /completed-incidents`, () => {
             prisonNumber: 'A1234AA',
             reporter: 'Bob',
           },
-          1
+          1,
         )
       })
   })
@@ -147,7 +156,24 @@ describe(`GET /not-completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force incidents')
-        expect(reviewService.getIncompleteReports).toHaveBeenCalledWith('user1', 'LEI')
+        expect(reviewService.getIncompleteReports).toHaveBeenCalledWith('user1', 'LEI', 1)
+      })
+  })
+
+  it('should pass search query params through to page params', () => {
+    userSupplier.mockReturnValue(reviewerUser)
+    reviewService.getIncompleteReports.mockResolvedValue(
+      new PageResponse(
+        { min: 1, max: 20, totalCount: 200, totalPages: 10, page: 1, nextPage: 2, previousPage: null },
+        [],
+      ),
+    )
+    return request(app)
+      .get('/not-completed-incidents?page=1')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('<a class="moj-pagination__link" href="?page=2">')
       })
   })
 
@@ -161,9 +187,22 @@ describe(`GET /not-completed-incidents`, () => {
 
   it('should display the OVERDUE badge but not REMOVAL REQUEST badge', () => {
     userSupplier.mockReturnValue(coordinatorUser)
-    reviewService.getIncompleteReports.mockResolvedValue([
-      { ...commonReportData, isOverdue: true, isRemovalRequested: false },
-    ])
+    reviewService.getIncompleteReports.mockResolvedValue({
+      metaData: {
+        page: 1,
+        totalPages: 1,
+        totalCount: 1,
+        min: 0,
+        max: 0,
+      },
+      items: [{ ...commonReportData, isOverdue: true, isRemovalRequested: false }],
+      map: function (fn: (item: IncidentSummary) => any) {
+        return {
+          ...this,
+          items: this.items.map(fn),
+        }
+      },
+    })
 
     return request(app)
       .get('/not-completed-incidents')
@@ -171,11 +210,25 @@ describe(`GET /not-completed-incidents`, () => {
       .expect(res => expect(res.text).toContain('OVERDUE'))
       .expect(res => expect(res.text).not.toContain('REMOVAL REQUEST'))
   })
+
   it('should display the REMOVAL REQUEST badge but not OVERDUE badge', () => {
     userSupplier.mockReturnValue(coordinatorUser)
-    reviewService.getIncompleteReports.mockResolvedValue([
-      { ...commonReportData, isOverdue: false, isRemovalRequested: true },
-    ])
+    reviewService.getIncompleteReports.mockResolvedValue({
+      metaData: {
+        page: 1,
+        totalPages: 1,
+        totalCount: 1,
+        min: 0,
+        max: 0,
+      },
+      items: [{ ...commonReportData, isOverdue: false, isRemovalRequested: true }],
+      map: function (fn: (item: IncidentSummary) => any) {
+        return {
+          ...this,
+          items: this.items.map(fn),
+        }
+      },
+    })
 
     return request(app)
       .get('/not-completed-incidents')
@@ -183,11 +236,25 @@ describe(`GET /not-completed-incidents`, () => {
       .expect(res => expect(res.text).not.toContain('OVERDUE'))
       .expect(res => expect(res.text).toContain('REMOVAL REQUEST'))
   })
+
   it('should display both the REMOVAL REQUEST and OVERDUE badges', () => {
     userSupplier.mockReturnValue(coordinatorUser)
-    reviewService.getIncompleteReports.mockResolvedValue([
-      { ...commonReportData, isOverdue: true, isRemovalRequested: true },
-    ])
+    reviewService.getIncompleteReports.mockResolvedValue({
+      metaData: {
+        page: 1,
+        totalPages: 1,
+        totalCount: 1,
+        min: 0,
+        max: 0,
+      },
+      items: [{ ...commonReportData, isOverdue: true, isRemovalRequested: true }],
+      map: function (fn: (item: IncidentSummary) => any) {
+        return {
+          ...this,
+          items: this.items.map(fn),
+        }
+      },
+    })
 
     return request(app)
       .get('/not-completed-incidents')

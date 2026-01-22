@@ -14,7 +14,7 @@ context('view review page', () => {
     cy.task('stubPrison', offender.agencyId)
     cy.task('stubOffenders', [offender])
     cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER', 'ANOTHER_USER'])
   })
 
   it('A reviewer can view reports they did and did not raise', () => {
@@ -66,7 +66,7 @@ context('view review page', () => {
       viewStatementsButton().click()
 
       let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
+      viewStatementsPage.reportTab().click()
 
       const viewReportPage = ViewReportPage.verifyOnPage()
       viewReportPage.reporterName().contains('James Stuart')
@@ -75,25 +75,15 @@ context('view review page', () => {
         viewReportPage.incidentNumber().contains(reportId)
       })
 
-      viewReportPage.returnToIncidentOverview().click()
-      viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.return().click()
+      viewReportPage.returnToUseOfForceIncidents().click()
+      viewStatementsPage = NotCompletedIncidentsPage.verifyOnPage()
     }
 
     {
-      const { prisoner, reporter, prisonNumber, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(1)
+      const { prisoner, reporter, prisonNumber } = notCompletedIncidentsPage.getTodoRow(1)
       prisoner().contains('Smith, Norman')
       reporter().contains('Anne OtherUser')
       prisonNumber().contains('A1234AC')
-      viewStatementsButton().click()
-
-      const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-      viewStatementsPage.reportLink().click()
-
-      const viewReportPage = ViewReportPage.verifyOnPage()
-      viewReportPage.reporterName().contains('Anne OtherUser')
-      viewReportPage.verifyInputs({ involvedStaff: ['Another User Name (ANOTHER_USER)'] })
-      viewReportPage.returnToIncidentOverview().click()
     }
   })
 })

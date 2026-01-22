@@ -3,24 +3,30 @@ import { Request, Response } from 'express'
 import { removeKeysWithEmptyValues, parseDate } from '../../utils/utils'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 import { ReportStatus } from '../../config/types'
-import type { OffenderService, ReviewService } from '../../services'
-import { SystemToken } from '../../types/uof'
+import OffenderService from '../../services/offenderService'
+import ReviewService from '../../services/reviewService'
+import AuthService from '../../services/authService'
 
 export default class ReviewerRoutes {
   constructor(
     private readonly offenderService: OffenderService,
     private readonly reportDetailBuilder: ReportDataBuilder,
     private readonly reviewService: ReviewService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   viewNotCompletedIncidents = async (req: Request, res: Response): Promise<void> => {
-    const reports = await this.reviewService.getIncompleteReports(
+    const page = parseInt(req.query.page as string, 10) || 1
+    const { items: reports, metaData: pageData } = await this.reviewService.getIncompleteReports(
       res.locals.user.username,
-      res.locals.user.activeCaseLoadId
+      res.locals.user.activeCaseLoadId,
+      page
     )
+
     return res.render('pages/not-completed-incidents', {
       reports,
+      pageData,
+      rawQuery: req.query,
       selectedTab: 'not-completed',
     })
   }
@@ -56,10 +62,12 @@ export default class ReviewerRoutes {
     const { reportId } = req.params
 
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
+    const { bookingId } = report
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
-    const data = await this.reportDetailBuilder.build(res.locals.user.username, report)
+    const reportDetail = await this.reportDetailBuilder.build(res.locals.user.username, report)
 
-    return res.render('pages/reviewer/view-report', { data })
+    return res.render('pages/reviewer/view-report', { data: { ...reportDetail, offenderDetail } })
   }
 
   reviewStatements = async (req: Request, res: Response): Promise<void> => {
@@ -67,13 +75,10 @@ export default class ReviewerRoutes {
     const report = await this.reviewService.getReport(parseInt(reportId, 10))
 
     const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
-      bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
 
     const statements = await this.reviewService.getStatements(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       parseInt(reportId, 10)
     )
     const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
@@ -91,14 +96,11 @@ export default class ReviewerRoutes {
     const { statementId } = req.params
 
     const statement = await this.reviewService.getStatement(
-      await this.systemToken(res.locals.user.username),
+      await this.authService.getSystemClientToken(res.locals.user.username),
       parseInt(statementId, 10)
     )
 
-    const offenderDetail = await this.offenderService.getOffenderDetails(
-      await this.systemToken(res.locals.user.username),
-      statement.bookingId
-    )
+    const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
 
     return res.render('pages/reviewer/view-statement', {

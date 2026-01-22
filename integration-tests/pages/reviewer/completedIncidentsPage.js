@@ -35,6 +35,7 @@ const incidentsPage = () =>
     }),
 
     getNoCompleteRows: () => cy.get('[data-qa="no-incidents-complete"]'),
+    viewIncidentLink: () => cy.get('[data-qa="view-incident-link"]'),
   })
 
 module.exports = {

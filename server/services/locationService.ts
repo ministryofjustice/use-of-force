@@ -1,13 +1,14 @@
 import { AgencyId } from '../types/uof'
 import logger from '../../log'
-import { RestClientBuilder, PrisonClient, LocationClient } from '../data'
 import { Prison, PrisonLocation } from '../data/prisonClientTypes'
 import config from '../config'
+import { LocationClient, PrisonClient } from '../data'
 
 export default class LocationService {
+  // eslint-disable-next-line
   constructor(
-    private readonly prisonClientBuilder: RestClientBuilder<PrisonClient>,
-    private readonly locationClientBuilder: RestClientBuilder<LocationClient>
+    private readonly prisonClient: PrisonClient,
+    private readonly locationClient: LocationClient
   ) {}
 
   mapLocationApiResponse(location) {
@@ -21,30 +22,26 @@ export default class LocationService {
   }
 
   async getPrisons(token: string): Promise<Prison[]> {
-    const prisonClient = this.prisonClientBuilder(token)
-    const prisons = await prisonClient.getPrisons()
+    const prisons = await this.prisonClient.getPrisons(token)
     return prisons.sort((a, b) => a.description.localeCompare(b.description, 'en', { ignorePunctuation: true }))
   }
 
   async getPrisonById(token: string, agencyId: AgencyId): Promise<Prison> {
-    const prisonClient = this.prisonClientBuilder(token)
-    return prisonClient.getPrisonById(agencyId)
+    return this.prisonClient.getPrisonById(agencyId, token)
   }
 
   async getLocation(token: string, incidentLocationId: string): Promise<string> {
     if (!incidentLocationId) {
       return ''
     }
-    const locationClient = this.locationClientBuilder(token)
 
-    const { localName, pathHierarchy } = (await locationClient.getLocation(incidentLocationId)) || {}
+    const { localName, pathHierarchy } = (await this.locationClient.getLocation(incidentLocationId, token)) || {}
     return localName || pathHierarchy || ''
   }
 
   async getIncidentLocations(token: string, agencyId: AgencyId): Promise<PrisonLocation[]> {
     try {
-      const locationClient = this.locationClientBuilder(token)
-      const locations = await locationClient.getLocations(agencyId, undefined)
+      const locations = await this.locationClient.getLocations(agencyId, token)
       const incidentLocations = locations.map(location => this.mapLocationApiResponse(location))
 
       const formattedIncidentLocations = incidentLocations.map(location => ({

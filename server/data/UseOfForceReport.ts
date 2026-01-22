@@ -17,6 +17,14 @@ export type UseOfForceDetails = {
   pavaDrawn?: boolean
   pavaDrawnAgainstPrisoner?: boolean
   pavaUsed: boolean
+  taserDrawn: boolean
+  taserOperativePresent: boolean
+  redDotWarning: boolean
+  arcWarningUsed: boolean
+  taserDeployed: boolean
+  taserCycleExtended: boolean
+  taserReenergised: boolean
+  bittenByPrisonDog: boolean
   weaponsObserved: string
   weaponTypes: { weaponType: string }[]
   guidingHold: boolean

@@ -1,0 +1,79 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from './addAnother.njk' import addAnother %}
+
+
+{% macro radiosWithAddAnotherTextBox(question) %}
+
+    {% if question.primaryQuestion.errorMessage %}
+        {% set govukFormGroupErrorOuter  =  'govuk-form-group--error' %}
+        {% set primaryErrorMessageText = question.primaryQuestion.errorMessage.text %}
+    {% endif %}
+
+    <div class="govuk-!-margin-bottom-9 {{govukFormGroupErrorOuter}}">
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend ">
+                {{question.primaryQuestion.text}}
+            </legend>
+            <span id="primaryQuestionErrMsg" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ primaryErrorMessageText}}
+      </span>
+
+            <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios--inline">
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}" name="{{question.primaryQuestion.name}}"
+                           type="radio" value="YES" data-aria-controls="conditional-input-for-{{question.primaryQuestion.questionSubject}}"
+                            {% if question.primaryQuestion.value === 'YES' %} checked="checked" {% endif %}>
+                    <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}">
+                        Yes
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="{{question.primaryQuestion.name}}-no"
+                           name="{{question.primaryQuestion.name}}" type="radio" value="NO"
+                            {% if question.primaryQuestion.value === 'NO' %} checked="checked" {% endif %}>
+                    <label class="govuk-label govuk-radios__label" for="{{question.primaryQuestion.name}}-no">
+                        No
+                    </label>
+                </div>
+                </div>
+                <div class="govuk-radios__conditional govuk-radios__conditional--hidden clear-both" id="conditional-input-for-{{question.primaryQuestion.questionSubject}}">
+                    <div class="add-another-{{question.primaryQuestion.questionSubject}}" id="{{question.followUpQuestion.name}}">
+                        {% set dataqa = ["add-another-", question.primaryQuestion.questionSubject ] | join %}
+
+                        {% for item in question.followUpQuestion.value %}
+
+                            {{ addAnother(
+                                question.followUpQuestion.otherIds,
+                                question.followUpQuestion.name,
+                                question.followUpQuestion.errorMessage,
+                                index = loop.index0,
+                                value = item[question.followUpQuestion.otherIds[0]],
+                                showRemove = loop.length != 1)
+                            }}
+                        {% else %}
+                            {{ addAnother(
+                                question.followUpQuestion.otherIds,
+                                question.followUpQuestion.name,
+                                question.followUpQuestion.errorMessage,
+                                index = 0,
+                                value = null,
+                                showRemove = false) }}
+                        {% endfor %}
+
+                        <div class="button-action">
+                            {{
+                            govukButton({
+                                text: 'Add another',
+                                classes: 'govuk-button--secondary  add-another__add-button govuk-!-margin-bottom-4',
+                                attributes: {dataqa: dataqa}
+                            })
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+{% endmacro %}

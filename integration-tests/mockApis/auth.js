@@ -101,7 +101,6 @@ const token = ({ userName = 'TEST_USER', isReviewer = false, isCoordinator = fal
       jsonBody: {
         access_token: createToken(isReviewer, isCoordinator),
         token_type: 'bearer',
-        refresh_token: 'refresh',
         user_name: userName,
         expires_in: 600,
         scope: 'read write',
@@ -208,6 +207,7 @@ const stubEmail = username =>
       jsonBody: {
         username,
         email: `${username}@gov.uk`,
+        verified: true,
       },
     },
   })

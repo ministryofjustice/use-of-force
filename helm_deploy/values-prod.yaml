@@ -10,14 +10,28 @@ generic-service:
     PRISONER_SEARCH_API_URL: https://prisoner-search.prison.service.justice.gov.uk
     LOCATIONS_INSIDE_PRISON_API_URL: https://locations-inside-prison-api.hmpps.service.justice.gov.uk
     NOMIS_MAPPING_API_URL: https://nomis-sync-prisoner-mapping.hmpps.service.justice.gov.uk
-    EXIT_LOCATION_URL: https://digital.prison.service.justice.gov.uk/
+    EXIT_LOCATION_URL: https://digital.prison.service.justice.gov.uk
     EMAIL_LOCATION_URL: https://use-of-force.service.justice.gov.uk
     TOKENVERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
-    DPS_URL: https://digital.prison.service.justice.gov.uk/
+    DPS_URL: https://digital.prison.service.justice.gov.uk
     COMPONENT_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
     ENVIRONMENT_NAME: ''
     HMPPS_MANAGE_USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     INGRESS_URL: https://use-of-force.service.justice.gov.uk
+
+  postgresDatabaseRestore:
+    enabled: true
+    namespace_secrets:
+      dps-rds-instance-output:
+        DB_NAME: "database_name"
+        DB_USER: "database_username"
+        DB_PASS: "database_password"
+        DB_HOST: "rds_instance_address"
+      dps-rds-instance-output-preprod:
+        DB_NAME_PREPROD: "database_name"
+        DB_USER_PREPROD: "database_username"
+        DB_PASS_PREPROD: "database_password"
+        DB_HOST_PREPROD: "rds_instance_address"
 
   allowlist:
     groups:
@@ -29,8 +43,12 @@ generic-service:
 
 # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
-  targetApplication: use-of-force
-  alertSeverity: elp_alerts
+  alertSeverity: move-a-prisoner-alerts-prod
 
 generic-data-analytics-extractor:
   serviceAccountName: use-of-force-prod-to-ap-s3
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 4G

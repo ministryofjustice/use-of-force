@@ -1,0 +1,105 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %} 
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %} 
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+{% import ".././reportDetailMacro.njk" as reportDetail %} 
+{% import "./navigationTabMacro.njk" as navigationTabMacro %}
+
+{% set pageTitle = 'Use of force report' %}
+
+{% block beforeContent %}
+  <div class="flex-container-space-between govuk-!-display-none-print">
+      {{ govukBreadcrumbs({
+        items: [
+          {
+            text: "Digital Prison Services",
+            href: links.exitUrl
+          },
+          {
+            text: "Use of force incidents",
+            href: "/"
+          }
+        ]
+      }) }}
+
+    {% if data.isReviewer or data.isCoordinator%}
+    
+      {% set linkText %}
+        {% if data.tab == 'edit-history' %}
+          Print incident and edit history      
+        {% else %}
+          Print report and statements
+        {% endif %}
+      {% endset %}
+
+      <div class="float-right">
+        <a href="" class="govuk-link govuk-link--no-visited-state print-link"> {{linkText}} </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {% if data.displaySuccessBanner == true %}
+    <!-- Display success banner if edit happens -->
+    {% set alertHtml %}
+    <p class="govuk-body">
+     You have changed {{data.reportSectionText}} for this incident. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
+    </p>
+    {% endset %}
+
+
+    {{ mojAlert({
+      variant: "success",
+      title: "Success",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: alertHtml,
+      attributes: {'data-qa':'success-banner'}
+    }) }}
+  {% endif %}
+
+{% if data.isCoordinator and data.reportEditOrDeletePermitted == false %}
+  {{ mojAlert({
+    variant: "information",
+    title: "You cannot edit this report",
+    showTitleAsHeading: true,
+    dismissible: false,
+    classes: 'govuk-!-display-none-print',
+    html:'Reports are editable for ' + data.editabilityPeriod + ' weeks from their incident date. If you think there is a  need to edit this report after ' + data.editabilityPeriod + ' weeks, contact the Use of Force service desk.'
+  }) }}
+ {% endif %}
+
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-body negative-margin-top-7">
+  {% set print = false %}
+
+  <div class=" govuk-grid-column-full govuk-!-margin-bottom-9">  
+    {% if data.tab == 'report' %}
+      {% set renderReportView = true %} {# renderReportView means a layout that is not used for the check-your-answers page #}
+      {% include "./report.njk" %}
+    {% elif data.tab == 'statements' %}
+      {% include "./statements.njk" %}
+    {% else %}
+      {% include "./edit-history.njk" %}
+    {% endif %}
+    <p class="govuk-!-margin-top-5">
+
+      {% if data.isReviewer or data.isCoordinator %}
+        {% set href = "/not-completed-incidents" %}
+      {% else %}
+        {% set href = "/your-statements" %}
+      {% endif %}
+
+      <a href="{{ href }}" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link">Return to use of force incidents</a>
+
+    </p>
+  </div>
+  </div>
+</div>
+
+{% endblock %}

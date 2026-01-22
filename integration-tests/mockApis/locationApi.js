@@ -5,7 +5,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/location-api/locations/${incidentLocationId}`,
+        urlPattern: `/location-api/locations/${incidentLocationId}\\?formatLocalName=true`,
       },
       response: {
         status: 200,
@@ -25,7 +25,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/location-api/locations/${incidentLocationId}`,
+        urlPattern: `/location-api/locations/${incidentLocationId}\\?formatLocalName=true`,
       },
       response: {
         status: 404,
@@ -37,7 +37,7 @@ module.exports = {
     return stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/location-api/locations/prison/${prisonId}/non-residential-service-type/${serviceType}`,
+        urlPattern: `/location-api/locations/prison/${prisonId}/non-residential-service-type/${serviceType}\\?formatLocalName=true&sortByLocalName=true`,
       },
       response: {
         status: 200,

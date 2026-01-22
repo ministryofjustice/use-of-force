@@ -5,7 +5,7 @@ generic-service:
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/use-of-force
+    repository: ghcr.io/ministryofjustice/use-of-force
     tag: latest
     port: 3000
 
@@ -27,8 +27,12 @@ generic-service:
     FEATURE_FLAG_OUTAGE_BANNER_ENABLED: false
     FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES: 'HMI'
     DB_SSL_ENABLED: true
+    REDIS_ENABLED: true
     REDIS_TLS_ENABLED: true
     NODE_ENV: production
+    PRODUCT_ID: 'DPS045'
+    WEB_SESSION_TIMEOUT_IN_MINUTES: 120
+    SUBMITTED_REPORT_EDIT_PERIOD_WEEKS: 13
 
   namespace_secrets:
     dps-rds-instance-output:
@@ -37,12 +41,14 @@ generic-service:
       DB_SERVER: rds_instance_address
       DB_NAME: database_name
       DB_HOST: url
+    application-insights:       
+      APPINSIGHTS_INSTRUMENTATIONKEY: APPINSIGHTS_INSTRUMENTATIONKEY
+      APPLICATIONINSIGHTS_CONNECTION_STRING: APPLICATIONINSIGHTS_CONNECTION_STRING
     use-of-force:
       API_CLIENT_ID: API_CLIENT_ID
       API_CLIENT_SECRET: API_CLIENT_SECRET
       SYSTEM_CLIENT_ID: SYSTEM_CLIENT_ID
       SYSTEM_CLIENT_SECRET: SYSTEM_CLIENT_SECRET
-      APPINSIGHTS_INSTRUMENTATIONKEY: APPINSIGHTS_INSTRUMENTATIONKEY
       NOTIFY_API_KEY: NOTIFY_API_KEY
       TAG_MANAGER_KEY: TAG_MANAGER_KEY
       TAG_MANAGER_ENVIRONMENT: TAG_MANAGER_ENVIRONMENT
@@ -59,7 +65,7 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: use-of-force
-  alertSeverity: digital-prison-service-dev
+  alertSeverity: move-a-prisoner-alerts-nonprod
 
 generic-data-analytics-extractor:
   databaseSecretName: dps-rds-instance-output

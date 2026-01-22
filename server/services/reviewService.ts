@@ -1,9 +1,16 @@
-import type { AgencyId, SystemToken } from '../types/uof'
-import type { IncidentSearchQuery, IncompleteReportSummary, Report, ReportSummary } from '../data/incidentClientTypes'
+import type { AgencyId } from '../types/uof'
+import type {
+  IncidentSearchQuery,
+  IncompleteReportSummary,
+  Report,
+  ReportEdit,
+  ReportSummary,
+} from '../data/incidentClientTypes'
 import { PageResponse, toPage } from '../utils/page'
-import { IncidentClient, StatementsClient, RestClientBuilder, AuthClient } from '../data'
+import { IncidentClient, StatementsClient, ManageUsersApiClient } from '../data'
 import OffenderService from './offenderService'
 import { AdditionalComment, ReviewerStatement } from '../data/statementsClientTypes'
+import AuthService from './authService'
 
 export interface IncidentSummary {
   id: number
@@ -53,9 +60,9 @@ export default class ReviewService {
   constructor(
     private readonly statementsClient: StatementsClient,
     private readonly incidentClient: IncidentClient,
-    private readonly authClientBuilder: RestClientBuilder<AuthClient>,
+    private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly offenderService: OffenderService,
-    private readonly systemToken: SystemToken
+    private readonly authService: AuthService
   ) {}
 
   async getReport(reportId: number): Promise<Report> {
@@ -66,8 +73,21 @@ export default class ReviewService {
     return report
   }
 
+  async getBookingIdWithReportId(reportId: number): Promise<string> {
+    const { bookingId } = await this.incidentClient.getBookingId(reportId)
+    if (!bookingId) {
+      throw new Error(`Booking Id: '${reportId}' does not exist`)
+    }
+    return bookingId
+  }
+
+  async getReportEdits(reportId: number): Promise<ReportEdit[]> {
+    const edits = await this.incidentClient.getReportEdits(reportId)
+    return edits
+  }
+
   async getOffenderNames(username: string, incidents: ReportSummary[]): Promise<NamesByOffenderNumber> {
-    const token = await this.systemToken(username)
+    const token = await this.authService.getSystemClientToken(username)
     const offenderNos = incidents.map(incident => incident.offenderNo)
     return this.offenderService.getOffenderNames(token, offenderNos)
   }
@@ -92,16 +112,20 @@ export default class ReviewService {
     return reports.map(toIncidentSummary(namesByOffenderNumber))
   }
 
-  async getIncompleteReports(username: string, agencyId: AgencyId): Promise<IncidentSummary[]> {
+  async getIncompleteReports(
+    username: string,
+    agencyId: AgencyId,
+    page: number
+  ): Promise<PageResponse<IncidentSummary>> {
     const incomplete = await this.incidentClient.getIncompleteReportsForReviewer(agencyId)
     const namesByOffenderNumber = await this.getOffenderNames(username, incomplete)
-    return incomplete.map(toIncidentSummary(namesByOffenderNumber))
+
+    return toPage(page, incomplete.map(toIncidentSummary(namesByOffenderNumber)))
   }
 
   async getStatements(token: string, reportId: number): Promise<ReviewerStatementWithComments[]> {
     const statements = await this.statementsClient.getStatementsForReviewer(reportId)
-    const authClient = this.authClientBuilder(token)
-    return Promise.all(statements.map(statement => this.decorateStatement(authClient, statement)))
+    return Promise.all(statements.map(statement => this.decorateStatement(statement, token)))
   }
 
   async getStatement(token: string, statementId: number): Promise<ReviewerStatementWithComments> {
@@ -109,14 +133,13 @@ export default class ReviewService {
     if (!statement) {
       throw new Error(`Statement: '${statementId}' does not exist`)
     }
-    const authClient = this.authClientBuilder(token)
-    return this.decorateStatement(authClient, statement)
+    return this.decorateStatement(statement, token)
   }
 
-  private async decorateStatement(authClient: AuthClient, statement: ReviewerStatement) {
+  private async decorateStatement(statement: ReviewerStatement, token: string) {
     return Promise.all([
       this.statementsClient.getAdditionalComments(statement.id),
-      authClient.getEmail(statement.userId),
+      this.manageUsersApiClient.getEmail(statement.userId, token),
     ]).then(([additionalComments, email]) => ({ ...statement, additionalComments, isVerified: email.verified }))
   }
 }

@@ -1,11 +1,9 @@
 import express, { Router } from 'express'
-
 import asyncMiddleware from '../../middleware/asyncMiddleware'
-import { adminOnly, coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
+import { coordinatorOnly, reviewerOrCoordinatorOnly } from '../../middleware/roleCheck'
 
 import ReviewRoutes from './reviewer'
 import CoordinatorRoutes from './coordinator'
-import AdminRoutes from './admin'
 
 import { Services } from '../../services'
 
@@ -15,16 +13,18 @@ export default function Index(services: Services): Router {
     reportService,
     involvedStaffService,
     reviewService,
-    systemToken,
     reportDetailBuilder,
     userService,
     statementService,
+    authService,
+    locationService,
+    reportEditService,
   } = services
 
   const router = express.Router()
 
   {
-    const reviewer = new ReviewRoutes(offenderService, reportDetailBuilder, reviewService, systemToken)
+    const reviewer = new ReviewRoutes(offenderService, reportDetailBuilder, reviewService, authService)
 
     const get = (path, handler) => router.get(path, reviewerOrCoordinatorOnly, asyncMiddleware(handler))
 
@@ -41,15 +41,47 @@ export default function Index(services: Services): Router {
       involvedStaffService,
       reviewService,
       offenderService,
-      systemToken,
       userService,
-      statementService
+      statementService,
+      authService,
+      locationService,
+      reportDetailBuilder,
+      reportEditService
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
-
-    get('/coordinator/report/:reportId/confirm-delete', coordinator.confirmDeleteReport)
-    post('/coordinator/report/:reportId/delete', coordinator.deleteReport)
+    // new routes previously wrapped in feature flag from here
+    get('/:reportId/edit-report', coordinator.viewEditReport)
+    get('/:reportId/delete-incident', coordinator.viewDeleteIncident)
+    post('/:reportId/delete-incident', coordinator.submitDeleteIncident)
+    get('/:reportId/reason-for-deleting-report', coordinator.viewReasonForDeletingIncident)
+    post('/:reportId/reason-for-deleting-report', coordinator.submitReasonForDeletingIncident)
+    get('/:reportId/delete-incident-success', coordinator.viewDeleteIncidentSuccess)
+    get('/:reportId/edit-report/incident-details', coordinator.viewEditIncidentDetails)
+    post('/:reportId/edit-report/incident-details', coordinator.submitEditIncidentDetails)
+    get('/:reportId/edit-report/why-was-uof-applied', coordinator.viewEditWhyWasUOFApplied)
+    post('/:reportId/edit-report/why-was-uof-applied', coordinator.submitEditWhyWasUOFApplied)
+    get('/:reportId/edit-report/what-was-the-primary-reason-of-uof', coordinator.viewEditPrimaryReasonForUof)
+    post('/:reportId/edit-report/what-was-the-primary-reason-of-uof', coordinator.submitEditPrimaryReasonForUof)
+    get('/:reportId/edit-report/use-of-force-details', coordinator.viewEditUseOfForceDetails)
+    post('/:reportId/edit-report/use-of-force-details', coordinator.submitEditUseOfForceDetails)
+    get('/:reportId/edit-report/relocation-and-injuries', coordinator.viewEditRelocationAndInjuries)
+    post('/:reportId/edit-report/relocation-and-injuries', coordinator.submitEditRelocationAndInjuries)
+    get('/:reportId/edit-report/evidence', coordinator.viewEditEvidence)
+    post('/:reportId/edit-report/evidence', coordinator.submitEditEvidence)
+    get('/:reportId/edit-report/prison', coordinator.viewEditPrison)
+    post('/:reportId/edit-report/prison', coordinator.submitEditPrison)
+    get('/:reportId/edit-report/reason-for-change', coordinator.viewReasonForChange)
+    post('/:reportId/edit-report/reason-for-change', coordinator.submitReasonForChange)
+    get('/:reportId/edit-report/staff-involved', coordinator.viewInvolvedStaff)
+    get('/:reportId/edit-report/staff-involved-search', coordinator.viewInvolvedStaffSearch)
+    post('/:reportId/edit-report/staff-involved-search', coordinator.submitInvolvedStaffSearch)
+    get('/:reportId/edit-report/staff-involved-search/no-results', coordinator.viewNoResultsFoundInvolvedStaffSearch)
+    get('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.editViewAddNewInvolvedStaffMember)
+    post('/:reportId/edit-report/add-new-staff-involved/:username', coordinator.submitAddNewInvolvedStaffMember)
+    get('/:reportId/statement/:statementId/confirm-delete/:username', coordinator.confirmDeleteStatement)
+    post('/:reportId/statement/:statementId/confirm-delete/:username', coordinator.submitDeleteStatement)
+    // to here
 
     get('/coordinator/report/:reportId/add-staff', coordinator.viewAddInvolvedStaff)
     post('/coordinator/report/:reportId/add-staff', coordinator.submitAddInvolvedStaff)
@@ -65,16 +97,6 @@ export default function Index(services: Services): Router {
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
       coordinator.viewStaffMemberNotRemoved
     )
-  }
-
-  {
-    const admin = new AdminRoutes(reportService, reviewService, offenderService, systemToken)
-    const get = (path, handler) => router.get(path, adminOnly, asyncMiddleware(handler))
-    const post = (path, handler) => router.post(path, adminOnly, asyncMiddleware(handler))
-
-    get('/:reportId/edit-report', admin.viewEditReport)
-    get('/:reportId/edit-report/:formName', admin.viewEditForm)
-    post('/:reportId/edit-report/:formName', admin.submitEditForm)
   }
 
   return router

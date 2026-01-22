@@ -3,10 +3,19 @@
 {% from "govuk/components/table/macro.njk" import govukTable %} 
 {% from  "../macros.njk" import overdueBadge %}   
 {% from  "../macros.njk" import removalRequestedBadge %}    
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block tabContent %}
 <section class="govuk-tabs__panel">
-  
+  {% if pageData.totalPages == 1 %}
+    <div class="displayResultsCountOnly">
+      {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+    </div>
+  {% elif pageData.totalPages > 1 %}
+    {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+  {% endif %} 
+
   {% if reports.length %}
 <table class="govuk-table reviewer-incidents" data-qa="incidents-todo">
 
@@ -16,19 +25,20 @@
       <th class="govuk-table__header prisoner" scope="col">Prisoner</th>
       <th class="govuk-table__header prisonNo" scope="col">Prison number</th>
       <th class="govuk-table__header reporter" scope="col">Reporter</th>
-      <th class="govuk-table__header report" scope="col"></th>
-      <th class="govuk-table__header report" scope="col"></th>
+      <th class="govuk-table__header report" scope="col">Action</th>
+      <th class="govuk-table__header report" scope="col">Statements</th>
     </tr>
   </thead>
 
   <tbody class="govuk-table__body">
       {% for report in reports %}
+      {% set href = '/'+ report.id + '/view-incident?tab=report' %}
       <tr class="govuk-table__row">
           <td class="govuk-table__cell">{{report.incidentdate | formatDate('DD/MM/YYYY')}}</td>
           <td class="govuk-table__cell">{{report.offenderName}}</td>
           <td class="govuk-table__cell">{{report.offenderNo}}</td>
           <td class="govuk-table__cell">{{report.staffMemberName}}</td>
-          <td class="govuk-table__cell"><a href="/{{ report.id }}/view-statements" draggable="false" class="govuk-link">View incident</a></td>
+          <td class="govuk-table__cell"><a href= {{href}} draggable="false" class="govuk-link" data-qa="view-incident-link">View incident</a></td>
     
           <td class="govuk-table__cell">
             {% if report.isOverdue %}
@@ -56,6 +66,10 @@
 {% else %}
 <p class="govuk-body" data-qa="no-incidents-todo">There are no incomplete incidents</p>
 {% endif %}
+
+{% if pageData.totalPages > 1 %}
+  {{ mojPagination( pageData | toPagination(rawQuery) ) }}
+{% endif %} 
 
 </section>
 {% endblock %}

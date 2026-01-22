@@ -1,0 +1,41 @@
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% macro navigation(data, active) %}
+
+  {% if data.hasReportBeenEdited %}
+    {% set editHistoryTab = 
+        {
+          text: "Edit history",
+          href: '/' + data.incidentId + '/view-incident?tab=edit-history',
+          active: active.editHistory,
+          attributes: {'data-qa':'edit-history-tab'}
+        }
+    %}
+  {% endif %}
+
+  {% if data.isCoordinator or  data.isReviewer %}
+    {% set statementsTab = 
+        {
+        text: "Statements",
+        href: '/' + data.incidentId + '/view-incident?tab=statements',
+        active: active.statements,
+        attributes: {'data-qa':'statements-tab'}
+      }
+    %}
+  {% endif %}
+
+
+  {{ mojSubNavigation({
+      label: "Sub navigation",
+      items: [{
+        text: "Report",
+        href: '/' + data.incidentId + '/view-incident?tab=report',
+        active: active.report,
+        attributes: {'data-qa':'report-tab'}
+      },
+      statementsTab, 
+      editHistoryTab
+      ], 
+      classes: 'govuk-!-display-none-print'
+    }) }}
+{% endmacro %}

@@ -1,5 +1,6 @@
 import R from 'ramda'
 import moment, { Moment } from 'moment'
+import { format, isValid, parse } from 'date-fns'
 
 export const isNilOrEmpty = R.either(R.isEmpty, R.isNil)
 export const { equals } = R
@@ -20,11 +21,11 @@ export const removeKeysWithEmptyValues = (vals: Record<string, unknown>): Record
     return isNilOrEmpty(v) ? result : { ...result, [k]: v }
   }, {})
 
-export const parseDate = (val: string | unknown, format: string): Moment | null => {
+export const parseDate = (val: string | unknown, dateFormat: string): Moment | null => {
   if (!val) {
     return null
   }
-  const date = moment(val, format, true)
+  const date = moment(val, dateFormat, true)
   return date.isValid() ? date : null
 }
 
@@ -35,7 +36,12 @@ export const parseDate = (val: string | unknown, format: string): Moment | null 
  * @returns name converted to proper case.
  */
 export const properCaseName = (name: string): string => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
-
+export const personDateOfBirth = (dateOfBirth: string): string => dayMonthYearForwardSlashSeparator(dateOfBirth)
+export const dayMonthYearForwardSlashSeparator = (dateString: string): string => {
+  if (!dateString) return ''
+  const date = parse(dateString, 'yyyy-MM-dd', new Date())
+  return date && isValid(date) ? format(date, 'dd/MM/yyyy') : dateString
+}
 export const properCaseFullName = (name: string): string =>
   isBlank(name)
     ? ''
@@ -49,6 +55,29 @@ export function forenameToInitial(name: string): string {
   if (!name) return null
   return `${name.charAt(0)}. ${name.split(' ').pop()}`
 }
+export const personProfileName = (person: { firstName: string; lastName: string }): string =>
+  lastNameCommaFirstName(person)
+
+export const lastNameCommaFirstName = (person: { firstName: string; lastName: string }): string => {
+  return `${nameCase(person.lastName)}, ${nameCase(person.firstName)}`.replace(/(^, )|(, $)/, '')
+}
+
+export const sentenceCase = (word: string): string => {
+  const uniformWhitespaceWord = uniformWhitespace(word)
+  return uniformWhitespaceWord.trim().length >= 1
+    ? uniformWhitespaceWord[0].toUpperCase() + uniformWhitespaceWord.toLowerCase().slice(1)
+    : ''
+}
+
+export const nameCase = (name: string): string => {
+  const uniformWhitespaceName = uniformWhitespace(name)
+  return uniformWhitespaceName
+    .split(' ')
+    .map(s => (s.includes('-') ? s.split('-').map(sentenceCase).join('-') : sentenceCase(s)))
+    .join(' ')
+}
+
+const uniformWhitespace = (word: string): string => (word ? word.trim().replace(/\s+/g, ' ') : '')
 
 export const initialiseName = (fullName?: string): string | null => {
   // this check is for the authError page
@@ -56,4 +85,28 @@ export const initialiseName = (fullName?: string): string | null => {
 
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
+}
+
+export const hasValueChanged = (oldValue, newValue) => {
+  if (!oldValue && newValue === '') return false
+
+  const newVal = newValue?.toUpperCase().trim() || undefined
+  const oldVal = oldValue?.toUpperCase().trim() || undefined
+  return newVal !== oldVal
+}
+
+export const excludeEmptyValuesThenTrim = arr => {
+  const actualObjects = arr?.filter(obj => obj.name?.trim() !== '') || undefined
+  return actualObjects?.length > 0
+    ? actualObjects.map(obj => ({ name: obj.name?.trim() })).filter(obj => obj.name !== undefined)
+    : undefined
+}
+
+export const getChangedValues = (obj, predicate) => {
+  return Object.fromEntries(Object.entries(obj).filter(([key, value]) => predicate(value, key)))
+}
+
+export const toJSDate = ({ date, time: { hour, minute } }) => {
+  const [day, month, year] = date.split('/').map(Number)
+  return new Date(year, month - 1, day, Number(hour), Number(minute))
 }

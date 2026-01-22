@@ -36,6 +36,7 @@ const createIncidentDetails = (
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
     prison,
+    incidentLocationId: incidentDetails.incidentLocationId,
     location: description,
     plannedUseOfForce: incidentDetails.plannedUseOfForce,
     authorisedBy: incidentDetails.authorisedBy,
@@ -94,7 +95,26 @@ const createUseOfForceDetails = (
         ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
         : toLabel(WeaponsObserved, value)
     ),
+    bittenByPrisonDog: details.bittenByPrisonDog,
+    taserDrawn: whenPresent(details.taserDrawn, value =>
+      value === true ? `${YES} - ${getTaserDetails(details)}` : `${NO}`
+    ),
   }
+}
+const getTaserDetails = details => {
+  const messageOptionsForEachInput = [
+    ['taserOperativePresent', 'prisoner warned', 'prisoner not warned'],
+    ['redDotWarning', 'red-dot warning used', 'red-dot warning not used'],
+    ['arcWarningUsed', 'arc warning used', 'arc warning not used'],
+    ['taserDeployed', 'Taser deployed', 'Taser not deployed'],
+    ['taserCycleExtended', 'Taser cycle extended', 'Taser cycle not extended'],
+    ['taserReenergised', 'Taser re-energised', 'Taser not re-energised'],
+  ]
+
+  return messageOptionsForEachInput
+    .map(([key, selectedMsg, notSelectedMsg]) => (details[key] ? ` ${selectedMsg}` : ` ${notSelectedMsg}`))
+    .join(',')
+    .trimEnd()
 }
 
 const getRelocationType = relocationType => {
@@ -155,7 +175,9 @@ const getRestraintPositions = positions => {
 
 const toParentChild = postions => {
   const positionObjects = postions.map(p => findEnum(ControlAndRestraintPosition, p))
+  // eslint-disable-next-line
   const parents: any[] = []
+  // eslint-disable-next-line
   const children: any[] = []
   positionObjects.forEach(obj => {
     if (obj.parent == null) {
@@ -165,7 +187,7 @@ const toParentChild = postions => {
     }
   })
   const parentChild: string[] = []
-  parents.forEach(function (p) {
+  parents.forEach(p => {
     const thesechildren = children
       .filter(pos => pos.parent === p.value)
       .map(child => child.label)

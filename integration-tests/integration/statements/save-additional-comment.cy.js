@@ -9,6 +9,7 @@ const { ReportStatus } = require('../../../server/config/types')
 context('Add comments to statement', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubComponents')
     cy.task('stubLogin')
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
