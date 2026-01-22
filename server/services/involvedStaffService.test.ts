@@ -323,7 +323,7 @@ describe('update', () => {
       ]
 
       // override to return array
-      statementsClient.getInvolvedStaffToRemove.mockResolvedValue(removalArray as any)
+      statementsClient.getInvolvedStaffToRemove.mockResolvedValue(removalArray as never)
 
       // make old involved staff include both
       incidentClient.getInvolvedStaff.mockResolvedValue([
