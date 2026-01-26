@@ -5,6 +5,7 @@ const viewInvolvedStaffPage = () =>
     staffInvolvedTableRows: () => cy.get('[data-qa="involved-staff-table"] tbody tr'),
     staffInvolvedTableRowDeleteLink: staffId => cy.get(`[data-qa=delete-staff-${staffId}]`),
     returnToIncidentReportLink: () => cy.get('[data-qa="return-to-incident-report-link"]'),
+    addSomeoneButton: () => cy.get('[data-qa="add-someone-button"]'),
     backLink: () => cy.get('[data-qa="back-link"]'),
     successBanner: () => cy.get('.moj-alert--success'),
   })

@@ -1,7 +1,7 @@
 import nock from 'nock'
 import LocationClient from './locationClient'
 import config from '../config'
-import { NonResidentialUsageType } from '../config/types'
+import { NonResidentialServiceType } from '../config/types'
 
 describe('locationClient', () => {
   let fakeLocationApi
@@ -66,7 +66,7 @@ describe('locationClient', () => {
     const locations = []
     it('should return data from api', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/OCCURRENCE?formatLocalName=true&sortByLocalName=true')
+        .get('/locations/non-residential/prison/MDI/service/USE_OF_FORCE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(200, locations)
 
@@ -75,11 +75,11 @@ describe('locationClient', () => {
     })
     it('can not search with incorrect usage-type filter', async () => {
       fakeLocationApi
-        .get('/locations/prison/MDI/non-residential-usage-type/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
+        .get('/locations/non-residential/prison/MDI/service/SOME-TYPE?formatLocalName=true&sortByLocalName=true')
         .matchHeader('authorization', `Bearer ${token}`)
         .reply(400)
 
-      await expect(locationClient.getLocations('MDI', token, 'SOME-TYPE' as NonResidentialUsageType)).rejects.toThrow(
+      await expect(locationClient.getLocations('MDI', token, 'SOME-TYPE' as NonResidentialServiceType)).rejects.toThrow(
         'Bad Request'
       )
     })

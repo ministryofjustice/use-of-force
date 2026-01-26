@@ -2,10 +2,10 @@ import R from 'ramda'
 import type { Request, RequestHandler } from 'express'
 import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
-import { isNilOrEmpty, firstItem, getChangedValues } from '../../utils/utils'
+import { isNilOrEmpty, getChangedValues } from '../../utils/utils'
 import getIncidentDate from '../../utils/getIncidentDate'
 import { paths, full } from '../../config/incident'
-import { ReportStatus, UofReasons } from '../../config/types'
+import { UofReasons } from '../../config/types'
 import ReportService from '../../services/reportService'
 import ReviewService from '../../services/reviewService'
 import OffenderService from '../../services/offenderService'
@@ -24,7 +24,6 @@ import reasonsForUofConfig from '../../config/edit/reasonsForUoFConfig'
 import useOfForceDetailsConfig, { QUESTION_ID as UOFDQID } from '../../config/edit/useOfForceDetailsConfig'
 import reasonForAddingStaffForm from '../../config/forms/reasonForAddingStaffForm'
 import reasonForDeletingStaffForm from '../../config/forms/reasonForDeletingStaffForm'
-import config from '../../config'
 
 import * as types from '../../config/types'
 
@@ -1160,14 +1159,6 @@ export default class CoordinatorRoutes {
     return res.redirect(paths.viewInvolvedStaff(reportId))
   }
 
-  viewAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const errors = req.flash('errors')
-    const data = { incidentId: req.params.reportId }
-
-    res.render('pages/coordinator/add-involved-staff/add-involved-staff.html', { errors, data })
-  }
-
-  // ===========.  existing code below which will be removed at some point.  ==========
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
@@ -1222,82 +1213,6 @@ export default class CoordinatorRoutes {
     return res.render('pages/coordinator/staff-member-not-removed.html', { data })
   }
 
-  submitAddInvolvedStaff: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const {
-      body: { username },
-    } = req
-
-    if (!username.trim()) {
-      req.flash('errors', [{ href: '#username', text: "Enter a staff member's username" }])
-      return res.redirect(paths.addInvolvedStaff(reportId))
-    }
-
-    const result = await this.involvedStaffService.addInvolvedStaff(
-      await this.authService.getSystemClientToken(res.locals.user.username),
-      reportId,
-      username
-    )
-
-    req.flash('username', username.toUpperCase())
-    return res.redirect(paths.addInvolvedStaffResult(reportId, result))
-  }
-
-  viewAddInvolvedStaffResult: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const result = req.params.result as AddStaffResult
-    const username = firstItem(req.flash('username'))
-
-    const knownResult = Object.values(AddStaffResult).some(knownValue => knownValue === result)
-
-    if (!username || !knownResult || result === AddStaffResult.SUCCESS) {
-      return res.redirect(paths.viewReport(reportId))
-    }
-
-    if ([AddStaffResult.SUCCESS_UNVERIFIED, AddStaffResult.ALREADY_EXISTS].includes(result)) {
-      const user = await this.involvedStaffService.loadInvolvedStaffByUsername(reportId, username)
-      return res.render(`pages/coordinator/add-involved-staff/${result}.html`, {
-        reportId,
-        username,
-        name: user.name,
-      })
-    }
-
-    return res.render(`pages/coordinator/add-involved-staff/${result}.html`, { reportId, username })
-  }
-
-  confirmDeleteReport: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const errors = req.flash('errors')
-    const report = await this.reviewService.getReport(reportId)
-
-    const { bookingId, reporterName, submittedDate } = report
-    const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
-    const data = { incidentId: reportId, reporterName, submittedDate, offenderDetail }
-
-    res.render('pages/coordinator/confirm-report-deletion.html', { errors, data })
-  }
-
-  deleteReport: RequestHandler = async (req, res) => {
-    const reportId = extractReportId(req)
-    const { confirm } = req.body
-
-    if (!confirm) {
-      req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this report' }])
-      return res.redirect(paths.confirmReportDelete(reportId))
-    }
-
-    const report = await this.reviewService.getReport(reportId)
-    const referringPage =
-      report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
-
-    if (confirm === 'yes') {
-      await this.reportService.deleteReport(res.locals.user.username, reportId)
-    }
-
-    return res.redirect(referringPage)
-  }
-
   confirmDeleteStatement: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const { statementId } = req.params
@@ -1309,16 +1224,11 @@ export default class CoordinatorRoutes {
 
     const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
 
-    if (config.featureFlagReportEditingEnabled) {
-      res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
-        errors,
-        data,
-        backlinkHref: paths.viewInvolvedStaff(reportId),
-      })
-    } else {
-      // remove else once edit functionality has been made live
-      res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
-    }
+    res.render('pages/coordinator/reason-for-deleting-this-person.njk', {
+      errors,
+      data,
+      backlinkHref: paths.viewInvolvedStaff(reportId),
+    })
   }
 
   deleteStatement: RequestHandler = async (req, res) => {

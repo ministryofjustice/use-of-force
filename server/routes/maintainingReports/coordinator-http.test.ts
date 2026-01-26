@@ -11,10 +11,6 @@ import LocationService from '../../services/locationService'
 import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
 import ReportEditService from '../../services/reportEditService'
 
-import config from '../../config'
-
-config.featureFlagReportEditingEnabled = true
-
 jest.mock('../../services/authService')
 jest.mock('../../services/offenderService')
 jest.mock('../../services/reportService')

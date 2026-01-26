@@ -7,7 +7,6 @@ import ReportService from '../../services/reportService'
 import ReportEditService from '../../services/reportEditService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
-import config from '../../config'
 import ViewIncidentsRoutes from './viewIncidents'
 import logger from '../../../log'
 
@@ -93,7 +92,6 @@ beforeEach(() => {
   report = { id: 1, username: 'user1', form: { incidentDetails: {} } } as unknown as Report
   userSupplier.mockReturnValue(user)
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
-  config.featureFlagReportEditingEnabled = true
   reviewService.getReport.mockResolvedValue(report)
   reportService.getReportEdits.mockResolvedValue([])
   reportEditService.mapEditDataToViewOutput.mockResolvedValue([])
