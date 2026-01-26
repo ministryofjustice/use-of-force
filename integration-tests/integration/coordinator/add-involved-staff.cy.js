@@ -1,32 +1,22 @@
-const moment = require('moment')
-const { offender } = require('../../mockApis/data')
-const ViewStatementsPage = require('../../pages/reviewer/viewStatementsPage')
-const CompletedIncidentsPage = require('../../pages/reviewer/completedIncidentsPage')
-const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
-const AddInvolvedStaffPage = require('../../pages/reviewer/addInvolvedStaffPage')
-const AddInvolvedStaffResultPage = require('../../pages/reviewer/addInvolvedStaffResultPage')
-const ViewReportPage = require('../../pages/reviewer/viewReportPage')
-const { ReportStatus } = require('../../../server/config/types')
+import { offender } from '../../mockApis/data'
+import { ReportStatus } from '../../../server/config/types'
+import ViewIncidentPage from '../../pages/coordinator/viewIncidentPage'
+import EditReportPage from '../../pages/coordinator/editReportPage'
+import ViewInvolvedStaffPage from '../../pages/coordinator/viewInvolvedStaffPage'
+import StaffInvolvedSearchPage from '../../pages/coordinator/staffInvolvedSearchPage'
+import AddNewStaffInvolvedPage from '../../pages/coordinator/addNewStaffInvolvedPage'
+import AddInvolvedStaffInvolvedSearchNoResultsPage from '../../pages/coordinator/addInvolvedStaffSearchNoResultsPage'
 
-context('A use of force coordinator can add involved staff', () => {
-  beforeEach(() => {
-    cy.task('reset')
-    cy.task('stubComponents')
-    cy.task('stubOffenderDetails', offender)
-    cy.task('stubLocations', offender.agencyId)
-    cy.task('stubPrison', offender.agencyId)
-    cy.task('stubDpsLocationMapping', 123456)
-    cy.task('stubPrisons')
-    cy.task('stubOffenders', [offender])
-    cy.task('stubLocation', '00000000-1111-2222-3333-444444444444')
-    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
-    cy.task('stubUnverifiedUserDetailsRetrieval', 'UNVERIFIED_USER')
-  })
+import NotCompletedIncidentsPage from '../../pages/reviewer/notCompletedIncidentsPage'
 
+context('A coordinator manages involved staff by editing a submitted report', () => {
+  const submittedDate = new Date()
+  const incidentDate = new Date()
   const seedReport = () =>
     cy.task('seedReport', {
       status: ReportStatus.SUBMITTED,
-      submittedDate: moment().toDate(),
+      submittedDate,
+      incidentDate,
       agencyId: 'MDI',
       bookingId: 1001,
       involvedStaff: [
@@ -38,170 +28,98 @@ context('A use of force coordinator can add involved staff', () => {
       ],
     })
 
-  const seedAndCompleteReport = () => {
+  beforeEach(() => {
+    cy.task('reset')
     seedReport()
+    cy.task('stubComponents')
+    cy.task('stubOffenderDetails', offender)
+    cy.task('stubPrison', offender.agencyId)
+    cy.task('stubOffenders', [offender])
+    cy.task('stubUserDetailsRetrieval', ['MR_ZAGATO', 'MRS_JONES', 'TEST_USER'])
+    cy.task('stubGetUser', 'A_BCD')
 
-    let notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-
-    const { reportId } = notCompletedIncidentsPage.getTodoRow(0)
-    reportId().then(id => cy.task('submitStatement', { userId: 'TEST_USER', reportId: id }).then(() => cy.reload()))
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRows().should('have.length', 1)
-
-    notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
-    notCompletedIncidentsPage.getNoTodoRows().should('exist')
-  }
-
-  xit('A coordinator can add staff on a complete report and it will move the report to incomplete', () => {
+    cy.task('stubStaffMemberSearch', {
+      searchText: 'A_BCD',
+      response: {
+        content: [
+          {
+            username: 'A_BCD',
+            staffId: 123465,
+            firstName: 'June',
+            lastName: 'Jones',
+            active: true,
+          },
+        ],
+        totalPages: 1,
+        totalElements: 1,
+        number: 1,
+        numberOfElements: 1,
+        first: true,
+        empty: false,
+      },
+    })
+    cy.task('stubStaffMemberSearch', {
+      searchText: 'UNKNOWN_USER',
+      response: {
+        numberOfElements: 0,
+      },
+    })
     cy.task('stubCoordinatorLogin')
     cy.login()
-
-    seedAndCompleteReport()
-
-    const completedIncidentsPage = CompletedIncidentsPage.goTo()
-    completedIncidentsPage.getCompleteRow(0).viewStatementsButton().click()
-
-    let viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.statements().then(result =>
-      expect(result).to.deep.equal([
-        {
-          username: 'TEST_USER name',
-          badge: '',
-          link: 'View statement',
-          isOverdue: false,
-          isUnverified: false,
-        },
-      ])
-    )
-    viewStatementsPage.reportLink().click()
-
-    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
-
-    const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
-    addInvolvedStaffPage.username().type('MRS_JONES')
-    addInvolvedStaffPage.saveAndContinue().click()
-
-    const reportPage = ViewReportPage.verifyOnPage()
-    reportPage.deleteInvolvedStaff('MRS_JONES').should('be.visible')
-    reportPage.returnToIncidentOverview().click()
-
-    viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.return().click()
-
-    const notCompletedIncidentsPage = NotCompletedIncidentsPage.verifyOnPage()
-    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-    notCompletedIncidentsPage.getTodoRow(0).viewStatementsButton().click()
-
-    ViewStatementsPage.verifyOnPage()
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-          { username: 'TEST_USER name', badge: '', link: 'View statement', isOverdue: false, isUnverified: false },
-        ])
-      )
-
-    cy.task('getReportCount', [ReportStatus.COMPLETE.value]).then(count => expect(count).to.equal(0))
   })
 
-  xit('Attempting to add a missing staff member', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedAndCompleteReport()
-
-    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
-
-    ViewStatementsPage.verifyOnPage().reportLink().click()
-
-    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
-
-    const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
-    addInvolvedStaffPage.username().type('JOHNNY')
-    addInvolvedStaffPage.saveAndContinue().click()
-
-    const warningPage = AddInvolvedStaffResultPage.verifyOnPage('The username does not exist')
-    warningPage.continue().click()
-
-    AddInvolvedStaffPage.verifyOnPage()
-  })
-
-  xit('Attempting to re-add an existing staff member', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedAndCompleteReport()
-
-    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
-
-    ViewStatementsPage.verifyOnPage().reportLink().click()
-
-    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
-
-    const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
-    addInvolvedStaffPage.username().type('TEST_USER')
-    addInvolvedStaffPage.saveAndContinue().click()
-
-    const warningPage = AddInvolvedStaffResultPage.verifyOnPage('TEST_USER name has already been added to the report')
-    warningPage.continue().click()
-
-    ViewReportPage.verifyOnPage()
-  })
-
-  xit('Attempting to add an unverified staff member', () => {
-    cy.task('stubCoordinatorLogin')
-    cy.login()
-
-    seedAndCompleteReport()
-
-    CompletedIncidentsPage.goTo().getCompleteRow(0).viewStatementsButton().click()
-
-    ViewStatementsPage.verifyOnPage().reportLink().click()
-
-    ViewReportPage.verifyOnPage().addInvolvedStaff().should('be.visible').click()
-
-    const addInvolvedStaffPage = AddInvolvedStaffPage.verifyOnPage()
-    addInvolvedStaffPage.username().type('UNVERIFIED_USER')
-    addInvolvedStaffPage.saveAndContinue().click()
-
-    const warningPage = AddInvolvedStaffResultPage.verifyOnPage(
-      'UNVERIFIED_USER name has not verified their email address'
-    )
-    warningPage.continue().click()
-
-    ViewReportPage.verifyOnPage()
-  })
-
-  xit('A reviewer user should not be able to add staff', () => {
-    cy.task('stubReviewerLogin')
-    cy.login()
-
-    seedReport()
-
+  it('they can add staff involved when that staff member exists', () => {
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
-    const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
-    prisoner().contains('Smith, Norman')
-    reporter().contains('James Stuart')
-    viewStatementsButton().click()
+    notCompletedIncidentsPage.viewIncidentLink().click()
 
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
 
-    viewStatementsPage
-      .statements()
-      .then(result =>
-        expect(result).to.deep.equal([
-          { username: 'TEST_USER name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        ])
-      )
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
 
-    viewStatementsPage.reportLink().click()
-    const reportPage = ViewReportPage.verifyOnPage()
-    reportPage.addInvolvedStaff().should('not.exist')
-    reportPage.prison().contains('Moorland')
-    reportPage.location().contains('ASSO')
+    const viewInvolvedStaffPage = ViewInvolvedStaffPage.verifyOnPage()
+    viewInvolvedStaffPage.addSomeoneButton().click()
+
+    const staffInvolvedSearchPage = StaffInvolvedSearchPage.verifyOnPage()
+    staffInvolvedSearchPage.username().type('A_BCD')
+    staffInvolvedSearchPage.searchButton().click()
+
+    StaffInvolvedSearchPage.verifyOnPage()
+    staffInvolvedSearchPage.getRowAndCol(1, 1).contains('June Jones')
+    staffInvolvedSearchPage.getRowAndCol(1, 3).contains('A_BCD')
+    staffInvolvedSearchPage.getRowAndCol(1, 5).contains('Add June Jones')
+    staffInvolvedSearchPage.getRowAndCol(1, 5).click()
+
+    const addNewStaffInvolvedPage = AddNewStaffInvolvedPage.verifyOnPage()
+    addNewStaffInvolvedPage.errorInReportRadio().click()
+    addNewStaffInvolvedPage.additionalInfo().type('Added by coordinator in test')
+    addNewStaffInvolvedPage.saveAndContinue().click()
+
+    ViewInvolvedStaffPage.verifyOnPage()
+  })
+
+  it('can not add involved staff involved, if they do not exist', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
+
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeStaffInvolvedLink().click()
+
+    const viewInvolvedStaffPage = ViewInvolvedStaffPage.verifyOnPage()
+    viewInvolvedStaffPage.addSomeoneButton().click()
+
+    const staffInvolvedSearchPage = StaffInvolvedSearchPage.verifyOnPage()
+    staffInvolvedSearchPage.username().type('UNKNOWN_USER')
+    staffInvolvedSearchPage.searchButton().click()
+
+    AddInvolvedStaffInvolvedSearchNoResultsPage.verifyOnPage()
   })
 })
