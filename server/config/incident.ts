@@ -10,7 +10,6 @@ export const paths = {
   incidentDetails: bookingId => `/report/${bookingId}/incident-details`,
   staffInvolved: bookingId => `/report/${bookingId}/staff-involved`,
   addInvolvedStaff: reportId => `/coordinator/report/${reportId}/add-staff`,
-  addInvolvedStaffResult: (reportId, result) => `/coordinator/report/${reportId}/add-staff/result/${result}`,
   staffMemberName: bookingId => `/report/${bookingId}/staff-member-name`,
   staffNotFound: bookingId => `/report/${bookingId}/staff-member-not-found`,
   selectStaffMember: bookingId => `/report/${bookingId}/select-staff-member`,
