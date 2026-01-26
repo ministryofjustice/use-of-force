@@ -41,36 +41,48 @@
 
   </div>
 
-  {% if data.displaySuccessBanner == true %}
-    <!-- Display success banner if edit happens -->
-    {% set alertHtml %}
-    <p class="govuk-body">
-     You have changed {{data.reportSectionText}} for this incident. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
-    </p>
-    {% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+    {% if data.displaySuccessBanner == true %}
+      <!-- Display success banner if edit happens -->
+      {% set alertHtml %}
+      <p class="govuk-body">
+      You have changed {{data.reportSectionText}} for this incident. You can see your changes in the <a class="govuk-link" href="/{{data.incidentId}}/view-incident?tab=edit-history" data-qa="success-banner-edit-history-link">edit history</a> tab below.
+      </p>
+      {% endset %}
 
 
-    {{ mojAlert({
-      variant: "success",
-      title: "Success",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: alertHtml,
-      attributes: {'data-qa':'success-banner'}
-    }) }}
-  {% endif %}
+      {{ mojAlert({
+        variant: "success",
+        title: "Success",
+        showTitleAsHeading: true,
+        dismissible: false,
+        html: alertHtml,
+        attributes: {'data-qa':'success-banner'}
+      }) }}
+    {% endif %}
 
-{% if data.isCoordinator and data.reportEditOrDeletePermitted == false %}
-  {{ mojAlert({
-    variant: "information",
-    title: "You cannot edit this report",
-    showTitleAsHeading: true,
-    dismissible: false,
-    classes: 'govuk-!-display-none-print',
-    html:'Reports are editable for ' + data.editabilityPeriod + ' weeks from their incident date. If you think there is a  need to edit this report after ' + data.editabilityPeriod + ' weeks, contact the Use of Force service desk.'
-  }) }}
- {% endif %}
+    {% if data.isCoordinator and data.reportEditOrDeletePermitted == false %}
+      {% set html %}
+        <p class="govuk-body">
+          Reports are editable for {{ data.editabilityPeriod }} weeks from their incident date. There is no further action required.
+          <br>
+          <a href="/not-completed-incidents" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>
+        </p>
+      {% endset %}
 
+      {{ mojAlert({
+        variant: "information",
+        title: "You cannot edit this report",
+        showTitleAsHeading: true,
+        dismissible: false,
+        classes: 'govuk-!-margin-bottom-0 govuk-!-display-none-print',
+        html: html
+      }) }}
+    {% endif %}
+    </div>
+  </div>
   {{ super() }}
 {% endblock %}
 
