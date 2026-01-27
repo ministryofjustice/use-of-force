@@ -41,7 +41,9 @@ const getReport = async reportId => {
 }
 
 const seedReports = async reports => Promise.all(reports.map(report => seedReport(report)))
-
+const incidentDateString = new Date()
+const createdDateString = moment().add(10, 'minutes')
+const submitDateString = moment().add(1, 'hour')
 const seedReport = ({
   status,
   username = 'TEST_USER',
@@ -51,8 +53,8 @@ const seedReport = ({
   payload = expectedPayload,
   involvedStaff = [],
   agencyId = 'MDI',
-  incidentDate = moment('2019-09-10 09:57:40.000').toDate(),
-  submittedDate = moment('2019-09-10 10:30:43.122').toDate(),
+  incidentDate = moment(incidentDateString).toDate(),
+  submittedDate = moment(submitDateString).toDate(),
   overdueDate = moment(submittedDate).add(3, 'd').toDate(),
   sequenceNumber = 0,
 }) => {
@@ -68,7 +70,7 @@ const seedReport = ({
         payload,
         username,
         bookingId,
-        '2019-09-10 09:57:43.122',
+        createdDateString,
         status.value,
         submitDate,
         offenderNumber,
