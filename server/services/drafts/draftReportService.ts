@@ -1,4 +1,6 @@
 import moment, { Moment } from 'moment'
+import { addWeeks, endOfDay, isWithinInterval, startOfDay, subDays } from 'date-fns'
+import config from '../../config'
 import type { DraftReportClient } from '../../data'
 import type SubmitDraftReportService from './submitDraftReportService'
 import type { FoundUserResult, LoggedInUser } from '../../types/uof'
@@ -35,6 +37,22 @@ export default class DraftReportService {
     private readonly locationService: LocationService,
     private readonly authService: AuthService
   ) {}
+
+  public isIncidentDateWithinSubmissionWindow(incidentDate: Date, today = new Date()): boolean {
+    if (!incidentDate) {
+      return true
+    }
+    const incidentStartDate = startOfDay(new Date(incidentDate))
+    const todayEnd = endOfDay(today)
+
+    const submissionWindowWeeks = config.submittedReportEditPeriodWeeks
+    const submissionWindowEndDate = endOfDay(subDays(addWeeks(incidentStartDate, submissionWindowWeeks), 1))
+
+    return isWithinInterval(todayEnd, {
+      start: incidentStartDate,
+      end: submissionWindowEndDate,
+    })
+  }
 
   public getCurrentDraft(userId: string, bookingId: number): Promise<DraftReport | NoDraftReport> {
     return this.draftReportClient.get(userId, bookingId)

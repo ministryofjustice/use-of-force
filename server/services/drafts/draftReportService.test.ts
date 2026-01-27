@@ -1,3 +1,4 @@
+import { addWeeks, addDays, subDays, startOfDay, endOfDay } from 'date-fns'
 import moment from 'moment'
 import { DraftReportClient } from '../../data'
 import type { LoggedInUser, FoundUserResult } from '../../types/uof'
@@ -362,5 +363,57 @@ describe('getPotentialDuplicates', () => {
         reporter: 'Harry',
       },
     ])
+  })
+})
+
+describe('isIncidentDateWithinSubmissionWindow', () => {
+  test('returns true when incidentDate is undefined', () => {
+    const today = new Date()
+
+    const result = service.isIncidentDateWithinSubmissionWindow(undefined, today)
+
+    expect(result).toBe(true)
+  })
+
+  test('returns true when today is the incident date', () => {
+    const incidentDate = new Date()
+    const today = new Date()
+
+    const result = service.isIncidentDateWithinSubmissionWindow(incidentDate, today)
+
+    expect(result).toBe(true)
+  })
+
+  test('returns true when today is just inside the 13-week submission window', () => {
+    const incidentDate = new Date()
+    const incidentStart = startOfDay(incidentDate)
+
+    const justInsideWindow = endOfDay(subDays(addWeeks(incidentStart, 13), 2))
+
+    const result = service.isIncidentDateWithinSubmissionWindow(incidentDate, justInsideWindow)
+
+    expect(result).toBe(true)
+  })
+
+  test('returns true on the last valid day of the submission window', () => {
+    const incidentDate = new Date()
+    const incidentStart = startOfDay(incidentDate)
+
+    const lastAllowedDay = endOfDay(subDays(addWeeks(incidentStart, 13), 1))
+
+    const result = service.isIncidentDateWithinSubmissionWindow(incidentDate, lastAllowedDay)
+
+    expect(result).toBe(true)
+  })
+
+  test('returns false when today is just outside the submission window', () => {
+    const incidentDate = new Date()
+    const incidentStart = startOfDay(incidentDate)
+
+    const firstInvalidDay = addDays(endOfDay(subDays(addWeeks(incidentStart, 13), 1)), 1)
+
+    const result = service.isIncidentDateWithinSubmissionWindow(incidentDate, firstInvalidDay)
+
+    expect(result).toBe(false)
   })
 })
