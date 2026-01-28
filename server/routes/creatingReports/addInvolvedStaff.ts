@@ -29,6 +29,12 @@ export default class AddInvolvedStaffRoutes {
     const token = await this.authService.getSystemClientToken(req.user.username)
     const staff = await this.draftReportService.getInvolvedStaffWithPrisons(token, req.user.username, Number(bookingId))
     const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), req.user.username)
+    const { incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+    let submissionAllowed = true
+
+    if (incidentDate) {
+      submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+    }
 
     const complete = await this.draftReportService.isDraftComplete(req.user.username, Number(bookingId))
     return res.render('formPages/addingStaff/staff-involved', {
@@ -36,6 +42,7 @@ export default class AddInvolvedStaffRoutes {
       errors,
       editMode: complete,
       data: { staff, bookingId, offenderDetail },
+      preventReportSubmission: !submissionAllowed,
     })
   }
 

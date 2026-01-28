@@ -44,11 +44,18 @@ export default class CreateReport {
       const { form, isComplete } = await this.loadForm(req)
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
+      const { incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+      let submissionAllowed = true
+
+      if (incidentDate) {
+        submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+      }
       res.render(`formPages/incident/${formName}`, {
         data: { offenderDetail, bookingId: bookingIdNumber, ...pageData, types },
         formName,
         errors,
         editMode: isComplete,
+        preventReportSubmission: !submissionAllowed,
       })
     }
   }

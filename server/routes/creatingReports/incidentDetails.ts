@@ -78,6 +78,12 @@ export default class IncidentDetailsRoutes {
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
+    let submissionAllowed = true
+
+    if (incidentDate) {
+      submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+    }
+
     const data = {
       bookingId,
       ...pageData,
@@ -95,6 +101,7 @@ export default class IncidentDetailsRoutes {
       formName,
       errors: req.flash('errors'),
       editMode: isComplete,
+      preventReportSubmission: !submissionAllowed,
     })
   }
 

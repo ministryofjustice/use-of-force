@@ -30,10 +30,18 @@ export default class WhyWasUoFAppliedRoutes {
 
       const selectedReasons = req.flash('clearingOutReasons')?.length ? [] : reasons
 
+      const { incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+      let submissionAllowed = true
+
+      if (incidentDate) {
+        submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+      }
+
       return res.render('formPages/incident/select-uof-reasons', {
         errors: req.flash('errors'),
         data: { offenderDetail, bookingId, UofReasons, reasons: selectedReasons },
         editMode: isComplete,
+        preventReportSubmission: !submissionAllowed,
       })
     }
   }

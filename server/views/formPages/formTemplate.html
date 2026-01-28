@@ -3,6 +3,7 @@
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% set showCancelEditButton = showCancelEditButton | default(true) %}
 {% set showSaveAndReturnButton = showSaveAndReturnButton | default(true) %}
@@ -17,6 +18,20 @@
     errorList: errors
   }) }}
 {% endif %}
+
+<div class="govuk-grid-row govuk-body">
+    <div class="width-fit govuk-!-margin-left-4">
+      {% if preventReportSubmission %}
+        {{ mojAlert({
+          variant: "information",
+          dismissible: false,
+          title: "You can not edit or submit this report. The incident date is over 13 weeks ago.",
+          showTitleAsHeading: true,
+          html: '<a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>'
+        }) }}
+      {% endif %}
+    </div>
+</div>
 
 <form method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
@@ -50,49 +65,45 @@
   </div>
   {% else %}
 
-  {% if editMode %}
+  {% if preventReportSubmission %}
+    <a href="/your-reports" class="govuk-link govuk-!-font-size-19">Return to Use of force incidents</a>
 
-    {{ govukButton({
-      text: saveButtonInEditModeText,
-      name: "submitType",
-      value: 'save-and-continue',
-      attributes: {'data-qa': 'save'}
-    }) }}
-
-    {% if showCancelEditButton %}
-
+    {% elif editMode %}
       {{ govukButton({
-        text: "Cancel",
+        text: saveButtonInEditModeText,
         name: "submitType",
-        href: '/report/' + data.bookingId + '/check-your-answers',
-        classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
-        attributes: {'data-qa': 'cancel'}
+        value: 'save-and-continue',
+        attributes: {'data-qa': 'save'}
       }) }}
 
+      {% if showCancelEditButton %}
+
+        {{ govukButton({
+          text: "Cancel",
+          name: "submitType",
+          href: '/report/' + data.bookingId + '/check-your-answers',
+          classes: "govuk-button govuk-button--secondary govuk-!-margin-left-3",
+          attributes: {'data-qa': 'cancel'}
+        }) }}
+      {% endif %}
+    {% else %}
+      {{ govukButton({
+        text: "Save and continue",
+        name: "submitType",
+        value: 'save-and-continue',
+        attributes: {'data-qa': 'save-and-continue'}
+      }) }}
+      {% if showSaveAndReturnButton %}
+        <br/>
+        {{ 
+          submitLink({
+            label: 'Save and return to report use of force',
+            qa: 'save-and-return', 
+            value: 'save-and-return'
+          }) 
+        }}
+      {% endif %}
     {% endif %}
-
-
-  {% else %}
-
-    {{ govukButton({
-      text: "Save and continue",
-      name: "submitType",
-      value: 'save-and-continue',
-      attributes: {'data-qa': 'save-and-continue'}
-    }) }}
-
-    {% if showSaveAndReturnButton %}
-      <br/>
-      {{ 
-        submitLink({
-          label: 'Save and return to report use of force',
-          qa: 'save-and-return', 
-          value: 'save-and-return'
-        }) 
-      }}
-    {% endif %}
-
-  {% endif %}
   {% endif %}
   {% block additionalActions %}
 

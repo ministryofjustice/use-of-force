@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subWeeks, subDays } from 'date-fns'
 import { paths } from '../../config/incident'
 import { StaffDetails } from '../../data/draftReportClientTypes'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
@@ -29,6 +30,10 @@ const flash = jest.fn()
 
 beforeEach(() => {
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+  const incidentDate = subDays(subWeeks(new Date(), 12), 1).toISOString()
+  draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+  draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+
   app = appWithAllRoutes({ draftReportService, authService, offenderService }, undefined, false, flash)
 })
 
@@ -54,6 +59,27 @@ describe('staff involved page', () => {
           REPORT_ID
         )
       })
+  })
+
+  test('Should allow continuation of report if incident date is less than 13 weeks ago', async () => {
+    const res = await request(app).get(paths.staffInvolved(REPORT_ID))
+    expect(res.text).toContain('Save and continue')
+    expect(res.text).toContain('Save and return')
+    expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+    expect(res.text).not.toContain('<a href="/your-reports"')
+  })
+
+  test('Should prevent continuation of report if incident date is more than 13 weeks ago', async () => {
+    const incidentDate = subDays(subWeeks(new Date(), 13), 1).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    app = appWithAllRoutes({ draftReportService, authService, offenderService }, undefined, false, flash)
+
+    const res = await request(app).get(paths.staffInvolved(REPORT_ID))
+    expect(res.text).toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+    expect(res.text).toContain('<a href="/your-reports"')
+    expect(res.text).not.toContain('Save and continue')
+    expect(res.text).not.toContain('Save and return')
   })
 
   test('POST requires an option to be selected', () => {

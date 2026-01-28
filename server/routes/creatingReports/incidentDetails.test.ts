@@ -1,5 +1,6 @@
 import request from 'supertest'
 import moment from 'moment'
+import { subWeeks, subDays } from 'date-fns'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
@@ -149,6 +150,42 @@ describe('GET /section/form', () => {
       .expect(() => {
         expect(locationService.getIncidentLocations).not.toHaveBeenCalled()
       })
+  })
+
+  test('Should allow continuation of report if incident date is less than 13 weeks ago', async () => {
+    const incidentDate = subDays(subWeeks(new Date(), 12), 1).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    app = appWithAllRoutes(
+      { draftReportService, offenderService, locationService, authService },
+      undefined,
+      false,
+      flash
+    )
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+    const res = await request(app).get('/report/1/incident-details')
+    expect(res.text).toContain('Save and continue')
+    expect(res.text).toContain('Save and return')
+    expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+    expect(res.text).not.toContain('<a href="/your-reports"')
+  })
+
+  test('Should prevent continuation of report if incident date is more than 13 weeks ago', async () => {
+    const incidentDate = subDays(subWeeks(new Date(), 13), 1).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    app = appWithAllRoutes(
+      { draftReportService, offenderService, locationService, authService },
+      undefined,
+      false,
+      flash
+    )
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    const res = await request(app).get('/report/1/incident-details')
+    expect(res.text).toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+    expect(res.text).toContain('<a href="/your-reports"')
+    expect(res.text).not.toContain('Save and continue')
+    expect(res.text).not.toContain('Save and return')
   })
 })
 

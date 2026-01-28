@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subWeeks, subDays } from 'date-fns'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import AuthService from '../../services/authService'
@@ -22,9 +23,42 @@ const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderS
 
 let app
 
-beforeEach(() => {
+const within13Weeks = () => subDays(subWeeks(new Date(), 12), 1).toISOString()
+
+const over13Weeks = () => subDays(subWeeks(new Date(), 13), 1).toISOString()
+
+const setupApp = () => {
   app = appWithAllRoutes({ draftReportService, authService, offenderService })
-  draftReportService.getCurrentDraft.mockResolvedValue({})
+}
+
+const setupIncidentDateWithinWindow = () => {
+  draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate: within13Weeks() })
+  draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+  setupApp()
+}
+
+const setupIncidentDateOutsideWindow = () => {
+  draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate: over13Weeks() })
+  draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+  setupApp()
+}
+
+const expectCanContinue = res => {
+  expect(res.text).toContain('Save and continue')
+  expect(res.text).toContain('Save and return')
+  expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+  expect(res.text).not.toContain('<a href="/your-reports"')
+}
+
+const expectCannotContinue = res => {
+  expect(res.text).toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+  expect(res.text).toContain('<a href="/your-reports"')
+  expect(res.text).not.toContain('Save and continue')
+  expect(res.text).not.toContain('Save and return')
+}
+
+beforeEach(() => {
+  setupIncidentDateWithinWindow()
 })
 
 afterEach(() => {
@@ -42,6 +76,21 @@ describe('GET /section/form', () => {
       })
   })
 })
+describe.each(['/use-of-force-details', '/relocation-and-injuries', '/evidence'])(
+  'Continuation rules for %s',
+  route => {
+    test('allows continuation when incident date is within 13 weeks', async () => {
+      const res = await request(app).get(`/report/1${route}`)
+      expectCanContinue(res)
+    })
+
+    test('prevents continuation when incident date is over 13 weeks', async () => {
+      setupIncidentDateOutsideWindow()
+      const res = await request(app).get(`/report/1${route}`)
+      expectCannotContinue(res)
+    })
+  }
+)
 
 const validUseOfForceDetailsRequest = {
   bodyWornCamera: 'YES',

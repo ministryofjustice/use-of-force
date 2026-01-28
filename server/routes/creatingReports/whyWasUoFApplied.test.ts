@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subWeeks, subDays } from 'date-fns'
 import { paths } from '../../config/incident'
 import { UofReasons } from '../../config/types'
 import { appWithAllRoutes, user } from '../__test/appSetup'
@@ -28,6 +29,9 @@ let app
 const flash = jest.fn()
 
 beforeEach(() => {
+  const incidentDate = subDays(subWeeks(new Date(), 12), 1).toISOString()
+  draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+  draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
   app = appWithAllRoutes({ draftReportService, offenderService, authService }, undefined, undefined, flash)
 })
 
@@ -60,6 +64,35 @@ describe('/why-was-uof-applied', () => {
         .expect(res => {
           expect(res.text).toContain('Select the reasons why use of force was applied')
         })
+    })
+
+    test('Should allow continuation of report if incident date is less than 13 weeks ago', async () => {
+      draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
+      flash
+        .mockReturnValueOnce('true')
+        .mockReturnValueOnce([{ href: '#reasons', text: 'Select the reasons why use of force was applied' }])
+      const res = await request(app).get(paths.whyWasUofApplied(-19))
+      expect(res.text).toContain('Save and continue')
+      expect(res.text).toContain('Save and return')
+      expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+      expect(res.text).not.toContain('<a href="/your-reports"')
+    })
+
+    test('Should prevent continuation of report if incident date is more than 13 weeks ago', async () => {
+      draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
+      flash
+        .mockReturnValueOnce('true')
+        .mockReturnValueOnce([{ href: '#reasons', text: 'Select the reasons why use of force was applied' }])
+      const incidentDate = subDays(subWeeks(new Date(), 13), 1).toISOString()
+      draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+      app = appWithAllRoutes({ draftReportService, offenderService, authService }, undefined, false, flash)
+
+      draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+      const res = await request(app).get(paths.whyWasUofApplied(-19))
+      expect(res.text).toContain('You can not edit or submit this report. The incident date is over 13 weeks ago.')
+      expect(res.text).toContain('<a href="/your-reports"')
+      expect(res.text).not.toContain('Save and continue')
+      expect(res.text).not.toContain('Save and return')
     })
   })
 
