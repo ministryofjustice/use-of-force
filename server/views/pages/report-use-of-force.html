@@ -51,7 +51,7 @@
           dismissible: false,
           title: "You can not edit or submit this report. The incident date is over 13 weeks ago.",
           showTitleAsHeading: true,
-          html: '<a href="/" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>'
+          html: '<a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>'
         }) }}
       {% endif %}
     </div>
@@ -95,7 +95,7 @@
                       {% endif %}
             <li>
               {% if preventReportSubmission %}
-                <div class="govuk-!-margin-top-8"><a href="/" class="govuk-link govuk-!-font-size-19">Return to Use of force incidents</a></div> 
+                <div class="govuk-!-margin-top-8"><a href="/your-reports" class="govuk-link govuk-!-font-size-19">Return to Use of force incidents</a></div> 
               {% else %}
               <div class="govuk-!-margin-top-8"><a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a></div> 
               {% endif %}
