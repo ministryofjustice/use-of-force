@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subDays } from 'date-fns'
 import { appWithAllRoutes } from '../__test/appSetup'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
@@ -64,5 +65,50 @@ describe('GET /task-list', () => {
       .expect(res => {
         expect(res.text).toMatch(/<a href=".*?" .*? data-qa="exit-to-dps-link">Exit to Digital Prison Services<\/a>/)
       })
+  })
+
+  it('should prevent report submission to if incident date is more than 13 weeks ago', async () => {
+    const incidentDate = subDays(new Date(), 92).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    offenderService.getOffenderDetails.mockResolvedValue({
+      displayName: 'John Doe',
+      offenderNo: 'A1234BC',
+      dateOfBirth: '1990-01-01',
+    })
+    const res = await request(app).get('/report/-35/report-use-of-force')
+    expect(res.text).toContain('You can not edit or submit this report')
+    expect(res.text).not.toContain('Check then send report')
+    expect(res.text).toContain('Return to Use of force incidents')
+  })
+
+  it('should NOT prevent report submission to if incident date exactly 13 weeks ago', async () => {
+    const incidentDate = subDays(new Date(), 91).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+    offenderService.getOffenderDetails.mockResolvedValue({
+      displayName: 'John Doe',
+      offenderNo: 'A1234BC',
+      dateOfBirth: '1990-01-01',
+    })
+    const res = await request(app).get('/report/-35/report-use-of-force')
+    expect(res.text).not.toContain('You can not edit or submit this report')
+    expect(res.text).toContain('Check then send report')
+    expect(res.text).toContain('Exit to Digital Prison Services')
+  })
+
+  it('should NOT prevent report submission to if incident date is less than 13 weeks ago', async () => {
+    const incidentDate = subDays(new Date(), 90).toISOString()
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+    offenderService.getOffenderDetails.mockResolvedValue({
+      displayName: 'John Doe',
+      offenderNo: 'A1234BC',
+      dateOfBirth: '1990-01-01',
+    })
+    const res = await request(app).get('/report/-35/report-use-of-force')
+    expect(res.text).not.toContain('You can not edit or submit this report')
+    expect(res.text).toContain('Check then send report')
+    expect(res.text).toContain('Exit to Digital Prison Services')
   })
 })

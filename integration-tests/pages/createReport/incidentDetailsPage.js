@@ -1,8 +1,14 @@
+import { getDate, getMonth, getYear } from 'date-fns'
 import page from '../page'
 import StaffInvolvedPage from './staffInvolvedPage'
 
-const incidentDetailsPage = () =>
-  page('Incident details', {
+const now = new Date()
+const day = String(getDate(now) - 1).padStart(2, '0')
+const month = String(getMonth(now) + 1).padStart(2, '0')
+const year = getYear(now)
+
+const incidentDetailsPage = () => {
+  return page('Incident details', {
     offenderName: () => cy.get('[data-qa=offender-name]'),
     location: () => cy.get('#incidentLocationId'),
     prison: () => cy.get('[data-qa=prison]'),
@@ -20,7 +26,7 @@ const incidentDetailsPage = () =>
     },
 
     fillForm() {
-      this.incidentDate.date().type('12/01/2020{esc}')
+      this.incidentDate.date().type(`${day}/${month}/${year}{esc}`)
       this.incidentDate.hour().type('09')
       this.incidentDate.minute().type('32')
       this.location().select('Asso A Wing')
@@ -68,5 +74,6 @@ const incidentDetailsPage = () =>
     clickContinueOrReturn: directionFollowingSave => cy.get(`[data-qa=${directionFollowingSave}]`).click(),
     cancelButton: () => cy.get('[data-qa="cancel"]'),
   })
+}
 
 module.exports = { verifyOnPage: incidentDetailsPage }

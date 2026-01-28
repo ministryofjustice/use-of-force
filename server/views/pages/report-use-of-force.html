@@ -1,6 +1,7 @@
 {% extends "../partials/prisonerBannerLayout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% set pageTitle = 'Report use of force' %}
 
@@ -41,23 +42,20 @@
 </p>
 {% endmacro %}
 
-{% set html %}
-<p class="govuk-notification-banner__heading">
-    Maintenance work is planned for 14:00 on Tuesday 5 November.
-    Use of force may be temporarily unavailable.
-</p>
-{% endset %}
-
 {% block content %}
-{% if featureFlagOutageBannerEnabled %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        {{ govukNotificationBanner({
-            html: html
+<div class="govuk-grid-row govuk-body">
+    <div class="width-fit govuk-!-margin-left-4">
+      {% if preventReportSubmission %}
+        {{ mojAlert({
+          variant: "information",
+          dismissible: false,
+          title: "You can not edit or submit this report. The incident date is over 13 weeks ago.",
+          showTitleAsHeading: true,
+          html: '<a href="/" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>'
         }) }}
+      {% endif %}
     </div>
-  </div>
-{% endif %}
+</div>
 <div class="govuk-grid-row govuk-body">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl mainHeading  ">{{ pageTitle }}</h1>
@@ -90,12 +88,17 @@
                       label = "Evidence",  
                       url = "/report/" + bookingId + "/evidence", 
                       value = status.evidence) }}
-
+            {% if not preventReportSubmission %}
             {{  section(name = "check-answers", 
                       label = "Check then send report",  
                       url = status.complete and "/report/" + bookingId + '/check-your-answers') }}
+                      {% endif %}
             <li>
+              {% if preventReportSubmission %}
+                <div class="govuk-!-margin-top-8"><a href="/" class="govuk-link govuk-!-font-size-19">Return to Use of force incidents</a></div> 
+              {% else %}
               <div class="govuk-!-margin-top-8"><a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a></div> 
+              {% endif %}
             </li>
           </ul>
         </li>
