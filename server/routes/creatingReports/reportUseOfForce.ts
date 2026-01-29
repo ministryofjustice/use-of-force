@@ -11,13 +11,7 @@ export default class ReportUseOfForceRoutes {
 
   public view = async (req, res) => {
     const { bookingId } = req.params
-    const { form = {}, incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
-
-    let submissionAllowed = true
-
-    if (incidentDate) {
-      submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
-    }
+    const { form = {} } = await this.draftReportService.getCurrentDraft(req.user.username, bookingId)
 
     const status = this.draftReportService.getReportStatus(form)
     const offenderDetail = await this.offenderService.getOffenderDetails(bookingId, res.locals.user.username)
@@ -26,7 +20,6 @@ export default class ReportUseOfForceRoutes {
       data: { ...res.locals.formObject, offenderDetail, displayName, offenderNo, dateOfBirth },
       bookingId: Number(req.params.bookingId),
       status,
-      preventReportSubmission: !submissionAllowed,
     })
   }
 }

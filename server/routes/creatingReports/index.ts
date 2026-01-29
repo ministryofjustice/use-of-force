@@ -1,4 +1,5 @@
 import express, { Router } from 'express'
+import incidentDateCheck from '../../middleware/incidentDateCheck'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 
 import CreateReportRoutes from './createReport'
@@ -25,7 +26,7 @@ export default function Index({
 }: Services): Router {
   const router = express.Router()
 
-  const get = (path, handler) => router.get(path, asyncMiddleware(handler))
+  const get = (path, handler, middleware?) => router.get(path, asyncMiddleware(middleware), asyncMiddleware(handler))
   const post = (path, handler) => router.post(path, asyncMiddleware(handler))
 
   const reportPath = (formName): string => `/report/:bookingId/${formName}`
@@ -36,7 +37,7 @@ export default function Index({
   post('/search-for-prisoner', searchForPrisoner.submit)
 
   const reportUseOfForce = new ReportUseOfForceRoutes(authService, draftReportService, offenderService)
-  get(reportPath('report-use-of-force'), reportUseOfForce.view)
+  get(reportPath('report-use-of-force'), reportUseOfForce.view, incidentDateCheck(draftReportService))
 
   const incidentDetails = new IncidentDetailsRoutes(draftReportService, offenderService, authService, locationService)
   get(reportPath('incident-details'), incidentDetails.view)

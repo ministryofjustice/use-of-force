@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { subDays } from 'date-fns'
+import { addDays, subDays, subWeeks } from 'date-fns'
 import { appWithAllRoutes } from '../__test/appSetup'
 import OffenderService from '../../services/offenderService'
 import AuthService from '../../services/authService'
@@ -68,7 +68,7 @@ describe('GET /task-list', () => {
   })
 
   it('should prevent report submission to if incident date is more than 13 weeks ago', async () => {
-    const incidentDate = subDays(new Date(), 92).toISOString()
+    const incidentDate = subDays(subWeeks(new Date(), 13), 1)
     draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
     draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
     offenderService.getOffenderDetails.mockResolvedValue({
@@ -83,7 +83,7 @@ describe('GET /task-list', () => {
   })
 
   it('should NOT prevent report submission to if incident date exactly 13 weeks ago', async () => {
-    const incidentDate = subDays(new Date(), 91).toISOString()
+    const incidentDate = subWeeks(new Date(), 13)
     draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
     draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
     offenderService.getOffenderDetails.mockResolvedValue({
@@ -98,7 +98,7 @@ describe('GET /task-list', () => {
   })
 
   it('should NOT prevent report submission to if incident date is less than 13 weeks ago', async () => {
-    const incidentDate = subDays(new Date(), 90).toISOString()
+    const incidentDate = addDays(subWeeks(new Date(), 13), 1)
     draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
     draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
     offenderService.getOffenderDetails.mockResolvedValue({

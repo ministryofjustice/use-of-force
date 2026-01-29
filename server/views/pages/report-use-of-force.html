@@ -45,7 +45,7 @@
 {% block content %}
 <div class="govuk-grid-row govuk-body">
     <div class="width-fit govuk-!-margin-left-4">
-      {% if preventReportSubmission %}
+      {% if renderInProgressReportAsViewOnly %}
         {{ mojAlert({
           variant: "information",
           dismissible: false,
@@ -88,13 +88,13 @@
                       label = "Evidence",  
                       url = "/report/" + bookingId + "/evidence", 
                       value = status.evidence) }}
-            {% if not preventReportSubmission %}
+            {% if not renderInProgressReportAsViewOnly %}
             {{  section(name = "check-answers", 
                       label = "Check then send report",  
                       url = status.complete and "/report/" + bookingId + '/check-your-answers') }}
                       {% endif %}
             <li>
-              {% if preventReportSubmission %}
+              {% if renderInProgressReportAsViewOnly %}
                 <div class="govuk-!-margin-top-8"><a href="/your-reports" class="govuk-link govuk-!-font-size-19">Return to Use of force incidents</a></div> 
               {% else %}
               <div class="govuk-!-margin-top-8"><a href="{{ links.exitUrl }}" class="govuk-link govuk-!-font-size-19" data-qa="exit-to-dps-link">Exit to Digital Prison Services</a></div> 
