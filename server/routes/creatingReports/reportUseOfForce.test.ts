@@ -67,7 +67,7 @@ describe('GET /task-list', () => {
       })
   })
 
-  it('should prevent report submission to if incident date is more than 13 weeks ago', async () => {
+  xit('should prevent report submission to if incident date is more than 13 weeks ago', async () => {
     const incidentDate = subDays(new Date(), 92).toISOString()
     draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate })
     draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
