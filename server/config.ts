@@ -195,5 +195,5 @@ export default {
   featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', 'false', requiredInProduction) === 'true',
   environmentName: get('ENVIRONMENT_NAME', ''),
   featureFlagRemoveCellLocationAgencies: get('FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES', '').split(','),
-  submittedReportEditPeriodWeeks: get('SUBMITTED_REPORT_EDIT_PERIOD_WEEKS', 13) as number,
+  maxWeeksFromIncidentDateToSubmitOrEditReport: get('MAX_WEEKS_TO_SUBMIT_OR_EDIT_REPORT', 13) as number,
 }

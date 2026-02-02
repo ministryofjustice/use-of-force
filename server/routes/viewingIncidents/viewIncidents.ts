@@ -66,7 +66,7 @@ export default class ViewIncidentsRoutes {
           displaySuccessBanner,
           reportSectionText,
           reportEditOrDeletePermitted,
-          editabilityPeriod: config.submittedReportEditPeriodWeeks,
+          editabilityPeriod: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
         }
         return res.render('pages/viewIncident/incident.njk', { data: dataForReport, statements: submittedStatements })
       }

@@ -286,6 +286,15 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     }
   })
 
+  njkEnv.addFilter('toNoDataEntered', value => {
+    const isEmptyArray = Array.isArray(value) && (value[0] === undefined || value.length === 0)
+    return ['\u2013', '', null, undefined, 'None', false].includes(value) || isEmptyArray ? 'No data entered' : value
+  })
+
+  njkEnv.addFilter('toNoDataEnteredIfNoOnly', value => {
+    return value === 'No' ? 'No data entered' : value
+  })
+
   njkEnv.addFilter('toYesNo', value => {
     if (value == null) {
       return '\u2013'

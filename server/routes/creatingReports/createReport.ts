@@ -6,6 +6,7 @@ import { nextPaths, paths, full, partial } from '../../config/incident'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 import OffenderService from '../../services/offenderService'
+import reportSummary from '../../services/reportSummary'
 
 enum SubmitType {
   SAVE_AND_CONTINUE = 'save-and-continue',
@@ -42,9 +43,43 @@ export default class CreateReport {
       const bookingIdNumber = Number(bookingId)
       const offenderDetail = await this.offenderService.getOffenderDetails(bookingIdNumber, res.locals.user.username)
       const { form, isComplete } = await this.loadForm(req)
+
+      let isWithinSubmissionWindow = true
+
+      const { incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+
+      if (incidentDate) {
+        isWithinSubmissionWindow = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+      }
+
+      if (!isWithinSubmissionWindow) {
+        let pageTitle
+        let pageId
+
+        switch (formName) {
+          case 'useOfForceDetails':
+            pageTitle = 'Use of force details'
+            pageId = 'useOfForceDetails'
+            break
+          case 'relocationAndInjuries':
+            pageTitle = 'Relocation and injuries'
+            pageId = 'relocationAndInjuries'
+            break
+          default:
+            pageTitle = 'Evidence'
+            pageId = 'evidence'
+        }
+
+        return res.render('pages/draftReportViewOnly/index.njk', {
+          data: reportSummary(form, offenderDetail, null, null, null, null),
+          pageTitle,
+          pageId,
+        })
+      }
+
       const pageData = firstItem(req.flash('userInput')) || form[formName]
       const errors = req.flash('errors')
-      res.render(`formPages/incident/${formName}`, {
+      return res.render(`formPages/incident/${formName}`, {
         data: { offenderDetail, bookingId: bookingIdNumber, ...pageData, types },
         formName,
         errors,

@@ -88,7 +88,7 @@ describe('Build details', () => {
       bookingId: 33,
       evidence: {
         cctv: undefined,
-        evidenceBaggedTagged: 'No',
+        evidenceBaggedTagged: false,
         photographs: undefined,
       },
       incidentDetails: {

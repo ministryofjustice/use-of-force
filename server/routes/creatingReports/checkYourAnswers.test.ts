@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subWeeks } from 'date-fns'
 import { Prison } from '../../data/prisonClientTypes'
 import LocationService from '../../services/locationService'
 import OffenderService from '../../services/offenderService'
@@ -6,6 +7,7 @@ import NomisMappingService from '../../services/nomisMappingService'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import AuthService from '../../services/authService'
+import config from '../../config'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
@@ -27,6 +29,7 @@ const locationService = new LocationService(null, null) as jest.Mocked<LocationS
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
+const submissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId = jest.fn()
 let app
 
@@ -49,6 +52,55 @@ afterEach(() => {
 })
 
 describe('GET /check-your-answers', () => {
+  it(`Should redirect to /report-use-of-force if incident date over ${submissionWindow} weeks ago`, () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      incidentDate: subWeeks(new Date(), submissionWindow + 1),
+      id: 1,
+      form: { incidentDetails: { locationId: 123456 } },
+    })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(302)
+      .expect('Location', '/report/-35/report-use-of-force')
+  })
+
+  it(`Should NOT redirect to /report-use-of-force if incident date exactly ${submissionWindow} weeks ago`, () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      incidentDate: subWeeks(new Date(), submissionWindow),
+      id: 1,
+      form: { incidentDetails: { locationId: 123456 } },
+    })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before sending the report')
+      })
+  })
+
+  it(`Should NOT redirect to /report-use-of-force if no incident date `, () => {
+    draftReportService.getReportStatus.mockReturnValue({ complete: true })
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      id: 1,
+      form: { incidentDetails: { locationId: 123456 } },
+    })
+
+    return request(app)
+      .get('/report/-35/check-your-answers')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before sending the report')
+      })
+  })
+
   it('Should get the dps location id if only the nomis location id is present', () => {
     draftReportService.getReportStatus.mockReturnValue({ complete: true })
     draftReportService.getCurrentDraft.mockResolvedValue({

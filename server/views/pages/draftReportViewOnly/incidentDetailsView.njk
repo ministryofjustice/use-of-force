@@ -1,0 +1,56 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %}
+
+<div>
+    {{reportDetailsMacros.tableRow({
+        label: 'Date of incident',  
+        'data-qa': 'incidentDate',    
+        dataValue: data.incidentDetails.incidentDate | formatDate('D MMMM YYYY')
+    })
+    }}
+    {{reportDetailsMacros.tableRow({
+        label: 'Time of incident',  
+        'data-qa': 'incidentTime',    
+        dataValue: data.incidentDetails.incidentDate | formatDate('HH:mm')
+    })
+    }}
+    {{
+    reportDetailsMacros.tableRow({
+        label: 'Prison',
+        'data-qa': 'prison',
+        dataValue: data.incidentDetails.prison.description
+    })
+    }}  
+    {{
+    reportDetailsMacros.tableRow({
+        label: 'Location',
+        'data-qa': 'location',
+        dataValue: data.incidentDetails.location
+    })
+    }}
+    {{
+    reportDetailsMacros.tableRow({
+        label: 'Was the use of force planned?',
+        'data-qa': 'incidentType',
+        dataValue: data.incidentDetails.plannedUseOfForce | toYesNo | toNoDataEntered
+    })
+    }}
+    {% if data.incidentDetails.authorisedBy %}
+    {{
+    reportDetailsMacros.tableRow({
+        label: 'Authorised by',
+        'data-qa': 'authorisedBy',
+        dataValue: data.incidentDetails.authorisedBy | toNoDataEntered
+        })
+    }}
+    {% endif %}
+    {{
+    reportDetailsMacros.tableRow({
+        label: 'Witnesses',
+        'data-qa': 'witnesses',
+        dataValue: data.incidentDetails.witnesses | toNoDataEntered,
+        type: 'itemPerLine',
+        addedClasses:addedClasses
+    })
+    }}
+</div>

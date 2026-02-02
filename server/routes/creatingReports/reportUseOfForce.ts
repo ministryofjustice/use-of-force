@@ -16,7 +16,6 @@ export default class ReportUseOfForceRoutes {
     let submissionAllowed = true
 
     if (incidentDate) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       submissionAllowed = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
     }
 
@@ -27,7 +26,7 @@ export default class ReportUseOfForceRoutes {
       data: { ...res.locals.formObject, offenderDetail, displayName, offenderNo, dateOfBirth },
       bookingId: Number(req.params.bookingId),
       status,
-      // preventReportSubmission: !submissionAllowed,
+      renderViewMode: !submissionAllowed,
     })
   }
 }

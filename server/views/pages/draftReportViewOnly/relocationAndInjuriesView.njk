@@ -1,0 +1,63 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %}
+
+  <div>
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Where was the prisoner relocated to?',
+        'data-qa': 'prisonerRelocation',
+        dataValue: data.relocationAndInjuries.prisonerRelocation | capitalize | toNoDataEntered
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was the prisoner compliant?',
+        'data-qa': 'compliancy',
+        dataValue: data.relocationAndInjuries.relocationCompliancy | toNoDataEnteredIfNoOnly
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Who completed the F213 form?',
+        'data-qa': 'f213',
+        dataValue: data.relocationAndInjuries.f213CompletedBy | title | toNoDataEntered
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Healthcare staff present',
+        'data-qa': 'healthcareStaffPresent',
+        dataValue: data.relocationAndInjuries.healthcareStaffPresent | title | toNoDataEntered
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Did the prisoner sustain any injuries at the time?',
+        'data-qa': 'prisonerInjuries',
+        dataValue: data.relocationAndInjuries.prisonerInjuries | toYesNo | toNoDataEntered
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Did the prisoner need outside hospitalisation at the time?',
+        'data-qa': 'prisonerHospitalisation',
+        dataValue: data.relocationAndInjuries.prisonerHospitalisation | toYesNo | toNoDataEntered
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Staff who needed medical attention',
+        'data-qa': 'staffMedicalAttention',
+        dataValue: data.relocationAndInjuries.staffMedicalAttention | toNoDataEntered, 
+        type: 'itemPerLine'       
+      })
+    }}
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Staff taken to hospital',
+        'data-qa': 'staffHospitalisation',
+        dataValue: data.relocationAndInjuries.staffHospitalisation | toNoDataEntered,
+        type: 'itemPerLine'
+      })
+    }}
+  </div>

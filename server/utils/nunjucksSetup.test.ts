@@ -50,27 +50,62 @@ describe('nunjucksSetup', () => {
   })
 
   describe('toYesNoIfTrueFalse', () => {
-    it('returns undefined nothing for no value', () => {
+    it('returns undefined for no value', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')()
       expect(result).toEqual(undefined)
     })
-    it('returns yes for string true', () => {
+    it('returns Yes for string true', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')('true')
       expect(result).toEqual('Yes')
     })
 
-    it('returns yes for boolean true', () => {
+    it('returns Yes for boolean true', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')(true)
       expect(result).toEqual('Yes')
     })
-    it('returnss no for string false', () => {
+    it('returns No for string false', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')('false')
       expect(result).toEqual('No')
     })
 
-    it('returns no for boolean false', () => {
+    it('returns No for boolean false', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')(false)
       expect(result).toEqual('No')
+    })
+  })
+
+  describe('toNoDataEntered', () => {
+    const toNoDataEntered = njk.getFilter('toNoDataEntered')
+    it('returns "No data entered" for empty string, null, undefined, "None", false, or en dash', () => {
+      expect(toNoDataEntered('')).toBe('No data entered')
+      expect(toNoDataEntered(null)).toBe('No data entered')
+      expect(toNoDataEntered(undefined)).toBe('No data entered')
+      expect(toNoDataEntered('None')).toBe('No data entered')
+      expect(toNoDataEntered(false)).toBe('No data entered')
+      expect(toNoDataEntered('\u2013')).toBe('No data entered')
+    })
+    it('returns "No data entered" for empty array or array with undefined as first element', () => {
+      expect(toNoDataEntered([])).toBe('No data entered')
+      expect(toNoDataEntered([undefined])).toBe('No data entered')
+    })
+    it('returns value for non-empty, non-matching values', () => {
+      expect(toNoDataEntered('Some value')).toBe('Some value')
+      expect(toNoDataEntered([1, 2])).toEqual([1, 2])
+      expect(toNoDataEntered(123)).toBe(123)
+      expect(toNoDataEntered(true)).toBe(true)
+    })
+  })
+
+  describe('toNoDataEnteredIfNoOnly', () => {
+    const toNoDataEnteredIfNoOnly = njk.getFilter('toNoDataEnteredIfNoOnly')
+    it('returns "No data entered" for "No"', () => {
+      expect(toNoDataEnteredIfNoOnly('No')).toBe('No data entered')
+    })
+    it('returns value for anything except "No"', () => {
+      expect(toNoDataEnteredIfNoOnly('Yes')).toBe('Yes')
+      expect(toNoDataEnteredIfNoOnly('Maybe')).toBe('Maybe')
+      expect(toNoDataEnteredIfNoOnly('')).toBe('')
+      expect(toNoDataEnteredIfNoOnly(null)).toBe(null)
     })
   })
 })

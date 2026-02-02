@@ -1,5 +1,6 @@
 import request from 'supertest'
 import moment from 'moment'
+import { subDays, subWeeks } from 'date-fns'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
@@ -7,6 +8,7 @@ import OffenderService from '../../services/offenderService'
 import LocationService from '../../services/locationService'
 import type { Prison } from '../../data/prisonClientTypes'
 import AuthService from '../../services/authService'
+import config from '../../config'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/offenderService')
@@ -29,7 +31,7 @@ const authService = new AuthService(null) as jest.Mocked<AuthService>
 let app
 const flash = jest.fn()
 const incidentLocationId = 'incident-location-id'
-
+const submissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 beforeEach(() => {
   app = appWithAllRoutes({ draftReportService, offenderService, locationService, authService }, undefined, false, flash)
   draftReportService.getCurrentDraft.mockResolvedValue({})
@@ -42,6 +44,10 @@ beforeEach(() => {
   flash.mockReturnValue([])
   draftReportService.getPotentialDuplicates.mockResolvedValue([])
   authService.getSystemClientToken.mockResolvedValue('user1-system-token')
+  locationService.getPrisonById.mockResolvedValue({
+    agencyId: 'LEI',
+    description: 'Leeds prison',
+  } as Prison)
 })
 
 afterEach(() => {
@@ -49,11 +55,65 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
+  test(`should render 'no edit or submit' banner if incident date over ${submissionWindow} weeks ago`, () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {
+          plannedUseOfForce: false,
+          incidentLocationId: 'bfca41db-f709-4df3-8884-4cc893dba6ba',
+        },
+      },
+      incidentDate: subDays(subWeeks(new Date(), 14), 1),
+    })
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    locationService.getLocation.mockResolvedValue('Some location')
+
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(
+          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`
+        )
+        expect(res.text).not.toContain('Save and return to report use of force')
+        expect(res.text).toContain('Return to use of force incidents')
+        expect(res.text).toContain('href="/your-reports"')
+      })
+  })
+
+  test(`should NOT render 'no edit or submit' banner if incident date is within ${submissionWindow} weeks ago`, () => {
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        incidentDetails: {
+          plannedUseOfForce: false,
+          incidentLocationId: 'bfca41db-f709-4df3-8884-4cc893dba6ba',
+        },
+      },
+      incidentDate: subWeeks(new Date(), 12),
+    })
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+    locationService.getLocation.mockResolvedValue('Some location')
+
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Save and continue')
+        expect(res.text).not.toContain(
+          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`
+        )
+        expect(res.text).not.toContain('Return to use of force incidents')
+        expect(res.text).not.toContain('href="/your-reports"')
+      })
+  })
+
   test('should render Leeds prison', () => {
-    locationService.getPrisonById.mockResolvedValue({
-      agencyId: 'LEI',
-      description: 'Leeds prison',
-    } as Prison)
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
@@ -74,7 +134,8 @@ describe('GET /section/form', () => {
   })
 
   test('should render incident-details using locations for current agency if new report', () => {
-    draftReportService.getCurrentDraft.mockResolvedValue({})
+    draftReportService.getCurrentDraft.mockResolvedValue({ incidentDate: new Date().toISOString() })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
     return request(app)
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
@@ -83,6 +144,7 @@ describe('GET /section/form', () => {
         expect(locationService.getIncidentLocations).toHaveBeenCalledWith('user1-system-token', 'current-agency-id')
       })
   })
+
   test('should render saved data', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({
       form: {

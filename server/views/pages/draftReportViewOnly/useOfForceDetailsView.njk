@@ -1,0 +1,160 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %}
+
+  <div>
+    {% if data.useOfForceDetails.reasonsForUseOfForce %}
+      {{
+      reportDetailsMacros.tableRow({
+          label: 'Why was use of force applied against this prisoner?',
+          'data-qa': 'reasonsForUseOfForce',
+          dataValue: data.useOfForceDetails.reasonsForUseOfForce | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {% if data.useOfForceDetails.primaryReason %}
+      {{
+      reportDetailsMacros.tableRow({
+          label: 'What was the primary reason use of force was applied against this prisoner?',
+          'data-qa': 'primaryReason',
+          dataValue: data.useOfForceDetails.primaryReason | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was positive communication used to de-escalate the situation with this prisoner?',
+        'data-qa': 'positiveCommunication',
+        dataValue: data.useOfForceDetails.positiveCommunicationUsed | toYesNo | toNoDataEntered
+      })
+    }}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was any part of the incident captured on a body-worn camera?',
+        'data-qa': 'bodyCameras',
+        dataValue: data.useOfForceDetails.bodyCameras | capitalize | toNoDataEntered 
+      })
+    }}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Were any personal protection techniques used against this prisoner?',
+        'data-qa': 'personalProtection',
+        dataValue: data.useOfForceDetails.personalProtectionTechniques | toYesNo | toNoDataEntered
+      })
+    }}
+
+    {% if data.useOfForceDetails.batonDrawn %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was a baton drawn by anyone during this incident?',
+          'data-qa': 'batonDrawn',
+          dataValue: data.useOfForceDetails.batonDrawn | toNoDataEntered
+        })
+      }}
+    {% else %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was a baton drawn by anyone against this prisoner?',
+          'data-qa': 'batonDrawnAgainstPrisoner',
+          dataValue: data.useOfForceDetails.batonDrawnAgainstPrisoner | toNoDataEntered
+        })
+      }}
+    {% endif %}
+    
+    {% if data.useOfForceDetails.pavaDrawn %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was PAVA drawn by anyone during this incident?',
+          'data-qa': 'pavaDrawn',
+          dataValue: data.useOfForceDetails.pavaDrawn | toNoDataEntered
+        })
+      }}
+    {% else %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was PAVA drawn by anyone against this prisoner?',
+          'data-qa': 'pavaDrawnAgainstPrisoner',
+          dataValue: data.useOfForceDetails.pavaDrawnAgainstPrisoner | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {% if data.useOfForceDetails.taserDrawn != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: ' Was a Taser drawn by anyone against this prisoner? ',
+          'data-qa': 'taserDrawn',
+          dataValue: data.useOfForceDetails.taserDrawn | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {% if data.useOfForceDetails.bittenByPrisonDog != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was the prisoner bitten by a prison dog?',
+          'data-qa': 'bittenByPrisonDog',
+          dataValue: data.useOfForceDetails.bittenByPrisonDog | toYesNo | toNoDataEntered
+        })
+      }}
+    {% endif %}
+    
+    {% if data.useOfForceDetails.weaponsObserved != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Were any weapons observed?',
+          'data-qa': 'weaponTypes',
+          dataValue: data.useOfForceDetails.weaponsObserved | capitalize |toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Was a guiding hold used against this prisoner?',
+        'data-qa': 'guidingHold',
+        dataValue: data.useOfForceDetails.guidingHoldUsed | capitalize | toNoDataEntered
+      })
+    }}
+
+    {% if data.useOfForceDetails.escortingHoldUsed != undefined  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Was an escorting hold used against this prisoner?',
+          'data-qa': 'escortingHold',
+          dataValue: data.useOfForceDetails.escortingHoldUsed | toYesNo | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Which control and restraint positions were used against this prisoner?',
+        'data-qa': 'restraintUsed',
+        dataValue: data.useOfForceDetails.controlAndRestraintUsed | toArray | toNoDataEntered,
+        type: 'parentChild'
+      })
+    }}
+    
+    {# painInducingTechniques was not a question in earlier iterations of the app hence the 'if' to accommodate backwards compatibility #}
+    {% if data.useOfForceDetails.painInducingTechniques != undefined and not details.painInducingTechniquesUsed  %}
+      {{
+        reportDetailsMacros.tableRow({
+          label: 'Which pain inducing techniques were used against this prisoner?',
+          'data-qa': 'painInducingTechniques',
+          dataValue: data.useOfForceDetails.painInducingTechniques | capitalize | toNoDataEntered
+        })
+      }}
+    {% endif %}
+
+    {{
+      reportDetailsMacros.tableRow({
+        label: 'Were handcuffs applied against this prisoner?',
+        'data-qa': 'handcuffsApplied',
+        dataValue: data.useOfForceDetails.handcuffsApplied  | toYesNo | toNoDataEntered
+      })
+    }}
+  </div>

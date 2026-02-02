@@ -455,7 +455,9 @@ export default class ReportEditService {
     const endOfToday = endOfDay(today)
 
     // Calculate start of edit period in UTC
-    const editPeriodEnd = endOfDay(subDays(addWeeks(editPeriodStart, config.submittedReportEditPeriodWeeks), 1))
+    const editPeriodEnd = endOfDay(
+      subDays(addWeeks(editPeriodStart, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+    )
 
     return isWithinInterval(endOfToday, { start: editPeriodStart, end: editPeriodEnd })
   }

@@ -551,7 +551,7 @@
         reportDetailsMacros.tableRow({
           label: 'Evidence bagged and tagged',
           'data-qa': 'evidenceBaggedTagged',
-          dataValue: data.evidence.evidenceBaggedTagged,
+          dataValue: data.evidence.evidenceBaggedTagged | toYesNoIfTrueFalse,
           type: 'itemPerLine',
           print: print
         })

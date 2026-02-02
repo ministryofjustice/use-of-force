@@ -5,6 +5,7 @@ import { nextPaths, paths } from '../../config/incident'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
 import AuthService from '../../services/authService'
 import OffenderService from '../../services/offenderService'
+import reportSummary from '../../services/reportSummary'
 
 const SubmitType = {
   SAVE_AND_CONTINUE: 'save-and-continue',
@@ -31,6 +32,21 @@ export default class AddInvolvedStaffRoutes {
     const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), req.user.username)
 
     const complete = await this.draftReportService.isDraftComplete(req.user.username, Number(bookingId))
+    let isWithinSubmissionWindow = true
+
+    const { form, incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+
+    if (incidentDate) {
+      isWithinSubmissionWindow = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+    }
+
+    if (!isWithinSubmissionWindow) {
+      return res.render('pages/draftReportViewOnly/index.njk', {
+        data: reportSummary(form, offenderDetail, null, null, staff, incidentDate),
+        pageTitle: 'Staff involved',
+        pageId: 'staffInvolved',
+      })
+    }
     return res.render('formPages/addingStaff/staff-involved', {
       staff,
       errors,
