@@ -315,7 +315,6 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
 
   njkEnv.addFilter('toNoDataEnteredOrNoneOrValue', value => {
     if (value === undefined || value === null || value === '') return 'No data entered'
-    if (value === 'None') return 'None'
     return value
   })
 
