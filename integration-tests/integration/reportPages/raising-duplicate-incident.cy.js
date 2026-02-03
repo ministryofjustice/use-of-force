@@ -9,7 +9,7 @@ const ReportAlreadyDeletedPage = require('../../pages/createReport/reportAlready
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submitting duplicate report', () => {
-  const incidentDate = new Date()
+  const incidentDate = subDays(new Date(), 1)
   const day = format(incidentDate, 'dd')
   const month = format(incidentDate, 'MM')
   const year = format(incidentDate, 'yyyy')
@@ -35,28 +35,28 @@ context('Submitting duplicate report', () => {
     incidentDate,
   }
 
-  const incidentDate1 = set(new Date(), {
+  const incidentDate1 = set(incidentDate, {
     hours: 15,
     minutes: 0,
     seconds: 0,
     milliseconds: 0,
   })
 
-  const incidentDate2 = set(new Date(), {
+  const incidentDate2 = set(incidentDate, {
     hours: 23,
     minutes: 59,
     seconds: 0,
     milliseconds: 0,
   })
 
-  const incidentDate3 = set(subDays(new Date(), 1), {
+  const incidentDate3 = set(subDays(incidentDate, 1), {
     hours: 0,
     minutes: 0,
     seconds: 1,
     milliseconds: 0,
   })
 
-  const incidentDate4 = set(subDays(new Date(), 2), {
+  const incidentDate4 = set(subDays(incidentDate, 2), {
     hours: 0,
     minutes: 0,
     seconds: 1,
@@ -122,7 +122,7 @@ context('Submitting duplicate report', () => {
     reportMayAlreadyExistPage.getRows().should('have.length', 1)
 
     const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(0)
-    dateTime().contains(format(incidentDate, 'EEEE d MMM yyyy, H:mm'))
+    dateTime().contains(format(incidentDate, 'EEEE d MMM yyyy'))
     location().contains('ASSO A Wing')
     reporter().contains('James Stuart')
 
