@@ -121,4 +121,22 @@ describe('nunjucksSetup', () => {
       expect(toNoDataEnteredIfNoOnly(null)).toBe(null)
     })
   })
+
+  describe('toNoDataEnteredOrNoneOrValue', () => {
+    const toNoDataEnteredOrNoneOrValue = njk.getFilter('toNoDataEnteredOrNoneOrValue')
+    it('returns "No data entered" for undefined, null, or empty string', () => {
+      expect(toNoDataEnteredOrNoneOrValue(undefined)).toBe('No data entered')
+      expect(toNoDataEnteredOrNoneOrValue(null)).toBe('No data entered')
+      expect(toNoDataEnteredOrNoneOrValue('')).toBe('No data entered')
+    })
+    it('returns "None" for string "None"', () => {
+      expect(toNoDataEnteredOrNoneOrValue('None')).toBe('None')
+    })
+    it('returns value for any other input', () => {
+      expect(toNoDataEnteredOrNoneOrValue('Some value')).toBe('Some value')
+      expect(toNoDataEnteredOrNoneOrValue(0)).toBe(0)
+      expect(toNoDataEnteredOrNoneOrValue(false)).toBe(false)
+      expect(toNoDataEnteredOrNoneOrValue([1, 2])).toEqual([1, 2])
+    })
+  })
 })
