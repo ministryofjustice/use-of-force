@@ -6,7 +6,7 @@
     reportDetailsMacros.tableRow({
       label: 'Evidence bagged and tagged',
       'data-qa': 'evidenceBaggedTagged',
-      dataValue: data.evidence.evidenceBaggedTagged | toNoDataEntered,
+      dataValue: data.evidence.evidenceBaggedTagged | toNoDataEnteredIfUndefined | toYesNoIfTrueFalse,
       type: 'itemPerLine'
     })
   }}

@@ -308,6 +308,11 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return value
   })
 
+  njkEnv.addFilter('toNoDataEnteredIfUndefined', value => {
+    if (value === undefined) return 'No data entered'
+    return value
+  })
+
   njkEnv.addFilter('MD5', value => (value ? nodeCrypto.createHash('md5').update(value).digest('hex') : value))
 
   njkEnv.addFilter('isActive', (types: LabelledValue[]) => {

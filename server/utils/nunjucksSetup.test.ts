@@ -49,6 +49,19 @@ describe('nunjucksSetup', () => {
     })
   })
 
+  describe('toNoDataEnteredIfUndefined', () => {
+    const toNoDataEnteredIfUndefined = njk.getFilter('toNoDataEnteredIfUndefined')
+    it('returns "No data entered" for undefined', () => {
+      expect(toNoDataEnteredIfUndefined(undefined)).toBe('No data entered')
+    })
+    it('returns value for defined input', () => {
+      expect(toNoDataEnteredIfUndefined('Some value')).toBe('Some value')
+      expect(toNoDataEnteredIfUndefined(0)).toBe(0)
+      expect(toNoDataEnteredIfUndefined(false)).toBe(false)
+      expect(toNoDataEnteredIfUndefined(null)).toBe(null)
+    })
+  })
+
   describe('toYesNoIfTrueFalse', () => {
     it('returns undefined for no value', () => {
       const result = njk.getFilter('toYesNoIfTrueFalse')()
