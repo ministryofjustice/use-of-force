@@ -177,4 +177,33 @@ describe('reportSummary', () => {
       expect(result.relocationAndInjuries.relocationCompliancy).toEqual('No - We had to put them on a BIG boat')
     })
   })
+
+  describe('baggedAndTaggedEvidence', () => {
+    it('returns undefined when evidenceYesNo is undefined', () => {
+      form.evidence.baggedEvidence = undefined
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.painInducingTechniques).toEqual(undefined)
+      expect(result.evidence.evidenceBaggedTagged).toBe(undefined)
+    })
+
+    it('returns false when evidenceYesNo is false', () => {
+      form.evidence.baggedEvidence = false
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.useOfForceDetails.painInducingTechniques).toEqual(undefined)
+      expect(result.evidence.evidenceBaggedTagged).toBe(false)
+    })
+
+    it('maps tagsAndEvidence to [evidenceTagReference, description] when evidenceYesNo is true', () => {
+      form.evidence.baggedEvidence = true
+      form.evidence.evidenceTagAndDescription = [
+        { evidenceTagReference: 'TAG1', description: 'Evidence one' },
+        { evidenceTagReference: 'TAG2', description: 'Evidence two' },
+      ]
+      const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
+      expect(result.evidence.evidenceBaggedTagged).toEqual([
+        ['TAG1', 'Evidence one'],
+        ['TAG2', 'Evidence two'],
+      ])
+    })
+  })
 })

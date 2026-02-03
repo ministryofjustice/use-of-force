@@ -231,7 +231,11 @@ const staffTakenToHospital = (staffMembers = []) => {
   return hospitalisedStaff.map(staff => [properCaseFullName(staff.name)])
 }
 
-const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo = false) => {
+const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo) => {
+  if (evidenceYesNo === undefined) {
+    return undefined
+  }
+
   if (evidenceYesNo === false) {
     return false
   }
