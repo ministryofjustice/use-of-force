@@ -1,0 +1,28 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %}
+
+<div>
+  {{
+    reportDetailsMacros.tableRow({
+      label: 'Evidence bagged and tagged',
+      'data-qa': 'evidenceBaggedTagged',
+      dataValue: data.evidence.evidenceBaggedTagged | toNoDataEntered,
+      type: 'itemPerLine'
+    })
+  }}
+  {{
+    reportDetailsMacros.tableRow({
+      label: 'Were any photographs taken?',
+      'data-qa': 'photographs',
+      dataValue: data.evidence.photographs | toYesNo | toNoDataEntered
+    })
+  }}
+  {{
+    reportDetailsMacros.tableRow({
+      label: 'Was any part of the incident captured on CCTV?',
+      'data-qa': 'cctv',
+      dataValue: data.evidence.cctv | capitalize | toNoDataEntered,
+      addedClasses: addedClasses
+    })
+  }}
+</div>

@@ -32,7 +32,7 @@ generic-service:
     NODE_ENV: production
     PRODUCT_ID: 'DPS045'
     WEB_SESSION_TIMEOUT_IN_MINUTES: 120
-    SUBMITTED_REPORT_EDIT_PERIOD_WEEKS: 13
+    MAX_WEEKS_TO_SUBMIT_OR_EDIT_REPORT: 13
 
   namespace_secrets:
     dps-rds-instance-output:

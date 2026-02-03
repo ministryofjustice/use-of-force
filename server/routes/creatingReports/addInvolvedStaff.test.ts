@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { subWeeks, subDays } from 'date-fns'
 import { paths } from '../../config/incident'
 import { StaffDetails } from '../../data/draftReportClientTypes'
 import DraftReportService, { AddStaffResult } from '../../services/drafts/draftReportService'
@@ -37,10 +38,12 @@ afterEach(() => {
 })
 
 describe('staff involved page', () => {
-  test('GET should display content and current staff', () => {
+  test('GET should display content and current staff when in read-write mode', () => {
     draftReportService.getInvolvedStaffWithPrisons.mockResolvedValue([
       { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
     ])
+    draftReportService.getCurrentDraft.mockResolvedValue({ form: {}, incidentDate: new Date().toISOString() })
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
     return request(app)
       .get(paths.staffInvolved(REPORT_ID))
       .expect('Content-Type', /html/)
@@ -48,6 +51,49 @@ describe('staff involved page', () => {
         expect(res.text).toContain('Staff involved in use of force')
         expect(res.text).toContain('User bob')
         expect(res.text).toContain('bob@justice.gov.uk')
+        expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith(
+          'user1-system-token',
+          'user1',
+          REPORT_ID
+        )
+        expect(res.text).toContain('Save')
+        expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago')
+        expect(res.text).not.toContain('href="/your-reports"')
+      })
+  })
+
+  test('GET should display content and current staff when in read-only mode', () => {
+    draftReportService.getInvolvedStaffWithPrisons.mockResolvedValue([
+      { name: 'User bob', email: 'bob@justice.gov.uk' } as StaffDetails,
+    ])
+
+    offenderService.getOffenderDetails.mockResolvedValue({
+      firstName: 'John',
+      lastName: 'Smith',
+      dateOfBirth: '1990-01-01',
+      bookingId: REPORT_ID,
+      agencyId: 'MDI',
+      agencyDescription: 'Moorland (HMP & YOI)',
+    })
+
+    draftReportService.isDraftComplete.mockResolvedValue(true)
+
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {},
+      incidentDate: subDays(subWeeks(new Date(), 14), 1),
+    })
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+
+    return request(app)
+      .get(paths.staffInvolved(REPORT_ID))
+      .expect('Content-Type', /html/)
+      .expect((res: request.Response) => {
+        expect(res.text).toContain('Staff involved')
+        expect(res.text).toContain('You can not edit or submit this report. The incident date is over 13 weeks ago')
+        expect(res.text).toContain('User bob')
+        expect(res.text).toContain('Return to use of force incidents')
+        expect(res.text).toContain('href="/your-reports"')
         expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith(
           'user1-system-token',
           'user1',

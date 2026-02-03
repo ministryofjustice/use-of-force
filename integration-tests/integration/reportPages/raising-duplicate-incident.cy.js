@@ -1,4 +1,4 @@
-const moment = require('moment')
+import { format, set, subDays } from 'date-fns'
 
 const { offender } = require('../../mockApis/data')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
@@ -9,6 +9,11 @@ const ReportAlreadyDeletedPage = require('../../pages/createReport/reportAlready
 const { ReportStatus } = require('../../../server/config/types')
 
 context('Submitting duplicate report', () => {
+  const incidentDate = new Date()
+  const day = format(incidentDate, 'dd')
+  const month = format(incidentDate, 'MM')
+  const year = format(incidentDate, 'yyyy')
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubComponents')
@@ -27,13 +32,41 @@ context('Submitting duplicate report', () => {
     bookingId: 1001,
     offenderNumber: 'A1234AC',
     sequenceNumber: 1,
-    incidentDate: moment('2020-01-12 09:57:40.000').toDate(),
+    incidentDate,
   }
+
+  const incidentDate1 = set(new Date(), {
+    hours: 15,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  })
+
+  const incidentDate2 = set(new Date(), {
+    hours: 23,
+    minutes: 59,
+    seconds: 0,
+    milliseconds: 0,
+  })
+
+  const incidentDate3 = set(subDays(new Date(), 1), {
+    hours: 0,
+    minutes: 0,
+    seconds: 1,
+    milliseconds: 0,
+  })
+
+  const incidentDate4 = set(subDays(new Date(), 2), {
+    hours: 0,
+    minutes: 0,
+    seconds: 1,
+    milliseconds: 0,
+  })
 
   const createNewReport = directionFollowingSave => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
-    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.date().type(`${day}/${month}/${year}{esc}`)
     incidentDetailsPage.incidentDate.hour().type('09')
     incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.offenderName().contains('Norman Smith')
@@ -49,13 +82,13 @@ context('Submitting duplicate report', () => {
   it('Only shows duplicates for the specific offender on the same day', () => {
     cy.task('seedReports', [
       // Day before
-      { ...duplicateBooking, sequenceNumber: 1, incidentDate: moment('2020-01-11 23:59:59.000').toDate() },
+      { ...duplicateBooking, sequenceNumber: 1, incidentDate: format(incidentDate1, 'EEEE dd MMM yyyy, HH:mm') },
       // Same day, different occurrence
-      { ...duplicateBooking, sequenceNumber: 2, incidentDate: moment('2020-01-12 13:20:40.000').toDate() },
+      { ...duplicateBooking, sequenceNumber: 2, incidentDate: format(incidentDate2, 'EEEE dd MMM yyyy, HH:mm') },
       // Same day
-      { ...duplicateBooking, sequenceNumber: 3 },
+      { ...duplicateBooking, sequenceNumber: 3, incidentDate: format(incidentDate3, 'EEEE dd MMM yyyy, HH:mm') },
       // Next day
-      { ...duplicateBooking, sequenceNumber: 4, incidentDate: moment('2020-01-13 00:00:01.000').toDate() },
+      { ...duplicateBooking, sequenceNumber: 4, incidentDate: format(incidentDate4, 'EEEE dd MMM yyyy, HH:mm') },
       // Same day, different offender
       { ...duplicateBooking, sequenceNumber: 5, offenderNumber: 'A1234AD', bookingId: 1002 },
     ])
@@ -67,14 +100,14 @@ context('Submitting duplicate report', () => {
 
     {
       const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(0)
-      dateTime().contains('Sunday 12 Jan 2020, 09:57')
+      dateTime().contains(format(incidentDate1, 'EEEE d MMM yyyy, H:mm'))
       location().contains('ASSO A Wing')
       reporter().contains('James Stuart')
     }
 
     {
       const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(1)
-      dateTime().contains('Sunday 12 Jan 2020, 13:20')
+      dateTime().contains(format(incidentDate2, 'EEEE d MMM yyyy, H:mm'))
       location().contains('ASSO A Wing')
       reporter().contains('James Stuart')
     }
@@ -89,7 +122,7 @@ context('Submitting duplicate report', () => {
     reportMayAlreadyExistPage.getRows().should('have.length', 1)
 
     const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(0)
-    dateTime().contains('Sunday 12 Jan 2020')
+    dateTime().contains(format(incidentDate, 'EEEE d MMM yyyy, H:mm'))
     location().contains('ASSO A Wing')
     reporter().contains('James Stuart')
 

@@ -1,10 +1,23 @@
-const moment = require('moment')
+import { format, parse, subDays } from 'date-fns'
 
 const { offender } = require('../../mockApis/data')
 const ReportUseOfForcePage = require('../../pages/createReport/reportUseOfForcePage')
 const IncidentDetailsPage = require('../../pages/createReport/incidentDetailsPage')
 
 context('Submitting incident details page', () => {
+  const now = new Date()
+
+  // Incident date is yesterday
+  const incidentDate = subDays(now, 1)
+
+  // UI input values
+  const day = format(incidentDate, 'dd')
+  const month = format(incidentDate, 'MM')
+  const year = format(incidentDate, 'yyyy')
+
+  // Helper to build Date objects (no moment)
+  const makeDateTime = (date, time) => parse(`${date} ${time}`, 'yyyy-MM-dd HH:mm:ss.SSS', new Date())
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubComponents')
@@ -22,7 +35,7 @@ context('Submitting incident details page', () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
 
-    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.date().type(`${day}/${month}/${year}{esc}`)
     incidentDetailsPage.incidentDate.hour().type('09')
     incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.offenderName().contains('Norman Smith')
@@ -35,15 +48,15 @@ context('Submitting incident details page', () => {
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
-    const detailsPage = incidentDetailsPage.save()
-    return detailsPage
+
+    return incidentDetailsPage.save()
   }
 
   const fillFormUnplannedAndSave = () => {
     const reportUseOfForcePage = ReportUseOfForcePage.visit(offender.bookingId)
     const incidentDetailsPage = reportUseOfForcePage.startNewForm()
 
-    incidentDetailsPage.incidentDate.date().type('12/01/2020{esc}')
+    incidentDetailsPage.incidentDate.date().type(`${day}/${month}/${year}{esc}`)
     incidentDetailsPage.incidentDate.hour().type('09')
     incidentDetailsPage.incidentDate.minute().type('32')
     incidentDetailsPage.offenderName().contains('Norman Smith')
@@ -55,25 +68,29 @@ context('Submitting incident details page', () => {
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
     incidentDetailsPage.addAnotherWitness().click()
-    const detailsPage = incidentDetailsPage.save()
-    return detailsPage
+
+    return incidentDetailsPage.save()
   }
 
   it('Can login and create a new report', () => {
     fillFormAndSave()
 
-    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(
-      ({ section, incidentDate }) => {
-        expect(moment(incidentDate).valueOf()).to.equal(moment('2020-01-12T09:32:00.000').valueOf())
+    cy.task('getFormSection', {
+      bookingId: offender.bookingId,
+      formName: 'incidentDetails',
+    }).then(({ section, incidentDate: savedIncidentDate }) => {
+      const expectedIncidentDate = makeDateTime(format(incidentDate, 'yyyy-MM-dd'), '09:32:00.000')
 
-        expect(section).to.deep.equal({
-          incidentLocationId: '00000000-1111-2222-3333-444444444444',
-          plannedUseOfForce: true,
-          authorisedBy: 'Eric Bloodaxe',
-          witnesses: [{ name: 'jimmy-ray' }],
-        })
-      }
-    )
+      // Normalize both sides to timestamps
+      expect(new Date(savedIncidentDate).getTime()).to.equal(expectedIncidentDate.getTime())
+
+      expect(section).to.deep.equal({
+        incidentLocationId: '00000000-1111-2222-3333-444444444444',
+        plannedUseOfForce: true,
+        authorisedBy: 'Eric Bloodaxe',
+        witnesses: [{ name: 'jimmy-ray' }],
+      })
+    })
   })
 
   it('Can revisit saved data', () => {
@@ -88,14 +105,17 @@ context('Submitting incident details page', () => {
 
     updatedIncidentDetailsPage.witnesses(0).name().should('have.value', 'jimmy-ray')
 
-    // Should't be able to remove sole item
+    // Shouldn't be able to remove sole item
     updatedIncidentDetailsPage.witnesses(0).remove().should('not.exist')
   })
 
   it('Can login and create a new unplanned UoF report', () => {
     fillFormUnplannedAndSave()
 
-    cy.task('getFormSection', { bookingId: offender.bookingId, formName: 'incidentDetails' }).then(({ section }) => {
+    cy.task('getFormSection', {
+      bookingId: offender.bookingId,
+      formName: 'incidentDetails',
+    }).then(({ section }) => {
       expect(section).to.deep.equal({
         incidentLocationId: '00000000-1111-2222-3333-444444444444',
         plannedUseOfForce: false,

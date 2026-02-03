@@ -1,10 +1,12 @@
 import request from 'supertest'
+import { subWeeks } from 'date-fns'
 import { paths } from '../../config/incident'
 import { UofReasons } from '../../config/types'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import DraftReportService from '../../services/drafts/draftReportService'
 import AuthService from '../../services/authService'
 import OffenderService from '../../services/offenderService'
+import config from '../../config'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/authService')
@@ -23,11 +25,20 @@ const draftReportService = new DraftReportService(
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
-
+const submissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 let app
 const flash = jest.fn()
 
 beforeEach(() => {
+  offenderService.getOffenderDetails.mockResolvedValue({
+    firstName: 'John',
+    lastName: 'Smith',
+    dateOfBirth: '1990-01-01',
+    bookingId: -19,
+    agencyId: 'MDI',
+    agencyDescription: 'Moorland (HMP & YOI)',
+  })
+
   app = appWithAllRoutes({ draftReportService, offenderService, authService }, undefined, undefined, flash)
 })
 
@@ -37,9 +48,49 @@ afterEach(() => {
 
 describe('/why-was-uof-applied', () => {
   describe('GET /why-was-uof-applied', () => {
+    test(`should render read-only view if incident date is over ${submissionWindow} weeks`, () => {
+      draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
+      offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Prisoner, Bad', dateOfBirth: '2025-05-01' })
+      draftReportService.isDraftComplete.mockResolvedValue(true)
+      draftReportService.getCurrentDraft.mockResolvedValue({
+        form: {
+          reasonsForUseOfForce: {
+            reasons: ['ASSAULT_BY_A_MEMBER_OF_PUBLIC', 'ASSAULT_ON_ANOTHER_PRISONER', 'ASSAULT_ON_A_MEMBER_OF_STAFF'],
+            primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER',
+          },
+        },
+        incidentDate: subWeeks(new Date(), submissionWindow + 1),
+      })
+      draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+
+      return request(app)
+        .get(paths.whyWasUofApplied(-19))
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Use of force details')
+          expect(res.text).toContain(UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.label)
+          expect(res.text).toContain(
+            `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago.`
+          )
+          expect(res.text).toContain('Return to use of force incidents')
+          expect(res.text).toContain('href="/your-reports"')
+        })
+    })
     test('should render content', () => {
       draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
       offenderService.getOffenderDetails.mockResolvedValue({ displayName: 'Prisoner, Bad', dateOfBirth: '2025-05-01' })
+      draftReportService.isDraftComplete.mockResolvedValue(true)
+      draftReportService.getCurrentDraft.mockResolvedValue({
+        form: {
+          reasonsForUseOfForce: {
+            reasons: ['ASSAULT_BY_A_MEMBER_OF_PUBLIC', 'ASSAULT_ON_ANOTHER_PRISONER', 'ASSAULT_ON_A_MEMBER_OF_STAFF'],
+            primaryReason: 'ASSAULT_ON_ANOTHER_PRISONER',
+          },
+        },
+        incidentDate: new Date(),
+      })
+      draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+
       return request(app)
         .get(paths.whyWasUofApplied(-19))
         .expect('Content-Type', /html/)
@@ -51,6 +102,21 @@ describe('/why-was-uof-applied', () => {
 
     test('should render errors', () => {
       draftReportService.getUoFReasonState.mockResolvedValue({ isComplete: false, reasons: [] })
+      draftReportService.getCurrentDraft.mockResolvedValue({
+        form: {},
+        incidentDate: new Date(),
+      })
+      offenderService.getOffenderDetails.mockResolvedValue({
+        firstName: 'John',
+        lastName: 'Smith',
+        dateOfBirth: '1990-01-01',
+        bookingId: -19,
+        agencyId: 'MDI',
+        agencyDescription: 'Moorland (HMP & YOI)',
+      })
+
+      draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(true)
+
       flash
         .mockReturnValueOnce('true')
         .mockReturnValueOnce([{ href: '#reasons', text: 'Select the reasons why use of force was applied' }])

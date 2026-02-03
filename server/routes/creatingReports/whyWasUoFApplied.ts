@@ -1,4 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
+import reportSummary from '../../services/reportSummary'
 import type DraftReportService from '../../services/drafts/draftReportService'
 import { UofReasons } from '../../config/types'
 import { paths } from '../../config/incident'
@@ -29,6 +30,21 @@ export default class WhyWasUoFAppliedRoutes {
       )
 
       const selectedReasons = req.flash('clearingOutReasons')?.length ? [] : reasons
+      let isWithinSubmissionWindow = true
+
+      const { form, incidentDate } = await this.draftReportService.getCurrentDraft(req.user.username, Number(bookingId))
+
+      if (incidentDate) {
+        isWithinSubmissionWindow = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+      }
+
+      if (!isWithinSubmissionWindow) {
+        return res.render('pages/draftReportViewOnly/index.njk', {
+          data: reportSummary(form, offenderDetail, null, null, null, null),
+          pageTitle: 'Use of force details',
+          pageId: 'useOfForceDetails',
+        })
+      }
 
       return res.render('formPages/incident/select-uof-reasons', {
         errors: req.flash('errors'),

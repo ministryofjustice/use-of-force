@@ -1,8 +1,10 @@
 import request from 'supertest'
+import { subDays, subWeeks } from 'date-fns'
 import DraftReportService from '../../services/drafts/draftReportService'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import AuthService from '../../services/authService'
 import OffenderService from '../../services/offenderService'
+import config from '../../config'
 
 jest.mock('../../services/drafts/draftReportService')
 jest.mock('../../services/authService')
@@ -19,7 +21,7 @@ const draftReportService = new DraftReportService(
 ) as jest.Mocked<DraftReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
-
+const isWithinSubmissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 let app
 
 beforeEach(() => {
@@ -32,6 +34,60 @@ afterEach(() => {
 })
 
 describe('GET /section/form', () => {
+  test(`should render 'no edit or submit banner' if incident date more than ${isWithinSubmissionWindow} weeks ago`, () => {
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      incidentDate: subDays(subWeeks(new Date(), isWithinSubmissionWindow), 1).toISOString(),
+    })
+
+    offenderService.getOffenderDetails.mockResolvedValue({
+      displayName: 'First Last',
+    })
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    return request(app)
+      .get(`/report/1/evidence`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('You can not edit or submit this report.')
+        expect(res.text).toContain('Evidence')
+        expect(res.text).toContain('Evidence bagged and tagged')
+        expect(res.text).toContain('Were any photographs taken?')
+        expect(res.text).toContain('Was any part of the incident captured on CCTV?')
+        const matches = res.text.match(/No data entered/g) || []
+        expect(matches).toHaveLength(3)
+        expect(res.text).toContain('Return to use of force incidents')
+        expect(res.text).toContain('href="/your-reports"')
+      })
+  })
+
+  test(`should render 'No data entered' correct number of times`, () => {
+    draftReportService.getCurrentDraft.mockResolvedValue({
+      form: {
+        evidence: {
+          photographsTaken: true,
+        },
+      },
+      incidentDate: subDays(subWeeks(new Date(), isWithinSubmissionWindow), 1).toISOString(),
+    })
+
+    offenderService.getOffenderDetails.mockResolvedValue({
+      displayName: 'First Last',
+    })
+
+    draftReportService.isIncidentDateWithinSubmissionWindow.mockReturnValue(false)
+    return request(app)
+      .get(`/report/1/evidence`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        const noDataEnteredMatches = res.text.match(/No data entered/g) || []
+        expect(noDataEnteredMatches).toHaveLength(2)
+
+        const yesMatches = res.text.match(/Yes/g) || []
+        expect(res.text).toContain('Yes')
+        expect(yesMatches).toHaveLength(1)
+      })
+  })
+
   test('should render use-of-force-details using locations for persisted agency if existing report', () => {
     draftReportService.getCurrentDraft.mockResolvedValue({ id: '1', agencyId: 'persisted-agency-id' })
     return request(app)
@@ -39,6 +95,8 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Use of force details')
+        expect(res.text).not.toContain('You can not edit or submit this report.')
+        expect(res.text).not.toContain('href="/your-reports"')
       })
   })
 })

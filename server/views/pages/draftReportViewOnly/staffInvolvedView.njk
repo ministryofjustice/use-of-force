@@ -1,0 +1,12 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% import "../reportDetailSectionsMacros.njk" as reportDetailsMacros %}
+
+  <div>
+    <ol data-qa="staffInvolved" class="govuk-!-margin-top-1 involved-staff staff-involved-padding">
+      {%for item in data.incidentDetails.staffInvolved|sort(true, true, 'isReporter') %}
+        <li class="govuk-!-margin-bottom-1 govuk-!-padding-top-2 govuk-!-padding-bottom-2 staff-involved-border">
+        {{item.name}} ({{item.username}}) 
+        </li>
+      {% endfor %} 
+    </ol>
+  </div>

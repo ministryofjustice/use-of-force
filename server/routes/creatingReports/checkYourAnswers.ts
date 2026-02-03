@@ -26,6 +26,17 @@ export default class CheckAnswerRoutes {
       agencyId: prisonId,
     } = await this.draftReportService.getCurrentDraft(req.user.username, parseInt(bookingId, 10))
 
+    let isWithinSubmissionWindow = true
+
+    if (incidentDate) {
+      isWithinSubmissionWindow = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+    }
+
+    if (!isWithinSubmissionWindow) {
+      // User should not be on this page if form is not complete.
+      return res.redirect(`/report/${bookingId}/report-use-of-force`)
+    }
+
     // At this point the reportStatus may be 'incomplete' (because of the validation rules) if only the nomis locationId is present.
     // This scenario would occur where a user is already at /check-your-answers when the new code to use incidentLocationId is deployed
     // To pass validation we need the equivalent dpsLocationId persisted to the db as incidentLocationId.

@@ -45,8 +45,9 @@ export default class DraftReportService {
     const incidentStartDate = startOfDay(new Date(incidentDate))
     const todayEnd = endOfDay(today)
 
-    const submissionWindowWeeks = config.submittedReportEditPeriodWeeks
-    const submissionWindowEndDate = endOfDay(subDays(addWeeks(incidentStartDate, submissionWindowWeeks), 1))
+    const submissionWindowEndDate = endOfDay(
+      subDays(addWeeks(incidentStartDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+    )
 
     return isWithinInterval(todayEnd, {
       start: incidentStartDate,

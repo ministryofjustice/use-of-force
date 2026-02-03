@@ -1,0 +1,60 @@
+{% extends "../../partials/prisonerBannerLayout.njk" %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{% set pageTitle = pageTitle %}
+
+{% block beforeContent %}
+  <div class="flex-container-space-between govuk-!-padding-top-0">
+      {{ govukBreadcrumbs({
+        items: [
+          {
+            text: "Digital Prison Services",
+            href: links.exitUrl
+          },
+          {
+            text: "Use of force incidents",
+            href: "/"
+          }
+        ]
+      }) }}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+  {% set rows = summaryItems %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-full">  
+      <div class="width-80">
+
+          {{ mojAlert({
+            variant: "information",
+            dismissible: false,
+            title: "You can not edit or submit this report. The incident date is over 13 weeks ago.",
+            showTitleAsHeading: true,
+            html: '<a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link-in-banner">Return to use of force incidents</a>'
+          }) }}
+
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+
+        {% if pageId === 'incidentDetails' %}
+              {% include "./incidentDetailsView.njk" %}
+        {% elif pageId === 'staffInvolved' %}
+              {% include "./staffInvolvedView.njk" %}
+        {% elif pageId === 'useOfForceDetails' %}
+              {% include "./useOfForceDetailsView.njk" %}
+        {% elif pageId === 'relocationAndInjuries' %}
+              {% include "./relocationAndInjuriesView.njk" %}
+        {% elif pageId === 'evidence' %}
+              {% include "./evidence.njk" %}
+        {% endif %}
+
+      <p class="govuk-!-margin-top-6">
+        <a href="/your-reports" class="govuk-link govuk-link--no-visited-state" data-qa="use-of-force-incidents-link">Return to use of force incidents</a>
+      </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

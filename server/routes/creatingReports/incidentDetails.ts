@@ -11,6 +11,7 @@ import type { ParsedDate } from '../../utils/dateSanitiser'
 import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 import AuthService from '../../services/authService'
 import getIncidentDate from '../../utils/getIncidentDate'
+import reportSummary from '../../services/reportSummary'
 
 const formName = 'incidentDetails'
 
@@ -88,6 +89,22 @@ export default class IncidentDetailsRoutes {
       prison,
       types,
       offenderDetail,
+    }
+
+    let isWithinSubmissionWindow = true
+
+    if (incidentDate) {
+      isWithinSubmissionWindow = this.draftReportService.isIncidentDateWithinSubmissionWindow(new Date(incidentDate))
+    }
+
+    if (!isWithinSubmissionWindow) {
+      const locationDescription = await this.locationService.getLocation(token, form.incidentDetails.incidentLocationId)
+
+      return res.render('pages/draftReportViewOnly/index.njk', {
+        data: reportSummary(form, offenderDetail, prison, locationDescription, null, incidentDate),
+        pageTitle: 'Incident details',
+        pageId: 'incidentDetails',
+      })
     }
 
     return res.render(`formPages/incident/${formName}`, {
