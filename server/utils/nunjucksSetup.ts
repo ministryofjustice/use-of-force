@@ -313,7 +313,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     return value
   })
 
-  njkEnv.addFilter('toNoDataEnteredOrNoneOrValue', value => {
+  njkEnv.addFilter('toNoDataEnteredOrValue', value => {
     if (value === undefined || value === null || value === '') return 'No data entered'
     return value
   })
