@@ -80,7 +80,7 @@ describe('GET /task-list', () => {
     const res = await request(app).get('/report/-35/report-use-of-force')
     expect(res.text).toContain('You can not edit or submit this report')
     expect(res.text).not.toContain('Check then send report')
-    expect(res.text).toContain('Return to Use of force incidents')
+    expect(res.text).toContain('Return to use of force incidents')
   })
 
   it(`should NOT prevent report submission if incident date exactly  ${submissionWindow} weeks ago`, async () => {
