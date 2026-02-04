@@ -48,7 +48,7 @@
       reportDetailsMacros.tableRow({
         label: 'Staff who needed medical attention',
         'data-qa': 'staffMedicalAttention',
-        dataValue: data.relocationAndInjuries.staffMedicalAttention, 
+        dataValue: data.relocationAndInjuries.staffMedicalAttention | toNoDataEnteredOrValue, 
         type: 'itemPerLine'       
       })
     }}
@@ -56,7 +56,7 @@
       reportDetailsMacros.tableRow({
         label: 'Staff taken to hospital',
         'data-qa': 'staffHospitalisation',
-        dataValue: data.relocationAndInjuries.staffHospitalisation,
+        dataValue: data.relocationAndInjuries.staffHospitalisation | toNoDataEnteredOrValue,
         type: 'itemPerLine'
       })
     }}
