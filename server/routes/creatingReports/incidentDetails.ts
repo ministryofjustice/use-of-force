@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { Request, Response } from 'express'
+import { addDays, format, subWeeks } from 'date-fns'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
 import { processInput } from '../../services/validation'
@@ -12,6 +13,7 @@ import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 import AuthService from '../../services/authService'
 import getIncidentDate from '../../utils/getIncidentDate'
 import reportSummary from '../../services/reportSummary'
+import config from '../../config'
 
 const formName = 'incidentDetails'
 
@@ -79,6 +81,13 @@ export default class IncidentDetailsRoutes {
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
 
+    const currentDate = format(new Date(), 'dd/MM/yyyy')
+
+    const earliestIncidentDate = format(
+      addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+      'dd/MM/yyyy'
+    )
+
     const data = {
       bookingId,
       ...pageData,
@@ -89,6 +98,9 @@ export default class IncidentDetailsRoutes {
       prison,
       types,
       offenderDetail,
+      currentDate,
+      earliestIncidentDate,
+      maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
     }
 
     let isWithinSubmissionWindow = true

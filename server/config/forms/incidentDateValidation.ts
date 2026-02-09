@@ -1,6 +1,8 @@
 import moment from 'moment'
 import joi, { ErrorReport } from '@hapi/joi'
+import { addWeeks, endOfDay, isAfter, isValid, isWithinInterval, parse, startOfDay, subDays } from 'date-fns'
 import { toInteger } from './sanitisers'
+import config from '../../config'
 
 export enum ValidationError {
   missing = 'missing',
@@ -10,17 +12,39 @@ export enum ValidationError {
   isFuture = 'isFuture',
   invalid = 'invalid',
   isNotPositiveNumber = 'isNotPositiveNumber',
+  outOfRange = 'outOfRange',
 }
 
 export function dateValidation(date: string, helpers: joi.CustomHelpers): ErrorReport | string {
   const trimmedDate = date.trim()
-  const parsedDate = moment(trimmedDate, 'DD/MM/YYYY', true)
 
-  if (!parsedDate.isValid()) {
+  if (!trimmedDate) {
+    return helpers.error(ValidationError.missing)
+  }
+
+  const parsedDate = parse(trimmedDate, 'dd/MM/yyyy', new Date())
+
+  if (!isValid(parsedDate)) {
     return helpers.error(ValidationError.invalid)
   }
 
-  if (parsedDate.isAfter(moment().startOf('day'))) {
+  const incidentDate = startOfDay(new Date(parsedDate))
+  const todayEnd = endOfDay(new Date())
+
+  const submissionWindowEndDate = endOfDay(
+    subDays(addWeeks(incidentDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+  )
+
+  const isWithinSubmissionWindow = isWithinInterval(todayEnd, {
+    start: incidentDate,
+    end: submissionWindowEndDate,
+  })
+
+  if (!isWithinSubmissionWindow) {
+    return helpers.error(ValidationError.outOfRange)
+  }
+
+  if (isAfter(parsedDate, startOfDay(new Date()))) {
     return helpers.error(ValidationError.isFuture)
   }
 

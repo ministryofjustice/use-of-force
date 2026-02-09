@@ -1,6 +1,6 @@
 import request from 'supertest'
 import moment from 'moment'
-import { subDays, subWeeks } from 'date-fns'
+import { format, subDays, subWeeks } from 'date-fns'
 import { appWithAllRoutes, user } from '../__test/appSetup'
 import { toDate } from '../../utils/dateSanitiser'
 import DraftReportService from '../../services/drafts/draftReportService'
@@ -27,6 +27,7 @@ const draftReportService = new DraftReportService(
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
+const yesterday = format(subDays(new Date(), 1), 'dd/MM/yyyy')
 
 let app
 const flash = jest.fn()
@@ -52,6 +53,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
+  jest.restoreAllMocks()
 })
 
 describe('GET /section/form', () => {
@@ -110,6 +112,38 @@ describe('GET /section/form', () => {
         )
         expect(res.text).not.toContain('Return to use of force incidents')
         expect(res.text).not.toContain('href="/your-reports"')
+      })
+  })
+
+  test('should display correct error message when no incident date input or selected', () => {
+    flash.mockReturnValue([
+      {
+        text: 'Enter or select a date',
+        href: '#incidentDate[date]',
+      },
+    ])
+
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Enter or select a date')
+      })
+  })
+
+  test('should display correct error message when incident date out of permitted range', () => {
+    flash.mockReturnValue([
+      {
+        text: 'Select an available date from the calendar',
+        href: '#incidentDate[date]',
+      },
+    ])
+
+    return request(app)
+      .get(`/report/1/incident-details`)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Select an available date from the calendar')
       })
   })
 
@@ -217,12 +251,13 @@ describe('GET /section/form', () => {
 describe('POST save and continue /section/form', () => {
   test('should redirect to the staff-involved page', () => {
     draftReportService.getPotentialDuplicates.mockResolvedValue([])
+
     return request(app)
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-continue',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         incidentLocationId,
@@ -243,14 +278,14 @@ describe('POST save and continue /section/form', () => {
             plannedUseOfForce: false,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
         )
       })
   })
 
   test('should redirect to the report-may-already-exist page', () => {
     const reports = {
-      date: moment('21/01/2019', 'DDMMYYYY'),
+      date: moment(yesterday, 'DDMMYYYY'),
       form: {},
       reporter: 'Harry',
       status: 'SUBMITTED',
@@ -262,7 +297,7 @@ describe('POST save and continue /section/form', () => {
       .send({
         submitType: 'save-and-continue',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         incidentLocationId,
@@ -278,7 +313,7 @@ describe('POST save and continue /section/form', () => {
       .send({
         submitType: 'save-and-continue',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         incidentLocationId,
@@ -297,7 +332,7 @@ describe('POST save and return to tasklist', () => {
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-return',
-        incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
+        incidentDate: { date: yesterday, time: { hour: '12', minute: '45' } },
         incidentLocationId,
         plannedUseOfForce: 'true',
         witnesses: [{ name: 'User bob' }, { name: '' }],
@@ -315,7 +350,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
         )
       })
   })
@@ -326,7 +361,7 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-change-prison',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         incidentLocationId,
@@ -348,7 +383,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
         )
       })
   })
@@ -359,7 +394,7 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-return',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         incidentLocationId,
@@ -377,7 +412,7 @@ describe('POST save and return to tasklist', () => {
             incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
         )
       })
   })
@@ -413,7 +448,7 @@ describe('POST save and return to tasklist', () => {
       .send({
         submitType: 'save-and-return',
         incidentDate: {
-          date: '21/01/2019',
+          date: yesterday,
           time: { hour: '12', minute: '45' },
         },
         witnesses: [{ name: '$% bob' }, { name: '' }],
@@ -429,7 +464,7 @@ describe('POST save and return to check-your-answers', () => {
       .post(`/report/1/incident-details`)
       .send({
         submitType: 'save-and-continue',
-        incidentDate: { date: '21/01/2019', time: { hour: '12', minute: '45' } },
+        incidentDate: { date: yesterday, time: { hour: '12', minute: '45' } },
         incidentLocationId,
         plannedUseOfForce: 'true',
         authorisedBy: 'Eric Bloodaxe',
@@ -449,7 +484,7 @@ describe('POST save and return to check-your-answers', () => {
             authorisedBy: 'Eric Bloodaxe',
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: '21/01/2019', time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
         )
       })
   })
