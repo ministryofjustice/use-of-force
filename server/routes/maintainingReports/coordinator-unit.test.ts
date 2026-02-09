@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { subDays, format } from 'date-fns'
 import { Request, Response } from 'express'
 import { ReportEdit } from '../../data/incidentClientTypes'
 import ReportService from '../../services/reportService'
@@ -59,7 +60,8 @@ let controller: any
 let req
 let res
 
-const incidentDate = '2025-10-28T03:10:00.000Z'
+const incidentDate = subDays(new Date(), 1)
+
 const report = {
   id: 1,
   username: 'USER',
@@ -128,9 +130,9 @@ const editIncidentDetailsViewModel = {
   data: {
     displayName: undefined,
     incidentDate: {
-      date: '28/10/2025',
-      hour: '03',
-      minute: '10',
+      date: format(incidentDate, 'dd/MM/yyyy'),
+      hour: format(incidentDate, 'HH'),
+      minute: format(incidentDate, 'mm'),
     },
     locations: [
       {
@@ -308,7 +310,7 @@ describe('CoordinatorEditReportController', () => {
         const reportEdits = [
           {
             id: 2,
-            editDate: new Date('2025-11-01T09:00:00.000Z'),
+            editDate: subDays(new Date(), 1),
             editorUserId: 'UserId2',
             editorName: 'John Smith',
             reportId: 1,
@@ -320,7 +322,7 @@ describe('CoordinatorEditReportController', () => {
           },
           {
             id: 1,
-            editDate: new Date('2025-10-15T09:00:00.000Z'),
+            editDate: subDays(new Date(), 2),
             editorUserId: 'UserId1',
             editorName: 'Mike Smith',
             reportId: 1,
@@ -340,7 +342,7 @@ describe('CoordinatorEditReportController', () => {
             hasReportBeenEdited: true,
             hasReportOwnerChanged: false,
             incidentDetails: {
-              incidentDate: '2025-10-28T03:10:00.000Z',
+              incidentDate,
             },
             lastEdit: {
               additionalComments: 'some comments 2',
@@ -350,7 +352,7 @@ describe('CoordinatorEditReportController', () => {
                   oldValue: true,
                 },
               },
-              editDate: new Date('2025-11-01T09:00:00.000Z'),
+              editDate: subDays(new Date(), 1),
               editorName: 'John Smith',
               editorUserId: 'UserId2',
               id: 2,
@@ -474,10 +476,10 @@ describe('CoordinatorEditReportController', () => {
         req.body = {
           newAgencyId: '',
           incidentDate: {
-            date: '06/10/2025',
+            date: format(incidentDate, 'dd/MM/yyyy'),
             time: {
-              hour: '04',
-              minute: '10',
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
             },
           },
           incidentLocationId: 'Loc-1',
@@ -503,19 +505,16 @@ describe('CoordinatorEditReportController', () => {
         req.body = {
           newAgencyId: '',
           incidentDate: {
-            date: '06/10/2025',
+            date: format(incidentDate, 'dd/MM/yyyy'),
             time: {
-              hour: '04',
-              minute: '10',
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
             },
           },
           incidentLocationId: 'Loc-1',
           plannedUseOfForce: 'true',
           authorisedBy: 'Mr Smith',
           witnesses: [
-            {
-              name: 'jimmy',
-            },
             {
               name: 'tom',
             },
@@ -534,6 +533,9 @@ describe('CoordinatorEditReportController', () => {
             oldValue: [
               {
                 name: 'jimmy',
+              },
+              {
+                name: 'tom',
               },
             ],
             newValue: [

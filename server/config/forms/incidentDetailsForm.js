@@ -19,6 +19,8 @@ const requiredIncidentDate = joi
       .any()
       .custom(dateValidation)
       .messages({
+        [ValidationError.outOfRange]: 'Select an available date from the calendar',
+        [ValidationError.missing]: 'Enter or select a date',
         [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020',
         [ValidationError.isFuture]: 'Enter a date that is not in the future',
       }),
