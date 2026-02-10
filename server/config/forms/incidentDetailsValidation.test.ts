@@ -1,6 +1,7 @@
-const { subDays, format, set, parse, addDays, subWeeks } = require('date-fns')
-const { complete, partial } = require('./incidentDetailsForm')
-const { processInput } = require('../../services/validation')
+import { subDays, format, set, parse, addDays, subWeeks } from 'date-fns'
+import { complete, partial } from './incidentDetailsForm'
+import { processInput } from '../../services/validation'
+import config from '../../config'
 
 // Helper to parse and set date and time from strings
 const buildDateTime = (dateStr, hourStr, minuteStr) => {
@@ -245,7 +246,12 @@ describe("'complete' validation", () => {
         }
         const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([{ href: '#incidentDate[date]', text: 'Select an available date from the calendar' }])
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[date]',
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+          },
+        ])
         expect(extractedFields.incidentDate).toEqual({
           date: format(tomorrow, 'dd/MM/yyyy'),
           value: set(tomorrow, { hours: 12, minutes: 45 }),
@@ -261,7 +267,12 @@ describe("'complete' validation", () => {
         }
         const { errors, extractedFields } = check(input)
 
-        expect(errors).toEqual([{ href: '#incidentDate[date]', text: 'Select an available date from the calendar' }])
+        expect(errors).toEqual([
+          {
+            href: '#incidentDate[date]',
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+          },
+        ])
         expect(extractedFields.incidentDate).toEqual({
           date: format(pastWeeks, 'dd/MM/yyyy'),
           value: set(pastWeeks, { hours: 12, minutes: 45 }),
