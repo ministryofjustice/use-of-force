@@ -134,7 +134,7 @@ describe('GET /section/form', () => {
   test('should display correct error message when incident date out of permitted range', () => {
     flash.mockReturnValue([
       {
-        text: 'Select an available date from the calendar',
+        text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
         href: '#incidentDate[date]',
       },
     ])
@@ -143,7 +143,9 @@ describe('GET /section/form', () => {
       .get(`/report/1/incident-details`)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Select an available date from the calendar')
+        expect(res.text).toContain(
+          `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`
+        )
       })
   })
 

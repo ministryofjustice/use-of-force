@@ -2,6 +2,7 @@ const { joi, validations, namePattern, caseInsensitiveComparator } = require('./
 const { EXTRACTED } = require('../fieldType')
 const { toDate } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
+const config = require('../../config')
 const {
   ValidationError,
   hourValidation,
@@ -19,7 +20,7 @@ const requiredIncidentDate = joi
       .any()
       .custom(dateValidation)
       .messages({
-        [ValidationError.outOfRange]: 'Select an available date from the calendar',
+        [ValidationError.outOfRange]: `Select or enter a date within the last ${config.default.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
         [ValidationError.missing]: 'Enter or select a date',
         [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020',
         [ValidationError.isFuture]: 'Enter a date that is not in the future',
