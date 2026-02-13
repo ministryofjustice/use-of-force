@@ -122,7 +122,7 @@
     "cookie-session": "^2.1.1",
     "csrf-sync": "^4.2.1",
     "cypress-axe": "^1.7.0",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "escape-html": "^1.0.3",
     "express": "^4.22.1",
     "express-session": "^1.19.0",
