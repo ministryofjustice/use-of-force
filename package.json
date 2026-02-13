@@ -153,7 +153,7 @@
   },
   "devDependencies": {
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
-    "@ministryofjustice/hmpps-precommit-hooks": "^1.0.2",
+    "@ministryofjustice/hmpps-precommit-hooks": "^2.0.0",
     "@types/bunyan": "^1.8.11",
     "@types/express": "^4.17.25",
     "@types/hapi__joi": "^17.1.15",
