@@ -29,7 +29,7 @@ jobs:
          npm install -g npm@latest
       - name: restore cache
         id: restore-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         env:
           cache-name: node-modules
         with:
@@ -60,7 +60,7 @@ jobs:
             assets/stylesheets/
       - name: save cache
         id: save-cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         env:
           cache-name: node-modules
         with:

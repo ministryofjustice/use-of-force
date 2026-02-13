@@ -45,7 +45,7 @@ jobs:
           name: npm_build_artifacts
       - name: restore cache
         id: restore-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         env:
           cache-name: node-modules
         with:
