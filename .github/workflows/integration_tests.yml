@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16.4
+        image: postgres:16.12
         env:
           POSTGRES_USER: use-of-force
           POSTGRES_PASSWORD: use-of-force
