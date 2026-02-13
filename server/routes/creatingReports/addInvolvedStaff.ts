@@ -57,7 +57,7 @@ export default class AddInvolvedStaffRoutes {
 
   public submitStaffInvolved = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { addMore, submitType } = req.body
+    const { addMore, submitType } = req.body || {}
 
     if (addMore === 'no') {
       await this.draftReportService.markInvolvedStaffComplete(res.locals.user, parseInt(bookingId, 10))
@@ -100,7 +100,7 @@ export default class AddInvolvedStaffRoutes {
 
   public submitDeleteStaffMember = async (req: Request, res: Response): Promise<void> => {
     const { bookingId, username } = req.params
-    const { confirm } = req.body
+    const { confirm } = req.body || {}
 
     if (!confirm) {
       req.flash('errors', [
@@ -128,7 +128,7 @@ export default class AddInvolvedStaffRoutes {
 
   public submitStaffMemberName = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { firstName, lastName } = req.body
+    const { firstName, lastName } = req.body || {}
 
     const errors = []
     if (!firstName?.trim()) {
@@ -215,7 +215,7 @@ export default class AddInvolvedStaffRoutes {
 
   public submitSelectStaffMember = async (req: Request, res: Response): Promise<void> => {
     const { bookingId } = req.params
-    const { selectedStaffUsername, firstName, lastName } = req.body
+    const { selectedStaffUsername, firstName, lastName } = req.body || {}
 
     if (!selectedStaffUsername) {
       const errors = [
