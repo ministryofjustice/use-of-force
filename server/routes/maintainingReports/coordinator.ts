@@ -1,5 +1,7 @@
 import R from 'ramda'
+import { addDays, format, subWeeks } from 'date-fns'
 import type { Request, RequestHandler } from 'express'
+import config from '../../config'
 import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
 import { isNilOrEmpty, getChangedValues } from '../../utils/utils'
@@ -213,6 +215,13 @@ export default class CoordinatorRoutes {
       }
     }
 
+    const currentDate = format(new Date(), 'dd/MM/yyyy')
+
+    const earliestIncidentDate = format(
+      addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+      'dd/MM/yyyy'
+    )
+
     const data = {
       ...pageData,
       reportId,
@@ -223,6 +232,9 @@ export default class CoordinatorRoutes {
       prison: newPrisonDetails || incidentDetails.prison,
       newAgencyId: newPrison,
       offenderDetail,
+      currentDate,
+      earliestIncidentDate,
+      maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
     }
 
     const errors = req.flash('errors')

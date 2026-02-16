@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { subDays, format } from 'date-fns'
+import { subDays, format, addDays, subWeeks } from 'date-fns'
 import { Request, Response } from 'express'
 import { ReportEdit } from '../../data/incidentClientTypes'
 import ReportService from '../../services/reportService'
@@ -14,6 +14,7 @@ import ReportDataBuilder from '../../services/reportDetailBuilder'
 import ReportEditService from '../../services/reportEditService'
 import logger from '../../../log'
 import CoordinatorRoutes from './coordinator'
+import config from '../../config'
 
 jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
@@ -154,6 +155,12 @@ const editIncidentDetailsViewModel = {
         name: 'tom',
       },
     ],
+    currentDate: format(new Date(), 'dd/MM/yyyy'),
+    earliestIncidentDate: format(
+      addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+      'dd/MM/yyyy'
+    ),
+    maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
   },
   errors: undefined,
   noChangeError: undefined,
@@ -550,6 +557,69 @@ describe('CoordinatorEditReportController', () => {
         await controller.submitEditIncidentDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(res.redirect).toHaveBeenCalledWith('reason-for-change')
+      })
+
+      it('should flash error message if new incident date is prior to edit window', async () => {
+        req.body = {
+          incidentDate: {
+            date: format(
+              subDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+              'dd/MM/yyyy'
+            ),
+            time: {
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
+            },
+          },
+          incidentLocationId: 'Loc-1',
+          plannedUseOfForce: 'true',
+          authorisedBy: 'Mr Smith',
+          witnesses: [
+            {
+              name: 'tom',
+            },
+          ],
+          submitType: 'continue-coordinator-edit',
+        }
+
+        await controller.submitEditIncidentDetails(req, res)
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          {
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+            href: '#incidentDate[date]',
+          },
+        ])
+      })
+
+      it('should flash error message if new incident date is in the future', async () => {
+        req.body = {
+          incidentDate: {
+            date: format(addDays(new Date(), 1), 'dd/MM/yyyy'),
+            time: {
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
+            },
+          },
+          incidentLocationId: 'Loc-1',
+          plannedUseOfForce: 'true',
+          authorisedBy: 'Mr Smith',
+          witnesses: [
+            {
+              name: 'tom',
+            },
+          ],
+          submitType: 'continue-coordinator-edit',
+        }
+
+        await controller.submitEditIncidentDetails(req, res)
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          {
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+            href: '#incidentDate[date]',
+          },
+        ])
       })
     })
   })
