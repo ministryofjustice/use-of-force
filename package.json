@@ -169,7 +169,7 @@
     "concurrently": "^9.2.1",
     "cypress": "^13.17.0",
     "cypress-multi-reporters": "^1.6.4",
-    "dotenv": "^16.6.1",
+    "dotenv": "^17.3.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "10.1.8",
