@@ -110,7 +110,7 @@
     "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "^5.2.1",
     "agentkeepalive": "^4.6.0",
-    "applicationinsights": "^2.9.8",
+    "applicationinsights": "^3.13.0",
     "applicationinsights-native-metrics": "^0.0.11",
     "axe-core": "^4.11.1",
     "bunyan": "^1.8.15",
