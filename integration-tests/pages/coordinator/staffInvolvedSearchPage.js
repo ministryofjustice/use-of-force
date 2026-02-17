@@ -5,6 +5,7 @@ const staffInvolvedSearch = () =>
     username: () => cy.get("[name='username']"),
     searchButton: () => cy.get('[data-qa=search]'),
     getRowAndCol: (row, col) => cy.get(`tr:nth-child(${row}) td:nth-child(${col})`),
+    getRowAndColTag: (row, col) => cy.get(`tr:nth-child(${row}) td:nth-child(${col}) .govuk-tag`),
   })
 
 module.exports = {
