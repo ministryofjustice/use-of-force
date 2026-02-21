@@ -108,7 +108,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@hapi/joi-date": "^2.0.1",
-    "@ministryofjustice/frontend": "^5.2.1",
+    "@ministryofjustice/frontend": "^8.0.1",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.8",
     "applicationinsights-native-metrics": "^0.0.11",
