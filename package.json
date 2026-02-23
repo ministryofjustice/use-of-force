@@ -183,7 +183,7 @@
     "mocha-junit-reporter": "^2.2.1",
     "nock": "^13.5.6",
     "nodemon": "^3.1.11",
-    "openapi-typescript": "^7.10.1",
+    "openapi-typescript": "^7.13.0",
     "prettier": "3.8.1",
     "sass": "^1.97.3",
     "supertest": "^7.2.2",
@@ -194,6 +194,6 @@
     "notifications-node-client": {
       "axios": "1.13.5"
     },
-    "tar": ">=7.5.7"
+    "tar": ">=7.5.9"
   }
 }
