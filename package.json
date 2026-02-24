@@ -32,9 +32,6 @@
     "generate-prisoner-search-api-types": "openapi-typescript https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs > ./server/types/prisonerSearchApi/index.d.ts",
     "generate-locations-api-types": "openapi-typescript https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > ./server/types/locationsApi/index.d.ts",
     "generate-manage-users-api-types": "openapi-typescript https://manage-users-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > ./server/types/manageUsersApi/index.d.ts",
-    "precommit:secrets": "gitleaks git --pre-commit --redact --staged --verbose --config .gitleaks/config.toml --gitleaks-ignore-path .gitleaks/.gitleaksignore",
-    "precommit:lint": "node_modules/.bin/lint-staged",
-    "precommit:verify": "npm run typecheck && npm test",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
@@ -177,7 +174,6 @@
     "eslint-plugin-cypress": "^2.15.2",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "5.5.5",
-    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-html-reporter": "^3.10.2",
     "jest-junit": "^15.0.0",
@@ -186,10 +182,10 @@
     "mocha": "^10.8.2",
     "mocha-junit-reporter": "^2.2.1",
     "nock": "^13.5.6",
-    "sass": "^1.97.3",
     "nodemon": "^3.1.11",
-    "openapi-typescript": "^7.10.1",
+    "openapi-typescript": "^7.13.0",
     "prettier": "3.8.1",
+    "sass": "^1.97.3",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
@@ -197,6 +193,7 @@
   "overrides": {
     "notifications-node-client": {
       "axios": "1.13.5"
-    }
+    },
+    "tar": ">=7.5.9"
   }
 }
