@@ -2,6 +2,7 @@ import { Readable } from 'stream'
 
 import { HttpAgent, HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
+import { IncomingHttpHeaders } from 'http'
 
 import logger from '../../log'
 import sanitiseError from '../sanitisedError'
@@ -11,7 +12,7 @@ import type { UnsanitisedError } from '../sanitisedError'
 interface Request {
   path: string
   query?: object | string
-  headers?: Record<string, string | number>
+  headers?: IncomingHttpHeaders
   responseType?: string
   raw?: boolean
 }
