@@ -46,7 +46,7 @@ test('getReports', async () => {
 test('getReportEdits', () => {
   incidentClient.getReportEdits(1)
 
-  expect(query).toBeCalledWith({
+  expect(query).toHaveBeenCalledWith({
     text: `select id
           , edit_date "editDate"
           , editor_user_id "editorUserId"

@@ -87,7 +87,7 @@ describe('reportService', () => {
       incidentClient.getAnonReportSummary.mockResolvedValue(undefined)
 
       await expect(service.getAnonReportSummary('token-1', 1)).resolves.toStrictEqual(undefined)
-      expect(locationService.getPrisonById).not.toBeCalled()
+      expect(locationService.getPrisonById).not.toHaveBeenCalled()
       expect(incidentClient.getAnonReportSummary).toHaveBeenCalledWith(1)
     })
   })
