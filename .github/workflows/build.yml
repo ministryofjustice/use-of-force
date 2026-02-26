@@ -51,7 +51,7 @@ jobs:
         run: |
           npm run lint
       - name: upload the artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: npm_build_artifacts
           path: |
