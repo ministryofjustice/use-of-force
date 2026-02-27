@@ -35,7 +35,7 @@
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
-    "node": "^22",
+    "node": "^24",
     "npm": "^11"
   },
   "jest": {
