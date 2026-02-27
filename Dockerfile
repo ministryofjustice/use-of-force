@@ -1,4 +1,4 @@
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS builder
+FROM node:22.22-bookworm-slim as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -22,7 +22,7 @@ RUN CYPRESS_INSTALL_BINARY=0 npm run setup && \
 
 RUN npm prune --production
 
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine
+FROM node:22.22-bookworm-slim
 
 ARG BUILD_NUMBER
 ARG GIT_REF
