@@ -395,7 +395,6 @@ export default class CoordinatorRoutes {
       req.flash('errors', [{ href: '#reasons', text: 'Select the reasons why use of force was applied' }])
       return res.redirect(req.originalUrl)
     }
-
     this.setIncidentReportSession(req, reportId, { reasons: Array.isArray(reasons) ? reasons : [reasons] })
 
     // compare page data with original report
