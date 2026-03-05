@@ -33,6 +33,8 @@ export const paths = {
     `/coordinator/report/${reportId}/statement/${statementId}/staff-member-not-removed`,
   viewStatements: reportId => `/${reportId}/view-statements`,
   viewReport: reportId => `/${reportId}/view-report`,
+  viewStatementsNonEdit: reportId => `/${reportId}/view-incident?tab=statements`,
+  viewReportNonEdit: reportId => `/${reportId}/view-incident?tab=report`,
   confirmStatementDelete: (reportId, statementId, removalRequest) =>
     `/coordinator/report/${reportId}/statement/${statementId}/confirm-delete${
       removalRequest ? `?removalRequest=${removalRequest}` : ''

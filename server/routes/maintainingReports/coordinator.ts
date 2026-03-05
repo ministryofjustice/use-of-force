@@ -1,6 +1,6 @@
 import R from 'ramda'
 import { addDays, format, subWeeks } from 'date-fns'
-import type { Request, RequestHandler } from 'express'
+import type { Request, Response, RequestHandler } from 'express'
 import config from '../../config'
 import { PrisonLocation } from '../../data/prisonClientTypes'
 import { AddStaffResult, InvolvedStaffService } from '../../services/involvedStaffService'
@@ -1313,6 +1313,40 @@ export default class CoordinatorRoutes {
     return res.redirect(paths.viewInvolvedStaff(reportId))
   }
 
+
+    confirmDeleteStatementFollowingRemovalRequest: RequestHandler = async (req: Request, res: Response) => {
+    const reportId = extractReportId(req)
+    const { statementId } = req.params
+    const { removalRequest } = req.query
+
+    const staffMember = await this.involvedStaffService.loadInvolvedStaff(reportId, parseInt(statementId, 10))
+
+    const errors = req.flash('errors')
+
+    const data = { reportId, statementId, displayName: staffMember.name, removalRequest }
+
+    res.render('pages/coordinator/confirm-statement-deletion.html', { errors, data })
+  }
+
+  deleteStatementFollowingRemovalRequest: RequestHandler = async (req: Request, res: Response) => {
+    const reportId = extractReportId(req)
+    const { statementId } = req.params
+    const { confirm, removalRequest } = req.body
+
+    if (!confirm) {
+      req.flash('errors', [{ href: '#confirm', text: 'Select yes if you want to delete this statement' }])
+      return removalRequest
+        ? res.redirect(paths.confirmStatementDelete(reportId, statementId, true))
+        : res.redirect(paths.confirmStatementDelete(reportId, statementId, false))
+    }
+
+    if (confirm === 'yes') {
+      await this.involvedStaffService.removeInvolvedStaff(reportId, parseInt(statementId, 10))
+    }
+
+    const location = removalRequest ? paths.viewStatementsNonEdit(reportId) : paths.viewReportNonEdit(reportId)
+    return res.redirect(location)
+  }
   getIncidentReportSession(req, reportId) {
     if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return undefined
     return req.session.incidentReport.find(entry => entry.reportId === reportId)

@@ -314,10 +314,11 @@ describe('CoordinatorEditReportController', () => {
   describe('Report details', () => {
     describe('viewEditReport', () => {
       it("should display the correct details in 'last edited' row", async () => {
+        const editDateReport2 = subDays(new Date(), 1)
         const reportEdits = [
           {
             id: 2,
-            editDate: subDays(new Date(), 1),
+            editDate: editDateReport2,
             editorUserId: 'UserId2',
             editorName: 'John Smith',
             reportId: 1,
@@ -359,7 +360,7 @@ describe('CoordinatorEditReportController', () => {
                   oldValue: true,
                 },
               },
-              editDate: subDays(new Date(), 1),
+              editDate: editDateReport2,
               editorName: 'John Smith',
               editorUserId: 'UserId2',
               id: 2,
@@ -1798,6 +1799,110 @@ describe('CoordinatorEditReportController', () => {
       await controller.deleteStatement(req as Request, res as Response)
       expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
       expect(res.redirect).toHaveBeenCalledWith('/1/view-report')
+    })
+  })
+
+  describe('deleteStatementFollowingRemovalRequest', () => {
+    beforeEach(() => {
+      req = {
+        params: { reportId: '1', statementId: '456' },
+        body: {},
+        flash: jest.fn(),
+      }
+      res = { redirect: jest.fn() }
+    })
+
+    it('flashes error and redirects to confirm page with removalRequest=true when confirm missing', async () => {
+      req.body = { removalRequest: true }
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#confirm', text: 'Select yes if you want to delete this statement' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith(
+        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true'
+      )
+    })
+
+    it('flashes error and redirects to confirm page (no removalRequest) when confirm missing', async () => {
+      req.body = {}
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#confirm', text: 'Select yes if you want to delete this statement' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/coordinator/report/1/statement/456/confirm-delete')
+    })
+
+    it('removes involved staff and redirects to non-edit statements tab', async () => {
+      req.body = { confirm: 'yes', removalRequest: true }
+      involvedStaffService.removeInvolvedStaff.mockResolvedValue()
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(1, 456)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=statements')
+    })
+
+    it('removes involved staff and redirects to non-edit report tab', async () => {
+      req.body = { confirm: 'yes', removalRequest: false }
+      involvedStaffService.removeInvolvedStaff.mockResolvedValue()
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).toHaveBeenCalledWith(1, 456)
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+
+    it('does not remove involved staff and redirects to non-edit statements tab', async () => {
+      req.body = { confirm: 'no', removalRequest: true }
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=statements')
+    })
+
+    it('does not remove involved staff and redirects to non-edit report tab', async () => {
+      req.body = { confirm: 'no', removalRequest: false }
+      await controller.deleteStatementFollowingRemovalRequest(req as Request, res as Response)
+      expect(involvedStaffService.removeInvolvedStaff).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+    })
+  })
+
+  describe('confirmDeleteStatementFollowingRemovalRequest', () => {
+    beforeEach(() => {
+      req = {
+        params: { reportId: '123', statementId: '456' },
+        query: { removalRequest: 'true' },
+        flash: jest.fn().mockReturnValue([]),
+      }
+      res = {
+        render: jest.fn(),
+      }
+
+      involvedStaffService.loadInvolvedStaff.mockResolvedValue({ name: 'John Doe' } as any)
+    })
+
+    it('should call loadInvolvedStaff with correct arguments', async () => {
+      await controller.confirmDeleteStatementFollowingRemovalRequest(req as Request, res as Response)
+
+      expect(involvedStaffService.loadInvolvedStaff).toHaveBeenCalledWith(123, 456)
+    })
+
+    it('should render the correct template with expected data', async () => {
+      await controller.confirmDeleteStatementFollowingRemovalRequest(req as Request, res as Response)
+
+      expect(res.render).toHaveBeenCalledWith('pages/coordinator/confirm-statement-deletion.html', {
+        data: {
+          displayName: 'John Doe',
+          removalRequest: 'true',
+          reportId: 123,
+          statementId: '456',
+        },
+        errors: [],
+      })
+    })
+
+    it('should include errors from flash if present', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue(['Some error'])
+
+      await controller.confirmDeleteStatementFollowingRemovalRequest(req as Request, res as Response)
+
+      expect(res.render).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ errors: ['Some error'] }))
     })
   })
 })
