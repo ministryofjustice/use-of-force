@@ -59,6 +59,9 @@ COPY --from=build --chown=appuser:appgroup \
 COPY --from=build --chown=appuser:appgroup \
         /app/server/views ./server/views
 
+COPY --from=build --chown=appuser:appgroup \
+        /app/dist ./dist
+
 ENV PORT=3000
 
 EXPOSE 3000
