@@ -109,7 +109,6 @@
     "@ministryofjustice/frontend": "^5.2.1",
     "@ministryofjustice/hmpps-monitoring": "1.0.2",
     "@ministryofjustice/hmpps-rest-client": "^1.1.0",
-    "@playwright/test": "^1.58.2",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.8",
     "applicationinsights-native-metrics": "^0.0.11",
