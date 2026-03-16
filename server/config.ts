@@ -1,3 +1,5 @@
+import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
+
 const production = process.env.NODE_ENV === 'production'
 
 function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
@@ -11,13 +13,6 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 }
 
 const requiredInProduction = { requireInProduction: true }
-export class AgentConfig {
-  maxSockets?: number
-
-  maxFreeSockets: number
-
-  freeSocketTimeout: number
-}
 
 export interface ApiConfig {
   url: string
@@ -87,11 +82,7 @@ export default {
         response: get('AUTH_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('AUTH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('AUTH_API_TIMEOUT_RESPONSE', 10000))),
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', requiredInProduction),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
       systemClientId: get('SYSTEM_CLIENT_ID', get('API_CLIENT_ID', 'use-of-force-system'), requiredInProduction),
@@ -104,11 +95,7 @@ export default {
         response: get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000))),
     },
     prison: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
@@ -117,11 +104,7 @@ export default {
         response: get('PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
     location: {
       url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
@@ -130,11 +113,7 @@ export default {
         response: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
     nomisMapping: {
       url: get('NOMIS_MAPPING_API_URL', 'http://localhost:8080', requiredInProduction),
@@ -143,11 +122,7 @@ export default {
         response: get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000))),
     },
     prisonerSearch: {
       url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
@@ -156,11 +131,7 @@ export default {
         response: get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000))),
     },
     tokenVerification: {
       url: get('TOKENVERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
@@ -183,11 +154,7 @@ export default {
         response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
         deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_SECONDS', 10000))),
     },
     digitalPrisonServiceUrl: get('DPS_URL', 'http://localhost:3000', requiredInProduction),
   },

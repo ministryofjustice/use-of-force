@@ -1,6 +1,6 @@
 import nock from 'nock'
 
-import { AgentConfig } from '../config'
+import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
 import RestClient from './restClient'
 
 const restClient = new RestClient(
