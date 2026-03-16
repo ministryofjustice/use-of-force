@@ -17,6 +17,10 @@ ENV GIT_BRANCH=${GIT_BRANCH}
 # Stage: build assets
 FROM base AS build
 
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+
 RUN apk update && \
         apk upgrade
 RUN apk add --no-cache \
