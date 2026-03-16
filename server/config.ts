@@ -149,12 +149,13 @@ export default {
     },
     frontendComponents: {
       url: get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction),
-      healthPath: '/health/ping',
+      healthPath: '/health',
       timeout: {
         response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
         deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
       },
       agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_SECONDS', 10000))),
+      enabled: get('COMMON_COMPONENTS_ENABLED', 'true') === 'true',
     },
     digitalPrisonServiceUrl: get('DPS_URL', 'http://localhost:3000', requiredInProduction),
   },
