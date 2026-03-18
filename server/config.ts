@@ -1,3 +1,5 @@
+import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
+
 const production = process.env.NODE_ENV === 'production'
 
 function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
@@ -11,13 +13,6 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 }
 
 const requiredInProduction = { requireInProduction: true }
-export class AgentConfig {
-  maxSockets?: number
-
-  maxFreeSockets: number
-
-  freeSocketTimeout: number
-}
 
 export interface ApiConfig {
   url: string
@@ -39,6 +34,7 @@ export default {
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   branchName: get('GIT_BRANCH', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
+  production,
   staticResourceCacheDuration: '1h',
   db: {
     username: get('DB_USER', 'use-of-force'),
@@ -80,16 +76,13 @@ export default {
   apis: {
     oauth2: {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
+      healthPath: '/health/ping',
       externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
         response: get('AUTH_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('AUTH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('AUTH_API_TIMEOUT_RESPONSE', 10000))),
       apiClientId: get('API_CLIENT_ID', 'use-of-force-client', requiredInProduction),
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
       systemClientId: get('SYSTEM_CLIENT_ID', get('API_CLIENT_ID', 'use-of-force-system'), requiredInProduction),
@@ -97,66 +90,52 @@ export default {
     },
     hmppsManageUsersApi: {
       url: get('HMPPS_MANAGE_USERS_API_URL', 'http://localhost:8081', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('HMPPS_MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('HMPPS_MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000))),
     },
     prison: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
     location: {
       url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('LOCATIONS_INSIDE_PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
     nomisMapping: {
       url: get('NOMIS_MAPPING_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('NOMIS_MAPPING_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('NOMIS_MAPPING_API_TIMEOUT_RESPONSE', 10000))),
     },
     prisonerSearch: {
       url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 10000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000))),
     },
     tokenVerification: {
       url: get('TOKENVERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
       timeout: {
         response: get('TOKENVERIFICATION_TIMEOUT_RESPONSE', 10000) as number,
         deadline: get('TOKENVERIFICATION_TIMEOUT_DEADLINE', 10000) as number,
@@ -170,15 +149,13 @@ export default {
     },
     frontendComponents: {
       url: get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction),
+      healthPath: '/health',
       timeout: {
         response: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
         deadline: get('COMPONENT_API_TIMEOUT_SECONDS', 2000) as number,
       },
-      agent: {
-        maxSockets: 100,
-        maxFreeSockets: 10,
-        freeSocketTimeout: 30000,
-      },
+      agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_SECONDS', 10000))),
+      enabled: get('COMMON_COMPONENTS_ENABLED', 'true') === 'true',
     },
     digitalPrisonServiceUrl: get('DPS_URL', 'http://localhost:3000', requiredInProduction),
   },
@@ -194,6 +171,7 @@ export default {
   },
   featureFlagOutageBannerEnabled: get('FEATURE_FLAG_OUTAGE_BANNER_ENABLED', 'false', requiredInProduction) === 'true',
   environmentName: get('ENVIRONMENT_NAME', ''),
+  ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   featureFlagRemoveCellLocationAgencies: get('FEATURE_FLAG_REMOVE_CELL_LOCATION_AGENCIES', '').split(','),
   maxWeeksFromIncidentDateToSubmitOrEditReport: get('MAX_WEEKS_TO_SUBMIT_OR_EDIT_REPORT', 13) as number,
 }
