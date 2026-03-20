@@ -199,6 +199,9 @@
     "notifications-node-client": {
       "axios": "1.13.5"
     },
-    "tar": ">=7.5.9"
+    "tar": ">=7.5.9",
+    "mocha": {
+      "serialize-javascript": "7.0.4"
+    }
   }
 }
