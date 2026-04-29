@@ -106,7 +106,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@hapi/joi-date": "^2.0.1",
-    "@ministryofjustice/frontend": "^5.2.1",
+    "@ministryofjustice/frontend": "^9.0.0",
     "@ministryofjustice/hmpps-monitoring": "1.0.2",
     "@ministryofjustice/hmpps-rest-client": "^1.1.0",
     "agentkeepalive": "^4.6.0",
