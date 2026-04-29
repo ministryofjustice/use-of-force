@@ -151,7 +151,7 @@
     "redis": "^4.7.1",
     "sass-middleware": "^0.0.3",
     "superagent": "^10.3.0",
-    "uuid": "13.0.0"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
