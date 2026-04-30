@@ -19,7 +19,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+  packages: write
 
 concurrency:
   # if branch is main, append commit sha to the group name, so that other jobs from main don't get cancelled
@@ -62,7 +62,7 @@ jobs:
       - node_integration_tests
       - node_unit_tests
     permissions:
-        packages: write
+        id-token: write
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
