@@ -31,11 +31,10 @@ describe('tokenStore', () => {
 
     it('Connects when no connection calling getToken', async () => {
       ;(redisClient as unknown as Record<string, boolean>).isOpen = false
-      redisClient.get.mockResolvedValue('token-1')
 
       await tokenStore.getToken('user-1')
 
-      expect(redisClient.connect).toHaveBeenCalled()
+      expect(redisClient.connect).toHaveBeenCalledWith()
     })
   })
 
@@ -51,7 +50,7 @@ describe('tokenStore', () => {
 
       await tokenStore.setToken('user-1', 'token-1', 10)
 
-      expect(redisClient.connect).toHaveBeenCalled()
+      expect(redisClient.connect).toHaveBeenCalledWith()
     })
   })
 })
