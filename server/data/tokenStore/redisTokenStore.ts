@@ -29,7 +29,7 @@ export default class RedisTokenStore implements TokenStore {
     const value = await this.client.get(`${this.prefix}${key}`)
 
     if (value == null) {
-      throw new Error('Token not found')
+      return null
     }
 
     return typeof value === 'string' ? value : value.toString('utf-8')
