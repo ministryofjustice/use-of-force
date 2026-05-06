@@ -131,7 +131,7 @@
     "govuk-frontend": "^5.14.0",
     "helmet": "^8.1.0",
     "http-errors": "^2.0.1",
-    "https-proxy-agent": "^7.0.6",
+    "https-proxy-agent": "^9.0.0",
     "iconv-lite": "0.7.2",
     "jwt-decode": "^4.0.0",
     "knex": "3.2.9",
