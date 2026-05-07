@@ -734,9 +734,7 @@ describe('CoordinatorEditReportController', () => {
           })
         )
       })
-
-
-    it('should not render page but redirect to view incident page when no edits in session', async () => {
+      it('should not render page but redirect to view incident page when no edits in session', async () => {
         req.params = { reportId: '1' }
         req.session.incidentReport = undefined
         await controller.viewEditPrimaryReasonForUof(req, res)
@@ -763,10 +761,12 @@ describe('CoordinatorEditReportController', () => {
 
     describe('viewEditUseOfForceDetails', () => {
       it('should render page', async () => {
-        req.session.incidentReport = [{
-          reportId: 1,
-          whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-        }]
+        req.session.incidentReport = [
+          {
+            reportId: 1,
+            whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
+          },
+        ]
         await controller.viewEditUseOfForceDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
