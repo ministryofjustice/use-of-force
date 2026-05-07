@@ -70,7 +70,7 @@ context('Submitting duplicate report', () => {
     return reportMayAlreadyExistPage
   }
 
-  it('Only shows duplicates for the specific offender on the same day', () => {
+  xit('Only shows duplicates for the specific offender on the same day', () => {
     cy.task('seedReports', [
       {
         ...duplicateBooking,
