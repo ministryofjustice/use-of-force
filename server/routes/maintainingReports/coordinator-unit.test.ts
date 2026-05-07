@@ -314,10 +314,11 @@ describe('CoordinatorEditReportController', () => {
   describe('Report details', () => {
     describe('viewEditReport', () => {
       it("should display the correct details in 'last edited' row", async () => {
+        const baseDate = new Date()
         const reportEdits = [
           {
             id: 2,
-            editDate: subDays(new Date(), 1),
+            editDate: subDays(baseDate, 1),
             editorUserId: 'UserId2',
             editorName: 'John Smith',
             reportId: 1,
@@ -329,7 +330,7 @@ describe('CoordinatorEditReportController', () => {
           },
           {
             id: 1,
-            editDate: subDays(new Date(), 2),
+            editDate: subDays(baseDate, 2),
             editorUserId: 'UserId1',
             editorName: 'Mike Smith',
             reportId: 1,
@@ -359,7 +360,7 @@ describe('CoordinatorEditReportController', () => {
                   oldValue: true,
                 },
               },
-              editDate: subDays(new Date(), 1),
+              editDate: subDays(baseDate, 1),
               editorName: 'John Smith',
               editorUserId: 'UserId2',
               id: 2,

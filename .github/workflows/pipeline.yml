@@ -61,6 +61,10 @@ jobs:
     needs:
       - node_integration_tests
       - node_unit_tests
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
