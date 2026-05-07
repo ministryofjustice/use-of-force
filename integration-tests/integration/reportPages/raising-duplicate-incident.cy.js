@@ -75,22 +75,22 @@ context('Submitting duplicate report', () => {
       {
         ...duplicateBooking,
         sequenceNumber: 1,
-        incidentDate: incidentDate1.toISOString(), // ✅ FIX
+        incidentDate: incidentDate1.toISOString(),
       },
       {
         ...duplicateBooking,
         sequenceNumber: 2,
-        incidentDate: incidentDate2.toISOString(), // ✅ FIX
+        incidentDate: incidentDate2.toISOString(),
       },
       {
         ...duplicateBooking,
         sequenceNumber: 3,
-        incidentDate: incidentDate3.toISOString(), // ✅ FIX
+        incidentDate: incidentDate3.toISOString(),
       },
       {
         ...duplicateBooking,
         sequenceNumber: 4,
-        incidentDate: incidentDate4.toISOString(), // ✅ FIX
+        incidentDate: incidentDate4.toISOString(),
       },
       {
         ...duplicateBooking,
