@@ -734,6 +734,13 @@ describe('CoordinatorEditReportController', () => {
           })
         )
       })
+      it('should not render page but redirect to view incident page when no edits in session', async () => {
+        req.params = { reportId: '1' }
+        req.session.incidentReport = undefined
+        await controller.viewEditPrimaryReasonForUof(req, res)
+        expect(res.render).not.toHaveBeenCalled()
+        expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
+      })
     })
 
     describe('submitEditPrimaryReasonForUof', () => {
@@ -754,13 +761,25 @@ describe('CoordinatorEditReportController', () => {
 
     describe('viewEditUseOfForceDetails', () => {
       it('should render page', async () => {
-        req.session.incidentReport = {
-          whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-        }
+        req.session.incidentReport = [
+          {
+            reportId: 1,
+            whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
+          },
+        ]
         await controller.viewEditUseOfForceDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalled()
+      })
+
+      it('should not render page but redirect to view incident page when no edits in session', async () => {
+        req.session.incidentReport = undefined
+        await controller.viewEditUseOfForceDetails(req, res)
+        expect(reviewService.getReport).not.toHaveBeenCalledWith(1)
+        expect(offenderService.getOffenderDetails).not.toHaveBeenCalledWith('123456', 'USER')
+        expect(res.render).not.toHaveBeenCalled()
+        expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
       })
     })
 
@@ -1102,6 +1121,15 @@ describe('CoordinatorEditReportController', () => {
           }),
         })
       )
+    })
+
+    it('should not render page but redirect to view incident page when no edits in session', async () => {
+      req.session.incidentReport = undefined
+      req.flash = jest.fn().mockReturnValue([])
+
+      await controller.viewReasonForChange(req, res)
+      expect(res.render).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
 
     it('should include errors from flash if present', async () => {

@@ -441,4 +441,70 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
       reasonForChangePage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
     })
   })
+
+  it('can not navigate back using browser once edit has been submitted', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeUofDetailsLink().click()
+
+    const reasonsPage = ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['FIGHT_BETWEEN_PRISONERS'])
+    })
+    reasonsPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    reasonsPage.clickContinue()
+
+    const primaryReasonPage = PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    primaryReasonPage.clickContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+    useOfForceDetailsPage.radio('positiveCommunication', 'false').click()
+    useOfForceDetailsPage.continueButton().click()
+
+    const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+
+    const tableRows = [
+      {
+        row: 1,
+        question: 'Why was use of force applied against this prisoner?',
+        old: 'Fight between prisoners',
+        new: 'Assault on a member of staff, Fight between prisoners',
+      },
+      {
+        row: 2,
+        question: 'What was the primary reason use of force was applied against this prisoner?',
+        old: 'Not applicable',
+        new: 'Assault on a member of staff',
+      },
+      {
+        row: 3,
+        question: 'Was positive communication used to de-escalate the situation with this prisoner?',
+        old: 'Yes',
+        new: 'No',
+      },
+    ]
+
+    tableRows.forEach(({ row, question, old, new: newValue }) => {
+      reasonForChangePage.tableRowAndColHeading(row, 'question').should('contain', question)
+      reasonForChangePage.tableRowAndColHeading(row, 'old-value').should('contain', old)
+      reasonForChangePage.tableRowAndColHeading(row, 'new-value').should('contain', newValue)
+    })
+
+    reasonForChangePage.radioAnotherReason().click()
+    reasonForChangePage.anotherReasonText().type('Some more details')
+    reasonForChangePage.additionalInfoText().type('Some even more additional details')
+    reasonForChangePage.saveButton().click()
+    // edit is complete
+    ViewIncidentPage.verifyOnPage()
+
+    // attempt to go back to reason for change page using browser back button should not work and should stay on view incident page
+    cy.go('back')
+    ViewIncidentPage.verifyOnPage()
+  })
 })

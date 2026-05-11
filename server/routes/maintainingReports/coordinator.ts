@@ -417,6 +417,12 @@ export default class CoordinatorRoutes {
 
   viewEditPrimaryReasonForUof: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+
+    // prevent user accessing this page if they have already completed edit journey
+    if (!this.getIncidentReportSession(req, reportId)) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
@@ -459,6 +465,12 @@ export default class CoordinatorRoutes {
 
   viewEditUseOfForceDetails: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+
+    // prevent user accessing this page if they have already completed edit journey
+    if (!this.getIncidentReportSession(req, reportId)) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
@@ -779,6 +791,12 @@ export default class CoordinatorRoutes {
   // viewReasonForChange will be used for changes to many parts of the report
   viewReasonForChange: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
+
+    // prevent user accessing this page if they have already completed edit journey
+    if (!this.getIncidentReportSession(req, reportId)) {
+      return res.redirect(`/${reportId}/view-incident?tab=report`)
+    }
+
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
 
     if (!reportEditOrDeletePermitted) {
