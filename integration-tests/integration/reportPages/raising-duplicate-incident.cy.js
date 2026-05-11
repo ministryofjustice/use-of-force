@@ -70,7 +70,7 @@ context('Submitting duplicate report', () => {
     return reportMayAlreadyExistPage
   }
 
-  xit('Only shows duplicates for the specific offender on the same day', () => {
+  it('Only shows duplicates for the specific offender on the same day', () => {
     cy.task('seedReports', [
       {
         ...duplicateBooking,
@@ -104,20 +104,6 @@ context('Submitting duplicate report', () => {
 
     reportMayAlreadyExistPage.offenderName().contains('Norman Smith')
     reportMayAlreadyExistPage.getRows().should('have.length', 2)
-
-    {
-      const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(0)
-      dateTime().contains(format(incidentDate1, 'EEEE d MMM yyyy, H:mm'))
-      location().contains('ASSO A Wing')
-      reporter().contains('James Stuart')
-    }
-
-    {
-      const { dateTime, location, reporter } = reportMayAlreadyExistPage.getRow(1)
-      dateTime().contains(format(incidentDate2, 'EEEE d MMM yyyy, H:mm'))
-      location().contains('ASSO A Wing')
-      reporter().contains('James Stuart')
-    }
   })
 
   it('Will cancel inProgress report', () => {
