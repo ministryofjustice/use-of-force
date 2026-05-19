@@ -107,7 +107,7 @@
     "@hapi/joi": "^17.1.1",
     "@hapi/joi-date": "^2.0.1",
     "@ministryofjustice/frontend": "^5.2.1",
-    "@ministryofjustice/hmpps-monitoring": "2.0.0",
+    "@ministryofjustice/hmpps-monitoring": "2.1.0",
     "@ministryofjustice/hmpps-rest-client": "^2.1.0",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.8",
@@ -155,7 +155,7 @@
     "uuid": "14.0.0"
   },
   "devDependencies": {
-    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.4",
+    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.5",
     "@ministryofjustice/hmpps-precommit-hooks": "3.0.0",
     "@types/bunyan": "^1.8.11",
     "@types/express": "^4.17.25",
