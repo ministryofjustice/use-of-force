@@ -7,6 +7,7 @@ npm-debug.log
 README.md
 .*
 !.allowed-scripts.mjs
+!.npmrc
 **/*.test.js
 scss-report.txt
 eslint-report.html

@@ -35,7 +35,7 @@ WORKDIR /app
 RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
         > /app/root.cert
 
-COPY package*.json .allowed-scripts.mjs ./
+COPY package*.json .allowed-scripts.mjs .npmrc ./
 RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
 ENV NODE_ENV='production'
 
