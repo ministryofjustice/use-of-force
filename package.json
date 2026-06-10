@@ -112,7 +112,7 @@
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.8",
     "applicationinsights-native-metrics": "^0.0.11",
-    "axe-core": "^4.11.4",
+    "axe-core": "^4.12.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "compression": "^1.8.1",
@@ -122,7 +122,7 @@
     "cookie-session": "^2.1.1",
     "csrf-sync": "^4.2.1",
     "cypress-axe": "^1.7.0",
-    "date-fns": "^4.3.0",
+    "date-fns": "^4.4.0",
     "date-fns-tz": "3.2.0",
     "encoding": "0.1.13",
     "escape-html": "^1.0.3",
@@ -138,7 +138,7 @@
     "knex": "3.2.10",
     "lodash": "^4.18.1",
     "moment": "^2.30.1",
-    "morgan": "^1.10.1",
+    "morgan": "^1.11.0",
     "nocache": "4.0.0",
     "notifications-node-client": "8.4.0",
     "nunjucks": "^3.2.4",
@@ -179,12 +179,12 @@
     "eslint-import-resolver-typescript": "^3.10.1",
     "eslint-plugin-cypress": "^2.15.2",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-prettier": "5.5.6",
     "jest": "30.4.2",
     "jest-html-reporter": "4.4.0",
     "jest-junit": "17.0.0",
     "jsonwebtoken": "^9.0.3",
-    "lint-staged": "^17.0.5",
+    "lint-staged": "^17.0.7",
     "mocha": "11.7.6",
     "mocha-junit-reporter": "^2.2.1",
     "nock": "14.0.15",
@@ -198,9 +198,9 @@
   },
   "overrides": {
     "notifications-node-client": {
-      "axios": ">=1.16.1"
+      "axios": ">=1.17.0"
     },
-    "tar": ">=7.5.15",
+    "tar": ">=7.5.16",
     "brace-expansion": "5.0.6",
     "tmp": "0.2.7",
     "mocha": {
