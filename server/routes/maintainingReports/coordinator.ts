@@ -45,13 +45,21 @@ export default class CoordinatorRoutes {
     private readonly reportEditService: ReportEditService
   ) {}
 
+  // when user starts a new journey, delete any edits from session that may exist for any previous edit journey that was not completed
+  deleteAnyPendingEditsForThisReport(req: Request, reportId: number): void {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
+    req.session.incidentReport = req.session.incidentReport.filter(
+      (entry: { reportId: number }) => entry.reportId !== reportId
+    )
+  }
+
   viewEditReport: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
-
+    this.deleteAnyPendingEditsForThisReport(req, reportId)
     const { user } = res.locals
     const systemToken = await this.authService.getSystemClientToken(user.username)
     const report = await this.reviewService.getReport(reportId)
