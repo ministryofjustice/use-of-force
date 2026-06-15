@@ -18,15 +18,8 @@ export default class ViewIncidentsRoutes {
     private readonly authService: AuthService
   ) {}
 
-  // handle any session data for this report if user closes browser tab without completing the edit
-  deleteAnyPendingEditsForThisReport(req, reportId) {
-    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
-    req.session.incidentReport = req.session.incidentReport.filter(entry => entry.reportId !== reportId)
-  }
-
   viewIncident: RequestHandler = async (req, res) => {
     const incidentId = extractReportId(req)
-    this.deleteAnyPendingEditsForThisReport(req, incidentId)
     const { tab } = req.query
     const { isReviewer, isCoordinator, username } = res.locals.user
     const report = await this.reviewService.getReport(incidentId)

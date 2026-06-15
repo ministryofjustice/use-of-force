@@ -7,7 +7,6 @@ import ReportService from '../../services/reportService'
 import ReportEditService from '../../services/reportEditService'
 import AuthService from '../../services/authService'
 import ReportDetailBuilder, { ReportDetail } from '../../services/reportDetailBuilder'
-import ViewIncidentsRoutes from './viewIncidents'
 import logger from '../../../log'
 
 jest.mock('../../services/reviewService')
@@ -744,89 +743,5 @@ describe('Edit history tab', () => {
           'someOtherUser attempted to access edit history for report 1 even though they are not the reporter or a reviewer/coordinator'
         )
       })
-  })
-})
-
-describe('deleteAnyPendingEditsForThisReport', () => {
-  let viewIncidentsRoutes: ViewIncidentsRoutes
-
-  beforeEach(() => {
-    viewIncidentsRoutes = new ViewIncidentsRoutes(
-      reportService,
-      reportEditService,
-      reportDetailBuilder,
-      reviewService,
-      authService
-    )
-  })
-
-  it('should remove the entry with the given reportId from session.incidentReport', () => {
-    const req = {
-      session: {
-        incidentReport: [
-          { reportId: 1, data: 'foo' },
-          { reportId: 2, data: 'bar' },
-        ],
-      },
-    } as any
-    viewIncidentsRoutes.deleteAnyPendingEditsForThisReport(req, 1)
-    expect(req.session.incidentReport).toEqual([{ reportId: 2, data: 'bar' }])
-  })
-
-  it('should do nothing if session.incidentReport is not an array', () => {
-    const req = { session: { incidentReport: {} } } as any
-    viewIncidentsRoutes.deleteAnyPendingEditsForThisReport(req, 1)
-    expect(req.session.incidentReport).toEqual({})
-  })
-
-  it('should do nothing if session.incidentReport is undefined', () => {
-    const req = { session: {} } as any
-    viewIncidentsRoutes.deleteAnyPendingEditsForThisReport(req, 1)
-    expect(req.session.incidentReport).toBeUndefined()
-  })
-})
-
-describe('ViewIncidentsRoutes', () => {
-  let viewIncidentsRoutes: any
-  let req: any
-  let res: any
-
-  beforeEach(() => {
-    viewIncidentsRoutes = new ViewIncidentsRoutes(
-      reportService,
-      reportEditService,
-      reportDetailBuilder,
-      reviewService,
-      authService
-    )
-    req = {
-      params: { incidentId: '123' },
-      session: {},
-      query: {},
-      user: {},
-      flash: jest.fn().mockReturnValue([{}]),
-      res: {},
-      ...{
-        locals: { user: { isCoordinator: true, username: 'user1' } },
-      },
-    }
-    res = {
-      render: jest.fn(),
-      redirect: jest.fn(),
-      locals: req.locals,
-    }
-  })
-
-  it('should call deleteAnyPendingEditsForThisReport with the correct incidentId', async () => {
-    const spy = jest.spyOn(viewIncidentsRoutes, 'deleteAnyPendingEditsForThisReport')
-    reviewService.getReport.mockResolvedValue({ username: 'user1', form: {} } as Report)
-    reportService.getReportEdits.mockResolvedValue([])
-    reportEditService.mapEditDataToViewOutput.mockResolvedValue([])
-    reportDetailBuilder.build.mockResolvedValue({ offenderDetail: {}, form: {} } as unknown as ReportDetail)
-    authService.getSystemClientToken.mockResolvedValue('token')
-    reviewService.getStatements.mockResolvedValue([])
-
-    await viewIncidentsRoutes.viewIncident(req, res)
-    expect(spy).toHaveBeenCalledWith(req, 123)
   })
 })

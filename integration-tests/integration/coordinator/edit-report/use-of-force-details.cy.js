@@ -507,4 +507,71 @@ context("A use of force coordinator needs to edit a submitted report's Use of Fo
     cy.go('back')
     ViewIncidentPage.verifyOnPage()
   })
+
+  it('does not lose session data if navigates to /view-incident part way through an edit', () => {
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.editReportButton().click()
+
+    const editReportPage = EditReportPage.verifyOnPage()
+    editReportPage.changeUofDetailsLink().click()
+
+    const reasonsPage = ReasonsForUseOfForcePage.verifyOnPage()
+    reasonsPage.reasons().then(reasons => {
+      expect(reasons).to.deep.equal(['FIGHT_BETWEEN_PRISONERS'])
+    })
+    reasonsPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    reasonsPage.clickContinue()
+
+    const primaryReasonPage = PrimaryReasonForUseOfForcePage.verifyOnPage()
+    primaryReasonPage.checkReason('ASSAULT_ON_A_MEMBER_OF_STAFF')
+    primaryReasonPage.clickContinue()
+
+    const useOfForceDetailsPage = UseOfForceDetailsPage.verifyOnPage()
+
+    // rather than submitting changes, user navigates to /view-incident again
+    cy.location('pathname').then(pathname => {
+      const reportId = pathname.split('/')[1]
+      cy.visit(`/${reportId}/view-incident`)
+    })
+
+    // then returns to the /use-of-force-details page to submit changes
+    cy.location('pathname').then(pathname => {
+      const reportId = pathname.split('/')[1]
+      cy.visit(`/${reportId}/edit-report/use-of-force-details`)
+    })
+
+    useOfForceDetailsPage.continueButton().click()
+
+    const reasonForChangePage = ReasonForChangePage.verifyOnPage()
+    reasonForChangePage.backLink().should('exist')
+
+    reasonForChangePage
+      .tableRowAndColHeading(1, 'question')
+      .should('contain', 'Why was use of force applied against this prisoner?')
+    reasonForChangePage.tableRowAndColHeading(1, 'old-value').should('contain', 'Fight between prisoners')
+    reasonForChangePage
+      .tableRowAndColHeading(1, 'new-value')
+      .should('contain', 'Assault on a member of staff, Fight between prisoners')
+    reasonForChangePage.radioAnotherReason().click()
+    reasonForChangePage.anotherReasonText().type('Some more details')
+    reasonForChangePage.additionalInfoText().type('Some even more additional details')
+    reasonForChangePage.saveButton().click()
+
+    ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.successBanner().should('exist')
+    viewIncidentPage.reasonsForUseOfForce().should('contain', 'Assault on a member of staff, Fight between prisoners')
+    viewIncidentPage.editHistoryLinkInSuccessBanner().click()
+    const editHistoryPage = EditHistoryPage.verifyOnPage()
+    editHistoryPage
+      .tableRowAndColHeading(1, 'what-changed')
+      .should('contain', 'Why was use of force applied against this prisoner?')
+    editHistoryPage.tableRowAndColHeading(1, 'old-value').should('contain', 'Fight between prisoners')
+    editHistoryPage
+      .tableRowAndColHeading(1, 'new-value')
+      .should('contain', 'Assault on a member of staff, Fight between prisoners')
+    editHistoryPage.tableRowAndColHeading(1, 'reason').should('contain', 'Another reason: Some more details')
+  })
 })

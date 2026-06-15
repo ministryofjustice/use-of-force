@@ -309,6 +309,20 @@ describe('CoordinatorEditReportController', () => {
         },
       })
     })
+
+    it('should call deleteAnyPendingEditsForThisReport with the correct incidentId', async () => {
+      req.params = { reportId: '123' }
+      req.session.incidentReport = [
+        { reportId: 123, reasonForChange: 'old reason' },
+        { reportId: 456, reasonForChange: 'keep me' },
+      ]
+      const spy = jest.spyOn(controller, 'deleteAnyPendingEditsForThisReport')
+
+      await controller.viewEditReport(req, res)
+
+      expect(spy).toHaveBeenCalledWith(req, 123)
+      expect(req.session.incidentReport).toEqual([{ reportId: 456, reasonForChange: 'keep me' }])
+    })
   })
 
   describe('Report details', () => {
