@@ -3,7 +3,7 @@ import { configureAllowedScripts } from '@ministryofjustice/hmpps-npm-script-all
 export default configureAllowedScripts({
   allowlist: {
     // cypress is used for integration tests
-    'node_modules/cypress@13.17.0': 'ALLOW',
+    'node_modules/cypress@15.17.0': 'ALLOW',
     // Provides native integration, supporting the ability to write dtrace probes for bunyan
     'node_modules/dtrace-provider@0.8.8': 'ALLOW',
     'node_modules/@parcel/watcher@2.5.6': 'ALLOW',
