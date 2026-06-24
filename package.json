@@ -197,9 +197,19 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
+    "qs": "6.15.2",
+    "@cypress/request": {
+      "uuid": "11.1.1"
+    },
     "notifications-node-client": {
       "axios": ">=1.18.0"
     },
+    "@opentelemetry/core": ">=2.8.0",
+    "@azure/functions-old": {
+      "uuid": ">=11.1.1"
+    },
+    "protobufjs": "8.6.4",
+    "js-yaml": ">=4.1.2",
     "tar": ">=7.5.16",
     "brace-expansion": "5.0.6",
     "tmp": "0.2.7",
