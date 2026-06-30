@@ -18,6 +18,7 @@
     "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice/frontend --load-path=. ./assets/sass/application.scss:./assets/stylesheets/application.css --style compressed",
     "watch-sass": "npm run compile-sass -- --watch",
     "build": "npm run compile-sass && tsc && npm run copy-views",
+    "rebuild": "npm run clean && npm i && npm run build",
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 50",
     "typecheck": "tsc",
