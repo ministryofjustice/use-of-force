@@ -32,6 +32,6 @@ export default class RedisTokenStore implements TokenStore {
       return null
     }
 
-    return typeof value === 'string' ? value : value.toString('utf-8')
+    return typeof value === 'string' ? value : null
   }
 }

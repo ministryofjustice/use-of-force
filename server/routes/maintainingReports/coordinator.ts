@@ -45,13 +45,21 @@ export default class CoordinatorRoutes {
     private readonly reportEditService: ReportEditService
   ) {}
 
+  // when user starts a new journey, delete any edits from session that may exist for any previous edit journey that was not completed
+  deleteAnyPendingEditsForThisReport(req: Request, reportId: number): void {
+    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
+    req.session.incidentReport = req.session.incidentReport.filter(
+      (entry: { reportId: number }) => entry.reportId !== reportId
+    )
+  }
+
   viewEditReport: RequestHandler = async (req, res) => {
     const reportId = extractReportId(req)
     const reportEditOrDeletePermitted = await this.reportEditService.isTodaysDateWithinEditabilityPeriod(reportId)
     if (!reportEditOrDeletePermitted) {
       return res.redirect(`/${reportId}/view-incident?tab=report`)
     }
-
+    this.deleteAnyPendingEditsForThisReport(req, reportId)
     const { user } = res.locals
     const systemToken = await this.authService.getSystemClientToken(user.username)
     const report = await this.reviewService.getReport(reportId)
@@ -1191,9 +1199,10 @@ export default class CoordinatorRoutes {
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
+    const parsedReportId = parseInt(reportId, 10)
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
     const [{ name, userId, email }, removalRequest] = await Promise.all([
-      this.involvedStaffService.loadInvolvedStaff(parseInt(reportId, 10), parseInt(statementId, 10)),
+      this.involvedStaffService.loadInvolvedStaff(parsedReportId, parseInt(statementId, 10)),
       this.involvedStaffService.getInvolvedStaffRemovalRequest(parseInt(statementId, 10)),
     ])
     const location = await this.userService.getUserLocation(token, userId)
@@ -1207,7 +1216,7 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
 
     if (!removalRequest.isRemovalRequested) {
-      return res.redirect(paths.viewStatements(parseInt(reportId, 10)))
+      return res.redirect(`/${parsedReportId}/view-incident?tab=statements`)
     }
     return res.render('pages/coordinator/view-removal-request.html', { data, errors })
   }

@@ -6,6 +6,7 @@ const ConfirmStatementDeletePage = require('../../pages/reviewer/confirmStatemen
 const NotCompletedIncidentsPage = require('../../pages/reviewer/notCompletedIncidentsPage')
 const StaffMemberNotRemovedPage = require('../../pages/coordinator/staffMemberNotRemovedPage')
 const { ReportStatus } = require('../../../server/config/types')
+const ViewIncidentPage = require('../../pages/coordinator/viewIncidentPage')
 
 context('A use of force coordinator can accept or refuse removal statement requests', () => {
   beforeEach(() => {
@@ -95,7 +96,7 @@ context('A use of force coordinator can accept or refuse removal statement reque
       )
   })
 
-  xit(`A coordinator can refuse a statment removal request`, () => {
+  it(`A coordinator can refuse a statement removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
 
@@ -105,26 +106,35 @@ context('A use of force coordinator can accept or refuse removal statement reque
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
 
     {
-      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
+      const { prisoner, reporter } = notCompletedIncidentsPage.getTodoRow(0)
       prisoner().contains('Smith, Norman')
       reporter().contains('James Stuart')
-      viewStatementsButton().click()
     }
 
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.statements().then(result =>
+    notCompletedIncidentsPage.viewIncidentLink().click()
+
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+
+    viewIncidentPage.statementsTabLink().click()
+
+    viewIncidentPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
         {
-          username: 'TEST_USER name',
-          badge: 'REMOVAL REQUEST',
-          link: 'View removal request',
-          isOverdue: false,
-          isUnverified: false,
+          username: 'MRS_JONES name (MRS_JONES)',
+          email: 'MRS_JONES@gov.uk',
+          status: '',
+          action: '',
+        },
+        {
+          username: 'TEST_USER name (TEST_USER)',
+          email: 'TEST_USER@gov.uk, REMOVAL REQUEST',
+          status: '',
+          action: 'View removal request',
         },
       ])
     )
-    viewStatementsPage.statementLink(1).click()
+
+    viewIncidentPage.removalRequestLink().click()
 
     const viewRemovalRequestPage = ViewRemovalRequestPage.verifyOnPage()
     viewRemovalRequestPage.name().contains('TEST_USER name')
@@ -139,117 +149,72 @@ context('A use of force coordinator can accept or refuse removal statement reque
     staffMemberNotRemovedPage.name().contains('TEST_USER name')
     staffMemberNotRemovedPage.return().click()
 
-    viewStatementsPage.statements().then(result =>
+    viewIncidentPage.statements().then(result =>
       expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
         {
-          username: 'TEST_USER name',
-          badge: '',
-          link: '',
-          isOverdue: false,
-          isUnverified: false,
+          username: 'MRS_JONES name (MRS_JONES)',
+          email: 'MRS_JONES@gov.uk',
+          status: '',
+          action: '',
+        },
+        {
+          username: 'TEST_USER name (TEST_USER)',
+          email: 'TEST_USER@gov.uk',
+          status: '',
+          action: '',
         },
       ])
     )
+    viewIncidentPage.returnToUseOfForceIncidentsLink().should('have.attr', 'href', '/not-completed-incidents')
   })
 
-  xit(`A coordinator can change their mind about accepting a statment removal request`, () => {
+  it(`A coordinator can not backtrack using link following refusal of a statement removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
-
     seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-
-    {
-      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
-      prisoner().contains('Smith, Norman')
-      reporter().contains('James Stuart')
-      viewStatementsButton().click()
-    }
-
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.statements().then(result =>
-      expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        {
-          username: 'TEST_USER name',
-          badge: 'REMOVAL REQUEST',
-          link: 'View removal request',
-          isOverdue: false,
-          isUnverified: false,
-        },
-      ])
-    )
-    viewStatementsPage.statementLink(1).click()
-
+    notCompletedIncidentsPage.viewIncidentLink().click()
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.removalRequestLink().click()
     const viewRemovalRequestPage = ViewRemovalRequestPage.verifyOnPage()
-    viewRemovalRequestPage.name().contains('TEST_USER name')
-    viewRemovalRequestPage.userId().contains('TEST_USER')
-    viewRemovalRequestPage.location().contains('Moorland')
-    viewRemovalRequestPage.emailAddress().contains('TEST_USER@gov.uk')
-    viewRemovalRequestPage.removalReason().contains('not working')
-    viewRemovalRequestPage.confirm()
+    viewRemovalRequestPage.refuse().click()
     viewRemovalRequestPage.continue().click()
-
-    const confirmStatementDeletePage = ConfirmStatementDeletePage.verifyOnPage('TEST_USER name')
-    confirmStatementDeletePage.refuse()
-    confirmStatementDeletePage.continue().click()
-
-    viewStatementsPage.statements().then(result =>
-      expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        {
-          username: 'TEST_USER name',
-          badge: 'REMOVAL REQUEST',
-          link: 'View removal request',
-          isOverdue: false,
-          isUnverified: false,
-        },
-      ])
-    )
+    const staffMemberNotRemovedPage = StaffMemberNotRemovedPage.verifyOnPage()
+    staffMemberNotRemovedPage.return().click()
+    ViewIncidentPage.verifyOnPage()
   })
 
-  xit(`A coordinator is shown a validation message when they neither accept or refuse a statment removal request`, () => {
+  it(`A coordinator can not backtrack using browser-back following refusal of a statement removal request`, () => {
     cy.task('stubCoordinatorLogin')
     cy.login()
-
     seedReport()
-
     const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
     notCompletedIncidentsPage.getTodoRows().should('have.length', 1)
-
-    {
-      const { prisoner, reporter, viewStatementsButton } = notCompletedIncidentsPage.getTodoRow(0)
-      prisoner().contains('Smith, Norman')
-      reporter().contains('James Stuart')
-      viewStatementsButton().click()
-    }
-
-    const viewStatementsPage = ViewStatementsPage.verifyOnPage()
-    viewStatementsPage.statements().then(result =>
-      expect(result).to.deep.equal([
-        { username: 'MRS_JONES name', badge: '', link: '', isOverdue: false, isUnverified: false },
-        {
-          username: 'TEST_USER name',
-          badge: 'REMOVAL REQUEST',
-          link: 'View removal request',
-          isOverdue: false,
-          isUnverified: false,
-        },
-      ])
-    )
-    viewStatementsPage.statementLink(1).click()
-
+    notCompletedIncidentsPage.viewIncidentLink().click()
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.removalRequestLink().click()
     const viewRemovalRequestPage = ViewRemovalRequestPage.verifyOnPage()
-    viewRemovalRequestPage.name().contains('TEST_USER name')
-    viewRemovalRequestPage.userId().contains('TEST_USER')
-    viewRemovalRequestPage.location().contains('Moorland')
-    viewRemovalRequestPage.emailAddress().contains('TEST_USER@gov.uk')
-    viewRemovalRequestPage.removalReason().contains('not working')
+    viewRemovalRequestPage.refuse().click()
     viewRemovalRequestPage.continue().click()
+    StaffMemberNotRemovedPage.verifyOnPage()
+    cy.go('back')
+    ViewIncidentPage.verifyOnPage()
+  })
 
+  it(`A coordinator is shown a validation message when they neither accept or refuse a statment removal request`, () => {
+    cy.task('stubCoordinatorLogin')
+    cy.login()
+    seedReport()
+    const notCompletedIncidentsPage = NotCompletedIncidentsPage.goTo()
+    notCompletedIncidentsPage.viewIncidentLink().click()
+    const viewIncidentPage = ViewIncidentPage.verifyOnPage()
+    viewIncidentPage.statementsTabLink().click()
+    viewIncidentPage.removalRequestLink().click()
+    const viewRemovalRequestPage = ViewRemovalRequestPage.verifyOnPage()
+    viewRemovalRequestPage.continue().click()
     viewRemovalRequestPage.errorSummaryTitle().contains('There is a problem')
     viewRemovalRequestPage.errorSummaryBody().contains('Select yes if you want to remove this person from the incident')
     viewRemovalRequestPage.inlineError().contains('Select yes if you want to remove this person from the incident')
