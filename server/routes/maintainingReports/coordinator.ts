@@ -1199,9 +1199,10 @@ export default class CoordinatorRoutes {
 
   viewRemovalRequest: RequestHandler = async (req, res) => {
     const { reportId, statementId } = req.params
+    const parsedReportId = parseInt(reportId, 10)
     const token = await this.authService.getSystemClientToken(res.locals.user.username)
     const [{ name, userId, email }, removalRequest] = await Promise.all([
-      this.involvedStaffService.loadInvolvedStaff(parseInt(reportId, 10), parseInt(statementId, 10)),
+      this.involvedStaffService.loadInvolvedStaff(parsedReportId, parseInt(statementId, 10)),
       this.involvedStaffService.getInvolvedStaffRemovalRequest(parseInt(statementId, 10)),
     ])
     const location = await this.userService.getUserLocation(token, userId)
@@ -1215,7 +1216,7 @@ export default class CoordinatorRoutes {
     const errors = req.flash('errors')
 
     if (!removalRequest.isRemovalRequested) {
-      return res.redirect(paths.viewStatements(parseInt(reportId, 10)))
+      return res.redirect(`/${parsedReportId}/view-incident?tab=statements`)
     }
     return res.render('pages/coordinator/view-removal-request.html', { data, errors })
   }
