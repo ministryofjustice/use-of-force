@@ -15,7 +15,8 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "ignoreDeprecations": "5.0",
-    "baseUrl": ""
+    "baseUrl": "",
+    "types": ["node", "jest", "mocha", "cypress"]
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist", "coverage"],
   "include": ["**/*.js", "**/*.ts"]

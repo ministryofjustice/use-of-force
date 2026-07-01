@@ -6,10 +6,9 @@ import { PrisonClient } from '../data'
 import AuthService from './authService'
 
 export default class OffenderService {
-  // eslint-disable-next-line
   constructor(
     private readonly prisonClient: PrisonClient,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

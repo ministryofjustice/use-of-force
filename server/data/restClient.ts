@@ -34,7 +34,7 @@ export default class RestClient {
   constructor(
     private readonly name: string,
     private readonly config: ApiConfig,
-    private readonly token: string
+    private readonly token: string,
   ) {
     this.agent = config.url.startsWith('https') ? new HttpsAgent(config.agent) : new HttpAgent(config.agent)
   }
@@ -79,7 +79,7 @@ export default class RestClient {
 
   private async requestWithBody<Response = unknown>(
     method: 'patch' | 'post' | 'put',
-    { path, query = {}, headers = {}, responseType = '', data = {}, raw = false, retry = false }: RequestWithBody
+    { path, query = {}, headers = {}, responseType = '', data = {}, raw = false, retry = false }: RequestWithBody,
   ): Promise<Response> {
     logger.info(`${this.name} ${method.toUpperCase()}: ${path}`)
     try {
@@ -168,7 +168,7 @@ export default class RestClient {
             reject(error)
           } else if (response) {
             const s = new Readable()
-            // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-empty-function
+            // eslint-disable-next-line no-underscore-dangle
             s._read = () => {}
             s.push(response.body)
             s.push(null)

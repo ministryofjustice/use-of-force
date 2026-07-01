@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { addDays, format, subWeeks } from 'date-fns'
 import type { Request, RequestHandler } from 'express'
 import config from '../../config'
@@ -42,14 +42,14 @@ export default class CoordinatorRoutes {
     private readonly authService: AuthService,
     private readonly locationService: LocationService,
     private readonly reportDetailBuilder: ReportDataBuilder,
-    private readonly reportEditService: ReportEditService
+    private readonly reportEditService: ReportEditService,
   ) {}
 
   // when user starts a new journey, delete any edits from session that may exist for any previous edit journey that was not completed
   deleteAnyPendingEditsForThisReport(req: Request, reportId: number): void {
     if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
     req.session.incidentReport = req.session.incidentReport.filter(
-      (entry: { reportId: number }) => entry.reportId !== reportId
+      (entry: { reportId: number }) => entry.reportId !== reportId,
     )
   }
 
@@ -176,7 +176,7 @@ export default class CoordinatorRoutes {
     const bookingId = await this.reviewService.getBookingIdWithReportId(reportId)
     const offenderDetail = await this.offenderService.getOffenderDetails(
       parseInt(bookingId, 10),
-      res.locals.user.username
+      res.locals.user.username,
     )
 
     return res.render('pages/coordinator/delete-incident-success.njk', {
@@ -200,7 +200,7 @@ export default class CoordinatorRoutes {
     const offenderDetail = await this.offenderService.getOffenderDetails(report.bookingId, res.locals.user.username)
     const incidentLocationsInPersistedPrison = await this.locationService.getIncidentLocations(
       systemToken,
-      report.agencyId
+      report.agencyId,
     )
     const { incidentDetails } = await this.reportDetailBuilder.build(res.locals.user.username, report)
     const sessionData = this.getIncidentReportSession(req, reportId)
@@ -216,9 +216,9 @@ export default class CoordinatorRoutes {
         newPrisonDetails = await this.locationService.getPrisonById(systemToken, newPrison.toString())
         incidentLocationsInNewPrison = await this.locationService.getIncidentLocations(
           systemToken,
-          newPrison.toString()
+          newPrison.toString(),
         )
-      } catch (error) {
+      } catch {
         log.error(`User attempted to obtain details for prison ${newPrison}`)
       }
     }
@@ -227,7 +227,7 @@ export default class CoordinatorRoutes {
 
     const earliestIncidentDate = format(
       addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
-      'dd/MM/yyyy'
+      'dd/MM/yyyy',
     )
 
     const data = {
@@ -557,7 +557,7 @@ export default class CoordinatorRoutes {
     // extract the data that has changed for useOfForceDetails
     const changedValuesForUofDetails = getChangedValues(
       uofDetailsComparedWithPersistedReport,
-      (value: { hasChanged: boolean }) => value.hasChanged === true
+      (value: { hasChanged: boolean }) => value.hasChanged === true,
     )
 
     const changesToUofDetails = this.reportEditService.removeHasChangedKey(changedValuesForUofDetails)
@@ -565,7 +565,7 @@ export default class CoordinatorRoutes {
     // extract data that has changed for reasonsForUseOfForce
     const changedValuesForReasons = getChangedValues(
       reasonsForUofComparedWithReport,
-      (value: { hasChanged: boolean }) => value.hasChanged === true
+      (value: { hasChanged: boolean }) => value.hasChanged === true,
     )
 
     const changesToReasonsForUof = this.reportEditService.removeHasChangedKey(changedValuesForReasons)
@@ -826,7 +826,7 @@ export default class CoordinatorRoutes {
     const changesToDisplayInTheReasonsPage = await this.reportEditService.constructChangesToView(
       res.locals.user.username,
       sectionDetails,
-      changes
+      changes,
     )
 
     data = {
@@ -990,7 +990,7 @@ export default class CoordinatorRoutes {
         await this.authService.getSystemClientToken(res.locals.user.username),
         reportId,
         username,
-        page
+        page,
       )
       content = userSearchResults?.content || []
     }
@@ -1000,7 +1000,7 @@ export default class CoordinatorRoutes {
         try {
           const isExistingInvolvedStaffMember = await this.involvedStaffService.loadInvolvedStaffByUsername(
             reportId,
-            staffMember.username
+            staffMember.username,
           )
 
           if (isExistingInvolvedStaffMember) {
@@ -1010,10 +1010,10 @@ export default class CoordinatorRoutes {
           // Log the error for debugging, but continue processing others
           log.error(
             `Error checking involved staff member ${staffMember.username} for report ${reportId}: ${error.message}`,
-            error
+            error,
           )
         }
-      })
+      }),
     )
 
     const { number: currentPage = 0, totalPages = 1, totalElements = 0, size = 10 } = userSearchResults
@@ -1072,7 +1072,7 @@ export default class CoordinatorRoutes {
       await this.authService.getSystemClientToken(res.locals.user.username),
       reportId,
       username,
-      page
+      page,
     )
 
     if (results.totalElements === undefined || results.totalElements === 0) {
@@ -1167,7 +1167,7 @@ export default class CoordinatorRoutes {
       reportId,
       username,
       res.locals.user.displayName,
-      pageInput
+      pageInput,
     )
 
     // Handle result - display appropriate alert message
@@ -1244,7 +1244,7 @@ export default class CoordinatorRoutes {
     const { reportId, statementId } = req.params
     const staffMember = await this.involvedStaffService.loadInvolvedStaff(
       parseInt(reportId, 10),
-      parseInt(statementId, 10)
+      parseInt(statementId, 10),
     )
 
     const data = { name: staffMember.name, email: staffMember.email, reportId }
@@ -1329,7 +1329,7 @@ export default class CoordinatorRoutes {
       reportId,
       parseInt(statementId, 10),
       res.locals.user.displayName,
-      pageInput
+      pageInput,
     )
 
     // redirect back to involved staff page with success message

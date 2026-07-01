@@ -37,7 +37,7 @@ context('Enter reasons for use of force', () => {
         expect(section).to.deep.equal({
           reasons: ['FIGHT_BETWEEN_PRISONERS'],
         })
-      }
+      },
     )
   })
 
@@ -64,7 +64,7 @@ context('Enter reasons for use of force', () => {
           reasons: ['FIGHT_BETWEEN_PRISONERS', 'VERBAL_THREAT', 'REFUSAL_TO_LOCATE_TO_CELL'],
           primaryReason: 'VERBAL_THREAT',
         })
-      }
+      },
     )
   })
 
@@ -110,7 +110,7 @@ context('Enter reasons for use of force', () => {
           reasons: ['VERBAL_THREAT', 'REFUSAL_TO_LOCATE_TO_CELL', 'TO_PREVENT_ESCAPE_OR_ABSCONDING'],
           primaryReason: 'REFUSAL_TO_LOCATE_TO_CELL',
         })
-      }
+      },
     )
   })
 

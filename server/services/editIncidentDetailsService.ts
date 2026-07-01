@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import moment from 'moment'
 import type LocationService from './locationService'
@@ -7,7 +6,7 @@ import AuthService from './authService'
 export default class EditIncidentDetailsService {
   constructor(
     private readonly locationService: LocationService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async buildIncidentDetails(username, questionSet, changes) {

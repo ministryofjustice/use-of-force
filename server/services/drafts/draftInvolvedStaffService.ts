@@ -10,7 +10,7 @@ export class DraftInvolvedStaffService {
     private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly prisonClient: PrisonClient,
     private readonly draftReportClient: DraftReportClient,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   private async reporter(token: string, reporterUsername: string): Promise<DraftInvolvedStaff> {
@@ -30,7 +30,7 @@ export class DraftInvolvedStaffService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: number,
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     const [involvedStaff, prisons] = await Promise.all([
       this.getInvolvedStaff(token, username, bookingId),
@@ -39,7 +39,7 @@ export class DraftInvolvedStaffService {
 
     const users = await this.manageUsersApiClient.getUsers(
       involvedStaff.map(staff => staff.username),
-      token
+      token,
     )
 
     const prisonForStaff = (staff: StaffDetails) => {

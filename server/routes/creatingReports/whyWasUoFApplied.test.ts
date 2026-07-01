@@ -20,7 +20,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
@@ -70,7 +70,7 @@ describe('/why-was-uof-applied', () => {
           expect(res.text).toContain('Use of force details')
           expect(res.text).toContain(UofReasons.ASSAULT_BY_A_MEMBER_OF_PUBLIC.label)
           expect(res.text).toContain(
-            `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago.`
+            `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago.`,
           )
           expect(res.text).toContain('Return to use of force incidents')
           expect(res.text).toContain('href="/your-reports"')

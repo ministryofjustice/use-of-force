@@ -22,7 +22,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
@@ -78,7 +78,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`
+          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`,
         )
         expect(res.text).not.toContain('Save and return to report use of force')
         expect(res.text).toContain('Return to use of force incidents')
@@ -108,7 +108,7 @@ describe('GET /section/form', () => {
       .expect(res => {
         expect(res.text).toContain('Save and continue')
         expect(res.text).not.toContain(
-          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`
+          `You can not edit or submit this report. The incident date is over ${submissionWindow} weeks ago`,
         )
         expect(res.text).not.toContain('Return to use of force incidents')
         expect(res.text).not.toContain('href="/your-reports"')
@@ -144,7 +144,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`
+          `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
         )
       })
   })
@@ -280,7 +280,7 @@ describe('POST save and continue /section/form', () => {
             plannedUseOfForce: false,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -352,7 +352,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -385,7 +385,7 @@ describe('POST save and return to tasklist', () => {
             plannedUseOfForce: true,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -414,7 +414,7 @@ describe('POST save and return to tasklist', () => {
             incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value,
         )
       })
   })
@@ -439,7 +439,7 @@ describe('POST save and return to tasklist', () => {
             incidentLocationId,
             witnesses: [{ name: 'User bob' }],
           },
-          null
+          null,
         )
       })
   })
@@ -486,7 +486,7 @@ describe('POST save and return to check-your-answers', () => {
             authorisedBy: 'Eric Bloodaxe',
             witnesses: [{ name: 'User bob' }],
           },
-          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value
+          toDate({ date: yesterday, time: { hour: '12', minute: '45' } }).value,
         )
       })
   })

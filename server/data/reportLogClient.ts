@@ -21,7 +21,7 @@ export default class ReportLogClient {
     username: string,
     reportId: number,
     action: Action,
-    details: Record<string, unknown> = {}
+    details: Record<string, unknown> = {},
   ): Promise<void> {
     await query({
       text: `insert into report_log (username, report_id, action, details, timestamp) values ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,

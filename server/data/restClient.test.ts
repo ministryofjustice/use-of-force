@@ -13,7 +13,7 @@ const restClient = new RestClient(
     },
     agent: new AgentConfig(),
   },
-  'token-1'
+  'token-1',
 )
 
 describe.each(['get', 'patch', 'post', 'put', 'delete'] as const)('Method: %s', method => {
@@ -73,7 +73,7 @@ describe.each(['get', 'patch', 'post', 'put', 'delete'] as const)('Method: %s', 
         restClient[method]({
           path: '/test',
           headers: { header1: 'headerValue1' },
-        })
+        }),
       ).rejects.toThrow('Internal Server Error')
 
       expect(nock.isDone()).toBe(true)
@@ -90,7 +90,7 @@ describe.each(['get', 'patch', 'post', 'put', 'delete'] as const)('Method: %s', 
         restClient[method]({
           path: '/test',
           headers: { header1: 'headerValue1' },
-        })
+        }),
       ).rejects.toThrow('Internal Server Error')
 
       expect(nock.isDone()).toBe(true)
@@ -112,7 +112,7 @@ describe.each(['get', 'patch', 'post', 'put', 'delete'] as const)('Method: %s', 
           path: '/test',
           headers: { header1: 'headerValue1' },
           retry: true,
-        })
+        }),
       ).rejects.toThrow('Internal Server Error')
 
       expect(nock.isDone()).toBe(true)

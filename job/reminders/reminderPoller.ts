@@ -10,7 +10,7 @@ export default function poll(
   inTransaction: InTransaction,
   incidentClient: IncidentClient,
   reminderSender: ReminderSender,
-  emailResolver: EmailResolver
+  emailResolver: EmailResolver,
 ): () => Promise<number> {
   const Status = { REMINDER_SENT: 0, REMINDER_NOT_SENT: 1, COMPLETE: 2 }
 
@@ -22,7 +22,7 @@ export default function poll(
   const setNextPollTime = async (client: QueryPerformer, reminder) => {
     const nextReminderDate = reminder.isOverdue ? null : getNextReminderDate(reminder)
     logger.info(
-      `Setting next reminder date of: '${nextReminderDate}' for staff: '${reminder.userId}', statementId: '${reminder.statementId}'`
+      `Setting next reminder date of: '${nextReminderDate}' for staff: '${reminder.userId}', statementId: '${reminder.statementId}'`,
     )
     await incidentClient.setNextReminderDate(reminder.statementId, nextReminderDate, client)
   }

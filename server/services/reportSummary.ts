@@ -28,10 +28,11 @@ const createIncidentDetails = (
   offenderDetail,
   prison: Prison,
   description,
-  incidentDetails: Partial<IncidentDetails> = {},
+  incidentDetailsParam: Partial<IncidentDetails>,
   involvedStaff,
-  incidentDate: Date
+  incidentDate: Date,
 ) => {
+  const incidentDetails = incidentDetailsParam ?? {}
   return {
     offenderName: offenderDetail.displayName,
     offenderNumber: offenderDetail.offenderNo,
@@ -51,7 +52,7 @@ const createIncidentDetails = (
 const createUseOfForceDetails = (
   details: Partial<UseOfForceDetails> = {},
   reasonsForUseOfForce: Partial<ReasonsForUseOfForce> = {},
-  evidence: Partial<Evidence> = {}
+  evidence: Partial<Evidence> = {},
 ) => {
   const bodyWornCamera = details.bodyWornCamera ? details.bodyWornCamera : evidence.bodyWornCamera
   const bodyWornCameraNumbers = details.bodyWornCameraNumbers
@@ -60,21 +61,21 @@ const createUseOfForceDetails = (
 
   return {
     reasonsForUseOfForce: whenPresent(reasonsForUseOfForce.reasons, reasons =>
-      reasons.map(value => toLabel(UofReasons, value)).join(', ')
+      reasons.map(value => toLabel(UofReasons, value)).join(', '),
     ),
     primaryReason: whenPresent(reasonsForUseOfForce.primaryReason, value => toLabel(UofReasons, value)),
     positiveCommunicationUsed: details.positiveCommunication,
     personalProtectionTechniques: details.personalProtectionTechniques,
     batonDrawn: whenPresent(details.batonDrawn, value => (value ? wasWeaponUsed(details.batonUsed) : NO)),
     batonDrawnAgainstPrisoner: whenPresent(details.batonDrawnAgainstPrisoner, value =>
-      value ? wasWeaponUsed(details.batonUsed) : NO
+      value ? wasWeaponUsed(details.batonUsed) : NO,
     ),
     pavaDrawn: whenPresent(details.pavaDrawn, value => (value ? wasWeaponUsed(details.pavaUsed) : NO)),
     pavaDrawnAgainstPrisoner: whenPresent(details.pavaDrawnAgainstPrisoner, value =>
-      value ? wasWeaponUsed(details.pavaUsed) : NO
+      value ? wasWeaponUsed(details.pavaUsed) : NO,
     ),
     guidingHoldUsed: whenPresent(details.guidingHold, value =>
-      value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO
+      value ? howManyOfficersInvolved(details.guidingHoldOfficersInvolved) : NO,
     ),
     escortingHoldUsed: details.escortingHold,
     controlAndRestraintUsed:
@@ -87,17 +88,17 @@ const createUseOfForceDetails = (
     bodyCameras: whenPresent(bodyWornCamera, value =>
       value === BodyWornCameras.YES.value
         ? `${YES} - ${extractCommaSeparatedList('cameraNum', bodyWornCameraNumbers)}` || YES
-        : toLabel(BodyWornCameras, value)
+        : toLabel(BodyWornCameras, value),
     ),
 
     weaponsObserved: whenPresent(details.weaponsObserved, value =>
       value === WeaponsObserved.YES.value
         ? `${YES} - ${extractCommaSeparatedList('weaponType', details.weaponTypes)}` || YES
-        : toLabel(WeaponsObserved, value)
+        : toLabel(WeaponsObserved, value),
     ),
     bittenByPrisonDog: details.bittenByPrisonDog,
     taserDrawn: whenPresent(details.taserDrawn, value =>
-      value === true ? `${YES} - ${getTaserDetails(details)}` : `${NO}`
+      value === true ? `${YES} - ${getTaserDetails(details)}` : `${NO}`,
     ),
   }
 }
@@ -135,16 +136,18 @@ const createRelocation = (relocationAndInjuries: Partial<RelocationAndInjuries> 
       relocationAndInjuries.relocationCompliancy === true ? YES : getNonCompliancyType(relocationAndInjuries),
 
     healthcareStaffPresent: whenPresent(relocationAndInjuries.healthcareInvolved, value =>
-      value ? relocationAndInjuries.healthcarePractionerName || YES : NO
+      value ? relocationAndInjuries.healthcarePractionerName || YES : NO,
     ),
     prisonerInjuries: relocationAndInjuries.prisonerInjuries,
     f213CompletedBy: relocationAndInjuries.f213CompletedBy,
     prisonerHospitalisation: relocationAndInjuries.prisonerHospitalisation,
     staffMedicalAttention: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-      value ? relocationAndInjuries.staffNeedingMedicalAttention.map(staff => [properCaseFullName(staff.name)]) : 'None'
+      value
+        ? relocationAndInjuries.staffNeedingMedicalAttention.map(staff => [properCaseFullName(staff.name)])
+        : 'None',
     ),
     staffHospitalisation: whenPresent(relocationAndInjuries.staffMedicalAttention, value =>
-      value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None'
+      value ? staffTakenToHospital(relocationAndInjuries.staffNeedingMedicalAttention) : 'None',
     ),
   }
 }
@@ -231,7 +234,7 @@ const staffTakenToHospital = (staffMembers = []) => {
   return hospitalisedStaff.map(staff => [properCaseFullName(staff.name)])
 }
 
-const baggedAndTaggedEvidence = (tagsAndEvidence = [], evidenceYesNo) => {
+const baggedAndTaggedEvidence = (tagsAndEvidence, evidenceYesNo) => {
   if (evidenceYesNo === undefined) {
     return undefined
   }
@@ -258,7 +261,7 @@ export = (
   prison: Prison,
   locationDescription: string,
   involvedStaff,
-  incidentDate: Date
+  incidentDate: Date,
 ) => {
   const { incidentDetails, reasonsForUseOfForce, useOfForceDetails, relocationAndInjuries, evidence } = form
   return {
@@ -268,7 +271,7 @@ export = (
       locationDescription,
       incidentDetails,
       involvedStaff,
-      incidentDate
+      incidentDate,
     ),
     offenderDetail,
     useOfForceDetails: createUseOfForceDetails(useOfForceDetails, reasonsForUseOfForce, evidence),

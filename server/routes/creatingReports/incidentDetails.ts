@@ -28,7 +28,7 @@ export default class IncidentDetailsRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly authService: AuthService,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
   ) {}
 
   private loadForm = async req => {
@@ -75,7 +75,8 @@ export default class IncidentDetailsRoutes {
 
     const { displayName, offenderNo } = offenderDetail
 
-    const input = firstItem(req.flash('userInputForIncidentDetails'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const input = firstItem(req.flash('userInputForIncidentDetails')) as any
 
     const pageData = input || form[formName]
 
@@ -85,7 +86,7 @@ export default class IncidentDetailsRoutes {
 
     const earliestIncidentDate = format(
       addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
-      'dd/MM/yyyy'
+      'dd/MM/yyyy',
     )
 
     const data = {
@@ -156,7 +157,7 @@ export default class IncidentDetailsRoutes {
       parseInt(bookingId, 10),
       formName,
       updatedSection,
-      incidentDate?.value || null
+      incidentDate?.value || null,
     )
 
     if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
@@ -166,7 +167,7 @@ export default class IncidentDetailsRoutes {
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),
-        token
+        token,
       )
 
       if (duplicates.length) {

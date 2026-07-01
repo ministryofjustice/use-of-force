@@ -86,7 +86,7 @@ export default function Index({
     offenderService,
     authService,
     locationService,
-    nomisMappingService
+    nomisMappingService,
   )
   get(reportPath('check-your-answers'), checkYourAnswers.view)
   post(reportPath('check-your-answers'), checkYourAnswers.submit)

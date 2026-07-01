@@ -8,15 +8,14 @@ const maxSequenceForBooking =
   '(select max(r2.sequence_no) from report r2 where r2.booking_id = r.booking_id and user_id = r.user_id)'
 
 export default class DraftReportClient {
-  // eslint-disable-next-line
   constructor(
     private readonly query: QueryPerformer,
-    private readonly reportLogClient: ReportLogClient
+    private readonly reportLogClient: ReportLogClient,
   ) {}
 
   async create(
     { userId, bookingId, agencyId, reporterName, offenderNo, incidentDate, formResponse },
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<number> {
     const nextSequence = `(select COALESCE(MAX(sequence_no), 0) + 1 from v_report where booking_id = $5 and user_id = $2)`
     const result = await query({
@@ -53,7 +52,7 @@ export default class DraftReportClient {
   async get(
     userId: string,
     bookingId: number,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<DraftReport | NoDraftReport> {
     const results = await query({
       text: `select id, incident_date "incidentDate", form_response "form", agency_id "agencyId" from v_report r
@@ -69,7 +68,7 @@ export default class DraftReportClient {
   async getInvolvedStaff(
     username: string,
     bookingId: number,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<StaffDetails[]> {
     const results = await query({
       text: 'select form_response "form" from v_report where booking_id = $1 and user_id = $2 and status = $3',
@@ -115,7 +114,7 @@ export default class DraftReportClient {
   async deleteReport(userId: string, bookingId: number, now: Date = new Date()): Promise<void> {
     await this.query({
       text: `update v_report r
-              set deleted = $1 
+              set deleted = $1
               where r.user_id = $2
               and r.booking_id = $3
               and r.status = $4`,

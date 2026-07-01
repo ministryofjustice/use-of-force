@@ -15,7 +15,7 @@ export default class ViewIncidentsRoutes {
     private readonly reportEditService: ReportEditService,
     private readonly reportDetailBuilder: ReportDataBuilder,
     private readonly reviewService: ReviewService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   viewIncident: RequestHandler = async (req, res) => {
@@ -65,7 +65,7 @@ export default class ViewIncidentsRoutes {
       }
 
       logger.info(
-        `${username} attempted to access report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+        `${username} attempted to access report ${incidentId} even though they are not the reporter or a reviewer/coordinator`,
       )
       return res.render('pages/userError.njk', {
         message: `Access denied because you are not the owner of report ${incidentId}`,
@@ -105,7 +105,7 @@ export default class ViewIncidentsRoutes {
         return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
       }
       logger.info(
-        `${username} attempted to access edit history for report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+        `${username} attempted to access edit history for report ${incidentId} even though they are not the reporter or a reviewer/coordinator`,
       )
       return res.render('pages/userError.njk', {
         message: `Access denied because you are not the owner of report ${incidentId}`,

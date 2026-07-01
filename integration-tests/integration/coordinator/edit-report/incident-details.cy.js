@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 import { format, subDays } from 'date-fns'
 import { offender } from '../../../mockApis/data'
 import NotCompletedIncidentsPage from '../../../pages/reviewer/notCompletedIncidentsPage'

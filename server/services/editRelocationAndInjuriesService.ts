@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import {
   RELOCATION_TYPE_DESCRIPTION,
   RELOCATION_LOCATION_DESCRIPTION,

@@ -32,7 +32,7 @@ export function dateValidation(date: string, helpers: joi.CustomHelpers): ErrorR
   const todayEnd = endOfDay(new Date())
 
   const submissionWindowEndDate = endOfDay(
-    subDays(addWeeks(incidentDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+    subDays(addWeeks(incidentDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
   )
 
   const isWithinSubmissionWindow = isWithinInterval(todayEnd, {

@@ -12,7 +12,7 @@ export default class ReviewerRoutes {
     private readonly offenderService: OffenderService,
     private readonly reportDetailBuilder: ReportDataBuilder,
     private readonly reviewService: ReviewService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   viewNotCompletedIncidents = async (req: Request, res: Response): Promise<void> => {
@@ -20,7 +20,7 @@ export default class ReviewerRoutes {
     const { items: reports, metaData: pageData } = await this.reviewService.getIncompleteReports(
       res.locals.user.username,
       res.locals.user.activeCaseLoadId,
-      page
+      page,
     )
 
     return res.render('pages/not-completed-incidents', {
@@ -47,7 +47,7 @@ export default class ReviewerRoutes {
       res.locals.user.username,
       res.locals.user.activeCaseLoadId,
       query,
-      page
+      page,
     )
     return res.render('pages/completed-incidents', {
       reports,
@@ -79,7 +79,7 @@ export default class ReviewerRoutes {
 
     const statements = await this.reviewService.getStatements(
       await this.authService.getSystemClientToken(res.locals.user.username),
-      parseInt(reportId, 10)
+      parseInt(reportId, 10),
     )
     const tab = report.status === ReportStatus.SUBMITTED.value ? '/not-completed-incidents' : '/completed-incidents'
 
@@ -97,7 +97,7 @@ export default class ReviewerRoutes {
 
     const statement = await this.reviewService.getStatement(
       await this.authService.getSystemClientToken(res.locals.user.username),
-      parseInt(statementId, 10)
+      parseInt(statementId, 10),
     )
 
     const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)

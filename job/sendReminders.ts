@@ -28,7 +28,7 @@ import InMemoryTokenStore from '../server/data/tokenStore/inMemoryTokenStore'
 import AuthService from '../server/services/authService'
 
 const eventPublisher = eventPublisherFactory(
-  buildAppInsightsClient(applicationInfoSupplier(), 'use-of-force-reminder-job')
+  buildAppInsightsClient(applicationInfoSupplier(), 'use-of-force-reminder-job'),
 )
 
 const statementClient = new StatementsClient(db.query)
@@ -36,7 +36,7 @@ const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
 const manageUsersClient = new ManageUsersApiClient()
 const authClient = new HmppsAuthClient(
-  config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore()
+  config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore(),
 )
 const authService = new AuthService(authClient)
 const emailResolver = new EmailResolver(manageUsersClient, authService, statementClient)

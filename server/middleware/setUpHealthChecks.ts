@@ -14,13 +14,13 @@ export default function setUpHealthChecks(applicationInfo: ApplicationInfo): Rou
 
   const apiConfig = Object.entries(config.apis).filter(
     ([, options]) =>
-      typeof options === 'object' && options !== null && typeof (options as Record<string, unknown>).url === 'string'
+      typeof options === 'object' && options !== null && typeof (options as Record<string, unknown>).url === 'string',
   )
 
   const middleware = monitoringMiddleware({
     applicationInfo,
     healthComponents: apiConfig.map(([name, options]) =>
-      endpointHealthComponent(logger, name, options as EndpointHealthComponentOptions)
+      endpointHealthComponent(logger, name, options as EndpointHealthComponentOptions),
     ),
   })
 

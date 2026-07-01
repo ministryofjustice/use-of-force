@@ -15,7 +15,7 @@ const selectUofReasonsPage = () =>
     () => {
       cy.get('h1').contains('Use of force details')
       cy.get('legend.govuk-fieldset__legend--l').contains('Why was use of force applied against this prisoner?')
-    }
+    },
   )
 
 module.exports = { verifyOnPage: selectUofReasonsPage }

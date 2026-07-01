@@ -19,7 +19,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const submissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 let app

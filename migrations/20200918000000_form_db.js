@@ -7,6 +7,6 @@ exports.up = async knex => {
 
 exports.down = async knex => {
   await knex.raw(
-    `update report set form_response = coalesce(jsonb_insert(form_response #- '{involvedStaff}', '{incidentDetails,involvedStaff}', form_response -> 'involvedStaff'), '{}'::jsonb)`
+    `update report set form_response = coalesce(jsonb_insert(form_response #- '{involvedStaff}', '{incidentDetails,involvedStaff}', form_response -> 'involvedStaff'), '{}'::jsonb)`,
   )
 }
