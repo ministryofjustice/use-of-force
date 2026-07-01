@@ -108,30 +108,38 @@ describe('EditUseOfForceDetailsService', () => {
 
       it('returns empty string if falsy input', () => {
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(undefined, ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(undefined, ControlAndRestraintPosition, noneMessage),
         ).toBe('')
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(null, ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(null, ControlAndRestraintPosition, noneMessage),
         ).toBe('')
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions('', ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions('', ControlAndRestraintPosition, noneMessage),
         ).toBe('')
       })
 
       it('returns none message for NONE input', () => {
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', ControlAndRestraintPosition, noneMessage),
         ).toBe('No positions')
       })
 
       it('returns label for single parent value', () => {
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions('STANDING', ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(
+            'STANDING',
+            ControlAndRestraintPosition,
+            noneMessage,
+          ),
         ).toBe('Standing')
       })
       it('returns label for single different parent value', () => {
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions('KNEELING', ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(
+            'KNEELING',
+            ControlAndRestraintPosition,
+            noneMessage,
+          ),
         ).toBe('Kneeling')
       })
 
@@ -140,15 +148,15 @@ describe('EditUseOfForceDetailsService', () => {
           service.formatDisplayOfRestraintAndPainInducingQuestions(
             ['STANDING', 'ON_BACK'],
             ControlAndRestraintPosition,
-            noneMessage
-          )
+            noneMessage,
+          ),
         ).toBe('Standing, On back (supine)')
       })
 
       it('returns formatted string for parent with children', () => {
         const input = ['STANDING', 'STANDING__WRIST_WEAVE', 'STANDING__DOUBLE_WRIST_HOLD']
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage),
         ).toBe('Standing: Wrist weave, Double wrist hold')
       })
 
@@ -167,9 +175,9 @@ describe('EditUseOfForceDetailsService', () => {
         ]
 
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage),
         ).toBe(
-          'Standing: Wrist weave, On back (supine): Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling'
+          'Standing: Wrist weave, On back (supine): Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling',
         )
       })
 
@@ -185,9 +193,9 @@ describe('EditUseOfForceDetailsService', () => {
         ]
 
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, ControlAndRestraintPosition, noneMessage),
         ).toBe(
-          'Standing, On back (supine), On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling'
+          'Standing, On back (supine), On front (prone): Balance displacement technique, Straight arm hold (left or right), Conversion to apply rigid bar handcuffs, Kneeling',
         )
       })
     })
@@ -197,7 +205,7 @@ describe('EditUseOfForceDetailsService', () => {
 
       it('returns none message for NONE input', () => {
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', PainInducingTechniquesUsed, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions('NONE', PainInducingTechniquesUsed, noneMessage),
         ).toBe('No pain inducing techniques were used')
       })
 
@@ -206,15 +214,15 @@ describe('EditUseOfForceDetailsService', () => {
           service.formatDisplayOfRestraintAndPainInducingQuestions(
             'THUMB_LOCK',
             PainInducingTechniquesUsed,
-            noneMessage
-          )
+            noneMessage,
+          ),
         ).toBe('Thumb lock')
       })
 
       it('returns comma-separated list for multiple techniques', () => {
         const input = ['FINAL_LOCK_FLEXION', 'FINAL_LOCK_ROTATION']
         expect(
-          service.formatDisplayOfRestraintAndPainInducingQuestions(input, PainInducingTechniquesUsed, noneMessage)
+          service.formatDisplayOfRestraintAndPainInducingQuestions(input, PainInducingTechniquesUsed, noneMessage),
         ).toBe('Wrist flexion, Wrist rotation')
       })
     })

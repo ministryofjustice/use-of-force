@@ -23,7 +23,7 @@ export default class PrisonerSearchService {
   constructor(
     private readonly prisonerSearchClient: PrisonerSearchClient,
     private readonly prisonClient: PrisonClient,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {

@@ -17,7 +17,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
@@ -109,7 +109,7 @@ describe('POST /prison-of-incident', () => {
           -19,
           'incidentDetails',
           { authorisedBy: 'the authoriser', plannedUseOfForce: true, witnesses: undefined },
-          null
+          null,
         )
         expect(draftReportService.updateAgencyId).toHaveBeenCalledWith('MDI', 'user1', -19)
         expect(flash).toHaveBeenCalledTimes(1)

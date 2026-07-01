@@ -489,8 +489,8 @@ describe("'complete' schema", () => {
         extract(
           validate(buildValidationSpec(joi.object({ f213CompletedBy })), {
             f213CompletedBy: 'ABCDEFGHIJKLM NOPQRSTUVWXYZ',
-          })
-        )
+          }),
+        ),
       ).toEqual([])
     })
 

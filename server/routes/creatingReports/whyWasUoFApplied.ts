@@ -17,7 +17,7 @@ export default class WhyWasUoFAppliedRoutes {
   constructor(
     private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
-    private readonly offenderService: OffenderService
+    private readonly offenderService: OffenderService,
   ) {}
 
   public view() {
@@ -26,7 +26,7 @@ export default class WhyWasUoFAppliedRoutes {
       const offenderDetail = await this.offenderService.getOffenderDetails(Number(bookingId), res.locals.user.username)
       const { isComplete, reasons } = await this.draftReportService.getUoFReasonState(
         req.user.username,
-        Number(bookingId)
+        Number(bookingId),
       )
 
       const selectedReasons = req.flash('clearingOutReasons')?.length ? [] : reasons
@@ -86,7 +86,7 @@ export default class WhyWasUoFAppliedRoutes {
 
       const { primaryReason, reasons } = await this.draftReportService.getUoFReasonState(
         req.user.username,
-        Number(bookingId)
+        Number(bookingId),
       )
 
       const updatedReasons = req.flash('reasons')

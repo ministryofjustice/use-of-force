@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Response } from 'express'
 import jwt from 'jsonwebtoken'
 

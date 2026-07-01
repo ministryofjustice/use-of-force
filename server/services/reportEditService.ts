@@ -47,7 +47,7 @@ export default class ReportEditService {
     private readonly editUseOfForceDetailsService: EditUseOfForceDetailsService,
     private readonly locationService: LocationService,
     private readonly authService: AuthService,
-    private readonly incidentClient: IncidentClient
+    private readonly incidentClient: IncidentClient,
   ) {}
 
   // used to format the output for the REASON-FOR-CHANGE page
@@ -58,7 +58,7 @@ export default class ReportEditService {
       response = await this.editIncidentDetailsService.buildIncidentDetails(
         username,
         questionSets[reportSection.section],
-        changes
+        changes,
       )
     }
 
@@ -187,7 +187,7 @@ export default class ReportEditService {
         data.reasonText,
         data.reasonAdditionalInfo,
         data.reportOwnerChanged,
-        pageInput.incidentDate || null
+        pageInput.incidentDate || null,
       )
     } catch (e) {
       logger.error(`Could not persist changes to report ${data.reportId}. ${e}`)
@@ -215,7 +215,7 @@ export default class ReportEditService {
 
   persistDeleteIncident = async (
     user: LoggedInUser,
-    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: any }
+    data: { reportId: number; reasonForDelete: string; reasonForDeleteText: string; changes: any },
   ): Promise<void> => {
     if (!user || !data) {
       throw new Error('User and data are required to delete an incident report.')
@@ -281,7 +281,7 @@ export default class ReportEditService {
         changedTo: await this.getChangedTo(edit.changes, user),
         reason: this.mapReasonToTitleAndText(edit),
         additionalComments: edit.additionalComments,
-      }))
+      })),
     )
   }
 
@@ -377,13 +377,13 @@ export default class ReportEditService {
         this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
           v,
           ControlAndRestraintPosition,
-          'No control and restraint positions were used'
+          'No control and restraint positions were used',
         ),
       [UOFDQID.PAIN_INDUCING_TECHNIQUES_USED]: () =>
         this.editUseOfForceDetailsService.formatDisplayOfRestraintAndPainInducingQuestions(
           v,
           PainInducingTechniquesUsed,
-          'No pain inducing techniques were used'
+          'No pain inducing techniques were used',
         ),
       [UOFDQID.HANDCUFFS_APPLIED]: () => (v === true ? 'Yes' : 'No'),
 
@@ -456,7 +456,7 @@ export default class ReportEditService {
 
     // Calculate start of edit period in UTC
     const editPeriodEnd = endOfDay(
-      subDays(addWeeks(editPeriodStart, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+      subDays(addWeeks(editPeriodStart, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
     )
 
     return isWithinInterval(endOfToday, { start: editPeriodStart, end: editPeriodEnd })

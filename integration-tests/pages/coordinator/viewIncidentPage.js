@@ -22,7 +22,7 @@ const viewIncidentPage = () =>
               status: Cypress.$(tds[2]).text().trim().replace(/\s\s+/g, ', '),
               action: Cypress.$(tds[3]).text().trim().replace(/\s\s+/g, ', '),
             }
-          })
+          }),
         ),
     staffInvolvedTableRows: () => cy.get('[data-qa=staff-involved]'),
     returnToUseOfForceIncidentsLink: () => cy.get('[data-qa="use-of-force-incidents-link"]'),

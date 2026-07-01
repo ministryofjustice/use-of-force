@@ -36,7 +36,7 @@ const involvedStaffService = new InvolvedStaffService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
@@ -53,7 +53,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<ReportEditService>
 const flash = jest.fn()
 
@@ -158,7 +158,7 @@ const editIncidentDetailsViewModel = {
     currentDate: format(new Date(), 'dd/MM/yyyy'),
     earliestIncidentDate: format(
       addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
-      'dd/MM/yyyy'
+      'dd/MM/yyyy',
     ),
     maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
   },
@@ -214,7 +214,7 @@ beforeEach(() => {
     authService,
     locationService,
     reportDetailBuilder,
-    reportEditService
+    reportEditService,
   )
 })
 
@@ -579,7 +579,7 @@ describe('CoordinatorEditReportController', () => {
           incidentDate: {
             date: format(
               subDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
-              'dd/MM/yyyy'
+              'dd/MM/yyyy',
             ),
             time: {
               hour: format(incidentDate, 'HH'),
@@ -648,7 +648,7 @@ describe('CoordinatorEditReportController', () => {
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalledWith(
           'pages/coordinator/why-uof-applied.njk',
-          expect.objectContaining({ coordinatorEditJourney: true })
+          expect.objectContaining({ coordinatorEditJourney: true }),
         )
         expect(req.session.incidentReport).toEqual({})
       })
@@ -665,7 +665,7 @@ describe('CoordinatorEditReportController', () => {
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(res.render).toHaveBeenCalledWith(
           'pages/coordinator/why-uof-applied.njk',
-          expect.objectContaining({ errors: error })
+          expect.objectContaining({ errors: error }),
         )
       })
     })
@@ -745,7 +745,7 @@ describe('CoordinatorEditReportController', () => {
             }),
             errors: undefined,
             showSaveAndReturnButton: false,
-          })
+          }),
         )
       })
       it('should not render page but redirect to view incident page when no edits in session', async () => {
@@ -1133,7 +1133,7 @@ describe('CoordinatorEditReportController', () => {
             backlinkHref: 'incident-details',
             offenderDetail: { name: 'An Offender' },
           }),
-        })
+        }),
       )
     })
 
@@ -1151,7 +1151,7 @@ describe('CoordinatorEditReportController', () => {
       await controller.viewReasonForChange(req, res)
       expect(res.render).toHaveBeenCalledWith(
         'pages/coordinator/reason-for-change.njk',
-        expect.objectContaining({ data: expect.objectContaining({ errors: [{ href: '#reason', text: 'Required' }] }) })
+        expect.objectContaining({ data: expect.objectContaining({ errors: [{ href: '#reason', text: 'Required' }] }) }),
       )
     })
   })
@@ -1570,7 +1570,7 @@ describe('CoordinatorEditReportController', () => {
 
       expect(logSpy).toHaveBeenCalledWith(
         expect.stringContaining('Error checking involved staff member abc'),
-        expect.any(Error)
+        expect.any(Error),
       )
     })
 
@@ -1720,7 +1720,7 @@ describe('CoordinatorEditReportController', () => {
       expect(req.flash).toHaveBeenCalledWith('result', 'success')
       expect(req.flash).toHaveBeenCalledWith(
         'resultMessage',
-        expect.stringContaining('You have added USER (ABC) to the incident')
+        expect.stringContaining('You have added USER (ABC) to the incident'),
       )
 
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
@@ -1733,7 +1733,7 @@ describe('CoordinatorEditReportController', () => {
       expect(req.flash).toHaveBeenCalledWith('result', 'error')
       expect(req.flash).toHaveBeenCalledWith(
         'resultMessage',
-        'An unexpected error occurred while adding the staff member.'
+        'An unexpected error occurred while adding the staff member.',
       )
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
     })
@@ -1800,7 +1800,7 @@ describe('CoordinatorEditReportController', () => {
         { href: '#confirm', text: 'Select yes if you want to delete this statement' },
       ])
       expect(res.redirect).toHaveBeenCalledWith(
-        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true'
+        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true',
       )
     })
 

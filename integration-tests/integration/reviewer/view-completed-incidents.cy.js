@@ -186,7 +186,7 @@ context('A use of force reviewer can view completed incidents at the current age
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const completedIncidentsPage = CompletedIncidentsPage.goTo()
@@ -203,7 +203,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     completedIncidentsPage.clickLinkWithText('Next page')
@@ -214,7 +214,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     completedIncidentsPage.clickLinkWithText('3')
@@ -224,7 +224,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-      ])
+      ]),
     )
 
     completedIncidentsPage.clickLinkWithText('Previous page')
@@ -235,7 +235,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 
@@ -256,7 +256,7 @@ context('A use of force reviewer can view completed incidents at the current age
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const completedIncidentsPage = CompletedIncidentsPage.goTo()
@@ -276,7 +276,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … 3 [4] 5 Next >
@@ -293,7 +293,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=5', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … [9] 10 11 Next >
@@ -311,7 +311,7 @@ context('A use of force reviewer can view completed incidents at the current age
         { href: '?page=10', text: '10', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=10', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 

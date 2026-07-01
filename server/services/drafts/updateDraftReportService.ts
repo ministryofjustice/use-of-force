@@ -14,7 +14,7 @@ export default class UpdateDraftReportService {
     private readonly reportLogClient: ReportLogClient,
     private readonly inTransaction: InTransaction,
     private readonly prisonClient: PrisonClient,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   public async process(
@@ -22,7 +22,7 @@ export default class UpdateDraftReportService {
     bookingId: number,
     formName: string,
     updatedSection: unknown,
-    incidentDate?: Date | null
+    incidentDate?: Date | null,
   ): Promise<void> {
     const { id: formId, form: existingReport = {} } = await this.draftReportClient.get(currentUser.username, bookingId)
 
@@ -39,7 +39,7 @@ export default class UpdateDraftReportService {
   private getUpdatedReport(
     existingReport: Record<string, unknown>,
     formName: string,
-    updatedSection
+    updatedSection,
   ): Record<string, unknown> | false {
     const updatedFormObject = {
       ...existingReport,
@@ -55,7 +55,7 @@ export default class UpdateDraftReportService {
     bookingId: number,
     currentUser: LoggedInUser,
     incidentDateValue,
-    formValue
+    formValue,
   ): Promise<void> {
     const { username } = currentUser
     if (incidentDateValue || formValue) {

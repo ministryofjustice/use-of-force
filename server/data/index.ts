@@ -37,7 +37,7 @@ export const dataAccess = {
   draftReportClient,
   reportLogClient,
   hmppsAuthClient: new HmppsAuthClient(
-    config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore()
+    config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore(),
   ),
   prisonApiClient: new PrisonClient(),
   locationsApiClient: new LocationClient(),

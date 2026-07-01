@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import request from 'supertest'
 import { appWithAllRoutes, user, reviewerUser, coordinatorUser } from '../__test/appSetup'
 import { Report, ReportEdit } from '../../data/incidentClientTypes'
@@ -16,7 +15,7 @@ jest.mock('../../services/authService')
 jest.mock('../../services/reportDetailBuilder')
 
 const userSupplier = jest.fn()
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+
 const loggerInfoSpy = jest.spyOn(logger, 'info').mockImplementation(() => {})
 
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
@@ -29,7 +28,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<ReportEditService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const reportDetailBuilder = new ReportDetailBuilder(null, null, null, null, null) as jest.Mocked<ReportDetailBuilder>
@@ -105,7 +104,7 @@ beforeEach(() => {
 
   app = appWithAllRoutes(
     { reportService, reportEditService, reportDetailBuilder, authService, reviewService },
-    userSupplier
+    userSupplier,
   )
 })
 
@@ -740,7 +739,7 @@ describe('Edit history tab', () => {
       .expect(res => {
         expect(res.text).toContain('Access denied because you are not the owner of report 1')
         expect(loggerInfoSpy).toHaveBeenCalledWith(
-          'someOtherUser attempted to access edit history for report 1 even though they are not the reporter or a reviewer/coordinator'
+          'someOtherUser attempted to access edit history for report 1 even though they are not the reporter or a reviewer/coordinator',
         )
       })
   })

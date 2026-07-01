@@ -35,7 +35,7 @@ export default class DraftReportService {
     private readonly submitDraftReport: SubmitDraftReportService,
     private readonly userService: UserService,
     private readonly locationService: LocationService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   public isIncidentDateWithinSubmissionWindow(incidentDate: Date, today = new Date()): boolean {
@@ -46,7 +46,7 @@ export default class DraftReportService {
     const todayEnd = endOfDay(today)
 
     const submissionWindowEndDate = endOfDay(
-      subDays(addWeeks(incidentStartDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1)
+      subDays(addWeeks(incidentStartDate, config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
     )
 
     return isWithinInterval(todayEnd, {
@@ -65,7 +65,7 @@ export default class DraftReportService {
 
   public async getUoFReasonState(
     userId: string,
-    bookingId: number
+    bookingId: number,
   ): Promise<{ isComplete: boolean; primaryReason?: string; reasons: string[] }> {
     const { form } = await this.getCurrentDraft(userId, bookingId)
     const reasonForm = form?.[REASONS_FOR_USE_OF_FORCE_FORM]
@@ -76,7 +76,7 @@ export default class DraftReportService {
   public async getInvolvedStaffWithPrisons(
     token: string,
     username: string,
-    bookingId: number
+    bookingId: number,
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     return this.draftInvolvedStaffService.getInvolvedStaffWithPrisons(token, username, bookingId)
   }
@@ -85,7 +85,7 @@ export default class DraftReportService {
     token: string,
     agencyId: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<FoundUserResult[]> {
     return this.userService.findUsersWithPrisons(token, agencyId, firstName, lastName)
   }
@@ -94,7 +94,7 @@ export default class DraftReportService {
     token: string,
     user: LoggedInUser,
     bookingId: number,
-    foundUsers: FoundUserResult[]
+    foundUsers: FoundUserResult[],
   ): Promise<AddStaffResult> {
     const currentDraftStaff = await this.getInvolvedStaff(token, user.username, bookingId)
 
@@ -125,7 +125,7 @@ export default class DraftReportService {
     user: LoggedInUser,
     bookingId: number,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<AddStaffResult> {
     const token = await this.authService.getSystemClientToken(user.username)
     const users = await this.userService.findUsers(token, firstName, lastName)
@@ -135,7 +135,7 @@ export default class DraftReportService {
   public async addDraftStaffByUsername(
     user: LoggedInUser,
     bookingId: number,
-    username: string
+    username: string,
   ): Promise<AddStaffResult> {
     const token = await this.authService.getSystemClientToken(user.username)
     const userToAdd = await this.userService.getUser(token, username)
@@ -145,7 +145,7 @@ export default class DraftReportService {
   async getPotentialDuplicates(
     bookingId: number,
     incidentDate: Moment,
-    token: string
+    token: string,
   ): Promise<Partial<DuplicateReport[] | []>> {
     const startDate = moment(incidentDate).startOf('day')
     const endDate = moment(incidentDate).endOf('day')
@@ -158,7 +158,7 @@ export default class DraftReportService {
           date: moment(r.date),
           location,
         }
-      })
+      }),
     )
   }
 
@@ -206,7 +206,7 @@ export default class DraftReportService {
     bookingId: number,
     formName: string,
     updatedSection: unknown,
-    incidentDate?: Date | null
+    incidentDate?: Date | null,
   ): Promise<void> {
     return this.updateDraftReport.process(currentUser, bookingId, formName, updatedSection, incidentDate)
   }
@@ -223,7 +223,7 @@ export default class DraftReportService {
     const involvedStaff = await this.getInvolvedStaff(
       await this.authService.getSystemClientToken(currentUser.username),
       currentUser.username,
-      bookingId
+      bookingId,
     )
     return this.submitDraftReport.submit(currentUser, bookingId, involvedStaff)
   }

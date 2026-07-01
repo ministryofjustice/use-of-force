@@ -30,7 +30,7 @@ import refreshSystemToken from './middleware/refreshSystemToken'
 import applicationInfo from './applicationInfo'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
-  tokenVerifierFactory(config.apis.tokenVerification)
+  tokenVerifierFactory(config.apis.tokenVerification),
 )
 
 const version = moment.now().toString()
@@ -106,7 +106,7 @@ export default function createApp(services: Services): Express {
           fontSrc,
         },
       },
-    })
+    }),
   )
 
   app.use((req, res, next) => {
@@ -162,7 +162,7 @@ export default function createApp(services: Services): Express {
 
   app.use(
     '/assets/images/icons',
-    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
+    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl),
   )
 
   app.use(setUpHealthChecks(appInfo))
@@ -215,8 +215,8 @@ export default function createApp(services: Services): Express {
       passport.authenticate('oauth2', {
         successReturnToOrRedirect: req.session.returnTo || '/',
         failureRedirect: '/autherror',
-      })(req, res, next)
-    )
+      })(req, res, next),
+    ),
   )
 
   app.use(
@@ -226,7 +226,7 @@ export default function createApp(services: Services): Express {
         req.logout(() => req.session.destroy())
       }
       res.redirect(authLogoutUrl)
-    })
+    }),
   )
 
   app.use(populateCurrentUser(services.userService))

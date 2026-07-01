@@ -21,7 +21,7 @@ const involvedStaffService = new InvolvedStaffService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<InvolvedStaffService>
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
@@ -50,7 +50,7 @@ beforeEach(() => {
     locationService,
     offenderService,
     nomisMappingService,
-    authService
+    authService,
   )
 })
 
@@ -190,7 +190,7 @@ describe('Build details', () => {
 
     expect(nomisMappingService.getDpsLocationDetailsHavingCorrespondingNomisLocationId).toHaveBeenCalledWith(
       'system-token-for-Bob',
-      locationId
+      locationId,
     )
   })
 

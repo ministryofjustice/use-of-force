@@ -13,5 +13,5 @@ exports.down = knex =>
     .then(() =>
       knex.schema.table('involved_staff', table => {
         table.renameColumn('incident_id', 'report_id')
-      })
+      }),
     )

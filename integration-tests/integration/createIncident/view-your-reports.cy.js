@@ -90,7 +90,7 @@ context('A reporter views their report list', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const yourReportsPage = YourReportsPage.goTo()
@@ -105,7 +105,7 @@ context('A reporter views their report list', () => {
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
     yourReportsPage.clickLinkWithText('Next page')
     yourReportsPage.pageLinks().then(pageLinks =>
@@ -115,7 +115,7 @@ context('A reporter views their report list', () => {
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     yourReportsPage.clickLinkWithText('3')
@@ -125,7 +125,7 @@ context('A reporter views their report list', () => {
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-      ])
+      ]),
     )
 
     yourReportsPage.clickLinkWithText('Previous page')
@@ -136,7 +136,7 @@ context('A reporter views their report list', () => {
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 
@@ -156,7 +156,7 @@ context('A reporter views their report list', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const yourReportsPage = YourReportsPage.goTo()
@@ -174,7 +174,7 @@ context('A reporter views their report list', () => {
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … 3 [4] 5 Next >
@@ -191,7 +191,7 @@ context('A reporter views their report list', () => {
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=5', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … [9] 10 11 Next >
@@ -209,7 +209,7 @@ context('A reporter views their report list', () => {
         { href: '?page=10', text: '10', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=10', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 })

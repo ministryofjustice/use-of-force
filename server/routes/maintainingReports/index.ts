@@ -46,7 +46,7 @@ export default function Index(services: Services): Router {
       authService,
       locationService,
       reportDetailBuilder,
-      reportEditService
+      reportEditService,
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -92,7 +92,7 @@ export default function Index(services: Services): Router {
 
     get(
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
-      coordinator.viewStaffMemberNotRemoved
+      coordinator.viewStaffMemberNotRemoved,
     )
   }
 

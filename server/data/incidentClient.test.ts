@@ -33,7 +33,7 @@ test('getReports', async () => {
             , r.status        "status"
             from v_report r
           where r.user_id = $1
-          order by (case status 
+          order by (case status
             when 'IN_PROGRESS' then 1
             else 2
             end), r.incident_date desc
@@ -85,7 +85,7 @@ test('getReportForReviewer', () => {
 
 test('getIncompleteReportsForReviewer', () => {
   const isOverdue = `(select count(*) from "v_statement" s
-                      where r.id = s.report_id 
+                      where r.id = s.report_id
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
@@ -153,7 +153,7 @@ test('getCompletedReportsForReviewer', async () => {
       dateFrom: moment('2020-01-29'),
       dateTo: moment('2020-01-30'),
     },
-    1
+    1,
   )
 
   expect(results).toStrictEqual(new PageResponse({ max: 0, min: 0, page: 1, totalCount: 0, totalPages: 0 }, []))
@@ -281,7 +281,7 @@ test('getInvolvedStaff', async () => {
     ,      s.user_id       "userId"
     ,      s.name          "name"
     ,      s.email         "email"
-    from v_statement s 
+    from v_statement s
     where s.report_id = $1`,
     values: [1],
   })
@@ -293,9 +293,9 @@ test('getNextNotificationReminder', () => {
     text: `select s.id                     "statementId"
               ,       r.id                     "reportId"
               ,       s.user_id                "userId"
-              ,       s.email                  "recipientEmail" 
+              ,       s.email                  "recipientEmail"
               ,       s.name                   "recipientName"
-              ,       s.next_reminder_date     "nextReminderDate"  
+              ,       s.next_reminder_date     "nextReminderDate"
               ,       r.submitted_date         "submittedDate"
               ,       r.reporter_name          "reporterName"
               ,       r.incident_date          "incidentDate"

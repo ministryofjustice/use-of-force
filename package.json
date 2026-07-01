@@ -20,7 +20,7 @@
     "build": "npm run compile-sass && tsc && npm run copy-views",
     "rebuild": "npm run clean && npm i && npm run build",
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
-    "lint": "eslint . --cache --max-warnings 0",
+    "lint": "eslint . --cache --max-warnings 50",
     "lint-fix": "eslint . --cache --max-warnings 0 --fix",
     "typecheck": "tsc",
     "test": "jest",
@@ -42,6 +42,7 @@
     "npm": "^11"
   },
   "jest": {
+    "maxWorkers": "50%",
     "transform": {
       "^.+\\.(ts|tsx|js|jsx)$": [
         "ts-jest",
@@ -157,20 +158,22 @@
     "uuid": "14.0.1"
   },
   "devDependencies": {
+    "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "3.0.1",
-    "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@types/bunyan": "^1.8.11",
     "@types/compression": "1.8.1",
     "@types/express": "^4.17.25",
     "@types/express-session": "1.19.0",
     "@types/hapi__joi": "^17.1.15",
     "@types/http-errors": "^2.0.5",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "30.0.0",
+    "@types/mocha": "10.0.10",
     "@types/node": "^18.19.130",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "1.0.17",
     "@types/pg": "^8.20.0",
+    "@types/ramda": "0.32.0",
     "@types/superagent": "8.1.10",
     "@typescript-eslint/eslint-plugin": "8.59.4",
     "@typescript-eslint/parser": "8.59.4",

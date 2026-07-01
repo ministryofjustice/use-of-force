@@ -13,7 +13,7 @@ export default class RemovalRequest {
   constructor(
     private readonly reportService: ReportService,
     private readonly statementService: StatementService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   private isSignatureValid = (statementId: unknown, signature: unknown): boolean =>
@@ -29,7 +29,7 @@ export default class RemovalRequest {
 
     const report = await this.reportService.getAnonReportSummary(
       await this.authService.getSystemClientToken(),
-      statementId
+      statementId,
     )
 
     if (!report) {

@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import { ControlAndRestraintPosition, PainInducingTechniquesUsed, UofReasons } from '../config/types'
 
 export default class EditUseOfForceDetailsService {
@@ -34,12 +33,12 @@ export default class EditUseOfForceDetailsService {
           resolvedOldValue = this.formatDisplayOfRestraintAndPainInducingQuestions(
             oldValue,
             ControlAndRestraintPosition,
-            'No control and restraint positions were used'
+            'No control and restraint positions were used',
           )
           resolvedNewValue = this.formatDisplayOfRestraintAndPainInducingQuestions(
             newValue,
             ControlAndRestraintPosition,
-            'No control and restraint positions were used'
+            'No control and restraint positions were used',
           )
           break
 
@@ -47,12 +46,12 @@ export default class EditUseOfForceDetailsService {
           resolvedOldValue = this.formatDisplayOfRestraintAndPainInducingQuestions(
             oldValue,
             PainInducingTechniquesUsed,
-            'No pain inducing techniques were used'
+            'No pain inducing techniques were used',
           )
           resolvedNewValue = this.formatDisplayOfRestraintAndPainInducingQuestions(
             newValue,
             PainInducingTechniquesUsed,
-            'No pain inducing techniques were used'
+            'No pain inducing techniques were used',
           )
           break
 
@@ -99,7 +98,7 @@ export default class EditUseOfForceDetailsService {
     }
 
     const labels = valArray.map(v =>
-      labelSet[v].sub_options && inputContainsChildren(v) ? `${labelSet[v].label}: ` : `${labelSet[v].label}, `
+      labelSet[v].sub_options && inputContainsChildren(v) ? `${labelSet[v].label}: ` : `${labelSet[v].label}, `,
     )
     return labels.join('').trim().slice(0, -1)
   }

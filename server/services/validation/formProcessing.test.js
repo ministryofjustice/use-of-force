@@ -67,7 +67,7 @@ describe('processInput', () => {
           q2: outSchema,
           q3: inSchema,
           q4: outSchema,
-        })
+        }),
       ),
       input: { q1: 'aaa', q2: 'bbb', q3: 'ccc', q4: 'ddd' },
     })

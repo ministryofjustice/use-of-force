@@ -31,7 +31,7 @@ const detailAdapterBuilder = firstFieldNameMap => {
 const extractFirstFieldNameMap = R.pipe(
   R.propOr({}, 'keys'),
   R.map(R.pipe(R.prop('metas'), R.mergeAll, R.prop('firstFieldName'))),
-  R.reject(R.isNil)
+  R.reject(R.isNil),
 )
 
 /**

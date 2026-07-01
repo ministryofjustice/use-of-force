@@ -8,7 +8,7 @@ export default class EmailResolver {
   constructor(
     private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly authService: AuthService,
-    private readonly statementsClient: StatementsClient
+    private readonly statementsClient: StatementsClient,
   ) {}
 
   async resolveEmail(transactionalClient: QueryPerformer, userId: string, reportId: number): Promise<boolean> {

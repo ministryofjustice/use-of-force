@@ -17,7 +17,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 
 let app

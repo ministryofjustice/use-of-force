@@ -40,7 +40,7 @@ export function initialisePassportStrategy(signInService) {
     (accessToken, refreshToken, params, profile, done) => {
       const user = signInService.getUser(accessToken, params.user_name)
       return done(null, user)
-    }
+    },
   )
 
   passport.use(strategy)

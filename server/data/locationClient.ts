@@ -30,7 +30,7 @@ export default class LocationClient extends BaseApiClient {
   async getLocations(
     prisonId: string,
     token: string,
-    serviceType: NonResidentialServiceType = NonResidentialServiceType.USE_OF_FORCE
+    serviceType: NonResidentialServiceType = NonResidentialServiceType.USE_OF_FORCE,
   ): Promise<LocationInPrison[]> {
     logger.info(`getting locations for prison ${prisonId} and serviceType ${serviceType}`)
     return LocationClient.restClient(token).get({

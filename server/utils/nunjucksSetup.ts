@@ -30,7 +30,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
