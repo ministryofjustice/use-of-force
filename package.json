@@ -39,7 +39,7 @@
   },
   "engines": {
     "node": "^24",
-    "npm": "^11"
+    "npm": ">=11"
   },
   "jest": {
     "maxWorkers": "50%",
