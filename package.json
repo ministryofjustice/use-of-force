@@ -178,7 +178,7 @@
     "@typescript-eslint/eslint-plugin": "8.63.0",
     "@typescript-eslint/parser": "8.63.0",
     "audit-ci": "^7.1.0",
-    "concurrently": "^10.0.3",
+    "concurrently": "^10.0.4",
     "cypress": "^13.17.0",
     "cypress-multi-reporters": "^2.0.5",
     "dotenv": "^17.4.2",
