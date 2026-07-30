@@ -193,7 +193,7 @@
     "nodemon": "3.1.14",
     "openapi-typescript": "^7.13.0",
     "prettier": "3.9.6",
-    "sass": "^1.101.3",
+    "sass": "^1.101.6",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
     "typescript": "^5.9.3"
