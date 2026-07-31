@@ -213,7 +213,7 @@
     "protobufjs": "8.7.1",
     "js-yaml": ">=5.2.1",
     "tar": ">=7.5.22",
-    "brace-expansion": "5.0.7",
+    "brace-expansion": "5.0.8",
     "tmp": "0.2.7",
     "mocha": {
       "serialize-javascript": "7.0.7"
