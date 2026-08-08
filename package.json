@@ -152,7 +152,7 @@
     "pg-format": "^1.0.4",
     "querystring": "^0.2.1",
     "ramda": "^0.32.0",
-    "redis": "^6.1.0",
+    "redis": "^6.2.0",
     "sass-middleware": "^0.0.3",
     "superagent": "^10.3.0",
     "uuid": "14.0.1"
@@ -172,7 +172,7 @@
     "@types/node": "^18.19.130",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "1.0.17",
-    "@types/pg": "^8.20.0",
+    "@types/pg": "^8.20.3",
     "@types/ramda": "0.32.0",
     "@types/superagent": "8.1.11",
     "@typescript-eslint/eslint-plugin": "8.65.0",
@@ -186,14 +186,14 @@
     "jest-html-reporter": "4.4.0",
     "jest-junit": "17.0.0",
     "jsonwebtoken": "^9.0.3",
-    "lint-staged": "^17.1.1",
+    "lint-staged": "^17.3.0",
     "mocha": "11.7.6",
     "mocha-junit-reporter": "^2.2.1",
-    "nock": "14.0.16",
+    "nock": "14.0.17",
     "nodemon": "3.1.14",
     "openapi-typescript": "^7.13.0",
     "prettier": "3.9.6",
-    "sass": "^1.101.6",
+    "sass": "^1.102.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
     "typescript": "^5.9.3"
@@ -204,7 +204,7 @@
       "uuid": "14.0.1"
     },
     "notifications-node-client": {
-      "axios": ">=1.18.1"
+      "axios": ">=1.19.0"
     },
     "@opentelemetry/core": ">=2.10.0",
     "@azure/functions-old": {
