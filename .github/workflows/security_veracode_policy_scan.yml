@@ -1,4 +1,4 @@
-name: Security veracode policy scan
+name: Security veracode policy scan # weekdays
 on:
   workflow_dispatch:
   schedule:
