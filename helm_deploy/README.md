@@ -1,70 +1,107 @@
-# Deployment Notes
+# Deployment notes
+
+Deployment reference for the helm chart. For the full picture — pipeline, environments, secrets,
+scheduled jobs — see [../docs/deployment.md](../docs/deployment.md).
+
+## Environments
+
+| Environment | Namespace | Host |
+| --- | --- | --- |
+| dev | `use-of-force-dev` | `dev.use-of-force.service.justice.gov.uk` |
+| preprod | `use-of-force-preprod` | `preprod.use-of-force.service.justice.gov.uk` |
+| prod | `use-of-force-prod` | `use-of-force.service.justice.gov.uk` |
+
+All on the `live` Cloud Platform cluster.
+
+## Layout
+
+The chart lives in a subdirectory; the values files sit one level above it.
+
+```
+helm_deploy/
+├── use-of-force/          <- the chart
+│   ├── Chart.yaml
+│   ├── values.yaml        <- shared values
+│   └── templates/job.yaml <- the send-reminders CronJob
+├── values-dev.yaml
+├── values-preprod.yaml
+└── values-prod.yaml
+```
+
+Paths in the commands below are relative to the repository root, not to this directory.
 
 ## Prerequisites
 
-- Ensure you have helm v3 client installed.
+A helm v3 client:
 
 ```sh
-$ helm version
-version.BuildInfo{Version:"v3.0.1", GitCommit:"7c22ef9ce89e0ebeb7125ba2ebf7d421f3e82ffa", GitTreeState:"clean", GoVersion:"go1.13.4"}
+helm version
 ```
 
-- Ensure a TLS cert for your intended hostname is configured and ready, see section below.
+## Useful commands
 
-
-### Useful helm (v3) commands:
-
-__Test chart template rendering:__
-
-This will out the fully rendered kubernetes resources in raw yaml.
+**Render the chart locally** — outputs the fully rendered Kubernetes resources as YAML:
 
 ```sh
-helm template [path to chart] --values=values-dev.yaml
+helm template helm_deploy/use-of-force --values helm_deploy/values-dev.yaml
 ```
 
-__List releases:__
+**List releases:**
 
 ```sh
-helm --namespace [namespace] list
+helm --namespace use-of-force-dev list
 ```
 
-__List current and previously installed application versions:__
+**List current and previous application versions:**
 
 ```sh
-helm --namespace [namespace] history [release name]
+helm --namespace use-of-force-dev history use-of-force
 ```
 
-__Rollback to previous version:__
+**Roll back:**
 
 ```sh
-helm --namespace [namespace] rollback [release name] [revision number] --wait
+helm --namespace use-of-force-dev rollback use-of-force [revision] --wait
 ```
 
-Note: replace _revision number_ with one from listed in the `history` command)
+Take the revision number from the `history` output.
 
-__Example deploy command:__
-
-The following example is `--dry-run` mode - which will allow for testing. CircleCI normally runs this command with actual secret values (from AWS secret manager), and also updated the chart's application version to match the release version:
+**Lint before pushing** — CI runs this for all three environments:
 
 ```sh
-helm upgrade [release name] [path to chart]. \
-  --install --wait --force --reset-values --timeout 5m --history-max 10 \
-  --dry-run \
-  --namespace [namespace] \
-  --values values-dev.yaml \
-  --values example-secrets.yaml
+helm lint helm_deploy/use-of-force --values helm_deploy/values-dev.yaml
 ```
 
-### Ingress TLS certificate
+## Deploying
 
-Ensure a certificate definition exists in the cloud-platform-environments repo under the relevant namespaces folder:
+Deploys run in GitHub Actions, not by hand, via
+`ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2`. A merge to `main`
+deploys through dev, preprod and prod in sequence. To deploy a specific version to a single
+environment, run the `deploy_to_env.yml` workflow manually and pick the environment and version.
 
-e.g.
+Secrets are not passed on the command line — they come from the four Kubernetes secrets mapped in
+`values.yaml` under `namespace_secrets` (`dps-rds-instance-output`, `application-insights`,
+`use-of-force`, `uof-elasticache-redis`). See [../docs/deployment.md](../docs/deployment.md#secrets).
 
-```sh
-cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/[INSERT NAMESPACE NAME]/05-certificate.yaml
+To test a rendered upgrade without applying it, add `--dry-run` to a `helm upgrade` against the
+namespace you have access to.
+
+## Ingress TLS certificate
+
+The certificate definition lives in the
+[cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repo,
+under the relevant namespace folder:
+
+```
+namespaces/live.cloud-platform.service.justice.gov.uk/use-of-force-dev/05-certificate.yaml
 ```
 
-Ensure the certificate is created and ready for use.
+The name of the Kubernetes secret holding the certificate is passed to the chart as
+`ingress.tlsSecretName` (currently `use-of-force-cert`) and used to configure the ingress.
 
-The name of the kubernetes secret where the certificate is stored is used as a value to the helm chart - this is used to configured the ingress.
+## Database migrations
+
+Migrations are **not** a separate deployment step. `server.ts` runs `knex.migrate.latest()` before
+`app.listen()`, so each deploy applies outstanding migrations as the new pods start. Migrations must
+be fast and backward-compatible with the version being replaced, since old and new pods share the
+schema during a rolling deploy.
