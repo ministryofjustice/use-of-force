@@ -1,6 +1,6 @@
 import { QueryPerformer } from './dataAccess/db'
 
-type Action =
+export type Action =
   | 'REPORT_CREATED'
   | 'REPORT_MODIFIED'
   | 'REPORT_DELETED'

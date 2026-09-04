@@ -1,0 +1,136 @@
+name: SchemaSpy report
+
+# Publishes the use-of-force data dictionary:
+#   https://ministryofjustice.github.io/use-of-force/schema-spy-report/
+#
+# The report is generated from a database built by the knex migrations, so it cannot drift from them.
+# This repository uses knex, not Flyway - see docs/data-model.md.
+
+on:
+  workflow_call:
+    inputs:
+      node_version_file:
+        description: Passed to setup-node to specify where to source the version of node from
+        required: false
+        type: string
+        default: '.nvmrc'
+      docker_compose_file:
+        description: Path to the Docker Compose file that starts the database
+        type: string
+        default: 'docker-compose-schema-spy.yml'
+      database_name:
+        description: Database name
+        type: string
+        default: 'use-of-force'
+      database_user:
+        description: Database user name
+        type: string
+        default: 'use-of-force'
+      database_password:
+        description: Database user password
+        type: string
+        default: 'use-of-force'
+      database_port:
+        description: Database port
+        type: string
+        default: '5432'
+      database_schema:
+        description: Database schema name
+        type: string
+        default: 'public'
+      publish:
+        description: Publish the report to GitHub Pages
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  schema-spy:
+    name: Schema Spy report generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+
+      # Same cache key as build.yml, which this job's needs: chain guarantees has already run.
+      - name: restore cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: |
+            ./node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}
+
+      - name: install dependencies
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: CYPRESS_INSTALL_BINARY=0 npm run setup
+
+      # Replaces the InitialiseDatabase integration test the Kotlin services use: there is no Spring
+      # context here, so the schema is built by running the knex migrations directly.
+      # bin/migrate-schema-spy.js deliberately avoids knexfile.ts, which the knex CLI cannot load
+      # without ts-node.
+      - name: Build the database from the migrations
+        shell: bash
+        run: |
+          docker compose -f ${{ inputs.docker_compose_file }} up -d --wait
+          npm run schema:migrate
+
+      # Fails the build if any table, view or column is missing a COMMENT ON or a sensitivity tag.
+      - name: Verify every table and column is documented
+        shell: bash
+        run: npm run schema:verify
+
+      - name: Export reference data
+        shell: bash
+        env:
+          REFERENCE_DATA_OUTPUT: ${{ github.workspace }}/reference-data.csv
+        run: npm run schema:reference-data
+
+      - name: Generate database schema report
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/database_schema_report@1061afed0f02c82850314e2fc29711523139e574 # v1.1.2
+        with:
+          database_name: ${{ inputs.database_name }}
+          port: ${{ inputs.database_port }}
+          schema: ${{ inputs.database_schema }}
+          user: ${{ inputs.database_user }}
+          password: ${{ inputs.database_password }}
+
+      - name: Generate CSV data dictionary
+        shell: bash
+        env:
+          DB_NAME: ${{ inputs.database_name }}
+          DB_PORT: ${{ inputs.database_port }}
+          DB_USER: ${{ inputs.database_user }}
+          DB_PASSWORD: ${{ inputs.database_password }}
+          DB_SCHEMA: ${{ inputs.database_schema }}
+        run: |
+          bin/generate-data-dictionary.sh /tmp/schemaspy/data-dictionary.csv
+          cp reference-data.csv /tmp/schemaspy/reference-data.csv
+
+      # After the first run, enable GitHub Pages on the repo (Settings > Pages, deploy from the gh-pages
+      # branch, root) and add an empty .nojekyll file to the *root* of gh-pages. Without it Pages tries
+      # to run a Jekyll build over the SchemaSpy output, which this repo's Actions policy does not allow,
+      # and the site never publishes. A root .nojekyll survives later deployments because this step only
+      # replaces schema-spy-report/.
+      - name: Publish to GitHub Pages
+        if: ${{ inputs.publish }}
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
+        with:
+          branch: gh-pages
+          folder: /tmp/schemaspy
+          target-folder: schema-spy-report
