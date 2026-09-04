@@ -1,83 +1,95 @@
 # Use of Force
-[![CircleCI](https://circleci.com/gh/ministryofjustice/use-of-force/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/use-of-force)
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fuse-of-force)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#use-of-force "Link to report")
 
-A service to allow recording of Use of Force incidents.
+A DPS service for recording Use of Force incidents in prisons.
 
-### Dependencies
-The app requires: 
-* A postgres DB to store report information
-* A REDIS instance for storing sessions
+Prison staff create a **report** describing an incident. Every other member of staff named on that
+report is then asked for their own **statement**. Once all statements are in, the report is complete.
+Reviewers and coordinators at the prison oversee the process.
 
+## Architecture at a glance
 
-## Getting started
-The easiest way to run the app is to use docker compose to start local postgres and redis DBs
+**This service has no backing API for writes.** Unlike most DPS services, the Express app owns the
+Postgres schema outright (via the knex migrations in `migrations/`) and performs all transactional
+work itself, in hand-written SQL under `server/data/`. The Kotlin `hmpps-uof-data-api` reads the same
+database but is read-only and exists to serve Subject Access Requests.
 
-`docker-compose pull`
-`docker-compose up`
+If you are new to this codebase, start with **[docs/getting-started.md](docs/getting-started.md)**.
 
-Install dependencies using `npm install`, ensuring you are using >= `Node v20`
+## Documentation
 
-And then, to build the assets and start the app with nodemon:
-`npm run start:dev`
+Full developer documentation is in **[`docs/`](docs/README.md)**:
 
-### Accessing the application
-Use your _GEN development credentials
+| Document | Covers |
+| --- | --- |
+| [Getting started](docs/getting-started.md) | Running the app and the tests locally, and the traps that cost people a day. |
+| [Architecture](docs/architecture.md) | Layers, middleware, authentication, upstream dependencies. |
+| [Creating and editing a report](docs/creating-and-editing-a-report.md) | The form journey and the pattern every form change follows. |
+| [Data model](docs/data-model.md) | Schema, soft-delete views, transactions, migrations. |
+| [Report payload](docs/report-payload.md) | What is inside `report.form_response`, with a worked example. |
+| [Process flows](docs/process-flows.md) | Report and statement lifecycles, submission, reminders. |
+| [Developer tips](docs/developer-tips.md) | Environment variables, npm scripts, debugging, glossary. |
+| [Deployment](docs/deployment.md) | Environments, namespaces, helm, CI/CD. |
 
-### user roles
-a reviewer is able to see all incidents on their current caseload:
-a force coordinator will additionally be able to add or delete staff and remove reports:
+## Dependencies
 
+- PostgreSQL, for report and statement data
+- Redis, for sessions and the cached system token
+- hmpps-auth, prison-api, manage-users-api, prisoner-search-api, locations-inside-prison-api,
+  nomis-mapping-api, frontend-components
+- GOV.UK Notify, for statement request and reminder emails
 
-### urls
-Once the use of force app has started, there are multiple ways to access the app.
+## Quick start
 
-* To create a report: 
-http://localhost:3000/report/-1/report-use-of-force (where -1 represents a booking id)
+Requires Node **22** (see `.nvmrc`), Docker, and `gitleaks` on your PATH for the pre-commit hook.
 
-* To view reports and statements: 
-http://localhost:3000/
+```bash
+nvm use
+npm run setup          # NOT npm install - see below
+docker compose up -d   # postgres on 5433, redis on 6379
+cp .env.example .env
+npm run start:dev
+```
 
-If new nomis is running you can access the home page at http://localhost:3001. 
-Only the leeds caseload has been configured to support use-of-force.
+The app runs on <http://localhost:3000>. Sign in with your `_GEN` development credentials.
 
-There are two ways of entering use-of-force from new-nomis:
-1.) Go to the new nomis homepage and click 'Use of force incidents' to view the user's reports/statements
-2.) Go to the new nomis homepage, search for an offender and click 'Report use of force' from the quick details page.
+- `npm run setup`, not `npm install` — `.npmrc` sets `ignore-scripts = true`, and `setup` runs the
+  allowlisted install scripts from `.allowed-scripts.mjs`.
+- Development Postgres is published on host port **5433**, but `server/config.ts` defaults `DB_PORT`
+  to 5432. `.env.example` sets it correctly.
+- Node version currently differs between `.nvmrc` (22), the Dockerfile (22.12) and `package.json`
+  `engines`. `.nvmrc` is what CI uses. Because `.npmrc` sets `engine-strict = true`, `npm ci` fails
+  outright on a mismatched Node major.
 
-#### Env variables
-In config.ts you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
+Entry points:
 
-### Run linter
+- <http://localhost:3000/> — your reports and statements
+- <http://localhost:3000/report/-1/report-use-of-force> — start a report against booking id `-1`
 
-`npm run lint`
+Configuration is read from environment variables; see `.env.example` and `server/config.ts`. Note
+that `.env` is only loaded by `npm run start:dev`.
 
-### Run tests
+## Tests
 
-`npm run test`
-
-## Testing coverage report
-
-Run:
-
-```shell
+```bash
+npm run lint
+npm run typecheck
+npm test
 npm run test-coverage
 ```
 
-### Running integration tests
+Integration tests use Cypress against a wiremock-stubbed environment. Order matters — cypress reads
+compiled output from `dist/`:
 
-For local running, start a test db, redis, and wiremock instance by:
+```bash
+docker compose down                              # the two compose stacks both use port 6379
+docker compose -f docker-compose.test.yml up -d   # postgres, redis, wiremock
+npm run build
+npm run start-feature                             # app on port 3007
+npm run int-test                                  # or npm run int-test-ui
+```
 
-`docker-compose -f docker-compose.test.yml up`
+## Contributing
 
-Then run the server in test mode by:
-
-`npm run start-feature` (or `npm run start-feature:dev` to run with nodemon)
-
-And then either, run tests in headless mode with:
-
-`npm run int-test`
- 
-Or run tests with the cypress UI:
-
-`npm run int-test-ui`
+Branch from `main` and raise a PR referencing the JIRA number. CI runs build, unit tests, integration
+tests and helm lint on every push; merges to `main` deploy through dev, preprod and prod.
