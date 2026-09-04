@@ -46,7 +46,7 @@ export default function Index(services: Services): Router {
       authService,
       locationService,
       reportDetailBuilder,
-      reportEditService
+      reportEditService,
     )
     const get = (path, handler) => router.get(path, coordinatorOnly, asyncMiddleware(handler))
     const post = (path, handler) => router.post(path, coordinatorOnly, asyncMiddleware(handler))
@@ -84,6 +84,7 @@ export default function Index(services: Services): Router {
     // to here
 
     get('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.confirmDeleteStatement)
+    post('/coordinator/report/:reportId/statement/:statementId/confirm-delete', coordinator.deleteStatement)
     post('/coordinator/report/:reportId/statement/:statementId/delete', coordinator.deleteStatement)
 
     get('/coordinator/report/:reportId/statement/:statementId/view-removal-request', coordinator.viewRemovalRequest)
@@ -91,7 +92,7 @@ export default function Index(services: Services): Router {
 
     get(
       '/coordinator/report/:reportId/statement/:statementId/staff-member-not-removed',
-      coordinator.viewStaffMemberNotRemoved
+      coordinator.viewStaffMemberNotRemoved,
     )
   }
 

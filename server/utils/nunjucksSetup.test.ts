@@ -139,4 +139,14 @@ describe('nunjucksSetup', () => {
       expect(toNoDataEnteredOrValue([1, 2])).toEqual([1, 2])
     })
   })
+
+  describe('activeStatus', () => {
+    const filter = njk.getFilter('activeStatus')
+    it('returns "Active" for true', () => {
+      expect(filter(true)).toBe('Active')
+    })
+    it('returns "Inactive" for false', () => {
+      expect(filter(false)).toBe('Inactive')
+    })
+  })
 })

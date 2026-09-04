@@ -14,7 +14,6 @@ const userService = new UserService(null, null) as jest.Mocked<UserService>
 let service: DraftInvolvedStaffService
 
 const aUser = (username: string, activeCaseLoadId: string, staffId: number) =>
-  // eslint-disable-next-line
   ({ username, activeCaseLoadId, staffId, exists: true }) as FoundUserResult
 
 beforeEach(() => {

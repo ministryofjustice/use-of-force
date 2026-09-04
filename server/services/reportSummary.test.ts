@@ -120,7 +120,7 @@ describe('reportSummary', () => {
       form.useOfForceDetails.redDotWarning = true
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
       expect(result.useOfForceDetails.taserDrawn).toEqual(
-        'Yes -  prisoner not warned, red-dot warning used, arc warning not used, Taser not deployed, Taser cycle not extended, Taser not re-energised'
+        'Yes -  prisoner not warned, red-dot warning used, arc warning not used, Taser not deployed, Taser cycle not extended, Taser not re-energised',
       )
     })
   })
@@ -144,7 +144,7 @@ describe('reportSummary', () => {
       ]
       const result = reportSummary(form, offenderDetail, prison, locationDescription, involvedStaff, incidentDate)
       expect(result.useOfForceDetails.reasonsForUseOfForce).toEqual(
-        'Assault by a member of public, Concerted indiscipline'
+        'Assault by a member of public, Concerted indiscipline',
       )
     })
   })

@@ -31,8 +31,8 @@ export default class StatementsClient {
             , s.overdue_date <= now()                "isOverdue"
             , s.removal_requested_date is not null   "isRemovalRequested"
             , s.statement_status                     "status"
-            from statement s 
-            inner join report r on s.report_id = r.id   
+            from statement s
+            inner join report r on s.report_id = r.id
           where s.user_id = $1
           and s.deleted is null
           order by status, r.incident_date desc
@@ -72,7 +72,7 @@ export default class StatementsClient {
     const results = await this.query({
       text: `select s.id
             ,      s.user_id                                 "userId"
-            ,      s.name                                    "name" 
+            ,      s.name                                    "name"
             ,      s.email                                   "email"
             ,      r.incident_date                           "incidentDate"
             ,      r.submitted_date                          "submittedDate"
@@ -90,7 +90,7 @@ export default class StatementsClient {
             ,      r.id                                      "reportId"
             ,      s.name
             ,      s.user_id                                 "userId"
-            ,      (s.overdue_date <= now()) and 
+            ,      (s.overdue_date <= now()) and
                    (s.statement_status != $1)                "isOverdue"
             ,      s.statement_status = $1                   "isSubmitted"
             ,      s.removal_requested_date is not null      "isRemovalRequested"
@@ -138,9 +138,9 @@ export default class StatementsClient {
 
   async getAdditionalComments(statementId: number): Promise<AdditionalComment[]> {
     const results = await this.query({
-      text: `select  
+      text: `select
     s.additional_comment "additionalComment",
-    s.date_submitted     "dateSubmitted" 
+    s.date_submitted     "dateSubmitted"
     from v_statement_amendments s
     where s.statement_id = $1`,
       values: [statementId],
@@ -151,7 +151,7 @@ export default class StatementsClient {
   async saveAdditionalComment(
     statementId: number,
     additionalComment: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `insert into v_statement_amendments (statement_id, additional_comment)
@@ -164,10 +164,10 @@ export default class StatementsClient {
     userId: string,
     reportId: number,
     { lastTrainingMonth, lastTrainingYear, jobStartYear, statement }: StatementUpdate,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
-      text: `update v_statement 
+      text: `update v_statement
     set last_training_month = $1
     ,   last_training_year = $2
     ,   job_start_year = $3
@@ -191,7 +191,7 @@ export default class StatementsClient {
 
   async submitStatement(userId: string, reportId: number, query: QueryPerformer = this.query): Promise<void> {
     await query({
-      text: `update v_statement 
+      text: `update v_statement
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
     ,   updated_date = CURRENT_TIMESTAMP
@@ -206,10 +206,10 @@ export default class StatementsClient {
     userId: string,
     reportId: number,
     emailAddress: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
-      text: `update v_statement 
+      text: `update v_statement
     set email = $3
     ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $1
@@ -231,7 +231,7 @@ export default class StatementsClient {
     firstReminder: Date,
     overdueDate: Date,
     staff: DraftInvolvedStaff[],
-    query = this.query
+    query = this.query,
   ): Promise<UsernameToStatementIds> {
     const rows = staff.map(s => [
       reportId,
@@ -246,12 +246,12 @@ export default class StatementsClient {
     const results = await query<StatementCreationResult>({
       text: format(
         'insert into v_statement (report_id, staff_id, user_id, name, email, next_reminder_date, overdue_date, statement_status) VALUES %L returning id, user_id "userId"',
-        rows
+        rows,
       ),
     })
     return results.rows.reduce<UsernameToStatementIds>(
       (result, staffMember) => ({ ...result, [staffMember.userId]: staffMember.id }),
-      {}
+      {},
     )
   }
 
@@ -269,7 +269,7 @@ export default class StatementsClient {
   async isStatementPresentForUser(
     reportId: number,
     username: string,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<boolean> {
     const { rows } = await query({
       text: `select count(*) from v_statement where report_id = $1 and user_id = $2`,
@@ -304,7 +304,7 @@ export default class StatementsClient {
     const { rows } = await this.query({
       text: `select s.removal_requested_reason "removalRequestedReason"
               , s.removal_requested_date is not null "isRemovalRequested"
-              from v_statement s 
+              from v_statement s
               where id = $1`,
       values: [statementId],
     })

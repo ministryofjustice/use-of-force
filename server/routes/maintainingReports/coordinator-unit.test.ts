@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { subDays, format, addDays, subWeeks } from 'date-fns'
 import { Request, Response } from 'express'
 import { ReportEdit } from '../../data/incidentClientTypes'
 import ReportService from '../../services/reportService'
@@ -13,6 +14,7 @@ import ReportDataBuilder from '../../services/reportDetailBuilder'
 import ReportEditService from '../../services/reportEditService'
 import logger from '../../../log'
 import CoordinatorRoutes from './coordinator'
+import config from '../../config'
 
 jest.mock('../../services/reportService')
 jest.mock('../../services/involvedStaffService')
@@ -34,7 +36,7 @@ const involvedStaffService = new InvolvedStaffService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
@@ -51,7 +53,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<ReportEditService>
 const flash = jest.fn()
 
@@ -59,7 +61,8 @@ let controller: any
 let req
 let res
 
-const incidentDate = '2025-10-28T03:10:00.000Z'
+const incidentDate = subDays(new Date(), 1)
+
 const report = {
   id: 1,
   username: 'USER',
@@ -128,9 +131,9 @@ const editIncidentDetailsViewModel = {
   data: {
     displayName: undefined,
     incidentDate: {
-      date: '28/10/2025',
-      hour: '03',
-      minute: '10',
+      date: format(incidentDate, 'dd/MM/yyyy'),
+      hour: format(incidentDate, 'HH'),
+      minute: format(incidentDate, 'mm'),
     },
     locations: [
       {
@@ -152,6 +155,12 @@ const editIncidentDetailsViewModel = {
         name: 'tom',
       },
     ],
+    currentDate: format(new Date(), 'dd/MM/yyyy'),
+    earliestIncidentDate: format(
+      addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+      'dd/MM/yyyy',
+    ),
+    maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
   },
   errors: undefined,
   noChangeError: undefined,
@@ -205,7 +214,7 @@ beforeEach(() => {
     authService,
     locationService,
     reportDetailBuilder,
-    reportEditService
+    reportEditService,
   )
 })
 
@@ -300,15 +309,30 @@ describe('CoordinatorEditReportController', () => {
         },
       })
     })
+
+    it('should call deleteAnyPendingEditsForThisReport with the correct incidentId', async () => {
+      req.params = { reportId: '123' }
+      req.session.incidentReport = [
+        { reportId: 123, reasonForChange: 'old reason' },
+        { reportId: 456, reasonForChange: 'keep me' },
+      ]
+      const spy = jest.spyOn(controller, 'deleteAnyPendingEditsForThisReport')
+
+      await controller.viewEditReport(req, res)
+
+      expect(spy).toHaveBeenCalledWith(req, 123)
+      expect(req.session.incidentReport).toEqual([{ reportId: 456, reasonForChange: 'keep me' }])
+    })
   })
 
   describe('Report details', () => {
     describe('viewEditReport', () => {
       it("should display the correct details in 'last edited' row", async () => {
+        const baseDate = new Date()
         const reportEdits = [
           {
             id: 2,
-            editDate: new Date('2025-11-01T09:00:00.000Z'),
+            editDate: subDays(baseDate, 1),
             editorUserId: 'UserId2',
             editorName: 'John Smith',
             reportId: 1,
@@ -320,7 +344,7 @@ describe('CoordinatorEditReportController', () => {
           },
           {
             id: 1,
-            editDate: new Date('2025-10-15T09:00:00.000Z'),
+            editDate: subDays(baseDate, 2),
             editorUserId: 'UserId1',
             editorName: 'Mike Smith',
             reportId: 1,
@@ -340,7 +364,7 @@ describe('CoordinatorEditReportController', () => {
             hasReportBeenEdited: true,
             hasReportOwnerChanged: false,
             incidentDetails: {
-              incidentDate: '2025-10-28T03:10:00.000Z',
+              incidentDate,
             },
             lastEdit: {
               additionalComments: 'some comments 2',
@@ -350,7 +374,7 @@ describe('CoordinatorEditReportController', () => {
                   oldValue: true,
                 },
               },
-              editDate: new Date('2025-11-01T09:00:00.000Z'),
+              editDate: subDays(baseDate, 1),
               editorName: 'John Smith',
               editorUserId: 'UserId2',
               id: 2,
@@ -474,10 +498,10 @@ describe('CoordinatorEditReportController', () => {
         req.body = {
           newAgencyId: '',
           incidentDate: {
-            date: '06/10/2025',
+            date: format(incidentDate, 'dd/MM/yyyy'),
             time: {
-              hour: '04',
-              minute: '10',
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
             },
           },
           incidentLocationId: 'Loc-1',
@@ -503,19 +527,16 @@ describe('CoordinatorEditReportController', () => {
         req.body = {
           newAgencyId: '',
           incidentDate: {
-            date: '06/10/2025',
+            date: format(incidentDate, 'dd/MM/yyyy'),
             time: {
-              hour: '04',
-              minute: '10',
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
             },
           },
           incidentLocationId: 'Loc-1',
           plannedUseOfForce: 'true',
           authorisedBy: 'Mr Smith',
           witnesses: [
-            {
-              name: 'jimmy',
-            },
             {
               name: 'tom',
             },
@@ -535,6 +556,9 @@ describe('CoordinatorEditReportController', () => {
               {
                 name: 'jimmy',
               },
+              {
+                name: 'tom',
+              },
             ],
             newValue: [
               {
@@ -549,6 +573,69 @@ describe('CoordinatorEditReportController', () => {
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(res.redirect).toHaveBeenCalledWith('reason-for-change')
       })
+
+      it('should flash error message if new incident date is prior to edit window', async () => {
+        req.body = {
+          incidentDate: {
+            date: format(
+              subDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+              'dd/MM/yyyy',
+            ),
+            time: {
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
+            },
+          },
+          incidentLocationId: 'Loc-1',
+          plannedUseOfForce: 'true',
+          authorisedBy: 'Mr Smith',
+          witnesses: [
+            {
+              name: 'tom',
+            },
+          ],
+          submitType: 'continue-coordinator-edit',
+        }
+
+        await controller.submitEditIncidentDetails(req, res)
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          {
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+            href: '#incidentDate[date]',
+          },
+        ])
+      })
+
+      it('should flash error message if new incident date is in the future', async () => {
+        req.body = {
+          incidentDate: {
+            date: format(addDays(new Date(), 1), 'dd/MM/yyyy'),
+            time: {
+              hour: format(incidentDate, 'HH'),
+              minute: format(incidentDate, 'mm'),
+            },
+          },
+          incidentLocationId: 'Loc-1',
+          plannedUseOfForce: 'true',
+          authorisedBy: 'Mr Smith',
+          witnesses: [
+            {
+              name: 'tom',
+            },
+          ],
+          submitType: 'continue-coordinator-edit',
+        }
+
+        await controller.submitEditIncidentDetails(req, res)
+
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          {
+            text: `Select or enter a date within the last ${config.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+            href: '#incidentDate[date]',
+          },
+        ])
+      })
     })
   })
 
@@ -561,7 +648,7 @@ describe('CoordinatorEditReportController', () => {
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalledWith(
           'pages/coordinator/why-uof-applied.njk',
-          expect.objectContaining({ coordinatorEditJourney: true })
+          expect.objectContaining({ coordinatorEditJourney: true }),
         )
         expect(req.session.incidentReport).toEqual({})
       })
@@ -578,7 +665,7 @@ describe('CoordinatorEditReportController', () => {
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(res.render).toHaveBeenCalledWith(
           'pages/coordinator/why-uof-applied.njk',
-          expect.objectContaining({ errors: error })
+          expect.objectContaining({ errors: error }),
         )
       })
     })
@@ -658,8 +745,15 @@ describe('CoordinatorEditReportController', () => {
             }),
             errors: undefined,
             showSaveAndReturnButton: false,
-          })
+          }),
         )
+      })
+      it('should not render page but redirect to view incident page when no edits in session', async () => {
+        req.params = { reportId: '1' }
+        req.session.incidentReport = undefined
+        await controller.viewEditPrimaryReasonForUof(req, res)
+        expect(res.render).not.toHaveBeenCalled()
+        expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
       })
     })
 
@@ -681,13 +775,25 @@ describe('CoordinatorEditReportController', () => {
 
     describe('viewEditUseOfForceDetails', () => {
       it('should render page', async () => {
-        req.session.incidentReport = {
-          whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
-        }
+        req.session.incidentReport = [
+          {
+            reportId: 1,
+            whyWasUOFAppliedReasons: ['HOSTAGE_NTRG', 'OTHER_NTRG_INCIDENT'],
+          },
+        ]
         await controller.viewEditUseOfForceDetails(req, res)
         expect(reviewService.getReport).toHaveBeenCalledWith(1)
         expect(offenderService.getOffenderDetails).toHaveBeenCalledWith('123456', 'USER')
         expect(res.render).toHaveBeenCalled()
+      })
+
+      it('should not render page but redirect to view incident page when no edits in session', async () => {
+        req.session.incidentReport = undefined
+        await controller.viewEditUseOfForceDetails(req, res)
+        expect(reviewService.getReport).not.toHaveBeenCalledWith(1)
+        expect(offenderService.getOffenderDetails).not.toHaveBeenCalledWith('123456', 'USER')
+        expect(res.render).not.toHaveBeenCalled()
+        expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
       })
     })
 
@@ -1027,8 +1133,17 @@ describe('CoordinatorEditReportController', () => {
             backlinkHref: 'incident-details',
             offenderDetail: { name: 'An Offender' },
           }),
-        })
+        }),
       )
+    })
+
+    it('should not render page but redirect to view incident page when no edits in session', async () => {
+      req.session.incidentReport = undefined
+      req.flash = jest.fn().mockReturnValue([])
+
+      await controller.viewReasonForChange(req, res)
+      expect(res.render).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/1/view-incident?tab=report')
     })
 
     it('should include errors from flash if present', async () => {
@@ -1036,7 +1151,7 @@ describe('CoordinatorEditReportController', () => {
       await controller.viewReasonForChange(req, res)
       expect(res.render).toHaveBeenCalledWith(
         'pages/coordinator/reason-for-change.njk',
-        expect.objectContaining({ data: expect.objectContaining({ errors: [{ href: '#reason', text: 'Required' }] }) })
+        expect.objectContaining({ data: expect.objectContaining({ errors: [{ href: '#reason', text: 'Required' }] }) }),
       )
     })
   })
@@ -1455,7 +1570,7 @@ describe('CoordinatorEditReportController', () => {
 
       expect(logSpy).toHaveBeenCalledWith(
         expect.stringContaining('Error checking involved staff member abc'),
-        expect.any(Error)
+        expect.any(Error),
       )
     })
 
@@ -1605,7 +1720,7 @@ describe('CoordinatorEditReportController', () => {
       expect(req.flash).toHaveBeenCalledWith('result', 'success')
       expect(req.flash).toHaveBeenCalledWith(
         'resultMessage',
-        expect.stringContaining('You have added USER (ABC) to the incident')
+        expect.stringContaining('You have added USER (ABC) to the incident'),
       )
 
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
@@ -1618,7 +1733,7 @@ describe('CoordinatorEditReportController', () => {
       expect(req.flash).toHaveBeenCalledWith('result', 'error')
       expect(req.flash).toHaveBeenCalledWith(
         'resultMessage',
-        'An unexpected error occurred while adding the staff member.'
+        'An unexpected error occurred while adding the staff member.',
       )
       expect(res.redirect).toHaveBeenCalledWith('/1/edit-report/staff-involved')
     })
@@ -1685,7 +1800,7 @@ describe('CoordinatorEditReportController', () => {
         { href: '#confirm', text: 'Select yes if you want to delete this statement' },
       ])
       expect(res.redirect).toHaveBeenCalledWith(
-        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true'
+        '/coordinator/report/1/statement/456/confirm-delete?removalRequest=true',
       )
     })
 

@@ -35,7 +35,7 @@ beforeEach(() => {
     userService,
     db.inTransaction,
     notificationService,
-    manageUsersApiClient
+    manageUsersApiClient,
   )
 
   incidentClient.getInvolvedStaff = jest.fn()
@@ -111,7 +111,7 @@ describe('update', () => {
         'SYSTEM',
         ReportStatus.COMPLETE,
         ReportStatus.SUBMITTED,
-        client
+        client,
       )
     })
 
@@ -241,7 +241,7 @@ describe('update', () => {
           reasonAdditionalInfo: pageInput.reasonAdditionalInfo,
           reportOwnerChanged: false,
         },
-        client
+        client,
       )
 
       // Assert status change called (SUBMITTED -> COMPLETE)
@@ -250,7 +250,7 @@ describe('update', () => {
         'SYSTEM',
         ReportStatus.SUBMITTED,
         ReportStatus.COMPLETE,
-        client
+        client,
       )
 
       // Assert notification called with first removed staff
@@ -262,7 +262,7 @@ describe('update', () => {
           incidentDate: expect.any(Date),
           submittedDate: expect.any(Date),
         },
-        { reportId: 1, statementId: 1 }
+        { reportId: 1, statementId: 1 },
       )
     })
 
@@ -356,7 +356,7 @@ describe('update', () => {
           incidentDate: expect.any(Date),
           submittedDate: removalArray[0].submittedDate,
         },
-        { reportId: 1, statementId: 1 }
+        { reportId: 1, statementId: 1 },
       )
     })
   })

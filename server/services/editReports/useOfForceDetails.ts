@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { QUESTION_SET } from '../../config/edit/useOfForceDetailsConfig'
 
 export default (report, valuesFromRequestBody) => {
@@ -9,7 +9,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.positiveCommunication,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.positiveCommunication,
-        valuesFromRequestBody.positiveCommunication
+        valuesFromRequestBody.positiveCommunication,
       ),
     },
     bodyWornCamera: {
@@ -25,7 +25,7 @@ export default (report, valuesFromRequestBody) => {
       hasChanged: !compareBodyWornCameraNumbersOrWeaponTypes(
         'cameraNum',
         report.form.useOfForceDetails.bodyWornCameraNumbers,
-        valuesFromRequestBody.bodyWornCameraNumbers
+        valuesFromRequestBody.bodyWornCameraNumbers,
       ),
     },
     personalProtectionTechniques: {
@@ -34,7 +34,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.personalProtectionTechniques,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.personalProtectionTechniques,
-        valuesFromRequestBody.personalProtectionTechniques
+        valuesFromRequestBody.personalProtectionTechniques,
       ),
     },
     batonDrawnAgainstPrisoner: {
@@ -43,7 +43,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.batonDrawnAgainstPrisoner,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.batonDrawnAgainstPrisoner,
-        valuesFromRequestBody.batonDrawnAgainstPrisoner
+        valuesFromRequestBody.batonDrawnAgainstPrisoner,
       ),
     },
     batonUsed: {
@@ -58,7 +58,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.pavaDrawnAgainstPrisoner,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.pavaDrawnAgainstPrisoner,
-        valuesFromRequestBody.pavaDrawnAgainstPrisoner
+        valuesFromRequestBody.pavaDrawnAgainstPrisoner,
       ),
     },
     pavaUsed: {
@@ -79,7 +79,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.taserOperativePresent,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.taserOperativePresent,
-        valuesFromRequestBody.taserOperativePresent
+        valuesFromRequestBody.taserOperativePresent,
       ),
     },
     redDotWarning: {
@@ -131,7 +131,7 @@ export default (report, valuesFromRequestBody) => {
       hasChanged: !compareBodyWornCameraNumbersOrWeaponTypes(
         'weaponType',
         report.form.useOfForceDetails.weaponTypes,
-        valuesFromRequestBody.weaponTypes
+        valuesFromRequestBody.weaponTypes,
       ),
     },
     guidingHold: {
@@ -146,7 +146,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.guidingHoldOfficersInvolved,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.guidingHoldOfficersInvolved,
-        valuesFromRequestBody.guidingHoldOfficersInvolved
+        valuesFromRequestBody.guidingHoldOfficersInvolved,
       ),
     },
     escortingHold: {
@@ -167,7 +167,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.painInducingTechniquesUsed,
       hasChanged: !R.equals(
         report.form.useOfForceDetails.painInducingTechniquesUsed,
-        valuesFromRequestBody.painInducingTechniquesUsed
+        valuesFromRequestBody.painInducingTechniquesUsed,
       ),
     },
     handcuffsApplied: {
@@ -182,9 +182,9 @@ export default (report, valuesFromRequestBody) => {
 const compareBodyWornCameraNumbersOrWeaponTypes = (
   entityKey: string,
   arr1?: Record<string, string>[],
-  arr2?: Record<string, string>[]
+  arr2?: Record<string, string>[],
 ) => {
-  const normalize = R.map((obj: Record<string, string>[]) => ({
+  const normalize = R.map((obj: Record<string, string>) => ({
     entityKey: R.toLower(obj[entityKey]),
   }))
 

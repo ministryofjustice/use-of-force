@@ -5,10 +5,9 @@ import config from '../config'
 import { LocationClient, PrisonClient } from '../data'
 
 export default class LocationService {
-  // eslint-disable-next-line
   constructor(
     private readonly prisonClient: PrisonClient,
-    private readonly locationClient: LocationClient
+    private readonly locationClient: LocationClient,
   ) {}
 
   mapLocationApiResponse(location) {
@@ -50,10 +49,10 @@ export default class LocationService {
       }))
 
       const prisonersCell = formattedIncidentLocations.find(
-        location => location.userDescription.toUpperCase() === "PRISONER'S CELL"
+        location => location.userDescription.toUpperCase() === "PRISONER'S CELL",
       )
       const otherCell = formattedIncidentLocations.find(
-        location => location.userDescription.toUpperCase() === 'OTHER CELL'
+        location => location.userDescription.toUpperCase() === 'OTHER CELL',
       )
       const inCell = formattedIncidentLocations.find(location => location.userDescription.toUpperCase() === 'IN CELL')
 
@@ -62,7 +61,7 @@ export default class LocationService {
           location =>
             location.userDescription.toUpperCase() !== 'OTHER CELL' &&
             location.userDescription.toUpperCase() !== "PRISONER'S CELL" &&
-            location.userDescription.toUpperCase() !== 'IN CELL'
+            location.userDescription.toUpperCase() !== 'IN CELL',
         )
         .sort((a, b) => a.userDescription.localeCompare(b.userDescription, 'en', { ignorePunctuation: true }))
       if (config.featureFlagRemoveCellLocationAgencies.includes(agencyId)) {

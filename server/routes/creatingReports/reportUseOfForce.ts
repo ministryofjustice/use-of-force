@@ -6,7 +6,7 @@ export default class ReportUseOfForceRoutes {
   constructor(
     private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
-    private readonly offenderService: OffenderService
+    private readonly offenderService: OffenderService,
   ) {}
 
   public view = async (req, res) => {

@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { QUESTION_SET } from '../../config/edit/reasonsForUoFConfig'
 
 export default (report, valuesFromRequestBody) => {

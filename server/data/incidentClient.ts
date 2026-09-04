@@ -19,7 +19,7 @@ export default class IncidentClient {
   constructor(
     private readonly query: QueryPerformer,
     private readonly inTransaction: InTransaction,
-    private readonly reportLogClient: ReportLogClient
+    private readonly reportLogClient: ReportLogClient,
   ) {}
 
   async changeStatus(
@@ -27,7 +27,7 @@ export default class IncidentClient {
     userId: string,
     startState: LabelledValue,
     endState: LabelledValue,
-    query: QueryPerformer
+    query: QueryPerformer,
   ): Promise<void> {
     await query({
       text: `update v_report r
@@ -65,7 +65,7 @@ export default class IncidentClient {
 
   async getBookingId(reportId: number): Promise<Record<'bookingId', string>> {
     const results = await this.query({
-      text: `select 
+      text: `select
           booking_id "bookingId"
           from report r
           where r.id = $1`,
@@ -128,7 +128,7 @@ export default class IncidentClient {
 
   async getIncompleteReportsForReviewer(agencyId: AgencyId): Promise<IncompleteReportSummary[]> {
     const isOverdue = `(select count(*) from "v_statement" s
-                      where r.id = s.report_id 
+                      where r.id = s.report_id
                       and s.statement_status = $3
                       and s.overdue_date <= now()) > 0`
 
@@ -187,7 +187,7 @@ export default class IncidentClient {
   async getCompletedReportsForReviewer(
     agencyId: AgencyId,
     query: IncidentSearchQuery,
-    page: number
+    page: number,
   ): Promise<PageResponse<ReportSummary>> {
     const [offset, limit] = offsetAndLimitForPage(page)
     const results = await this.query<HasTotalCount<ReportSummary>>({
@@ -218,7 +218,7 @@ export default class IncidentClient {
             , r.status        "status"
             from v_report r
           where r.user_id = $1
-          order by (case status 
+          order by (case status
             when 'IN_PROGRESS' then 1
             else 2
             end), r.incident_date desc
@@ -235,7 +235,7 @@ export default class IncidentClient {
     ,      s.user_id       "userId"
     ,      s.name          "name"
     ,      s.email         "email"
-    from v_statement s 
+    from v_statement s
     where s.report_id = $1`,
       values: [reportId],
     })
@@ -267,9 +267,9 @@ export default class IncidentClient {
       text: `select s.id                     "statementId"
               ,       r.id                     "reportId"
               ,       s.user_id                "userId"
-              ,       s.email                  "recipientEmail" 
+              ,       s.email                  "recipientEmail"
               ,       s.name                   "recipientName"
-              ,       s.next_reminder_date     "nextReminderDate"  
+              ,       s.next_reminder_date     "nextReminderDate"
               ,       r.submitted_date         "submittedDate"
               ,       r.reporter_name          "reporterName"
               ,       r.incident_date          "incidentDate"
@@ -304,7 +304,7 @@ export default class IncidentClient {
     reportId: number,
     incidentDate: Date | null,
     formResponse: unknown | null,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `update v_report r
@@ -321,7 +321,7 @@ export default class IncidentClient {
     incidentDate: Date | null,
     agencyId: string | null,
     formResponse: unknown | null,
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     await query({
       text: `update v_report r
@@ -345,7 +345,7 @@ export default class IncidentClient {
       reasonAdditionalInfo: string
       reportOwnerChanged: boolean
     },
-    query: QueryPerformer = this.query
+    query: QueryPerformer = this.query,
   ): Promise<void> {
     const { username, displayName, reportId, changes, reason, reasonText, reasonAdditionalInfo, reportOwnerChanged } =
       edits

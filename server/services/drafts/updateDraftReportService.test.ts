@@ -30,7 +30,7 @@ beforeEach(() => {
     reportLogClient,
     inTransaction,
     prisonClient,
-    authService
+    authService,
   )
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
   prisonClient.getOffenderDetails.mockResolvedValue({ offenderNo: 'AA123ABC', agencyId: 'MDI' } as InmateDetail)

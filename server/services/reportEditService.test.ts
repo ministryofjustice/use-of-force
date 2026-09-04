@@ -44,7 +44,7 @@ beforeEach(() => {
     editUseOfForceDetailsService,
     locationService,
     authService,
-    incidentClient
+    incidentClient,
   )
 })
 
@@ -62,7 +62,7 @@ describe('constructChangesToView', () => {
     expect(editIncidentDetailsService.buildIncidentDetails).toHaveBeenCalledWith(
       'user-1',
       questionSets.incidentDetails,
-      changes
+      changes,
     )
   })
 })
@@ -544,7 +544,7 @@ describe('persistChanges', () => {
       '',
       'Some additional text',
       false,
-      null
+      null,
     )
   })
 
@@ -729,7 +729,7 @@ describe('persistDeleteIncident', () => {
     const error = new Error('fail')
     reportService.deleteIncidentAndUpdateReportEdit.mockRejectedValue(error)
     await expect(reportEditService.persistDeleteIncident(user, data)).rejects.toThrow(
-      'Could not delete incident with id 1.'
+      'Could not delete incident with id 1.',
     )
     expect(reportService.deleteIncidentAndUpdateReportEdit).toHaveBeenCalledWith(user, data)
     expect(logger.error).toHaveBeenCalledWith('Report deletion failed. Report id 1', error)

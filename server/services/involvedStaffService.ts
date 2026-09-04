@@ -23,7 +23,7 @@ export class InvolvedStaffService {
     private readonly userService: UserService,
     private readonly inTransaction: InTransaction,
     private readonly notificationService,
-    private readonly manageUsersClient: ManageUsersApiClient
+    private readonly manageUsersClient: ManageUsersApiClient,
   ) {}
 
   public getInvolvedStaff(reportId: number): Promise<InvolvedStaff[]> {
@@ -79,7 +79,7 @@ export class InvolvedStaffService {
         null,
         moment(report.submittedDate).add(3, 'day').toDate(),
         [foundUser],
-        client
+        client,
       )
 
       if (report.status === ReportStatus.COMPLETE.value) {
@@ -90,7 +90,7 @@ export class InvolvedStaffService {
           'SYSTEM',
           ReportStatus.COMPLETE,
           ReportStatus.SUBMITTED,
-          client
+          client,
         )
       }
       return foundUser.verified ? AddStaffResult.SUCCESS : AddStaffResult.SUCCESS_UNVERIFIED
@@ -121,7 +121,7 @@ export class InvolvedStaffService {
             'SYSTEM',
             ReportStatus.SUBMITTED,
             ReportStatus.COMPLETE,
-            client
+            client,
           )
         }
       }
@@ -134,7 +134,7 @@ export class InvolvedStaffService {
     await this.notificationService.sendInvolvedStaffRemovedFromReport(
       email,
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
   }
 
@@ -144,7 +144,7 @@ export class InvolvedStaffService {
     statementId: number,
     displayName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pageInput: any
+    pageInput: any,
   ): Promise<void> {
     logger.info(`Removing statement: ${statementId} from report: ${reportId}`)
 
@@ -163,7 +163,7 @@ export class InvolvedStaffService {
 
     // Filter out staff where BOTH email and userId match
     const filteredStaff = oldValue.filter(
-      staff => !involvedStaff.some(remove => remove.email === staff.email && remove.userId === staff.userId)
+      staff => !involvedStaff.some(remove => remove.email === staff.email && remove.userId === staff.userId),
     )
 
     const newValue = filteredStaff.map(staff => `${staff.name} (${staff.userId})`).join(', ')
@@ -200,7 +200,7 @@ export class InvolvedStaffService {
             'SYSTEM',
             ReportStatus.SUBMITTED,
             ReportStatus.COMPLETE,
-            client
+            client,
           )
         }
       }
@@ -215,7 +215,7 @@ export class InvolvedStaffService {
     await this.notificationService.sendInvolvedStaffRemovedFromReport(
       email,
       { involvedName, incidentDate: moment(incidentDate).toDate(), submittedDate },
-      context
+      context,
     )
   }
 
@@ -227,7 +227,7 @@ export class InvolvedStaffService {
     token: string,
     reportId: number,
     value: string,
-    page: number
+    page: number,
   ): Promise<FuzzySearchFoundUserResponse> {
     logger.info(`Fuzzy searching for involved staff with value: ${value} on report: '${reportId}'`)
 
@@ -240,7 +240,7 @@ export class InvolvedStaffService {
     username: string,
     displayName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pageInput: any
+    pageInput: any,
   ): Promise<AddStaffResult> {
     logger.info(`Updating involved staff with username: ${username} on report: '${reportId}'`)
 

@@ -12,7 +12,7 @@ module.exports = {
           selected:
             Cypress.$(element).find('a').attr('href') === undefined &&
             !Cypress.$(element).hasClass('moj-pagination__item--dots'),
-        }))
+        })),
       ),
   pageResults: () => firstPagination().find('.moj-pagination__results'),
   clickLinkWithText: text => firstPagination().get(`.moj-pagination__item`).contains(text).click(),

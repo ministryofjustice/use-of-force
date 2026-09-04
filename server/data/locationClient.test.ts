@@ -80,7 +80,7 @@ describe('locationClient', () => {
         .reply(400)
 
       await expect(locationClient.getLocations('MDI', token, 'SOME-TYPE' as NonResidentialServiceType)).rejects.toThrow(
-        'Bad Request'
+        'Bad Request',
       )
     })
   })

@@ -2,6 +2,7 @@ const { joi, validations, namePattern, caseInsensitiveComparator } = require('./
 const { EXTRACTED } = require('../fieldType')
 const { toDate } = require('./sanitisers')
 const { buildValidationSpec } = require('../../services/validation')
+const config = require('../../config')
 const {
   ValidationError,
   hourValidation,
@@ -19,6 +20,8 @@ const requiredIncidentDate = joi
       .any()
       .custom(dateValidation)
       .messages({
+        [ValidationError.outOfRange]: `Select or enter a date within the last ${config.default.maxWeeksFromIncidentDateToSubmitOrEditReport} weeks`,
+        [ValidationError.missing]: 'Enter or select a date',
         [ValidationError.invalid]: 'Enter a date in the correct format, for example, 23/07/2020',
         [ValidationError.isFuture]: 'Enter a date that is not in the future',
       }),
@@ -64,7 +67,7 @@ const transientSchema = joi.object({
   locationId: joi.optional(),
 
   plannedUseOfForce: requiredBooleanMsg('Select yes if the use of force was planned').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   authorisedBy: joi.when('plannedUseOfForce', {
@@ -78,7 +81,7 @@ const transientSchema = joi.object({
 
   witnesses: arrayOfObjects({
     name: requiredPatternMsg(namePattern)(
-      'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe'
+      'Witness names can only contain letters, spaces, full stops, hyphens, apostrophe',
     ).alter(optionalForPartialValidation),
   })
     .ruleset.unique(caseInsensitiveComparator('name'))

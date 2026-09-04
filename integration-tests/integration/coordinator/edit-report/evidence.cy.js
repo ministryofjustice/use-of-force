@@ -107,7 +107,7 @@ context('A use of force coordinator needs to edit evidence details', () => {
         .tableRowAndColHeading(2, 'old-value')
         .should(
           'contain',
-          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples'
+          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples',
         )
       reasonForChangePage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
 
@@ -133,7 +133,7 @@ context('A use of force coordinator needs to edit evidence details', () => {
         .tableRowAndColHeading(2, 'old-value')
         .should(
           'contain',
-          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples'
+          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples',
         )
       reasonForChangePage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
 
@@ -166,7 +166,7 @@ context('A use of force coordinator needs to edit evidence details', () => {
         .tableRowAndColHeading(2, 'old-value')
         .should(
           'contain',
-          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples'
+          'Bagged evidence 1- This evidence was collected from the prisoner 1, Bagged evidence 2- This evidence was collected from the prisoner 2, Bagged evidence 3- Clothes samples',
         )
       editHistoryPage.tableRowAndColHeading(2, 'new-value').should('contain', 'Not applicable')
 

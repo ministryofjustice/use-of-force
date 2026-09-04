@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { QUESTION_SET } from '../../config/edit/evidenceConfig'
 
 export default (report, valuesFromRequestBody) => {
@@ -15,7 +15,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.evidenceTagAndDescription,
       hasChanged: compareEvidenceTagAndDescription(
         report.form.evidence.evidenceTagAndDescription || [],
-        valuesFromRequestBody.evidenceTagAndDescription || []
+        valuesFromRequestBody.evidenceTagAndDescription || [],
       ),
     },
     photographsTaken: {
@@ -33,8 +33,10 @@ export default (report, valuesFromRequestBody) => {
   }
 }
 
-const compareEvidenceTagAndDescription = (arr1, arr2) => {
-  const normalize = R.map(obj => ({
+type EvidenceTagAndDescription = { evidenceTagReference: string; description: string }
+
+const compareEvidenceTagAndDescription = (arr1: EvidenceTagAndDescription[], arr2: EvidenceTagAndDescription[]) => {
+  const normalize = R.map((obj: EvidenceTagAndDescription) => ({
     evidenceTagReference: R.toLower(obj.evidenceTagReference),
     description: R.toLower(obj.description),
   }))

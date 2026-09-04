@@ -12,7 +12,7 @@ const editPrimaryReasonPage = () =>
       clickBack: () => cy.get('[data-qa="back-link"]').click(),
       errorSummaryTitle: () => cy.get('.govuk-error-summary__title'),
       errorSummaryText: () => cy.get('.govuk-error-summary__list'),
-    }
+    },
   )
 
 module.exports = {

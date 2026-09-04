@@ -25,8 +25,8 @@ test('getStatements', async () => {
             , s.overdue_date <= now()                "isOverdue"
             , s.removal_requested_date is not null   "isRemovalRequested"
             , s.statement_status                     "status"
-            from statement s 
-            inner join report r on s.report_id = r.id   
+            from statement s
+            inner join report r on s.report_id = r.id
           where s.user_id = $1
           and s.deleted is null
           order by status, r.incident_date desc
@@ -65,9 +65,9 @@ test('getAdditionalComments', () => {
   statementsClient.getAdditionalComments(48)
 
   expect(query).toHaveBeenCalledWith({
-    text: `select  
+    text: `select
     s.additional_comment "additionalComment",
-    s.date_submitted     "dateSubmitted" 
+    s.date_submitted     "dateSubmitted"
     from v_statement_amendments s
     where s.statement_id = $1`,
     values: [48],
@@ -133,7 +133,7 @@ test('saveStatement', () => {
   })
 
   expect(query).toHaveBeenCalledWith({
-    text: `update v_statement 
+    text: `update v_statement
     set last_training_month = $1
     ,   last_training_year = $2
     ,   job_start_year = $3
@@ -151,7 +151,7 @@ test('submitStatement', () => {
   statementsClient.submitStatement('user1', 1)
 
   expect(query).toHaveBeenCalledWith({
-    text: `update v_statement 
+    text: `update v_statement
     set submitted_date = CURRENT_TIMESTAMP
     ,   statement_status = $1
     ,   updated_date = CURRENT_TIMESTAMP
@@ -166,7 +166,7 @@ test('setEmail', () => {
   statementsClient.setEmail('user1', 1, 'user@gov.uk')
 
   expect(query).toHaveBeenCalledWith({
-    text: `update v_statement 
+    text: `update v_statement
     set email = $3
     ,   updated_date = CURRENT_TIMESTAMP
     where user_id = $1
@@ -220,7 +220,7 @@ test('getInvolvedStaffToRemove', () => {
   expect(query).toHaveBeenCalledWith({
     text: `select s.id
             ,      s.user_id                                 "userId"
-            ,      s.name                                    "name" 
+            ,      s.name                                    "name"
             ,      s.email                                   "email"
             ,      r.incident_date                           "incidentDate"
             ,      r.submitted_date                          "submittedDate"
@@ -238,7 +238,7 @@ test('getStatementForReviewer', () => {
             ,      r.id                                      "reportId"
             ,      s.name
             ,      s.user_id                                 "userId"
-            ,      (s.overdue_date <= now()) and 
+            ,      (s.overdue_date <= now()) and
                    (s.statement_status != $1)                "isOverdue"
             ,      s.statement_status = $1                   "isSubmitted"
             ,      s.removal_requested_date is not null      "isRemovalRequested"
@@ -300,7 +300,7 @@ test('getRemovalRequest', async () => {
   expect(query).toHaveBeenCalledWith({
     text: `select s.removal_requested_reason "removalRequestedReason"
               , s.removal_requested_date is not null "isRemovalRequested"
-              from v_statement s 
+              from v_statement s
               where id = $1`,
     values: [1],
   })

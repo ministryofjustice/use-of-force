@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import moment, { Moment } from 'moment'
 import { format, isValid, parse } from 'date-fns'
 
@@ -7,7 +7,7 @@ export const { equals } = R
 export const firstItem = R.head
 
 export const getFieldDetail = (fieldPath: string, fieldConfig: string): string =>
-  R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
+  R.pipe(R.values, R.head, v => R.path(fieldPath as unknown as R.Path, v) as string)(fieldConfig)
 
 export const getFieldName = R.pipe(R.keys, R.head)
 

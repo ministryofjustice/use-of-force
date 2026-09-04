@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 
 import { QUESTION_SET } from '../../config/edit/relocationAndInjuriesConfig'
 
@@ -10,7 +10,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.prisonerRelocation,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.prisonerRelocation,
-        valuesFromRequestBody.prisonerRelocation
+        valuesFromRequestBody.prisonerRelocation,
       ),
     },
     relocationCompliancy: {
@@ -19,7 +19,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.relocationCompliancy,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.relocationCompliancy,
-        valuesFromRequestBody.relocationCompliancy
+        valuesFromRequestBody.relocationCompliancy,
       ),
     },
     relocationType: {
@@ -34,7 +34,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.userSpecifiedRelocationType,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.userSpecifiedRelocationType,
-        valuesFromRequestBody.userSpecifiedRelocationType
+        valuesFromRequestBody.userSpecifiedRelocationType,
       ),
     },
     f213CompletedBy: {
@@ -43,7 +43,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.f213CompletedBy,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.f213CompletedBy.toUpperCase().trim(),
-        valuesFromRequestBody.f213CompletedBy.toUpperCase().trim()
+        valuesFromRequestBody.f213CompletedBy.toUpperCase().trim(),
       ),
     },
     prisonerInjuries: {
@@ -58,7 +58,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.healthcareInvolved,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.healthcareInvolved,
-        valuesFromRequestBody.healthcareInvolved
+        valuesFromRequestBody.healthcareInvolved,
       ),
     },
     healthcarePractionerName: {
@@ -67,7 +67,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.healthcarePractionerName,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.healthcarePractionerName,
-        valuesFromRequestBody.healthcarePractionerName
+        valuesFromRequestBody.healthcarePractionerName,
       ),
     },
     prisonerHospitalisation: {
@@ -76,7 +76,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.prisonerHospitalisation,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.prisonerHospitalisation,
-        valuesFromRequestBody.prisonerHospitalisation
+        valuesFromRequestBody.prisonerHospitalisation,
       ),
     },
     staffMedicalAttention: {
@@ -85,7 +85,7 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.staffMedicalAttention,
       hasChanged: !R.equals(
         report.form.relocationAndInjuries.staffMedicalAttention,
-        valuesFromRequestBody.staffMedicalAttention
+        valuesFromRequestBody.staffMedicalAttention,
       ),
     },
     staffNeedingMedicalAttention: {
@@ -94,14 +94,19 @@ export default (report, valuesFromRequestBody) => {
       newValue: valuesFromRequestBody.staffNeedingMedicalAttention,
       hasChanged: compareStaffNeedingMedicalAttention(
         report.form.relocationAndInjuries.staffNeedingMedicalAttention || [],
-        valuesFromRequestBody.staffNeedingMedicalAttention || []
+        valuesFromRequestBody.staffNeedingMedicalAttention || [],
       ),
     },
   }
 }
 
-const compareStaffNeedingMedicalAttention = (arr1, arr2) => {
-  const normalize = R.map(obj => ({
+type StaffNeedingMedicalAttention = { name: string; hospitalisation: boolean }
+
+const compareStaffNeedingMedicalAttention = (
+  arr1: StaffNeedingMedicalAttention[],
+  arr2: StaffNeedingMedicalAttention[],
+) => {
+  const normalize = R.map((obj: StaffNeedingMedicalAttention) => ({
     name: R.toLower(obj.name),
     hospitalisation: obj.hospitalisation,
   }))

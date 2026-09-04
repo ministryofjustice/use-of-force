@@ -21,7 +21,7 @@ export default class AddInvolvedStaffRoutes {
   constructor(
     private readonly draftReportService: DraftReportService,
     private readonly authService: AuthService,
-    private readonly offenderService: OffenderService
+    private readonly offenderService: OffenderService,
   ) {}
 
   public viewStaffInvolved = async (req: Request, res: Response): Promise<void> => {
@@ -91,7 +91,7 @@ export default class AddInvolvedStaffRoutes {
     const involvedStaff = await this.draftReportService.getInvolvedStaff(
       await this.authService.getSystemClientToken(req.user.username),
       req.user.username,
-      parseInt(bookingId, 10)
+      parseInt(bookingId, 10),
     )
     const staffToDelete = involvedStaff.find(staff => staff.username === username)
     const name = properCaseFullName(staffToDelete.name)
@@ -155,7 +155,7 @@ export default class AddInvolvedStaffRoutes {
       res.locals.user,
       parseInt(bookingId, 10),
       firstName,
-      lastName
+      lastName,
     )
 
     switch (result) {
@@ -201,7 +201,7 @@ export default class AddInvolvedStaffRoutes {
       await this.authService.getSystemClientToken(req.user.username),
       agencyId,
       firstName,
-      lastName
+      lastName,
     )
 
     return res.render('formPages/addingStaff/select-staff-member', {
@@ -232,7 +232,7 @@ export default class AddInvolvedStaffRoutes {
     const result = await this.draftReportService.addDraftStaffByUsername(
       res.locals.user,
       parseInt(bookingId, 10),
-      selectedStaffUsername
+      selectedStaffUsername,
     )
 
     switch (result) {

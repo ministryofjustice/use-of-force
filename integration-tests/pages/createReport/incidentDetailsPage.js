@@ -1,11 +1,12 @@
-import { getDate, getMonth, getYear } from 'date-fns'
+import { getDate, getMonth, getYear, subDays } from 'date-fns'
 import page from '../page'
 import StaffInvolvedPage from './staffInvolvedPage'
 
-const now = new Date()
-const day = String(getDate(now) - 1).padStart(2, '0')
-const month = String(getMonth(now) + 1).padStart(2, '0')
-const year = getYear(now)
+const yesterday = subDays(new Date(), 1)
+
+const day = String(getDate(yesterday)).padStart(2, '0')
+const month = String(getMonth(yesterday) + 1).padStart(2, '0')
+const year = getYear(yesterday)
 
 const incidentDetailsPage = () => {
   return page('Incident details', {

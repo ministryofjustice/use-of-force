@@ -12,6 +12,8 @@
 {% set pageTitle = 'Incident details' %}
 {% set showCancelEditButton = data.locationId %}
 {% from "./macros/radiosWithNestedTextbox.njk" import radiosWithNestedTextbox %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
 
 
 {% block formItems %}
@@ -27,23 +29,32 @@
         </p>
       </div>
 
-      {% set isDateError = errors | isErrorPresent(['incidentDate[date]'])  %}
       {% set isHourError = errors | isErrorPresent(['incidentDate[time][hour]', 'incidentDate[time]'])  %}
       {% set isMinuteError = errors | isErrorPresent(['incidentDate[time][minute]', 'incidentDate[time]'])  %}
 
       <p class="govuk-label--s">When did the incident happen?</p>
-      <div>
-        {{ datePicker({
-          id: 'incidentDate[date]',
-          label: 'Date',
-          name: 'incidentDate[date]',
-          date: data.incidentDate.date,
-          classes: 'date-picker-input-wide' if isDateError ,
-          attributes: {'disable-future-dates': 'true', 'date-format': 'dd/mm/yy', 'placeholder': 'DD/MM/YYYY', 'data-qa':'incident-date'},
-          errorMessage: errors | findErrors(['incidentDate[date]'])
-          })
-        }}
+      <div class="govuk-!-width-one-third">
+        {{ mojDatePicker({
+          id: "incidentDate[date]",
+          name: "incidentDate[date]",
+          value: data.incidentDate.date,
+          minDate: data.earliestIncidentDate,
+          maxDate: data.currentDate,
+          errorMessage: errors | findErrors(['incidentDate[date]']),
+          leadingZeros: 'true',
+          label: {
+            text: "Date"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          }
+        }) }}
+        
       </div>
+        {{ govukWarningText({
+          text: "Incident date must be within the last " + data.maxWeeks + " weeks.",
+          iconFallbackText: "Warning"
+        }) }}
 
         {{ incidentTime({
           errorMessage: errors | concatErrors(["incidentDate[time][hour]", "incidentDate[time][minute]", "incidentDate[time]"]),

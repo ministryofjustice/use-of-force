@@ -39,7 +39,7 @@ context('A coordinator manages involved staff by editing a submitted report', ()
     cy.task('stubGetUser', 'A_BCD')
 
     cy.task('stubStaffMemberSearch', {
-      searchText: 'A_BCD',
+      searchText: 'BCD',
       response: {
         content: [
           {
@@ -49,11 +49,18 @@ context('A coordinator manages involved staff by editing a submitted report', ()
             lastName: 'Jones',
             active: true,
           },
+          {
+            username: 'B_BCD',
+            staffId: 123466,
+            firstName: 'Tom',
+            lastName: 'Jones',
+            active: false,
+          },
         ],
         totalPages: 1,
-        totalElements: 1,
+        totalElements: 2,
         number: 1,
-        numberOfElements: 1,
+        numberOfElements: 2,
         first: true,
         empty: false,
       },
@@ -84,15 +91,28 @@ context('A coordinator manages involved staff by editing a submitted report', ()
     viewInvolvedStaffPage.addSomeoneButton().click()
 
     const staffInvolvedSearchPage = StaffInvolvedSearchPage.verifyOnPage()
-    staffInvolvedSearchPage.username().type('A_BCD')
+    staffInvolvedSearchPage.username().type('BCD')
     staffInvolvedSearchPage.searchButton().click()
 
     StaffInvolvedSearchPage.verifyOnPage()
     staffInvolvedSearchPage.getRowAndCol(1, 1).contains('June Jones')
     staffInvolvedSearchPage.getRowAndCol(1, 3).contains('A_BCD')
-    staffInvolvedSearchPage.getRowAndCol(1, 5).contains('Add June Jones')
-    staffInvolvedSearchPage.getRowAndCol(1, 5).click()
+    staffInvolvedSearchPage.getRowAndCol(1, 5).contains('Active')
 
+    // assert correct account status and tag colour is used for row 1
+    staffInvolvedSearchPage.getRowAndCol(1, 5).should('contain.text', 'Active')
+    staffInvolvedSearchPage
+      .getRowAndColTag(1, 5)
+      .should('have.class', 'govuk-tag')
+      .and('have.class', 'govuk-tag--green')
+
+    // assert correct account status and tag colour is used for row 2
+    staffInvolvedSearchPage.getRowAndCol(2, 1).should('contain.text', 'Tom Jones')
+    staffInvolvedSearchPage.getRowAndCol(2, 3).should('contain.text', 'B_BCD')
+    staffInvolvedSearchPage.getRowAndCol(2, 5).should('contain.text', 'Inactive')
+    staffInvolvedSearchPage.getRowAndColTag(2, 5).should('have.class', 'govuk-tag').and('have.class', 'govuk-tag--pink')
+
+    staffInvolvedSearchPage.getRowAndCol(1, 6).click()
     const addNewStaffInvolvedPage = AddNewStaffInvolvedPage.verifyOnPage()
     addNewStaffInvolvedPage.errorInReportRadio().click()
     addNewStaffInvolvedPage.additionalInfo().type('Added by coordinator in test')

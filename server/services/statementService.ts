@@ -14,7 +14,7 @@ export default class StatementService {
   constructor(
     private readonly statementsClient: StatementsClient,
     private readonly incidentClient: IncidentClient,
-    private readonly inTransaction: InTransaction
+    private readonly inTransaction: InTransaction,
   ) {}
 
   getStatements(userId: string, page: number): Promise<PageResponse<StatementSummary>> {

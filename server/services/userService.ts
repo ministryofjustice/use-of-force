@@ -8,7 +8,7 @@ import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 export default class UserService {
   constructor(
     private readonly manageUsersClient: ManageUsersApiClient,
-    private readonly prisonClient: PrisonClient
+    private readonly prisonClient: PrisonClient,
   ) {}
 
   public async getSelf(token: string): Promise<User> {
@@ -95,7 +95,7 @@ export default class UserService {
     token: string,
     agencyId: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<UserWithPrison[]> {
     try {
       const users = await this.manageUsersClient.findUsers(firstName, lastName, token)

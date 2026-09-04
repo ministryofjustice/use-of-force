@@ -143,7 +143,7 @@ describe('using meta to specify sanitisers', () => {
 
   it('allows multiple sanitisers to be attached as metadata', () => {
     expect(
-      joi.string().required().meta({ sanitiser: trimmedString }).meta({ sanitiser: toInteger }).describe()
+      joi.string().required().meta({ sanitiser: trimmedString }).meta({ sanitiser: toInteger }).describe(),
     ).toEqual({
       flags: {
         presence: 'required',
@@ -222,7 +222,7 @@ describe('simplifying descriptions', () => {
               })
               .min(1)
               .max(2)
-              .required()
+              .required(),
           )
           .required(),
       })
@@ -375,13 +375,13 @@ describe('building sanitisers', () => {
                 .min(1)
                 .max(2)
                 .required()
-                .meta(addTestFieldSanitiser)
+                .meta(addTestFieldSanitiser),
             )
             .required()
             .meta(addTestItemSanitiser),
         })
         .required()
-        .meta(addTestFieldSanitiser)
+        .meta(addTestFieldSanitiser),
     )
 
     it('sanitises absent object', () => expect(sanitiser(undefined)).toBeUndefined())
@@ -402,7 +402,7 @@ describe('building sanitisers', () => {
 
     it('sanitises populated composite', () =>
       expect(
-        sanitiser({ a: 'A', b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }], ignore: [{}] })
+        sanitiser({ a: 'A', b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }], ignore: [{}] }),
       ).toEqual({
         a: 'AA',
         b: [
@@ -431,11 +431,11 @@ describe('building sanitisers', () => {
                 })
                 .min(1)
                 .max(2)
-                .required()
+                .required(),
             )
             .required(),
         })
-        .required()
+        .required(),
     )
 
     it('sanitises absent object', () => expect(sanitiser(undefined)).toBeUndefined())
@@ -453,7 +453,7 @@ describe('building sanitisers', () => {
           a: 'A',
           b: [{ p: 1, q: false }, { p: 2 }, { q: true }, { ignore: 1 }],
           ignore: [{}],
-        })
+        }),
       ).toEqual({
         a: 'A',
         b: [{ p: 1, q: false }, { p: 2 }, { q: true }, {}],

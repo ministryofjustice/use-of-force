@@ -27,7 +27,7 @@ export default class StatementsRoutes {
   constructor(
     private readonly statementService: StatementService,
     private readonly offenderService: OffenderService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   private getOffenderNames = (token, incidents) => {
@@ -41,7 +41,7 @@ export default class StatementsRoutes {
 
     const namesByOffenderNumber = await this.getOffenderNames(
       await this.authService.getSystemClientToken(res.locals.user.username),
-      results
+      results,
     )
     const statements = results.map(toStatement(namesByOffenderNumber))
 
@@ -64,7 +64,7 @@ export default class StatementsRoutes {
     const statement = await this.statementService.getStatementForUser(
       req.user.username,
       reportId,
-      StatementStatus.PENDING
+      StatementStatus.PENDING,
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
@@ -113,7 +113,7 @@ export default class StatementsRoutes {
     const statement = await this.statementService.getStatementForUser(
       req.user.username,
       reportId,
-      StatementStatus.PENDING
+      StatementStatus.PENDING,
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
@@ -153,7 +153,7 @@ export default class StatementsRoutes {
     const statement = await this.statementService.getStatementForUser(
       req.user.username,
       reportId,
-      StatementStatus.SUBMITTED
+      StatementStatus.SUBMITTED,
     )
 
     const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
@@ -175,7 +175,7 @@ export default class StatementsRoutes {
     const statement = await this.statementService.getStatementForUser(
       req.user.username,
       reportId,
-      StatementStatus.SUBMITTED
+      StatementStatus.SUBMITTED,
     )
     const offenderDetail = await this.offenderService.getOffenderDetails(statement.bookingId, res.locals.user.username)
     const { displayName, offenderNo } = offenderDetail
@@ -197,7 +197,7 @@ export default class StatementsRoutes {
     const statement = await this.statementService.getStatementForUser(
       req.user.username,
       reportId,
-      StatementStatus.SUBMITTED
+      StatementStatus.SUBMITTED,
     )
     if (req.body.additionalComment && req.body.additionalComment.trim().length) {
       await this.statementService.saveAdditionalComment(statement.id, req.body.additionalComment)

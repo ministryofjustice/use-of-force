@@ -10,7 +10,7 @@ const setupMockAuthentication = (app, signInService) => {
       secret: 'test',
       resave: false,
       saveUninitialized: true,
-    })
+    }),
   )
   app.use(passport.initialize())
   app.use(passport.session())

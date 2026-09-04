@@ -31,7 +31,7 @@ const involvedStaffService = new InvolvedStaffService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
@@ -47,7 +47,7 @@ const reportEditService = new ReportEditService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<ReportEditService>
 const userSupplier = jest.fn()
 
@@ -92,7 +92,7 @@ beforeEach(() => {
     },
     userSupplier,
     false,
-    flash
+    flash,
   )
 })
 

@@ -16,7 +16,7 @@ enum SubmitType {
 export default class CreateReport {
   constructor(
     private readonly draftReportService: DraftReportService,
-    private readonly offenderService: OffenderService
+    private readonly offenderService: OffenderService,
   ) {}
 
   private async loadForm(req) {

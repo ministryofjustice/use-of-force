@@ -7,6 +7,13 @@ type Error = {
   text: string
 }
 
+const asString = (value: string | string[] | undefined): string | undefined => {
+  if (Array.isArray(value)) {
+    return value[0]
+  }
+  return value
+}
+
 const errors: { [key: string]: Error } = {
   INVALID_QUERY: {
     href: '#prisonNumber',
@@ -23,17 +30,22 @@ const errors: { [key: string]: Error } = {
 }
 
 export default function validateForm({ prisonNumber, lastName, firstName, agencyId }: SearchForm): Error | null {
-  if (prisonNumber && prisonNumber.length < 7) {
+  const prisonNumberExtracted = asString(prisonNumber)
+  const lastNameExtracted = asString(lastName)
+  const firstNameExtracted = asString(firstName)
+  const agencyIdExtracted = asString(agencyId)
+
+  if (prisonNumberExtracted && prisonNumberExtracted.length < 7) {
     return errors.PRISON_NUMBER_TOO_SMALL
   }
 
-  if (prisonNumber && !prisonNumber.match(prisonNumberPatttern)) {
+  if (prisonNumberExtracted && !prisonNumberExtracted.match(prisonNumberPatttern)) {
     return errors.PRISON_NUMBER_WRONG_FORMAT
   }
 
-  const prisonWithoutName = agencyId && !lastName
-  const nameWithoutPrison = !agencyId && (lastName || firstName)
-  const prisonNumberNorPrison = !prisonNumber && !agencyId
+  const prisonWithoutName = agencyIdExtracted && !lastNameExtracted
+  const nameWithoutPrison = !agencyIdExtracted && (lastNameExtracted || firstNameExtracted)
+  const prisonNumberNorPrison = !prisonNumberExtracted && !agencyIdExtracted
   if (prisonNumberNorPrison || prisonWithoutName || nameWithoutPrison) {
     return errors.INVALID_QUERY
   }

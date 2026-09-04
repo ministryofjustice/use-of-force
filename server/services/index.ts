@@ -56,7 +56,7 @@ export const services = () => {
     userService,
     db.inTransaction,
     notificationService,
-    hmppsManageUsersApiClient
+    hmppsManageUsersApiClient,
   )
   const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
   const offenderService = new OffenderService(prisonApiClient, authService)
@@ -69,14 +69,14 @@ export const services = () => {
     locationService,
     reportLogClient,
     db.inTransaction,
-    authService
+    authService,
   )
 
   const submitDraftReportService = new SubmitDraftReportService(
     draftReportClient,
     statementsClient,
     notificationService,
-    db.inTransaction
+    db.inTransaction,
   )
 
   const updateDraftReportService = new UpdateDraftReportService(
@@ -85,13 +85,13 @@ export const services = () => {
     reportLogClient,
     db.inTransaction,
     prisonApiClient,
-    authService
+    authService,
   )
   const draftInvolvedStaffService = new DraftInvolvedStaffService(
     hmppsManageUsersApiClient,
     prisonApiClient,
     draftReportClient,
-    userService
+    userService,
   )
 
   const draftReportService = new DraftReportService(
@@ -101,7 +101,7 @@ export const services = () => {
     submitDraftReportService,
     userService,
     locationService,
-    authService
+    authService,
   )
 
   const statementService = new StatementService(statementsClient, incidentClient, db.inTransaction)
@@ -110,14 +110,14 @@ export const services = () => {
     incidentClient,
     hmppsManageUsersApiClient,
     offenderService,
-    authService
+    authService,
   )
   const reportDetailBuilder = new ReportDetailBuilder(
     involvedStaffService,
     locationService,
     offenderService,
     nomisMappingService,
-    authService
+    authService,
   )
   const feComponentsService = new FeComponentsService(feComponentsClient)
 
@@ -134,7 +134,7 @@ export const services = () => {
     editUseOfForceDetailsService,
     locationService,
     authService,
-    incidentClient
+    incidentClient,
   )
 
   return {

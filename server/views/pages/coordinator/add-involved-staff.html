@@ -68,7 +68,7 @@
             </div>
 
             <p class="govuk-body govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-margin-bottom-6">
-                If there are 2 or more results with the same name, you may have to contact the person to confirm which email address belongs to them.
+                If you're unsure of the member of staff's details, contact your local administrator to confirm which account they use.
             </p>
 
             <table class="govuk-table">
@@ -78,6 +78,7 @@
                     <th scope="col" class="govuk-table__header">Location</th>
                     <th scope="col" class="govuk-table__header">User ID</th>
                     <th scope="col" class="govuk-table__header">Email address</th>
+                    <th scope="col" class="govuk-table__header">Account status</th>
                     <th scope="col" class="govuk-table__header govuk-!-text-align-right">Action</th>
                     </tr>
                 </thead>
@@ -89,6 +90,7 @@
                             <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
                             <td class="govuk-table__cell">{{ user.username }}</td>
                             <td class="govuk-table__cell">{{ user.email }}</td>
+                            <td class="govuk-table__cell"> <strong class="govuk-tag govuk-tag--{{ 'green' if user.active else 'pink' }}"> {{ user.active | activeStatus }} </strong></td>
                             <td class="govuk-table__cell govuk-!-text-align-right">
                                 {% if user.isExistingInvolvedStaffMember %}
                                     <span class="govuk-body govuk-!-color-grey-7">Added to report</span>

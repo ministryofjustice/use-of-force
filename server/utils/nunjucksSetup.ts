@@ -30,7 +30,7 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   njkEnv.addGlobal('googleTagManagerContainerId', tagManagerKey)
@@ -338,6 +338,8 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
   njkEnv.addFilter('initialiseName', initialiseName)
   njkEnv.addFilter('personProfileName', personProfileName)
   njkEnv.addFilter('personDateOfBirth', personDateOfBirth)
-
+  njkEnv.addFilter('activeStatus', value => {
+    return value === true ? 'Active' : 'Inactive'
+  })
   return njkEnv
 }

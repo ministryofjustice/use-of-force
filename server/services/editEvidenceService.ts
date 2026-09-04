@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 export default class EditEvidenceService {
   //  for displaying data in /reason-for-change
   async buildDetails(questionSet, changes) {

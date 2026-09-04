@@ -13,7 +13,7 @@ import nunjucksSetup from './utils/nunjucksSetup'
 import { Services } from './services'
 
 import tokenVerifierFactory from './authentication/tokenverifier/tokenVerifierFactory'
-import healthcheckFactory from './services/healthcheck'
+import setUpHealthChecks from './middleware/setUpHealthChecks'
 
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
 import populateCurrentUser from './middleware/populateCurrentUser'
@@ -27,9 +27,10 @@ import getFrontendComponents from './middleware/feComponentsMiddleware'
 import setUpEnvironmentName from './middleware/setUpEnvironmentName'
 import setUpWebSession from './middleware/setUpWebSession'
 import refreshSystemToken from './middleware/refreshSystemToken'
+import applicationInfo from './applicationInfo'
 
 const authenticationMiddleware: RequestHandler = authenticationMiddlewareFactory(
-  tokenVerifierFactory(config.apis.tokenVerification)
+  tokenVerifierFactory(config.apis.tokenVerification),
 )
 
 const version = moment.now().toString()
@@ -37,6 +38,8 @@ const production = process.env.NODE_ENV === 'production'
 
 export default function createApp(services: Services): Express {
   const app = express()
+
+  const appInfo = applicationInfo()
 
   initialisePassportStrategy(services.signInService)
 
@@ -103,7 +106,7 @@ export default function createApp(services: Services): Express {
           fontSrc,
         },
       },
-    })
+    }),
   )
 
   app.use((req, res, next) => {
@@ -159,28 +162,10 @@ export default function createApp(services: Services): Express {
 
   app.use(
     '/assets/images/icons',
-    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl)
+    express.static(path.join(process.cwd(), `/node_modules/govuk_frontend_toolkit/images`), cacheControl),
   )
 
-  const healthcheck = healthcheckFactory(
-    config.apis.oauth2.url,
-    config.apis.prison.url,
-    config.apis.tokenVerification.url
-  )
-
-  // Express Routing Configuration
-  app.get('/health', (req, res, next) => {
-    healthcheck((err, result) => {
-      if (err) {
-        return next(err)
-      }
-      if (!result.healthy) {
-        res.status(503)
-      }
-      res.json(result)
-      return result
-    })
-  })
+  app.use(setUpHealthChecks(appInfo))
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
@@ -230,8 +215,8 @@ export default function createApp(services: Services): Express {
       passport.authenticate('oauth2', {
         successReturnToOrRedirect: req.session.returnTo || '/',
         failureRedirect: '/autherror',
-      })(req, res, next)
-    )
+      })(req, res, next),
+    ),
   )
 
   app.use(
@@ -241,7 +226,7 @@ export default function createApp(services: Services): Express {
         req.logout(() => req.session.destroy())
       }
       res.redirect(authLogoutUrl)
-    })
+    }),
   )
 
   app.use(populateCurrentUser(services.userService))

@@ -33,7 +33,7 @@ describe('validateForm', () => {
 
     it('last name but no prison', () => {
       expect(
-        validateForm({ prisonNumber: 'A1234AA', firstName: null, lastName: 'SMITH', agencyId: null })
+        validateForm({ prisonNumber: 'A1234AA', firstName: null, lastName: 'SMITH', agencyId: null }),
       ).toStrictEqual({
         href: '#prisonNumber',
         text: 'You must search using either the prison number or the prisoner’s last name and prison',
@@ -45,13 +45,13 @@ describe('validateForm', () => {
         {
           href: '#prisonNumber',
           text: 'You must search using either the prison number or the prisoner’s last name and prison',
-        }
+        },
       )
     })
 
     it('prison and first name but no last name', () => {
       expect(
-        validateForm({ prisonNumber: 'A1234AA', firstName: 'BOB', lastName: null, agencyId: 'MDI' })
+        validateForm({ prisonNumber: 'A1234AA', firstName: 'BOB', lastName: null, agencyId: 'MDI' }),
       ).toStrictEqual({
         href: '#prisonNumber',
         text: 'You must search using either the prison number or the prisoner’s last name and prison',

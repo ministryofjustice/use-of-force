@@ -20,6 +20,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 concurrency:
   # if branch is main, append commit sha to the group name, so that other jobs from main don't get cancelled
@@ -54,6 +55,18 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
+  test-build:
+    name: Build docker image from hmpps-github-actions without publishing
+    if: github.ref != 'refs/heads/main'
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    needs: [ node_build ]
+    with:
+      docker_registry: 'ghcr.io'
+      registry_org: 'ministryofjustice'
+      additional_docker_tag: ${{ inputs.additional_docker_tag }}
+      push: false
+      docker_multiplatform:
+        false
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
@@ -61,6 +74,10 @@ jobs:
     needs:
       - node_integration_tests
       - node_unit_tests
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'

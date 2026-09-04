@@ -62,7 +62,7 @@ export default class ReviewService {
     private readonly incidentClient: IncidentClient,
     private readonly manageUsersApiClient: ManageUsersApiClient,
     private readonly offenderService: OffenderService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async getReport(reportId: number): Promise<Report> {
@@ -96,7 +96,7 @@ export default class ReviewService {
     username: string,
     agencyId: AgencyId,
     query: ReportQuery,
-    page: number
+    page: number,
   ): Promise<PageResponse<IncidentSummary>> {
     if (query.prisonerName) {
       // when searching by prisoner name, we can't filter paged results as we would end up with odd/empty shaped pages. So have to load all and page in memory
@@ -115,7 +115,7 @@ export default class ReviewService {
   async getIncompleteReports(
     username: string,
     agencyId: AgencyId,
-    page: number
+    page: number,
   ): Promise<PageResponse<IncidentSummary>> {
     const incomplete = await this.incidentClient.getIncompleteReportsForReviewer(agencyId)
     const namesByOffenderNumber = await this.getOffenderNames(username, incomplete)

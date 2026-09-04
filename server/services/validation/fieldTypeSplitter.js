@@ -3,7 +3,7 @@ const { isNilOrEmpty } = require('../../utils/utils')
 
 const extractPropertyNamesForFieldType = (fieldTypeValue, description) => {
   const keys = R.propOr({}, 'keys', description)
-  const descriptionsHavingFieldTypeMetas = R.map(d => R.mergeAll(d.metas).fieldType, keys)
+  const descriptionsHavingFieldTypeMetas = R.map(d => /** @type {any} */ (R.mergeAll(d.metas)).fieldType, keys)
   const descriptionsHavingNamedFieldType = R.filter(R.equals(fieldTypeValue), descriptionsHavingFieldTypeMetas)
   return Object.keys(descriptionsHavingNamedFieldType)
 }

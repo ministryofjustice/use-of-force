@@ -54,7 +54,7 @@ it('no values supplied', () => {
         href: '#statement',
         text: 'Enter your statement',
       },
-    ])
+    ]),
   )
 
   expect(formResponse).toEqual({})

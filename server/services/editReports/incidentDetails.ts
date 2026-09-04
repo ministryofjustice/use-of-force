@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 
 import { QUESTION_SET } from '../../config/edit/incidentDetailsConfig'
 import { hasValueChanged, excludeEmptyValuesThenTrim } from '../../utils/utils'

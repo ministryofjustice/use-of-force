@@ -10,7 +10,7 @@ export default class AdminRoutes {
     private readonly reportService: ReportService,
     private readonly reviewService: ReviewService,
     private readonly offenderService: OffenderService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   viewEditReport: RequestHandler = async (req, res) =>

@@ -87,7 +87,7 @@ describe('POST /search-for-prisoner', () => {
       .send({ agencyId: 'MDI', prisonNumber: 'A1234AA', firstName: 'Brian', lastName: 'Jones' })
       .expect(
         'Location',
-        '/search-for-prisoner-results?prisonNumber=A1234AA&firstName=Brian&lastName=Jones&agencyId=MDI'
+        '/search-for-prisoner-results?prisonNumber=A1234AA&firstName=Brian&lastName=Jones&agencyId=MDI',
       )
   })
 

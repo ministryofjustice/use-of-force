@@ -128,7 +128,7 @@ context('A user views their statements list', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const yourStatementsPage = YourStatementsPage.goTo()
@@ -145,7 +145,7 @@ context('A user views their statements list', () => {
         { href: '?page=2', text: '2', selected: false },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
     yourStatementsPage.clickLinkWithText('Next page')
     yourStatementsPage.pageLinks().then(pageLinks =>
@@ -155,7 +155,7 @@ context('A user views their statements list', () => {
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     yourStatementsPage.clickLinkWithText('3')
@@ -165,7 +165,7 @@ context('A user views their statements list', () => {
         { href: '?page=1', text: '1', selected: false },
         { href: '?page=2', text: '2', selected: false },
         { href: undefined, text: '3', selected: true },
-      ])
+      ]),
     )
 
     yourStatementsPage.clickLinkWithText('Previous page')
@@ -176,7 +176,7 @@ context('A user views their statements list', () => {
         { href: undefined, text: '2', selected: true },
         { href: '?page=3', text: '3', selected: false },
         { href: '?page=3', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 
@@ -196,7 +196,7 @@ context('A user views their statements list', () => {
             email: 'TEST_USER@gov.uk',
           },
         ],
-      }))
+      })),
     )
 
     const yourStatementsPage = YourStatementsPage.goTo()
@@ -216,7 +216,7 @@ context('A user views their statements list', () => {
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=2', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … 3 [4] 5 Next >
@@ -233,7 +233,7 @@ context('A user views their statements list', () => {
         { href: undefined, text: '…', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=5', text: 'Next page', selected: false },
-      ])
+      ]),
     )
 
     // < Previous 1 … [9] 10 11 Next >
@@ -251,7 +251,7 @@ context('A user views their statements list', () => {
         { href: '?page=10', text: '10', selected: false },
         { href: '?page=11', text: '11', selected: false },
         { href: '?page=10', text: 'Next page', selected: false },
-      ])
+      ]),
     )
   })
 })

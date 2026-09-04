@@ -11,7 +11,7 @@ export default function viewingIncidentRoutes(services: Services): Router {
     reportEditService,
     reportDetailBuilder,
     reviewService,
-    authService
+    authService,
   )
   const get = (path, handler) => router.get(path, asyncMiddleware(handler))
 

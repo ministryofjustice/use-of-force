@@ -40,7 +40,7 @@ describe('send reporter notifications', () => {
     await service.sendReporterStatementReminder(
       'user@email.com',
       { reporterName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(reporter.REMINDER, 'user@email.com', {
@@ -92,7 +92,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffStatementReminder(
       'user@email.com',
       { involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REMINDER, 'user@email.com', {
@@ -121,7 +121,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffStatementOverdue(
       'user@email.com',
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.OVERDUE, 'user@email.com', {
@@ -148,7 +148,7 @@ describe('send involved staff notifications', () => {
     await service.sendInvolvedStaffRemovedFromReport(
       'user@email.com',
       { involvedName, incidentDate, submittedDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REMOVED, 'user@email.com', {
@@ -169,7 +169,7 @@ describe('send involved staff notifications', () => {
     await service.sendStatementRequest(
       'user@email.com',
       { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REQUEST, 'user@email.com', {
@@ -201,7 +201,7 @@ describe('send involved staff notifications', () => {
     await service.sendStatementRequest(
       'user@email.com',
       { reporterName, involvedName, incidentDate, submittedDate, overdueDate },
-      context
+      context,
     )
 
     expect(client.sendEmail).toHaveBeenCalledWith(involvedStaff.REQUEST, 'user@email.com', {

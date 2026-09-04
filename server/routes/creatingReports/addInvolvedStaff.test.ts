@@ -18,7 +18,7 @@ const draftReportService = new DraftReportService(
   null,
   null,
   null,
-  null
+  null,
 ) as jest.Mocked<DraftReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
@@ -54,7 +54,7 @@ describe('staff involved page', () => {
         expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith(
           'user1-system-token',
           'user1',
-          REPORT_ID
+          REPORT_ID,
         )
         expect(res.text).toContain('Save')
         expect(res.text).not.toContain('You can not edit or submit this report. The incident date is over 13 weeks ago')
@@ -97,7 +97,7 @@ describe('staff involved page', () => {
         expect(draftReportService.getInvolvedStaffWithPrisons).toHaveBeenCalledWith(
           'user1-system-token',
           'user1',
-          REPORT_ID
+          REPORT_ID,
         )
       })
   })

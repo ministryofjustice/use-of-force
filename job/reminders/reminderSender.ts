@@ -14,7 +14,7 @@ export default class ReminderService {
           incidentDate: reminder.incidentDate,
           submittedDate: reminder.submittedDate,
         },
-        this.context(reminder)
+        this.context(reminder),
       )
     } else {
       await this.notificationService.sendInvolvedStaffStatementOverdue(
@@ -24,7 +24,7 @@ export default class ReminderService {
           incidentDate: reminder.incidentDate,
           submittedDate: reminder.submittedDate,
         },
-        this.context(reminder)
+        this.context(reminder),
       )
     }
   }
@@ -39,7 +39,7 @@ export default class ReminderService {
           overdueDate: reminder.overdueDate,
           submittedDate: reminder.submittedDate,
         },
-        this.context(reminder)
+        this.context(reminder),
       )
     } else {
       await this.notificationService.sendInvolvedStaffStatementReminder(
@@ -50,7 +50,7 @@ export default class ReminderService {
           overdueDate: reminder.overdueDate,
           submittedDate: reminder.submittedDate,
         },
-        this.context(reminder)
+        this.context(reminder),
       )
     }
   }

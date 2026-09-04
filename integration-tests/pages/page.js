@@ -9,7 +9,7 @@ export const alternativeComponentToTitle = (
   name,
   tag,
   pageObject = {},
-  checkOnPage = () => cy.get(tag).contains(name)
+  checkOnPage = () => cy.get(tag).contains(name),
 ) => {
   const logout = () => cy.get('[data-qa=signOut]')
   checkOnPage()

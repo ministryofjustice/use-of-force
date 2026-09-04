@@ -8,7 +8,7 @@ export default class ReportMayAlreadyExistRoutes {
   constructor(
     private readonly authService: AuthService,
     private readonly draftReportService: DraftReportService,
-    private readonly offenderService: OffenderService
+    private readonly offenderService: OffenderService,
   ) {}
 
   public view: RequestHandler = async (req: Request, res: Response): Promise<void> => {
@@ -19,7 +19,7 @@ export default class ReportMayAlreadyExistRoutes {
 
     const { id: formId, incidentDate } = await this.draftReportService.getCurrentDraft(
       req.user.username,
-      Number(bookingId)
+      Number(bookingId),
     )
 
     if (!formId) {
@@ -29,7 +29,7 @@ export default class ReportMayAlreadyExistRoutes {
     const reports = await this.draftReportService.getPotentialDuplicates(
       parseInt(bookingId, 10),
       moment(incidentDate),
-      token
+      token,
     )
 
     const data = {

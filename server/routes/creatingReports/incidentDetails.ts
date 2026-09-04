@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { Request, Response } from 'express'
+import { addDays, format, subWeeks } from 'date-fns'
 import { isNilOrEmpty, firstItem } from '../../utils/utils'
 import * as types from '../../config/types'
 import { processInput } from '../../services/validation'
@@ -12,6 +13,7 @@ import { isReportComplete } from '../../services/drafts/reportStatusChecker'
 import AuthService from '../../services/authService'
 import getIncidentDate from '../../utils/getIncidentDate'
 import reportSummary from '../../services/reportSummary'
+import config from '../../config'
 
 const formName = 'incidentDetails'
 
@@ -26,7 +28,7 @@ export default class IncidentDetailsRoutes {
     private readonly draftReportService: DraftReportService,
     private readonly offenderService: OffenderService,
     private readonly authService: AuthService,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
   ) {}
 
   private loadForm = async req => {
@@ -73,11 +75,19 @@ export default class IncidentDetailsRoutes {
 
     const { displayName, offenderNo } = offenderDetail
 
-    const input = firstItem(req.flash('userInputForIncidentDetails'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const input = firstItem(req.flash('userInputForIncidentDetails')) as any
 
     const pageData = input || form[formName]
 
     const prison = await this.locationService.getPrisonById(token, prisonId)
+
+    const currentDate = format(new Date(), 'dd/MM/yyyy')
+
+    const earliestIncidentDate = format(
+      addDays(subWeeks(new Date(), config.maxWeeksFromIncidentDateToSubmitOrEditReport), 1),
+      'dd/MM/yyyy',
+    )
 
     const data = {
       bookingId,
@@ -89,6 +99,9 @@ export default class IncidentDetailsRoutes {
       prison,
       types,
       offenderDetail,
+      currentDate,
+      earliestIncidentDate,
+      maxWeeks: config.maxWeeksFromIncidentDateToSubmitOrEditReport,
     }
 
     let isWithinSubmissionWindow = true
@@ -144,7 +157,7 @@ export default class IncidentDetailsRoutes {
       parseInt(bookingId, 10),
       formName,
       updatedSection,
-      incidentDate?.value || null
+      incidentDate?.value || null,
     )
 
     if (incidentDate && submitType !== SubmitType.SAVE_AND_CHANGE_PRISON) {
@@ -154,7 +167,7 @@ export default class IncidentDetailsRoutes {
       const duplicates = await this.draftReportService.getPotentialDuplicates(
         parseInt(bookingId, 10),
         moment(incidentDate.value),
-        token
+        token,
       )
 
       if (duplicates.length) {

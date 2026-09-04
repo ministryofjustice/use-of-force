@@ -16,11 +16,11 @@ const f213CompletedBy = requiredStringMsg('Enter the name of who completed the F
 
 const completeSchema = joi.object({
   prisonerRelocation: requiredStringMsg('Select where the prisoner was relocated to').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   relocationCompliancy: requiredBooleanMsg('Select yes if the prisoner was compliant').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   relocationType: joi.when('relocationCompliancy', {
@@ -42,11 +42,11 @@ const completeSchema = joi.object({
   f213CompletedBy,
 
   prisonerInjuries: requiredBooleanMsg('Select yes if the prisoner sustained any injuries').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   healthcareInvolved: requiredBooleanMsg('Select yes if a member of healthcare was present during the incident').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   healthcarePractionerName: joi.when('healthcareInvolved', {
@@ -59,11 +59,11 @@ const completeSchema = joi.object({
   }),
 
   prisonerHospitalisation: requiredBooleanMsg('Select yes if the prisoner needed outside hospitalisation').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   staffMedicalAttention: requiredBooleanMsg('Select yes if a staff member needed medical attention').alter(
-    optionalForPartialValidation
+    optionalForPartialValidation,
   ),
 
   staffNeedingMedicalAttention: joi
@@ -75,7 +75,7 @@ const completeSchema = joi.object({
           .message('Names may only contain letters, spaces, full stops, hyphens or apostrophes')
           .alter(optionalForPartialValidation),
         hospitalisation: requiredBooleanMsg('Select yes if the staff member had to go to hospital').alter(
-          optionalForPartialValidation
+          optionalForPartialValidation,
         ),
       })
         .min(1)

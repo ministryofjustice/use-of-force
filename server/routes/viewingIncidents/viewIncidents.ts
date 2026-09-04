@@ -15,18 +15,11 @@ export default class ViewIncidentsRoutes {
     private readonly reportEditService: ReportEditService,
     private readonly reportDetailBuilder: ReportDataBuilder,
     private readonly reviewService: ReviewService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
-
-  // handle any session data for this report if user closes browser tab without completing the edit
-  deleteAnyPendingEditsForThisReport(req, reportId) {
-    if (!req.session.incidentReport || !Array.isArray(req.session.incidentReport)) return
-    req.session.incidentReport = req.session.incidentReport.filter(entry => entry.reportId !== reportId)
-  }
 
   viewIncident: RequestHandler = async (req, res) => {
     const incidentId = extractReportId(req)
-    this.deleteAnyPendingEditsForThisReport(req, incidentId)
     const { tab } = req.query
     const { isReviewer, isCoordinator, username } = res.locals.user
     const report = await this.reviewService.getReport(incidentId)
@@ -72,7 +65,7 @@ export default class ViewIncidentsRoutes {
       }
 
       logger.info(
-        `${username} attempted to access report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+        `${username} attempted to access report ${incidentId} even though they are not the reporter or a reviewer/coordinator`,
       )
       return res.render('pages/userError.njk', {
         message: `Access denied because you are not the owner of report ${incidentId}`,
@@ -112,7 +105,7 @@ export default class ViewIncidentsRoutes {
         return res.render('pages/viewIncident/incident.njk', { data: dataForEditHistory })
       }
       logger.info(
-        `${username} attempted to access edit history for report ${incidentId} even though they are not the reporter or a reviewer/coordinator`
+        `${username} attempted to access edit history for report ${incidentId} even though they are not the reporter or a reviewer/coordinator`,
       )
       return res.render('pages/userError.njk', {
         message: `Access denied because you are not the owner of report ${incidentId}`,

@@ -152,7 +152,7 @@ test('deleteReport', () => {
 
   expect(query).toHaveBeenCalledWith({
     text: `update v_report r
-              set deleted = $1 
+              set deleted = $1
               where r.user_id = $2
               and r.booking_id = $3
               and r.status = $4`,

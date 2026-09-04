@@ -3,14 +3,14 @@ import { PrisonerDetail } from '../../../data/prisonClientTypes'
 
 export interface Groups {
   [group: string]: {
-    codes?: Array<string>
+    codes?: Array<string | number>
   }
 }
 
 export interface DescribedGroups extends Groups {
   [group: string]: {
     description: string
-    codes?: Array<string>
+    codes?: Array<string | number>
   }
 }
 
@@ -28,8 +28,8 @@ export interface IncidentCountByGroup {
 export const invertGroupings: (groups: Groups) => { [code: string]: string } = R.pipe(
   R.toPairs,
   R.chain(([groupName, { codes }]) => (codes ? codes.map(code => [code, groupName]) : [])),
-  R.fromPairs,
-  Object.freeze
+  (pairs: [string | number, string][]) => R.fromPairs(pairs),
+  Object.freeze,
 )
 
 export type CsvRendererConfiguration = Array<{ key: string; header: string }>
@@ -41,7 +41,7 @@ export interface IncidentsByPrisonerPropertyAggregator {
 export const aggregatorFactory = (
   codesByGroup: Groups,
   defaultGroup: string,
-  prisonerDetailPropertyName: string
+  prisonerDetailPropertyName: string,
 ): IncidentsByPrisonerPropertyAggregator => {
   const groupsByCode = invertGroupings(codesByGroup)
 
@@ -55,7 +55,7 @@ export const aggregatorFactory = (
         accumulator[group] = accumulatedCount + offenderNumberToIncidentCountMap[prisonerDetail.offenderNo]
         return accumulator
       },
-      R.map(() => 0, codesByGroup)
+      R.map(() => 0, codesByGroup),
     )
 }
 

@@ -3,10 +3,9 @@ import type ReportService from '../../services/reportService'
 import type ReportDataBuilder from '../../services/reportDetailBuilder'
 
 export default class IncidentsRoutes {
-  // eslint-disable-next-line
   constructor(
     private readonly reportService: ReportService,
-    private readonly reportDetailBuilder: ReportDataBuilder
+    private readonly reportDetailBuilder: ReportDataBuilder,
   ) {}
 
   redirectToHomePage: RequestHandler = async (req, res): Promise<void> => {

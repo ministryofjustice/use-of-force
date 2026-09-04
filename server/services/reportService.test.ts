@@ -36,7 +36,7 @@ beforeEach(() => {
     locationService,
     reportLogClient,
     inTransaction,
-    authService
+    authService,
   )
 })
 
@@ -87,7 +87,7 @@ describe('reportService', () => {
       incidentClient.getAnonReportSummary.mockResolvedValue(undefined)
 
       await expect(service.getAnonReportSummary('token-1', 1)).resolves.toStrictEqual(undefined)
-      expect(locationService.getPrisonById).not.toBeCalled()
+      expect(locationService.getPrisonById).not.toHaveBeenCalled()
       expect(incidentClient.getAnonReportSummary).toHaveBeenCalledWith(1)
     })
   })
@@ -106,7 +106,7 @@ describe('reportService', () => {
             reporterName: 'BOB',
             status: 'IN_PROGRESS',
           },
-        ])
+        ]),
       )
       const result = await service.getReports('user1', 1)
       expect(result).toEqual(
@@ -120,7 +120,7 @@ describe('reportService', () => {
             staffMemberName: 'BOB',
             status: 'IN_PROGRESS',
           },
-        ])
+        ]),
       )
       expect(incidentClient.getReports).toHaveBeenCalledWith('user1', 1)
     })
@@ -209,7 +209,7 @@ describe('reportService', () => {
         'Error in report',
         'just forgot',
         false,
-        incidentDate
+        incidentDate,
       )
 
       expect(incidentClient.updateWithEdits).toHaveBeenCalledWith(
@@ -224,7 +224,7 @@ describe('reportService', () => {
             witnesses: [{ name: 'Witness A' }, { name: 'Witness B' }],
           },
         },
-        transactionalClient
+        transactionalClient,
       )
 
       expect(incidentClient.insertReportEdit).toHaveBeenCalledWith(
@@ -249,7 +249,7 @@ describe('reportService', () => {
           reportOwnerChanged: false,
           username: 'USER-1',
         },
-        transactionalClient
+        transactionalClient,
       )
     })
   })
