@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="use-of-force" schema="public" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg120+2)">
+   <sequences>
+      <sequence increment="1" name="form_id_seq" startValue="1"/>
+      <sequence increment="1" name="involved_staff_id_seq" startValue="1"/>
+      <sequence increment="1" name="knex_migrations_id_seq" startValue="1"/>
+      <sequence increment="1" name="knex_migrations_lock_index_seq" startValue="1"/>
+      <sequence increment="1" name="report_edit_id_seq" startValue="1"/>
+      <sequence increment="1" name="report_log_id_seq" startValue="1"/>
+      <sequence increment="1" name="statement_amendments_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="flyway_schema_history" numRows="0" remarks="NOT A FLYWAY TABLE, AND THIS IS NOT A FLYWAY REPOSITORY. It is a view over knex_migrations created by migrations/20241120000001_form_db.js purely so tooling that expects Flyway keeps working - specifically the HMPPS subject access request test support library, which asserts an expected schema version. This repository uses knex; schema changes belong in migrations/. Running Flyway against this database will collide with this view." schema="public" type="VIEW" viewSql=" SELECT name AS version&#10;   FROM knex_migrations&#10;  ORDER BY id;">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="version" nullable="true" remarks="The knex migration filename, presented as if it were a Flyway version. [Sensitivity: NONE]" size="255" type="varchar" typeCode="12"/>
+      </table>
+      <table name="knex_migrations" remarks="Knex's own record of which migrations have been applied. Not part of the use of force domain schema." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('knex_migrations_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="Migration filename as it appears in migrations/. [Sensitivity: NONE]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="batch" nullable="true" remarks="Which batch the migration was applied in; a batch is one run of migrate.latest(). [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="migration_time" nullable="true" remarks="When the migration was applied. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="knex_migrations_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="knex_migrations_lock" remarks="Knex's advisory lock, preventing two instances migrating at once. Migrations run at application boot, so every pod attempts them on start." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('knex_migrations_lock_index_seq'::regclass)" digits="0" id="0" name="index" nullable="false" remarks="Primary key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="is_locked" nullable="true" remarks="Non-zero while a migration run holds the lock. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="index" sequenceNumberInPK="1"/>
+         <index name="knex_migrations_lock_pkey" unique="true">
+            <column ascending="true" name="index"/>
+         </index>
+      </table>
+      <table name="report" remarks="One use of force incident report. Nothing is ever hard-deleted: &quot;deleted&quot; is a timestamp tombstone, and the application reads and writes through the v_report view. A draft is simply a row with status IN_PROGRESS - there is no separate draft table. The table has no outbound foreign keys and its primary key constraint is still named pk_form, from when the table was called &quot;form&quot;." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('form_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. The sequence is still named form_id_seq after the original table name. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
+            <child column="report_id" foreignKey="involved_staff_incident_id_foreign" implied="false" onDeleteCascade="true" schema="public" table="statement"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="form_response" nullable="true" remarks="The entire report as submitted, as JSON. Holds the reasons force was used, the techniques and restraint positions applied, what was observed, and the relocationAndInjuries section - which records prisoner injuries, hospitalisation, healthcare involvement, the healthcare practitioner's name and whether staff needed medical attention. Health data about both the prisoner and staff. See docs/report-payload.md for the shape, and reference-data.csv for the permitted values. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="HMPPS username of the officer who created the report. Nullable in the database - a 2019 migration altered the column and dropped the not-null constraint - but always populated in practice. [Sensitivity: STAFF]" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="3" name="sequence_no" nullable="false" remarks="Distinguishes multiple reports by the same officer against the same booking. Computed as MAX(sequence_no) + 1 for that user and booking. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="'-1'::bigint" digits="0" id="4" name="booking_id" nullable="false" remarks="NOMIS booking id: the custody period of the prisoner force was used on. Defaults to -1 where unknown. [Sensitivity: PERSONAL]" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP(6)" digits="6" id="5" name="created_date" nullable="false" remarks="When the report was created. Originally named start_date. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="true" remarks="IN_PROGRESS, SUBMITTED or COMPLETE. No check constraint - the application enforces it. See reference-data.csv. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="submitted_date" nullable="true" remarks="When the reporting officer submitted the report, which is what creates the statement rows. Null while still a draft. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="offender_no" nullable="false" remarks="NOMIS offender number of the prisoner force was used on. The identifier that makes every row in this schema personal data about that prisoner. [Sensitivity: PERSONAL]" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="reporter_name" nullable="false" remarks="Display name of the reporting officer, captured at creation so the report reads correctly even after the officer leaves. [Sensitivity: STAFF]" size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="incident_date" nullable="true" remarks="When force was used. Extracted out of form_response into its own column so it can be indexed and searched. Places a named prisoner at a point in time. [Sensitivity: PERSONAL]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_id" nullable="true" remarks="Prison the incident happened at, as a NOMIS agency code such as MDI. Stamped at creation and updatable through the change-prison flow. With incident_date, locates a named prisoner. [Sensitivity: PERSONAL]" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="updated_date" nullable="true" remarks="When the report was last changed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_report view; nothing is physically removed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="completed_date" nullable="true" remarks="Intended to record when every required statement had been submitted. Added October 2025 and not yet written or read by anything - do not rely on it. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="form_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_created_date_index" unique="false">
+            <column ascending="true" name="created_date"/>
+         </index>
+         <index name="report_incident_date_index" unique="false">
+            <column ascending="true" name="incident_date"/>
+         </index>
+         <index name="report_offender_no_index" unique="false">
+            <column ascending="true" name="offender_no"/>
+         </index>
+         <index name="report_status_index" unique="false">
+            <column ascending="true" name="status"/>
+         </index>
+         <index name="user_booking_sequence_index" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="booking_id"/>
+            <column ascending="true" name="sequence_no"/>
+         </index>
+      </table>
+      <table name="report_edit" remarks="History of post-submission edits made through the coordinator edit flow. Its primary key constraint is named pk_edit. As with report_log, report_id has NO foreign key to report, so edit history survives a soft-delete and SchemaSpy draws no relationship line." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('report_edit_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="1" name="edit_date" nullable="false" remarks="When the edit was made. Originally named timestamp. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="editor_user_id" nullable="false" remarks="HMPPS username of the coordinator who made the edit. Originally named user_id. [Sensitivity: STAFF]" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="editor_name" nullable="false" remarks="Display name of that coordinator. Originally named user_name. [Sensitivity: STAFF]" size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="report_id" nullable="false" remarks="The report that was edited. Not a declared foreign key - see the table comment. [Sensitivity: NONE]" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="reason" nullable="false" remarks="Coded reason for the edit, covering the edit, add-staff, remove-staff and delete-report journeys. See reference-data.csv for the permitted values. [Sensitivity: NONE]" size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="additional_comments" nullable="true" remarks="Free text from the coordinator expanding on the edit. Not a health or offence question in itself, but free text about a named prisoner's report and capable of carrying that detail. [Sensitivity: PERSONAL]" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="report_owner_changed" nullable="true" remarks="Whether this edit reassigned the report to a different reporting officer. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="'{}'::jsonb" digits="0" id="8" name="changes" nullable="false" remarks="What the edit changed, as JSON keyed by field, each entry holding oldValue, newValue and the question text. Contains arbitrary before and after slices of the report, including involved staff and the relocation and injuries answers. See docs/report-payload.md. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="reason_text" nullable="true" remarks="Free text supplied when the coded reason is &quot;another reason&quot;. Same caveat as additional_comments. [Sensitivity: PERSONAL]" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_edit_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_edit_report_id_index" unique="false">
+            <column ascending="true" name="report_id"/>
+         </index>
+      </table>
+      <table name="report_log" remarks="Audit trail of what happened to a report. Its primary key constraint is named pk_audit. report_id is a plain bigint with NO foreign key to report, deliberately, so audit rows survive the report being soft-deleted - which is why SchemaSpy draws this table with no relationship line to report." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('report_log_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="1" name="timestamp" nullable="false" remarks="When the action happened. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="username" nullable="false" remarks="HMPPS username of the person who acted, or the literal SYSTEM for automatic status transitions. [Sensitivity: STAFF]" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="report_id" nullable="false" remarks="The report acted on. Not a declared foreign key - see the table comment. [Sensitivity: NONE]" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="action" nullable="false" remarks="What happened: REPORT_CREATED, REPORT_MODIFIED, REPORT_DELETED, REPORT_SUBMITTED, REPORT_STATUS_CHANGED or REPORT_COMPLETED. See reference-data.csv. [Sensitivity: NONE]" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="details" nullable="true" remarks="Context for the action, as JSON. For REPORT_MODIFIED this holds originalSection and updatedSection - whole before and after slices of report.form_response - so it carries the same incident, injury and healthcare content as the report itself. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_log_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_log_report_id_index" unique="false">
+            <column ascending="true" name="report_id"/>
+         </index>
+      </table>
+      <table name="statement" remarks="One member of staff's account of a use of force incident, created for each involved officer when the report is submitted. Originally called involved_staff, which still shows in its index names. Read and written through the v_statement view." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('involved_staff_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. The sequence is still named involved_staff_id_seq after the original table name. [Sensitivity: NONE]" size="10" type="serial" typeCode="4">
+            <child column="statement_id" foreignKey="statement_amendments_statement_id_foreign" implied="false" onDeleteCascade="true" schema="public" table="statement_amendments"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="report_id" nullable="false" remarks="The report this statement belongs to. Foreign key to report(id) with ON DELETE CASCADE. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="involved_staff_incident_id_foreign" implied="false" onDeleteCascade="true" schema="public" table="report"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="HMPPS username of the officer the statement is required from. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="name" nullable="true" remarks="Display name of that officer. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="email" nullable="true" remarks="Email address used to send statement reminders. May be backfilled later by the reminder job rather than set at creation. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="submitted_date" nullable="true" remarks="When the officer submitted their statement. Null while still outstanding. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="statement_status" nullable="false" remarks="PENDING or SUBMITTED. See reference-data.csv. [Sensitivity: NONE]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="last_training_month" nullable="true" remarks="Month of the officer's most recent control and restraint training, as a ZERO-BASED index: 0 is January and 11 is December, not 1 to 12. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="last_training_year" nullable="true" remarks="Year of the officer's most recent control and restraint training. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="job_start_year" nullable="true" remarks="Year the officer started in the role. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="statement" nullable="true" remarks="The officer's free-text account of the force used on a named prisoner. Routinely records injuries and the healthcare given (Article 9 health data) and describes conduct that may become a criminal or disciplinary allegation against the prisoner or the officer (Article 10). [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="staff_id" nullable="true" remarks="NOMIS staff id of the officer. Originally not-null with a -1 default; a 2019 migration made it nullable and dropped the default. [Sensitivity: STAFF]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP(6)" digits="6" id="12" name="created_date" nullable="false" remarks="When the statement row was created, which is when the report was submitted. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="updated_date" nullable="true" remarks="When the statement was last changed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="next_reminder_date" nullable="true" remarks="When the reminder job should next chase this statement. Set to submission plus one day, advanced daily, and nulled once the statement is overdue. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="overdue_date" nullable="true" remarks="When the statement becomes overdue - submission plus three days. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="16" name="in_progress" nullable="false" remarks="Whether the officer has saved a draft of their statement without submitting it. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="17" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_statement view. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="removal_requested_reason" nullable="true" remarks="Free text written by the member of staff themselves, asking to be removed from the report because they were not involved. Tagged STAFF because it is their own account of their own involvement, but it is free text and can carry health or personal-circumstance detail - handle it with the same care as a special category column. [Sensitivity: STAFF]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="19" name="removal_requested_date" nullable="true" remarks="When removal from the report was requested. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="involved_staff_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="involved_staff_incident_id_user_id_unique" unique="true">
+            <column ascending="true" name="report_id"/>
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="statement_next_reminder_date_statement_status_index" unique="false">
+            <column ascending="true" name="next_reminder_date"/>
+            <column ascending="true" name="statement_status"/>
+         </index>
+         <index name="statement_report_id_index" unique="false">
+            <column ascending="true" name="report_id"/>
+         </index>
+      </table>
+      <table name="statement_amendments" remarks="Additional comments added by a member of staff after their statement was submitted. A statement is never edited in place; corrections are appended here. Read and written through the v_statement_amendments view." schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('statement_amendments_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="Primary key. [Sensitivity: NONE]" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="statement_id" nullable="false" remarks="The statement being amended. Foreign key to statement(id) with ON DELETE CASCADE. [Sensitivity: NONE]" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="statement_amendments_statement_id_foreign" implied="false" onDeleteCascade="true" schema="public" table="statement"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="additional_comment" nullable="false" remarks="Free-text addition to a submitted statement. Same content and the same risks as statement.statement - an account of force used on a named prisoner, including injuries and healthcare. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP(6)" digits="6" id="3" name="date_submitted" nullable="false" remarks="When the amendment was submitted. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_statement_amendments view. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="statement_amendments_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="statement_amendments_statement_id_index" unique="false">
+            <column ascending="true" name="statement_id"/>
+         </index>
+      </table>
+      <table name="v_report" numRows="0" remarks="Live reports: report filtered to deleted IS NULL. The application reads and writes through this view rather than the base table, so a soft-deleted report disappears from the service without being destroyed. It is a simple auto-updatable Postgres view, so UPDATE and INSERT work against it. Columns are as per report." schema="public" type="VIEW" viewSql=" SELECT id,&#10;    form_response,&#10;    user_id,&#10;    sequence_no,&#10;    booking_id,&#10;    created_date,&#10;    status,&#10;    submitted_date,&#10;    offender_no,&#10;    reporter_name,&#10;    incident_date,&#10;    agency_id,&#10;    updated_date,&#10;    deleted,&#10;    completed_date&#10;   FROM report&#10;  WHERE (deleted IS NULL);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="true" remarks="Primary key. The sequence is still named form_id_seq after the original table name. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="form_response" nullable="true" remarks="The entire report as submitted, as JSON. Holds the reasons force was used, the techniques and restraint positions applied, what was observed, and the relocationAndInjuries section - which records prisoner injuries, hospitalisation, healthcare involvement, the healthcare practitioner's name and whether staff needed medical attention. Health data about both the prisoner and staff. See docs/report-payload.md for the shape, and reference-data.csv for the permitted values. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="HMPPS username of the officer who created the report. Nullable in the database - a 2019 migration altered the column and dropped the not-null constraint - but always populated in practice. [Sensitivity: STAFF]" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="sequence_no" nullable="true" remarks="Distinguishes multiple reports by the same officer against the same booking. Computed as MAX(sequence_no) + 1 for that user and booking. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="booking_id" nullable="true" remarks="NOMIS booking id: the custody period of the prisoner force was used on. Defaults to -1 where unknown. [Sensitivity: PERSONAL]" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="created_date" nullable="true" remarks="When the report was created. Originally named start_date. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="true" remarks="IN_PROGRESS, SUBMITTED or COMPLETE. No check constraint - the application enforces it. See reference-data.csv. [Sensitivity: NONE]" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="submitted_date" nullable="true" remarks="When the reporting officer submitted the report, which is what creates the statement rows. Null while still a draft. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="offender_no" nullable="true" remarks="NOMIS offender number of the prisoner force was used on. The identifier that makes every row in this schema personal data about that prisoner. [Sensitivity: PERSONAL]" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="reporter_name" nullable="true" remarks="Display name of the reporting officer, captured at creation so the report reads correctly even after the officer leaves. [Sensitivity: STAFF]" size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="incident_date" nullable="true" remarks="When force was used. Extracted out of form_response into its own column so it can be indexed and searched. Places a named prisoner at a point in time. [Sensitivity: PERSONAL]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_id" nullable="true" remarks="Prison the incident happened at, as a NOMIS agency code such as MDI. Stamped at creation and updatable through the change-prison flow. With incident_date, locates a named prisoner. [Sensitivity: PERSONAL]" size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="updated_date" nullable="true" remarks="When the report was last changed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_report view; nothing is physically removed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="completed_date" nullable="true" remarks="Intended to record when every required statement had been submitted. Added October 2025 and not yet written or read by anything - do not rely on it. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+      </table>
+      <table name="v_statement" numRows="0" remarks="Live statements: statement filtered to deleted IS NULL, auto-updatable, and the path the application uses. Columns are as per statement." schema="public" type="VIEW" viewSql=" SELECT id,&#10;    report_id,&#10;    user_id,&#10;    name,&#10;    email,&#10;    submitted_date,&#10;    statement_status,&#10;    last_training_month,&#10;    last_training_year,&#10;    job_start_year,&#10;    statement,&#10;    staff_id,&#10;    created_date,&#10;    updated_date,&#10;    next_reminder_date,&#10;    overdue_date,&#10;    in_progress,&#10;    deleted,&#10;    removal_requested_reason,&#10;    removal_requested_date&#10;   FROM statement&#10;  WHERE (deleted IS NULL);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="true" remarks="Primary key. The sequence is still named involved_staff_id_seq after the original table name. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="report_id" nullable="true" remarks="The report this statement belongs to. Foreign key to report(id) with ON DELETE CASCADE. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="HMPPS username of the officer the statement is required from. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="name" nullable="true" remarks="Display name of that officer. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="email" nullable="true" remarks="Email address used to send statement reminders. May be backfilled later by the reminder job rather than set at creation. [Sensitivity: STAFF]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="submitted_date" nullable="true" remarks="When the officer submitted their statement. Null while still outstanding. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="statement_status" nullable="true" remarks="PENDING or SUBMITTED. See reference-data.csv. [Sensitivity: NONE]" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="last_training_month" nullable="true" remarks="Month of the officer's most recent control and restraint training, as a ZERO-BASED index: 0 is January and 11 is December, not 1 to 12. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="last_training_year" nullable="true" remarks="Year of the officer's most recent control and restraint training. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="job_start_year" nullable="true" remarks="Year the officer started in the role. Employment record data. [Sensitivity: STAFF]" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="statement" nullable="true" remarks="The officer's free-text account of the force used on a named prisoner. Routinely records injuries and the healthcare given (Article 9 health data) and describes conduct that may become a criminal or disciplinary allegation against the prisoner or the officer (Article 10). [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="staff_id" nullable="true" remarks="NOMIS staff id of the officer. Originally not-null with a -1 default; a 2019 migration made it nullable and dropped the default. [Sensitivity: STAFF]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="created_date" nullable="true" remarks="When the statement row was created, which is when the report was submitted. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="updated_date" nullable="true" remarks="When the statement was last changed. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="next_reminder_date" nullable="true" remarks="When the reminder job should next chase this statement. Set to submission plus one day, advanced daily, and nulled once the statement is overdue. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="overdue_date" nullable="true" remarks="When the statement becomes overdue - submission plus three days. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="in_progress" nullable="true" remarks="Whether the officer has saved a draft of their statement without submitting it. [Sensitivity: NONE]" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="17" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_statement view. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="removal_requested_reason" nullable="true" remarks="Free text written by the member of staff themselves, asking to be removed from the report because they were not involved. Tagged STAFF because it is their own account of their own involvement, but it is free text and can carry health or personal-circumstance detail - handle it with the same care as a special category column. [Sensitivity: STAFF]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="19" name="removal_requested_date" nullable="true" remarks="When removal from the report was requested. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+      </table>
+      <table name="v_statement_amendments" numRows="0" remarks="Live statement amendments: statement_amendments filtered to deleted IS NULL, auto-updatable, and the path the application uses. Columns are as per statement_amendments." schema="public" type="VIEW" viewSql=" SELECT id,&#10;    statement_id,&#10;    additional_comment,&#10;    date_submitted,&#10;    deleted&#10;   FROM statement_amendments&#10;  WHERE (deleted IS NULL);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="true" remarks="Primary key. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="statement_id" nullable="true" remarks="The statement being amended. Foreign key to statement(id) with ON DELETE CASCADE. [Sensitivity: NONE]" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="additional_comment" nullable="true" remarks="Free-text addition to a submitted statement. Same content and the same risks as statement.statement - an account of force used on a named prisoner, including injuries and healthcare. [Sensitivity: SPECIAL-CATEGORY]" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="date_submitted" nullable="true" remarks="When the amendment was submitted. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="deleted" nullable="true" remarks="Soft-delete tombstone. Non-null rows are filtered out by the v_statement_amendments view. [Sensitivity: NONE]" size="35" type="timestamptz" typeCode="93"/>
+      </table>
+   </tables>
+</database>

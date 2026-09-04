@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>use-of-force.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="bower/html5shiv/html5shiv.min.js"></script>
+        <script src="bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="index.html" class="navbar-brand"><b>use-of-force</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>Columns</h1>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 class="box-title">Columns</h3>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="column_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="50"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                    <tr>
+                                        <th>Table</th>
+                                        <th>Type</th>
+                                        <th>Column</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th title='Are nulls allowed?'>Nullable</th>
+                                        <th title='Is column automatically updated?'>Auto</th>
+                                        <th title='Default value'>Default</th>
+                                        <th title='Comments' class="toggle"><span>Comments</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <script>
+                    var tableData = [
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "last_training_month",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Month of the officer&rsquo;s most recent control and restraint training, as a ZERO-BASED index: 0 is January and 11 is December, not 1 to 12. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "timestamp",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "comments": "<p>When the action happened. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations_lock",
+        "tableFileName": "knex_migrations_lock",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "is_locked",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Non-zero while a migration run holds the lock. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "name",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Display name of that officer. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement_amendments",
+        "tableFileName": "v_statement_amendments",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "date_submitted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the amendment was submitted. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_report view; nothing is physically removed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "report_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The report this statement belongs to. Foreign key to report(id) with ON DELETE CASCADE. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement_amendments",
+        "tableFileName": "v_statement_amendments",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "reason",
+        "type": "varchar",
+        "length": 128,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Coded reason for the edit, covering the edit, add-staff, remove-staff and delete-report journeys. See reference-data.csv for the permitted values. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "updated_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the statement was last changed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations_lock",
+        "tableFileName": "knex_migrations_lock",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>index",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('knex_migrations_lock_index_seq'::regclass)",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submitted_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the officer submitted their statement. Null while still outstanding. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "reporter_name",
+        "type": "varchar",
+        "length": 128,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Display name of the reporting officer, captured at creation so the report reads correctly even after the officer leaves. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement_amendments",
+        "tableFileName": "v_statement_amendments",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "statement_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The statement being amended. Foreign key to statement(id) with ON DELETE CASCADE. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "details",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Context for the action, as JSON. For REPORT_MODIFIED this holds originalSection and updatedSection - whole before and after slices of report.form_response - so it carries the same incident, injury and healthcare content as the report itself. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "overdue_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the statement becomes overdue - submission plus three days. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>sequence_no",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "1",
+        "comments": "<p>Distinguishes multiple reports by the same officer against the same booking. Computed as MAX(sequence_no) + 1 for that user and booking. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "in_progress",
+        "type": "bool",
+        "length": 1,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Whether the officer has saved a draft of their statement without submitting it. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "removal_requested_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When removal from the report was requested. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "job_start_year",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Year the officer started in the role. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>incident_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When force was used. Extracted out of form_response into its own column so it can be indexed and searched. Places a named prisoner at a point in time. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement_amendments",
+        "tableFileName": "v_statement_amendments",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "additional_comment",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free-text addition to a submitted statement. Same content and the same risks as statement.statement - an account of force used on a named prisoner, including injuries and healthcare. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement_amendments",
+        "tableFileName": "v_statement_amendments",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_statement_amendments view. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>report_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The report this statement belongs to. Foreign key to report(id) with ON DELETE CASCADE. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "last_training_year",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Year of the officer&rsquo;s most recent control and restraint training. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>report_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The report that was edited. Not a declared foreign key - see the table comment. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "flyway_schema_history",
+        "tableFileName": "flyway_schema_history",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "version",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The knex migration filename, presented as if it were a Flyway version. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "action",
+        "type": "varchar",
+        "length": 50,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>What happened: REPORT_CREATED, REPORT_MODIFIED, REPORT_DELETED, REPORT_SUBMITTED, REPORT_STATUS_CHANGED or REPORT_COMPLETED. See reference-data.csv. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "status",
+        "type": "varchar",
+        "length": 20,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>IN_PROGRESS, SUBMITTED or COMPLETE. No check constraint - the application enforces it. See reference-data.csv. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "statement_status",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>PENDING or SUBMITTED. See reference-data.csv. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement_amendments",
+        "tableFileName": "statement_amendments",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>statement_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The statement being amended. Foreign key to statement(id) with ON DELETE CASCADE. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "booking_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>NOMIS booking id: the custody period of the prisoner force was used on. Defaults to -1 where unknown. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "reason_text",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free text supplied when the coded reason is &ldquo;another reason&rdquo;. Same caveat as additional_comments. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "overdue_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the statement becomes overdue - submission plus three days. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "updated_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the report was last changed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "updated_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the report was last changed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "offender_no",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>NOMIS offender number of the prisoner force was used on. The identifier that makes every row in this schema personal data about that prisoner. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "last_training_month",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Month of the officer&rsquo;s most recent control and restraint training, as a ZERO-BASED index: 0 is January and 11 is December, not 1 to 12. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "form_response",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The entire report as submitted, as JSON. Holds the reasons force was used, the techniques and restraint positions applied, what was observed, and the relocationAndInjuries section - which records prisoner injuries, hospitalisation, healthcare involvement, the healthcare practitioner&rsquo;s name and whether staff needed medical attention. Health data about both the prisoner and staff. See docs/report-payload.md for the shape, and reference-data.csv for the permitted values. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Primary key. The sequence is still named involved_staff_id_seq after the original table name. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('form_id_seq'::regclass)",
+        "comments": "<p>Primary key. The sequence is still named form_id_seq after the original table name. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>status",
+        "type": "varchar",
+        "length": 20,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>IN_PROGRESS, SUBMITTED or COMPLETE. No check constraint - the application enforces it. See reference-data.csv. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "created_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the report was created. Originally named start_date. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "agency_id",
+        "type": "varchar",
+        "length": 6,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Prison the incident happened at, as a NOMIS agency code such as MDI. Stamped at creation and updatable through the change-prison flow. With incident_date, locates a named prisoner. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "changes",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "'{}'::jsonb",
+        "comments": "<p>What the edit changed, as JSON keyed by field, each entry holding oldValue, newValue and the question text. Contains arbitrary before and after slices of the report, including involved staff and the relocation and injuries answers. See docs/report-payload.md. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "job_start_year",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Year the officer started in the role. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('report_edit_id_seq'::regclass)",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>statement_status",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>PENDING or SUBMITTED. See reference-data.csv. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "sequence_no",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Distinguishes multiple reports by the same officer against the same booking. Computed as MAX(sequence_no) + 1 for that user and booking. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_statement view. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "additional_comments",
+        "type": "varchar",
+        "length": 1000,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free text from the coordinator expanding on the edit. Not a health or offence question in itself, but free text about a named prisoner&rsquo;s report and capable of carrying that detail. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "staff_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>NOMIS staff id of the officer. Originally not-null with a -1 default; a 2019 migration made it nullable and dropped the default. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations",
+        "tableFileName": "knex_migrations",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "batch",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Which batch the migration was applied in; a batch is one run of migrate.latest(). <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "report_owner_changed",
+        "type": "bool",
+        "length": 1,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "false",
+        "comments": "<p>Whether this edit reassigned the report to a different reporting officer. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Primary key. The sequence is still named form_id_seq after the original table name. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement_amendments",
+        "tableFileName": "statement_amendments",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "date_submitted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "CURRENT_TIMESTAMP(6)",
+        "comments": "<p>When the amendment was submitted. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "form_response",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The entire report as submitted, as JSON. Holds the reasons force was used, the techniques and restraint positions applied, what was observed, and the relocationAndInjuries section - which records prisoner injuries, hospitalisation, healthcare involvement, the healthcare practitioner&rsquo;s name and whether staff needed medical attention. Health data about both the prisoner and staff. See docs/report-payload.md for the shape, and reference-data.csv for the permitted values. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>booking_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "'-1'::bigint",
+        "comments": "<p>NOMIS booking id: the custody period of the prisoner force was used on. Defaults to -1 where unknown. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "next_reminder_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the reminder job should next chase this statement. Set to submission plus one day, advanced daily, and nulled once the statement is overdue. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "removal_requested_reason",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free text written by the member of staff themselves, asking to be removed from the report because they were not involved. Tagged STAFF because it is their own account of their own involvement, but it is free text and can carry health or personal-circumstance detail - handle it with the same care as a special category column. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations",
+        "tableFileName": "knex_migrations",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "name",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Migration filename as it appears in migrations/. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations",
+        "tableFileName": "knex_migrations",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('knex_migrations_id_seq'::regclass)",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submitted_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the officer submitted their statement. Null while still outstanding. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement_amendments",
+        "tableFileName": "statement_amendments",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_statement_amendments view. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "completed_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Intended to record when every required statement had been submitted. Added October 2025 and not yet written or read by anything - do not rely on it. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "created_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the statement row was created, which is when the report was submitted. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "updated_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the statement was last changed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('report_log_id_seq'::regclass)",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the officer who created the report. Nullable in the database - a 2019 migration altered the column and dropped the not-null constraint - but always populated in practice. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "edit_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "comments": "<p>When the edit was made. Originally named timestamp. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "editor_user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the coordinator who made the edit. Originally named user_id. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "agency_id",
+        "type": "varchar",
+        "length": 6,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Prison the incident happened at, as a NOMIS agency code such as MDI. Stamped at creation and updatable through the change-prison flow. With incident_date, locates a named prisoner. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "knex_migrations",
+        "tableFileName": "knex_migrations",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "migration_time",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the migration was applied. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "statement",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The officer&rsquo;s free-text account of the force used on a named prisoner. Routinely records injuries and the healthcare given (Article 9 health data) and describes conduct that may become a criminal or disciplinary allegation against the prisoner or the officer (Article 10). <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "email",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Email address used to send statement reminders. May be backfilled later by the reminder job rather than set at creation. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>next_reminder_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the reminder job should next chase this statement. Set to submission plus one day, advanced daily, and nulled once the statement is overdue. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "reporter_name",
+        "type": "varchar",
+        "length": 128,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Display name of the reporting officer, captured at creation so the report reads correctly even after the officer leaves. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>user_id",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the officer the statement is required from. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>created_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "CURRENT_TIMESTAMP(6)",
+        "comments": "<p>When the report was created. Originally named start_date. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "user_id",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the officer the statement is required from. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement_amendments",
+        "tableFileName": "statement_amendments",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('statement_amendments_id_seq'::regclass)",
+        "comments": "<p>Primary key. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "email",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Email address used to send statement reminders. May be backfilled later by the reminder job rather than set at creation. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "removal_requested_reason",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free text written by the member of staff themselves, asking to be removed from the report because they were not involved. Tagged STAFF because it is their own account of their own involvement, but it is free text and can carry health or personal-circumstance detail - handle it with the same care as a special category column. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>report_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The report acted on. Not a declared foreign key - see the table comment. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "staff_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>NOMIS staff id of the officer. Originally not-null with a -1 default; a 2019 migration made it nullable and dropped the default. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report_log",
+        "tableFileName": "report_log",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "username",
+        "type": "varchar",
+        "length": 50,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the person who acted, or the literal SYSTEM for automatic status transitions. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_report view; nothing is physically removed. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement_amendments",
+        "tableFileName": "statement_amendments",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "additional_comment",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Free-text addition to a submitted statement. Same content and the same risks as statement.statement - an account of force used on a named prisoner, including injuries and healthcare. <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>offender_no",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>NOMIS offender number of the prisoner force was used on. The identifier that makes every row in this schema personal data about that prisoner. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('involved_staff_id_seq'::regclass)",
+        "comments": "<p>Primary key. The sequence is still named involved_staff_id_seq after the original table name. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "completed_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Intended to record when every required statement had been submitted. Added October 2025 and not yet written or read by anything - do not rely on it. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "name",
+        "type": "varchar",
+        "length": 255,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Display name of that officer. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "deleted",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Soft-delete tombstone. Non-null rows are filtered out by the v_statement view. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "last_training_year",
+        "type": "int2",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Year of the officer&rsquo;s most recent control and restraint training. Employment record data. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "removal_requested_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When removal from the report was requested. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "report_edit",
+        "tableFileName": "report_edit",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "editor_name",
+        "type": "varchar",
+        "length": 128,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Display name of that coordinator. Originally named user_name. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "in_progress",
+        "type": "bool",
+        "length": 1,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "false",
+        "comments": "<p>Whether the officer has saved a draft of their statement without submitting it. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_statement",
+        "tableFileName": "v_statement",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "statement",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The officer&rsquo;s free-text account of the force used on a named prisoner. Routinely records injuries and the healthcare given (Article 9 health data) and describes conduct that may become a criminal or disciplinary allegation against the prisoner or the officer (Article 10). <a href=\"./null\">Sensitivity: SPECIAL-CATEGORY<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submitted_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the reporting officer submitted the report, which is what creates the statement rows. Null while still a draft. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "v_report",
+        "tableFileName": "v_report",
+        "tableType": "View",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "incident_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When force was used. Extracted out of form_response into its own column so it can be indexed and searched. Places a named prisoner at a point in time. <a href=\"./null\">Sensitivity: PERSONAL<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "indexedColumn",
+        "keyTitle": "Indexed",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>user_id",
+        "type": "varchar",
+        "length": 32,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>HMPPS username of the officer who created the report. Nullable in the database - a 2019 migration altered the column and dropped the not-null constraint - but always populated in practice. <a href=\"./null\">Sensitivity: STAFF<\/a><\/p>"
+    },
+    {
+        "tableName": "report",
+        "tableFileName": "report",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submitted_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>When the reporting officer submitted the report, which is what creates the statement rows. Null while still a draft. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    },
+    {
+        "tableName": "statement",
+        "tableFileName": "statement",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "created_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "CURRENT_TIMESTAMP(6)",
+        "comments": "<p>When the statement row was created, which is when the report was submitted. <a href=\"./null\">Sensitivity: NONE<\/a><\/p>"
+    }
+];
+                    var config = {
+                        pagination: true
+                    };
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.2.4</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="bower/pdfmake/pdfmake.min.js"></script>
+        <script src="bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="bower/codemirror/codemirror.js"></script>
+        <script src="bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="column.js"></script>
+        <script src="schemaSpy.js"></script>
+    </body>
+</html>
