@@ -3,6 +3,15 @@
 The database is owned by **this repository**, via the knex migrations in `migrations/`. The Kotlin
 `hmpps-uof-data-api` reads it but has no production migrations — do not put schema changes there.
 
+> **The per-column reference is published, not here.** Every table, view and column carries a
+> `COMMENT ON` description and a data sensitivity classification, applied by
+> [`migrations/20260904000000_schema_comments.js`](../migrations/20260904000000_schema_comments.js) and
+> published to
+> [the schema report](https://ministryofjustice.github.io/use-of-force/schema-spy-report/) with CSV
+> exports. This page explains the *shape* and the rules; the report is the authoritative column
+> reference, and it is generated from the migrations so it cannot go stale. Add a `COMMENT ON` for any
+> new column — `npm run schema:verify` fails otherwise.
+
 ## Entity relationships
 
 ```mermaid
@@ -71,6 +80,7 @@ erDiagram
         varchar editor_name
         varchar reason
         text reason_text
+        varchar additional_comments
         jsonb changes
         boolean report_owner_changed
         timestamp edit_date
@@ -92,13 +102,18 @@ erDiagram
 
 ## Tables
 
+> Types below are written as `timestamp` for brevity, but knex's `table.timestamp()` creates
+> **`timestamp with time zone`** on Postgres. Every timestamp column in this schema is `timestamptz`.
+> The published schema report shows the real types.
+
+
 ### `report`
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | `id` | serial | PK (constraint is named `pk_form` — the table was once called `form`). |
 | `form_response` | jsonb | The whole payload. See [report-payload.md](report-payload.md). |
-| `user_id` | varchar(32) | Reporter's HMPPS username. Not null. |
+| `user_id` | varchar(32) | Reporter's HMPPS username. **Nullable** in the database: `20190626000000_form_db.js` altered the column without restating `.notNullable()`, so knex dropped the constraint. Always populated in practice. |
 | `sequence_no` | integer | Not null, default 1. Computed as `MAX(sequence_no) + 1` for that user and booking. |
 | `booking_id` | bigint | Not null, default -1. NOMIS booking id. |
 | `created_date` | timestamp | Not null, default `now(6)`. |

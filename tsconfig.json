@@ -18,6 +18,6 @@
     "baseUrl": "",
     "types": ["node", "jest", "mocha", "cypress"]
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "cypress.config.ts", "dist", "coverage"],
+  "exclude": ["node_modules", "assets/**/*.js", "integration-tests", "db-tooling", "cypress.config.ts", "dist", "coverage"],
   "include": ["**/*.js", "**/*.ts"]
 }

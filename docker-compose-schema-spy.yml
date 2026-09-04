@@ -1,0 +1,29 @@
+# Disposable database for building the data dictionary. Nothing in it survives the run.
+#
+# Port 5432 with database/user/password all "use-of-force" is deliberate: those are the defaults in
+# server/config.ts, so scripts/migrate-schema-spy.js, the db-tooling tests and
+# scripts/generate-data-dictionary.sh all reach this container with no environment set.
+#
+# Stop docker-compose.test.yml first if it is running - it also binds 5432. That clash fails safely
+# rather than silently, because its database is called use-of-force-int, so a default connection gets
+# "database use-of-force does not exist" instead of writing to the wrong place.
+services:
+  postgres:
+    image: postgres:16.4
+    networks:
+      - hmpps_schema_spy
+    container_name: use-of-force-schema-spy-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=use-of-force
+      - POSTGRES_USER=use-of-force
+      - POSTGRES_PASSWORD=use-of-force
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "use-of-force", "-d", "use-of-force"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+networks:
+  hmpps_schema_spy:

@@ -22,6 +22,7 @@ report → data model**. The rest are reference.
 | [architecture.md](architecture.md) | You need the shape of the app — layers, middleware, auth, which upstream APIs it calls. |
 | [creating-and-editing-a-report.md](creating-and-editing-a-report.md) | You are about to change a form page, add a question, or touch the coordinator edit flow. |
 | [data-model.md](data-model.md) | You are writing a query or a migration, or wondering why a row you deleted is still there. |
+| [Data dictionary](https://ministryofjustice.github.io/use-of-force/schema-spy-report/) | You want the published schema report, per-column descriptions and data sensitivity classifications. |
 | [report-payload.md](report-payload.md) | You need to know what is actually inside `report.form_response`. |
 | [process-flows.md](process-flows.md) | You need the report and statement lifecycles, or the reminder job's behaviour. |
 | [developer-tips.md](developer-tips.md) | You want the environment variables, the npm scripts, debugging recipes, or the domain glossary. |
