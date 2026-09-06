@@ -66,7 +66,7 @@ jobs:
       # Same cache key as build.yml, which this job's needs: chain guarantees has already run.
       - name: restore cache
         id: restore-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         env:
           cache-name: node-modules
         with:
