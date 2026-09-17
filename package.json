@@ -203,7 +203,7 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "qs": "6.15.3",
+    "qs": "6.16.0",
     "@cypress/request": {
       "uuid": "14.0.2"
     },
