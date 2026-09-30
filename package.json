@@ -221,6 +221,7 @@
     "tmp": "0.2.7",
     "mocha": {
       "serialize-javascript": "7.1.0"
-    }
+    },
+    "proxy-addr": "2.0.8"
   }
 }
