@@ -27,7 +27,7 @@
         Select who you want to add.
       </p>
       <p>
-        You might need to contact the staff member to confirm which email address belongs to them.
+        If you're unsure of the member of staff's details, contact your local administrator to confirm which account they use.
       </p>
       {% set rows = [] %}
       {% for item in staff %}
@@ -38,10 +38,16 @@
           username: item.username,
           prison: item.prison | default('None', true),
           email: item.email | default('No email address', true),
+          active: item.active,
           id: 'user-' + loop.index,
           attributes: { 'data-qa': item.username }
           }
       ), rows) %}
+      {% endfor %}
+      {% for item in rows %}
+        {% for key, value in item %}
+          <p>{{ key }}: {{ value }}</p>
+        {% endfor %}
       {% endfor %}
       <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
         <span class="user-heading govuk-label--s">Name</span>
@@ -54,6 +60,9 @@
       </div>
       <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">  
         <span class="email govuk-label--s">Email address</span>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
+        <span class="account-status govuk-label--s">Account status</span>
       </div>
 
         <div class="govuk-grid-column-one-quarter" id="select-staff">  
@@ -83,6 +92,18 @@
           {% for item in rows %}
             <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
               <label class="staff-match" data-qa="email-{{loop.index0}}" for="{{item.id}}">{{item.email}}</label>
+            </p>
+          {% endfor %}
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          {% for item in rows %}
+            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
+              <strong
+                class="govuk-tag govuk-tag--{{ 'green' if item.active else 'pink' }}"
+                data-qa="status-{{loop.index0}}"
+              >
+                {{ 'Active' if item.active else 'Inactive' }}
+              </strong>
             </p>
           {% endfor %}
         </div>

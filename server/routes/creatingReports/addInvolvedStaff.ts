@@ -204,6 +204,7 @@ export default class AddInvolvedStaffRoutes {
       lastName,
     )
 
+    console.log(JSON.stringify(staff, null, 2))
     return res.render('formPages/addingStaff/select-staff-member', {
       bookingId,
       firstName,
