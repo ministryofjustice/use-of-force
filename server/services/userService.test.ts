@@ -164,11 +164,20 @@ describe('findUsersWithPrisons', () => {
     }
 
     manageUsersApiClient.findUsers.mockResolvedValue([user1])
+    manageUsersApiClient.getUsers.mockResolvedValue([
+      {
+        username: 'Bob',
+        name: 'Bob Smith',
+        staffId: 1,
+        activeCaseLoadId: 'MDI',
+        active: true,
+      },
+    ])
     prisonClient.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
 
     const result = await service.findUsersWithPrisons(token, 'MDI', 'Bob', 'Smith')
 
-    expect(result).toEqual([{ ...user1, prison: 'Moorland (HMP)' }])
+    expect(result).toEqual([{ ...user1, active: true, prison: 'Moorland (HMP)' }])
   })
 })
 

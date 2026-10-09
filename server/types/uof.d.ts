@@ -33,6 +33,7 @@ export type FoundUserResult = {
   name: string
   activeCaseLoadId?: string // not present for new users or having active caseload removed
   staffId: number
+  active?: boolean
 }
 
 export type UserWithPrison = FoundUserResult & { prison?: string }
