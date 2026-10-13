@@ -7,19 +7,15 @@
 {% set pageTitle = 'There is more than 1 person with that name' %}
 
 {% block content %}
-<form method="post">
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-  <input type="hidden" name="firstName" value="{{ firstName }}" />
-  <input type="hidden" name="lastName" value="{{ lastName }}" />
   <div class="govuk-grid-row govuk-body">
     {% if errors.length > 0 %}
-    {{
-      govukErrorSummary({
-        titleText: 'There is a problem',
-        errorList: errors,
-        attributes: { 'data-qa-errors': true }
-      })
-    }}
+      {{
+        govukErrorSummary({
+          titleText: 'There is a problem',
+          errorList: errors,
+          attributes: { 'data-qa-errors': true }
+        })
+      }}
     {% endif %}
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
@@ -29,89 +25,50 @@
       <p>
         If you're unsure of the member of staff's details, contact your local administrator to confirm which account they use.
       </p>
-      {% set rows = [] %}
-      {% for item in staff %}
-      {% set rows = (rows.push(
-          {
-          html: item.name,
-          value: item.username,
-          username: item.username,
-          prison: item.prison | default('None', true),
-          email: item.email | default('No email address', true),
-          active: item.active,
-          id: 'user-' + loop.index,
-          attributes: { 'data-qa': item.username }
-          }
-      ), rows) %}
-      {% endfor %}
-      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
-        <span class="user-heading govuk-label--s">Name</span>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
-        <span class="caseload govuk-label--s">Location</span>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
-        <span class="user-id govuk-label--s">User ID</span>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
-        <span class="email govuk-label--s">Email address</span>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-2">
-        <span class="account-status govuk-label--s">Account status</span>
-      </div>
 
-        <div class="govuk-grid-column-one-quarter" id="select-staff">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Name</th>
+            <th scope="col" class="govuk-table__header">Location</th>
+            <th scope="col" class="govuk-table__header">User ID</th>
+            <th scope="col" class="govuk-table__header">Email address</th>
+            <th scope="col" class="govuk-table__header">Account status</th>
+            <th scope="col" class="govuk-table__header govuk-!-text-align-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for item in staff %}
+            <tr class="govuk-table__row" data-qa="staff-row-{{ item.username }}">
+              <td class="govuk-table__cell" data-qa="name-{{ item.username }}">{{ item.name }}</td>
+              <td class="govuk-table__cell" data-qa="prison-{{ item.username }}">{{ item.prison | default('None', true) }}</td>
+              <td class="govuk-table__cell" data-qa="username-{{ item.username }}">{{ item.username }}</td>
+              <td class="govuk-table__cell" data-qa="email-{{ item.username }}">{{ item.email | default('No email address', true) }}</td>
+              <td class="govuk-table__cell" data-qa="status-{{ item.username }}">
+                <strong class="govuk-tag govuk-tag--{{ 'green' if item.active else 'pink' }}">
+                  {{ 'Active' if item.active else 'Inactive' }}
+                </strong>
+              </td>
+              <td class="govuk-table__cell govuk-!-text-align-right">
+                <form method="post">
+                  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                  <input type="hidden" name="firstName" value="{{ firstName }}" />
+                  <input type="hidden" name="lastName" value="{{ lastName }}" />
+                  <input type="hidden" name="selectedStaffUsername" value="{{ item.username }}" />
 
-          {{ govukRadios({
-            idPrefix: "select-staff",
-            name: "selectedStaffUsername",
-            items: rows
-          }) }}
-        </div>
-
-        <div class="govuk-grid-column-one-quarter">
-          {% for item in rows %}
-            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
-              <label class="staff-match" data-qa="prison-{{loop.index0}}" for="{{item.id}}">{{item.prison}}</label>
-            </p>
+                  {{
+                    govukButton({
+                      text: 'Add ' + item.name,
+                      classes: 'govuk-button--secondary',
+                      attributes: { 'data-qa': 'add-' + item.username }
+                    })
+                  }}
+                </form>
+              </td>
+            </tr>
           {% endfor %}
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          {% for item in rows %}
-            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
-              <label class="staff-match" data-qa="username-{{loop.index0}}" for="{{item.id}}">{{item.username}}</label>
-            </p>
-          {% endfor %}
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          {% for item in rows %}
-            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
-              <label class="staff-match" data-qa="email-{{loop.index0}}" for="{{item.id}}">{{item.email}}</label>
-            </p>
-          {% endfor %}
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          {% for item in rows %}
-            <p class="found-staff-detail govuk-!-margin-bottom-0 govuk-!-margin-top-0">
-              <strong
-                class="govuk-tag govuk-tag--{{ 'green' if item.active else 'pink' }}"
-                data-qa="status-{{loop.index0}}"
-              >
-                {{ 'Active' if item.active else 'Inactive' }}
-              </strong>
-            </p>
-          {% endfor %}
-        </div>
-      <br/>
+        </tbody>
+      </table>
     </div>
   </div>
-      {{
-        govukButton({
-          text: "Continue",
-          value: 'continue',
-          attributes: {'data-qa': 'continue'}
-        })
-      }}
-</form>
-
 {% endblock %}
