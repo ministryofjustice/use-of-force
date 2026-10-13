@@ -101,9 +101,6 @@ export default class UserService {
       const users = await this.manageUsersClient.findUsers(firstName, lastName, token)
       const usernames = users.map(user => user.username)
 
-      // const userDetails = await this.manageUsersClient.getUsers(usernames, token)
-      // const prisons = await this.prisonClient.getPrisons(token)
-
       const [userDetails, prisons] = await Promise.all([
         this.manageUsersClient.getUsers(usernames, token),
         this.prisonClient.getPrisons(token),
