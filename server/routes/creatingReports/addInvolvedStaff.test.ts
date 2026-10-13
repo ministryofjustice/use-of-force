@@ -299,7 +299,8 @@ describe('multiple results', () => {
     return request(app)
       .get(paths.selectStaffMember(REPORT_ID))
       .expect('Content-Type', /html/)
-      .expect(() => {
+      .expect(res => {
+        expect(res.text).toContain('There is more than 1 person with that name')
         expect(draftReportService.findUsers).toHaveBeenCalledWith('user1-system-token', 'MDI', 'Bob', 'Smith')
       })
   })

@@ -993,8 +993,6 @@ export default class CoordinatorRoutes {
         page,
       )
       content = userSearchResults?.content || []
-      console.log('edit route userSearchResults:', JSON.stringify(userSearchResults, null, 2))
-      console.log('edit route content:', JSON.stringify(content, null, 2))
     }
 
     await Promise.all(
