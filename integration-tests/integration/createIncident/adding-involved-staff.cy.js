@@ -172,30 +172,47 @@ context('Adding involved staff', () => {
         },
       ],
     })
+    cy.task('stubGetUser', {
+      username: 'USER-1',
+      response: {
+        active: false,
+        staffId: 1,
+        activeCaseLoadId: 'MDI',
+      },
+    })
+    cy.task('stubGetUser', {
+      username: 'JO_JONES',
+      response: {
+        active: true,
+        staffId: 2,
+        activeCaseLoadId: 'RSI',
+      },
+    })
     whatIsStaffMembersNamePage.clickContinue()
 
     const selectStaffMemberPage = SelectStaffMemberPage.verifyOnPage()
     {
-      const { prison, username, email } = selectStaffMemberPage.match(0)
+      const { prison, username, email, status } = selectStaffMemberPage.row('USER-1')
       prison().should('contain', 'HMP Moorland')
       username().should('contain', 'USER-1')
       email().should('contain', 'joJones2@gov.uk')
+      status().should('contain', 'Inactive')
     }
     {
-      const { prison, username, email } = selectStaffMemberPage.match(1)
+      const { prison, username, email, status } = selectStaffMemberPage.row('JO_JONES')
       prison().should('contain', 'HMP Risley')
       username().should('contain', 'JO_JONES')
       email().should('contain', 'joJones1@gov.uk')
+      status().should('contain', 'Active')
     }
 
-    selectStaffMemberPage.select('JO_JONES').click()
-    selectStaffMemberPage.clickContinue()
+    selectStaffMemberPage.add('JO_JONES').click()
 
     staffInvolvedPage = StaffInvolvedPage.verifyOnPage()
     staffInvolvedPage.presentStaff().then(staff => {
       expect(staff).to.deep.equal([
         { name: 'TEST_USER name', prison: 'HMP Moorland', emailAddress: 'TEST_USER@gov.uk', canDelete: false },
-        { name: 'JO_JONES name', prison: 'HMP Moorland', emailAddress: 'JO_JONES@gov.uk', canDelete: true },
+        { name: 'JO_JONES name', prison: 'HMP Risley', emailAddress: 'JO_JONES@gov.uk', canDelete: true },
       ])
     })
   })
