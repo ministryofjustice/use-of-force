@@ -203,7 +203,6 @@ export default class AddInvolvedStaffRoutes {
       firstName,
       lastName,
     )
-
     return res.render('formPages/addingStaff/select-staff-member', {
       bookingId,
       firstName,

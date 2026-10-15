@@ -99,12 +99,19 @@ export default class UserService {
   ): Promise<UserWithPrison[]> {
     try {
       const users = await this.manageUsersClient.findUsers(firstName, lastName, token)
+      const usernames = users.map(user => user.username)
 
-      const prisons = await this.prisonClient.getPrisons(token)
+      const [userDetails, prisons] = await Promise.all([
+        this.manageUsersClient.getUsers(usernames, token),
+        this.prisonClient.getPrisons(token),
+      ])
+
+      const userDetailsByUsername = new Map(userDetails.map(user => [user.username, user]))
 
       return users
         .map(user => ({
           ...user,
+          active: userDetailsByUsername.get(user.username)?.active,
           prison: prisons.find(p => p.agencyId === user.activeCaseLoadId)?.description,
         }))
         .sort(this.comparesUsers(agencyId))

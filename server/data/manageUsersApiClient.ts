@@ -13,9 +13,11 @@ export type EmailResult = {
 }
 
 export type UserResult = {
+  username?: string
   name: string
   activeCaseLoadId?: string
   staffId: number
+  active?: boolean
 }
 export default class ManageUsersApiClient extends BaseApiClient {
   protected static config() {

@@ -1,15 +1,14 @@
 import page from '../page'
 
-const whatIsStaffMembersNamePage = () =>
+const selectStaffMemberPage = () =>
   page('There is more than 1 person with that name', {
-    select: username => cy.get(`[data-qa="${username}"]`),
-    clickCancel: () => cy.get('[data-qa="cancel"]').click(),
-    clickContinue: () => cy.get('[data-qa="continue"]').click(),
-    match: i => ({
-      username: () => cy.get(`[data-qa="username-${i}"]`),
-      prison: () => cy.get(`[data-qa="prison-${i}"]`),
-      email: () => cy.get(`[data-qa="email-${i}"]`),
+    add: username => cy.get(`[data-qa="add-${username}"]`),
+    row: username => ({
+      username: () => cy.get(`[data-qa="username-${username}"]`),
+      prison: () => cy.get(`[data-qa="prison-${username}"]`),
+      email: () => cy.get(`[data-qa="email-${username}"]`),
+      status: () => cy.get(`[data-qa="status-${username}"]`),
     }),
   })
 
-module.exports = { verifyOnPage: whatIsStaffMembersNamePage }
+module.exports = { verifyOnPage: selectStaffMemberPage }
