@@ -1,5 +1,3 @@
-import { buildAppInsightsClient, initialiseAppInsights } from '../utils/azureAppInsights'
-
 import ReportLogClient from './reportLogClient'
 import PrisonerSearchClient from './prisonerSearchClient'
 import IncidentClient from './incidentClient'
@@ -21,8 +19,6 @@ import ManageUsersApiClient from './manageUsersApiClient'
 import InMemoryTokenStore from './tokenStore/inMemoryTokenStore'
 
 const applicationInfo = applicationInfoSupplier()
-initialiseAppInsights()
-const telemetryClient = buildAppInsightsClient(applicationInfo)
 
 const reportLogClient = new ReportLogClient()
 const incidentClient = new IncidentClient(db.query, db.inTransaction, reportLogClient)
@@ -33,7 +29,6 @@ export const dataAccess = {
   applicationInfo,
   statementsClient,
   incidentClient,
-  telemetryClient,
   draftReportClient,
   reportLogClient,
   hmppsAuthClient: new HmppsAuthClient(
