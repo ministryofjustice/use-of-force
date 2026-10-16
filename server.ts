@@ -1,9 +1,10 @@
+/* eslint-disable import/first, import/order */
 /*
- * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
- * In particular, applicationinsights automatically collects bunyan logs
+ * Do telemetry first as OpenTelemetry needs to instrument modules (express, http, bunyan etc.) before they're loaded
  */
-// Require app insights before anything else to allow for instrumentation of bunyan and express
-import 'applicationinsights'
+import { flushTelemetry, initialiseAppInsights } from './server/utils/azureAppInsights'
+
+initialiseAppInsights()
 
 import knex from 'knex'
 import knexfile from './knexfile'
@@ -35,6 +36,11 @@ const init = {
 
 log.debug('Migration start')
 const knex1 = knex(init)
+process.on('SIGTERM', async () => {
+  await flushTelemetry()
+  process.exit(0)
+})
+
 knex1.migrate.latest().then(() => {
   log.debug('Migration finished')
   app.listen(app.get('port'), () => {

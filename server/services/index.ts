@@ -42,11 +42,10 @@ export const services = () => {
     feComponentsClient,
     prisonerSearchApiClient,
     statementsClient,
-    telemetryClient,
     reportLogClient,
   } = dataAccess
 
-  const eventPublisher = EventPublisher(telemetryClient)
+  const eventPublisher = EventPublisher()
   const authService = new AuthService(hmppsAuthClient)
   const userService = new UserService(hmppsManageUsersApiClient, prisonApiClient)
   const notificationService = notificationServiceFactory(eventPublisher)

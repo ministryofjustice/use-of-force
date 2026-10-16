@@ -29,8 +29,7 @@ npm run setup
 **Use `npm run setup`, not `npm install`.** `.npmrc` sets `ignore-scripts = true`, so package install
 scripts are blocked by default. `npm run setup` runs `npm ci` and then
 `hmpps-npm-script-run-allowlist`, which executes install scripts only for the packages listed in
-`.allowed-scripts.mjs` (cypress, dtrace-provider, @parcel/watcher, fsevents, unrs-resolver,
-applicationinsights-native-metrics). Plain `npm install` skips that step and leaves cypress without
+`.allowed-scripts.mjs` (cypress, dtrace-provider, @parcel/watcher, fsevents, unrs-resolver). Plain `npm install` skips that step and leaves cypress without
 its binary.
 
 > Those allowlist entries are **exact version pins**. When Renovate bumps one of those packages,
