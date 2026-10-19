@@ -36,10 +36,14 @@ const init = {
 
 log.debug('Migration start')
 const knex1 = knex(init)
-process.on('SIGTERM', async () => {
+
+const shutdown = async () => {
   await flushTelemetry()
   process.exit(0)
-})
+}
+
+process.on('SIGTERM', () => shutdown())
+process.on('SIGINT', () => shutdown())
 
 knex1.migrate.latest().then(() => {
   log.debug('Migration finished')
