@@ -120,8 +120,9 @@ Note the two different "config" concepts: `server/config.ts` is environment conf
 
 `server.ts` does three things, in order:
 
-1. imports `applicationinsights` **first**, so it can instrument bunyan and express before anything
-   else is required
+1. initialises telemetry (`@ministryofjustice/hmpps-azure-telemetry`, via
+   `server/utils/azureAppInsights.ts`) **first**, so OpenTelemetry can instrument bunyan and express
+   before anything else is required
 2. runs `knex.migrate.latest()`
 3. only then calls `app.listen()`
 

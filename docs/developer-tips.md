@@ -202,7 +202,7 @@ check before assuming a modern API is available:
 | knex | 2.x | Migrations only. A major behind. |
 | `@hapi/joi` | 17 | The deprecated package name; current is `joi`. |
 | helmet | 6 | |
-| applicationinsights | 2 | Not v3. |
+| `@ministryofjustice/hmpps-azure-telemetry` | 1.1 | OpenTelemetry-based; replaces the old `applicationinsights` v2 SDK. |
 | eslint | 8 + typescript-eslint 5 | Legacy `.eslintrc.json`, not flat config. |
 | `@types/node` | 18 | While running Node 22+. |
 | moment **and** date-fns | both present | New code should use date-fns. |

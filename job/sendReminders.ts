@@ -1,11 +1,10 @@
 /* eslint-disable import/first */
 /*
- * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
- * In particular, applicationinsights automatically collects bunyan logs
+ * Do telemetry first as OpenTelemetry needs to instrument modules (http, bunyan etc.) before they're loaded
  */
-import { initialiseAppInsights, buildAppInsightsClient } from '../server/utils/azureAppInsights'
+import { flushTelemetry, initialiseAppInsights } from '../server/utils/azureAppInsights'
 
-initialiseAppInsights()
+initialiseAppInsights('use-of-force-reminder-job')
 
 import StatementsClient from '../server/data/statementsClient'
 import IncidentClient from '../server/data/incidentClient'
@@ -20,16 +19,13 @@ import ReminderSender from './reminders/reminderSender'
 import eventPublisherFactory from '../server/services/eventPublisher'
 import ReportLogClient from '../server/data/reportLogClient'
 import { HmppsAuthClient, ManageUsersApiClient } from '../server/data'
-import applicationInfoSupplier from '../server/applicationInfo'
 import config from '../server/config'
 import RedisTokenStore from '../server/data/tokenStore/redisTokenStore'
 import { redisClient } from '../server/data/redisClient'
 import InMemoryTokenStore from '../server/data/tokenStore/inMemoryTokenStore'
 import AuthService from '../server/services/authService'
 
-const eventPublisher = eventPublisherFactory(
-  buildAppInsightsClient(applicationInfoSupplier(), 'use-of-force-reminder-job'),
-)
+const eventPublisher = eventPublisherFactory()
 
 const statementClient = new StatementsClient(db.query)
 const reportLogClient = new ReportLogClient()
@@ -52,4 +48,6 @@ async function runJob() {
   eventPublisher.publish({ name: 'FinishedSendingReminders', properties: { totalSent }, detail: null })
 }
 
-runJob().catch(error => logger.error(error, 'Problem polling for reminders'))
+runJob()
+  .catch(error => logger.error(error, 'Problem polling for reminders'))
+  .finally(() => flushTelemetry())

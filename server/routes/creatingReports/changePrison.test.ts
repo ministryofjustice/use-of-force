@@ -104,6 +104,7 @@ describe('POST /prison-of-incident', () => {
             lastName: 'last',
             token: 'token',
             userId: 'id',
+            userUuid: '11111111-1111-1111-1111-111111111111',
             username: 'user1',
           },
           -19,

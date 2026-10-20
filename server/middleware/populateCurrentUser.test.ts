@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 import populateCurrentUser from './populateCurrentUser'
 import UserService from '../services/userService'
 import { CaseLoad, UserDetail } from '../data/prisonClientTypes'
@@ -55,8 +56,40 @@ describe('populateCurrentUser', () => {
       displayName: 'Jo Smith',
       displayNameInitial: 'J. Smith',
       activeCaseLoad: { caseLoadId: '2', description: 'Leeds' },
+      userId: undefined,
+      userUuid: undefined,
+      authSource: undefined,
       token: 'token-1',
     })
+  })
+
+  test('Should add userId, userUuid and authSource from the token', async () => {
+    const token = jwt.sign(
+      { user_id: '3', user_uuid: '11111111-1111-1111-1111-111111111111', auth_source: 'nomis' },
+      'secret',
+    )
+    res = { locals: { user: { token } } }
+
+    userService.getSelf.mockResolvedValue({
+      staffId: 3,
+      username: 'jouser',
+      firstName: 'Jo',
+      lastName: 'Smith',
+      displayName: 'Jo Smith',
+      displayNameInitial: 'J. Smith',
+      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
+    })
+    await populateCurrentUser(userService)(req, res, next)
+
+    expect(res.locals.user).toEqual(
+      expect.objectContaining({
+        userId: '3',
+        userUuid: '11111111-1111-1111-1111-111111111111',
+        authSource: 'nomis',
+        username: 'jouser',
+        token,
+      }),
+    )
   })
 
   test('Should log info if prison user not present', async () => {

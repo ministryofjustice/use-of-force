@@ -7,6 +7,7 @@ import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
 import crypto from 'crypto'
+import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
 import setUpCsrf from './middleware/setUpCsrf'
 import createRouter from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -230,6 +231,11 @@ export default function createApp(services: Services): Express {
   )
 
   app.use(populateCurrentUser(services.userService))
+  app.use(
+    telemetryMiddleware.addUserMetadataToTelemetry({
+      getAttributes: (req: Request) => ({ username: req.user?.username }),
+    }),
+  )
   app.use(refreshSystemToken(services))
 
   app.use(unauthenticatedRoutes(services))

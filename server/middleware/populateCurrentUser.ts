@@ -1,6 +1,22 @@
 import { NextFunction, Request, Response } from 'express'
+import { jwtDecode } from 'jwt-decode'
+import { UUID } from 'crypto'
 import logger from '../../log'
 import UserService from '../services/userService'
+
+type TokenClaims = {
+  user_id?: string
+  user_uuid?: UUID
+  auth_source?: string
+}
+
+const decodeTokenClaims = (token: string): TokenClaims => {
+  try {
+    return jwtDecode<TokenClaims>(token)
+  } catch {
+    return {}
+  }
+}
 
 export default (userService: UserService) =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -13,7 +29,12 @@ export default (userService: UserService) =>
       const user = res.locals.user && (await userService.getSelf(res.locals.user.token))
 
       if (user) {
-        res.locals.user = { ...user, ...res.locals.user }
+        const {
+          user_id: userId,
+          user_uuid: userUuid,
+          auth_source: authSource,
+        } = decodeTokenClaims(res.locals.user.token)
+        res.locals.user = { ...user, userId, userUuid, authSource, ...res.locals.user }
       } else {
         logger.info('No user available')
       }
