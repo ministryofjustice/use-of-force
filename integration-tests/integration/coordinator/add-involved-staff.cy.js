@@ -110,7 +110,10 @@ context('A coordinator manages involved staff by editing a submitted report', ()
     staffInvolvedSearchPage.getRowAndCol(2, 1).should('contain.text', 'Tom Jones')
     staffInvolvedSearchPage.getRowAndCol(2, 3).should('contain.text', 'B_BCD')
     staffInvolvedSearchPage.getRowAndCol(2, 5).should('contain.text', 'Inactive')
-    staffInvolvedSearchPage.getRowAndColTag(2, 5).should('have.class', 'govuk-tag').and('have.class', 'govuk-tag--pink')
+    staffInvolvedSearchPage
+      .getRowAndColTag(2, 5)
+      .should('have.class', 'govuk-tag')
+      .and('have.class', 'govuk-tag--magenta')
 
     staffInvolvedSearchPage.getRowAndCol(1, 6).click()
     const addNewStaffInvolvedPage = AddNewStaffInvolvedPage.verifyOnPage()

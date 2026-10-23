@@ -1784,10 +1784,7 @@ export interface components {
       usage?: components['schemas']['NonResidentialUsageDto'][]
       /** @description Accommodation Types */
       accommodationTypes?: (
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
+        'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
       )[]
       /** @description Specialist Cell Types */
       specialistCellTypes?: (
@@ -2063,10 +2060,7 @@ export interface components {
         usage?: components['schemas']['NonResidentialUsageDto'][]
         /** @description Accommodation Types */
         accommodationTypes?: (
-          | 'CARE_AND_SEPARATION'
-          | 'HEALTHCARE_INPATIENTS'
-          | 'NORMAL_ACCOMMODATION'
-          | 'OTHER_NON_RESIDENTIAL'
+          'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
         )[]
         /** @description Specialist Cell Types */
         specialistCellTypes?: (
@@ -3300,10 +3294,7 @@ export interface components {
        * @enum {string}
        */
       accommodationType:
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
+        'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
       /**
        * @description Location Type
        * @example CELL
@@ -3519,10 +3510,7 @@ export interface components {
        * @enum {string}
        */
       accommodationType:
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
+        'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
       cells: components['schemas']['NewCellRequest'][]
     }
     LevelAboveCells: {
@@ -3627,10 +3615,7 @@ export interface components {
        * @enum {string}
        */
       accommodationType?:
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
+        'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
       /** @description used For types */
       usedFor?: (
         | 'CLOSE_SUPERVISION_CENTRE'
@@ -4328,10 +4313,7 @@ export interface components {
         usage?: components['schemas']['NonResidentialUsageDto'][]
         /** @description Accommodation Types */
         accommodationTypes?: (
-          | 'CARE_AND_SEPARATION'
-          | 'HEALTHCARE_INPATIENTS'
-          | 'NORMAL_ACCOMMODATION'
-          | 'OTHER_NON_RESIDENTIAL'
+          'CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL'
         )[]
         /** @description Specialist Cell Types */
         specialistCellTypes?: (
@@ -4917,13 +4899,7 @@ export interface components {
     Specification: {
       /** @enum {string} */
       template:
-        | 'list'
-        | 'list-section'
-        | 'list-tab'
-        | 'summary'
-        | 'summary-section'
-        | 'parent-child'
-        | 'parent-child-section'
+        'list' | 'list-section' | 'list-tab' | 'summary' | 'summary-section' | 'parent-child' | 'parent-child-section'
       fields: components['schemas']['FieldDefinition'][]
       sections: string[]
     }

@@ -42,7 +42,7 @@ div.govuk-width-container {
 }
 
 .app-task-list__item {
-  border-bottom: 1px solid $govuk-border-colour;
+  border-bottom: 1px solid govuk-functional-colour(border);
   margin-bottom: 0 !important;
   padding-top: govuk-spacing(2);
   padding-bottom: govuk-spacing(2);
@@ -50,7 +50,7 @@ div.govuk-width-container {
 }
 
 .app-task-list__item:first-child {
-  border-top: 1px solid $govuk-border-colour;
+  border-top: 1px solid govuk-functional-colour(border);
 }
 
 .app-task-list__task-name {
@@ -164,7 +164,7 @@ div.govuk-width-container {
 .search-results {
   tbody {
     tr:nth-child(odd) {
-      background: govuk-colour("light-grey");
+      background: govuk-colour("black", $variant: "tint-95");
     }
   }
 }
@@ -176,7 +176,7 @@ div.govuk-width-container {
 .sortableLink,
 .sortableLink:hover {
   text-decoration: none;
-  color: $govuk-link-colour;
+  color: govuk-functional-colour(link);
 }
 
 .arrow-up {
@@ -228,7 +228,7 @@ dt.summary-list__key__wider {
 }
 
 .incident-search {
-  background-color: govuk-colour("light-grey");
+  background-color: govuk-colour("black", $variant: "tint-95");
   padding: govuk-spacing(3);
   margin-bottom: govuk-spacing(7);
 
@@ -318,7 +318,7 @@ dt.summary-list__key__wider {
 }
 
 .ui-state-active {
-  background: $govuk-brand-colour !important;
+  background: govuk-functional-colour(brand) !important;
   color: govuk-colour("white") !important;
   border-radius: 15px !important;
   padding: 2px !important;
@@ -327,7 +327,7 @@ dt.summary-list__key__wider {
 }
 
 .ui-state-highlight {
-  border: 1px solid govuk-colour("light-blue") !important;
+  border: 1px solid govuk-colour("blue", $variant: "tint-25") !important;
   border-radius: 15px !important;
   padding: 2px !important;
   width: 25px !important;
@@ -445,7 +445,7 @@ dt.summary-list__key__wider {
 }
 
 .summary-card {
-  border: 1px solid govuk-colour("mid-grey");
+  border: 1px solid govuk-colour("black", $variant: "tint-80");
   margin-bottom: 30px;
 
   h2 {
@@ -454,7 +454,7 @@ dt.summary-list__key__wider {
 
   &__title-wrapper h2 {
     border-bottom: 1px solid transparent;
-    background-color: govuk-colour("light-grey");
+    background-color: govuk-colour("black", $variant: "tint-95");
     padding: 15px 20px;
     margin-top: 0 !important;
     font-size: 24px;
@@ -501,7 +501,7 @@ dt.summary-list__key__wider {
 }
 
 .edit-history-table .border-bottom-grey tr:last-child {
-  border-bottom: 1px solid govuk-colour("mid-grey");
+  border-bottom: 1px solid govuk-colour("black", $variant: "tint-80");
 }
 
 .edit-history-table .govuk-table__cell {

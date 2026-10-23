@@ -45,7 +45,7 @@
               <td class="govuk-table__cell" data-qa="username-{{ item.username }}">{{ item.username }}</td>
               <td class="govuk-table__cell" data-qa="email-{{ item.username }}">{{ item.email | default('No email address', true) }}</td>
               <td class="govuk-table__cell" data-qa="status-{{ item.username }}">
-                <strong class="govuk-tag govuk-tag--{{ 'green' if item.active else 'pink' }}">
+                <strong class="govuk-tag govuk-tag--{{ 'green' if item.active else 'magenta' }}">
                   {{ 'Active' if item.active else 'Inactive' }}
                 </strong>
               </td>

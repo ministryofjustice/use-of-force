@@ -100,7 +100,7 @@ describe(`GET /completed-incidents`, () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          '<a class="moj-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3',
+          '<a class="govuk-link govuk-pagination__link" href="?prisonNumber=A1234AA&amp;reporter=Bob&amp;dateFrom=9%20Jan%202020&amp;dateTo=15%20Jan%202020&amp;prisonerName=Jimmy%20Choo&amp;page=3',
         )
       })
   })
@@ -173,7 +173,7 @@ describe(`GET /not-completed-incidents`, () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('<a class="moj-pagination__link" href="?page=2">')
+        expect(res.text).toContain('<a class="govuk-link govuk-pagination__link" href="?page=2"')
       })
   })
 
@@ -349,7 +349,7 @@ describe('GET /view-statements', () => {
       isVerified: true,
       name: `User ${params.id}`,
       userId: `USER_${params.id}`,
-    } as ReviewerStatementWithComments)
+    }) as ReviewerStatementWithComments
 
   it('should only render submitted statements', async () => {
     userSupplier.mockReturnValue(coordinatorUser)

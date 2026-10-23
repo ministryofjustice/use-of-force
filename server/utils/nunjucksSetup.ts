@@ -202,12 +202,10 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
         count: totalCount,
       },
       previous: previousPage && {
-        text: 'Previous',
         href: urlForPage(previousPage),
       },
       next: nextPage &&
         !(totalPages <= 3 && page === totalPages) && {
-          text: 'Next',
           href: urlForPage(nextPage),
         },
       items,
@@ -274,12 +272,10 @@ export default function configureNunjucks(app: Express.Application): nunjucks.En
         count: totalCount,
       },
       previous: previousPage && {
-        text: 'Previous',
         href: urlForPage(previousPage - 1),
       },
       next: nextPage &&
         !(totalPages <= 3 && page === totalPages) && {
-          text: 'Next',
           href: urlForPage(nextPage),
         },
       items,

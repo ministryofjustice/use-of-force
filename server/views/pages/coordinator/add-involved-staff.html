@@ -1,6 +1,6 @@
 {% extends "../../partials/prisonerBannerLayout.njk" %}
-{% from "govuk/components/button/macro.njk" import govukButton %} 
-{% from "govuk/components/input/macro.njk" import govukInput %} 
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
@@ -20,10 +20,10 @@
         }}
     {% endif %}
     <span class="govuk-caption-xl">Edit a use of force report</span>
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>  
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ pageTitle }}</h1>
     <div class="govuk-grid-row govuk-!-margin-top-7">
         <div class="govuk-grid-column-three-quarters">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2> 
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Search for a member of staff</h2>
             <span class="govuk-caption-m">Search by part of a persons name, their full name, their email address or their user ID</span>
         </div>
         <div class="govuk-grid-column-three-quarters govuk-!-margin-top-6">
@@ -90,7 +90,7 @@
                             <td class="govuk-table__cell">{{ user.activeCaseload.name }}</td>
                             <td class="govuk-table__cell">{{ user.username }}</td>
                             <td class="govuk-table__cell">{{ user.email }}</td>
-                            <td class="govuk-table__cell"> <strong class="govuk-tag govuk-tag--{{ 'green' if user.active else 'pink' }}"> {{ user.active | activeStatus }} </strong></td>
+                            <td class="govuk-table__cell"> <strong class="govuk-tag govuk-tag--{{ 'green' if user.active else 'magenta' }}"> {{ user.active | activeStatus }} </strong></td>
                             <td class="govuk-table__cell govuk-!-text-align-right">
                                 {% if user.isExistingInvolvedStaffMember %}
                                     <span class="govuk-body govuk-!-color-grey-7">Added to report</span>
@@ -111,7 +111,7 @@
                 <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-2 govuk-!-padding-left-0 govuk-!-padding-right-0">
                     {{ mojPagination( data.paginationMeta | toPaginationZeroBased({ username: data.username })) }}
                 </div
-            {% endif %} 
+            {% endif %}
 
         {% endif %}
     </div>
@@ -119,5 +119,5 @@
     <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-4 govuk-!-padding-left-0">
         <a href="/{{ data.reportId }}/edit-report/staff-involved" class="govuk-link govuk-body">Cancel</a>
     </div>
-</div>  
+</div>
 {% endblock %}
