@@ -192,7 +192,7 @@
     "lint-staged": "^17.6.0",
     "mocha": "12.0.3",
     "mocha-junit-reporter": "^2.2.1",
-    "nock": "14.0.17",
+    "nock": "15.0.5",
     "nodemon": "3.1.14",
     "openapi-typescript": "^7.13.0",
     "prettier": "3.9.10",
