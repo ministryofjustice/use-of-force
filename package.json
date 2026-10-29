@@ -18,7 +18,7 @@
     "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice/frontend --load-path=. ./assets/sass/application.scss:./assets/stylesheets/application.css --style compressed",
     "watch-sass": "npm run compile-sass -- --watch",
     "build": "npm run compile-sass && tsc && npm run copy-views",
-    "rebuild": "npm run clean && npm i && npm run build",
+    "rebuild": "npm run clean && npm setup && npm run build",
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 50",
     "lint-fix": "eslint . --cache --max-warnings 0 --fix",
@@ -39,7 +39,7 @@
     "generate-prisoner-search-api-types": "openapi-typescript https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs > ./server/types/prisonerSearchApi/index.d.ts",
     "generate-locations-api-types": "openapi-typescript https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > ./server/types/locationsApi/index.d.ts",
     "generate-manage-users-api-types": "openapi-typescript https://manage-users-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > ./server/types/manageUsersApi/index.d.ts",
-    "setup": "npm ci && hmpps-npm-script-run-allowlist"
+    "setup": "npm ci"
   },
   "engines": {
     "node": "^24",
@@ -162,7 +162,6 @@
   },
   "devDependencies": {
     "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
-    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "3.0.2",
     "@types/bunyan": "^1.8.11",
     "@types/compression": "1.8.1",
@@ -222,5 +221,12 @@
       "serialize-javascript": "7.1.2"
     },
     "proxy-addr": "2.0.8"
+  },
+  "allowScripts": {
+    "cypress@13.17.0": true,
+    "dtrace-provider@0.8.8": false,
+    "@parcel/watcher@2.6.0": true,
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.12.2": true
   }
 }
