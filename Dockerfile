@@ -1,4 +1,10 @@
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine as base
+# Build args available to all stages
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+
+# Stage: build assets
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS build
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -14,13 +20,6 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV GIT_REF=${GIT_REF}
 ENV GIT_BRANCH=${GIT_BRANCH}
 
-# Stage: build assets
-FROM base AS build
-
-ARG BUILD_NUMBER
-ARG GIT_REF
-ARG GIT_BRANCH
-
 RUN apk update && \
         apk upgrade
 RUN apk add --no-cache \
@@ -35,7 +34,8 @@ WORKDIR /app
 RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
         > /app/root.cert
 
-COPY package*.json .allowed-scripts.mjs .npmrc ./
+RUN npm install -g npm@12
+COPY package*.json .npmrc ./
 RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
 ENV NODE_ENV='production'
 
@@ -48,7 +48,8 @@ RUN npm prune --no-audit --no-fund --omit=dev
 
 RUN npm prune --production
 
-FROM base
+# Stage: copy production assets and dependencies
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine-runtime
 
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
@@ -75,4 +76,4 @@ ENV PORT=3000
 EXPOSE 3000
 USER 2000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "dist/server.js" ]
