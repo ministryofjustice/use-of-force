@@ -1,10 +1,8 @@
 name: Security CodeQL actions scan
-
 on:
   workflow_dispatch:
   schedule:
     - cron: "52 8 * * MON-FRI" # Every weekday at 08:52 UTC
-
 jobs:
   security-codeql-actions-check:
     permissions:
@@ -15,5 +13,4 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/security_codeql_actions.yml@v2 # WORKFLOW_VERSION
     with:
       channel_id: ${{ vars.SECURITY_ALERTS_SLACK_CHANNEL_ID || 'NO_SLACK' }}
-    secrets:
-      HMPPS_SRE_SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
+    secrets: inherit
