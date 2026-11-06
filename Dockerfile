@@ -1,10 +1,4 @@
-# Build args available to all stages
-ARG BUILD_NUMBER
-ARG GIT_REF
-ARG GIT_BRANCH
-
-# Stage: build assets
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS build
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -19,6 +13,13 @@ RUN test -n "$GIT_BRANCH" || (echo "GIT_BRANCH not set" && false)
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV GIT_REF=${GIT_REF}
 ENV GIT_BRANCH=${GIT_BRANCH}
+
+# Stage: build assets
+FROM base AS build
+
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
 
 RUN apk update && \
         apk upgrade
@@ -48,8 +49,7 @@ RUN npm prune --no-audit --no-fund --omit=dev
 
 RUN npm prune --production
 
-# Stage: copy production assets and dependencies
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine-runtime
+FROM base
 
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
