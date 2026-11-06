@@ -1,4 +1,4 @@
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
+FROM ghcr.io/ministryofjustice/hmpps-node:26-alpine AS base
 
 ARG BUILD_NUMBER
 ARG GIT_REF
