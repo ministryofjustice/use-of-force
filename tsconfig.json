@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es2021",
-    "lib": ["es2021"],
+    "lib": ["es2022"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist",
