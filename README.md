@@ -142,6 +142,11 @@ npm run start-feature                             # app on port 3007
 npm run int-test                                  # or npm run int-test-ui
 ```
 
+## Support
+
+The Manage Safety team owns this service. Ask questions in the `#manage-safety` Slack channel; developers
+use `#manage-safety-dev`. Raise tickets in the `IR` Jira project.
+
 ## Contributing
 
 Branch from `main` and raise a PR referencing the JIRA number. CI runs build, unit tests, integration
