@@ -4,10 +4,12 @@ helm_deploy*
 README.md
 node_modules
 npm-debug.log
+README.md
 .*
+!.allowed-scripts.mjs
 !.npmrc
 **/*.test.js
 scss-report.txt
 eslint-report.html
 test-report.html
-docker-compose*
+docker-compose.yml
