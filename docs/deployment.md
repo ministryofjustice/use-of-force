@@ -140,9 +140,9 @@ Practical consequences:
   `use-of-force-reminder-job`.
 - **Alerts**: `generic-prometheus-alerts`.
 
-> `alertSeverity` is currently `move-a-prisoner-alerts-nonprod` / `-prod`, so alerts route to the
-> **Move a Prisoner** channels. This needs to change as part of the move to the Manage Safety team —
-> it is a tracked follow-up.
+> `alertSeverity` is currently `move-a-prisoner-alerts-nonprod` / `-prod`, so alerts still route to
+> the **Move a Prisoner** channels. IR-2151 moves them to the Manage Safety channels,
+> `manage-safety-alerts-non-prod` and `manage-safety-alerts-prod`.
 
 ## Docker image
 
