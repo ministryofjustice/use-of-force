@@ -1,4 +1,4 @@
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine as base
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -35,7 +35,8 @@ WORKDIR /app
 RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
         > /app/root.cert
 
-COPY package*.json .allowed-scripts.mjs .npmrc ./
+RUN npm install -g npm@12
+COPY package*.json .npmrc ./
 RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
 ENV NODE_ENV='production'
 
@@ -75,4 +76,4 @@ ENV PORT=3000
 EXPOSE 3000
 USER 2000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "dist/server.js" ]
