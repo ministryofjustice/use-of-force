@@ -37,3 +37,4 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       app_version: ${{ inputs.version }}
+      slack_notification: 'true' # posts to the channel in the (NON)PROD_RELEASES_SLACK_CHANNEL variable, if set
