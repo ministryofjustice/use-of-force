@@ -94,10 +94,11 @@ fails rather than exporting a blank row.
 
 ## Quick start
 
-Requires Node **22** (see `.nvmrc`), Docker, and `gitleaks` on your PATH for the pre-commit hook.
+Requires Node **26** (see `.nvmrc`), npm **12**, Docker, and `gitleaks` on your PATH for the pre-commit hook.
 
 ```bash
 nvm use
+npm install -g npm@12
 npm run setup          # NOT npm install - see below
 docker compose up -d   # postgres on 5433, redis on 6379
 cp .env.example .env
@@ -106,13 +107,12 @@ npm run start:dev
 
 The app runs on <http://localhost:3000>. Sign in with your `_GEN` development credentials.
 
-- `npm run setup`, not `npm install` — `.npmrc` sets `ignore-scripts = true`, and `setup` runs the
-  allowlisted install scripts from `.allowed-scripts.mjs`.
+- `npm run setup` uses `npm ci` to install the locked dependencies. npm 12 enforces the
+  `allowScripts` configuration in `package.json` through `.npmrc`'s `strict-allow-scripts` setting.
 - Development Postgres is published on host port **5433**, but `server/config.ts` defaults `DB_PORT`
   to 5432. `.env.example` sets it correctly.
-- Node version currently differs between `.nvmrc` (22), the Dockerfile (22.12) and `package.json`
-  `engines`. `.nvmrc` is what CI uses. Because `.npmrc` sets `engine-strict = true`, `npm ci` fails
-  outright on a mismatched Node major.
+- `.nvmrc`, the Docker images and `package.json` engines use Node 26. CI reads `.nvmrc`.
+  Because `.npmrc` sets `engine-strict = true`, installation fails on unsupported Node or npm versions.
 
 Entry points:
 

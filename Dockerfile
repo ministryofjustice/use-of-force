@@ -1,4 +1,4 @@
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
+FROM ghcr.io/ministryofjustice/hmpps-node:26-alpine AS build
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -13,13 +13,6 @@ RUN test -n "$GIT_BRANCH" || (echo "GIT_BRANCH not set" && false)
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV GIT_REF=${GIT_REF}
 ENV GIT_BRANCH=${GIT_BRANCH}
-
-# Stage: build assets
-FROM base AS build
-
-ARG BUILD_NUMBER
-ARG GIT_REF
-ARG GIT_BRANCH
 
 RUN apk update && \
         apk upgrade
@@ -46,10 +39,16 @@ RUN npm run record-build-info
 
 RUN npm prune --no-audit --no-fund --omit=dev
 
+FROM ghcr.io/ministryofjustice/hmpps-node:26-alpine-runtime
 
-RUN npm prune --production
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
 
-FROM base
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV GIT_REF=${GIT_REF}
+ENV GIT_BRANCH=${GIT_BRANCH}
+ENV NODE_ENV='production'
 
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
