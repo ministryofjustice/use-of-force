@@ -219,7 +219,6 @@
     "@parcel/watcher@2.6.0": true,
     "dtrace-provider@0.8.8": false,
     "fsevents@2.3.3": true,
-    "fsevents@2.3.2": true,
     "unrs-resolver@1.12.2": true,
     "esbuild@0.28.2": true
   }
