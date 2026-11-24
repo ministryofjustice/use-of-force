@@ -17,6 +17,7 @@ const next = jest.fn()
 describe('feComponentsMiddleware', () => {
   beforeEach(() => {
     jest.resetAllMocks()
+    req = { session: {} }
     res = { locals: { user: {} } } as unknown as Response
     res.locals.user.token = 'token-1'
   })
@@ -36,6 +37,30 @@ describe('feComponentsMiddleware', () => {
       jsIncludes: [],
     })
     expect(next).toHaveBeenCalled()
+  })
+
+  test('Should keep the active caseload from the components response in the session', async () => {
+    const header = { html: '<header></header>', javascript: [], css: [] }
+    const footer = { html: '<footer></footer>', javascript: [], css: [] }
+    const meta = { activeCaseLoad: { caseLoadId: 'LEI' }, caseLoads: [], services: [] }
+    feComponentsService.getFeComponents.mockResolvedValue({ header, footer, meta })
+    req.session.activeCaseLoadId = 'MDI'
+
+    await feComponentsMiddleware(feComponentsService)(req, res, next)
+
+    expect(req.session.activeCaseLoadId).toEqual('LEI')
+    expect(next).toHaveBeenCalled()
+  })
+
+  test('Should leave the session caseload alone when the response has none', async () => {
+    const header = { html: '<header></header>', javascript: [], css: [] }
+    const footer = { html: '<footer></footer>', javascript: [], css: [] }
+    feComponentsService.getFeComponents.mockResolvedValue({ header, footer })
+    req.session.activeCaseLoadId = 'MDI'
+
+    await feComponentsMiddleware(feComponentsService)(req, res, next)
+
+    expect(req.session.activeCaseLoadId).toEqual('MDI')
   })
 
   test('Should log errors', async () => {

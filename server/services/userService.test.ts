@@ -1,6 +1,6 @@
 import UserService from './userService'
 import { PrisonClient, ManageUsersApiClient } from '../data'
-import { UserDetail, CaseLoad, Prison } from '../data/prisonClientTypes'
+import { Prison } from '../data/prisonClientTypes'
 import { UserWithPrison } from '../types/uof'
 
 const token = 'token-1'
@@ -20,42 +20,20 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('getSelf', () => {
-  const user = {
-    staffId: 3,
-    username: 'jouser',
-    firstName: 'Jo',
-    lastName: 'Smith',
-    activeCaseLoadId: '2',
-  } as UserDetail
+describe('getActiveCaseLoadId', () => {
+  it('should return the active caseload from Manage Users', async () => {
+    manageUsersApiClient.getCurrentUser.mockResolvedValue({ name: 'Jo Smith', staffId: 3, activeCaseLoadId: 'LEI' })
 
-  it('should retrieve user details', async () => {
-    prisonClient.getUser.mockResolvedValue(user)
-    prisonClient.getUserCaseLoads.mockResolvedValue([
-      { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
-      { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
-    ])
+    const result = await service.getActiveCaseLoadId(token)
 
-    const result = await service.getSelf(token)
-
-    expect(result).toEqual({
-      ...user,
-      displayName: 'Jo Smith',
-      displayNameInitial: 'J. Smith',
-      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' },
-    })
+    expect(result).toEqual('LEI')
+    expect(manageUsersApiClient.getCurrentUser).toHaveBeenCalledWith(token)
   })
 
-  it('should use the user token', async () => {
-    prisonClient.getUser.mockResolvedValue(user)
-    prisonClient.getUserCaseLoads.mockResolvedValue([
-      { caseLoadId: '1', description: 'Moorland' } as CaseLoad,
-      { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
-    ])
+  it('should return undefined when the user has no active caseload', async () => {
+    manageUsersApiClient.getCurrentUser.mockResolvedValue({ name: 'Jo Smith', staffId: 3 })
 
-    await service.getSelf(token)
-
-    expect(prisonClient.getUser).toHaveBeenCalledWith(token)
+    expect(await service.getActiveCaseLoadId(token)).toBeUndefined()
   })
 })
 

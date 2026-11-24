@@ -1,4 +1,4 @@
-import FeComponentsClient, { AvailableComponent, Component } from '../data/feComponentsClient'
+import FeComponentsClient, { AvailableComponent, Component, FeComponentsMeta } from '../data/feComponentsClient'
 
 export default class FeComponentsService {
   constructor(private readonly feComponentsClient: FeComponentsClient) {}
@@ -6,7 +6,9 @@ export default class FeComponentsService {
   async getFeComponents<T extends AvailableComponent[]>(
     components: T,
     token: string,
-  ): Promise<Record<T[number], Component>> {
-    return this.feComponentsClient.getComponents(components, token)
+  ): Promise<Record<T[number], Component> & { meta?: FeComponentsMeta }> {
+    return this.feComponentsClient.getComponents(components, token) as Promise<
+      Record<T[number], Component> & { meta?: FeComponentsMeta }
+    >
   }
 }

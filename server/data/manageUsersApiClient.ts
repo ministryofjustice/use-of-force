@@ -38,6 +38,10 @@ export default class ManageUsersApiClient extends BaseApiClient {
     }
   }
 
+  async getCurrentUser(token: string): Promise<UserResult> {
+    return ManageUsersApiClient.restClient(token).get({ path: '/users/me' })
+  }
+
   async getUser(username: string, token: string): Promise<UserResult> {
     const path = `/users/${username}`
     return ManageUsersApiClient.restClient(token).get({ path })

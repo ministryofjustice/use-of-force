@@ -236,4 +236,4 @@ Renovate bump to any of them must update that file in the same PR or `npm run se
 | **Relocation** | Where the prisoner was taken afterwards — segregation unit, own cell, and so on. |
 | **Body-worn camera** | Recorded per incident, with camera numbers. |
 | **DPS** | Digital Prison Services, the wider service this sits inside. Older code and docs may say "new NOMIS". |
-| **NOMIS** | The legacy prison system. Still the source of bookings, agencies and caseloads via prison-api. |
+| **NOMIS** | The legacy prison system. Still the source of bookings and agencies via prison-api. |

@@ -23,6 +23,11 @@ module.exports = {
             javascript: ['/common-components/footer.js'],
             css: ['/common-components/footer.css'],
           },
+          meta: {
+            activeCaseLoad: { caseLoadId: 'MDI', description: 'Moorland (HMP & YOI)' },
+            caseLoads: [{ caseLoadId: 'MDI', description: 'Moorland (HMP & YOI)' }],
+            services: [],
+          },
         },
       },
     })

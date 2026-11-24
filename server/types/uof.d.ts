@@ -1,5 +1,4 @@
 import moment from 'moment'
-import { CaseLoad } from '../data/prisonClientTypes'
 
 export type DateRange = [moment.Moment, moment.Moment]
 
@@ -13,16 +12,6 @@ export interface OffenderNoWithIncidentDate {
 export interface OffenderNoWithIncidentCount {
   offenderNo: string
   incidentCount: number
-}
-
-export type User = {
-  staffId: number
-  username: string
-  firstName: string
-  lastName: string
-  activeCaseLoad: CaseLoad
-  displayName: string
-  displayNameInitial: string
 }
 
 export type FoundUserResult = {

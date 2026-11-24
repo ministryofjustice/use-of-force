@@ -9,6 +9,7 @@ export declare module 'express-session' {
     systemToken: string
     incidentReport: Record<string, any>[]
     flash: Record<string, any[]>
+    activeCaseLoadId: string
   }
 }
 
@@ -33,8 +34,6 @@ export declare global {
         user?: {
           username: string
           token: string
-          firstName: string
-          lastName: string
           userId: string | undefined // This is an id specific to the authSource, for example for NOMIS users this is the staffId
           userUuid: UUID | undefined // This is a UUID created by HMPPS Auth upon first user login that is unique to the user across all authSources
           authSource: string | undefined
