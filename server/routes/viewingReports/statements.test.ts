@@ -10,7 +10,7 @@ jest.mock('../../services/offenderService')
 jest.mock('../../services/authService')
 
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let app

@@ -2,6 +2,11 @@ import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSe
 import BaseApiClient from './baseApiClient'
 import config from '../config'
 
+export type PrisonerName = Pick<PrisonerSearchApiPrisoner, 'prisonerNumber' | 'firstName' | 'lastName'>
+
+// The most prisoner numbers Prisoner Search accepts in one request
+export const MAX_PRISONER_NUMBERS_PER_REQUEST = 1000
+
 export type SearchForm = {
   prisonNumber?: string
   firstName?: string
@@ -18,6 +23,14 @@ export default class PrisonerSearchClient extends BaseApiClient {
     return PrisonerSearchClient.restClient(token).get({
       path: `/prisoner/${nomisId}`,
     }) as Promise<PrisonerSearchApiPrisoner>
+  }
+
+  async getPrisonerNames(prisonerNumbers: string[], token: string): Promise<PrisonerName[]> {
+    return PrisonerSearchClient.restClient(token).post({
+      path: '/prisoner-search/prisoner-numbers',
+      query: { responseFields: 'prisonerNumber,firstName,lastName' },
+      data: { prisonerNumbers },
+    })
   }
 
   // eslint-disable-next-line

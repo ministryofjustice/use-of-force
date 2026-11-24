@@ -20,7 +20,7 @@ const draftReportService = new DraftReportService(
   null,
 ) as jest.Mocked<DraftReportService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null, null) as jest.Mocked<OffenderService>
 const isWithinSubmissionWindow = config.maxWeeksFromIncidentDateToSubmitOrEditReport
 let app
 

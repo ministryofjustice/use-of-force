@@ -30,23 +30,6 @@ module.exports = {
       },
     })
   },
-  stubOffenders: offenders => {
-    return stubFor({
-      request: {
-        method: 'POST',
-        urlPattern: `/api/bookings/offenders\\?activeOnly=false`,
-        bodyPatterns: [{ equalToJson: offenders.map(o => o.offenderNo), ignoreArrayOrder: true }],
-      },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json;charset=UTF-8',
-        },
-        jsonBody: offenders,
-      },
-    })
-  },
-
   stubPrison: prisonId => {
     const descriptions = { LEI: 'Leeds', MDI: 'Moorland' }
 

@@ -58,7 +58,7 @@ export const services = () => {
     hmppsManageUsersApiClient,
   )
   const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
-  const offenderService = new OffenderService(prisonApiClient, authService)
+  const offenderService = new OffenderService(prisonApiClient, authService, prisonerSearchApiClient)
 
   const locationService = new LocationService(prisonApiClient, locationsApiClient)
   const nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)

@@ -14,7 +14,7 @@ jest.mock('./authService')
 const incidentClient = new IncidentClient(null, null, null) as jest.Mocked<IncidentClient>
 const statementsClient = new StatementsClient(null) as jest.Mocked<StatementsClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null, null) as jest.Mocked<OffenderService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service: ReviewService

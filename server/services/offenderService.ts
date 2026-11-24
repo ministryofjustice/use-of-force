@@ -1,14 +1,17 @@
 import type { Readable } from 'stream'
 import moment from 'moment/moment'
+import { splitEvery } from 'ramda'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
-import { PrisonClient } from '../data'
+import { PrisonClient, PrisonerSearchClient } from '../data'
+import { MAX_PRISONER_NUMBERS_PER_REQUEST } from '../data/prisonerSearchClient'
 import AuthService from './authService'
 
 export default class OffenderService {
   constructor(
     private readonly prisonClient: PrisonClient,
     private readonly authService: AuthService,
+    private readonly prisonerSearchClient: PrisonerSearchClient,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,8 +51,9 @@ export default class OffenderService {
       return {}
     }
     const uniqueNos = [...new Set(offenderNos)]
-    const offenders = await this.prisonClient.getOffenders(uniqueNos, token)
+    const batches = splitEvery(MAX_PRISONER_NUMBERS_PER_REQUEST, uniqueNos)
+    const results = await Promise.all(batches.map(batch => this.prisonerSearchClient.getPrisonerNames(batch, token)))
 
-    return offenders.reduce((rv, offender) => ({ ...rv, [offender.offenderNo]: this.fullName(offender) }), {})
+    return Object.fromEntries(results.flat().map(prisoner => [prisoner.prisonerNumber, this.fullName(prisoner)]))
   }
 }

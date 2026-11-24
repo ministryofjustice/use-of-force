@@ -17,6 +17,21 @@ describe('prisonSearchClientBuilder', () => {
     nock.cleanAll()
   })
 
+  describe('getPrisonerNames', () => {
+    it('should ask for only the name fields', async () => {
+      const results = [{ prisonerNumber: 'A1234AA', firstName: 'SAM', lastName: 'SMITH' }]
+      fakePrisonerSearchApi
+        .post('/prisoner-search/prisoner-numbers', { prisonerNumbers: ['A1234AA'] })
+        .query({ responseFields: 'prisonerNumber,firstName,lastName' })
+        .matchHeader('authorization', `Bearer ${token}`)
+        .reply(200, results)
+
+      const output = await client.getPrisonerNames(['A1234AA'], token)
+
+      expect(output).toEqual(results)
+    })
+  })
+
   describe('search', () => {
     it('should return data from api', async () => {
       const results = []
