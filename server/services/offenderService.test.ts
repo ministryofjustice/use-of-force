@@ -60,7 +60,7 @@ describe('getOffenderImage', () => {
 })
 
 describe('getOffenderNames', () => {
-  it('Can retrieve prisoner names from Prisoner Search', async () => {
+  it('retrieves prisoner names from Prisoner Search API', async () => {
     prisonerSearchClient.getPrisonerNames.mockResolvedValue([
       { prisonerNumber: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
       { prisonerNumber: 'BBB', firstName: 'BEN', lastName: 'SMITH-JONES' },

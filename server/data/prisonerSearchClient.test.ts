@@ -18,7 +18,7 @@ describe('prisonSearchClientBuilder', () => {
   })
 
   describe('getPrisonerNames', () => {
-    it('should ask for only the name fields', async () => {
+    it('asks for only the name fields', async () => {
       const results = [{ prisonerNumber: 'A1234AA', firstName: 'SAM', lastName: 'SMITH' }]
       fakePrisonerSearchApi
         .post('/prisoner-search/prisoner-numbers', { prisonerNumbers: ['A1234AA'] })
@@ -33,7 +33,7 @@ describe('prisonSearchClientBuilder', () => {
   })
 
   describe('search', () => {
-    it('should return data from api', async () => {
+    it('returns data from the api', async () => {
       const results = []
       fakePrisonerSearchApi
         .post(
