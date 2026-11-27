@@ -52,18 +52,6 @@ export interface InmateDetail {
   imprisonmentStatus: string
 }
 
-export interface InmateBasicDetails {
-  bookingId: number
-  bookingNo: string
-  offenderNo: string
-  firstName: string
-  middleName: string
-  lastName: string
-  agencyId: string
-  assignedLivingUnitId: number
-  dateOfBirth: Date
-}
-
 export interface PrisonerDetail {
   offenderNo: string
   title: string

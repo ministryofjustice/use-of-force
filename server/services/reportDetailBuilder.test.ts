@@ -26,7 +26,7 @@ const involvedStaffService = new InvolvedStaffService(
 
 const locationService = new LocationService(null, null) as jest.Mocked<LocationService>
 
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null, null) as jest.Mocked<OffenderService>
 
 const nomisMappingService = new NomisMappingService(null) as jest.Mocked<NomisMappingService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>

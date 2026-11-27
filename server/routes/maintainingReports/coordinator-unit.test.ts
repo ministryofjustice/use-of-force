@@ -39,7 +39,7 @@ const involvedStaffService = new InvolvedStaffService(
   null,
 ) as jest.Mocked<InvolvedStaffService>
 const reviewService = new ReviewService(null, null, null, null, null) as jest.Mocked<ReviewService>
-const offenderService = new OffenderService(null, null) as jest.Mocked<OffenderService>
+const offenderService = new OffenderService(null, null, null) as jest.Mocked<OffenderService>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 const statementService = new StatementService(null, null, null) as jest.Mocked<StatementService>
 const authService = new AuthService(null) as jest.Mocked<AuthService>

@@ -43,21 +43,6 @@ describe('prisonClient', () => {
     })
   })
 
-  describe('getOffenders', () => {
-    const offenderNos = ['aaa', 'bbb']
-    const offenders = []
-
-    it('should return data from api', async () => {
-      fakePrisonApi
-        .post('/api/bookings/offenders?activeOnly=false', offenderNos)
-        .matchHeader('authorization', `Bearer ${token}`)
-        .reply(200, offenders)
-
-      const output = await prisonClient.getOffenders(offenderNos, token)
-      expect(output).toEqual(offenders)
-    })
-  })
-
   describe('getPrisonById', () => {
     const mockPrison = {
       active: true,

@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream'
 import OffenderService from './offenderService'
-import { PrisonClient } from '../data'
-import { InmateBasicDetails, InmateDetail } from '../data/prisonClientTypes'
+import { PrisonClient, PrisonerSearchClient } from '../data'
+import { InmateDetail } from '../data/prisonClientTypes'
 import AuthService from './authService'
 
 const token = 'token-1'
@@ -9,18 +9,20 @@ jest.mock('../data')
 jest.mock('../services/authService')
 
 const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const prisonerSearchClient = new PrisonerSearchClient() as jest.Mocked<PrisonerSearchClient>
 const authService = new AuthService(null) as jest.Mocked<AuthService>
 
 let service
 
 beforeEach(() => {
   authService.getSystemClientToken.mockResolvedValue(token)
-  service = new OffenderService(prisonClient, authService)
+  service = new OffenderService(prisonClient, authService, prisonerSearchClient)
 })
 
 afterEach(() => {
   prisonClient.getOffenderDetails.mockReset()
   prisonClient.getOffenderImage.mockReset()
+  prisonerSearchClient.getPrisonerNames.mockReset()
 })
 
 describe('getOffenderDetails', () => {
@@ -57,20 +59,47 @@ describe('getOffenderImage', () => {
   })
 })
 
-describe('getOffenders', () => {
-  it('Can retrieve offenders', async () => {
-    const off1 = { offenderNo: 'AAA', firstName: 'SAM', lastName: 'SMITH' }
-    const off2 = { offenderNo: 'BBB', firstName: 'BEN', lastName: 'SMITH' }
-    const offenders: Partial<InmateBasicDetails>[] = [off1, off2]
+describe('getOffenderNames', () => {
+  it('Can retrieve prisoner names from Prisoner Search', async () => {
+    prisonerSearchClient.getPrisonerNames.mockResolvedValue([
+      { prisonerNumber: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
+      { prisonerNumber: 'BBB', firstName: 'BEN', lastName: 'SMITH-JONES' },
+    ])
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    prisonClient.getOffenders.mockResolvedValue(offenders)
+    const names = await service.getOffenderNames(token, ['AAA', 'BBB', 'AAA'])
 
-    const offenderNos = ['AAA', 'BBB', 'AAA']
-    const names = await service.getOffenderNames(token, offenderNos)
+    expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith-Jones, Ben' })
+    expect(prisonerSearchClient.getPrisonerNames).toHaveBeenCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonerNames).toHaveBeenCalledWith(['AAA', 'BBB'], token)
+  })
 
-    expect(names).toEqual({ AAA: 'Smith, Sam', BBB: 'Smith, Ben' })
-    expect(prisonClient.getOffenders).toHaveBeenCalledWith(['AAA', 'BBB'], token)
+  it('Makes no call when there are no prison numbers', async () => {
+    const names = await service.getOffenderNames(token, [])
+
+    expect(names).toEqual({})
+    expect(prisonerSearchClient.getPrisonerNames).not.toHaveBeenCalled()
+  })
+
+  it('Leaves out prison numbers that Prisoner Search does not return', async () => {
+    prisonerSearchClient.getPrisonerNames.mockResolvedValue([
+      { prisonerNumber: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
+    ])
+
+    const names = await service.getOffenderNames(token, ['AAA', 'ZZZ'])
+
+    expect(names).toEqual({ AAA: 'Smith, Sam' })
+  })
+
+  it('Splits more than 1,000 prison numbers into batches', async () => {
+    const prisonNumbers = Array.from({ length: 2001 }, (_, i) => `A${i.toString().padStart(4, '0')}AA`)
+    prisonerSearchClient.getPrisonerNames.mockImplementation(async batch =>
+      batch.map(prisonerNumber => ({ prisonerNumber, firstName: 'SAM', lastName: 'SMITH' })),
+    )
+
+    const names = await service.getOffenderNames(token, prisonNumbers)
+
+    expect(prisonerSearchClient.getPrisonerNames).toHaveBeenCalledTimes(3)
+    expect(prisonerSearchClient.getPrisonerNames.mock.calls.map(([batch]) => batch.length)).toEqual([1000, 1000, 1])
+    expect(Object.keys(names)).toHaveLength(2001)
   })
 })

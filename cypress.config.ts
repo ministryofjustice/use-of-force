@@ -49,7 +49,7 @@ export default defineConfig({
 
         stubOffenderImage: prisonApi.stubOffenderImage,
 
-        stubOffenders: prisonApi.stubOffenders,
+        stubOffenders: search.stubPrisonerNames,
 
         stubLocation: locationApi.stubGetLocation,
 
