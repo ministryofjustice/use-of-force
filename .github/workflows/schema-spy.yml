@@ -102,7 +102,7 @@ jobs:
         run: npm run schema:reference-data
 
       - name: Generate database schema report
-        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/database_schema_report@cf153ef9fac2a87d0ae26cdd67c6b54dc6ce32f4 # v1.1.10
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/database_schema_report@a72e9a2ee67d147544c72b40f576e27de7d1e0d3 # v1.1.11
         with:
           database_name: ${{ inputs.database_name }}
           port: ${{ inputs.database_port }}
