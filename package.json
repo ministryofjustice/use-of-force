@@ -215,7 +215,10 @@
     "mocha": {
       "serialize-javascript": "7.1.4"
     },
-    "proxy-addr": "2.0.8"
+    "proxy-addr": "2.0.8",
+    "@ministryofjustice/frontend": {
+      "moment": "$moment"
+    }
   },
   "allowScripts": {
     "cypress@13.17.0": true,
