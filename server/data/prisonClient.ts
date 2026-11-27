@@ -1,7 +1,7 @@
 import type { Readable } from 'stream'
 import sanitiseError from '../utils/errorSanitiser'
 import logger from '../../log'
-import type { InmateDetail, InmateBasicDetails, UserDetail, CaseLoad, Prison } from './prisonClientTypes'
+import type { InmateDetail, InmateBasicDetails, Prison } from './prisonClientTypes'
 import config from '../config'
 import BaseApiClient from './baseApiClient'
 
@@ -19,14 +19,6 @@ export default class PrisonClient extends BaseApiClient {
       path: '/api/bookings/offenders?activeOnly=false',
       data: offenderNos,
     })
-  }
-
-  async getUser(token: string): Promise<UserDetail> {
-    return PrisonClient.restClient(token).get({ path: '/api/users/me' })
-  }
-
-  getUserCaseLoads(token: string): Promise<CaseLoad[]> {
-    return PrisonClient.restClient(token).get({ path: '/api/users/me/caseLoads' })
   }
 
   getPrisons(token: string): Promise<Prison[]> {

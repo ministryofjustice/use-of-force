@@ -38,14 +38,12 @@ export default defineConfig({
 
         getLoginUrl: auth.getLoginUrl,
 
-        stubLogin: (user = {}) =>
-          Promise.all([auth.stubLogin(user), prisonApi.stubUser(user), prisonApi.stubUserCaseloads()]),
+        stubLogin: (user = {}) => Promise.all([auth.stubLogin(user), manageUsersApi.stubCurrentUser()]),
 
-        stubReviewerLogin: () =>
-          Promise.all([auth.stubLogin({ isReviewer: true }), prisonApi.stubUser(), prisonApi.stubUserCaseloads()]),
+        stubReviewerLogin: () => Promise.all([auth.stubLogin({ isReviewer: true }), manageUsersApi.stubCurrentUser()]),
 
         stubCoordinatorLogin: () =>
-          Promise.all([auth.stubLogin({ isCoordinator: true }), prisonApi.stubUser(), prisonApi.stubUserCaseloads()]),
+          Promise.all([auth.stubLogin({ isCoordinator: true }), manageUsersApi.stubCurrentUser()]),
 
         stubOffenderDetails: prisonApi.stubOffenderDetails,
 

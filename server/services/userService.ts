@@ -1,8 +1,7 @@
 import logger from '../../log'
-import { properCaseName, forenameToInitial } from '../utils/utils'
 import { usernamePattern } from '../config/forms/validations'
 import { type PrisonClient } from '../data'
-import { User, UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
+import { UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
@@ -11,23 +10,9 @@ export default class UserService {
     private readonly prisonClient: PrisonClient,
   ) {}
 
-  public async getSelf(token: string): Promise<User> {
-    try {
-      const user = await this.prisonClient.getUser(token)
-      const activeCaseLoads = user.activeCaseLoadId ? await this.prisonClient.getUserCaseLoads(token) : []
-      const activeCaseLoad = activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === user.activeCaseLoadId)
-      const displayName = `${properCaseName(user.firstName)} ${properCaseName(user.lastName)}`
-
-      return {
-        ...user,
-        displayName,
-        displayNameInitial: `${forenameToInitial(displayName)}`,
-        activeCaseLoad,
-      }
-    } catch (error) {
-      logger.error('Error during getUser: ', error.stack)
-      throw error
-    }
+  public async getActiveCaseLoadId(token: string): Promise<string | undefined> {
+    const user = await this.manageUsersClient.getCurrentUser(token)
+    return user.activeCaseLoadId
   }
 
   private async getEmailSafely(client: ManageUsersApiClient, username: string, token: string): Promise<EmailResult> {

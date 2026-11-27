@@ -36,7 +36,7 @@ flowchart TB
     subgraph hmpps["HMPPS services"]
         auth["hmpps-auth<br/>OAuth2"]
         tokenverify["token-verification-api"]
-        prison["prison-api<br/>bookings, agencies, caseloads, photos"]
+        prison["prison-api<br/>bookings, agencies, photos"]
         users["manage-users-api<br/>staff lookup + email"]
         search["prisoner-search-api"]
         locations["locations-inside-prison-api"]
@@ -141,10 +141,10 @@ Note the two different "config" concepts: `server/config.ts` is environment conf
 | 9 | `GET /health` | Pings auth, prison-api and token-verification. 503 when unhealthy. |
 | 10 | `setUpCsrf()` | Uses `csrf-sync`, reads the token from `req.body._csrf` rather than a header, and is **disabled when `NODE_ENV=test`**. |
 | 11 | Auth endpoints | `/login`, `/login/callback`, `/sign-out`, `/autherror`. |
-| 12 | `populateCurrentUser`, `refreshSystemToken` | |
+| 12 | `populateCurrentUser`, `refreshSystemToken` | `populateCurrentUser` takes the user's name and IDs from the HMPPS Auth token. It makes no API calls. |
 | 13 | **`unauthenticatedRoutes`** | Mounted *before* the authorisation middleware — this is deliberate, so emailed removal-request deep links work without a login. |
 | 14 | `authorisationMiddleware` | Decodes roles from the JWT, or redirects to `/login`. |
-| 15 | Frontend components | |
+| 15 | Frontend components, then `setUserActiveCaseLoadId` | The components response includes the user's active caseload, which is copied to the session on every page, including when the user no longer has one. The session value is only kept if the components call fails or returns no caseload details. `setUserActiveCaseLoadId` copies it to `res.locals.user.activeCaseLoadId`, and asks Manage Users (`GET /users/me`) only when the session has none. |
 | 16 | `createRouter(...)` | The application routes. |
 | 17 | `errorHandler` | Renders `pages/error`; hides message and stack in production. |
 
@@ -193,8 +193,8 @@ export const ADMIN = 'ROLE_NOMIS_BATCHLOAD'
 They become `res.locals.user.isReviewer` (true for reviewer **or** coordinator), `isCoordinator` and
 `isAdmin`. Route guards are in `server/middleware/roleCheck.js`.
 
-**Caseload scoping is narrower than you might assume.** `populateCurrentUser` reads
-`/api/users/me` from prison-api to get `activeCaseLoadId`, and the reviewer *list* queries filter on
+**Caseload scoping is narrower than you might assume.** `activeCaseLoadId` comes from the frontend
+components response (falling back to Manage Users), and the reviewer *list* queries filter on
 it in SQL (`getIncompleteReportsForReviewer(agencyId)`, `getCompletedReportsForReviewer(agencyId, …)`).
 Individual report and statement views are guarded by **role only**, not by agency.
 

@@ -98,29 +98,6 @@ export interface PrisonerDetail {
   currentWorkingBirthDate: Date
 }
 
-export interface UserDetail {
-  staffId: number
-  username: string
-  firstName: string
-  lastName: string
-  thumbnailId: number
-  activeCaseLoadId: string
-  lockDate: Date
-  expiryDate: Date
-  lockedFlag: boolean
-  expiredFlag: boolean
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  additionalProperties: { [key: string]: any }
-}
-
-export interface CaseLoad {
-  caseLoadId: string
-  description: string
-  type: string
-  currentlyActive: boolean
-}
-
 interface Agency {
   agencyId: string
   description: string

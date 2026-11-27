@@ -1,14 +1,9 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import populateCurrentUser from './populateCurrentUser'
-import UserService from '../services/userService'
-import { CaseLoad, UserDetail } from '../data/prisonClientTypes'
 import logger from '../../log'
 
-jest.mock('../services/userService')
 jest.mock('../../log')
-
-const userService = new UserService(null, null) as jest.Mocked<UserService>
 
 describe('populateCurrentUser', () => {
   let res
@@ -21,111 +16,69 @@ describe('populateCurrentUser', () => {
     req = { baseUrl: '/', path: '', hostname: 'localhost' } as Request
   })
 
-  test('Should add hostname and currentUrlPath to res.locals', async () => {
-    await populateCurrentUser(userService)(req, res, next)
+  test('Should add hostname and currentUrlPath to res.locals', () => {
+    populateCurrentUser()(req, res, next)
 
     expect(res.locals.hostname).toStrictEqual('localhost')
     expect(res.locals.currentUrlPath).toStrictEqual('/')
+    expect(next).toHaveBeenCalled()
   })
 
-  test('Should stash prison user data into res.locals', async () => {
-    res = { locals: { user: { token: 'token-1' } } }
-    const user = {
-      staffId: 3,
-      username: 'jouser',
-      firstName: 'Jo',
-      lastName: 'Smith',
-      activeCaseLoadId: '2',
-    } as UserDetail
+  test('Should add the user details from the token', () => {
+    const token = jwt.sign(
+      {
+        name: 'JO SMITH-JONES',
+        user_id: '3',
+        user_uuid: '11111111-1111-1111-1111-111111111111',
+        auth_source: 'nomis',
+      },
+      'secret',
+    )
+    res = { locals: { user: { username: 'jouser', token } } }
 
-    userService.getSelf.mockResolvedValue({
-      ...user,
-      displayName: 'Jo Smith',
-      displayNameInitial: 'J. Smith',
-      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
-    })
-    await populateCurrentUser(userService)(req, res, next)
+    populateCurrentUser()(req, res, next)
 
-    expect(userService.getSelf).toHaveBeenCalledWith(res.locals.user.token)
     expect(res.locals.user).toEqual({
-      staffId: 3,
+      displayName: 'Jo Smith-Jones',
+      userId: '3',
+      userUuid: '11111111-1111-1111-1111-111111111111',
+      authSource: 'nomis',
       username: 'jouser',
-      firstName: 'Jo',
-      lastName: 'Smith',
-      activeCaseLoadId: '2',
-      displayName: 'Jo Smith',
-      displayNameInitial: 'J. Smith',
-      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' },
+      token,
+    })
+    expect(next).toHaveBeenCalled()
+  })
+
+  test('Should not overwrite values already on the user', () => {
+    const token = jwt.sign({ name: 'Jo Smith', user_id: '3' }, 'secret')
+    res = { locals: { user: { username: 'jouser', token, userId: 'existing' } } }
+
+    populateCurrentUser()(req, res, next)
+
+    expect(res.locals.user.userId).toEqual('existing')
+    expect(res.locals.user.displayName).toEqual('Jo Smith')
+  })
+
+  test('Should cope with a token that cannot be decoded', () => {
+    res = { locals: { user: { username: 'jouser', token: 'not-a-jwt' } } }
+
+    populateCurrentUser()(req, res, next)
+
+    expect(res.locals.user).toEqual({
+      displayName: '',
       userId: undefined,
       userUuid: undefined,
       authSource: undefined,
-      token: 'token-1',
-    })
-  })
-
-  test('Should add userId, userUuid and authSource from the token', async () => {
-    const token = jwt.sign(
-      { user_id: '3', user_uuid: '11111111-1111-1111-1111-111111111111', auth_source: 'nomis' },
-      'secret',
-    )
-    res = { locals: { user: { token } } }
-
-    userService.getSelf.mockResolvedValue({
-      staffId: 3,
       username: 'jouser',
-      firstName: 'Jo',
-      lastName: 'Smith',
-      displayName: 'Jo Smith',
-      displayNameInitial: 'J. Smith',
-      activeCaseLoad: { caseLoadId: '2', description: 'Leeds' } as CaseLoad,
+      token: 'not-a-jwt',
     })
-    await populateCurrentUser(userService)(req, res, next)
-
-    expect(res.locals.user).toEqual(
-      expect.objectContaining({
-        userId: '3',
-        userUuid: '11111111-1111-1111-1111-111111111111',
-        authSource: 'nomis',
-        username: 'jouser',
-        token,
-      }),
-    )
+    expect(next).toHaveBeenCalled()
   })
 
-  test('Should log info if prison user not present', async () => {
-    res = {
-      locals: {
-        user: {
-          staffId: 3,
-          username: 'jouser',
-          firstName: 'Jo',
-          lastName: 'Smith',
-        },
-      },
-    }
-
-    userService.getSelf.mockResolvedValue(null)
-    await populateCurrentUser(userService)(req, res, next)
+  test('Should log info if user not present', () => {
+    populateCurrentUser()(req, res, next)
 
     expect(logger.info).toHaveBeenCalledWith('No user available')
-  })
-
-  test('Should log any errors present', async () => {
-    res = {
-      locals: {
-        user: {
-          staffId: 3,
-          username: 'jouser',
-          firstName: 'Jo',
-          lastName: 'Smith',
-        },
-      },
-    }
-    const error = new Error('error message')
-
-    userService.getSelf.mockRejectedValue(error)
-    await populateCurrentUser(userService)(req, res, next)
-
-    expect(logger.error).toHaveBeenCalledWith(error, `Failed to retrieve user for: ${res.locals.user}`)
+    expect(next).toHaveBeenCalled()
   })
 })

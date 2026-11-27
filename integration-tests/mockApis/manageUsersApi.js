@@ -1,6 +1,27 @@
 const { stubFor } = require('./wiremock')
 
 module.exports = {
+  stubCurrentUser: ({ activeCaseLoadId = 'MDI' } = {}) => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/users/me',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: {
+          username: 'ITAG_USER',
+          active: true,
+          authSource: 'nomis',
+          activeCaseLoadId,
+        },
+      },
+    })
+  },
+
   stubStaffMemberSearch: ({ searchText, response }) => {
     return stubFor({
       request: {

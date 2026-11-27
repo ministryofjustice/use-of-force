@@ -30,26 +30,6 @@ describe('prisonClient', () => {
     })
   })
 
-  describe('getUser', () => {
-    const userResponse = {}
-    it('should return data from api', async () => {
-      fakePrisonApi.get('/api/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, userResponse)
-
-      const output = await prisonClient.getUser(token)
-      expect(output).toEqual(userResponse)
-    })
-  })
-
-  describe('getUserCaseLoads', () => {
-    const caseloads = []
-    it('should return data from api', async () => {
-      fakePrisonApi.get('/api/users/me/caseLoads').matchHeader('authorization', `Bearer ${token}`).reply(200, caseloads)
-
-      const output = await prisonClient.getUserCaseLoads(token)
-      expect(output).toEqual(caseloads)
-    })
-  })
-
   describe('getPrisons', () => {
     const locations = []
     it('should return data from api', async () => {

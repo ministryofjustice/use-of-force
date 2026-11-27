@@ -18,6 +18,7 @@ import setUpHealthChecks from './middleware/setUpHealthChecks'
 
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
 import populateCurrentUser from './middleware/populateCurrentUser'
+import setUserActiveCaseLoadId from './middleware/setUserActiveCaseLoadId'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import errorHandler from './errorHandler'
 
@@ -230,7 +231,7 @@ export default function createApp(services: Services): Express {
     }),
   )
 
-  app.use(populateCurrentUser(services.userService))
+  app.use(populateCurrentUser())
   app.use(
     telemetryMiddleware.addUserMetadataToTelemetry({
       getAttributes: (req: Request) => ({ username: req.user?.username }),
@@ -242,6 +243,7 @@ export default function createApp(services: Services): Express {
   app.use(authorisationMiddleware)
 
   app.get('*', getFrontendComponents(services.feComponentsService))
+  app.use(setUserActiveCaseLoadId(services.userService))
   app.use(createRouter(authenticationMiddleware, services))
 
   app.use(errorHandler(process.env.NODE_ENV === 'production'))

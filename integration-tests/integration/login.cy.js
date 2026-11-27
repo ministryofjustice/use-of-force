@@ -27,7 +27,7 @@ context('Login functionality', () => {
   })
 
   it('Logout takes user to login page', () => {
-    cy.task('stubLogin', { firstName: 'James', lastName: 'Stuart' })
+    cy.task('stubLogin', { name: 'James Stuart' })
     cy.login()
     const yourStatements = YourStatements.verifyOnPage()
     yourStatements.loggedInName().contains('J. Stuart')
@@ -36,7 +36,7 @@ context('Login functionality', () => {
 
   it('New user login should log current user out', () => {
     // login as James Stuart
-    cy.task('stubLogin', { firstName: 'James', lastName: 'Stuart' })
+    cy.task('stubLogin', { name: 'James Stuart' })
     cy.login()
     const yourStatements = YourStatements.verifyOnPage()
     yourStatements.loggedInName().contains('J. Stuart')
@@ -45,7 +45,7 @@ context('Login functionality', () => {
     cy.request('/').its('body').should('contain', 'Sign in')
 
     // now login as Bobby Brown
-    cy.task('stubLogin', { firstName: 'Bobby', lastName: 'Brown' })
+    cy.task('stubLogin', { name: 'Bobby Brown' })
     cy.login()
     yourStatements.loggedInName().contains('B. Brown')
   })
