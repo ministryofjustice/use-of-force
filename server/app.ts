@@ -1,12 +1,11 @@
 import express, { Express, RequestHandler, Response, Request } from 'express'
-import { v4 as uuidv4 } from 'uuid'
+import { randomBytes, randomUUID } from 'crypto'
 import helmet from 'helmet'
 import noCache from 'nocache'
 import path from 'path'
 import moment from 'moment'
 import compression from 'compression'
 import passport from 'passport'
-import crypto from 'crypto'
 import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
 import setUpCsrf from './middleware/setUpCsrf'
 import createRouter from './routes'
@@ -65,7 +64,7 @@ export default function createApp(services: Services): Express {
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
   app.use((req, res, next) => {
-    res.locals.cspNonce = crypto.randomBytes(16).toString('base64')
+    res.locals.cspNonce = randomBytes(16).toString('base64')
     next()
   })
 
@@ -114,7 +113,7 @@ export default function createApp(services: Services): Express {
   app.use((req, res, next) => {
     const headerName = 'X-Request-Id'
     const oldValue = req.get(headerName)
-    const id = oldValue === undefined ? uuidv4() : oldValue
+    const id = oldValue === undefined ? randomUUID() : oldValue
 
     res.set(headerName, id)
     req.id = id
