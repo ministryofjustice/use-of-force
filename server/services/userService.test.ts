@@ -21,7 +21,7 @@ afterEach(() => {
 })
 
 describe('getActiveCaseLoadId', () => {
-  it('should return the active caseload from Manage Users', async () => {
+  it('returns the active caseload from Manage Users', async () => {
     manageUsersApiClient.getCurrentUser.mockResolvedValue({ name: 'Jo Smith', staffId: 3, activeCaseLoadId: 'LEI' })
 
     const result = await service.getActiveCaseLoadId(token)
@@ -30,7 +30,7 @@ describe('getActiveCaseLoadId', () => {
     expect(manageUsersApiClient.getCurrentUser).toHaveBeenCalledWith(token)
   })
 
-  it('should return undefined when the user has no active caseload', async () => {
+  it('returns undefined when the user has no active caseload', async () => {
     manageUsersApiClient.getCurrentUser.mockResolvedValue({ name: 'Jo Smith', staffId: 3 })
 
     expect(await service.getActiveCaseLoadId(token)).toBeUndefined()

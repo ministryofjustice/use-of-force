@@ -14,9 +14,11 @@ export default function getFrontendComponents(feComponentsService): RequestHandl
         cssIncludes: [...header.css, ...footer.css],
         jsIncludes: [...header.javascript, ...footer.javascript],
       }
-      // Keep the active caseload up to date in case the user has switched prison elsewhere in DPS
-      if (meta?.activeCaseLoad?.caseLoadId) {
-        req.session.activeCaseLoadId = meta.activeCaseLoad.caseLoadId
+      // The components response is the source of truth for the active caseload, so it is always copied to
+      // the session, including when the user no longer has one. This picks up a prison switch elsewhere in
+      // DPS or a caseload removed in NOMIS. The session value is only kept when meta is missing or the call fails.
+      if (meta) {
+        req.session.activeCaseLoadId = meta.activeCaseLoad?.caseLoadId
       }
       return next()
     } catch (error) {

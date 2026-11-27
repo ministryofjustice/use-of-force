@@ -18,7 +18,7 @@ import setUpHealthChecks from './middleware/setUpHealthChecks'
 
 import { authenticationMiddlewareFactory, initialisePassportStrategy } from './authentication/auth'
 import populateCurrentUser from './middleware/populateCurrentUser'
-import retrieveActiveCaseLoad from './middleware/retrieveActiveCaseLoad'
+import setUserActiveCaseLoadId from './middleware/setUserActiveCaseLoadId'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import errorHandler from './errorHandler'
 
@@ -243,7 +243,7 @@ export default function createApp(services: Services): Express {
   app.use(authorisationMiddleware)
 
   app.get('*', getFrontendComponents(services.feComponentsService))
-  app.use(retrieveActiveCaseLoad(services.userService))
+  app.use(setUserActiveCaseLoadId(services.userService))
   app.use(createRouter(authenticationMiddleware, services))
 
   app.use(errorHandler(process.env.NODE_ENV === 'production'))

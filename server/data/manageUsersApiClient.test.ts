@@ -18,7 +18,7 @@ describe('manageUsersApiClient', () => {
   })
 
   describe('getCurrentUser', () => {
-    it('should return the signed in user from the api', async () => {
+    it('returns the signed in user from the api', async () => {
       const user = { username: 'JOUSER', name: 'Jo Smith', staffId: 3, activeCaseLoadId: 'MDI' }
       fakeManageUsersApi.get('/users/me').matchHeader('authorization', `Bearer ${token}`).reply(200, user)
 

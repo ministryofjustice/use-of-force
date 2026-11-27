@@ -20,7 +20,7 @@ const decodeTokenClaims = (token: string): TokenClaims => {
 }
 
 // The user's details come from the HMPPS Auth token, so no API call is needed on each request.
-// The active caseload is added later by retrieveActiveCaseLoad.
+// The active caseload is added later by setUserActiveCaseLoadId.
 export default () =>
   (req: Request, res: Response, next: NextFunction): void => {
     res.locals = {

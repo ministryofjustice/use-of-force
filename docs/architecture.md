@@ -144,7 +144,7 @@ Note the two different "config" concepts: `server/config.ts` is environment conf
 | 12 | `populateCurrentUser`, `refreshSystemToken` | `populateCurrentUser` takes the user's name and IDs from the HMPPS Auth token. It makes no API calls. |
 | 13 | **`unauthenticatedRoutes`** | Mounted *before* the authorisation middleware — this is deliberate, so emailed removal-request deep links work without a login. |
 | 14 | `authorisationMiddleware` | Decodes roles from the JWT, or redirects to `/login`. |
-| 15 | Frontend components, then `retrieveActiveCaseLoad` | The components response includes the user's active caseload, which is kept in the session. `retrieveActiveCaseLoad` copies it to `res.locals.user.activeCaseLoadId`, and asks Manage Users (`GET /users/me`) only when the session has none. |
+| 15 | Frontend components, then `setUserActiveCaseLoadId` | The components response includes the user's active caseload, which is copied to the session on every page, including when the user no longer has one. The session value is only kept if the components call fails or returns no caseload details. `setUserActiveCaseLoadId` copies it to `res.locals.user.activeCaseLoadId`, and asks Manage Users (`GET /users/me`) only when the session has none. |
 | 16 | `createRouter(...)` | The application routes. |
 | 17 | `errorHandler` | Renders `pages/error`; hides message and stack in production. |
 

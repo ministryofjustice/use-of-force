@@ -5,7 +5,7 @@ import type UserService from '../services/userService'
 // Sets res.locals.user.activeCaseLoadId from the session. The session value is refreshed from the
 // front end components response on each page (see feComponentsMiddleware). Manage Users is only
 // asked when the session has no value, for example when the components call failed at sign-in.
-export default function retrieveActiveCaseLoad(userService: UserService): RequestHandler {
+export default function setUserActiveCaseLoadId(userService: UserService): RequestHandler {
   return async (req, res, next) => {
     const { user } = res.locals
     if (!user) {

@@ -1,4 +1,4 @@
-import retrieveActiveCaseLoad from './retrieveActiveCaseLoad'
+import setUserActiveCaseLoadId from './setUserActiveCaseLoadId'
 import UserService from '../services/userService'
 import logger from '../../log'
 
@@ -7,7 +7,7 @@ jest.mock('../../log')
 
 const userService = new UserService(null, null) as jest.Mocked<UserService>
 
-describe('retrieveActiveCaseLoad', () => {
+describe('setUserActiveCaseLoadId', () => {
   let req
   let res
   const next = jest.fn()
@@ -18,20 +18,20 @@ describe('retrieveActiveCaseLoad', () => {
     res = { locals: { user: { username: 'jouser', token: 'token-1', authSource: 'nomis' } } }
   })
 
-  test('Should use the caseload held in the session without calling Manage Users', async () => {
+  test('uses the caseload held in the session without looking it up', async () => {
     req.session.activeCaseLoadId = 'LEI'
 
-    await retrieveActiveCaseLoad(userService)(req, res, next)
+    await setUserActiveCaseLoadId(userService)(req, res, next)
 
     expect(res.locals.user.activeCaseLoadId).toEqual('LEI')
     expect(userService.getActiveCaseLoadId).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalled()
   })
 
-  test('Should ask Manage Users when the session has no caseload, and keep the answer', async () => {
+  test('looks up the caseload when the session has none, and keeps it in the session', async () => {
     userService.getActiveCaseLoadId.mockResolvedValue('MDI')
 
-    await retrieveActiveCaseLoad(userService)(req, res, next)
+    await setUserActiveCaseLoadId(userService)(req, res, next)
 
     expect(userService.getActiveCaseLoadId).toHaveBeenCalledWith('token-1')
     expect(req.session.activeCaseLoadId).toEqual('MDI')
@@ -39,31 +39,31 @@ describe('retrieveActiveCaseLoad', () => {
     expect(next).toHaveBeenCalled()
   })
 
-  test('Should not ask Manage Users for users who are not NOMIS users', async () => {
+  test('does not look up the caseload for users who are not NOMIS users', async () => {
     res.locals.user.authSource = 'auth'
 
-    await retrieveActiveCaseLoad(userService)(req, res, next)
+    await setUserActiveCaseLoadId(userService)(req, res, next)
 
     expect(userService.getActiveCaseLoadId).not.toHaveBeenCalled()
     expect(res.locals.user.activeCaseLoadId).toBeUndefined()
     expect(next).toHaveBeenCalled()
   })
 
-  test('Should log and carry on if Manage Users fails', async () => {
+  test('logs and carries on if the lookup fails', async () => {
     const error = new Error('boom')
     userService.getActiveCaseLoadId.mockRejectedValue(error)
 
-    await retrieveActiveCaseLoad(userService)(req, res, next)
+    await setUserActiveCaseLoadId(userService)(req, res, next)
 
     expect(logger.error).toHaveBeenCalledWith(error, 'Failed to retrieve active caseload for: jouser')
     expect(res.locals.user.activeCaseLoadId).toBeUndefined()
     expect(next).toHaveBeenCalled()
   })
 
-  test('Should do nothing when there is no user', async () => {
+  test('does nothing when there is no user', async () => {
     res.locals = {}
 
-    await retrieveActiveCaseLoad(userService)(req, res, next)
+    await setUserActiveCaseLoadId(userService)(req, res, next)
 
     expect(userService.getActiveCaseLoadId).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalled()
