@@ -61,6 +61,9 @@
     "testMatch": [
       "<rootDir>/(server|job)/**/?(*.)(spec|test).{ts,js,jsx,mjs}"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/server/testutils/nockTeardown.ts"
+    ],
     "testEnvironment": "node",
     "reporters": [
       "default",
