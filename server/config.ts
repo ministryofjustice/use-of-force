@@ -106,6 +106,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
+    prisonRegister: {
+      url: get('PRISON_REGISTER_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: get('PRISON_REGISTER_API_TIMEOUT_RESPONSE', 10000) as number,
+        deadline: get('PRISON_REGISTER_API_TIMEOUT_DEADLINE', 10000) as number,
+      },
+      agent: new AgentConfig(Number(get('PRISON_REGISTER_API_TIMEOUT_RESPONSE', 10000))),
+    },
     location: {
       url: get('LOCATIONS_INSIDE_PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
       healthPath: '/health/ping',

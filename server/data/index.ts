@@ -5,6 +5,7 @@ import DraftReportClient from './draftReportClient'
 import StatementsClient from './statementsClient'
 
 import PrisonClient from './prisonClient'
+import PrisonRegisterClient from './prisonRegisterClient'
 import LocationClient from './locationClient'
 import NomisMappingClient from './nomisMappingClient'
 import FeComponentsClient from './feComponentsClient'
@@ -35,6 +36,7 @@ export const dataAccess = {
     config.redis.enabled ? new RedisTokenStore(redisClient) : new InMemoryTokenStore(),
   ),
   prisonApiClient: new PrisonClient(),
+  prisonRegisterApiClient: new PrisonRegisterClient(),
   locationsApiClient: new LocationClient(),
   nomisMappingClientBuilder: new NomisMappingClient(),
   feComponentsClient: new FeComponentsClient(),
@@ -49,6 +51,7 @@ export {
   StatementsClient,
   IncidentClient,
   PrisonClient,
+  PrisonRegisterClient,
   LocationClient,
   NomisMappingClient,
   FeComponentsClient,

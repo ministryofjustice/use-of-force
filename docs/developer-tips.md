@@ -48,7 +48,8 @@ All required in production. Each also accepts `<NAME>_TIMEOUT_RESPONSE` and
 
 | Variable | Default | Used for |
 | --- | --- | --- |
-| `PRISON_API_URL` | `:8080` | Bookings, agencies, caseloads, offender photos. |
+| `PRISON_API_URL` | `:8080` | Bookings and offender photos. |
+| `PRISON_REGISTER_API_URL` | `:8080` | Prison names and the list of prisons. Needs the `HMPPS_REGISTERS_API__R` role on the system client. |
 | `HMPPS_MANAGE_USERS_API_URL` | `:8081` | Staff lookup and email addresses. |
 | `PRISONER_SEARCH_API_URL` | `:8080` | Prisoner search. |
 | `LOCATIONS_INSIDE_PRISON_API_URL` | `:8080` | Non-residential incident locations. |
@@ -236,4 +237,4 @@ Renovate bump to any of them must update that file in the same PR or `npm run se
 | **Relocation** | Where the prisoner was taken afterwards — segregation unit, own cell, and so on. |
 | **Body-worn camera** | Recorded per incident, with camera numbers. |
 | **DPS** | Digital Prison Services, the wider service this sits inside. Older code and docs may say "new NOMIS". |
-| **NOMIS** | The legacy prison system. Still the source of bookings and agencies via prison-api. |
+| **NOMIS** | The legacy prison system. Still the source of bookings via prison-api. |

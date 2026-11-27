@@ -15,6 +15,7 @@ generic-service:
     LOCATIONS_INSIDE_PRISON_API_URL: https://locations-inside-prison-api-preprod.hmpps.service.justice.gov.uk
     NOMIS_MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     PRISONER_SEARCH_API_URL: https://prisoner-search-preprod.prison.service.justice.gov.uk
+    PRISON_REGISTER_API_URL: https://prison-register-preprod.hmpps.service.justice.gov.uk
     EXIT_LOCATION_URL: https://digital-preprod.prison.service.justice.gov.uk
     EMAIL_LOCATION_URL: https://preprod.use-of-force.service.justice.gov.uk
     TOKENVERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk

@@ -1,4 +1,4 @@
-import { PrisonClient, LocationClient } from '../data'
+import { PrisonRegisterClient, LocationClient } from '../data'
 import type { Prison } from '../data/prisonClientTypes'
 import LocationService from './locationService'
 import config from '../config'
@@ -9,7 +9,7 @@ jest.mock('../config')
 
 const token = 'token'
 
-const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const prisonRegisterClient = new PrisonRegisterClient() as jest.Mocked<PrisonRegisterClient>
 const locationClient = new LocationClient() as jest.Mocked<LocationClient>
 
 const locationUUID = 'some-uuid'
@@ -17,7 +17,7 @@ const locationUUID = 'some-uuid'
 let locationService
 
 beforeEach(() => {
-  locationService = new LocationService(prisonClient, locationClient)
+  locationService = new LocationService(prisonRegisterClient, locationClient)
 })
 
 afterEach(() => {
@@ -57,7 +57,7 @@ describe('locationService', () => {
         },
       ] as Prison[]
 
-      prisonClient.getPrisons.mockResolvedValue(prisonsMock)
+      prisonRegisterClient.getPrisons.mockResolvedValue(prisonsMock)
       const result = await locationService.getPrisons(token)
       expect(result).toEqual(prisonsInOrder)
     })

@@ -36,7 +36,8 @@ flowchart TB
     subgraph hmpps["HMPPS services"]
         auth["hmpps-auth<br/>OAuth2"]
         tokenverify["token-verification-api"]
-        prison["prison-api<br/>bookings, agencies, photos"]
+        prison["prison-api<br/>bookings, photos"]
+        register["prison-register<br/>prison names"]
         users["manage-users-api<br/>staff lookup + email"]
         search["prisoner-search-api"]
         locations["locations-inside-prison-api"]
@@ -55,6 +56,7 @@ flowchart TB
     app --> auth
     app --> tokenverify
     app --> prison
+    app --> register
     app --> users
     app --> search
     app --> locations
