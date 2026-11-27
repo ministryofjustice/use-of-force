@@ -60,7 +60,7 @@ describe('getOffenderImage', () => {
 })
 
 describe('getOffenderNames', () => {
-  it('Can retrieve prisoner names from Prisoner Search', async () => {
+  it('retrieves prisoner names from Prisoner Search API', async () => {
     prisonerSearchClient.getPrisonerNames.mockResolvedValue([
       { prisonerNumber: 'AAA', firstName: 'SAM', lastName: 'SMITH' },
       { prisonerNumber: 'BBB', firstName: 'BEN', lastName: 'SMITH-JONES' },
@@ -101,5 +101,25 @@ describe('getOffenderNames', () => {
     expect(prisonerSearchClient.getPrisonerNames).toHaveBeenCalledTimes(3)
     expect(prisonerSearchClient.getPrisonerNames.mock.calls.map(([batch]) => batch.length)).toEqual([1000, 1000, 1])
     expect(Object.keys(names)).toHaveLength(2001)
+  })
+
+  it('Asks for one batch at a time', async () => {
+    const prisonNumbers = Array.from({ length: 2001 }, (_, i) => `A${i.toString().padStart(4, '0')}AA`)
+    let inFlight = 0
+    let mostInFlight = 0
+    prisonerSearchClient.getPrisonerNames.mockImplementation(async batch => {
+      inFlight += 1
+      mostInFlight = Math.max(mostInFlight, inFlight)
+      await new Promise(resolve => {
+        setImmediate(resolve)
+      })
+      inFlight -= 1
+      return batch.map(prisonerNumber => ({ prisonerNumber, firstName: 'SAM', lastName: 'SMITH' }))
+    })
+
+    await service.getOffenderNames(token, prisonNumbers)
+
+    expect(prisonerSearchClient.getPrisonerNames).toHaveBeenCalledTimes(3)
+    expect(mostInFlight).toEqual(1)
   })
 })
