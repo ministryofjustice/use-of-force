@@ -4,7 +4,7 @@ import { splitEvery } from 'ramda'
 import logger from '../../log'
 import { isNilOrEmpty, properCaseName } from '../utils/utils'
 import { PrisonClient, PrisonerSearchClient } from '../data'
-import { MAX_PRISONER_NUMBERS_PER_REQUEST, type PrisonerName } from '../data/prisonerSearchClient'
+import { MAX_PRISONER_NUMBERS_PER_REQUEST } from '../data/prisonerSearchClient'
 import AuthService from './authService'
 
 export default class OffenderService {
@@ -51,13 +51,9 @@ export default class OffenderService {
       return {}
     }
     const uniqueNos = [...new Set(offenderNos)]
-    // Ask for one batch at a time, so a long list does not send several requests to Prisoner Search at once
-    const prisoners: PrisonerName[] = []
-    for (const batch of splitEvery(MAX_PRISONER_NUMBERS_PER_REQUEST, uniqueNos)) {
-      // eslint-disable-next-line no-await-in-loop
-      prisoners.push(...(await this.prisonerSearchClient.getPrisonerNames(batch, token)))
-    }
+    const batches = splitEvery(MAX_PRISONER_NUMBERS_PER_REQUEST, uniqueNos)
+    const results = await Promise.all(batches.map(batch => this.prisonerSearchClient.getPrisonerNames(batch, token)))
 
-    return Object.fromEntries(prisoners.map(prisoner => [prisoner.prisonerNumber, this.fullName(prisoner)]))
+    return Object.fromEntries(results.flat().map(prisoner => [prisoner.prisonerNumber, this.fullName(prisoner)]))
   }
 }
