@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const { complete, partial, f213CompletedBy } = require('./relocationAndInjuriesForm')
 const { processInput } = require('../../services/validation')
 const { isValid, validate } = require('../../services/validation')

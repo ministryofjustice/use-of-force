@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const { buildValidationSpec } = require('../../services/validation')
 
 const schema = joi.object({

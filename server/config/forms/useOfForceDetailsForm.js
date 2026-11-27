@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const { validations } = require('./validations')
 const { buildValidationSpec } = require('../../services/validation')
 

@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi').extend(require('@hapi/joi-date'))
+const joi = require('joi')
 const R = require('ramda')
 const { toBoolean, trimmedString, toInteger, removeEmptyObjects } = require('./sanitisers')
 
