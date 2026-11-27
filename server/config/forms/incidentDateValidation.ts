@@ -1,5 +1,5 @@
 import moment from 'moment'
-import joi, { ErrorReport } from '@hapi/joi'
+import joi, { ErrorReport } from 'joi'
 import { addWeeks, endOfDay, isAfter, isValid, isWithinInterval, parse, startOfDay, subDays } from 'date-fns'
 import { toInteger } from './sanitisers'
 import config from '../../config'

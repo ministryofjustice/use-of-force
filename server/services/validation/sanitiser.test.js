@@ -1,5 +1,5 @@
 const R = require('ramda')
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const { trimmedString, toBoolean, toInteger, toSmallInt } = require('../../config/forms/sanitisers')
 const { simplifyDescription, buildSanitiser, getSanitiser } = require('./sanitiser')
 const {

@@ -1,4 +1,3 @@
-const Joi = require('@hapi/joi')
 const R = require('ramda')
 const { processInput } = require('./formProcessing')
 const { EXTRACTED } = require('../../config/fieldType')
@@ -62,7 +61,7 @@ describe('processInput', () => {
 
     const output = processInput({
       validationSpec: buildValidationSpec(
-        Joi.object({
+        joi.object({
           q1: inSchema,
           q2: outSchema,
           q3: inSchema,

@@ -200,7 +200,6 @@ check before assuming a modern API is available:
 | --- | --- | --- |
 | express | 4.x | Not v5. |
 | knex | 2.x | Migrations only. A major behind. |
-| `@hapi/joi` | 17 | The deprecated package name; current is `joi`. |
 | helmet | 6 | |
 | `@ministryofjustice/hmpps-azure-telemetry` | 1.1 | OpenTelemetry-based; replaces the old `applicationinsights` v2 SDK. |
 | eslint | 8 + typescript-eslint 5 | Legacy `.eslintrc.json`, not flat config. |
