@@ -3,6 +3,7 @@ import { defineConfig } from 'cypress'
 import auth from './integration-tests/mockApis/auth'
 import { resetStubs } from './integration-tests/mockApis/wiremock'
 import prisonApi from './integration-tests/mockApis/prisonApi'
+import prisonRegister from './integration-tests/mockApis/prisonRegister'
 import manageUsersApi from './integration-tests/mockApis/manageUsersApi'
 import locationApi from './integration-tests/mockApis/locationApi'
 import nomisMappingApi from './integration-tests/mockApis/nomisMappingApi'
@@ -59,11 +60,11 @@ export default defineConfig({
 
         stubDpsLocationMapping: nomisMappingApi.stubGetDpsLocationMappingUsingNomisLocationId,
 
-        stubPrisons: prisonApi.stubPrisons,
+        stubPrisons: prisonRegister.stubPrisons,
 
         stubSearch: search.stubSearch,
 
-        stubPrison: prisonApi.stubPrison,
+        stubPrison: prisonRegister.stubPrison,
 
         stubUserDetailsRetrieval: auth.stubUserDetailsRetrieval,
 

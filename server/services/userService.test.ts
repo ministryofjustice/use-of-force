@@ -1,5 +1,5 @@
 import UserService from './userService'
-import { PrisonClient, ManageUsersApiClient } from '../data'
+import { PrisonRegisterClient, ManageUsersApiClient } from '../data'
 import { Prison } from '../data/prisonClientTypes'
 import { UserWithPrison } from '../types/uof'
 
@@ -7,13 +7,13 @@ const token = 'token-1'
 
 jest.mock('../data')
 
-const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const prisonRegisterClient = new PrisonRegisterClient() as jest.Mocked<PrisonRegisterClient>
 const manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
 
 let service: UserService
 
 beforeEach(() => {
-  service = new UserService(manageUsersApiClient, prisonClient)
+  service = new UserService(manageUsersApiClient, prisonRegisterClient)
 })
 
 afterEach(() => {
@@ -151,7 +151,7 @@ describe('findUsersWithPrisons', () => {
         active: true,
       },
     ])
-    prisonClient.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
+    prisonRegisterClient.getPrisons.mockResolvedValue([{ agencyId: 'MDI', description: 'Moorland (HMP)' } as Prison])
 
     const result = await service.findUsersWithPrisons(token, 'MDI', 'Bob', 'Smith')
 
@@ -218,7 +218,7 @@ describe('compareUsers', () => {
       }
 
       manageUsersApiClient.getUser.mockResolvedValue({ name: 'Bob Smith', activeCaseLoadId: 'MDI', staffId: 485828 })
-      prisonClient.getPrisonById.mockResolvedValue(caseload)
+      prisonRegisterClient.getPrisonById.mockResolvedValue(caseload)
       const result = await service.getUserLocation(token, 'Bob Smith')
       expect(result).toEqual('Moorland (HMP & YOI)')
     })

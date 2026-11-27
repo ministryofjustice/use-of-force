@@ -1,13 +1,13 @@
 import logger from '../../log'
 import { usernamePattern } from '../config/forms/validations'
-import { type PrisonClient } from '../data'
+import { type PrisonRegisterClient } from '../data'
 import { UserWithPrison, FoundUserResult, FuzzySearchFoundUserResponse } from '../types/uof'
 import ManageUsersApiClient, { EmailResult } from '../data/manageUsersApiClient'
 
 export default class UserService {
   constructor(
     private readonly manageUsersClient: ManageUsersApiClient,
-    private readonly prisonClient: PrisonClient,
+    private readonly prisonRegisterClient: PrisonRegisterClient,
   ) {}
 
   public async getActiveCaseLoadId(token: string): Promise<string | undefined> {
@@ -88,7 +88,7 @@ export default class UserService {
 
       const [userDetails, prisons] = await Promise.all([
         this.manageUsersClient.getUsers(usernames, token),
-        this.prisonClient.getPrisons(token),
+        this.prisonRegisterClient.getPrisons(token),
       ])
 
       const userDetailsByUsername = new Map(userDetails.map(user => [user.username, user]))
@@ -109,7 +109,7 @@ export default class UserService {
   public async getUserLocation(token: string, username: string): Promise<string> {
     try {
       const user = await this.manageUsersClient.getUser(username, token)
-      const caseload = await this.prisonClient.getPrisonById(user.activeCaseLoadId, token)
+      const caseload = await this.prisonRegisterClient.getPrisonById(user.activeCaseLoadId, token)
       return caseload.description
     } catch (error) {
       logger.error('Error during getUser: ', error.stack)

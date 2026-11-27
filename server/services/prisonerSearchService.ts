@@ -1,6 +1,6 @@
 import { SearchForm } from '../data/prisonerSearchClient'
 import { properCaseFullName } from '../utils/utils'
-import { PrisonClient, PrisonerSearchClient } from '../data'
+import { PrisonRegisterClient, PrisonerSearchClient } from '../data'
 import { PrisonerSearchApiPrisoner } from '../types/prisonerSearchApi/prisonerSearchTypes'
 import AuthService from './authService'
 
@@ -22,12 +22,12 @@ const isFormComplete = (form: SearchForm): boolean =>
 export default class PrisonerSearchService {
   constructor(
     private readonly prisonerSearchClient: PrisonerSearchClient,
-    private readonly prisonClient: PrisonClient,
+    private readonly prisonRegisterClient: PrisonRegisterClient,
     private readonly authService: AuthService,
   ) {}
 
   private async getPrisonsUsing(token: string): Promise<Prison[]> {
-    const prisons = await this.prisonClient.getPrisons(token)
+    const prisons = await this.prisonRegisterClient.getPrisons(token)
     return prisons
       .map(({ agencyId, description }) => ({ agencyId, description }))
       .sort((a, b) => a.description.localeCompare(b.description))

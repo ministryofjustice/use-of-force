@@ -1,4 +1,4 @@
-import { PrisonClient, DraftReportClient, ManageUsersApiClient } from '../../data'
+import { PrisonRegisterClient, DraftReportClient, ManageUsersApiClient } from '../../data'
 import type { StaffDetails } from '../../data/draftReportClientTypes'
 import type UserService from '../userService'
 
@@ -8,7 +8,7 @@ export type DraftInvolvedStaffWithPrison = DraftInvolvedStaff & { prison?: strin
 export class DraftInvolvedStaffService {
   constructor(
     private readonly manageUsersApiClient: ManageUsersApiClient,
-    private readonly prisonClient: PrisonClient,
+    private readonly prisonRegisterClient: PrisonRegisterClient,
     private readonly draftReportClient: DraftReportClient,
     private readonly userService: UserService,
   ) {}
@@ -34,7 +34,7 @@ export class DraftInvolvedStaffService {
   ): Promise<DraftInvolvedStaffWithPrison[]> {
     const [involvedStaff, prisons] = await Promise.all([
       this.getInvolvedStaff(token, username, bookingId),
-      this.prisonClient.getPrisons(token),
+      this.prisonRegisterClient.getPrisons(token),
     ])
 
     const users = await this.manageUsersApiClient.getUsers(

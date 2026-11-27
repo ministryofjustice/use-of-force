@@ -37,6 +37,7 @@ export const services = () => {
     draftReportClient,
     incidentClient,
     prisonApiClient,
+    prisonRegisterApiClient,
     locationsApiClient,
     nomisMappingClientBuilder,
     feComponentsClient,
@@ -47,7 +48,7 @@ export const services = () => {
 
   const eventPublisher = EventPublisher()
   const authService = new AuthService(hmppsAuthClient)
-  const userService = new UserService(hmppsManageUsersApiClient, prisonApiClient)
+  const userService = new UserService(hmppsManageUsersApiClient, prisonRegisterApiClient)
   const notificationService = notificationServiceFactory(eventPublisher)
   const involvedStaffService = new InvolvedStaffService(
     incidentClient,
@@ -57,10 +58,10 @@ export const services = () => {
     notificationService,
     hmppsManageUsersApiClient,
   )
-  const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonApiClient, authService)
+  const prisonerSearchService = new PrisonerSearchService(prisonerSearchApiClient, prisonRegisterApiClient, authService)
   const offenderService = new OffenderService(prisonApiClient, authService, prisonerSearchApiClient)
 
-  const locationService = new LocationService(prisonApiClient, locationsApiClient)
+  const locationService = new LocationService(prisonRegisterApiClient, locationsApiClient)
   const nomisMappingService = new NomisMappingService(nomisMappingClientBuilder)
   const reportService = new ReportService(
     incidentClient,
@@ -88,7 +89,7 @@ export const services = () => {
   )
   const draftInvolvedStaffService = new DraftInvolvedStaffService(
     hmppsManageUsersApiClient,
-    prisonApiClient,
+    prisonRegisterApiClient,
     draftReportClient,
     userService,
   )

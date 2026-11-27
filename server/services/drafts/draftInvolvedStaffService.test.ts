@@ -1,4 +1,4 @@
-import { DraftReportClient, PrisonClient, ManageUsersApiClient } from '../../data'
+import { DraftReportClient, PrisonRegisterClient, ManageUsersApiClient } from '../../data'
 import { FoundUserResult } from '../../types/uof'
 import { DraftInvolvedStaffService } from './draftInvolvedStaffService'
 import UserService from '../userService'
@@ -6,7 +6,7 @@ import UserService from '../userService'
 jest.mock('../userService')
 jest.mock('../../data')
 
-const prisonClient = new PrisonClient() as jest.Mocked<PrisonClient>
+const prisonRegisterClient = new PrisonRegisterClient() as jest.Mocked<PrisonRegisterClient>
 const manageUsersClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
 const draftReportClient = new DraftReportClient(null, null) as jest.Mocked<DraftReportClient>
 const userService = new UserService(null, null) as jest.Mocked<UserService>
@@ -17,7 +17,7 @@ const aUser = (username: string, activeCaseLoadId: string, staffId: number) =>
   ({ username, activeCaseLoadId, staffId, exists: true }) as FoundUserResult
 
 beforeEach(() => {
-  service = new DraftInvolvedStaffService(manageUsersClient, prisonClient, draftReportClient, userService)
+  service = new DraftInvolvedStaffService(manageUsersClient, prisonRegisterClient, draftReportClient, userService)
   draftReportClient.get.mockResolvedValue({ id: 1, a: 'b', incidentDate: 'today' })
 })
 
@@ -50,7 +50,7 @@ describe('getInvolvedStaffWithPrisons', () => {
     draftReportClient.getInvolvedStaff.mockResolvedValue([{ username: 'user-2', staffId: 2 }])
     manageUsersClient.getUsers.mockResolvedValue([aUserResult('user-1', 'MDI', 1), aUserResult('user-2', 'MDI', 2)])
     userService.getUser.mockResolvedValue(aUser('user-1', 'MDI', 1))
-    prisonClient.getPrisons.mockResolvedValue([
+    prisonRegisterClient.getPrisons.mockResolvedValue([
       { agencyId: 'MDI', description: 'Moorland (HMP)', active: true, agencyType: 'INST' },
     ])
 

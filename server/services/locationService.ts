@@ -2,11 +2,11 @@ import { AgencyId } from '../types/uof'
 import logger from '../../log'
 import { Prison, PrisonLocation } from '../data/prisonClientTypes'
 import config from '../config'
-import { LocationClient, PrisonClient } from '../data'
+import { LocationClient, PrisonRegisterClient } from '../data'
 
 export default class LocationService {
   constructor(
-    private readonly prisonClient: PrisonClient,
+    private readonly prisonRegisterClient: PrisonRegisterClient,
     private readonly locationClient: LocationClient,
   ) {}
 
@@ -21,12 +21,12 @@ export default class LocationService {
   }
 
   async getPrisons(token: string): Promise<Prison[]> {
-    const prisons = await this.prisonClient.getPrisons(token)
+    const prisons = await this.prisonRegisterClient.getPrisons(token)
     return prisons.sort((a, b) => a.description.localeCompare(b.description, 'en', { ignorePunctuation: true }))
   }
 
   async getPrisonById(token: string, agencyId: AgencyId): Promise<Prison> {
-    return this.prisonClient.getPrisonById(agencyId, token)
+    return this.prisonRegisterClient.getPrisonById(agencyId, token)
   }
 
   async getLocation(token: string, incidentLocationId: string): Promise<string> {
